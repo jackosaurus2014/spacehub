@@ -178,3 +178,54 @@ model SpaceCompany {
   @@index([isPublic])
   @@index([ticker])
 }
+
+model SpaceResource {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  description     String?
+  category        String   // raw_material, composite, component, fuel, life_support, electronics, exotic
+
+  // Earth pricing
+  earthPricePerKg Float    // USD per kg on Earth
+  priceUnit       String?  // Optional unit clarification (e.g., "per kg", "per liter", "per unit")
+  priceSource     String?  // Source of pricing data
+
+  // Properties
+  density         Float?   // kg per cubic meter (for volume calculations)
+
+  // Space applications
+  applications    String   // JSON array of space applications
+  usedIn          String?  // JSON array of systems/missions that use this
+
+  // Supply chain info
+  primarySuppliers String? // JSON array of major suppliers/countries
+  availability    String?  // abundant, common, limited, rare, critical
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([availability])
+}
+
+model LaunchProvider {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  vehicle         String   // Rocket/vehicle name
+  costPerKgToLEO  Float    // USD per kg to Low Earth Orbit
+  costPerKgToGEO  Float?   // USD per kg to Geostationary Orbit
+  costPerKgToMoon Float?   // USD per kg to lunar orbit/surface
+  costPerKgToMars Float?   // USD per kg to Mars
+  payloadToLEO    Float?   // Max payload to LEO in kg
+  status          String   // operational, development, retired
+  country         String
+  reusable        Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+  @@index([country])
+}

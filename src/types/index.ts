@@ -151,6 +151,14 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 4,
   },
+  {
+    moduleId: 'resource-exchange',
+    name: 'Resource Exchange',
+    description: 'Space commodities pricing - Earth vs orbit costs',
+    icon: '💰',
+    defaultEnabled: true,
+    defaultPosition: 5,
+  },
 ];
 
 export const EVENT_TYPE_INFO: Record<SpaceEventType, { label: string; icon: string; color: string }> = {
@@ -358,3 +366,75 @@ export const EXCHANGES: Record<string, string> = {
   MOEX: 'Moscow Exchange',
   EPA: 'Euronext Paris',
 };
+
+// Space Resource Types
+export type ResourceCategory =
+  | 'raw_material'
+  | 'composite'
+  | 'fuel'
+  | 'life_support'
+  | 'electronics'
+  | 'exotic';
+
+export type ResourceAvailability =
+  | 'abundant'
+  | 'common'
+  | 'limited'
+  | 'rare'
+  | 'critical';
+
+export interface SpaceResource {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  category: ResourceCategory;
+  earthPricePerKg: number;
+  priceUnit: string | null;
+  priceSource: string | null;
+  density: number | null;
+  applications: string[];
+  usedIn: string[] | null;
+  primarySuppliers: string[] | null;
+  availability: ResourceAvailability;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface LaunchProvider {
+  id: string;
+  slug: string;
+  name: string;
+  vehicle: string;
+  costPerKgToLEO: number;
+  costPerKgToGEO: number | null;
+  costPerKgToMoon: number | null;
+  costPerKgToMars: number | null;
+  payloadToLEO: number | null;
+  status: string;
+  country: string;
+  reusable: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const RESOURCE_CATEGORIES: { value: ResourceCategory; label: string; icon: string }[] = [
+  { value: 'raw_material', label: 'Raw Materials', icon: '🪨' },
+  { value: 'composite', label: 'Composites', icon: '🧬' },
+  { value: 'fuel', label: 'Propellants & Fuels', icon: '⛽' },
+  { value: 'life_support', label: 'Life Support', icon: '💧' },
+  { value: 'electronics', label: 'Electronics', icon: '💻' },
+  { value: 'exotic', label: 'Exotic Materials', icon: '💎' },
+];
+
+export const AVAILABILITY_INFO: Record<ResourceAvailability, { label: string; color: string }> = {
+  abundant: { label: 'Abundant', color: 'bg-green-500' },
+  common: { label: 'Common', color: 'bg-blue-500' },
+  limited: { label: 'Limited', color: 'bg-yellow-500' },
+  rare: { label: 'Rare', color: 'bg-orange-500' },
+  critical: { label: 'Critical', color: 'bg-red-500' },
+};
+
+// Conversion constants
+export const KG_TO_LB = 2.20462;
+export const LB_TO_KG = 0.453592;

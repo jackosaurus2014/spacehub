@@ -47,6 +47,12 @@ export default function Navigation() {
               <span>📊</span> Market Intel
             </Link>
             <Link
+              href="/resource-exchange"
+              className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
+            >
+              <span>💰</span> Resources
+            </Link>
+            <Link
               href="/news"
               className="text-star-200 hover:text-white transition-colors"
             >
@@ -151,6 +157,13 @@ export default function Navigation() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span>📊</span> Market Intel
+              </Link>
+              <Link
+                href="/resource-exchange"
+                className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span>💰</span> Resources
               </Link>
               <Link
                 href="/news"
