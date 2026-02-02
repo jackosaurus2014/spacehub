@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { UserModuleWithConfig } from '@/lib/module-preferences';
 import MissionControlModule from './MissionControlModule';
+import BlogsArticlesModule from './BlogsArticlesModule';
 import NewsFeedModule from './NewsFeedModule';
 import CategoriesModule from './CategoriesModule';
 import ModuleCustomizer from './ModuleCustomizer';
@@ -14,6 +15,7 @@ interface ModuleContainerProps {
 
 const MODULE_COMPONENTS: Record<string, React.ComponentType> = {
   'mission-control': MissionControlModule,
+  'blogs-articles': BlogsArticlesModule,
   'news-feed': NewsFeedModule,
   'categories': CategoriesModule,
 };

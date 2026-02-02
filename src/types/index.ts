@@ -120,12 +120,20 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultPosition: 0,
   },
   {
+    moduleId: 'blogs-articles',
+    name: 'Blogs & Articles',
+    description: 'Expert insights from space industry professionals',
+    icon: '✍️',
+    defaultEnabled: true,
+    defaultPosition: 1,
+  },
+  {
     moduleId: 'news-feed',
     name: 'News Feed',
     description: 'Latest space industry news',
     icon: '📰',
     defaultEnabled: true,
-    defaultPosition: 1,
+    defaultPosition: 2,
   },
   {
     moduleId: 'categories',
@@ -133,7 +141,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     description: 'Explore news by category',
     icon: '📂',
     defaultEnabled: true,
-    defaultPosition: 2,
+    defaultPosition: 3,
   },
 ];
 
@@ -159,3 +167,74 @@ export const EVENT_STATUS_INFO: Record<SpaceEventStatus, { label: string; color:
   go: { label: 'GO', color: 'bg-green-600' },
   tbc: { label: 'TBC', color: 'bg-orange-500' },
 };
+
+// Blog Types
+export type BlogAuthorType =
+  | 'consultant'
+  | 'lawyer'
+  | 'entrepreneur'
+  | 'investor'
+  | 'engineer'
+  | 'journalist';
+
+export type BlogTopic =
+  | 'space_law'
+  | 'investment'
+  | 'policy'
+  | 'technology'
+  | 'business'
+  | 'exploration';
+
+export interface BlogSource {
+  id: string;
+  name: string;
+  slug: string;
+  url: string;
+  feedUrl: string | null;
+  type: string;
+  authorName: string | null;
+  authorTitle: string | null;
+  authorType: BlogAuthorType;
+  description: string | null;
+  imageUrl: string | null;
+  isActive: boolean;
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string | null;
+  content: string | null;
+  url: string;
+  sourceId: string;
+  source: {
+    name: string;
+    slug: string;
+    authorType: string;
+    imageUrl?: string | null;
+  };
+  authorName: string | null;
+  imageUrl: string | null;
+  tags: string | null;
+  topic: BlogTopic | null;
+  publishedAt: Date;
+  fetchedAt: Date;
+}
+
+export const BLOG_TOPICS: { value: BlogTopic; label: string; icon: string }[] = [
+  { value: 'space_law', label: 'Space Law', icon: '⚖️' },
+  { value: 'investment', label: 'Investment', icon: '💰' },
+  { value: 'policy', label: 'Policy', icon: '📜' },
+  { value: 'technology', label: 'Technology', icon: '🔧' },
+  { value: 'business', label: 'Business', icon: '💼' },
+  { value: 'exploration', label: 'Exploration', icon: '🚀' },
+];
+
+export const AUTHOR_TYPES: { value: BlogAuthorType; label: string; icon: string }[] = [
+  { value: 'consultant', label: 'Consultants', icon: '👔' },
+  { value: 'lawyer', label: 'Lawyers', icon: '⚖️' },
+  { value: 'entrepreneur', label: 'Entrepreneurs', icon: '💡' },
+  { value: 'investor', label: 'Investors', icon: '📈' },
+  { value: 'engineer', label: 'Engineers', icon: '🔬' },
+  { value: 'journalist', label: 'Journalists', icon: '📝' },
+];

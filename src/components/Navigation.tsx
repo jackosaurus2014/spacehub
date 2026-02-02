@@ -35,6 +35,12 @@ export default function Navigation() {
               <span>🎯</span> Mission Control
             </Link>
             <Link
+              href="/blogs"
+              className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
+            >
+              <span>✍️</span> Blogs
+            </Link>
+            <Link
               href="/news"
               className="text-star-200 hover:text-white transition-colors"
             >
@@ -125,6 +131,13 @@ export default function Navigation() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span>🎯</span> Mission Control
+              </Link>
+              <Link
+                href="/blogs"
+                className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span>✍️</span> Blogs
               </Link>
               <Link
                 href="/news"

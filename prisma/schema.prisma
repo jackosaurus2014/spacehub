@@ -91,3 +91,45 @@ model ModuleDefinition {
   defaultEnabled Boolean @default(true)
   defaultPosition Int @default(0)
 }
+
+model BlogSource {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  url         String
+  feedUrl     String?    // RSS feed URL if available
+  type        String     // blog, newsletter, medium, substack, linkedin
+  authorName  String?
+  authorTitle String?    // e.g., "Space Law Attorney", "Aerospace Consultant"
+  authorType  String     // consultant, lawyer, entrepreneur, investor, engineer, journalist
+  description String?
+  imageUrl    String?
+  isActive    Boolean    @default(true)
+  lastFetched DateTime?
+  createdAt   DateTime   @default(now())
+  posts       BlogPost[]
+
+  @@index([type])
+  @@index([authorType])
+  @@index([isActive])
+}
+
+model BlogPost {
+  id          String     @id @default(cuid())
+  title       String
+  excerpt     String?
+  content     String?
+  url         String     @unique
+  sourceId    String
+  source      BlogSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  authorName  String?
+  imageUrl    String?
+  tags        String?    // JSON array of tags
+  topic       String?    // space_law, investment, policy, technology, business, exploration
+  publishedAt DateTime
+  fetchedAt   DateTime   @default(now())
+
+  @@index([sourceId])
+  @@index([publishedAt])
+  @@index([topic])
+}
