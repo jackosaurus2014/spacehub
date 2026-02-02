@@ -143,6 +143,14 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 3,
   },
+  {
+    moduleId: 'market-intel',
+    name: 'Market Intel',
+    description: 'Space industry companies, stocks, and funding data',
+    icon: '📊',
+    defaultEnabled: true,
+    defaultPosition: 4,
+  },
 ];
 
 export const EVENT_TYPE_INFO: Record<SpaceEventType, { label: string; icon: string; color: string }> = {
@@ -238,3 +246,115 @@ export const AUTHOR_TYPES: { value: BlogAuthorType; label: string; icon: string 
   { value: 'engineer', label: 'Engineers', icon: '🔬' },
   { value: 'journalist', label: 'Journalists', icon: '📝' },
 ];
+
+// Space Company Types
+export type CompanyFocusArea =
+  | 'launch_provider'
+  | 'satellites'
+  | 'space_stations'
+  | 'lunar'
+  | 'mars'
+  | 'defense'
+  | 'earth_observation'
+  | 'communications'
+  | 'in_space_services'
+  | 'manufacturing'
+  | 'propulsion'
+  | 'space_tourism'
+  | 'asteroid_mining'
+  | 'space_infrastructure';
+
+export type CompanyCountry =
+  | 'USA'
+  | 'CHN'
+  | 'RUS'
+  | 'JPN'
+  | 'EUR'
+  | 'FRA'
+  | 'IND'
+  | 'KOR'
+  | 'ISR'
+  | 'NZL'
+  | 'AUS';
+
+export interface SpaceCompany {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  country: CompanyCountry;
+  headquarters: string | null;
+  founded: number | null;
+  website: string | null;
+  logoUrl: string | null;
+
+  // Public company info
+  isPublic: boolean;
+  ticker: string | null;
+  exchange: string | null;
+  marketCap: number | null;
+  stockPrice: number | null;
+  priceChange24h: number | null;
+
+  // Private company info
+  isPreIPO: boolean;
+  expectedIPODate: string | null;
+  lastFundingRound: string | null;
+  lastFundingAmount: number | null;
+  lastFundingDate: string | null;
+  totalFunding: number | null;
+  nextFundingRound: string | null;
+  valuation: number | null;
+
+  // Space industry focus
+  focusAreas: CompanyFocusArea[];
+  subSectors: string[] | null;
+
+  // Metadata
+  employeeCount: number | null;
+  revenueEstimate: number | null;
+
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const FOCUS_AREAS: { value: CompanyFocusArea; label: string; icon: string }[] = [
+  { value: 'launch_provider', label: 'Launch Provider', icon: '🚀' },
+  { value: 'satellites', label: 'Satellites', icon: '📡' },
+  { value: 'space_stations', label: 'Space Stations', icon: '🛰️' },
+  { value: 'lunar', label: 'Lunar', icon: '🌙' },
+  { value: 'mars', label: 'Mars', icon: '🔴' },
+  { value: 'defense', label: 'Defense & National Security', icon: '🛡️' },
+  { value: 'earth_observation', label: 'Earth Observation', icon: '🌍' },
+  { value: 'communications', label: 'Communications', icon: '📶' },
+  { value: 'in_space_services', label: 'In-Space Services', icon: '🔧' },
+  { value: 'manufacturing', label: 'Space Manufacturing', icon: '🏭' },
+  { value: 'propulsion', label: 'Propulsion', icon: '⚡' },
+  { value: 'space_tourism', label: 'Space Tourism', icon: '✈️' },
+  { value: 'asteroid_mining', label: 'Asteroid Mining', icon: '⛏️' },
+  { value: 'space_infrastructure', label: 'Space Infrastructure', icon: '🏗️' },
+];
+
+export const COUNTRY_INFO: Record<CompanyCountry, { name: string; flag: string }> = {
+  USA: { name: 'United States', flag: '🇺🇸' },
+  CHN: { name: 'China', flag: '🇨🇳' },
+  RUS: { name: 'Russia', flag: '🇷🇺' },
+  JPN: { name: 'Japan', flag: '🇯🇵' },
+  EUR: { name: 'Europe', flag: '🇪🇺' },
+  FRA: { name: 'France', flag: '🇫🇷' },
+  IND: { name: 'India', flag: '🇮🇳' },
+  KOR: { name: 'South Korea', flag: '🇰🇷' },
+  ISR: { name: 'Israel', flag: '🇮🇱' },
+  NZL: { name: 'New Zealand', flag: '🇳🇿' },
+  AUS: { name: 'Australia', flag: '🇦🇺' },
+};
+
+export const EXCHANGES: Record<string, string> = {
+  NYSE: 'New York Stock Exchange',
+  NASDAQ: 'NASDAQ',
+  TSE: 'Tokyo Stock Exchange',
+  SSE: 'Shanghai Stock Exchange',
+  LSE: 'London Stock Exchange',
+  MOEX: 'Moscow Exchange',
+  EPA: 'Euronext Paris',
+};

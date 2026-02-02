@@ -7,6 +7,7 @@ import MissionControlModule from './MissionControlModule';
 import BlogsArticlesModule from './BlogsArticlesModule';
 import NewsFeedModule from './NewsFeedModule';
 import CategoriesModule from './CategoriesModule';
+import MarketIntelModule from './MarketIntelModule';
 import ModuleCustomizer from './ModuleCustomizer';
 
 interface ModuleContainerProps {
@@ -18,6 +19,7 @@ const MODULE_COMPONENTS: Record<string, React.ComponentType> = {
   'blogs-articles': BlogsArticlesModule,
   'news-feed': NewsFeedModule,
   'categories': CategoriesModule,
+  'market-intel': MarketIntelModule,
 };
 
 export default function ModuleContainer({ initialModules }: ModuleContainerProps) {
