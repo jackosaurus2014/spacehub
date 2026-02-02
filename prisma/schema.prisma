@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String              @id @default(cuid())
+  email             String              @unique
+  password          String
+  name              String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  modulePreferences UserModulePreference[]
+}
+
+model NewsArticle {
+  id          String   @id @default(cuid())
+  title       String
+  summary     String?
+  content     String?
+  url         String   @unique
+  source      String
+  category    String
+  imageUrl    String?
+  publishedAt DateTime
+  fetchedAt   DateTime @default(now())
+
+  @@index([category])
+  @@index([publishedAt])
+  @@index([source])
+}
+
+model Category {
+  id          String @id @default(cuid())
+  name        String @unique
+  slug        String @unique
+  description String?
+}
+
+model SpaceEvent {
+  id            String   @id @default(cuid())
+  externalId    String?  @unique
+  name          String
+  description   String?
+  type          String   // launch, moon_mission, mars_mission, rover, payload, orbital_hab, space_station
+  status        String   // upcoming, in_progress, completed, scrubbed, tbd
+  launchDate    DateTime?
+  launchDatePrecision String? // exact, hour, day, month, quarter, year
+  windowStart   DateTime?
+  windowEnd     DateTime?
+  location      String?
+  country       String?
+  agency        String?
+  rocket        String?
+  mission       String?
+  imageUrl      String?
+  infoUrl       String?
+  videoUrl      String?
+  fetchedAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([type])
+  @@index([status])
+  @@index([launchDate])
+  @@index([country])
+}
+
+model UserModulePreference {
+  id         String  @id @default(cuid())
+  userId     String
+  moduleId   String  // e.g., "mission-control", "news-feed", etc.
+  enabled    Boolean @default(true)
+  position   Int     @default(0)
+  settings   String? // JSON string for module-specific settings
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+  @@index([userId])
+}
+
+model ModuleDefinition {
+  id          String  @id @default(cuid())
+  moduleId    String  @unique
+  name        String
+  description String?
+  icon        String?
+  defaultEnabled Boolean @default(true)
+  defaultPosition Int @default(0)
+}

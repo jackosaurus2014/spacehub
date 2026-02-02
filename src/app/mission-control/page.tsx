@@ -1,0 +1,331 @@
+'use client';
+
+import { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
+import { SpaceEvent, EVENT_TYPE_INFO, SpaceEventType } from '@/types';
+
+const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
+  { value: 'all', label: 'All Events', icon: '🌌' },
+  { value: 'launch', label: 'Launches', icon: '🚀' },
+  { value: 'crewed_mission', label: 'Crewed', icon: '👨‍🚀' },
+  { value: 'moon_mission', label: 'Moon', icon: '🌙' },
+  { value: 'mars_mission', label: 'Mars', icon: '🔴' },
+  { value: 'space_station', label: 'Stations', icon: '🛰️' },
+  { value: 'satellite', label: 'Satellites', icon: '📡' },
+];
+
+interface GroupedEvents {
+  [year: string]: {
+    [month: string]: SpaceEvent[];
+  };
+}
+
+function EventCard({ event }: { event: SpaceEvent }) {
+  const typeInfo = EVENT_TYPE_INFO[event.type] || EVENT_TYPE_INFO.launch;
+  const launchDate = event.launchDate ? new Date(event.launchDate) : null;
+  const isPast = launchDate && launchDate < new Date();
+  const isWithin48Hours = launchDate &&
+    launchDate > new Date() &&
+    launchDate < new Date(Date.now() + 48 * 60 * 60 * 1000);
+
+  return (
+    <div className={`card overflow-hidden ${isWithin48Hours ? 'border-green-500/50 glow-border' : ''}`}>
+      <div className="flex">
+        {/* Image */}
+        <div className="relative w-32 h-32 flex-shrink-0 bg-space-700">
+          {event.imageUrl ? (
+            <Image
+              src={event.imageUrl}
+              alt={event.name}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-space-700 to-nebula-500/20">
+              <span className="text-4xl">{typeInfo.icon}</span>
+            </div>
+          )}
+          {isWithin48Hours && (
+            <div className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse">
+              SOON
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 p-4">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className={`${typeInfo.color} text-white text-xs font-semibold px-2 py-0.5 rounded`}>
+                  {typeInfo.icon} {typeInfo.label}
+                </span>
+                {event.country && (
+                  <span className="text-star-300 text-xs">{event.country}</span>
+                )}
+              </div>
+              <h3 className={`font-semibold text-white line-clamp-2 ${isPast ? 'opacity-60' : ''}`}>
+                {event.name}
+              </h3>
+            </div>
+          </div>
+
+          {event.agency && (
+            <p className="text-star-300 text-sm mt-1">{event.agency}</p>
+          )}
+
+          <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-star-300">
+            {launchDate && (
+              <span className={`flex items-center gap-1 ${isPast ? 'line-through opacity-60' : ''}`}>
+                <span>📅</span>
+                {launchDate.toLocaleDateString('en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+                {' '}
+                {launchDate.toLocaleTimeString('en-US', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </span>
+            )}
+            {event.location && (
+              <span className="flex items-center gap-1">
+                <span>📍</span> {event.location}
+              </span>
+            )}
+          </div>
+
+          {event.rocket && (
+            <p className="text-nebula-300 text-xs mt-2">
+              <span>🚀</span> {event.rocket}
+            </p>
+          )}
+
+          {event.description && (
+            <p className="text-star-300/70 text-xs mt-2 line-clamp-2">{event.description}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function MissionControlPage() {
+  const [events, setEvents] = useState<SpaceEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedType, setSelectedType] = useState<SpaceEventType | 'all'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      try {
+        // Fetch events for next 5 years
+        const startDate = new Date().toISOString();
+        const endDate = new Date(Date.now() + 5 * 365 * 24 * 60 * 60 * 1000).toISOString();
+
+        const params = new URLSearchParams({
+          startDate,
+          endDate,
+          limit: '500',
+        });
+
+        if (selectedType !== 'all') {
+          params.set('type', selectedType);
+        }
+
+        const res = await fetch(`/api/events?${params}`);
+        const data = await res.json();
+        setEvents(data.events || []);
+      } catch (error) {
+        console.error('Failed to fetch events:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, [selectedType]);
+
+  // Filter and group events
+  const groupedEvents = useMemo(() => {
+    let filtered = events;
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = events.filter(
+        (e) =>
+          e.name.toLowerCase().includes(query) ||
+          e.agency?.toLowerCase().includes(query) ||
+          e.location?.toLowerCase().includes(query) ||
+          e.rocket?.toLowerCase().includes(query)
+      );
+    }
+
+    const grouped: GroupedEvents = {};
+
+    filtered.forEach((event) => {
+      if (!event.launchDate) return;
+      const date = new Date(event.launchDate);
+      const year = date.getFullYear().toString();
+      const month = date.toLocaleDateString('en-US', { month: 'long' });
+
+      if (!grouped[year]) grouped[year] = {};
+      if (!grouped[year][month]) grouped[year][month] = [];
+      grouped[year][month].push(event);
+    });
+
+    return grouped;
+  }, [events, searchQuery]);
+
+  const years = Object.keys(groupedEvents).sort();
+
+  return (
+    <div className="min-h-screen py-8">
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-4xl">🎯</span>
+            <h1 className="text-3xl md:text-4xl font-display font-bold text-white">
+              Mission Control
+            </h1>
+          </div>
+          <p className="text-star-300">
+            Explore all upcoming space missions, launches, and events for the next 5 years
+          </p>
+        </div>
+
+        {/* Filters */}
+        <div className="card p-4 mb-8">
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Search */}
+            <div className="flex-1">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-star-300">
+                  🔍
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search missions, agencies, rockets..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="input pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Type Filter */}
+            <div className="flex flex-wrap gap-2">
+              {EVENT_TYPES.map((type) => (
+                <button
+                  key={type.value}
+                  onClick={() => setSelectedType(type.value)}
+                  className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-1 text-sm ${
+                    selectedType === type.value
+                      ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
+                      : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
+                  }`}
+                >
+                  <span>{type.icon}</span>
+                  <span className="hidden sm:inline">{type.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="card p-4 text-center">
+            <div className="text-3xl font-bold text-white">{events.length}</div>
+            <div className="text-star-300 text-sm">Total Events</div>
+          </div>
+          <div className="card p-4 text-center">
+            <div className="text-3xl font-bold text-green-400">
+              {events.filter(e => {
+                const d = e.launchDate ? new Date(e.launchDate) : null;
+                return d && d > new Date() && d < new Date(Date.now() + 48 * 60 * 60 * 1000);
+              }).length}
+            </div>
+            <div className="text-star-300 text-sm">Next 48 Hours</div>
+          </div>
+          <div className="card p-4 text-center">
+            <div className="text-3xl font-bold text-nebula-300">
+              {events.filter(e => e.type === 'crewed_mission').length}
+            </div>
+            <div className="text-star-300 text-sm">Crewed Missions</div>
+          </div>
+          <div className="card p-4 text-center">
+            <div className="text-3xl font-bold text-rocket-400">
+              {new Set(events.map(e => e.agency).filter(Boolean)).size}
+            </div>
+            <div className="text-star-300 text-sm">Agencies</div>
+          </div>
+        </div>
+
+        {/* Timeline */}
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <div className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+          </div>
+        ) : years.length === 0 ? (
+          <div className="text-center py-20">
+            <span className="text-6xl block mb-4">🔭</span>
+            <h2 className="text-2xl font-semibold text-white mb-2">No Events Found</h2>
+            <p className="text-star-300">
+              {searchQuery
+                ? 'Try adjusting your search terms'
+                : 'No upcoming events available. Try fetching fresh data.'}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-12">
+            {years.map((year) => (
+              <div key={year}>
+                <h2 className="text-2xl font-display font-bold text-white mb-6 flex items-center gap-3 sticky top-16 bg-space-900/95 backdrop-blur-sm py-3 z-10">
+                  <span className="text-nebula-400">📅</span>
+                  {year}
+                  <span className="text-star-300 text-sm font-normal">
+                    ({Object.values(groupedEvents[year]).flat().length} events)
+                  </span>
+                </h2>
+
+                <div className="space-y-8 pl-4 border-l-2 border-nebula-500/30">
+                  {Object.entries(groupedEvents[year]).map(([month, monthEvents]) => (
+                    <div key={`${year}-${month}`} className="relative">
+                      {/* Month marker */}
+                      <div className="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-nebula-500 flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">
+                          {month.substring(0, 3)}
+                        </span>
+                      </div>
+
+                      <div className="ml-6">
+                        <h3 className="text-lg font-semibold text-white mb-4">
+                          {month}
+                          <span className="text-star-300 text-sm font-normal ml-2">
+                            ({monthEvents.length} events)
+                          </span>
+                        </h3>
+
+                        <div className="space-y-4">
+                          {monthEvents.map((event) => (
+                            <EventCard key={event.id} event={event} />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

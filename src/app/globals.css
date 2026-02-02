@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 226, 232, 240;
+  --background-start-rgb: 10, 10, 26;
+  --background-end-rgb: 15, 15, 42;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--background-start-rgb)),
+    rgb(var(--background-end-rgb))
+  );
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Starfield Background */
+.starfield {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Glow Effects */
+.glow-border {
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3),
+              0 0 30px rgba(139, 92, 246, 0.1);
+}
+
+.glow-border:hover {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5),
+              0 0 40px rgba(139, 92, 246, 0.2);
+}
+
+.glow-text {
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+/* Button Styles */
+.btn-primary {
+  @apply bg-gradient-to-r from-nebula-500 to-nebula-400 text-white font-semibold
+         py-2 px-6 rounded-lg transition-all duration-300
+         hover:from-nebula-400 hover:to-nebula-300 hover:shadow-lg hover:shadow-nebula-500/25
+         active:scale-95;
+}
+
+.btn-secondary {
+  @apply border border-nebula-500/50 text-star-100 font-semibold
+         py-2 px-6 rounded-lg transition-all duration-300
+         hover:bg-nebula-500/20 hover:border-nebula-400
+         active:scale-95;
+}
+
+/* Card Styles */
+.card {
+  @apply bg-space-800/80 backdrop-blur-sm border border-space-600/50 rounded-xl
+         transition-all duration-300 hover:border-nebula-500/50;
+}
+
+/* Input Styles */
+.input {
+  @apply w-full bg-space-700/50 border border-space-600 rounded-lg px-4 py-3
+         text-star-100 placeholder-star-300/50
+         focus:outline-none focus:border-nebula-500 focus:ring-1 focus:ring-nebula-500
+         transition-all duration-200;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4c1d95;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6d28d9;
+}
+
+/* Gradient Text */
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-nebula-300 via-star-100 to-rocket-400;
+}
