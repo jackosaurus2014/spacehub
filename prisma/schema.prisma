@@ -229,3 +229,83 @@ model LaunchProvider {
   @@index([status])
   @@index([country])
 }
+
+model BusinessOpportunity {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  description     String
+  fullAnalysis    String?  // Detailed AI analysis
+
+  // Classification
+  type            String   // government_contract, industry_need, resource_shortage, service_gap, ai_insight, market_trend
+  category        String   // launch_services, hardware, satellites, software, logistics, manufacturing, research, consulting, other
+  sector          String?  // defense, commercial, civil, scientific
+
+  // Opportunity details
+  estimatedValue  String?  // Could be a range like "$1M-$5M" or "Unknown"
+  timeframe       String?  // immediate, short_term, medium_term, long_term
+  difficulty      String?  // low, medium, high, expert
+
+  // Source information
+  sourceType      String   // sam_gov, news_analysis, company_report, ai_generated, user_submitted
+  sourceUrl       String?
+  sourceName      String?
+
+  // Government contract specific
+  solicitationId  String?  @unique
+  agency          String?
+  dueDate         DateTime?
+  contractType    String?  // fixed_price, cost_plus, idiq, etc.
+  setAside        String?  // small_business, 8a, hubzone, etc.
+
+  // AI analysis metadata
+  aiConfidence    Float?   // 0-1 confidence score
+  aiReasoning     String?  // Why AI thinks this is an opportunity
+  relatedTrends   String?  // JSON array of related trends
+  targetAudience  String?  // JSON array: entrepreneurs, investors, students, corporations
+
+  // Status
+  status          String   @default("active") // active, expired, archived, flagged
+  featured        Boolean  @default(false)
+  viewCount       Int      @default(0)
+
+  // Timestamps
+  discoveredAt    DateTime @default(now())
+  publishedAt     DateTime?
+  expiresAt       DateTime?
+  updatedAt       DateTime @updatedAt
+
+  @@index([type])
+  @@index([category])
+  @@index([status])
+  @@index([discoveredAt])
+  @@index([featured])
+}
+
+model AIAnalysisRun {
+  id              String   @id @default(cuid())
+  runType         String   // daily_scan, deep_dive, contract_analysis, trend_analysis
+  status          String   // pending, running, completed, failed
+
+  // Analysis parameters
+  focusAreas      String?  // JSON array of focus areas
+  newsSourcesUsed String?  // JSON array of news sources analyzed
+
+  // Results
+  opportunitiesFound Int   @default(0)
+  insightsGenerated  Int   @default(0)
+  summaryReport   String?  // Overall findings summary
+
+  // Metadata
+  tokensUsed      Int?
+  processingTime  Int?     // in seconds
+  errorMessage    String?
+
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+
+  @@index([runType])
+  @@index([status])
+  @@index([startedAt])
+}

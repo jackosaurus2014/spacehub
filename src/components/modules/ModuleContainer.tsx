@@ -9,6 +9,7 @@ import NewsFeedModule from './NewsFeedModule';
 import CategoriesModule from './CategoriesModule';
 import MarketIntelModule from './MarketIntelModule';
 import ResourceExchangeModule from './ResourceExchangeModule';
+import BusinessOpportunitiesModule from './BusinessOpportunitiesModule';
 import ModuleCustomizer from './ModuleCustomizer';
 
 interface ModuleContainerProps {
@@ -22,6 +23,7 @@ const MODULE_COMPONENTS: Record<string, React.ComponentType> = {
   'categories': CategoriesModule,
   'market-intel': MarketIntelModule,
   'resource-exchange': ResourceExchangeModule,
+  'business-opportunities': BusinessOpportunitiesModule,
 };
 
 export default function ModuleContainer({ initialModules }: ModuleContainerProps) {

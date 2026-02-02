@@ -159,6 +159,14 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 5,
   },
+  {
+    moduleId: 'business-opportunities',
+    name: 'Business Opportunities',
+    description: 'AI-powered space business opportunities and government contracts',
+    icon: '💼',
+    defaultEnabled: true,
+    defaultPosition: 6,
+  },
 ];
 
 export const EVENT_TYPE_INFO: Record<SpaceEventType, { label: string; icon: string; color: string }> = {
@@ -438,3 +446,116 @@ export const AVAILABILITY_INFO: Record<ResourceAvailability, { label: string; co
 // Conversion constants
 export const KG_TO_LB = 2.20462;
 export const LB_TO_KG = 0.453592;
+
+// Business Opportunity Types
+export type OpportunityType =
+  | 'government_contract'
+  | 'industry_need'
+  | 'resource_shortage'
+  | 'service_gap'
+  | 'ai_insight'
+  | 'market_trend';
+
+export type OpportunityCategory =
+  | 'launch_services'
+  | 'hardware'
+  | 'satellites'
+  | 'software'
+  | 'logistics'
+  | 'manufacturing'
+  | 'research'
+  | 'consulting'
+  | 'other';
+
+export type OpportunityTimeframe =
+  | 'immediate'
+  | 'short_term'
+  | 'medium_term'
+  | 'long_term';
+
+export type OpportunityDifficulty =
+  | 'low'
+  | 'medium'
+  | 'high'
+  | 'expert';
+
+export type TargetAudience =
+  | 'entrepreneurs'
+  | 'investors'
+  | 'students'
+  | 'corporations';
+
+export interface BusinessOpportunity {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  fullAnalysis: string | null;
+  type: OpportunityType;
+  category: OpportunityCategory;
+  sector: string | null;
+  estimatedValue: string | null;
+  timeframe: OpportunityTimeframe | null;
+  difficulty: OpportunityDifficulty | null;
+  sourceType: string;
+  sourceUrl: string | null;
+  sourceName: string | null;
+  solicitationId: string | null;
+  agency: string | null;
+  dueDate: Date | null;
+  contractType: string | null;
+  setAside: string | null;
+  aiConfidence: number | null;
+  aiReasoning: string | null;
+  relatedTrends: string[] | null;
+  targetAudience: TargetAudience[] | null;
+  status: string;
+  featured: boolean;
+  viewCount: number;
+  discoveredAt: Date;
+  publishedAt: Date | null;
+  expiresAt: Date | null;
+  updatedAt: Date;
+}
+
+export const OPPORTUNITY_TYPES: { value: OpportunityType; label: string; icon: string; color: string }[] = [
+  { value: 'government_contract', label: 'Government Contract', icon: '🏛️', color: 'bg-blue-500' },
+  { value: 'industry_need', label: 'Industry Need', icon: '🏭', color: 'bg-purple-500' },
+  { value: 'resource_shortage', label: 'Resource Shortage', icon: '⚠️', color: 'bg-orange-500' },
+  { value: 'service_gap', label: 'Service Gap', icon: '🔧', color: 'bg-cyan-500' },
+  { value: 'ai_insight', label: 'AI Insight', icon: '🤖', color: 'bg-nebula-500' },
+  { value: 'market_trend', label: 'Market Trend', icon: '📈', color: 'bg-green-500' },
+];
+
+export const OPPORTUNITY_CATEGORIES: { value: OpportunityCategory; label: string; icon: string }[] = [
+  { value: 'launch_services', label: 'Launch Services', icon: '🚀' },
+  { value: 'hardware', label: 'Hardware', icon: '🔩' },
+  { value: 'satellites', label: 'Satellites', icon: '📡' },
+  { value: 'software', label: 'Software', icon: '💻' },
+  { value: 'logistics', label: 'Logistics', icon: '📦' },
+  { value: 'manufacturing', label: 'Manufacturing', icon: '🏭' },
+  { value: 'research', label: 'Research', icon: '🔬' },
+  { value: 'consulting', label: 'Consulting', icon: '💼' },
+  { value: 'other', label: 'Other', icon: '📋' },
+];
+
+export const TIMEFRAME_INFO: Record<OpportunityTimeframe, { label: string; color: string }> = {
+  immediate: { label: 'Immediate', color: 'bg-red-500' },
+  short_term: { label: '1-2 Years', color: 'bg-orange-500' },
+  medium_term: { label: '2-5 Years', color: 'bg-yellow-500' },
+  long_term: { label: '5+ Years', color: 'bg-green-500' },
+};
+
+export const DIFFICULTY_INFO: Record<OpportunityDifficulty, { label: string; color: string }> = {
+  low: { label: 'Low Barrier', color: 'bg-green-500' },
+  medium: { label: 'Medium', color: 'bg-yellow-500' },
+  high: { label: 'High', color: 'bg-orange-500' },
+  expert: { label: 'Expert Only', color: 'bg-red-500' },
+};
+
+export const TARGET_AUDIENCE_INFO: Record<TargetAudience, { label: string; icon: string }> = {
+  entrepreneurs: { label: 'Entrepreneurs', icon: '💡' },
+  investors: { label: 'Investors', icon: '💰' },
+  students: { label: 'Students', icon: '🎓' },
+  corporations: { label: 'Corporations', icon: '🏢' },
+};

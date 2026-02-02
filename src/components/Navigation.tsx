@@ -53,6 +53,12 @@ export default function Navigation() {
               <span>💰</span> Resources
             </Link>
             <Link
+              href="/business-opportunities"
+              className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
+            >
+              <span>💼</span> Opportunities
+            </Link>
+            <Link
               href="/news"
               className="text-star-200 hover:text-white transition-colors"
             >
@@ -164,6 +170,13 @@ export default function Navigation() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span>💰</span> Resources
+              </Link>
+              <Link
+                href="/business-opportunities"
+                className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span>💼</span> Opportunities
               </Link>
               <Link
                 href="/news"
