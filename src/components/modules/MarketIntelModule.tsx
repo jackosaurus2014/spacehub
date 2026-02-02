@@ -4,16 +4,136 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { SpaceCompany, FOCUS_AREAS, COUNTRY_INFO, CompanyCountry } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import StockMiniChart from '@/components/ui/StockMiniChart';
 
-function CompanyCard({ company }: { company: SpaceCompany }) {
+interface StockData {
+  ticker: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  change30D: number;
+  chartData: number[];
+  success: boolean;
+}
+
+function formatPrice(price: number): string {
+  return price.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  });
+}
+
+function formatChange(change: number, isPercent = false): string {
+  const prefix = change >= 0 ? '+' : '';
+  if (isPercent) {
+    return `${prefix}${change.toFixed(2)}%`;
+  }
+  return `${prefix}${change.toFixed(2)}`;
+}
+
+function PublicCompanyCard({
+  company,
+  stockData,
+}: {
+  company: SpaceCompany;
+  stockData?: StockData;
+}) {
   const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
+  const isPositive = stockData ? stockData.changePercent >= 0 : true;
+  const is30DPositive = stockData ? stockData.change30D >= 0 : true;
 
-  const formatMarketCap = (cap: number | null) => {
-    if (!cap) return 'N/A';
-    if (cap >= 1000) return `$${(cap / 1000).toFixed(1)}T`;
-    if (cap >= 1) return `$${cap.toFixed(1)}B`;
-    return `$${(cap * 1000).toFixed(0)}M`;
-  };
+  return (
+    <div className="card p-4 hover:border-nebula-500/50 transition-all">
+      <div className="flex items-start justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
+          <div>
+            <h3 className="font-semibold text-white text-sm">{company.name}</h3>
+            <span className="text-xs text-nebula-300 font-mono">
+              {company.exchange}:{company.ticker}
+            </span>
+          </div>
+        </div>
+        {stockData && (
+          <span
+            className={`text-xs font-medium px-2 py-0.5 rounded ${
+              isPositive
+                ? 'bg-green-500/20 text-green-400'
+                : 'bg-red-500/20 text-red-400'
+            }`}
+          >
+            {formatChange(stockData.changePercent, true)}
+          </span>
+        )}
+      </div>
+
+      {stockData ? (
+        <>
+          <div className="mb-3">
+            <div className="text-xl font-bold text-white">
+              {formatPrice(stockData.price)}
+            </div>
+            <div className={`text-xs ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+              {formatChange(stockData.change)} today
+            </div>
+          </div>
+
+          {stockData.chartData && stockData.chartData.length > 0 && (
+            <div className="mb-3">
+              <StockMiniChart
+                data={stockData.chartData}
+                width={140}
+                height={36}
+                positive={is30DPositive}
+              />
+            </div>
+          )}
+
+          <div className="flex gap-2 text-xs">
+            <div
+              className={`px-2 py-1 rounded ${
+                isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+              }`}
+            >
+              1D: {formatChange(stockData.changePercent, true)}
+            </div>
+            <div
+              className={`px-2 py-1 rounded ${
+                is30DPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+              }`}
+            >
+              30D: {formatChange(stockData.change30D, true)}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="animate-pulse">
+          <div className="h-6 w-24 bg-space-700 rounded mb-2" />
+          <div className="h-9 w-full bg-space-700 rounded mb-2" />
+          <div className="h-6 w-32 bg-space-700 rounded" />
+        </div>
+      )}
+
+      <div className="flex flex-wrap gap-1 mt-3">
+        {(company.focusAreas as string[]).slice(0, 2).map((area) => {
+          const focusInfo = FOCUS_AREAS.find((f) => f.value === area);
+          return (
+            <span
+              key={area}
+              className="text-xs bg-space-700/50 text-star-200 px-2 py-0.5 rounded"
+            >
+              {focusInfo?.icon} {focusInfo?.label || area}
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function PrivateCompanyCard({ company }: { company: SpaceCompany }) {
+  const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
 
   const formatValuation = (val: number | null) => {
     if (!val) return 'N/A';
@@ -28,18 +148,10 @@ function CompanyCard({ company }: { company: SpaceCompany }) {
           <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
           <div>
             <h3 className="font-semibold text-white text-sm">{company.name}</h3>
-            {company.ticker && (
-              <span className="text-xs text-nebula-300 font-mono">
-                {company.exchange}:{company.ticker}
-              </span>
-            )}
+            <span className="text-xs text-star-400">Private</span>
           </div>
         </div>
-        {company.isPublic ? (
-          <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">
-            Public
-          </span>
-        ) : company.isPreIPO ? (
+        {company.isPreIPO ? (
           <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">
             Pre-IPO
           </span>
@@ -51,17 +163,10 @@ function CompanyCard({ company }: { company: SpaceCompany }) {
       </div>
 
       <div className="space-y-2 text-xs">
-        {company.isPublic ? (
-          <div className="flex justify-between">
-            <span className="text-star-300">Market Cap:</span>
-            <span className="text-white font-medium">{formatMarketCap(company.marketCap)}</span>
-          </div>
-        ) : (
-          <div className="flex justify-between">
-            <span className="text-star-300">Valuation:</span>
-            <span className="text-white font-medium">{formatValuation(company.valuation)}</span>
-          </div>
-        )}
+        <div className="flex justify-between">
+          <span className="text-star-300">Valuation:</span>
+          <span className="text-white font-medium">{formatValuation(company.valuation)}</span>
+        </div>
 
         {company.isPreIPO && company.expectedIPODate && (
           <div className="flex justify-between">
@@ -70,7 +175,7 @@ function CompanyCard({ company }: { company: SpaceCompany }) {
           </div>
         )}
 
-        {!company.isPublic && company.lastFundingRound && (
+        {company.lastFundingRound && (
           <div className="flex justify-between">
             <span className="text-star-300">Last Round:</span>
             <span className="text-nebula-300">{company.lastFundingRound}</span>
@@ -80,7 +185,7 @@ function CompanyCard({ company }: { company: SpaceCompany }) {
 
       <div className="flex flex-wrap gap-1 mt-3">
         {(company.focusAreas as string[]).slice(0, 2).map((area) => {
-          const focusInfo = FOCUS_AREAS.find(f => f.value === area);
+          const focusInfo = FOCUS_AREAS.find((f) => f.value === area);
           return (
             <span
               key={area}
@@ -90,11 +195,6 @@ function CompanyCard({ company }: { company: SpaceCompany }) {
             </span>
           );
         })}
-        {(company.focusAreas as string[]).length > 2 && (
-          <span className="text-xs text-star-400">
-            +{(company.focusAreas as string[]).length - 2}
-          </span>
-        )}
       </div>
     </div>
   );
@@ -109,6 +209,7 @@ export default function MarketIntelModule() {
     totalMarketCap: number;
     byCountry: Record<string, number>;
   } | null>(null);
+  const [stockData, setStockData] = useState<Record<string, StockData>>({});
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
 
@@ -119,7 +220,7 @@ export default function MarketIntelModule() {
   const fetchData = async () => {
     try {
       const [companiesRes, statsRes] = await Promise.all([
-        fetch('/api/companies?limit=8'),
+        fetch('/api/companies?limit=12'),
         fetch('/api/companies/stats'),
       ]);
 
@@ -128,6 +229,14 @@ export default function MarketIntelModule() {
 
       if (companiesData.companies) {
         setCompanies(companiesData.companies);
+
+        // Fetch stock data for public companies
+        const publicCompanies = companiesData.companies.filter(
+          (c: SpaceCompany) => c.isPublic && c.ticker
+        );
+        if (publicCompanies.length > 0) {
+          fetchStockData(publicCompanies);
+        }
       }
       if (statsData.total !== undefined) {
         setStats(statsData);
@@ -136,6 +245,26 @@ export default function MarketIntelModule() {
       console.error('Failed to fetch market data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchStockData = async (publicCompanies: SpaceCompany[]) => {
+    const tickers = publicCompanies.map((c) => c.ticker).join(',');
+    try {
+      const res = await fetch(`/api/stocks?tickers=${tickers}`);
+      const data = await res.json();
+
+      if (data.stocks) {
+        const stockMap: Record<string, StockData> = {};
+        data.stocks.forEach((stock: StockData) => {
+          if (stock.success) {
+            stockMap[stock.ticker] = stock;
+          }
+        });
+        setStockData(stockMap);
+      }
+    } catch (error) {
+      console.error('Failed to fetch stock data:', error);
     }
   };
 
@@ -185,6 +314,9 @@ export default function MarketIntelModule() {
     );
   }
 
+  const publicCompanies = companies.filter((c) => c.isPublic && c.ticker);
+  const privateCompanies = companies.filter((c) => !c.isPublic);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -195,10 +327,7 @@ export default function MarketIntelModule() {
             <p className="text-star-300 text-sm">Space industry companies & investments</p>
           </div>
         </div>
-        <Link
-          href="/market-intel"
-          className="btn-secondary text-sm py-1.5 px-4"
-        >
+        <Link href="/market-intel" className="btn-secondary text-sm py-1.5 px-4">
           View All →
         </Link>
       </div>
@@ -221,9 +350,11 @@ export default function MarketIntelModule() {
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-nebula-300">
               {stats.totalMarketCap
-                ? `$${stats.totalMarketCap >= 1000
-                    ? `${(stats.totalMarketCap / 1000).toFixed(1)}T`
-                    : `${stats.totalMarketCap.toFixed(0)}B`}`
+                ? `$${
+                    stats.totalMarketCap >= 1000
+                      ? `${(stats.totalMarketCap / 1000).toFixed(1)}T`
+                      : `${stats.totalMarketCap.toFixed(0)}B`
+                  }`
                 : 'N/A'}
             </div>
             <div className="text-star-300 text-xs">Total Market Cap</div>
@@ -231,12 +362,36 @@ export default function MarketIntelModule() {
         </div>
       )}
 
-      {/* Companies Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {companies.map((company) => (
-          <CompanyCard key={company.id} company={company} />
-        ))}
-      </div>
+      {/* Live Stock Prices */}
+      {publicCompanies.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            Live Stock Prices
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {publicCompanies.slice(0, 4).map((company) => (
+              <PublicCompanyCard
+                key={company.id}
+                company={company}
+                stockData={company.ticker ? stockData[company.ticker] : undefined}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Private Companies */}
+      {privateCompanies.length > 0 && (
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-3">Private & Pre-IPO</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {privateCompanies.slice(0, 4).map((company) => (
+              <PrivateCompanyCard key={company.id} company={company} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

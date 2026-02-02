@@ -4,6 +4,26 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { SpaceCompany, FOCUS_AREAS, COUNTRY_INFO, CompanyCountry, CompanyFocusArea } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import StockMiniChart from '@/components/ui/StockMiniChart';
+
+interface StockData {
+  ticker: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  change30D: number;
+  chartData: number[];
+  success: boolean;
+}
+
+interface DetailedStockData {
+  ticker: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  performance: { '1D': number; '30D': number; '1Y': number };
+  chartData: { daily: Array<{ close: number }>; monthly: Array<{ close: number }> };
+}
 
 const COUNTRY_FILTERS = [
   { value: '', label: 'All Countries' },
@@ -147,6 +167,8 @@ export default function MarketIntelPage() {
     totalMarketCap: number;
     byCountry: Record<string, number>;
   } | null>(null);
+  const [stockData, setStockData] = useState<Record<string, StockData>>({});
+  const [detailedStockData, setDetailedStockData] = useState<Record<string, DetailedStockData>>({});
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState('');
@@ -175,6 +197,14 @@ export default function MarketIntelPage() {
 
       if (companiesData.companies) {
         setCompanies(companiesData.companies);
+
+        // Fetch stock data for public companies
+        const publicCompanies = companiesData.companies.filter(
+          (c: SpaceCompany) => c.isPublic && c.ticker
+        );
+        if (publicCompanies.length > 0) {
+          fetchStockData(publicCompanies);
+        }
       }
       if (statsData.total !== undefined) {
         setStats(statsData);
@@ -183,6 +213,50 @@ export default function MarketIntelPage() {
       console.error('Failed to fetch market data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchStockData = async (publicCompanies: SpaceCompany[]) => {
+    const tickers = publicCompanies.map((c) => c.ticker).join(',');
+    try {
+      // Fetch batch stock data
+      const res = await fetch(`/api/stocks?tickers=${tickers}`);
+      const data = await res.json();
+
+      if (data.stocks) {
+        const stockMap: Record<string, StockData> = {};
+        data.stocks.forEach((stock: StockData) => {
+          if (stock.success) {
+            stockMap[stock.ticker] = stock;
+          }
+        });
+        setStockData(stockMap);
+      }
+
+      // Fetch detailed data for top 6 stocks
+      const topTickers = publicCompanies.slice(0, 6).map((c) => c.ticker);
+      const detailedPromises = topTickers.map(async (ticker) => {
+        try {
+          const res = await fetch(`/api/stocks/${ticker}`);
+          const data = await res.json();
+          if (!data.error) {
+            return { ticker, data };
+          }
+        } catch {
+          return null;
+        }
+      });
+
+      const detailedResults = await Promise.all(detailedPromises);
+      const detailedMap: Record<string, DetailedStockData> = {};
+      detailedResults.forEach((result) => {
+        if (result) {
+          detailedMap[result.ticker] = result.data;
+        }
+      });
+      setDetailedStockData(detailedMap);
+    } catch (error) {
+      console.error('Failed to fetch stock data:', error);
     }
   };
 
@@ -264,6 +338,103 @@ export default function MarketIntelPage() {
                 })}
               </div>
             </div>
+
+            {/* Live Stock Ticker */}
+            {Object.keys(detailedStockData).length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  Live Stock Performance
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {companies
+                    .filter((c) => c.isPublic && c.ticker && detailedStockData[c.ticker])
+                    .slice(0, 6)
+                    .map((company) => {
+                      const stock = detailedStockData[company.ticker!];
+                      const isPositive = stock.changePercent >= 0;
+                      const is30DPositive = stock.performance['30D'] >= 0;
+                      const is1YPositive = stock.performance['1Y'] >= 0;
+                      const chartData = stock.chartData.daily.map((d) => d.close);
+
+                      return (
+                        <div
+                          key={company.id}
+                          className="card p-4 hover:border-nebula-500/50 transition-all"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div>
+                              <div className="font-semibold text-white">{company.name}</div>
+                              <div className="text-xs text-nebula-300 font-mono">
+                                {company.exchange}:{company.ticker}
+                              </div>
+                            </div>
+                            <span
+                              className={`text-xs font-medium px-2 py-0.5 rounded ${
+                                isPositive
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : 'bg-red-500/20 text-red-400'
+                              }`}
+                            >
+                              {isPositive ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-4 mb-3">
+                            <div className="text-2xl font-bold text-white">
+                              ${stock.price.toFixed(2)}
+                            </div>
+                            <div className={`text-sm ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                              {isPositive ? '+' : ''}{stock.change.toFixed(2)} today
+                            </div>
+                          </div>
+
+                          {chartData.length > 0 && (
+                            <div className="mb-3">
+                              <StockMiniChart
+                                data={chartData}
+                                width={200}
+                                height={48}
+                                positive={is30DPositive}
+                              />
+                            </div>
+                          )}
+
+                          <div className="flex gap-2">
+                            <div
+                              className={`px-2 py-1 rounded text-xs ${
+                                isPositive
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : 'bg-red-500/20 text-red-400'
+                              }`}
+                            >
+                              1D: {isPositive ? '+' : ''}{stock.performance['1D'].toFixed(2)}%
+                            </div>
+                            <div
+                              className={`px-2 py-1 rounded text-xs ${
+                                is30DPositive
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : 'bg-red-500/20 text-red-400'
+                              }`}
+                            >
+                              30D: {is30DPositive ? '+' : ''}{stock.performance['30D'].toFixed(2)}%
+                            </div>
+                            <div
+                              className={`px-2 py-1 rounded text-xs ${
+                                is1YPositive
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : 'bg-red-500/20 text-red-400'
+                              }`}
+                            >
+                              1Y: {is1YPositive ? '+' : ''}{stock.performance['1Y'].toFixed(2)}%
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
 
             {/* Filters */}
             <div className="card p-4 mb-6">
