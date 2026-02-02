@@ -220,9 +220,11 @@ export default function MarketIntelModule() {
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-nebula-300">
-              ${stats.totalMarketCap >= 1000
-                ? `${(stats.totalMarketCap / 1000).toFixed(1)}T`
-                : `${stats.totalMarketCap.toFixed(0)}B`}
+              {stats.totalMarketCap
+                ? `$${stats.totalMarketCap >= 1000
+                    ? `${(stats.totalMarketCap / 1000).toFixed(1)}T`
+                    : `${stats.totalMarketCap.toFixed(0)}B`}`
+                : 'N/A'}
             </div>
             <div className="text-star-300 text-xs">Total Market Cap</div>
           </div>

@@ -696,11 +696,19 @@ export async function getCompanyStats() {
     _count: { country: true },
   });
 
+  // Calculate total market cap from public companies
+  const marketCapAgg = await prisma.spaceCompany.aggregate({
+    where: { isPublic: true },
+    _sum: { marketCap: true },
+  });
+
   return {
     total,
     publicCount,
     privateCount,
     preIPOCount,
     countriesCount: countries.length,
+    totalMarketCap: marketCapAgg._sum.marketCap || 0,
+    byCountry: Object.fromEntries(countries.map((c) => [c.country, c._count.country])),
   };
 }
