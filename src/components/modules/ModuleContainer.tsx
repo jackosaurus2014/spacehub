@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { UserModuleWithConfig } from '@/lib/module-preferences';
+import { useSubscription } from '@/components/SubscriptionProvider';
+import PremiumGate, { PremiumBadge } from '@/components/PremiumGate';
+import { getRequiredTierForModule } from '@/lib/subscription';
 import MissionControlModule from './MissionControlModule';
 import BlogsArticlesModule from './BlogsArticlesModule';
 import NewsFeedModule from './NewsFeedModule';
@@ -146,9 +149,18 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
           const Component = MODULE_COMPONENTS[module.moduleId];
           if (!Component) return null;
 
+          const requiredTier = getRequiredTierForModule(module.moduleId);
+
           return (
             <section key={module.moduleId}>
-              <Component />
+              {requiredTier && (
+                <div className="flex items-center gap-2 mb-2">
+                  <PremiumBadge tier={requiredTier} />
+                </div>
+              )}
+              <PremiumGate moduleId={module.moduleId}>
+                <Component />
+              </PremiumGate>
             </section>
           );
         })}

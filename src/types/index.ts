@@ -108,16 +108,86 @@ export interface ModuleConfig {
   icon: string;
   defaultEnabled: boolean;
   defaultPosition: number;
+  isPremium?: boolean;
 }
 
+// Subscription tiers
+export type SubscriptionTier = 'free' | 'pro' | 'enterprise';
+
+export interface SubscriptionPlan {
+  id: SubscriptionTier;
+  name: string;
+  price: number;
+  priceYearly: number;
+  features: string[];
+  highlighted?: boolean;
+}
+
+export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
+  {
+    id: 'free',
+    name: 'Explorer',
+    price: 0,
+    priceYearly: 0,
+    features: [
+      'Browse news by category',
+      'Mission Control countdown',
+      'Basic news feed',
+      'Limited to 10 articles/day',
+      'Community support',
+    ],
+  },
+  {
+    id: 'pro',
+    name: 'Professional',
+    price: 9.99,
+    priceYearly: 99,
+    highlighted: true,
+    features: [
+      'Everything in Explorer',
+      'Unlimited article access',
+      'Real-time stock tracking',
+      'Market Intel dashboard',
+      'Resource Exchange calculator',
+      'Price alerts & notifications',
+      'Ad-free experience',
+      'Priority support',
+    ],
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    price: 49.99,
+    priceYearly: 499,
+    features: [
+      'Everything in Professional',
+      'AI-powered opportunities',
+      'Government contract alerts',
+      'Custom watchlists',
+      'API access',
+      'Team collaboration',
+      'Dedicated account manager',
+      'Custom integrations',
+    ],
+  },
+];
+
 export const AVAILABLE_MODULES: ModuleConfig[] = [
+  {
+    moduleId: 'categories',
+    name: 'Browse Categories',
+    description: 'Explore news by category',
+    icon: '📂',
+    defaultEnabled: true,
+    defaultPosition: 0,
+  },
   {
     moduleId: 'mission-control',
     name: 'Mission Control',
     description: 'Countdown to upcoming space missions and events',
     icon: '🎯',
     defaultEnabled: true,
-    defaultPosition: 0,
+    defaultPosition: 1,
   },
   {
     moduleId: 'blogs-articles',
@@ -125,21 +195,13 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     description: 'Expert insights from space industry professionals',
     icon: '✍️',
     defaultEnabled: true,
-    defaultPosition: 1,
+    defaultPosition: 2,
   },
   {
     moduleId: 'news-feed',
     name: 'News Feed',
     description: 'Latest space industry news',
     icon: '📰',
-    defaultEnabled: true,
-    defaultPosition: 2,
-  },
-  {
-    moduleId: 'categories',
-    name: 'Browse Categories',
-    description: 'Explore news by category',
-    icon: '📂',
     defaultEnabled: true,
     defaultPosition: 3,
   },
@@ -150,6 +212,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     icon: '📊',
     defaultEnabled: true,
     defaultPosition: 4,
+    isPremium: true,
   },
   {
     moduleId: 'resource-exchange',
@@ -158,6 +221,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     icon: '💰',
     defaultEnabled: true,
     defaultPosition: 5,
+    isPremium: true,
   },
   {
     moduleId: 'business-opportunities',
@@ -166,6 +230,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     icon: '💼',
     defaultEnabled: true,
     defaultPosition: 6,
+    isPremium: true,
   },
 ];
 

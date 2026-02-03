@@ -15,6 +15,18 @@ model User {
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
   modulePreferences UserModulePreference[]
+
+  // Subscription
+  subscriptionTier     String    @default("free") // free, pro, enterprise
+  subscriptionStatus   String    @default("active") // active, canceled, past_due
+  subscriptionStartDate DateTime?
+  subscriptionEndDate  DateTime?
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+
+  // Usage tracking (for free tier limits)
+  dailyArticleViews    Int       @default(0)
+  lastArticleViewReset DateTime  @default(now())
 }
 
 model NewsArticle {

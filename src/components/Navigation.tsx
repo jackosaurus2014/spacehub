@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { useState } from 'react';
+import { useSubscription } from './SubscriptionProvider';
 
 export default function Navigation() {
   const { data: session, status } = useSession();
+  const { tier, isPro } = useSubscription();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -76,10 +78,23 @@ export default function Navigation() {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            {!isPro && (
+              <Link
+                href="/pricing"
+                className="text-nebula-400 hover:text-nebula-300 text-sm font-medium transition-colors"
+              >
+                Upgrade
+              </Link>
+            )}
             {status === 'loading' ? (
               <div className="w-8 h-8 border-2 border-nebula-500 border-t-transparent rounded-full animate-spin" />
             ) : session ? (
               <div className="flex items-center space-x-4">
+                {isPro && (
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-nebula-500/20 text-nebula-300 border border-nebula-500/30">
+                    PRO
+                  </span>
+                )}
                 <span className="text-star-300 text-sm">
                   {session.user?.name || session.user?.email}
                 </span>
@@ -195,6 +210,15 @@ export default function Navigation() {
                 </Link>
               )}
               <div className="pt-4 border-t border-space-600/50 flex flex-col space-y-2">
+                {!isPro && (
+                  <Link
+                    href="/pricing"
+                    className="text-nebula-400 hover:text-nebula-300 font-medium text-center py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Upgrade to Pro
+                  </Link>
+                )}
                 {session ? (
                   <button
                     onClick={() => {
