@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { initializeBlogSources, fetchBlogPosts } from '@/lib/blogs-fetcher';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   try {
     // First ensure blog sources are initialized

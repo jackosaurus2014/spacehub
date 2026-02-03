@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { fetchLaunchLibraryEvents } from '@/lib/events-fetcher';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   try {
     const count = await fetchLaunchLibraryEvents();

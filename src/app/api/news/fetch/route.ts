@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { fetchSpaceflightNews } from '@/lib/news-fetcher';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   try {
     const count = await fetchSpaceflightNews();

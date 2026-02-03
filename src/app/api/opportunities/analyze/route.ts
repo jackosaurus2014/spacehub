@@ -1,6 +1,6 @@
-'use server';
-
 import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import { runAIAnalysis, getRecentAnalysisRuns } from '@/lib/opportunities-data';
 
 export async function POST(request: Request) {

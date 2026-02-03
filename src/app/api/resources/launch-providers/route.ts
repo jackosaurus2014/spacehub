@@ -1,6 +1,6 @@
-'use server';
-
 import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import { getLaunchProviders } from '@/lib/resources-data';
 
 export async function GET(request: Request) {

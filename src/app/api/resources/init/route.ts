@@ -1,6 +1,6 @@
-'use server';
-
 import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import { initializeResources } from '@/lib/resources-data';
 
 export async function POST() {

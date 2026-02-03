@@ -1,6 +1,6 @@
-'use server';
-
 import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import { getCompanyStats } from '@/lib/companies-data';
 
 export async function GET() {

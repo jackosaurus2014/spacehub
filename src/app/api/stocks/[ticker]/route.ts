@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import YahooFinance from 'yahoo-finance2';
 
+export const dynamic = 'force-dynamic';
+
 const yahooFinance = new YahooFinance();
 
 export async function GET(
