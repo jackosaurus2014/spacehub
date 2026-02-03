@@ -287,6 +287,25 @@ const SEED_OPPORTUNITIES: OpportunityData[] = [
     relatedTrends: ['smallsats', 'cots', 'rapid_development'],
     targetAudience: ['entrepreneurs', 'investors', 'corporations'],
   },
+  {
+    slug: 'orbital-bio-enhancement-clinics',
+    title: 'Orbital Bio-Enhancement Clinics',
+    description: 'Exclusive medical clinics in low-Earth orbit offering anti-aging treatments and custom pharmaceuticals leveraging microgravity\'s unique effects on biology, targeting ultra-high-net-worth individuals.',
+    fullAnalysis: 'With reusable rockets like Starship slashing launch costs to under $10 million per flight by the early 2030s, microgravity environments will become accessible for short-duration commercial trips. Orbital bio-enhancement clinics would offer treatments leveraging zero-gravity\'s unique effects on biology—accelerated stem cell regeneration for anti-aging, optimized protein folding for custom pharmaceuticals that can\'t be replicated on Earth. This isn\'t just space tourism; it\'s a high-margin medical service blending biotech and adventure. Clients pay $5-10 million for a 1-2 week stay, including personalized gene therapies tested in real-time microgravity labs. Revenue streams: Direct fees, partnerships with pharma giants for R&D data, and spin-off products like Earth-based simulators. Ground-based anti-aging is saturated, but orbital clinics tap into the billionaire longevity craze, with projected space economy growth to $1 trillion by 2030 fueling demand. No one is commercializing this yet—it\'s beyond current ISS experiments, positioning early movers as pioneers in space rejuvenation for the ultra-rich.',
+    type: 'ai_insight',
+    category: 'research',
+    sector: 'commercial',
+    estimatedValue: '$1B-$5B',
+    timeframe: 'long_term',
+    difficulty: 'expert',
+    sourceType: 'ai_generated',
+    sourceName: 'SpaceHub Analysis',
+    aiConfidence: 0.82,
+    aiReasoning: 'Convergence of declining launch costs, growing longevity market, and unique microgravity biotech advantages creates a novel high-margin opportunity with no current competitors.',
+    relatedTrends: ['reusable_rockets', 'space_tourism', 'biotech', 'longevity', 'microgravity_research'],
+    targetAudience: ['entrepreneurs', 'investors', 'corporations'],
+    featured: true,
+  },
 ];
 
 // Initialize opportunities database
