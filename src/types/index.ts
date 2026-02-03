@@ -1364,3 +1364,53 @@ export const CONJUNCTION_RISK_INFO: Record<ConjunctionRisk, { label: string; col
   high: { label: 'High', color: 'text-orange-400', bgColor: 'bg-orange-500' },
   critical: { label: 'Critical', color: 'text-red-400', bgColor: 'bg-red-500' },
 };
+
+// ============================================================
+// Feature Request & Help Request Types
+// ============================================================
+export type FeatureRequestType = 'existing_module' | 'new_module';
+export type FeatureRequestStatus = 'new' | 'under_review' | 'planned' | 'in_progress' | 'completed' | 'declined';
+export type HelpRequestStatus = 'new' | 'in_progress' | 'resolved' | 'closed';
+
+export interface FeatureRequest {
+  id: string;
+  userId: string | null;
+  email: string;
+  type: FeatureRequestType;
+  module: string | null;
+  title: string;
+  details: string;
+  status: FeatureRequestStatus;
+  adminNotes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface HelpRequest {
+  id: string;
+  userId: string | null;
+  email: string;
+  subject: string;
+  details: string;
+  status: HelpRequestStatus;
+  adminResponse: string | null;
+  respondedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const FEATURE_REQUEST_STATUSES: { value: FeatureRequestStatus; label: string; color: string }[] = [
+  { value: 'new', label: 'New', color: 'bg-blue-500' },
+  { value: 'under_review', label: 'Under Review', color: 'bg-yellow-500' },
+  { value: 'planned', label: 'Planned', color: 'bg-purple-500' },
+  { value: 'in_progress', label: 'In Progress', color: 'bg-orange-500' },
+  { value: 'completed', label: 'Completed', color: 'bg-green-500' },
+  { value: 'declined', label: 'Declined', color: 'bg-red-500' },
+];
+
+export const HELP_REQUEST_STATUSES: { value: HelpRequestStatus; label: string; color: string }[] = [
+  { value: 'new', label: 'New', color: 'bg-blue-500' },
+  { value: 'in_progress', label: 'In Progress', color: 'bg-yellow-500' },
+  { value: 'resolved', label: 'Resolved', color: 'bg-green-500' },
+  { value: 'closed', label: 'Closed', color: 'bg-gray-500' },
+];

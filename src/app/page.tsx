@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ModuleContainer } from '@/components/modules';
 import { getDefaultModulePreferences } from '@/lib/module-preferences';
+import HeroActions from '@/components/HeroActions';
 
 // Force dynamic rendering - no static generation at build time
 export const dynamic = 'force-dynamic';
@@ -26,14 +27,7 @@ export default async function HomePage() {
               rapidly evolving space market. Perfect for enthusiasts, investors,
               and industry professionals.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/mission-control" className="btn-primary text-lg py-3 px-8">
-                Mission Control
-              </Link>
-              <Link href="/news" className="btn-secondary text-lg py-3 px-8">
-                Explore News
-              </Link>
-            </div>
+            <HeroActions />
           </div>
         </div>
       </section>

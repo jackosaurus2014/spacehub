@@ -24,9 +24,16 @@ model User {
   stripeCustomerId     String?   @unique
   stripeSubscriptionId String?   @unique
 
+  // Admin
+  isAdmin              Boolean   @default(false)
+
   // Usage tracking (for free tier limits)
   dailyArticleViews    Int       @default(0)
   lastArticleViewReset DateTime  @default(now())
+
+  // Relations
+  featureRequests      FeatureRequest[]
+  helpRequests         HelpRequest[]
 }
 
 model NewsArticle {
@@ -1089,4 +1096,43 @@ model DebrisStats {
   createdAt       DateTime @default(now())
 
   @@index([snapshotDate])
+}
+
+// Feature Request & Help Request Models
+
+model FeatureRequest {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  email       String
+  type        String   // "existing_module" | "new_module"
+  module      String?  // module ID if type is existing_module
+  title       String
+  details     String
+  status      String   @default("new") // new, under_review, planned, in_progress, completed, declined
+  adminNotes  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model HelpRequest {
+  id            String    @id @default(cuid())
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  email         String
+  subject       String
+  details       String
+  status        String    @default("new") // new, in_progress, resolved, closed
+  adminResponse String?
+  respondedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
 }

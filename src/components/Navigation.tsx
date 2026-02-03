@@ -92,6 +92,14 @@ export default function Navigation() {
                 Dashboard
               </Link>
             )}
+            {session?.user?.isAdmin && (
+              <Link
+                href="/admin"
+                className="text-rocket-400 hover:text-rocket-300 transition-colors font-medium"
+              >
+                Admin
+              </Link>
+            )}
           </div>
 
           {/* Auth Buttons */}
@@ -246,6 +254,15 @@ export default function Navigation() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Dashboard
+                </Link>
+              )}
+              {session?.user?.isAdmin && (
+                <Link
+                  href="/admin"
+                  className="text-rocket-400 hover:text-rocket-300 transition-colors font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Admin
                 </Link>
               )}
               <div className="pt-4 border-t border-space-600/50 flex flex-col space-y-2">
