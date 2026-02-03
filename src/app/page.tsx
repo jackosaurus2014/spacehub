@@ -1,27 +1,11 @@
 import Link from 'next/link';
 import { ModuleContainer } from '@/components/modules';
 import { getDefaultModulePreferences } from '@/lib/module-preferences';
-import { fetchSpaceflightNews } from '@/lib/news-fetcher';
-import { fetchLaunchLibraryEvents } from '@/lib/events-fetcher';
 
-export const revalidate = 300; // Revalidate every 5 minutes
-
-async function initializeData() {
-  // Fetch fresh data in parallel
-  try {
-    await Promise.all([
-      fetchSpaceflightNews().catch(console.error),
-      fetchLaunchLibraryEvents().catch(console.error),
-    ]);
-  } catch (error) {
-    console.error('Failed to fetch data:', error);
-  }
-}
+// Force dynamic rendering - no static generation at build time
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  // Initialize data on page load
-  await initializeData();
-
   // Get default module configuration for SSR
   const modules = await getDefaultModulePreferences();
 
