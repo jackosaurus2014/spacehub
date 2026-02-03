@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -42,7 +43,13 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="card p-8 glow-border">
           <div className="text-center mb-8">
-            <span className="text-5xl block mb-4">🚀</span>
+            <Image
+              src="/spacenexus-logo.png"
+              alt="SpaceNexus"
+              width={320}
+              height={160}
+              className="mx-auto w-full max-w-xs h-auto rounded-lg mb-4"
+            />
             <h1 className="text-2xl font-display font-bold text-white">
               Welcome Back
             </h1>

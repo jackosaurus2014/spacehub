@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ModuleContainer } from '@/components/modules';
 import { getDefaultModulePreferences } from '@/lib/module-preferences';
 import HeroActions from '@/components/HeroActions';
@@ -17,6 +18,16 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-nebula-500/10 to-transparent" />
         <div className="container mx-auto px-4 relative">
           <div className="text-center max-w-4xl mx-auto">
+            <div className="mb-8">
+              <Image
+                src="/spacenexus-logo.png"
+                alt="SpaceNexus"
+                width={600}
+                height={300}
+                className="mx-auto w-full max-w-lg h-auto rounded-lg"
+                priority
+              />
+            </div>
             <h1 className="text-4xl md:text-6xl font-display font-bold mb-6">
               <span className="gradient-text">Your Gateway to the</span>
               <br />
