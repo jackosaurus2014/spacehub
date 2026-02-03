@@ -250,7 +250,7 @@ export default function MarketIntelPage() {
       const detailedResults = await Promise.all(detailedPromises);
       const detailedMap: Record<string, DetailedStockData> = {};
       detailedResults.forEach((result) => {
-        if (result) {
+        if (result && result.ticker) {
           detailedMap[result.ticker] = result.data;
         }
       });
