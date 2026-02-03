@@ -4,6 +4,7 @@ import './globals.css';
 import Navigation from '@/components/Navigation';
 import Starfield from '@/components/Starfield';
 import AuthProvider from '@/components/AuthProvider';
+import DataInitializer from '@/components/DataInitializer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
+          <DataInitializer />
           <Starfield />
           <div className="relative z-10 min-h-screen flex flex-col">
             <Navigation />
