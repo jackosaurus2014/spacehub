@@ -70,6 +70,11 @@ export default function Navigation() {
               className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
             >
               <span>⚖️</span> Compliance
+              {!isPro && (
+                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-nebula-500/20 text-nebula-300 border border-nebula-500/30 ml-1">
+                  PRO
+                </span>
+              )}
             </Link>
             <Link
               href="/solar-exploration"
@@ -230,6 +235,11 @@ export default function Navigation() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span>⚖️</span> Compliance
+                {!isPro && (
+                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-nebula-500/20 text-nebula-300 border border-nebula-500/30 ml-1">
+                    PRO
+                  </span>
+                )}
               </Link>
               <Link
                 href="/solar-exploration"

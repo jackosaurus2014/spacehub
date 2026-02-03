@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import InlineDisclaimer from '@/components/InlineDisclaimer';
+import PremiumGate from '@/components/PremiumGate';
 import {
   EXPORT_REGIMES,
   CLASSIFICATION_CATEGORIES,
@@ -503,16 +504,18 @@ export default function CompliancePage() {
           </Link>
         </div>
 
-        {/* Content wrapped in Suspense for useSearchParams */}
-        <Suspense
-          fallback={
-            <div className="flex justify-center py-20">
-              <LoadingSpinner size="lg" />
-            </div>
-          }
-        >
-          <ComplianceContent />
-        </Suspense>
+        <PremiumGate requiredTier="pro">
+          {/* Content wrapped in Suspense for useSearchParams */}
+          <Suspense
+            fallback={
+              <div className="flex justify-center py-20">
+                <LoadingSpinner size="lg" />
+              </div>
+            }
+          >
+            <ComplianceContent />
+          </Suspense>
+        </PremiumGate>
       </div>
     </div>
   );
