@@ -6,6 +6,7 @@ import Starfield from '@/components/Starfield';
 import AuthProvider from '@/components/AuthProvider';
 import SubscriptionProvider from '@/components/SubscriptionProvider';
 import DataInitializer from '@/components/DataInitializer';
+import Footer from '@/components/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -31,12 +32,7 @@ export default function RootLayout({
               <main className="flex-1">
                 {children}
               </main>
-              <footer className="border-t border-space-600/50 py-6 mt-auto">
-                <div className="container mx-auto px-4 text-center text-star-300 text-sm">
-                  <p>&copy; {new Date().getFullYear()} SpaceNexus. All rights reserved.</p>
-                  <p className="mt-1">Powered by Spaceflight News API</p>
-                </div>
-              </footer>
+              <Footer />
             </div>
           </SubscriptionProvider>
         </AuthProvider>

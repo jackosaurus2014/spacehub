@@ -10,6 +10,7 @@ import {
   ClassificationCategory,
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import InlineDisclaimer from '@/components/InlineDisclaimer';
 
 interface ExportClassification {
   id: string;
@@ -248,6 +249,8 @@ export default function ComplianceModule() {
           View All →
         </Link>
       </div>
+
+      <InlineDisclaimer />
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

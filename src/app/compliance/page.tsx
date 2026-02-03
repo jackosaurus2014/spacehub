@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import InlineDisclaimer from '@/components/InlineDisclaimer';
 import {
   EXPORT_REGIMES,
   CLASSIFICATION_CATEGORIES,
@@ -317,6 +318,8 @@ function ComplianceContent() {
           </div>
         </div>
       )}
+
+      <InlineDisclaimer />
 
       {/* Tab Navigation */}
       <div className="flex flex-wrap gap-2 mb-6">

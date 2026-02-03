@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import LegalDisclaimerModal from '@/components/LegalDisclaimerModal';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -12,6 +13,8 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [agreedToDisclaimer, setAgreedToDisclaimer] = useState(false);
+  const [disclaimerOpen, setDisclaimerOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +27,11 @@ export default function RegisterPage() {
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
+      return;
+    }
+
+    if (!agreedToDisclaimer) {
+      setError('You must agree to the Legal Disclaimer to create an account');
       return;
     }
 
@@ -138,9 +146,29 @@ export default function RegisterPage() {
               />
             </div>
 
+            <div className="flex items-start gap-3">
+              <input
+                id="disclaimer"
+                type="checkbox"
+                checked={agreedToDisclaimer}
+                onChange={(e) => setAgreedToDisclaimer(e.target.checked)}
+                className="mt-1 w-4 h-4 rounded border-space-600 bg-space-800 text-nebula-500 focus:ring-nebula-500 cursor-pointer"
+              />
+              <label htmlFor="disclaimer" className="text-star-300 text-sm cursor-pointer">
+                I have read and agree to the{' '}
+                <button
+                  type="button"
+                  onClick={() => setDisclaimerOpen(true)}
+                  className="text-nebula-400 hover:text-nebula-300 transition-colors underline underline-offset-2"
+                >
+                  Legal Disclaimer
+                </button>
+              </label>
+            </div>
+
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !agreedToDisclaimer}
               className="btn-primary w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
@@ -167,6 +195,11 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
+
+      <LegalDisclaimerModal
+        isOpen={disclaimerOpen}
+        onClose={() => setDisclaimerOpen(false)}
+      />
     </div>
   );
 }
