@@ -58,7 +58,7 @@ export default function RegisterPage() {
           <div className="text-center mb-8">
             <span className="text-5xl block mb-4">🌟</span>
             <h1 className="text-2xl font-display font-bold text-white">
-              Join SpaceHub
+              Join SpaceNexus
             </h1>
             <p className="text-star-300 mt-2">
               Create your account and explore the cosmos

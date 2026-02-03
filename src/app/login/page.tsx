@@ -47,7 +47,7 @@ export default function LoginPage() {
               Welcome Back
             </h1>
             <p className="text-star-300 mt-2">
-              Sign in to access your SpaceHub account
+              Sign in to access your SpaceNexus account
             </p>
           </div>
 

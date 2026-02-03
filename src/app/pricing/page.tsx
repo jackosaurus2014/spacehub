@@ -208,7 +208,7 @@ export default function PricingPage() {
             Have questions? We&apos;re here to help.
           </p>
           <Link
-            href="mailto:support@spacehub.app"
+            href="mailto:support@spacenexus.com"
             className="text-nebula-400 hover:text-nebula-300 transition-colors"
           >
             Contact Support →

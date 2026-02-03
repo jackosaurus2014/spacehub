@@ -10,7 +10,7 @@ import DataInitializer from '@/components/DataInitializer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'SpaceHub - Space Industry News & Information',
+  title: 'SpaceNexus - Space Industry News & Information',
   description: 'Your gateway to the latest space industry news, launches, and market insights',
 };
 
@@ -33,7 +33,7 @@ export default function RootLayout({
               </main>
               <footer className="border-t border-space-600/50 py-6 mt-auto">
                 <div className="container mx-auto px-4 text-center text-star-300 text-sm">
-                  <p>&copy; {new Date().getFullYear()} SpaceHub. All rights reserved.</p>
+                  <p>&copy; {new Date().getFullYear()} SpaceNexus. All rights reserved.</p>
                   <p className="mt-1">Powered by Spaceflight News API</p>
                 </div>
               </footer>

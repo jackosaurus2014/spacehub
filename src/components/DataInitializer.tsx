@@ -86,7 +86,7 @@ export default function DataInitializer() {
           <div className="absolute inset-0 border-4 border-nebula-500/30 rounded-full" />
           <div className="absolute inset-0 border-4 border-nebula-500 border-t-transparent rounded-full animate-spin" />
         </div>
-        <p className="text-white text-lg font-medium mb-2">Initializing SpaceHub</p>
+        <p className="text-white text-lg font-medium mb-2">Initializing SpaceNexus</p>
         <p className="text-star-300 text-sm">{message || 'Loading space industry data...'}</p>
         <p className="text-star-400 text-xs mt-4">This only happens once</p>
       </div>

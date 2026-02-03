@@ -299,7 +299,7 @@ const SEED_OPPORTUNITIES: OpportunityData[] = [
     timeframe: 'long_term',
     difficulty: 'expert',
     sourceType: 'ai_generated',
-    sourceName: 'SpaceHub Analysis',
+    sourceName: 'SpaceNexus Analysis',
     aiConfidence: 0.82,
     aiReasoning: 'Convergence of declining launch costs, growing longevity market, and unique microgravity biotech advantages creates a novel high-margin opportunity with no current competitors.',
     relatedTrends: ['reusable_rockets', 'space_tourism', 'biotech', 'longevity', 'microgravity_research'],

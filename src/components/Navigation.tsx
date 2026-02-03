@@ -18,7 +18,7 @@ export default function Navigation() {
           <Link href="/" className="flex items-center space-x-2">
             <span className="text-2xl">🚀</span>
             <span className="font-display font-bold text-xl gradient-text">
-              SpaceHub
+              SpaceNexus
             </span>
           </Link>
 
