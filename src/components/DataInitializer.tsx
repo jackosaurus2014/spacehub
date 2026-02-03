@@ -1,45 +1,73 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+
+const REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes
+const STALE_THRESHOLD = 60; // minutes
 
 export default function DataInitializer() {
   const [status, setStatus] = useState<'checking' | 'initializing' | 'done' | 'error'>('checking');
   const [message, setMessage] = useState('');
 
-  useEffect(() => {
-    const initializeData = async () => {
-      try {
-        // Check if data needs initialization
-        const checkRes = await fetch('/api/init');
-        const checkData = await checkRes.json();
+  const checkAndRefreshData = useCallback(async (isInitial: boolean) => {
+    try {
+      // Check if data needs initialization
+      const checkRes = await fetch('/api/init');
+      const checkData = await checkRes.json();
 
-        if (checkData.initialized) {
-          setStatus('done');
-          return;
-        }
-
+      if (!checkData.initialized) {
         // Data needs initialization
-        setStatus('initializing');
-        setMessage('Setting up your space dashboard...');
+        if (isInitial) {
+          setStatus('initializing');
+          setMessage('Setting up your space dashboard...');
+        }
 
         const initRes = await fetch('/api/init', { method: 'POST' });
         const initData = await initRes.json();
 
         if (initData.success) {
           setStatus('done');
-        } else {
+        } else if (isInitial) {
           setStatus('error');
           setMessage(initData.error || 'Initialization failed');
         }
-      } catch (error) {
-        console.error('Data initialization error:', error);
+        return;
+      }
+
+      // Data exists - check if it's stale
+      const refreshRes = await fetch('/api/refresh');
+      const refreshData = await refreshRes.json();
+
+      if (refreshData.stale) {
+        // Refresh in background (don't show loading screen)
+        console.log('Data is stale, refreshing in background...');
+        fetch('/api/refresh', { method: 'POST' })
+          .then(r => r.json())
+          .then(data => console.log('Background refresh complete:', data))
+          .catch(err => console.error('Background refresh failed:', err));
+      }
+
+      setStatus('done');
+    } catch (error) {
+      console.error('Data check error:', error);
+      if (isInitial) {
         setStatus('error');
         setMessage(String(error));
       }
-    };
-
-    initializeData();
+    }
   }, []);
+
+  useEffect(() => {
+    // Initial check
+    checkAndRefreshData(true);
+
+    // Set up periodic refresh check (every 30 minutes)
+    const interval = setInterval(() => {
+      checkAndRefreshData(false);
+    }, REFRESH_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, [checkAndRefreshData]);
 
   // Don't render anything once done
   if (status === 'done' || status === 'checking') {
