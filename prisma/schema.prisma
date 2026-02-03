@@ -321,3 +321,772 @@ model AIAnalysisRun {
   @@index([status])
   @@index([startedAt])
 }
+
+// Compliance Module Models
+
+model ExportClassification {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Classification type
+  regime          String   // EAR, ITAR
+  classification  String   // ECCN (e.g., 9A515) or USML Category (e.g., XV)
+
+  // Item details
+  name            String
+  description     String
+  technicalNotes  String?  // Additional technical parameters
+
+  // Categorization
+  category        String   // spacecraft, satellite, launch_vehicle, component, software, technology, orbital_hab, rover
+  subCategory     String?  // propulsion, avionics, structures, thermal, power, communications, etc.
+
+  // Control information
+  controlReason   String?  // NS, MT, NP, CB, CC, RS, AT, UN, etc.
+  licenseRequired String?  // License requirement description
+  exceptions      String?  // JSON array of available license exceptions
+
+  // Related items
+  relatedECCNs    String?  // JSON array of related classifications
+
+  // Source and updates
+  sourceUrl       String?
+  effectiveDate   DateTime?
+  lastUpdated     DateTime @default(now())
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([regime])
+  @@index([category])
+  @@index([classification])
+}
+
+model ProposedRegulation {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Regulation details
+  title           String
+  summary         String
+  fullText        String?  // Full regulation text or key excerpts
+
+  // Source information
+  agency          String   // BIS, DDTC, FAA, FCC, NASA, etc.
+  docketNumber    String?  // Federal Register docket number
+  federalRegisterCitation String?
+
+  // Classification
+  type            String   // proposed_rule, final_rule, notice, guidance, executive_order
+  category        String   // export_control, licensing, safety, spectrum, environmental, commercial_space
+
+  // Impact assessment
+  impactAreas     String   // JSON array: launch, satellite, components, software, technology
+  impactSeverity  String?  // low, medium, high, critical
+
+  // Timeline
+  publishedDate   DateTime
+  commentDeadline DateTime?
+  effectiveDate   DateTime?
+
+  // Status tracking
+  status          String   @default("open") // open, comment_period, closed, final, withdrawn
+
+  // Links
+  sourceUrl       String
+  commentUrl      String?  // URL to submit comments
+
+  // Analysis
+  keyChanges      String?  // JSON array of key changes
+  industryImpact  String?  // Analysis of industry impact
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agency])
+  @@index([type])
+  @@index([category])
+  @@index([status])
+  @@index([publishedDate])
+}
+
+model LegalUpdate {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Content
+  title           String
+  excerpt         String?
+  content         String?
+
+  // Source
+  sourceId        String
+  source          LegalSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  authorName      String?
+
+  // Classification
+  topics          String   // JSON array: export_control, itar, ear, space_law, faa, licensing, trade
+  relevantRegimes String?  // JSON array: EAR, ITAR, FAA, FCC
+
+  // Links
+  url             String   @unique
+
+  // Dates
+  publishedAt     DateTime
+  fetchedAt       DateTime @default(now())
+
+  @@index([sourceId])
+  @@index([publishedAt])
+}
+
+model LegalSource {
+  id              String   @id @default(cuid())
+
+  // Source info
+  name            String
+  slug            String   @unique
+  type            String   // law_firm, government, industry_association, think_tank
+
+  // Organization details
+  organization    String?  // Parent organization
+  specialty       String?  // export_control, space_law, regulatory, general
+
+  // Feed info
+  url             String
+  feedUrl         String?  // RSS feed if available
+
+  // Status
+  isActive        Boolean  @default(true)
+  lastFetched     DateTime?
+
+  // Related
+  updates         LegalUpdate[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([type])
+  @@index([isActive])
+}
+
+// Solar Exploration Module Models
+
+model PlanetaryBody {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  description     String?
+  diameter        Float    // km
+  type            String   // planet, moon, asteroid
+  textureUrl      String?
+  color           String?  // fallback hex color
+  hasBeenExplored Boolean  @default(false)
+
+  landers         SurfaceLander[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([type])
+}
+
+model SurfaceLander {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  missionType     String   // lander, rover, probe, sample_return
+  status          String   // active, inactive, completed, lost
+
+  planetaryBodyId String
+  planetaryBody   PlanetaryBody @relation(fields: [planetaryBodyId], references: [id], onDelete: Cascade)
+
+  latitude        Float
+  longitude       Float
+  landingSite     String?
+
+  country         String
+  agency          String?
+  company         String?
+
+  launchDate      DateTime?
+  landingDate     DateTime?
+  endDate         DateTime?
+
+  description     String?
+  objectives      String?  // JSON array of mission objectives
+  mass            Float?   // kg
+  powerSource     String?  // solar, RTG, battery
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([planetaryBodyId])
+  @@index([status])
+  @@index([missionType])
+}
+
+// Solar Flare Tracker Models
+
+model SolarFlare {
+  id              String   @id @default(cuid())
+  flareId         String   @unique  // External ID (e.g., from NOAA)
+
+  // Classification
+  classification  String   // X, M, C, B, A class
+  intensity       Float    // Peak intensity value (e.g., X5.0 = 5.0)
+
+  // Timing
+  startTime       DateTime
+  peakTime        DateTime?
+  endTime         DateTime?
+
+  // Location on Sun
+  activeRegion    String?  // NOAA Active Region number
+  sourceLocation  String?  // Heliographic coordinates
+
+  // Impact assessment
+  radioBlackout   String?  // none, minor, moderate, strong, severe, extreme
+  solarRadiation  String?  // none, minor, moderate, strong, severe, extreme
+  geomagneticStorm String? // none, minor, moderate, strong, severe, extreme
+
+  // Additional data
+  description     String?
+  linkedCME       Boolean  @default(false)  // Associated Coronal Mass Ejection
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([classification])
+  @@index([startTime])
+  @@index([intensity])
+}
+
+model SolarForecast {
+  id              String   @id @default(cuid())
+
+  // Forecast period
+  forecastDate    DateTime  // Date this forecast is for
+  issueDate       DateTime  // When forecast was issued
+
+  // Probabilities (0-100)
+  probC           Int       // Probability of C-class flare
+  probM           Int       // Probability of M-class flare
+  probX           Int       // Probability of X-class flare
+  probProton      Int?      // Probability of proton event
+
+  // Geomagnetic activity
+  kpIndex         Float?    // Predicted Kp index (0-9)
+  geomagneticLevel String?  // quiet, unsettled, active, storm
+
+  // Risk assessment
+  riskLevel       String    // low, moderate, high, severe, extreme
+  alertActive     Boolean   @default(false)
+
+  // Context
+  activeRegions   String?   // JSON array of active region numbers
+  notes           String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([forecastDate])
+  @@index([forecastDate])
+  @@index([riskLevel])
+}
+
+model SolarActivity {
+  id              String   @id @default(cuid())
+
+  // Current conditions (updated regularly)
+  timestamp       DateTime @default(now())
+
+  // Solar wind
+  solarWindSpeed  Float?   // km/s
+  solarWindDensity Float?  // particles/cm³
+
+  // Magnetic field
+  bz              Float?   // nT (negative = southward, geoeffective)
+  bt              Float?   // nT total field
+
+  // Indices
+  kpIndex         Float?   // Current Kp index
+  dstIndex        Float?   // Disturbance Storm Time index
+  sunspotNumber   Int?     // Daily sunspot number
+
+  // Radio flux
+  f107            Float?   // 10.7 cm radio flux
+
+  // Current status
+  overallStatus   String   // quiet, active, stormy
+
+  createdAt       DateTime @default(now())
+
+  @@index([timestamp])
+}
+
+// Orbital Slots Module Models
+
+model OrbitalSlot {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Orbit classification
+  orbitType       String   // LEO, MEO, GEO, HEO, SSO, Molniya, Lagrange, Lunar, Interplanetary
+  orbitName       String   // Full name (e.g., "Low Earth Orbit")
+
+  // Orbital parameters
+  altitudeMin     Float?   // km
+  altitudeMax     Float?   // km
+  inclinationMin  Float?   // degrees
+  inclinationMax  Float?   // degrees
+
+  // Current statistics
+  activeSatellites Int     @default(0)
+  inactiveSatellites Int   @default(0)
+  debrisCount     Int      @default(0)
+
+  // Projections
+  projected1Year  Int      @default(0)  // Expected satellites in 1 year
+  projected5Year  Int      @default(0)  // Expected satellites in 5 years
+
+  // Metadata
+  description     String?
+  congestionLevel String?  // low, moderate, high, critical
+  slotAvailability String? // available, limited, scarce, full
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([orbitType])
+}
+
+model SatelliteOperator {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  country         String
+
+  // Satellite counts by orbit
+  leoCount        Int      @default(0)
+  meoCount        Int      @default(0)
+  geoCount        Int      @default(0)
+  otherCount      Int      @default(0)
+  totalActive     Int      @default(0)
+
+  // Fleet info
+  primaryPurpose  String?  // communications, earth_observation, navigation, research, military
+  constellationName String? // e.g., "Starlink", "OneWeb"
+
+  // Projections
+  planned1Year    Int      @default(0)
+  planned5Year    Int      @default(0)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([country])
+  @@index([totalActive])
+}
+
+model OrbitalEvent {
+  id              String   @id @default(cuid())
+
+  // Event details
+  eventType       String   // launch, reentry, conjunction, debris_event, maneuver
+  orbitType       String   // Target/affected orbit
+
+  // Timing
+  expectedDate    DateTime
+  dateConfidence  String?  // confirmed, tentative, estimated
+
+  // Satellites involved
+  satelliteCount  Int      @default(1)
+  operatorName    String?
+  missionName     String?
+
+  // Impact
+  description     String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([eventType])
+  @@index([expectedDate])
+  @@index([orbitType])
+}
+
+// Space Insurance & Risk Calculator Models
+
+model InsurancePolicy {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Policy details
+  missionType     String   // launch, in_orbit, liability, third_party, ground
+  coverageType    String   // full, partial, excess, reinsurance
+  insurer         String
+  country         String
+
+  // Financials
+  premiumRate     Float    // % of insured value
+  insuredValue    Float    // USD millions
+  premiumAmount   Float    // USD millions
+  deductible      Float?   // USD millions
+  maxPayout       Float?   // USD millions
+
+  // Mission details
+  missionName     String?
+  launchVehicle   String?
+  operator        String?
+  yearWritten     Int
+
+  // Claims
+  claimFiled      Boolean  @default(false)
+  claimAmount     Float?   // USD millions
+  claimPaid       Float?   // USD millions
+  claimReason     String?
+
+  // Status
+  status          String   // active, expired, claimed, settled
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([missionType])
+  @@index([status])
+  @@index([yearWritten])
+}
+
+model InsuranceMarketData {
+  id              String   @id @default(cuid())
+  year            Int      @unique
+
+  // Market metrics
+  totalPremiums   Float    // USD millions
+  totalClaims     Float    // USD millions
+  lossRatio       Float    // claims/premiums as percentage
+  marketCapacity  Float    // USD billions
+
+  // By segment
+  launchPremiums  Float?
+  inOrbitPremiums Float?
+  liabilityPremiums Float?
+
+  // Trends
+  avgPremiumRate  Float    // average premium as % of insured value
+  largestClaim    Float?   // USD millions
+  numberOfPolicies Int
+
+  createdAt       DateTime @default(now())
+
+  @@index([year])
+}
+
+// Spectrum & Frequency Allocation Models
+
+model SpectrumAllocation {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Frequency info
+  bandName        String   // L-band, S-band, C-band, Ku-band, Ka-band, V-band, etc.
+  frequencyMin    Float    // MHz
+  frequencyMax    Float    // MHz
+  bandwidth       Float    // MHz
+
+  // Allocation
+  service         String   // fixed_satellite, mobile_satellite, earth_exploration, radio_astronomy, inter_satellite
+  region          String   // Region 1, 2, 3 or Global
+  allocationType  String   // primary, secondary, shared
+
+  // Usage
+  assignedTo      String?  // Operator or constellation name
+  filingStatus    String   // available, filed, coordinating, assigned, congested
+  numberOfFilings Int      @default(0)
+
+  // Regulatory
+  ituReference    String?
+  fccReference    String?
+  coordinationRequired Boolean @default(false)
+
+  description     String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([bandName])
+  @@index([service])
+  @@index([filingStatus])
+}
+
+model SpectrumFiling {
+  id              String   @id @default(cuid())
+
+  // Filing info
+  filingId        String   @unique
+  operator        String
+  system          String   // Constellation or satellite name
+  agency          String   // FCC, ITU, Ofcom, etc.
+
+  // Frequency
+  bandName        String
+  frequencyMin    Float
+  frequencyMax    Float
+
+  // Details
+  orbitType       String   // GEO, NGSO, MEO, LEO
+  numberOfSatellites Int?
+  status          String   // pending, approved, denied, expired, coordinating
+  filingDate      DateTime
+  grantDate       DateTime?
+  expiryDate      DateTime?
+
+  description     String?
+  country         String
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([operator])
+  @@index([status])
+  @@index([bandName])
+}
+
+// Space Workforce & Talent Analytics Models
+
+model SpaceJobPosting {
+  id              String   @id @default(cuid())
+
+  // Job details
+  title           String
+  company         String
+  location        String
+  remoteOk        Boolean  @default(false)
+
+  // Classification
+  category        String   // engineering, operations, business, research, legal, manufacturing
+  specialization  String?  // propulsion, avionics, software, systems, thermal, structures, RF, etc.
+  seniorityLevel  String   // entry, mid, senior, lead, director, vp, c_suite
+
+  // Compensation
+  salaryMin       Float?   // USD annual
+  salaryMax       Float?   // USD annual
+  salaryMedian    Float?
+
+  // Requirements
+  yearsExperience Int?
+  clearanceRequired Boolean @default(false)
+  degreeRequired  String?  // bachelor, master, phd, none
+
+  // Status
+  isActive        Boolean  @default(true)
+  postedDate      DateTime
+  sourceUrl       String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([company])
+  @@index([category])
+  @@index([specialization])
+  @@index([seniorityLevel])
+}
+
+model WorkforceTrend {
+  id              String   @id @default(cuid())
+
+  // Time period
+  period          String   @unique  // e.g., "2026-Q1"
+  year            Int
+  quarter         Int
+
+  // Workforce metrics
+  totalOpenings   Int
+  totalHires      Int?
+  avgSalary       Float?
+  medianSalary    Float?
+
+  // By category
+  engineeringOpenings Int   @default(0)
+  operationsOpenings  Int   @default(0)
+  businessOpenings    Int   @default(0)
+  researchOpenings    Int   @default(0)
+
+  // Top skills in demand (JSON array)
+  topSkills       String?
+  topCompanies    String?  // JSON array of top hiring companies
+
+  // Growth metrics
+  yoyGrowth       Float?   // Year-over-year growth percentage
+
+  createdAt       DateTime @default(now())
+
+  @@index([year])
+}
+
+// Launch Windows & Mission Planner Models
+
+model LaunchWindow {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Destination
+  destination     String   // Moon, Mars, Venus, Jupiter, Saturn, Asteroid_Belt, etc.
+  missionType     String   // flyby, orbit, landing, sample_return
+
+  // Window details
+  windowOpen      DateTime
+  windowClose     DateTime
+  optimalDate     DateTime?
+
+  // Trajectory
+  deltaV          Float    // km/s total delta-V required
+  travelTime      Int      // days
+  transferType    String   // hohmann, low_energy, gravity_assist, direct
+
+  // Parameters
+  c3Energy        Float?   // km²/s² (characteristic energy)
+  arrivalVelocity Float?   // km/s
+
+  // Status
+  frequency       String   // e.g., "Every 26 months" for Mars
+  nextAfter       DateTime? // Next window after this one
+
+  description     String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([destination])
+  @@index([windowOpen])
+}
+
+model CelestialDestination {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  type            String   // planet, moon, asteroid, dwarf_planet, lagrange
+
+  // Orbital parameters
+  distanceFromSun Float?   // AU (average)
+  distanceFromEarth Float? // AU (current/average)
+  orbitalPeriod   Float?   // Earth years
+  synodicPeriod   Float?   // days (time between launch windows)
+
+  // Delta-V requirements
+  deltaVToOrbit   Float?   // km/s from LEO
+  deltaVToLand    Float?   // km/s additional for landing
+
+  // Mission history
+  totalMissions   Int      @default(0)
+  successfulMissions Int   @default(0)
+
+  description     String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([type])
+}
+
+// Space Debris & Collision Risk Monitor Models
+
+model DebrisObject {
+  id              String   @id @default(cuid())
+
+  // Identification
+  noradId         String?  @unique
+  name            String
+  objectType      String   // payload, rocket_body, debris, unknown
+
+  // Orbit
+  orbitType       String   // LEO, MEO, GEO, HEO
+  altitude        Float    // km (average)
+  inclination     Float?   // degrees
+  eccentricity    Float?
+
+  // Physical
+  size            String?  // small (<10cm), medium (10cm-1m), large (>1m)
+  mass            Float?   // kg (estimated)
+
+  // Origin
+  originMission   String?
+  originCountry   String?
+  originYear      Int?
+
+  // Status
+  isActive        Boolean  @default(false)
+  trackable       Boolean  @default(true)
+  deorbitDate     DateTime? // Expected or actual
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([orbitType])
+  @@index([objectType])
+  @@index([altitude])
+}
+
+model ConjunctionEvent {
+  id              String   @id @default(cuid())
+
+  // Event details
+  eventTime       DateTime
+  probability     Float    // 0-1 collision probability
+  missDistance     Float    // meters
+
+  // Objects involved
+  primaryObject   String   // Name of primary object
+  secondaryObject String   // Name of secondary object
+  primaryType     String   // payload, debris
+  secondaryType   String
+
+  // Orbit info
+  altitude        Float    // km
+  orbitType       String
+
+  // Risk assessment
+  riskLevel       String   // low, moderate, high, critical
+  maneuverRequired Boolean @default(false)
+  maneuverExecuted Boolean @default(false)
+
+  description     String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([eventTime])
+  @@index([riskLevel])
+}
+
+model DebrisStats {
+  id              String   @id @default(cuid())
+
+  // Snapshot date
+  snapshotDate    DateTime @unique
+
+  // Object counts
+  totalTracked    Int
+  totalPayloads   Int
+  totalRocketBodies Int
+  totalDebris     Int
+  totalUnknown    Int
+
+  // By orbit
+  leoCount        Int      @default(0)
+  meoCount        Int      @default(0)
+  geoCount        Int      @default(0)
+
+  // Risk metrics
+  kesslerRiskIndex Float?  // 0-10 custom risk score
+  conjunctionsPerDay Float? // Average daily conjunction events
+  avgCollisionProb Float?  // Average collision probability
+
+  // Compliance
+  compliant25Year Int?     // Objects meeting 25-year deorbit rule
+  nonCompliant    Int?
+
+  createdAt       DateTime @default(now())
+
+  @@index([snapshotDate])
+}

@@ -61,6 +61,24 @@ export default function Navigation() {
               <span>💼</span> Opportunities
             </Link>
             <Link
+              href="/compliance"
+              className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
+            >
+              <span>⚖️</span> Compliance
+            </Link>
+            <Link
+              href="/solar-exploration"
+              className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
+            >
+              <span>🌍</span> Exploration
+            </Link>
+            <Link
+              href="/solar-flares"
+              className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
+            >
+              <span>☀️</span> Solar
+            </Link>
+            <Link
               href="/news"
               className="text-star-200 hover:text-white transition-colors"
             >
@@ -192,6 +210,27 @@ export default function Navigation() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span>💼</span> Opportunities
+              </Link>
+              <Link
+                href="/compliance"
+                className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span>⚖️</span> Compliance
+              </Link>
+              <Link
+                href="/solar-exploration"
+                className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span>🌍</span> Exploration
+              </Link>
+              <Link
+                href="/solar-flares"
+                className="text-star-200 hover:text-white transition-colors flex items-center gap-1"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span>☀️</span> Solar Flares
               </Link>
               <Link
                 href="/news"

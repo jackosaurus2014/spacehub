@@ -6,6 +6,7 @@ import { initializeBlogSources, fetchBlogPosts } from '@/lib/blogs-fetcher';
 import { initializeCompanies } from '@/lib/companies-data';
 import { initializeResources } from '@/lib/resources-data';
 import { initializeOpportunities } from '@/lib/opportunities-data';
+import { initializeComplianceData } from '@/lib/compliance-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -68,6 +69,15 @@ export async function POST() {
       results.opportunities = `Already has ${opportunitiesCount} opportunities`;
     }
 
+    // Check and initialize compliance data
+    const complianceCount = await prisma.exportClassification.count();
+    if (complianceCount === 0) {
+      const counts = await initializeComplianceData();
+      results.compliance = `Initialized ${counts.classifications} classifications, ${counts.regulations} regulations, ${counts.sources} sources`;
+    } else {
+      results.compliance = `Already has ${complianceCount} classifications`;
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Initialization complete',
@@ -85,20 +95,21 @@ export async function POST() {
 export async function GET() {
   // Check current data status
   try {
-    const [news, events, blogs, companies, resources, opportunities] = await Promise.all([
+    const [news, events, blogs, companies, resources, opportunities, compliance] = await Promise.all([
       prisma.newsArticle.count(),
       prisma.spaceEvent.count(),
       prisma.blogPost.count(),
       prisma.spaceCompany.count(),
       prisma.spaceResource.count(),
       prisma.businessOpportunity.count(),
+      prisma.exportClassification.count(),
     ]);
 
     const needsInit = news === 0 || events === 0 || companies === 0;
 
     return NextResponse.json({
       initialized: !needsInit,
-      counts: { news, events, blogs, companies, resources, opportunities },
+      counts: { news, events, blogs, companies, resources, opportunities, compliance },
     });
   } catch (error) {
     return NextResponse.json({ initialized: false, error: String(error) });

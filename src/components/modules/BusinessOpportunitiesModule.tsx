@@ -13,6 +13,20 @@ import {
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
+interface MoonshotIdea {
+  id: string;
+  title: string;
+  description: string;
+  riskLevel: 'extreme' | 'very_high';
+  potentialReturn: string;
+  timeHorizon: string;
+  whyUnlikely: string;
+  keyInsight: string;
+  targetAudience: string[];
+  requiredCapital: string;
+  generatedAt: string;
+}
+
 function OpportunityCard({ opportunity }: { opportunity: BusinessOpportunity }) {
   const typeInfo = OPPORTUNITY_TYPES.find((t) => t.value === opportunity.type);
   const timeframeInfo = opportunity.timeframe
@@ -85,6 +99,7 @@ function OpportunityCard({ opportunity }: { opportunity: BusinessOpportunity }) 
 
 export default function BusinessOpportunitiesModule() {
   const [opportunities, setOpportunities] = useState<BusinessOpportunity[]>([]);
+  const [moonshots, setMoonshots] = useState<MoonshotIdea[]>([]);
   const [stats, setStats] = useState<{
     total: number;
     featured: number;
@@ -94,6 +109,7 @@ export default function BusinessOpportunitiesModule() {
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [showMoonshots, setShowMoonshots] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -101,19 +117,24 @@ export default function BusinessOpportunitiesModule() {
 
   const fetchData = async () => {
     try {
-      const [oppsRes, statsRes] = await Promise.all([
+      const [oppsRes, statsRes, moonshotsRes] = await Promise.all([
         fetch('/api/opportunities?limit=6&featured=true'),
         fetch('/api/opportunities/stats'),
+        fetch('/api/opportunities/moonshots'),
       ]);
 
       const oppsData = await oppsRes.json();
       const statsData = await statsRes.json();
+      const moonshotsData = await moonshotsRes.json();
 
       if (oppsData.opportunities) {
         setOpportunities(oppsData.opportunities);
       }
       if (statsData.total !== undefined) {
         setStats(statsData);
+      }
+      if (moonshotsData.moonshots) {
+        setMoonshots(moonshotsData.moonshots);
       }
     } catch (error) {
       console.error('Failed to fetch opportunities:', error);
@@ -255,6 +276,98 @@ export default function BusinessOpportunitiesModule() {
           <OpportunityCard key={opp.id} opportunity={opp} />
         ))}
       </div>
+
+      {/* Moonshots Section */}
+      {moonshots.length > 0 && (
+        <div className="mt-8">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">🚀</span>
+              <h3 className="text-xl font-display font-bold text-white">Moonshots</h3>
+              <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded ml-2">
+                High Risk / High Reward
+              </span>
+            </div>
+            <button
+              onClick={() => setShowMoonshots(!showMoonshots)}
+              className="text-nebula-300 hover:text-nebula-200 text-sm"
+            >
+              {showMoonshots ? 'Hide' : 'Show'} Moonshots
+            </button>
+          </div>
+
+          {showMoonshots ? (
+            <div className="space-y-4">
+              <p className="text-star-400 text-sm italic mb-4">
+                Unconventional, high-risk opportunities that others might overlook. For educational purposes only.
+              </p>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {moonshots.map((moonshot) => (
+                  <div
+                    key={moonshot.id}
+                    className="card p-5 border-2 border-purple-500/30 bg-gradient-to-br from-purple-900/10 to-space-800"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-medium">
+                        {moonshot.riskLevel === 'extreme' ? 'EXTREME RISK' : 'VERY HIGH RISK'}
+                      </span>
+                      <span className="text-green-400 font-semibold text-sm">
+                        {moonshot.potentialReturn}
+                      </span>
+                    </div>
+
+                    <h4 className="text-white font-semibold mb-2">{moonshot.title}</h4>
+                    <p className="text-star-300 text-sm mb-4">{moonshot.description}</p>
+
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-star-400">Time Horizon:</span>
+                        <span className="text-star-200">{moonshot.timeHorizon}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-star-400">Capital Required:</span>
+                        <span className="text-star-200">{moonshot.requiredCapital}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-space-600">
+                      <div className="mb-2">
+                        <span className="text-orange-400 text-xs font-medium">Why Most Would Dismiss:</span>
+                        <p className="text-star-400 text-xs mt-1">{moonshot.whyUnlikely}</p>
+                      </div>
+                      <div>
+                        <span className="text-green-400 text-xs font-medium">Key Insight:</span>
+                        <p className="text-star-300 text-xs mt-1">{moonshot.keyInsight}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-star-500 text-xs text-center mt-4">
+                These are speculative ideas for educational discussion. Not investment advice.
+              </p>
+            </div>
+          ) : (
+            <div
+              className="card p-4 border border-purple-500/30 cursor-pointer hover:border-purple-500/50 transition-all"
+              onClick={() => setShowMoonshots(true)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">🎯</span>
+                  <div>
+                    <p className="text-white font-medium">{moonshots.length} Moonshot Ideas Available</p>
+                    <p className="text-star-400 text-sm">
+                      Unconventional opportunities with extreme risk and reward potential
+                    </p>
+                  </div>
+                </div>
+                <span className="text-nebula-300 text-sm">Click to explore →</span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

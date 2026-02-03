@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma db push && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
@@ -16,12 +16,15 @@
     "@anthropic-ai/sdk": "^0.72.1",
     "@auth/prisma-adapter": "^1.4.0",
     "@prisma/client": "^5.8.0",
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^8.18.0",
     "bcryptjs": "^2.4.3",
     "next": "14.1.0",
     "next-auth": "^4.24.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rss-parser": "^3.13.0",
+    "three": "^0.182.0",
     "yahoo-finance2": "^3.13.0"
   },
   "devDependencies": {
@@ -29,6 +32,7 @@
     "@types/node": "^20.11.0",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
+    "@types/three": "^0.182.0",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.33",
     "prisma": "^5.8.0",

@@ -13,6 +13,15 @@ import CategoriesModule from './CategoriesModule';
 import MarketIntelModule from './MarketIntelModule';
 import ResourceExchangeModule from './ResourceExchangeModule';
 import BusinessOpportunitiesModule from './BusinessOpportunitiesModule';
+import ComplianceModule from './ComplianceModule';
+import SolarExplorationModule from './SolarExplorationModule';
+import SolarFlareTrackerModule from './SolarFlareTrackerModule';
+import OrbitalSlotsModule from './OrbitalSlotsModule';
+import SpaceInsuranceModule from './SpaceInsuranceModule';
+import SpectrumTrackerModule from './SpectrumTrackerModule';
+import SpaceWorkforceModule from './SpaceWorkforceModule';
+import LaunchWindowsModule from './LaunchWindowsModule';
+import DebrisMonitorModule from './DebrisMonitorModule';
 import ModuleCustomizer from './ModuleCustomizer';
 
 interface ModuleContainerProps {
@@ -27,6 +36,15 @@ const MODULE_COMPONENTS: Record<string, React.ComponentType> = {
   'market-intel': MarketIntelModule,
   'resource-exchange': ResourceExchangeModule,
   'business-opportunities': BusinessOpportunitiesModule,
+  'compliance': ComplianceModule,
+  'solar-exploration': SolarExplorationModule,
+  'solar-flare-tracker': SolarFlareTrackerModule,
+  'orbital-slots': OrbitalSlotsModule,
+  'space-insurance': SpaceInsuranceModule,
+  'spectrum-tracker': SpectrumTrackerModule,
+  'space-workforce': SpaceWorkforceModule,
+  'launch-windows': LaunchWindowsModule,
+  'debris-monitor': DebrisMonitorModule,
 };
 
 export default function ModuleContainer({ initialModules }: ModuleContainerProps) {

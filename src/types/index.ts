@@ -232,6 +232,208 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultPosition: 6,
     isPremium: true,
   },
+  {
+    moduleId: 'compliance',
+    name: 'Compliance',
+    description: 'Export controls, regulations, and legal updates for space industry',
+    icon: '⚖️',
+    defaultEnabled: true,
+    defaultPosition: 7,
+    isPremium: true,
+  },
+  {
+    moduleId: 'solar-exploration',
+    name: 'Solar Exploration',
+    description: 'Interactive 3D visualization of planetary bodies with rover and lander locations',
+    icon: '🌍',
+    defaultEnabled: true,
+    defaultPosition: 8,
+    isPremium: true,
+  },
+  {
+    moduleId: 'solar-flare-tracker',
+    name: 'Solar Flare Tracker',
+    description: 'Real-time solar activity monitoring with 90-day danger forecasts',
+    icon: '☀️',
+    defaultEnabled: true,
+    defaultPosition: 9,
+    isPremium: true,
+  },
+  {
+    moduleId: 'orbital-slots',
+    name: 'Orbital Slots',
+    description: 'Satellite population by orbit with 1Y and 5Y projections',
+    icon: '🛰️',
+    defaultEnabled: true,
+    defaultPosition: 10,
+    isPremium: true,
+  },
+  {
+    moduleId: 'space-insurance',
+    name: 'Space Insurance',
+    description: 'Insurance market data, premium calculator, and risk assessment',
+    icon: '🛡️',
+    defaultEnabled: true,
+    defaultPosition: 11,
+    isPremium: true,
+  },
+  {
+    moduleId: 'spectrum-tracker',
+    name: 'Spectrum Tracker',
+    description: 'Satellite frequency allocations, filings, and spectrum availability',
+    icon: '📡',
+    defaultEnabled: true,
+    defaultPosition: 12,
+    isPremium: true,
+  },
+  {
+    moduleId: 'space-workforce',
+    name: 'Space Workforce',
+    description: 'Job market analytics, salary benchmarks, and talent trends',
+    icon: '👩‍🚀',
+    defaultEnabled: true,
+    defaultPosition: 13,
+    isPremium: true,
+  },
+  {
+    moduleId: 'launch-windows',
+    name: 'Launch Windows',
+    description: 'Optimal launch windows and mission planning for planetary destinations',
+    icon: '🪟',
+    defaultEnabled: true,
+    defaultPosition: 14,
+    isPremium: true,
+  },
+  {
+    moduleId: 'debris-monitor',
+    name: 'Debris Monitor',
+    description: 'Space debris tracking, collision risk, and Kessler syndrome monitoring',
+    icon: '⚠️',
+    defaultEnabled: true,
+    defaultPosition: 15,
+    isPremium: true,
+  },
+];
+
+// Compliance Module Types
+export type ExportRegime = 'EAR' | 'ITAR';
+export type ClassificationCategory = 'spacecraft' | 'satellite' | 'launch_vehicle' | 'component' | 'software' | 'technology' | 'orbital_hab' | 'rover';
+export type RegulationType = 'proposed_rule' | 'final_rule' | 'notice' | 'guidance' | 'executive_order';
+export type RegulationCategory = 'export_control' | 'licensing' | 'safety' | 'spectrum' | 'environmental' | 'commercial_space';
+export type RegulationStatus = 'open' | 'comment_period' | 'closed' | 'final' | 'withdrawn';
+export type LegalSourceType = 'law_firm' | 'government' | 'industry_association' | 'think_tank';
+
+export interface ExportClassification {
+  id: string;
+  slug: string;
+  regime: ExportRegime;
+  classification: string;
+  name: string;
+  description: string;
+  technicalNotes?: string;
+  category: ClassificationCategory;
+  subCategory?: string;
+  controlReason?: string;
+  licenseRequired?: string;
+  exceptions?: string[];
+  relatedECCNs?: string[];
+  sourceUrl?: string;
+  effectiveDate?: Date;
+}
+
+export interface ProposedRegulation {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  fullText?: string;
+  agency: string;
+  docketNumber?: string;
+  federalRegisterCitation?: string;
+  type: RegulationType;
+  category: RegulationCategory;
+  impactAreas: string[];
+  impactSeverity?: 'low' | 'medium' | 'high' | 'critical';
+  publishedDate: Date;
+  commentDeadline?: Date;
+  effectiveDate?: Date;
+  status: RegulationStatus;
+  sourceUrl: string;
+  commentUrl?: string;
+  keyChanges?: string[];
+  industryImpact?: string;
+}
+
+export interface LegalUpdate {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt?: string;
+  content?: string;
+  sourceId: string;
+  sourceName?: string;
+  authorName?: string;
+  topics: string[];
+  relevantRegimes?: string[];
+  url: string;
+  publishedAt: Date;
+}
+
+export interface LegalSource {
+  id: string;
+  name: string;
+  slug: string;
+  type: LegalSourceType;
+  organization?: string;
+  specialty?: string;
+  url: string;
+  feedUrl?: string;
+  isActive: boolean;
+}
+
+export const EXPORT_REGIMES: { value: ExportRegime; label: string; description: string }[] = [
+  { value: 'EAR', label: 'EAR', description: 'Export Administration Regulations (Commerce Dept)' },
+  { value: 'ITAR', label: 'ITAR', description: 'International Traffic in Arms Regulations (State Dept)' },
+];
+
+export const CLASSIFICATION_CATEGORIES: { value: ClassificationCategory; label: string; icon: string }[] = [
+  { value: 'spacecraft', label: 'Spacecraft', icon: '🛸' },
+  { value: 'satellite', label: 'Satellites', icon: '🛰️' },
+  { value: 'launch_vehicle', label: 'Launch Vehicles', icon: '🚀' },
+  { value: 'component', label: 'Components', icon: '⚙️' },
+  { value: 'software', label: 'Software', icon: '💻' },
+  { value: 'technology', label: 'Technology', icon: '🔬' },
+  { value: 'orbital_hab', label: 'Orbital Habitats', icon: '🏠' },
+  { value: 'rover', label: 'Rovers', icon: '🤖' },
+];
+
+export const REGULATION_AGENCIES: { value: string; label: string }[] = [
+  { value: 'BIS', label: 'Bureau of Industry and Security' },
+  { value: 'DDTC', label: 'Directorate of Defense Trade Controls' },
+  { value: 'FAA', label: 'Federal Aviation Administration' },
+  { value: 'FCC', label: 'Federal Communications Commission' },
+  { value: 'NASA', label: 'NASA' },
+  { value: 'NOAA', label: 'NOAA' },
+  { value: 'DoD', label: 'Department of Defense' },
+  { value: 'State', label: 'Department of State' },
+  { value: 'Commerce', label: 'Department of Commerce' },
+];
+
+export const REGULATION_STATUSES: { value: RegulationStatus; label: string; color: string }[] = [
+  { value: 'open', label: 'Open for Comment', color: 'green' },
+  { value: 'comment_period', label: 'Comment Period', color: 'yellow' },
+  { value: 'closed', label: 'Comments Closed', color: 'orange' },
+  { value: 'final', label: 'Final Rule', color: 'blue' },
+  { value: 'withdrawn', label: 'Withdrawn', color: 'gray' },
+];
+
+export const REGULATION_CATEGORIES: { value: RegulationCategory; label: string; icon: string }[] = [
+  { value: 'export_control', label: 'Export Control', icon: '📋' },
+  { value: 'licensing', label: 'Licensing', icon: '📜' },
+  { value: 'safety', label: 'Safety', icon: '🛡️' },
+  { value: 'spectrum', label: 'Spectrum', icon: '📡' },
+  { value: 'environmental', label: 'Environmental', icon: '🌍' },
+  { value: 'commercial_space', label: 'Commercial Space', icon: '🚀' },
 ];
 
 export const EVENT_TYPE_INFO: Record<SpaceEventType, { label: string; icon: string; color: string }> = {
@@ -623,4 +825,542 @@ export const TARGET_AUDIENCE_INFO: Record<TargetAudience, { label: string; icon:
   investors: { label: 'Investors', icon: '💰' },
   students: { label: 'Students', icon: '🎓' },
   corporations: { label: 'Corporations', icon: '🏢' },
+};
+
+// Solar Exploration Module Types
+export type PlanetaryBodyType = 'planet' | 'moon' | 'asteroid';
+export type LanderMissionType = 'lander' | 'rover' | 'probe' | 'sample_return';
+export type LanderStatus = 'active' | 'inactive' | 'completed' | 'lost';
+
+export interface PlanetaryBody {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  diameter: number;
+  type: PlanetaryBodyType;
+  textureUrl: string | null;
+  color: string | null;
+  hasBeenExplored: boolean;
+  landers?: SurfaceLander[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface SurfaceLander {
+  id: string;
+  slug: string;
+  name: string;
+  missionType: LanderMissionType;
+  status: LanderStatus;
+  planetaryBodyId: string;
+  planetaryBody?: PlanetaryBody;
+  latitude: number;
+  longitude: number;
+  landingSite: string | null;
+  country: string;
+  agency: string | null;
+  company: string | null;
+  launchDate: Date | null;
+  landingDate: Date | null;
+  endDate: Date | null;
+  description: string | null;
+  objectives: string[] | null;
+  mass: number | null;
+  powerSource: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const PLANETARY_BODY_TYPES: { value: PlanetaryBodyType; label: string; icon: string }[] = [
+  { value: 'planet', label: 'Planet', icon: '🪐' },
+  { value: 'moon', label: 'Moon', icon: '🌙' },
+  { value: 'asteroid', label: 'Asteroid', icon: '☄️' },
+];
+
+export const LANDER_MISSION_TYPES: { value: LanderMissionType; label: string; icon: string }[] = [
+  { value: 'rover', label: 'Rover', icon: '🤖' },
+  { value: 'lander', label: 'Lander', icon: '🛬' },
+  { value: 'probe', label: 'Probe', icon: '🛸' },
+  { value: 'sample_return', label: 'Sample Return', icon: '📦' },
+];
+
+export const LANDER_STATUS_INFO: Record<LanderStatus, { label: string; color: string; bgColor: string }> = {
+  active: { label: 'Active', color: 'text-green-400', bgColor: 'bg-green-500' },
+  inactive: { label: 'Inactive', color: 'text-yellow-400', bgColor: 'bg-yellow-500' },
+  completed: { label: 'Completed', color: 'text-blue-400', bgColor: 'bg-blue-500' },
+  lost: { label: 'Lost', color: 'text-red-400', bgColor: 'bg-red-500' },
+};
+
+export const SPACE_AGENCIES: Record<string, { name: string; flag: string }> = {
+  NASA: { name: 'NASA', flag: '🇺🇸' },
+  CNSA: { name: 'CNSA', flag: '🇨🇳' },
+  ESA: { name: 'ESA', flag: '🇪🇺' },
+  JAXA: { name: 'JAXA', flag: '🇯🇵' },
+  ISRO: { name: 'ISRO', flag: '🇮🇳' },
+  Roscosmos: { name: 'Roscosmos', flag: '🇷🇺' },
+};
+
+// Solar Flare Tracker Types
+export type FlareClassification = 'X' | 'M' | 'C' | 'B' | 'A';
+export type ImpactLevel = 'none' | 'minor' | 'moderate' | 'strong' | 'severe' | 'extreme';
+export type RiskLevel = 'low' | 'moderate' | 'high' | 'severe' | 'extreme';
+export type GeomagneticLevel = 'quiet' | 'unsettled' | 'active' | 'storm';
+export type SolarStatus = 'quiet' | 'active' | 'stormy';
+
+export interface SolarFlare {
+  id: string;
+  flareId: string;
+  classification: FlareClassification;
+  intensity: number;
+  startTime: Date;
+  peakTime: Date | null;
+  endTime: Date | null;
+  activeRegion: string | null;
+  sourceLocation: string | null;
+  radioBlackout: ImpactLevel | null;
+  solarRadiation: ImpactLevel | null;
+  geomagneticStorm: ImpactLevel | null;
+  description: string | null;
+  linkedCME: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface SolarForecast {
+  id: string;
+  forecastDate: Date;
+  issueDate: Date;
+  probC: number;
+  probM: number;
+  probX: number;
+  probProton: number | null;
+  kpIndex: number | null;
+  geomagneticLevel: GeomagneticLevel | null;
+  riskLevel: RiskLevel;
+  alertActive: boolean;
+  activeRegions: string[] | null;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface SolarActivity {
+  id: string;
+  timestamp: Date;
+  solarWindSpeed: number | null;
+  solarWindDensity: number | null;
+  bz: number | null;
+  bt: number | null;
+  kpIndex: number | null;
+  dstIndex: number | null;
+  sunspotNumber: number | null;
+  f107: number | null;
+  overallStatus: SolarStatus;
+  createdAt: Date;
+}
+
+export const FLARE_CLASSIFICATIONS: { value: FlareClassification; label: string; color: string; description: string }[] = [
+  { value: 'X', label: 'X-Class', color: 'bg-red-500', description: 'Extreme - Can cause planet-wide radio blackouts and radiation storms' },
+  { value: 'M', label: 'M-Class', color: 'bg-orange-500', description: 'Major - Can cause brief radio blackouts at polar regions' },
+  { value: 'C', label: 'C-Class', color: 'bg-yellow-500', description: 'Common - Minor impact on Earth' },
+  { value: 'B', label: 'B-Class', color: 'bg-green-500', description: 'Background - No significant impact' },
+  { value: 'A', label: 'A-Class', color: 'bg-blue-500', description: 'Smallest - Negligible impact' },
+];
+
+export const RISK_LEVEL_INFO: Record<RiskLevel, { label: string; color: string; bgColor: string; icon: string }> = {
+  low: { label: 'Low', color: 'text-green-400', bgColor: 'bg-green-500', icon: '✓' },
+  moderate: { label: 'Moderate', color: 'text-yellow-400', bgColor: 'bg-yellow-500', icon: '⚡' },
+  high: { label: 'High', color: 'text-orange-400', bgColor: 'bg-orange-500', icon: '⚠️' },
+  severe: { label: 'Severe', color: 'text-red-400', bgColor: 'bg-red-500', icon: '🔴' },
+  extreme: { label: 'Extreme', color: 'text-red-600', bgColor: 'bg-red-600', icon: '☢️' },
+};
+
+export const IMPACT_LEVEL_INFO: Record<ImpactLevel, { label: string; scale: number; color: string }> = {
+  none: { label: 'None', scale: 0, color: 'text-gray-400' },
+  minor: { label: 'Minor (R1/S1/G1)', scale: 1, color: 'text-green-400' },
+  moderate: { label: 'Moderate (R2/S2/G2)', scale: 2, color: 'text-yellow-400' },
+  strong: { label: 'Strong (R3/S3/G3)', scale: 3, color: 'text-orange-400' },
+  severe: { label: 'Severe (R4/S4/G4)', scale: 4, color: 'text-red-400' },
+  extreme: { label: 'Extreme (R5/S5/G5)', scale: 5, color: 'text-red-600' },
+};
+
+// Orbital Slots Module Types
+export type OrbitType = 'LEO' | 'MEO' | 'GEO' | 'HEO' | 'SSO' | 'Molniya' | 'Lagrange' | 'Lunar' | 'Interplanetary';
+export type CongestionLevel = 'low' | 'moderate' | 'high' | 'critical';
+export type SlotAvailability = 'available' | 'limited' | 'scarce' | 'full';
+export type SatellitePurpose = 'communications' | 'earth_observation' | 'navigation' | 'research' | 'military' | 'internet';
+export type OrbitalEventType = 'launch' | 'reentry' | 'conjunction' | 'debris_event' | 'maneuver';
+
+export interface OrbitalSlot {
+  id: string;
+  slug: string;
+  orbitType: OrbitType;
+  orbitName: string;
+  altitudeMin: number | null;
+  altitudeMax: number | null;
+  inclinationMin: number | null;
+  inclinationMax: number | null;
+  activeSatellites: number;
+  inactiveSatellites: number;
+  debrisCount: number;
+  projected1Year: number;
+  projected5Year: number;
+  description: string | null;
+  congestionLevel: CongestionLevel | null;
+  slotAvailability: SlotAvailability | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface SatelliteOperator {
+  id: string;
+  slug: string;
+  name: string;
+  country: string;
+  leoCount: number;
+  meoCount: number;
+  geoCount: number;
+  otherCount: number;
+  totalActive: number;
+  primaryPurpose: SatellitePurpose | null;
+  constellationName: string | null;
+  planned1Year: number;
+  planned5Year: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrbitalEvent {
+  id: string;
+  eventType: OrbitalEventType;
+  orbitType: string;
+  expectedDate: Date;
+  dateConfidence: string | null;
+  satelliteCount: number;
+  operatorName: string | null;
+  missionName: string | null;
+  description: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const ORBIT_TYPES: { value: OrbitType; label: string; icon: string; altitude: string }[] = [
+  { value: 'LEO', label: 'Low Earth Orbit', icon: '🛰️', altitude: '160-2,000 km' },
+  { value: 'MEO', label: 'Medium Earth Orbit', icon: '📡', altitude: '2,000-35,786 km' },
+  { value: 'GEO', label: 'Geostationary Orbit', icon: '🌐', altitude: '35,786 km' },
+  { value: 'HEO', label: 'Highly Elliptical Orbit', icon: '🔄', altitude: 'Variable' },
+  { value: 'SSO', label: 'Sun-Synchronous Orbit', icon: '☀️', altitude: '600-800 km' },
+  { value: 'Molniya', label: 'Molniya Orbit', icon: '🇷🇺', altitude: '500-40,000 km' },
+  { value: 'Lagrange', label: 'Lagrange Points', icon: '⚖️', altitude: 'L1-L5' },
+  { value: 'Lunar', label: 'Lunar Orbit', icon: '🌙', altitude: '~384,400 km' },
+  { value: 'Interplanetary', label: 'Interplanetary', icon: '🚀', altitude: 'Beyond Moon' },
+];
+
+export const CONGESTION_LEVEL_INFO: Record<CongestionLevel, { label: string; color: string; bgColor: string }> = {
+  low: { label: 'Low', color: 'text-green-400', bgColor: 'bg-green-500' },
+  moderate: { label: 'Moderate', color: 'text-yellow-400', bgColor: 'bg-yellow-500' },
+  high: { label: 'High', color: 'text-orange-400', bgColor: 'bg-orange-500' },
+  critical: { label: 'Critical', color: 'text-red-400', bgColor: 'bg-red-500' },
+};
+
+export const SATELLITE_PURPOSE_INFO: Record<SatellitePurpose, { label: string; icon: string }> = {
+  communications: { label: 'Communications', icon: '📡' },
+  earth_observation: { label: 'Earth Observation', icon: '🌍' },
+  navigation: { label: 'Navigation', icon: '🧭' },
+  research: { label: 'Research', icon: '🔬' },
+  military: { label: 'Military', icon: '🛡️' },
+  internet: { label: 'Internet', icon: '🌐' },
+};
+
+// ============================================================
+// Space Insurance & Risk Calculator Types
+// ============================================================
+export type InsuranceMissionType = 'launch' | 'in_orbit' | 'liability' | 'third_party' | 'ground';
+export type InsuranceCoverageType = 'full' | 'partial' | 'excess' | 'reinsurance';
+export type InsuranceStatus = 'active' | 'expired' | 'claimed' | 'settled';
+
+export interface InsurancePolicy {
+  id: string;
+  slug: string;
+  missionType: InsuranceMissionType;
+  coverageType: InsuranceCoverageType;
+  insurer: string;
+  country: string;
+  premiumRate: number;
+  insuredValue: number;
+  premiumAmount: number;
+  deductible: number | null;
+  maxPayout: number | null;
+  missionName: string | null;
+  launchVehicle: string | null;
+  operator: string | null;
+  yearWritten: number;
+  claimFiled: boolean;
+  claimAmount: number | null;
+  claimPaid: number | null;
+  claimReason: string | null;
+  status: InsuranceStatus;
+}
+
+export interface InsuranceMarketData {
+  id: string;
+  year: number;
+  totalPremiums: number;
+  totalClaims: number;
+  lossRatio: number;
+  marketCapacity: number;
+  launchPremiums: number | null;
+  inOrbitPremiums: number | null;
+  liabilityPremiums: number | null;
+  avgPremiumRate: number;
+  largestClaim: number | null;
+  numberOfPolicies: number;
+}
+
+export const INSURANCE_MISSION_TYPES: { value: InsuranceMissionType; label: string; icon: string }[] = [
+  { value: 'launch', label: 'Launch', icon: '🚀' },
+  { value: 'in_orbit', label: 'In-Orbit', icon: '🛰️' },
+  { value: 'liability', label: 'Liability', icon: '⚖️' },
+  { value: 'third_party', label: 'Third Party', icon: '👥' },
+  { value: 'ground', label: 'Ground', icon: '🏗️' },
+];
+
+// ============================================================
+// Spectrum & Frequency Allocation Types
+// ============================================================
+export type SpectrumService = 'fixed_satellite' | 'mobile_satellite' | 'earth_exploration' | 'radio_astronomy' | 'inter_satellite';
+export type SpectrumFilingStatus = 'available' | 'filed' | 'coordinating' | 'assigned' | 'congested';
+
+export interface SpectrumAllocation {
+  id: string;
+  slug: string;
+  bandName: string;
+  frequencyMin: number;
+  frequencyMax: number;
+  bandwidth: number;
+  service: SpectrumService;
+  region: string;
+  allocationType: string;
+  assignedTo: string | null;
+  filingStatus: SpectrumFilingStatus;
+  numberOfFilings: number;
+  ituReference: string | null;
+  fccReference: string | null;
+  coordinationRequired: boolean;
+  description: string | null;
+}
+
+export interface SpectrumFiling {
+  id: string;
+  filingId: string;
+  operator: string;
+  system: string;
+  agency: string;
+  bandName: string;
+  frequencyMin: number;
+  frequencyMax: number;
+  orbitType: string;
+  numberOfSatellites: number | null;
+  status: string;
+  filingDate: Date;
+  grantDate: Date | null;
+  expiryDate: Date | null;
+  description: string | null;
+  country: string;
+}
+
+export const SPECTRUM_BANDS: { value: string; label: string; range: string }[] = [
+  { value: 'L-band', label: 'L-Band', range: '1-2 GHz' },
+  { value: 'S-band', label: 'S-Band', range: '2-4 GHz' },
+  { value: 'C-band', label: 'C-Band', range: '4-8 GHz' },
+  { value: 'X-band', label: 'X-Band', range: '8-12 GHz' },
+  { value: 'Ku-band', label: 'Ku-Band', range: '12-18 GHz' },
+  { value: 'Ka-band', label: 'Ka-Band', range: '26-40 GHz' },
+  { value: 'V-band', label: 'V-Band', range: '40-75 GHz' },
+  { value: 'Q-band', label: 'Q-Band', range: '33-50 GHz' },
+];
+
+// ============================================================
+// Space Workforce & Talent Analytics Types
+// ============================================================
+export type JobCategory = 'engineering' | 'operations' | 'business' | 'research' | 'legal' | 'manufacturing';
+export type SeniorityLevel = 'entry' | 'mid' | 'senior' | 'lead' | 'director' | 'vp' | 'c_suite';
+
+export interface SpaceJobPosting {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  remoteOk: boolean;
+  category: JobCategory;
+  specialization: string | null;
+  seniorityLevel: SeniorityLevel;
+  salaryMin: number | null;
+  salaryMax: number | null;
+  salaryMedian: number | null;
+  yearsExperience: number | null;
+  clearanceRequired: boolean;
+  degreeRequired: string | null;
+  isActive: boolean;
+  postedDate: Date;
+  sourceUrl: string | null;
+}
+
+export interface WorkforceTrend {
+  id: string;
+  period: string;
+  year: number;
+  quarter: number;
+  totalOpenings: number;
+  totalHires: number | null;
+  avgSalary: number | null;
+  medianSalary: number | null;
+  engineeringOpenings: number;
+  operationsOpenings: number;
+  businessOpenings: number;
+  researchOpenings: number;
+  topSkills: string[] | null;
+  topCompanies: string[] | null;
+  yoyGrowth: number | null;
+}
+
+export const JOB_CATEGORIES: { value: JobCategory; label: string; icon: string }[] = [
+  { value: 'engineering', label: 'Engineering', icon: '⚙️' },
+  { value: 'operations', label: 'Operations', icon: '🎯' },
+  { value: 'business', label: 'Business', icon: '💼' },
+  { value: 'research', label: 'Research', icon: '🔬' },
+  { value: 'legal', label: 'Legal', icon: '⚖️' },
+  { value: 'manufacturing', label: 'Manufacturing', icon: '🏭' },
+];
+
+export const SENIORITY_LEVELS: { value: SeniorityLevel; label: string }[] = [
+  { value: 'entry', label: 'Entry Level' },
+  { value: 'mid', label: 'Mid Level' },
+  { value: 'senior', label: 'Senior' },
+  { value: 'lead', label: 'Lead' },
+  { value: 'director', label: 'Director' },
+  { value: 'vp', label: 'VP' },
+  { value: 'c_suite', label: 'C-Suite' },
+];
+
+// ============================================================
+// Launch Windows & Mission Planner Types
+// ============================================================
+export type TransferType = 'hohmann' | 'low_energy' | 'gravity_assist' | 'direct';
+
+export interface LaunchWindow {
+  id: string;
+  slug: string;
+  destination: string;
+  missionType: string;
+  windowOpen: Date;
+  windowClose: Date;
+  optimalDate: Date | null;
+  deltaV: number;
+  travelTime: number;
+  transferType: TransferType;
+  c3Energy: number | null;
+  arrivalVelocity: number | null;
+  frequency: string;
+  nextAfter: Date | null;
+  description: string | null;
+}
+
+export interface CelestialDestination {
+  id: string;
+  slug: string;
+  name: string;
+  type: string;
+  distanceFromSun: number | null;
+  distanceFromEarth: number | null;
+  orbitalPeriod: number | null;
+  synodicPeriod: number | null;
+  deltaVToOrbit: number | null;
+  deltaVToLand: number | null;
+  totalMissions: number;
+  successfulMissions: number;
+  description: string | null;
+}
+
+export const TRANSFER_TYPES: { value: TransferType; label: string; description: string }[] = [
+  { value: 'hohmann', label: 'Hohmann Transfer', description: 'Minimum energy elliptical transfer' },
+  { value: 'low_energy', label: 'Low-Energy', description: 'Uses gravitational assists for lower delta-V' },
+  { value: 'gravity_assist', label: 'Gravity Assist', description: 'Planetary flyby to gain velocity' },
+  { value: 'direct', label: 'Direct', description: 'Shortest time, highest energy' },
+];
+
+// ============================================================
+// Space Debris & Collision Risk Monitor Types
+// ============================================================
+export type DebrisObjectType = 'payload' | 'rocket_body' | 'debris' | 'unknown';
+export type DebrisSize = 'small' | 'medium' | 'large';
+export type ConjunctionRisk = 'low' | 'moderate' | 'high' | 'critical';
+
+export interface DebrisObject {
+  id: string;
+  noradId: string | null;
+  name: string;
+  objectType: DebrisObjectType;
+  orbitType: string;
+  altitude: number;
+  inclination: number | null;
+  eccentricity: number | null;
+  size: DebrisSize | null;
+  mass: number | null;
+  originMission: string | null;
+  originCountry: string | null;
+  originYear: number | null;
+  isActive: boolean;
+  trackable: boolean;
+  deorbitDate: Date | null;
+}
+
+export interface ConjunctionEvent {
+  id: string;
+  eventTime: Date;
+  probability: number;
+  missDistance: number;
+  primaryObject: string;
+  secondaryObject: string;
+  primaryType: string;
+  secondaryType: string;
+  altitude: number;
+  orbitType: string;
+  riskLevel: ConjunctionRisk;
+  maneuverRequired: boolean;
+  maneuverExecuted: boolean;
+  description: string | null;
+}
+
+export interface DebrisStats {
+  id: string;
+  snapshotDate: Date;
+  totalTracked: number;
+  totalPayloads: number;
+  totalRocketBodies: number;
+  totalDebris: number;
+  totalUnknown: number;
+  leoCount: number;
+  meoCount: number;
+  geoCount: number;
+  kesslerRiskIndex: number | null;
+  conjunctionsPerDay: number | null;
+  avgCollisionProb: number | null;
+  compliant25Year: number | null;
+  nonCompliant: number | null;
+}
+
+export const DEBRIS_OBJECT_TYPES: { value: DebrisObjectType; label: string; icon: string }[] = [
+  { value: 'payload', label: 'Payload', icon: '🛰️' },
+  { value: 'rocket_body', label: 'Rocket Body', icon: '🚀' },
+  { value: 'debris', label: 'Debris', icon: '💥' },
+  { value: 'unknown', label: 'Unknown', icon: '❓' },
+];
+
+export const CONJUNCTION_RISK_INFO: Record<ConjunctionRisk, { label: string; color: string; bgColor: string }> = {
+  low: { label: 'Low', color: 'text-green-400', bgColor: 'bg-green-500' },
+  moderate: { label: 'Moderate', color: 'text-yellow-400', bgColor: 'bg-yellow-500' },
+  high: { label: 'High', color: 'text-orange-400', bgColor: 'bg-orange-500' },
+  critical: { label: 'Critical', color: 'text-red-400', bgColor: 'bg-red-500' },
 };
