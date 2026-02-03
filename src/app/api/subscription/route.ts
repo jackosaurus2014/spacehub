@@ -39,7 +39,7 @@ export async function GET() {
 
     // Reset daily article views if it's a new day
     const now = new Date();
-    const lastReset = user.lastArticleViewReset;
+    const lastReset = user.lastArticleViewReset ? new Date(user.lastArticleViewReset) : now;
     const isNewDay = lastReset.toDateString() !== now.toDateString();
 
     if (isNewDay) {
