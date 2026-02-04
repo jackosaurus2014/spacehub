@@ -21,7 +21,7 @@ interface WorkforceStats {
   totalOpenings: number;
   avgSalary: number;
   topCategory: string;
-  yoyGrowth: number;
+  growthRate: number;
 }
 
 const SENIORITY_LABELS: Record<SeniorityLevel, string> = {
@@ -289,7 +289,7 @@ export default function SpaceWorkforceModule() {
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-green-400">
-            {stats.avgSalary.toFixed(0)}
+            {(stats.avgSalary ?? 0).toFixed(0)}
           </div>
           <div className="text-star-300 text-xs">Avg Salary ($K)</div>
         </div>
@@ -302,10 +302,10 @@ export default function SpaceWorkforceModule() {
         <div className="card p-3 text-center">
           <div
             className={`text-2xl font-bold ${
-              stats.yoyGrowth >= 0 ? 'text-green-400' : 'text-red-400'
+              (stats.growthRate ?? 0) >= 0 ? 'text-green-400' : 'text-red-400'
             }`}
           >
-            {stats.yoyGrowth >= 0 ? '+' : ''}{stats.yoyGrowth.toFixed(1)}
+            {(stats.growthRate ?? 0) >= 0 ? '+' : ''}{(stats.growthRate ?? 0).toFixed(1)}
           </div>
           <div className="text-star-300 text-xs">YoY Growth (%)</div>
         </div>

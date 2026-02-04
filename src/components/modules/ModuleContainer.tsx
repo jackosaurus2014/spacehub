@@ -23,6 +23,7 @@ import SpaceWorkforceModule from './SpaceWorkforceModule';
 import LaunchWindowsModule from './LaunchWindowsModule';
 import DebrisMonitorModule from './DebrisMonitorModule';
 import ModuleCustomizer from './ModuleCustomizer';
+import ModuleErrorBoundary from './ModuleErrorBoundary';
 
 interface ModuleContainerProps {
   initialModules?: UserModuleWithConfig[];
@@ -176,9 +177,11 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                   <PremiumBadge tier={requiredTier} />
                 </div>
               )}
-              <PremiumGate moduleId={module.moduleId}>
-                <Component />
-              </PremiumGate>
+              <ModuleErrorBoundary moduleName={module.name}>
+                <PremiumGate moduleId={module.moduleId}>
+                  <Component />
+                </PremiumGate>
+              </ModuleErrorBoundary>
             </section>
           );
         })}

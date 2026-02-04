@@ -279,7 +279,7 @@ export default function OrbitalSlotsModule() {
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold text-blue-400">
-              +{((data.stats.growth5Year / data.stats.totalActive) * 100).toFixed(0)}%
+              +{(data.stats.totalActive > 0 ? (data.stats.growth5Year / data.stats.totalActive) * 100 : 0).toFixed(0)}%
             </div>
             <div className="text-star-400 text-sm">Growth</div>
           </div>
