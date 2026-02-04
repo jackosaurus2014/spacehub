@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { BlogPost, BLOG_TOPICS, AUTHOR_TYPES, BlogTopic, BlogAuthorType } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import PageHeader from '@/components/ui/PageHeader';
 
 const topicColors: Record<string, string> = {
   space_law: 'bg-purple-500',
@@ -152,41 +153,26 @@ export default function BlogsPage() {
   };
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-4xl">✍️</span>
-                <h1 className="text-3xl md:text-4xl font-display font-bold text-white">
-                  Blogs & Articles
-                </h1>
-              </div>
-              <p className="text-star-300">
-                Expert insights from consultants, lawyers, and space industry professionals
-              </p>
-            </div>
-            <button
-              onClick={handleFetchNewPosts}
-              disabled={fetching}
-              className="btn-primary flex items-center gap-2"
-            >
-              {fetching ? (
-                <>
-                  <LoadingSpinner size="sm" />
-                  <span>Fetching...</span>
-                </>
-              ) : (
-                <>
-                  <span>🔄</span>
-                  <span>Fetch New Articles</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
+        <PageHeader title="Blogs & Articles" subtitle="Expert insights from consultants, lawyers, and space industry professionals" breadcrumbs={[{label: 'Home', href: '/'}, {label: 'Blogs'}]}>
+          <button
+            onClick={handleFetchNewPosts}
+            disabled={fetching}
+            className="btn-primary flex items-center gap-2"
+          >
+            {fetching ? (
+              <>
+                <LoadingSpinner size="sm" />
+                <span>Fetching...</span>
+              </>
+            ) : (
+              <>
+                <span>Fetch New Articles</span>
+              </>
+            )}
+          </button>
+        </PageHeader>
 
         {/* Filters */}
         <div className="card p-4 mb-8">
@@ -199,8 +185,8 @@ export default function BlogsPage() {
                   onClick={() => handleTopicChange(null)}
                   className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm ${
                     selectedTopic === null
-                      ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
-                      : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
+                      ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
+                      : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
                   }`}
                 >
                   All Topics
@@ -211,8 +197,8 @@ export default function BlogsPage() {
                     onClick={() => handleTopicChange(topic.value)}
                     className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm flex items-center gap-1 ${
                       selectedTopic === topic.value
-                        ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
-                        : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
+                        ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
+                        : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
                     }`}
                   >
                     <span>{topic.icon}</span>
@@ -230,8 +216,8 @@ export default function BlogsPage() {
                   onClick={() => handleAuthorTypeChange(null)}
                   className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm ${
                     selectedAuthorType === null
-                      ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
-                      : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
+                      ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
+                      : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
                   }`}
                 >
                   All Authors
@@ -242,8 +228,8 @@ export default function BlogsPage() {
                     onClick={() => handleAuthorTypeChange(type.value)}
                     className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm flex items-center gap-1 ${
                       selectedAuthorType === type.value
-                        ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
-                        : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
+                        ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
+                        : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
                     }`}
                   >
                     <span>{type.icon}</span>
@@ -257,21 +243,21 @@ export default function BlogsPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-white">{total}</div>
-            <div className="text-star-300 text-sm">Total Articles</div>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-white">{total}</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Total Articles</div>
           </div>
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-nebula-300">{BLOG_TOPICS.length}</div>
-            <div className="text-star-300 text-sm">Topics</div>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{BLOG_TOPICS.length}</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Topics</div>
           </div>
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-rocket-400">{AUTHOR_TYPES.length}</div>
-            <div className="text-star-300 text-sm">Author Types</div>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-rocket-400">{AUTHOR_TYPES.length}</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Author Types</div>
           </div>
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-green-400">7</div>
-            <div className="text-star-300 text-sm">Sources</div>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-green-400">7</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Sources</div>
           </div>
         </div>
 

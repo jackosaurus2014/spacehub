@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import PageHeader from '@/components/ui/PageHeader';
 import InlineDisclaimer from '@/components/InlineDisclaimer';
 import PremiumGate from '@/components/PremiumGate';
 import {
@@ -297,25 +298,25 @@ function ComplianceContent() {
       {/* Stats Overview */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-white">{stats.classifications}</div>
-            <div className="text-star-300 text-sm">Classifications</div>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.classifications}</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Classifications</div>
           </div>
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-red-400">{stats.regimeBreakdown?.ITAR || 0}</div>
-            <div className="text-star-300 text-sm">ITAR Items</div>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-red-400">{stats.regimeBreakdown?.ITAR || 0}</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">ITAR Items</div>
           </div>
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-blue-400">{stats.regimeBreakdown?.EAR || 0}</div>
-            <div className="text-star-300 text-sm">EAR Items</div>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-blue-400">{stats.regimeBreakdown?.EAR || 0}</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">EAR Items</div>
           </div>
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-nebula-400">{stats.regulations}</div>
-            <div className="text-star-300 text-sm">Regulations</div>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-nebula-400">{stats.regulations}</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Regulations</div>
           </div>
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-yellow-400">{stats.openRegulations}</div>
-            <div className="text-star-300 text-sm">Open for Comment</div>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-yellow-400">{stats.openRegulations}</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Open for Comment</div>
           </div>
         </div>
       )}
@@ -335,8 +336,8 @@ function ComplianceContent() {
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
               activeTab === tab.id
-                ? 'bg-nebula-500 text-white'
-                : 'bg-space-700/50 text-star-300 hover:bg-space-600/50'
+                ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
+                : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
             }`}
           >
             <span>{tab.icon}</span>
@@ -484,25 +485,17 @@ function ComplianceContent() {
 
 export default function CompliancePage() {
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <span className="text-4xl">⚖️</span>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-display font-bold text-white">
-                Space Compliance
-              </h1>
-              <p className="text-star-300">
-                Export controls, regulations, and legal updates for the space industry
-              </p>
-            </div>
-          </div>
+        <PageHeader
+          title="Space Compliance"
+          subtitle="Export controls, regulations, and legal updates for the space industry"
+          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Compliance' }]}
+        >
           <Link href="/" className="btn-secondary text-sm py-2 px-4">
             ← Back to Dashboard
           </Link>
-        </div>
+        </PageHeader>
 
         <PremiumGate requiredTier="pro">
           {/* Content wrapped in Suspense for useSearchParams */}

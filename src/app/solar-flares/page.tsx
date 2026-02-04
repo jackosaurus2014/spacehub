@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import {
   SolarFlare,
   SolarForecast,
@@ -11,6 +10,7 @@ import {
   IMPACT_LEVEL_INFO,
   RiskLevel,
 } from '@/types';
+import PageHeader from '@/components/ui/PageHeader';
 
 interface SolarFlareData {
   flares: SolarFlare[];
@@ -48,7 +48,7 @@ export default function SolarFlaresPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen py-8">
+      <div className="min-h-screen">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center py-20">
             <div
@@ -63,7 +63,7 @@ export default function SolarFlaresPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen py-8">
+      <div className="min-h-screen">
         <div className="container mx-auto px-4 text-center py-20">
           <span className="text-5xl block mb-4">⚠️</span>
           <p className="text-star-300">Failed to load solar activity data</p>
@@ -80,23 +80,9 @@ export default function SolarFlaresPage() {
   const currentRisk = todayForecast ? RISK_LEVEL_INFO[todayForecast.riskLevel] : RISK_LEVEL_INFO.low;
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-star-400 text-sm mb-2">
-            <Link href="/" className="hover:text-white">Home</Link>
-            <span>/</span>
-            <span className="text-white">Solar Flare Tracker</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-white flex items-center gap-3">
-            <span className="text-4xl">☀️</span>
-            Solar Flare Tracker
-          </h1>
-          <p className="text-star-300 mt-2">
-            Real-time solar activity monitoring and 90-day danger forecasts
-          </p>
-        </div>
+        <PageHeader title="Solar Flare Tracker" subtitle="Real-time solar activity monitoring and 90-day danger forecasts" breadcrumbs={[{label: 'Home', href: '/'}, {label: 'Solar Flares'}]} />
 
         {/* Current Status Banner */}
         {todayForecast && (
@@ -146,45 +132,45 @@ export default function SolarFlaresPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-white">{data.stats.last30Days.xClass}</div>
-            <div className="text-star-400 text-sm">X-Class (30d)</div>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-white">{data.stats.last30Days.xClass}</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">X-Class (30d)</div>
           </div>
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-white">{data.stats.last30Days.mClass}</div>
-            <div className="text-star-400 text-sm">M-Class (30d)</div>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-white">{data.stats.last30Days.mClass}</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">M-Class (30d)</div>
           </div>
-          <div className="card p-4 text-center">
-            <div className={`text-3xl font-bold ${
+          <div className="card-elevated p-6 text-center">
+            <div className={`text-4xl font-bold font-display tracking-tight ${
               data.stats.upcomingDangerDays >= 10 ? 'text-red-400' : 'text-orange-400'
             }`}>
               {data.stats.upcomingDangerDays}
             </div>
-            <div className="text-star-400 text-sm">Danger Days (90d)</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Danger Days (90d)</div>
           </div>
-          <div className="card p-4 text-center">
+          <div className="card-elevated p-6 text-center">
             {data.activity ? (
               <>
-                <div className="text-3xl font-bold text-white">{Math.round(data.activity.solarWindSpeed || 0)}</div>
-                <div className="text-star-400 text-sm">Solar Wind (km/s)</div>
+                <div className="text-4xl font-bold font-display tracking-tight text-white">{Math.round(data.activity.solarWindSpeed || 0)}</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Solar Wind (km/s)</div>
               </>
             ) : (
               <>
-                <div className="text-3xl font-bold text-star-500">-</div>
-                <div className="text-star-400 text-sm">Solar Wind</div>
+                <div className="text-4xl font-bold font-display tracking-tight text-star-500">-</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Solar Wind</div>
               </>
             )}
           </div>
-          <div className="card p-4 text-center">
+          <div className="card-elevated p-6 text-center">
             {data.activity ? (
               <>
-                <div className="text-3xl font-bold text-white">{data.activity.sunspotNumber || 0}</div>
-                <div className="text-star-400 text-sm">Sunspot Number</div>
+                <div className="text-4xl font-bold font-display tracking-tight text-white">{data.activity.sunspotNumber || 0}</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Sunspot Number</div>
               </>
             ) : (
               <>
-                <div className="text-3xl font-bold text-star-500">-</div>
-                <div className="text-star-400 text-sm">Sunspots</div>
+                <div className="text-4xl font-bold font-display tracking-tight text-star-500">-</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Sunspots</div>
               </>
             )}
           </div>
@@ -198,8 +184,8 @@ export default function SolarFlaresPage() {
               onClick={() => setSelectedTab(tab)}
               className={`px-4 py-2 rounded-lg font-medium capitalize transition-all ${
                 selectedTab === tab
-                  ? 'bg-nebula-500 text-white'
-                  : 'bg-space-700/50 text-star-200 hover:bg-space-600/50'
+                  ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
+                  : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
               }`}
             >
               {tab}

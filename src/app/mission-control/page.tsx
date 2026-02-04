@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { SpaceEvent, EVENT_TYPE_INFO, SpaceEventType } from '@/types';
+import PageHeader from '@/components/ui/PageHeader';
 
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
   { value: 'all', label: 'All Events', icon: '🌌' },
@@ -184,20 +185,9 @@ export default function MissionControlPage() {
   const years = Object.keys(groupedEvents).sort();
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-4xl">🎯</span>
-            <h1 className="text-3xl md:text-4xl font-display font-bold text-white">
-              Mission Control
-            </h1>
-          </div>
-          <p className="text-star-300">
-            Explore all upcoming space missions, launches, and events for the next 5 years
-          </p>
-        </div>
+        <PageHeader title="Mission Control" subtitle="Explore all upcoming space missions, launches, and events for the next 5 years" breadcrumbs={[{label: 'Home', href: '/'}, {label: 'Mission Control'}]} />
 
         {/* Filters */}
         <div className="card p-4 mb-8">
@@ -226,8 +216,8 @@ export default function MissionControlPage() {
                   onClick={() => setSelectedType(type.value)}
                   className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-1 text-sm ${
                     selectedType === type.value
-                      ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
-                      : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
+                      ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
+                      : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
                   }`}
                 >
                   <span>{type.icon}</span>
@@ -240,30 +230,30 @@ export default function MissionControlPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-white">{events.length}</div>
-            <div className="text-star-300 text-sm">Total Events</div>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-white">{events.length}</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Total Events</div>
           </div>
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-green-400">
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-green-400">
               {events.filter(e => {
                 const d = e.launchDate ? new Date(e.launchDate) : null;
                 return d && d > new Date() && d < new Date(Date.now() + 48 * 60 * 60 * 1000);
               }).length}
             </div>
-            <div className="text-star-300 text-sm">Next 48 Hours</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Next 48 Hours</div>
           </div>
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-nebula-300">
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
               {events.filter(e => e.type === 'crewed_mission').length}
             </div>
-            <div className="text-star-300 text-sm">Crewed Missions</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Crewed Missions</div>
           </div>
-          <div className="card p-4 text-center">
-            <div className="text-3xl font-bold text-rocket-400">
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-rocket-400">
               {new Set(events.map(e => e.agency).filter(Boolean)).size}
             </div>
-            <div className="text-star-300 text-sm">Agencies</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Agencies</div>
           </div>
         </div>
 

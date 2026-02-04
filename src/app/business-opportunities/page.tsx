@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import {
   BusinessOpportunity,
   OPPORTUNITY_TYPES,
@@ -16,6 +15,7 @@ import {
   TargetAudience,
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import PageHeader from '@/components/ui/PageHeader';
 
 function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
   const [expanded, setExpanded] = useState(false);
@@ -265,48 +265,30 @@ export default function BusinessOpportunitiesPage() {
   };
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-star-300 text-sm mb-2">
-            <Link href="/" className="hover:text-white transition-colors">
-              Home
-            </Link>
-            <span>/</span>
-            <span className="text-white">Business Opportunities</span>
-          </div>
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <div className="flex items-center gap-4 mb-2">
-                <span className="text-4xl">💼</span>
-                <h1 className="text-3xl md:text-4xl font-display font-bold text-white">
-                  Business Opportunities
-                </h1>
-              </div>
-              <p className="text-star-300">
-                AI-powered discovery of space industry opportunities for entrepreneurs, investors, and students
-              </p>
-            </div>
-            <button
-              onClick={handleRunAnalysis}
-              disabled={analyzing}
-              className="btn-primary flex items-center gap-2"
-            >
-              {analyzing ? (
-                <>
-                  <LoadingSpinner size="sm" />
-                  <span>Running AI Analysis...</span>
-                </>
-              ) : (
-                <>
-                  <span>🤖</span>
-                  <span>Run AI Deep Dive</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
+        <PageHeader
+          title="Business Opportunities"
+          subtitle="AI-powered discovery of space industry opportunities for entrepreneurs, investors, and students"
+          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Business Opportunities' }]}
+        >
+          <button
+            onClick={handleRunAnalysis}
+            disabled={analyzing}
+            className="btn-primary flex items-center gap-2"
+          >
+            {analyzing ? (
+              <>
+                <LoadingSpinner size="sm" />
+                <span>Running AI Analysis...</span>
+              </>
+            ) : (
+              <>
+                <span>Run AI Deep Dive</span>
+              </>
+            )}
+          </button>
+        </PageHeader>
 
         {/* AI Analysis Result */}
         {analysisResult && (
@@ -354,29 +336,29 @@ export default function BusinessOpportunitiesPage() {
           <>
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-white">{stats.total}</div>
-                <div className="text-star-300 text-sm">Total Opportunities</div>
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.total}</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Total Opportunities</div>
               </div>
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-yellow-400">{stats.featured}</div>
-                <div className="text-star-300 text-sm">Featured</div>
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-yellow-400">{stats.featured}</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Featured</div>
               </div>
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-green-400">{stats.recentCount}</div>
-                <div className="text-star-300 text-sm">Added This Week</div>
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-green-400">{stats.recentCount}</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Added This Week</div>
               </div>
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-blue-400">
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-blue-400">
                   {stats.byType?.government_contract || 0}
                 </div>
-                <div className="text-star-300 text-sm">Gov Contracts</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Gov Contracts</div>
               </div>
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-nebula-300">
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
                   {stats.byType?.ai_insight || 0}
                 </div>
-                <div className="text-star-300 text-sm">AI Insights</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">AI Insights</div>
               </div>
             </div>
 

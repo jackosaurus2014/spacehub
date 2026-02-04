@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import NewsCard from '@/components/NewsCard';
 import NewsFilter from '@/components/NewsFilter';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import PageHeader from '@/components/ui/PageHeader';
 import { NewsArticle } from '@/types';
 
 function NewsContent() {
@@ -120,17 +121,9 @@ function NewsContent() {
 
 export default function NewsPage() {
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">
-            Space News
-          </h1>
-          <p className="text-star-300">
-            Stay up to date with the latest from the space industry
-          </p>
-        </div>
+        <PageHeader title="Space News" subtitle="Stay up to date with the latest from the space industry" breadcrumbs={[{label: 'Home', href: '/'}, {label: 'News'}]} />
 
         {/* Content wrapped in Suspense for useSearchParams */}
         <Suspense fallback={

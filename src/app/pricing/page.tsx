@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { SUBSCRIPTION_PLANS, SubscriptionTier } from '@/types';
 import { useSubscription } from '@/components/SubscriptionProvider';
+import PageHeader from '@/components/ui/PageHeader';
 
 function PricingCard({
   plan,
@@ -109,40 +110,34 @@ export default function PricingPage() {
   const [isYearly, setIsYearly] = useState(true);
 
   return (
-    <div className="min-h-screen py-12">
+    <div className="min-h-screen pb-12">
       <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
-            Choose Your Plan
-          </h1>
-          <p className="text-xl text-star-300 max-w-2xl mx-auto mb-8">
-            Get unlimited access to space industry intelligence, real-time stock tracking,
-            and AI-powered business opportunities.
-          </p>
+        <PageHeader
+          title="Choose Your Plan"
+          subtitle="Get unlimited access to space industry intelligence, real-time stock tracking, and AI-powered business opportunities."
+        />
 
-          {/* Billing Toggle */}
-          <div className="flex items-center justify-center gap-4">
-            <span className={`text-sm ${!isYearly ? 'text-white' : 'text-star-400'}`}>
-              Monthly
-            </span>
-            <button
-              onClick={() => setIsYearly(!isYearly)}
-              className={`relative w-14 h-7 rounded-full transition-colors ${
-                isYearly ? 'bg-nebula-500' : 'bg-space-600'
+        {/* Billing Toggle */}
+        <div className="flex items-center justify-center gap-4 mb-12">
+          <span className={`text-sm ${!isYearly ? 'text-white' : 'text-star-400'}`}>
+            Monthly
+          </span>
+          <button
+            onClick={() => setIsYearly(!isYearly)}
+            className={`relative w-14 h-7 rounded-full transition-colors ${
+              isYearly ? 'bg-nebula-500' : 'bg-space-600'
+            }`}
+          >
+            <span
+              className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform ${
+                isYearly ? 'translate-x-8' : 'translate-x-1'
               }`}
-            >
-              <span
-                className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                  isYearly ? 'translate-x-8' : 'translate-x-1'
-                }`}
-              />
-            </button>
-            <span className={`text-sm ${isYearly ? 'text-white' : 'text-star-400'}`}>
-              Yearly
-              <span className="ml-1 text-green-400 text-xs">Save up to 17%</span>
-            </span>
-          </div>
+            />
+          </button>
+          <span className={`text-sm ${isYearly ? 'text-white' : 'text-star-400'}`}>
+            Yearly
+            <span className="ml-1 text-green-400 text-xs">Save up to 17%</span>
+          </span>
         </div>
 
         {/* Pricing Cards */}

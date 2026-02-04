@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import {
   SpaceResource,
   LaunchProvider,
@@ -12,6 +11,7 @@ import {
   KG_TO_LB,
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import PageHeader from '@/components/ui/PageHeader';
 
 const DEFAULT_LAUNCH_COST = 2720;
 
@@ -241,53 +241,39 @@ export default function ResourceExchangePage() {
   };
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-star-300 text-sm mb-2">
-            <Link href="/" className="hover:text-white transition-colors">
-              Home
-            </Link>
-            <span>/</span>
-            <span className="text-white">Resource Exchange</span>
-          </div>
-          <div className="flex items-center gap-4 mb-2">
-            <span className="text-4xl">💰</span>
-            <h1 className="text-3xl md:text-4xl font-display font-bold text-white">
-              Resource Exchange
-            </h1>
-          </div>
-          <p className="text-star-300">
-            Compare Earth prices vs space delivery costs for commodities and materials
-          </p>
-        </div>
+        <PageHeader
+          title="Resource Exchange"
+          subtitle="Compare Earth prices vs space delivery costs for commodities and materials"
+          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Resource Exchange' }]}
+        />
 
         {stats && stats.total > 0 && (
           <>
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-white">{stats.total}</div>
-                <div className="text-star-300 text-sm">Resources Tracked</div>
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.total}</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Resources Tracked</div>
               </div>
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-green-400">
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-green-400">
                   {Object.keys(stats.byCategory).length}
                 </div>
-                <div className="text-star-300 text-sm">Categories</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Categories</div>
               </div>
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-rocket-400">
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-rocket-400">
                   ${stats.launchCosts.min?.toLocaleString()}
                 </div>
-                <div className="text-star-300 text-sm">Min Launch $/kg</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Min Launch $/kg</div>
               </div>
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-nebula-300">
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
                   {providers.length}
                 </div>
-                <div className="text-star-300 text-sm">Launch Providers</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Launch Providers</div>
               </div>
             </div>
 
@@ -323,8 +309,8 @@ export default function ResourceExchangePage() {
                         onClick={() => handleDestinationChange(dest)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                           destination === dest
-                            ? 'bg-nebula-500 text-white'
-                            : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
+                            ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
+                            : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
                         }`}
                       >
                         {dest === 'LEO' && '🌍 '}

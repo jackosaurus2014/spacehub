@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { SpaceCompany, FOCUS_AREAS, COUNTRY_INFO, CompanyCountry, CompanyFocusArea } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import StockMiniChart from '@/components/ui/StockMiniChart';
+import PageHeader from '@/components/ui/PageHeader';
 
 interface StockData {
   ticker: string;
@@ -273,49 +273,33 @@ export default function MarketIntelPage() {
   };
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-star-300 text-sm mb-2">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-white">Market Intel</span>
-          </div>
-          <div className="flex items-center gap-4 mb-2">
-            <span className="text-4xl">📊</span>
-            <h1 className="text-3xl md:text-4xl font-display font-bold text-white">
-              Market Intel
-            </h1>
-          </div>
-          <p className="text-star-300">
-            Track space industry companies, stock performance, and funding rounds
-          </p>
-        </div>
+        <PageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" breadcrumbs={[{label: 'Home', href: '/'}, {label: 'Market Intel'}]} />
 
         {stats && stats.total > 0 && (
           <>
             {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-white">{stats.total}</div>
-                <div className="text-star-300 text-sm">Total Companies</div>
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.total}</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Total Companies</div>
               </div>
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-green-400">{stats.publicCount}</div>
-                <div className="text-star-300 text-sm">Publicly Traded</div>
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-green-400">{stats.publicCount}</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Publicly Traded</div>
               </div>
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-yellow-400">{stats.privateCount}</div>
-                <div className="text-star-300 text-sm">Private / Pre-IPO</div>
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-yellow-400">{stats.privateCount}</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Private / Pre-IPO</div>
               </div>
-              <div className="card p-4 text-center">
-                <div className="text-3xl font-bold text-nebula-300">
+              <div className="card-elevated p-6 text-center">
+                <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
                   ${stats.totalMarketCap >= 1000
                     ? `${(stats.totalMarketCap / 1000).toFixed(1)}T`
                     : `${stats.totalMarketCap.toFixed(0)}B`}
                 </div>
-                <div className="text-star-300 text-sm">Combined Market Cap</div>
+                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Combined Market Cap</div>
               </div>
             </div>
 

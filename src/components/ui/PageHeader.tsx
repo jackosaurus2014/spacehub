@@ -1,0 +1,48 @@
+import Link from 'next/link';
+
+interface Breadcrumb {
+  label: string;
+  href?: string;
+}
+
+interface PageHeaderProps {
+  title: string;
+  subtitle?: string;
+  breadcrumbs?: Breadcrumb[];
+  children?: React.ReactNode;
+}
+
+export default function PageHeader({ title, subtitle, breadcrumbs, children }: PageHeaderProps) {
+  return (
+    <div className="pt-12 pb-8">
+      {breadcrumbs && breadcrumbs.length > 0 && (
+        <div className="flex items-center gap-2 text-star-400 text-sm mb-4">
+          {breadcrumbs.map((crumb, index) => (
+            <span key={index} className="flex items-center gap-2">
+              {index > 0 && <span className="text-star-400/50">/</span>}
+              {crumb.href ? (
+                <Link href={crumb.href} className="hover:text-white transition-colors">
+                  {crumb.label}
+                </Link>
+              ) : (
+                <span className="text-white">{crumb.label}</span>
+              )}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="w-12 h-[3px] bg-gradient-to-r from-nebula-500 to-plasma-400 rounded-full mb-4" />
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h1 className="text-display-md font-display font-bold text-white">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="text-star-300 mt-2 text-lg">{subtitle}</p>
+          )}
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}

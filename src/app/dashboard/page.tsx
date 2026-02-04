@@ -64,8 +64,8 @@ export default function DashboardPage() {
         {/* Welcome Header */}
         <div className="card p-8 mb-8 glow-border">
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-nebula-500 to-rocket-500 flex items-center justify-center text-3xl">
-              👨‍🚀
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-nebula-500 to-rocket-500 flex items-center justify-center text-white text-xl font-bold">
+              {session.user?.name?.charAt(0)?.toUpperCase() || 'E'}
             </div>
             <div>
               <h1 className="text-2xl font-display font-bold text-white">

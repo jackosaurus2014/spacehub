@@ -163,15 +163,20 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
       )}
 
       {/* Render Enabled Modules */}
-      <div className="space-y-8">
-        {enabledModules.map((module) => {
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {enabledModules.map((module, index) => {
           const Component = MODULE_COMPONENTS[module.moduleId];
           if (!Component) return null;
 
           const requiredTier = getRequiredTierForModule(module.moduleId);
+          const isWide = ['news-feed', 'mission-control', 'market-intel'].includes(module.moduleId);
 
           return (
-            <section key={module.moduleId}>
+            <section
+              key={module.moduleId}
+              className={`animate-fade-in-up ${isWide ? 'lg:col-span-2' : ''}`}
+              style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'both' }}
+            >
               {requiredTier && (
                 <div className="flex items-center gap-2 mb-2">
                   <PremiumBadge tier={requiredTier} />

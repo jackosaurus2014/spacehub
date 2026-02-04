@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
 import {
   PlanetaryBody,
   SurfaceLander,
@@ -11,6 +10,7 @@ import {
   LANDER_MISSION_TYPES,
   SPACE_AGENCIES,
 } from '@/types';
+import PageHeader from '@/components/ui/PageHeader';
 
 // Dynamic import for 3D scene (client-side only)
 const PlanetaryScene = dynamic(
@@ -107,7 +107,7 @@ function SolarExplorationContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen py-8">
+      <div className="min-h-screen">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center py-20">
             <div
@@ -121,44 +121,28 @@ function SolarExplorationContent() {
   }
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-star-400 text-sm mb-2">
-            <Link href="/" className="hover:text-white">
-              Home
-            </Link>
-            <span>/</span>
-            <span className="text-white">Solar Exploration</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-white flex items-center gap-3">
-            <span className="text-4xl">🌍</span>
-            Solar System Exploration
-          </h1>
-          <p className="text-star-300 mt-2">
-            Interactive 3D visualization of planetary bodies with rover and lander locations
-          </p>
-        </div>
+        <PageHeader title="Solar System Exploration" subtitle="Interactive 3D visualization of planetary bodies with rover and lander locations" breadcrumbs={[{label: 'Home', href: '/'}, {label: 'Solar Exploration'}]} />
 
         {/* Stats Overview */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="card p-4 text-center">
-              <div className="text-3xl font-bold text-white">{stats.totalBodies}</div>
-              <div className="text-star-400 text-sm">Bodies Explored</div>
+            <div className="card-elevated p-6 text-center">
+              <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.totalBodies}</div>
+              <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Bodies Explored</div>
             </div>
-            <div className="card p-4 text-center">
-              <div className="text-3xl font-bold text-white">{stats.totalLanders}</div>
-              <div className="text-star-400 text-sm">Total Missions</div>
+            <div className="card-elevated p-6 text-center">
+              <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.totalLanders}</div>
+              <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Total Missions</div>
             </div>
-            <div className="card p-4 text-center">
-              <div className="text-3xl font-bold text-green-400">{stats.activeLanders}</div>
-              <div className="text-star-400 text-sm">Active Missions</div>
+            <div className="card-elevated p-6 text-center">
+              <div className="text-4xl font-bold font-display tracking-tight text-green-400">{stats.activeLanders}</div>
+              <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Active Missions</div>
             </div>
-            <div className="card p-4 text-center">
-              <div className="text-3xl font-bold text-blue-400">{stats.completedLanders}</div>
-              <div className="text-star-400 text-sm">Completed</div>
+            <div className="card-elevated p-6 text-center">
+              <div className="text-4xl font-bold font-display tracking-tight text-blue-400">{stats.completedLanders}</div>
+              <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Completed</div>
             </div>
           </div>
         )}
@@ -171,8 +155,8 @@ function SolarExplorationContent() {
               onClick={() => setSelectedBodySlug(body.slug)}
               className={`px-5 py-3 rounded-lg font-medium transition-all ${
                 selectedBodySlug === body.slug
-                  ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
-                  : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
+                  ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
+                  : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
               }`}
             >
               {body.name}
@@ -316,7 +300,7 @@ function LanderCard({
 
 function LoadingFallback() {
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center py-20">
           <div
