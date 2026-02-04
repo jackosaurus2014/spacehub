@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
 import InlineDisclaimer from '@/components/InlineDisclaimer';
 import PremiumGate from '@/components/PremiumGate';
+import ExportButton from '@/components/ui/ExportButton';
 import {
   EXPORT_REGIMES,
   CLASSIFICATION_CATEGORIES,
@@ -92,6 +93,11 @@ function RegulationCard({ item }: { item: ProposedRegulation }) {
   const deadline = item.commentDeadline ? new Date(item.commentDeadline) : null;
   const isUrgent = deadline && deadline > new Date() && deadline < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
+  const isFAA = item.agency === 'FAA';
+  const isExportTrade = ['export_control', 'trade', 'export'].some(
+    (k) => item.category?.toLowerCase().includes(k)
+  );
+
   return (
     <div className="card p-5 hover:border-nebula-500/50 transition-all">
       <div className="flex items-start justify-between mb-3">
@@ -131,14 +137,26 @@ function RegulationCard({ item }: { item: ProposedRegulation }) {
           </span>
         )}
       </div>
-      <a
-        href={item.sourceUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-3 inline-flex items-center text-sm text-nebula-400 hover:text-nebula-300"
-      >
-        View Full Regulation →
-      </a>
+      <div className="flex items-center gap-3 mt-3">
+        <a
+          href={item.sourceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center text-sm text-nebula-400 hover:text-nebula-300"
+        >
+          View Full Regulation →
+        </a>
+        {isFAA && (
+          <Link href="/spectrum" className="text-xs text-rocket-400 hover:text-rocket-300 bg-rocket-500/10 px-2 py-1 rounded">
+            Spectrum regulations →
+          </Link>
+        )}
+        {isExportTrade && (
+          <Link href="/compliance?tab=classifications" className="text-xs text-red-400 hover:text-red-300 bg-red-500/10 px-2 py-1 rounded">
+            View classifications →
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
@@ -204,10 +222,18 @@ function LegalUpdateCard({ update }: { update: LegalUpdate }) {
 
 function ComplianceContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const initialTab = searchParams.get('tab') || 'classifications';
+  const initialRegime = searchParams.get('regime') || '';
+  const initialCategory = searchParams.get('category') || '';
+  const initialAgency = searchParams.get('agency') || '';
+  const initialStatus = searchParams.get('status') || '';
+  const initialSourceType = searchParams.get('sourceType') || '';
 
   const [activeTab, setActiveTab] = useState<'classifications' | 'regulations' | 'sources' | 'updates'>(
-    initialTab as any
+    initialTab as 'classifications' | 'regulations' | 'sources' | 'updates'
   );
   const [classifications, setClassifications] = useState<ExportClassification[]>([]);
   const [regulations, setRegulations] = useState<ProposedRegulation[]>([]);
@@ -216,11 +242,11 @@ function ComplianceContent() {
   const [loading, setLoading] = useState(true);
 
   // Filters
-  const [regimeFilter, setRegimeFilter] = useState<string>('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('');
-  const [agencyFilter, setAgencyFilter] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
-  const [sourceTypeFilter, setSourceTypeFilter] = useState<string>('');
+  const [regimeFilter, setRegimeFilter] = useState<string>(initialRegime);
+  const [categoryFilter, setCategoryFilter] = useState<string>(initialCategory);
+  const [agencyFilter, setAgencyFilter] = useState<string>(initialAgency);
+  const [statusFilter, setStatusFilter] = useState<string>(initialStatus);
+  const [sourceTypeFilter, setSourceTypeFilter] = useState<string>(initialSourceType);
 
   // Stats
   const [stats, setStats] = useState<{
@@ -230,6 +256,19 @@ function ComplianceContent() {
     sources: number;
     regimeBreakdown?: { ITAR: number; EAR: number };
   } | null>(null);
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (activeTab && activeTab !== 'classifications') params.set('tab', activeTab);
+    if (regimeFilter) params.set('regime', regimeFilter);
+    if (categoryFilter) params.set('category', categoryFilter);
+    if (agencyFilter) params.set('agency', agencyFilter);
+    if (statusFilter) params.set('status', statusFilter);
+    if (sourceTypeFilter) params.set('sourceType', sourceTypeFilter);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [activeTab, regimeFilter, categoryFilter, agencyFilter, statusFilter, sourceTypeFilter, router, pathname]);
 
   useEffect(() => {
     fetchStats();
@@ -348,7 +387,7 @@ function ComplianceContent() {
 
       {/* Filters */}
       <div className="card p-4 mb-6">
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           {activeTab === 'classifications' && (
             <>
               <select
@@ -371,6 +410,20 @@ function ComplianceContent() {
                   <option key={c.value} value={c.value}>{c.icon} {c.label}</option>
                 ))}
               </select>
+              <div className="ml-auto">
+                <ExportButton
+                  data={classifications}
+                  filename="export-classifications"
+                  columns={[
+                    { key: 'regime', label: 'Regime' },
+                    { key: 'classification', label: 'Classification' },
+                    { key: 'name', label: 'Name' },
+                    { key: 'description', label: 'Description' },
+                    { key: 'category', label: 'Category' },
+                    { key: 'controlReason', label: 'Control Reason' },
+                  ]}
+                />
+              </div>
             </>
           )}
           {activeTab === 'regulations' && (
@@ -397,21 +450,60 @@ function ComplianceContent() {
                   <option key={s.value} value={s.value}>{s.label}</option>
                 ))}
               </select>
+              <div className="ml-auto">
+                <ExportButton
+                  data={regulations}
+                  filename="proposed-regulations"
+                  columns={[
+                    { key: 'title', label: 'Title' },
+                    { key: 'agency', label: 'Agency' },
+                    { key: 'status', label: 'Status' },
+                    { key: 'category', label: 'Category' },
+                    { key: 'summary', label: 'Summary' },
+                    { key: 'publishedDate', label: 'Published Date' },
+                    { key: 'commentDeadline', label: 'Comment Deadline' },
+                    { key: 'sourceUrl', label: 'Source URL' },
+                  ]}
+                />
+              </div>
             </>
           )}
           {activeTab === 'sources' && (
-            <select
-              value={sourceTypeFilter}
-              onChange={(e) => setSourceTypeFilter(e.target.value)}
-              className="bg-space-700 border border-space-600 text-star-200 rounded-lg px-3 py-2 text-sm"
-            >
-              <option value="">All Types</option>
-              <option value="law_firm">Law Firms</option>
-              <option value="government">Government</option>
-              <option value="industry_association">Industry Associations</option>
-              <option value="think_tank">Think Tanks</option>
-            </select>
+            <>
+              <select
+                value={sourceTypeFilter}
+                onChange={(e) => setSourceTypeFilter(e.target.value)}
+                className="bg-space-700 border border-space-600 text-star-200 rounded-lg px-3 py-2 text-sm"
+              >
+                <option value="">All Types</option>
+                <option value="law_firm">Law Firms</option>
+                <option value="government">Government</option>
+                <option value="industry_association">Industry Associations</option>
+                <option value="think_tank">Think Tanks</option>
+              </select>
+              <div className="ml-auto">
+                <ExportButton
+                  data={sources}
+                  filename="legal-sources"
+                  columns={[
+                    { key: 'name', label: 'Name' },
+                    { key: 'type', label: 'Type' },
+                    { key: 'organization', label: 'Organization' },
+                    { key: 'url', label: 'URL' },
+                    { key: 'description', label: 'Description' },
+                  ]}
+                />
+              </div>
+            </>
           )}
+        </div>
+        <div className="mt-3 pt-3 border-t border-white/[0.06]">
+          <Link
+            href="/workforce?tab=jobs&category=legal"
+            className="text-sm text-nebula-400 hover:text-nebula-300 transition-colors"
+          >
+            Find compliance professionals →
+          </Link>
         </div>
       </div>
 

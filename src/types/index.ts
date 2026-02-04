@@ -29,9 +29,13 @@ export const NEWS_CATEGORIES = [
   { name: 'Launches', slug: 'launches', description: 'Rocket launches and mission updates' },
   { name: 'Missions', slug: 'missions', description: 'Space exploration missions' },
   { name: 'Companies', slug: 'companies', description: 'Space industry company news' },
+  { name: 'Satellites', slug: 'satellites', description: 'Satellite constellations and telecom' },
+  { name: 'Defense', slug: 'defense', description: 'National security and military space' },
   { name: 'Earnings', slug: 'earnings', description: 'Financial news and earnings reports' },
+  { name: 'M&A', slug: 'mergers', description: 'Mergers, acquisitions, and partnerships' },
   { name: 'Development', slug: 'development', description: 'Technology and R&D updates' },
   { name: 'Policy', slug: 'policy', description: 'Space policy and regulations' },
+  { name: 'Debris', slug: 'debris', description: 'Space debris and collision risk' },
 ] as const;
 
 export type CategorySlug = typeof NEWS_CATEGORIES[number]['slug'];
@@ -587,7 +591,12 @@ export type CompanyCountry =
   | 'KOR'
   | 'ISR'
   | 'NZL'
-  | 'AUS';
+  | 'AUS'
+  | 'GBR'
+  | 'DEU'
+  | 'LUX'
+  | 'CAN'
+  | 'ARE';
 
 export interface SpaceCompany {
   id: string;
@@ -659,6 +668,11 @@ export const COUNTRY_INFO: Record<CompanyCountry, { name: string; flag: string }
   ISR: { name: 'Israel', flag: '🇮🇱' },
   NZL: { name: 'New Zealand', flag: '🇳🇿' },
   AUS: { name: 'Australia', flag: '🇦🇺' },
+  GBR: { name: 'United Kingdom', flag: '🇬🇧' },
+  DEU: { name: 'Germany', flag: '🇩🇪' },
+  LUX: { name: 'Luxembourg', flag: '🇱🇺' },
+  CAN: { name: 'Canada', flag: '🇨🇦' },
+  ARE: { name: 'UAE', flag: '🇦🇪' },
 };
 
 export const EXCHANGES: Record<string, string> = {

@@ -9,6 +9,7 @@ const parser = new Parser({
 
 // Predefined blog sources focused on space industry professionals
 const BLOG_SOURCES = [
+  // --- Policy & Analysis ---
   {
     name: 'The Space Review',
     slug: 'space-review',
@@ -28,15 +29,6 @@ const BLOG_SOURCES = [
     description: 'Space policy news and analysis',
   },
   {
-    name: 'Parabolic Arc',
-    slug: 'parabolic-arc',
-    url: 'http://www.parabolicarc.com',
-    feedUrl: 'http://www.parabolicarc.com/feed/',
-    type: 'blog',
-    authorType: 'journalist',
-    description: 'Space news and commentary',
-  },
-  {
     name: 'SpaceNews Opinion',
     slug: 'spacenews-opinion',
     url: 'https://spacenews.com/section/opinion/',
@@ -44,6 +36,73 @@ const BLOG_SOURCES = [
     type: 'blog',
     authorType: 'consultant',
     description: 'Expert opinions on space industry matters',
+  },
+  {
+    name: 'CSIS Aerospace Security',
+    slug: 'csis-aerospace',
+    url: 'https://aerospace.csis.org',
+    feedUrl: 'https://aerospace.csis.org/feed/',
+    type: 'blog',
+    authorType: 'consultant',
+    description: 'Space security analysis and annual Space Threat Assessment',
+  },
+
+  // --- Law Firm Blogs ---
+  {
+    name: 'Sheppard Mullin FCC Law Blog',
+    slug: 'sheppard-mullin-fcc',
+    url: 'https://www.fcclawblog.com',
+    feedUrl: 'https://www.fcclawblog.com/feed/',
+    type: 'blog',
+    authorType: 'lawyer',
+    description: 'FCC satellite and space regulatory proceedings analysis',
+  },
+  {
+    name: 'StarLaw Blog',
+    slug: 'starlaw-blog',
+    url: 'https://www.starlawblog.com',
+    feedUrl: 'https://www.starlawblog.com/feed/',
+    type: 'blog',
+    authorType: 'lawyer',
+    description: 'Global Space Law Center at Cleveland-Marshall College of Law',
+  },
+  {
+    name: 'Space Legal Issues',
+    slug: 'space-legal-issues',
+    url: 'https://www.spacelegalissues.com',
+    feedUrl: 'https://www.spacelegalissues.com/feed/',
+    type: 'blog',
+    authorType: 'lawyer',
+    description: 'Space law and public international law analysis',
+  },
+  {
+    name: 'EJIL: Talk! — Space Law',
+    slug: 'ejil-space-law',
+    url: 'https://www.ejiltalk.org/category/space-law/',
+    feedUrl: 'https://www.ejiltalk.org/feed/',
+    type: 'blog',
+    authorType: 'lawyer',
+    description: 'European Journal of International Law blog — space law coverage',
+  },
+  {
+    name: 'Above the Law — Space Law',
+    slug: 'above-the-law-space',
+    url: 'https://abovethelaw.com/tag/space-law/',
+    feedUrl: 'https://abovethelaw.com/tag/space-law/feed/',
+    type: 'blog',
+    authorType: 'lawyer',
+    description: 'Legal industry coverage of space law developments',
+  },
+
+  // --- Technical Blogs ---
+  {
+    name: 'Parabolic Arc',
+    slug: 'parabolic-arc',
+    url: 'http://www.parabolicarc.com',
+    feedUrl: 'http://www.parabolicarc.com/feed/',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Space news and commentary',
   },
   {
     name: 'NASA Blogs',
@@ -64,6 +123,44 @@ const BLOG_SOURCES = [
     description: 'Space exploration advocacy and education',
   },
   {
+    name: 'Everyday Astronaut',
+    slug: 'everyday-astronaut',
+    url: 'https://everydayastronaut.com',
+    feedUrl: 'https://everydayastronaut.com/feed',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Detailed technical analysis of rockets and space systems',
+  },
+  {
+    name: 'European Spaceflight',
+    slug: 'european-spaceflight',
+    url: 'https://europeanspaceflight.com',
+    feedUrl: 'https://europeanspaceflight.com/feed',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'European space activities, rocket startups, and ESA programs',
+  },
+  {
+    name: 'NASASpaceflight',
+    slug: 'nasaspaceflight',
+    url: 'https://www.nasaspaceflight.com',
+    feedUrl: 'https://www.nasaspaceflight.com/feed',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Leading technical coverage of SpaceX, NASA, and global launch providers',
+  },
+  {
+    name: 'Ars Technica — Space',
+    slug: 'arstechnica-space',
+    url: 'https://arstechnica.com/space/',
+    feedUrl: 'https://arstechnica.com/space/feed',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Award-winning space reporting with technical depth',
+  },
+
+  // --- Industry & Business ---
+  {
     name: 'Space Explored',
     slug: 'space-explored',
     url: 'https://spaceexplored.com',
@@ -72,15 +169,60 @@ const BLOG_SOURCES = [
     authorType: 'journalist',
     description: 'Space industry news and analysis',
   },
+  {
+    name: 'Payload Space',
+    slug: 'payload-space',
+    url: 'https://payloadspace.com',
+    feedUrl: 'https://payloadspace.com/feed/',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Daily coverage of space business and policy',
+  },
+  {
+    name: 'SpaceWatch.Global',
+    slug: 'spacewatch-global',
+    url: 'https://spacewatch.global',
+    feedUrl: 'https://spacewatch.global/feed/',
+    type: 'blog',
+    authorType: 'consultant',
+    description: 'International space industry news and geopolitical analysis',
+  },
+  {
+    name: 'SpaceQ',
+    slug: 'spaceq',
+    url: 'https://spaceq.ca',
+    feedUrl: 'https://spaceq.ca/feed/',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Canadian and international space sector coverage',
+  },
+  {
+    name: 'NASA Watch',
+    slug: 'nasa-watch',
+    url: 'https://nasawatch.com',
+    feedUrl: 'https://nasawatch.com/feed/',
+    type: 'blog',
+    authorType: 'consultant',
+    description: 'NASA program commentary and space policy analysis',
+  },
+  {
+    name: 'SpaceNews',
+    slug: 'spacenews-articles',
+    url: 'https://spacenews.com',
+    feedUrl: 'https://spacenews.com/feed',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Comprehensive space industry news since 1989',
+  },
 ];
 
 const TOPIC_KEYWORDS: Record<string, string[]> = {
-  space_law: ['law', 'legal', 'regulation', 'treaty', 'liability', 'property rights', 'fcc', 'itu', 'artemis accords'],
-  investment: ['investment', 'investor', 'funding', 'venture', 'capital', 'ipo', 'spac', 'valuation', 'market', 'stock'],
-  policy: ['policy', 'congress', 'legislation', 'government', 'budget', 'administration', 'faa', 'nasa budget'],
-  technology: ['technology', 'innovation', 'propulsion', 'engine', 'satellite', 'spacecraft', 'rocket', 'reusable'],
-  business: ['business', 'commercial', 'contract', 'revenue', 'profit', 'startup', 'company', 'enterprise'],
-  exploration: ['exploration', 'moon', 'mars', 'asteroid', 'deep space', 'artemis', 'human spaceflight', 'colony'],
+  space_law: ['law', 'legal', 'regulation', 'treaty', 'liability', 'property rights', 'fcc', 'itu', 'artemis accords', 'outer space treaty', 'licensing', 'compliance', 'regulatory', 'litigation', 'adjudication', 'jurisdiction', 'space act', 'copuos', 'spectrum allocation', 'orbital debris regulation', 'launch license', 'reentry authorization', 'part 25', 'part 97'],
+  investment: ['investment', 'investor', 'funding', 'venture', 'capital', 'ipo', 'spac', 'valuation', 'market', 'stock', 'series a', 'series b', 'series c', 'fundraise', 'acquisition', 'merger', 'm&a', 'deal', 'portfolio'],
+  policy: ['policy', 'congress', 'legislation', 'government', 'budget', 'administration', 'faa', 'nasa budget', 'appropriation', 'authorization', 'white house', 'executive order', 'space council', 'national space'],
+  technology: ['technology', 'innovation', 'propulsion', 'engine', 'satellite', 'spacecraft', 'rocket', 'reusable', 'electric propulsion', 'in-space manufacturing', 'additive manufacturing', 'laser comms', 'optical', 'antenna', 'phased array'],
+  business: ['business', 'commercial', 'contract', 'revenue', 'profit', 'startup', 'company', 'enterprise', 'partnership', 'joint venture', 'award', 'procurement'],
+  exploration: ['exploration', 'moon', 'mars', 'asteroid', 'deep space', 'artemis', 'human spaceflight', 'colony', 'lunar', 'gateway', 'interplanetary', 'hab', 'lander', 'rover'],
 };
 
 function categorizeTopic(title: string, content: string): string {

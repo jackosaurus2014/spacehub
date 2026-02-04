@@ -1,10 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { SpaceCompany, FOCUS_AREAS, COUNTRY_INFO, CompanyCountry, CompanyFocusArea } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import StockMiniChart from '@/components/ui/StockMiniChart';
 import PageHeader from '@/components/ui/PageHeader';
+import ExportButton from '@/components/ui/ExportButton';
 
 interface StockData {
   ticker: string;
@@ -33,6 +36,16 @@ const COUNTRY_FILTERS = [
   { value: 'JPN', label: '🇯🇵 Japan' },
   { value: 'FRA', label: '🇫🇷 France' },
   { value: 'EUR', label: '🇪🇺 Europe' },
+  { value: 'GBR', label: '🇬🇧 United Kingdom' },
+  { value: 'DEU', label: '🇩🇪 Germany' },
+  { value: 'IND', label: '🇮🇳 India' },
+  { value: 'KOR', label: '🇰🇷 South Korea' },
+  { value: 'ISR', label: '🇮🇱 Israel' },
+  { value: 'NZL', label: '🇳🇿 New Zealand' },
+  { value: 'AUS', label: '🇦🇺 Australia' },
+  { value: 'CAN', label: '🇨🇦 Canada' },
+  { value: 'LUX', label: '🇱🇺 Luxembourg' },
+  { value: 'ARE', label: '🇦🇪 UAE' },
 ];
 
 function CompanyRow({ company }: { company: SpaceCompany }) {
@@ -143,22 +156,54 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
         </div>
       </td>
       <td className="py-4 px-4">
-        {company.website && (
-          <a
-            href={company.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-nebula-400 hover:text-nebula-300 text-sm"
+        <div className="flex flex-col gap-1">
+          {company.website && (
+            <a
+              href={company.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-nebula-400 hover:text-nebula-300 text-sm"
+            >
+              Visit →
+            </a>
+          )}
+          <Link
+            href={`/workforce?tab=jobs&search=${encodeURIComponent(company.name)}`}
+            className="text-xs text-green-400 hover:text-green-300"
           >
-            Visit →
-          </a>
-        )}
+            Jobs →
+          </Link>
+          {(company.focusAreas as string[]).some((a) =>
+            ['spectrum', 'communications', 'satellite_communications'].includes(a)
+          ) && (
+            <Link href="/spectrum" className="text-xs text-rocket-400 hover:text-rocket-300">
+              Spectrum →
+            </Link>
+          )}
+          {(company.focusAreas as string[]).some((a) =>
+            ['launch_services', 'launch_vehicles'].includes(a)
+          ) && (
+            <Link href="/resource-exchange" className="text-xs text-yellow-400 hover:text-yellow-300">
+              Launches →
+            </Link>
+          )}
+          <Link
+            href={`/orbital-slots?tab=operators`}
+            className="text-xs text-nebula-400 hover:text-nebula-300"
+          >
+            Satellites →
+          </Link>
+        </div>
       </td>
     </tr>
   );
 }
 
-export default function MarketIntelPage() {
+function MarketIntelContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [companies, setCompanies] = useState<SpaceCompany[]>([]);
   const [stats, setStats] = useState<{
     total: number;
@@ -171,9 +216,23 @@ export default function MarketIntelPage() {
   const [detailedStockData, setDetailedStockData] = useState<Record<string, DetailedStockData>>({});
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState('');
-  const [selectedType, setSelectedType] = useState<'' | 'public' | 'private'>('');
-  const [selectedFocus, setSelectedFocus] = useState<CompanyFocusArea | ''>('');
+  const [selectedCountry, setSelectedCountry] = useState(searchParams.get('country') || '');
+  const [selectedType, setSelectedType] = useState<'' | 'public' | 'private'>(
+    (searchParams.get('type') as '' | 'public' | 'private') || ''
+  );
+  const [selectedFocus, setSelectedFocus] = useState<CompanyFocusArea | ''>(
+    (searchParams.get('focus') as CompanyFocusArea | '') || ''
+  );
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCountry) params.set('country', selectedCountry);
+    if (selectedType) params.set('type', selectedType);
+    if (selectedFocus) params.set('focus', selectedFocus);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [selectedCountry, selectedType, selectedFocus, router, pathname]);
 
   useEffect(() => {
     fetchData();
@@ -481,6 +540,23 @@ export default function MarketIntelPage() {
                     </button>
                   </div>
                 )}
+
+                <div className="flex items-end ml-auto">
+                  <ExportButton
+                    data={companies}
+                    filename="space-companies"
+                    columns={[
+                      { key: 'name', label: 'Name' },
+                      { key: 'country', label: 'Country' },
+                      { key: 'isPublic', label: 'Type' },
+                      { key: 'focusAreas', label: 'Focus Area' },
+                      { key: 'founded', label: 'Founded' },
+                      { key: 'employees', label: 'Employees' },
+                      { key: 'marketCap', label: 'Revenue / Market Cap' },
+                      { key: 'website', label: 'Website' },
+                    ]}
+                  />
+                </div>
               </div>
             </div>
           </>
@@ -561,5 +637,19 @@ export default function MarketIntelPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function MarketIntelPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex justify-center py-20">
+          <LoadingSpinner size="lg" />
+        </div>
+      }
+    >
+      <MarketIntelContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import {
   SpaceResource,
   LaunchProvider,
@@ -12,6 +14,7 @@ import {
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
+import ExportButton from '@/components/ui/ExportButton';
 
 const DEFAULT_LAUNCH_COST = 2720;
 
@@ -132,14 +135,34 @@ function LaunchProviderCard({
       <div className="text-rocket-400 font-bold">
         ${provider.costPerKgToLEO.toLocaleString()}/kg
       </div>
-      <div className="text-star-400 text-xs">
+      <div className="text-star-400 text-xs mb-2">
         to LEO • {provider.payloadToLEO?.toLocaleString() || 'N/A'} kg capacity
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        <Link
+          href={`/market-intel?search=${encodeURIComponent(provider.name)}`}
+          onClick={(e) => e.stopPropagation()}
+          className="text-xs text-nebula-400 hover:text-nebula-300 bg-nebula-500/10 px-1.5 py-0.5 rounded transition-colors"
+        >
+          Company info
+        </Link>
+        <Link
+          href="/space-insurance"
+          onClick={(e) => e.stopPropagation()}
+          className="text-xs text-yellow-400 hover:text-yellow-300 bg-yellow-500/10 px-1.5 py-0.5 rounded transition-colors"
+        >
+          Insure your launch
+        </Link>
       </div>
     </button>
   );
 }
 
-export default function ResourceExchangePage() {
+function ResourceExchangeContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [resources, setResources] = useState<SpaceResource[]>([]);
   const [providers, setProviders] = useState<LaunchProvider[]>([]);
   const [stats, setStats] = useState<{
@@ -149,10 +172,26 @@ export default function ResourceExchangePage() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<string>('spacex-falcon9');
+  const [selectedProvider, setSelectedProvider] = useState<string>(
+    searchParams.get('provider') || 'spacex-falcon9'
+  );
   const [launchCost, setLaunchCost] = useState(DEFAULT_LAUNCH_COST);
-  const [selectedCategory, setSelectedCategory] = useState<ResourceCategory | ''>('');
-  const [destination, setDestination] = useState<'LEO' | 'GEO' | 'Moon' | 'Mars'>('LEO');
+  const [selectedCategory, setSelectedCategory] = useState<ResourceCategory | ''>(
+    (searchParams.get('category') as ResourceCategory | '') || ''
+  );
+  const [destination, setDestination] = useState<'LEO' | 'GEO' | 'Moon' | 'Mars'>(
+    (searchParams.get('destination') as 'LEO' | 'GEO' | 'Moon' | 'Mars') || 'LEO'
+  );
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCategory) params.set('category', selectedCategory);
+    if (selectedProvider && selectedProvider !== 'spacex-falcon9') params.set('provider', selectedProvider);
+    if (destination && destination !== 'LEO') params.set('destination', destination);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [selectedCategory, selectedProvider, destination, router, pathname]);
 
   useEffect(() => {
     fetchData();
@@ -341,6 +380,20 @@ export default function ResourceExchangePage() {
                   </select>
                 </div>
 
+                <div className="flex items-end">
+                  <ExportButton
+                    data={resources}
+                    filename="space-resources"
+                    columns={[
+                      { key: 'name', label: 'Name' },
+                      { key: 'category', label: 'Category' },
+                      { key: 'availability', label: 'Availability' },
+                      { key: 'earthPricePerKg', label: 'Earth Price/kg' },
+                      { key: 'applications', label: 'Applications' },
+                    ]}
+                  />
+                </div>
+
                 <div className="ml-auto text-right">
                   <div className="text-star-300 text-sm">Current Launch Cost</div>
                   <div className="text-2xl font-bold text-rocket-400">
@@ -441,5 +494,19 @@ export default function ResourceExchangePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResourceExchangePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex justify-center py-20">
+          <LoadingSpinner size="lg" />
+        </div>
+      }
+    >
+      <ResourceExchangeContent />
+    </Suspense>
   );
 }

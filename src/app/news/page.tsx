@@ -1,15 +1,18 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import NewsCard from '@/components/NewsCard';
 import NewsFilter from '@/components/NewsFilter';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
+import ExportButton from '@/components/ui/ExportButton';
 import { NewsArticle } from '@/types';
 
 function NewsContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const initialCategory = searchParams.get('category');
 
   const [articles, setArticles] = useState<NewsArticle[]>([]);
@@ -20,6 +23,14 @@ function NewsContent() {
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
   const limit = 12;
+
+  // Sync category to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCategory) params.set('category', selectedCategory);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [selectedCategory, router, pathname]);
 
   useEffect(() => {
     fetchNews();
@@ -63,10 +74,24 @@ function NewsContent() {
     <>
       {/* Filters */}
       <div className="mb-8">
-        <NewsFilter
-          selectedCategory={selectedCategory}
-          onCategoryChange={handleCategoryChange}
-        />
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <NewsFilter
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+          />
+          <ExportButton
+            data={articles}
+            filename="space-news"
+            columns={[
+              { key: 'title', label: 'Title' },
+              { key: 'source', label: 'Source' },
+              { key: 'category', label: 'Category' },
+              { key: 'publishedAt', label: 'Published At' },
+              { key: 'url', label: 'URL' },
+              { key: 'summary', label: 'Summary' },
+            ]}
+          />
+        </div>
       </div>
 
       {/* News Grid */}

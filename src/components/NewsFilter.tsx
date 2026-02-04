@@ -11,9 +11,13 @@ const categoryIcons: Record<string, string> = {
   launches: '🚀',
   missions: '🛸',
   companies: '🏢',
+  satellites: '📡',
+  defense: '🛡️',
   earnings: '💰',
+  mergers: '🤝',
   development: '🔧',
   policy: '📜',
+  debris: '💥',
 };
 
 export default function NewsFilter({

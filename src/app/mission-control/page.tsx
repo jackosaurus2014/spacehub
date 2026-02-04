@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { SpaceEvent, EVENT_TYPE_INFO, SpaceEventType } from '@/types';
 import PageHeader from '@/components/ui/PageHeader';
+import ExportButton from '@/components/ui/ExportButton';
 
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
   { value: 'all', label: 'All Events', icon: '🌌' },
@@ -108,17 +111,67 @@ function EventCard({ event }: { event: SpaceEvent }) {
           {event.description && (
             <p className="text-star-300/70 text-xs mt-2 line-clamp-2">{event.description}</p>
           )}
+
+          <div className="flex flex-wrap gap-2 mt-2">
+            {event.type === 'launch' && (
+              <Link
+                href="/resource-exchange"
+                className="text-xs text-rocket-400 hover:text-rocket-300 bg-rocket-500/10 px-2 py-1 rounded transition-colors"
+              >
+                Launch providers →
+              </Link>
+            )}
+            {event.type === 'satellite' && (
+              <Link
+                href="/orbital-slots?tab=operators"
+                className="text-xs text-nebula-400 hover:text-nebula-300 bg-nebula-500/10 px-2 py-1 rounded transition-colors"
+              >
+                Orbital slots →
+              </Link>
+            )}
+            {event.type === 'moon_mission' && (
+              <Link
+                href="/solar-exploration?body=moon"
+                className="text-xs text-yellow-400 hover:text-yellow-300 bg-yellow-500/10 px-2 py-1 rounded transition-colors"
+              >
+                Moon exploration →
+              </Link>
+            )}
+            {event.type === 'mars_mission' && (
+              <Link
+                href="/solar-exploration?body=mars"
+                className="text-xs text-red-400 hover:text-red-300 bg-red-500/10 px-2 py-1 rounded transition-colors"
+              >
+                Mars exploration →
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export default function MissionControlPage() {
+function MissionControlContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [events, setEvents] = useState<SpaceEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedType, setSelectedType] = useState<SpaceEventType | 'all'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedType, setSelectedType] = useState<SpaceEventType | 'all'>(
+    (searchParams.get('type') as SpaceEventType | 'all') || 'all'
+  );
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedType && selectedType !== 'all') params.set('type', selectedType);
+    if (searchQuery) params.set('search', searchQuery);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [selectedType, searchQuery, router, pathname]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -225,6 +278,21 @@ export default function MissionControlPage() {
                 </button>
               ))}
             </div>
+
+            <div className="flex items-center">
+              <ExportButton
+                data={events}
+                filename="space-events"
+                columns={[
+                  { key: 'name', label: 'Name' },
+                  { key: 'type', label: 'Type' },
+                  { key: 'launchDate', label: 'Date' },
+                  { key: 'location', label: 'Location' },
+                  { key: 'description', label: 'Description' },
+                  { key: 'agency', label: 'Agency' },
+                ]}
+              />
+            </div>
           </div>
         </div>
 
@@ -315,7 +383,51 @@ export default function MissionControlPage() {
             ))}
           </div>
         )}
+
+        {/* Related Intelligence */}
+        {!loading && events.length > 0 && (
+          <div className="card p-6 mt-8">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <span>🔗</span> Related Intelligence
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <Link href="/solar-flares" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-nebula-300">☀️ Solar Flares</div>
+                <p className="text-xs text-star-400 mt-1">Solar weather can delay launches</p>
+              </Link>
+              <Link href="/debris-monitor" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-nebula-300">🛰️ Debris Monitor</div>
+                <p className="text-xs text-star-400 mt-1">Track orbital debris near missions</p>
+              </Link>
+              <Link href="/orbital-slots" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-nebula-300">📡 Orbital Slots</div>
+                <p className="text-xs text-star-400 mt-1">Satellite registry and congestion</p>
+              </Link>
+              <Link href="/space-insurance" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-nebula-300">🛡️ Space Insurance</div>
+                <p className="text-xs text-star-400 mt-1">Mission risk and coverage data</p>
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </div>
+  );
+}
+
+export default function MissionControlPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center py-20">
+          <div
+            className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin"
+            style={{ borderWidth: '3px' }}
+          />
+        </div>
+      }
+    >
+      <MissionControlContent />
+    </Suspense>
   );
 }

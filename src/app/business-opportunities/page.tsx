@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import {
   BusinessOpportunity,
   OPPORTUNITY_TYPES,
@@ -16,6 +18,7 @@ import {
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
+import ExportButton from '@/components/ui/ExportButton';
 
 function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
   const [expanded, setExpanded] = useState(false);
@@ -119,6 +122,24 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             </div>
           )}
 
+          {/* Cross-module Links */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            <Link
+              href="/market-intel"
+              className="text-xs text-nebula-400 hover:text-nebula-300 bg-nebula-500/10 px-2 py-1 rounded transition-colors"
+            >
+              View related companies →
+            </Link>
+            {(opportunity.category === 'launch_services' || opportunity.category === 'satellites') && (
+              <Link
+                href="/compliance?tab=regulations"
+                className="text-xs text-red-400 hover:text-red-300 bg-red-500/10 px-2 py-1 rounded transition-colors"
+              >
+                Compliance requirements →
+              </Link>
+            )}
+          </div>
+
           {/* Expandable Analysis */}
           {(opportunity.fullAnalysis || opportunity.aiReasoning) && (
             <div>
@@ -169,7 +190,11 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
   );
 }
 
-export default function BusinessOpportunitiesPage() {
+function BusinessOpportunitiesContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [opportunities, setOpportunities] = useState<BusinessOpportunity[]>([]);
   const [stats, setStats] = useState<{
     total: number;
@@ -187,9 +212,25 @@ export default function BusinessOpportunitiesPage() {
     insights: string[];
     error?: string;
   } | null>(null);
-  const [selectedType, setSelectedType] = useState<OpportunityType | ''>('');
-  const [selectedCategory, setSelectedCategory] = useState<OpportunityCategory | ''>('');
-  const [selectedAudience, setSelectedAudience] = useState<TargetAudience | ''>('');
+  const [selectedType, setSelectedType] = useState<OpportunityType | ''>(
+    (searchParams.get('type') as OpportunityType | '') || ''
+  );
+  const [selectedCategory, setSelectedCategory] = useState<OpportunityCategory | ''>(
+    (searchParams.get('category') as OpportunityCategory | '') || ''
+  );
+  const [selectedAudience, setSelectedAudience] = useState<TargetAudience | ''>(
+    (searchParams.get('audience') as TargetAudience | '') || ''
+  );
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedType) params.set('type', selectedType);
+    if (selectedCategory) params.set('category', selectedCategory);
+    if (selectedAudience) params.set('audience', selectedAudience);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [selectedType, selectedCategory, selectedAudience, router, pathname]);
 
   useEffect(() => {
     fetchData();
@@ -430,6 +471,22 @@ export default function BusinessOpportunitiesPage() {
                     </button>
                   </div>
                 )}
+
+                <div className="flex items-end ml-auto">
+                  <ExportButton
+                    data={opportunities}
+                    filename="business-opportunities"
+                    columns={[
+                      { key: 'title', label: 'Title' },
+                      { key: 'type', label: 'Type' },
+                      { key: 'category', label: 'Category' },
+                      { key: 'targetAudience', label: 'Target Audience' },
+                      { key: 'description', label: 'Description' },
+                      { key: 'estimatedValue', label: 'Estimated Value' },
+                      { key: 'timeframe', label: 'Timeframe' },
+                    ]}
+                  />
+                </div>
               </div>
             </div>
           </>
@@ -499,5 +556,19 @@ export default function BusinessOpportunitiesPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BusinessOpportunitiesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex justify-center py-20">
+          <LoadingSpinner size="lg" />
+        </div>
+      }
+    >
+      <BusinessOpportunitiesContent />
+    </Suspense>
   );
 }

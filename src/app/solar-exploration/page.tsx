@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {
   PlanetaryBody,
@@ -11,6 +12,7 @@ import {
   SPACE_AGENCIES,
 } from '@/types';
 import PageHeader from '@/components/ui/PageHeader';
+import ExportButton from '@/components/ui/ExportButton';
 
 // Dynamic import for 3D scene (client-side only)
 const PlanetaryScene = dynamic(
@@ -42,14 +44,29 @@ interface Stats {
 
 function SolarExplorationContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const bodyParam = searchParams.get('body');
+  const initialStatus = searchParams.get('status');
+  const initialType = searchParams.get('type');
 
   const [bodies, setBodies] = useState<PlanetaryBody[]>([]);
   const [selectedBodySlug, setSelectedBodySlug] = useState<string>(bodyParam || 'mars');
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(initialStatus);
+  const [typeFilter, setTypeFilter] = useState<string | null>(initialType);
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedBodySlug && selectedBodySlug !== 'mars') params.set('body', selectedBodySlug);
+    if (statusFilter) params.set('status', statusFilter);
+    if (typeFilter) params.set('type', typeFilter);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [selectedBodySlug, statusFilter, typeFilter, router, pathname]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -193,9 +210,35 @@ function SolarExplorationContent() {
             {/* Landers List */}
             <div className="xl:col-span-1">
               <div className="card p-4 sticky top-20">
-                <h3 className="text-lg font-semibold text-white mb-4">
-                  Surface Missions ({filteredLanders.length})
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">
+                    Surface Missions ({filteredLanders.length})
+                  </h3>
+                  <ExportButton
+                    data={filteredLanders.map((l) => ({
+                      name: l.name,
+                      status: l.status,
+                      missionType: l.missionType,
+                      agency: l.agency || '',
+                      country: l.country || '',
+                      landingSite: l.landingSite || '',
+                      latitude: l.latitude,
+                      longitude: l.longitude,
+                      landingDate: l.landingDate ? new Date(l.landingDate).toISOString() : '',
+                      description: l.description || '',
+                    }))}
+                    filename={`${selectedBodySlug}-missions`}
+                    columns={[
+                      { key: 'name', label: 'Name' },
+                      { key: 'status', label: 'Status' },
+                      { key: 'missionType', label: 'Mission Type' },
+                      { key: 'agency', label: 'Agency' },
+                      { key: 'landingSite', label: 'Landing Site' },
+                      { key: 'landingDate', label: 'Landing Date' },
+                      { key: 'description', label: 'Description' },
+                    ]}
+                  />
+                </div>
 
                 {/* Filters */}
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -242,6 +285,31 @@ function SolarExplorationContent() {
             </div>
           </div>
         )}
+
+        {/* Related Modules */}
+        <div className="card p-6 mt-6">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <span>🔗</span> Related Modules
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <Link href="/mission-control?type=moon_mission" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
+              <div className="text-sm font-medium text-white group-hover:text-nebula-300">🌙 Moon Missions</div>
+              <p className="text-xs text-star-400 mt-1">Upcoming lunar launch schedule</p>
+            </Link>
+            <Link href="/mission-control?type=mars_mission" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
+              <div className="text-sm font-medium text-white group-hover:text-nebula-300">🔴 Mars Missions</div>
+              <p className="text-xs text-star-400 mt-1">Upcoming Mars launch windows</p>
+            </Link>
+            <Link href="/resource-exchange" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
+              <div className="text-sm font-medium text-white group-hover:text-nebula-300">🚀 Launch Providers</div>
+              <p className="text-xs text-star-400 mt-1">Vehicles and launch services</p>
+            </Link>
+            <Link href="/space-insurance?tab=policies" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
+              <div className="text-sm font-medium text-white group-hover:text-nebula-300">🛡️ Mission Insurance</div>
+              <p className="text-xs text-star-400 mt-1">Coverage for exploration missions</p>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

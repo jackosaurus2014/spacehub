@@ -11,9 +11,13 @@ const categoryColors: Record<string, string> = {
   launches: 'bg-rocket-500',
   missions: 'bg-nebula-500',
   companies: 'bg-blue-500',
+  satellites: 'bg-cyan-500',
+  defense: 'bg-slate-500',
   earnings: 'bg-green-500',
+  mergers: 'bg-purple-500',
   development: 'bg-yellow-500',
   policy: 'bg-red-500',
+  debris: 'bg-orange-500',
 };
 
 export default function NewsCard({ article, featured = false }: NewsCardProps) {

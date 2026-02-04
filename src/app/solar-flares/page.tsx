@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import {
   SolarFlare,
   SolarForecast,
@@ -11,6 +13,19 @@ import {
   RiskLevel,
 } from '@/types';
 import PageHeader from '@/components/ui/PageHeader';
+import ExportButton from '@/components/ui/ExportButton';
+
+const FLARE_EXPORT_COLUMNS = [
+  { key: 'classification', label: 'Classification' },
+  { key: 'intensity', label: 'Intensity' },
+  { key: 'startTime', label: 'Start Time' },
+  { key: 'peakTime', label: 'Peak Time' },
+  { key: 'activeRegion', label: 'Active Region' },
+  { key: 'radioBlackout', label: 'Radio Blackout' },
+  { key: 'geomagneticStorm', label: 'Geomagnetic Storm' },
+  { key: 'linkedCME', label: 'CME Associated' },
+  { key: 'description', label: 'Description' },
+];
 
 interface SolarFlareData {
   flares: SolarFlare[];
@@ -24,10 +39,23 @@ interface SolarFlareData {
   };
 }
 
-export default function SolarFlaresPage() {
+function SolarFlaresContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const initialTab = (searchParams.get('tab') as 'overview' | 'forecast' | 'history') || 'overview';
+
   const [data, setData] = useState<SolarFlareData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedTab, setSelectedTab] = useState<'overview' | 'forecast' | 'history'>('overview');
+  const [selectedTab, setSelectedTab] = useState<'overview' | 'forecast' | 'history'>(initialTab);
+
+  const handleTabChange = (tab: 'overview' | 'forecast' | 'history') => {
+    setSelectedTab(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    if (tab === 'overview') { params.delete('tab'); } else { params.set('tab', tab); }
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -181,7 +209,7 @@ export default function SolarFlaresPage() {
           {(['overview', 'forecast', 'history'] as const).map((tab) => (
             <button
               key={tab}
-              onClick={() => setSelectedTab(tab)}
+              onClick={() => handleTabChange(tab)}
               className={`px-4 py-2 rounded-lg font-medium capitalize transition-all ${
                 selectedTab === tab
                   ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
@@ -195,6 +223,7 @@ export default function SolarFlaresPage() {
 
         {/* Tab Content */}
         {selectedTab === 'overview' && (
+          <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 90-Day Danger Timeline */}
             <div className="card p-6">
@@ -250,6 +279,13 @@ export default function SolarFlaresPage() {
                           <p className="text-star-400 text-sm mt-2 border-t border-space-600 pt-2">
                             {forecast.notes}
                           </p>
+                        )}
+                        {(forecast.riskLevel === 'severe' || forecast.riskLevel === 'extreme') && (
+                          <div className="mt-2 pt-2 border-t border-space-600">
+                            <Link href="/debris-monitor" className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30">
+                              Check debris risk &rarr;
+                            </Link>
+                          </div>
                         )}
                       </div>
                     );
@@ -317,6 +353,32 @@ export default function SolarFlaresPage() {
               </div>
             </div>
           </div>
+
+          {/* Related Modules */}
+          <div className="card p-6">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <span>🔗</span> Related Modules
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <Link href="/debris-monitor" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-nebula-300">🛰️ Debris Monitor</div>
+                <p className="text-xs text-star-400 mt-1">Solar storms can alter debris orbits</p>
+              </Link>
+              <Link href="/orbital-slots" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-nebula-300">📡 Orbital Slots</div>
+                <p className="text-xs text-star-400 mt-1">Check satellite exposure to solar events</p>
+              </Link>
+              <Link href="/space-insurance" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-nebula-300">🛡️ Space Insurance</div>
+                <p className="text-xs text-star-400 mt-1">Solar activity affects insurance risk</p>
+              </Link>
+              <Link href="/mission-control" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-nebula-300">🎯 Mission Control</div>
+                <p className="text-xs text-star-400 mt-1">Solar weather impacts launch windows</p>
+              </Link>
+            </div>
+          </div>
+          </div>
         )}
 
         {selectedTab === 'forecast' && (
@@ -375,7 +437,10 @@ export default function SolarFlaresPage() {
 
         {selectedTab === 'history' && (
           <div className="card p-6">
-            <h3 className="text-xl font-semibold text-white mb-4">Solar Flare History</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-white">Solar Flare History</h3>
+              <ExportButton data={data.flares} filename="solar-flare-history" columns={FLARE_EXPORT_COLUMNS} label="Export" />
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -461,5 +526,22 @@ export default function SolarFlaresPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SolarFlaresPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center py-20">
+          <div
+            className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin"
+            style={{ borderWidth: '3px' }}
+          />
+        </div>
+      }
+    >
+      <SolarFlaresContent />
+    </Suspense>
   );
 }

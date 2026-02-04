@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   SpaceJobPosting,
   WorkforceTrend,
@@ -11,9 +12,9 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 interface SalaryBenchmark {
   category: JobCategory;
-  min: number;
-  median: number;
-  max: number;
+  avgMin: number;
+  avgMedian: number;
+  avgMax: number;
   count: number;
 }
 
@@ -156,10 +157,10 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
 
 function SalaryBenchmarkBar({ benchmark }: { benchmark: SalaryBenchmark }) {
   const categoryInfo = CATEGORY_LABELS[benchmark.category];
-  const maxRange = 300; // max salary for bar scale ($300K)
-  const minPct = (benchmark.min / maxRange) * 100;
-  const medianPct = (benchmark.median / maxRange) * 100;
-  const maxPct = (benchmark.max / maxRange) * 100;
+  const maxRange = 500000; // max salary for bar scale
+  const minPct = (benchmark.avgMin / maxRange) * 100;
+  const medianPct = (benchmark.avgMedian / maxRange) * 100;
+  const maxPct = (benchmark.avgMax / maxRange) * 100;
 
   return (
     <div className="bg-space-700/30 rounded-lg p-3">
@@ -173,7 +174,7 @@ function SalaryBenchmarkBar({ benchmark }: { benchmark: SalaryBenchmark }) {
       <div className="relative h-3 bg-space-800 rounded-full overflow-hidden mb-1">
         <div
           className="absolute h-full bg-space-600 rounded-full"
-          style={{ left: `${minPct}%`, width: `${maxPct - minPct}%` }}
+          style={{ left: `${minPct}%`, width: `${Math.max(maxPct - minPct, 1)}%` }}
         />
         <div
           className="absolute h-full w-1 bg-nebula-400 rounded-full"
@@ -182,9 +183,9 @@ function SalaryBenchmarkBar({ benchmark }: { benchmark: SalaryBenchmark }) {
       </div>
 
       <div className="flex justify-between text-[10px] text-star-400">
-        <span>{formatSalary(benchmark.min)}</span>
-        <span className="text-nebula-300 font-medium">Median: {formatSalary(benchmark.median)}</span>
-        <span>{formatSalary(benchmark.max)}</span>
+        <span>{formatSalary(benchmark.avgMin)}</span>
+        <span className="text-nebula-300 font-medium">Median: {formatSalary(benchmark.avgMedian)}</span>
+        <span>{formatSalary(benchmark.avgMax)}</span>
       </div>
     </div>
   );
@@ -211,7 +212,7 @@ export default function SpaceWorkforceModule() {
       if (data.jobs) setJobs(data.jobs);
       if (data.trends) setTrends(data.trends);
       if (data.stats) setStats(data.stats);
-      if (data.salaryBenchmarks) setSalaryBenchmarks(data.salaryBenchmarks);
+      if (data.salaryBenchmarks?.byCategory) setSalaryBenchmarks(data.salaryBenchmarks.byCategory);
     } catch (error) {
       console.error('Failed to fetch workforce data:', error);
     } finally {
@@ -277,6 +278,12 @@ export default function SpaceWorkforceModule() {
             <p className="text-star-300 text-sm">Jobs, salaries & workforce trends</p>
           </div>
         </div>
+        <Link
+          href="/workforce"
+          className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
+        >
+          Full Dashboard →
+        </Link>
       </div>
 
       {/* Quick Stats */}
