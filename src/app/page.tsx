@@ -22,13 +22,13 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-nebula-500/5 via-transparent to-space-950/50" />
         <div className="container mx-auto px-4 relative">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="mb-10">
+            <div className="mb-10 w-full">
               <Image
                 src="/spacenexus-logo.png"
                 alt="SpaceNexus"
-                width={192}
-                height={96}
-                className="mx-auto w-48 h-auto rounded-lg opacity-90"
+                width={1200}
+                height={600}
+                className="w-full h-auto rounded-lg opacity-90"
                 priority
               />
             </div>

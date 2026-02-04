@@ -6,6 +6,7 @@ import { UserModuleWithConfig } from '@/lib/module-preferences';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import PremiumGate, { PremiumBadge } from '@/components/PremiumGate';
 import { getRequiredTierForModule } from '@/lib/subscription';
+import { MODULE_SECTIONS, ModuleSection } from '@/types';
 import MissionControlModule from './MissionControlModule';
 import BlogsArticlesModule from './BlogsArticlesModule';
 import NewsFeedModule from './NewsFeedModule';
@@ -162,35 +163,51 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
         />
       )}
 
-      {/* Render Enabled Modules */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {enabledModules.map((module, index) => {
-          const Component = MODULE_COMPONENTS[module.moduleId];
-          if (!Component) return null;
+      {/* Render Enabled Modules grouped by section */}
+      {MODULE_SECTIONS.map(section => {
+        const sectionModules = enabledModules.filter(m => m.section === section.value);
+        if (sectionModules.length === 0) return null;
 
-          const requiredTier = getRequiredTierForModule(module.moduleId);
-          const isWide = ['news-feed', 'mission-control', 'market-intel'].includes(module.moduleId);
+        return (
+          <div key={section.value} className="space-y-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-star-400 text-xs uppercase tracking-widest font-medium">
+                {section.label}
+              </h2>
+              <div className="flex-1 h-px bg-white/[0.06]" />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {sectionModules.map((module) => {
+                const Component = MODULE_COMPONENTS[module.moduleId];
+                if (!Component) return null;
 
-          return (
-            <section
-              key={module.moduleId}
-              className={`animate-fade-in-up ${isWide ? 'lg:col-span-2' : ''}`}
-              style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'both' }}
-            >
-              {requiredTier && (
-                <div className="flex items-center gap-2 mb-2">
-                  <PremiumBadge tier={requiredTier} />
-                </div>
-              )}
-              <ModuleErrorBoundary moduleName={module.name}>
-                <PremiumGate moduleId={module.moduleId}>
-                  <Component />
-                </PremiumGate>
-              </ModuleErrorBoundary>
-            </section>
-          );
-        })}
-      </div>
+                const globalIndex = enabledModules.findIndex(m => m.moduleId === module.moduleId);
+                const requiredTier = getRequiredTierForModule(module.moduleId);
+                const isWide = ['news-feed', 'mission-control', 'market-intel'].includes(module.moduleId);
+
+                return (
+                  <section
+                    key={module.moduleId}
+                    className={`animate-fade-in-up ${isWide ? 'lg:col-span-2' : ''}`}
+                    style={{ animationDelay: `${globalIndex * 100}ms`, animationFillMode: 'both' }}
+                  >
+                    {requiredTier && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <PremiumBadge tier={requiredTier} />
+                      </div>
+                    )}
+                    <ModuleErrorBoundary moduleName={module.name}>
+                      <PremiumGate moduleId={module.moduleId}>
+                        <Component />
+                      </PremiumGate>
+                    </ModuleErrorBoundary>
+                  </section>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
 
       {enabledModules.length === 0 && (
         <div className="card p-8 text-center">

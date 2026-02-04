@@ -1,11 +1,12 @@
 import prisma from './db';
-import { AVAILABLE_MODULES, ModuleConfig } from '@/types';
+import { AVAILABLE_MODULES, ModuleConfig, ModuleSection } from '@/types';
 
 export interface UserModuleWithConfig {
   moduleId: string;
   name: string;
   description: string;
   icon: string;
+  section: ModuleSection;
   enabled: boolean;
   position: number;
   settings: Record<string, unknown> | null;
@@ -29,6 +30,7 @@ export async function getUserModulePreferences(userId: string): Promise<UserModu
       name: module.name,
       description: module.description,
       icon: module.icon,
+      section: module.section,
       enabled: userPref?.enabled ?? module.defaultEnabled,
       position: userPref?.position ?? module.defaultPosition,
       settings: userPref?.settings ? JSON.parse(userPref.settings) : null,
@@ -46,6 +48,7 @@ export async function getDefaultModulePreferences(): Promise<UserModuleWithConfi
       name: module.name,
       description: module.description,
       icon: module.icon,
+      section: module.section,
       enabled: module.defaultEnabled,
       position: module.defaultPosition,
       settings: null,

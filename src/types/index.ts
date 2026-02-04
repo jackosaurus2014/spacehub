@@ -101,11 +101,21 @@ export interface UserModulePreference {
   settings: string | null;
 }
 
+export type ModuleSection = 'explore' | 'intelligence' | 'business' | 'tools';
+
+export const MODULE_SECTIONS: { value: ModuleSection; label: string }[] = [
+  { value: 'explore', label: 'Explore' },
+  { value: 'intelligence', label: 'Intelligence' },
+  { value: 'business', label: 'Business' },
+  { value: 'tools', label: 'Tools' },
+];
+
 export interface ModuleConfig {
   moduleId: string;
   name: string;
   description: string;
   icon: string;
+  section: ModuleSection;
   defaultEnabled: boolean;
   defaultPosition: number;
   isPremium?: boolean;
@@ -173,11 +183,13 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
 ];
 
 export const AVAILABLE_MODULES: ModuleConfig[] = [
+  // === Explore ===
   {
     moduleId: 'categories',
     name: 'Browse Categories',
     description: 'Explore news by category',
     icon: '📂',
+    section: 'explore',
     defaultEnabled: true,
     defaultPosition: 0,
   },
@@ -186,95 +198,58 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     name: 'Mission Control',
     description: 'Countdown to upcoming space missions and events',
     icon: '🎯',
+    section: 'explore',
     defaultEnabled: true,
     defaultPosition: 1,
-  },
-  {
-    moduleId: 'blogs-articles',
-    name: 'Blogs & Articles',
-    description: 'Expert insights from space industry professionals',
-    icon: '✍️',
-    defaultEnabled: true,
-    defaultPosition: 2,
-  },
-  {
-    moduleId: 'news-feed',
-    name: 'News Feed',
-    description: 'Latest space industry news',
-    icon: '📰',
-    defaultEnabled: true,
-    defaultPosition: 3,
-  },
-  {
-    moduleId: 'market-intel',
-    name: 'Market Intel',
-    description: 'Space industry companies, stocks, and funding data',
-    icon: '📊',
-    defaultEnabled: true,
-    defaultPosition: 4,
-    isPremium: true,
-  },
-  {
-    moduleId: 'resource-exchange',
-    name: 'Resource Exchange',
-    description: 'Space commodities pricing - Earth vs orbit costs',
-    icon: '💰',
-    defaultEnabled: true,
-    defaultPosition: 5,
-    isPremium: true,
-  },
-  {
-    moduleId: 'business-opportunities',
-    name: 'Business Opportunities',
-    description: 'AI-powered space business opportunities and government contracts',
-    icon: '💼',
-    defaultEnabled: true,
-    defaultPosition: 6,
-    isPremium: true,
-  },
-  {
-    moduleId: 'compliance',
-    name: 'Compliance',
-    description: 'Export controls, regulations, and legal updates for space industry',
-    icon: '⚖️',
-    defaultEnabled: true,
-    defaultPosition: 7,
-    isPremium: true,
   },
   {
     moduleId: 'solar-exploration',
     name: 'Solar Exploration',
     description: 'Interactive 3D visualization of planetary bodies with rover and lander locations',
     icon: '🌍',
+    section: 'explore',
     defaultEnabled: true,
-    defaultPosition: 8,
+    defaultPosition: 2,
     isPremium: true,
   },
   {
-    moduleId: 'solar-flare-tracker',
-    name: 'Solar Flare Tracker',
-    description: 'Real-time solar activity monitoring with 90-day danger forecasts',
-    icon: '☀️',
+    moduleId: 'news-feed',
+    name: 'News Feed',
+    description: 'Latest space industry news',
+    icon: '📰',
+    section: 'explore',
     defaultEnabled: true,
-    defaultPosition: 9,
+    defaultPosition: 3,
+  },
+  // === Intelligence ===
+  {
+    moduleId: 'market-intel',
+    name: 'Market Intel',
+    description: 'Space industry companies, stocks, and funding data',
+    icon: '📊',
+    section: 'intelligence',
+    defaultEnabled: true,
+    defaultPosition: 4,
     isPremium: true,
   },
   {
-    moduleId: 'orbital-slots',
-    name: 'Orbital Slots',
-    description: 'Satellite population by orbit with 1Y and 5Y projections',
-    icon: '🛰️',
+    moduleId: 'blogs-articles',
+    name: 'Blogs & Articles',
+    description: 'Expert insights from space industry professionals',
+    icon: '✍️',
+    section: 'intelligence',
     defaultEnabled: true,
-    defaultPosition: 10,
-    isPremium: true,
+    defaultPosition: 5,
   },
+  // === Business ===
   {
-    moduleId: 'space-insurance',
-    name: 'Space Insurance',
-    description: 'Insurance market data, premium calculator, and risk assessment',
-    icon: '🛡️',
+    moduleId: 'business-opportunities',
+    name: 'Business Opportunities',
+    description: 'AI-powered space business opportunities and government contracts',
+    icon: '💼',
+    section: 'business',
     defaultEnabled: true,
-    defaultPosition: 11,
+    defaultPosition: 6,
     isPremium: true,
   },
   {
@@ -282,8 +257,19 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     name: 'Spectrum Tracker',
     description: 'Satellite frequency allocations, filings, and spectrum availability',
     icon: '📡',
+    section: 'business',
     defaultEnabled: true,
-    defaultPosition: 12,
+    defaultPosition: 7,
+    isPremium: true,
+  },
+  {
+    moduleId: 'space-insurance',
+    name: 'Space Insurance',
+    description: 'Insurance market data, premium calculator, and risk assessment',
+    icon: '🛡️',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 8,
     isPremium: true,
   },
   {
@@ -291,6 +277,48 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     name: 'Space Workforce',
     description: 'Job market analytics, salary benchmarks, and talent trends',
     icon: '👩‍🚀',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 9,
+    isPremium: true,
+  },
+  // === Tools ===
+  {
+    moduleId: 'resource-exchange',
+    name: 'Resource Exchange',
+    description: 'Space commodities pricing - Earth vs orbit costs',
+    icon: '💰',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 10,
+    isPremium: true,
+  },
+  {
+    moduleId: 'compliance',
+    name: 'Compliance',
+    description: 'Export controls, regulations, and legal updates for space industry',
+    icon: '⚖️',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 11,
+    isPremium: true,
+  },
+  {
+    moduleId: 'solar-flare-tracker',
+    name: 'Solar Flare Tracker',
+    description: 'Real-time solar activity monitoring with 90-day danger forecasts',
+    icon: '☀️',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 12,
+    isPremium: true,
+  },
+  {
+    moduleId: 'orbital-slots',
+    name: 'Orbital Slots',
+    description: 'Satellite population by orbit with 1Y and 5Y projections',
+    icon: '🛰️',
+    section: 'tools',
     defaultEnabled: true,
     defaultPosition: 13,
     isPremium: true,
@@ -300,6 +328,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     name: 'Launch Windows',
     description: 'Optimal launch windows and mission planning for planetary destinations',
     icon: '🪟',
+    section: 'tools',
     defaultEnabled: true,
     defaultPosition: 14,
     isPremium: true,
@@ -309,6 +338,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     name: 'Debris Monitor',
     description: 'Space debris tracking, collision risk, and Kessler syndrome monitoring',
     icon: '⚠️',
+    section: 'tools',
     defaultEnabled: true,
     defaultPosition: 15,
     isPremium: true,

@@ -15,19 +15,27 @@ interface DropdownItem {
 const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Mission Control', href: '/mission-control', description: 'Upcoming launches and events' },
   { label: 'Solar Exploration', href: '/solar-exploration', description: '3D planetary visualization' },
-  { label: 'Solar Flares', href: '/solar-flares', description: 'Real-time solar activity' },
   { label: 'News', href: '/news', description: 'Latest space industry updates' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Market Intel', href: '/market-intel', description: 'Companies and stock tracking' },
-  { label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
   { label: 'Blogs', href: '/blogs', description: 'Expert industry insights' },
+];
+
+const BUSINESS_ITEMS: DropdownItem[] = [
+  { label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
+  { label: 'Spectrum Tracker', href: '/', description: 'Frequency allocations and filings' },
+  { label: 'Space Insurance', href: '/', description: 'Risk calculator and market data' },
+  { label: 'Space Workforce', href: '/', description: 'Talent trends and salary benchmarks' },
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Resource Exchange', href: '/resource-exchange', description: 'Space commodity pricing' },
   { label: 'Compliance', href: '/compliance', description: 'Export controls and regulations' },
+  { label: 'Solar Flares', href: '/solar-flares', description: 'Real-time solar activity' },
+  { label: 'Debris Monitor', href: '/', description: 'Collision risk and tracking' },
+  { label: 'Orbital Slots', href: '/', description: 'Satellite population by orbit' },
   { label: 'Dashboard', href: '/dashboard', description: 'Your personalized hub' },
 ];
 
@@ -164,6 +172,13 @@ export default function Navigation() {
               isPro={isPro}
             />
             <DropdownMenu
+              label="Business"
+              items={BUSINESS_ITEMS}
+              isOpen={openDropdown === 'business'}
+              onToggle={() => toggleDropdown('business')}
+              isPro={isPro}
+            />
+            <DropdownMenu
               label="Tools"
               items={TOOLS_ITEMS}
               isOpen={openDropdown === 'tools'}
@@ -288,6 +303,24 @@ export default function Navigation() {
                     {INTELLIGENCE_ITEMS.map((item) => (
                       <Link
                         key={item.href}
+                        href={item.href}
+                        className="block px-3 py-2.5 rounded-lg text-star-100 hover:bg-white/[0.06] transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <span className="text-sm font-medium">{item.label}</span>
+                        <p className="text-star-400 text-xs mt-0.5">{item.description}</p>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Business Section */}
+                <div>
+                  <h3 className="text-star-400 text-xs uppercase tracking-widest font-medium mb-3">Business</h3>
+                  <div className="space-y-1">
+                    {BUSINESS_ITEMS.map((item) => (
+                      <Link
+                        key={item.label}
                         href={item.href}
                         className="block px-3 py-2.5 rounded-lg text-star-100 hover:bg-white/[0.06] transition-colors"
                         onClick={() => setIsMenuOpen(false)}
