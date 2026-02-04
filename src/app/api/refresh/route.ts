@@ -15,6 +15,8 @@ import { initializeSolarFlareData } from '@/lib/solar-flare-data';
 import { initializeOrbitalData } from '@/lib/orbital-slots-data';
 import { initializeLaunchWindowsData } from '@/lib/launch-windows-data';
 import { initializeDebrisData } from '@/lib/debris-data';
+import { generateDailyDigest } from '@/lib/newsletter/digest-generator';
+import { sendDailyDigest } from '@/lib/newsletter/email-service';
 
 export const dynamic = 'force-dynamic';
 
@@ -72,6 +74,69 @@ async function refreshDaily(): Promise<Record<string, string>> {
 
   await initializeDebrisData();
   results.debris = 'Refreshed';
+
+  // Generate and send newsletter digest
+  try {
+    const digestResult = await generateDailyDigest();
+    if (digestResult.success) {
+      results.newsletterDigest = `Generated with ${digestResult.newsCount} articles`;
+
+      // Get verified subscribers and send
+      const subscribers = await prisma.newsletterSubscriber.findMany({
+        where: {
+          verified: true,
+          unsubscribedAt: null,
+        },
+        select: {
+          email: true,
+          unsubscribeToken: true,
+        },
+      });
+
+      if (subscribers.length > 0 && digestResult.digestId) {
+        const digest = await prisma.dailyDigest.findUnique({
+          where: { id: digestResult.digestId },
+        });
+
+        if (digest) {
+          await prisma.dailyDigest.update({
+            where: { id: digest.id },
+            data: {
+              status: 'sending',
+              sendStartedAt: new Date(),
+            },
+          });
+
+          const sendResult = await sendDailyDigest(
+            subscribers,
+            digest.htmlContent,
+            digest.plainContent,
+            digest.subject
+          );
+
+          await prisma.dailyDigest.update({
+            where: { id: digest.id },
+            data: {
+              status: sendResult.success ? 'sent' : 'failed',
+              sendCompletedAt: new Date(),
+              recipientCount: sendResult.sentCount,
+              failureCount: sendResult.failedCount,
+              errorLog: sendResult.errors.length > 0 ? sendResult.errors.join('\n') : null,
+            },
+          });
+
+          results.newsletterSend = `Sent to ${sendResult.sentCount}/${subscribers.length} subscribers`;
+        }
+      } else {
+        results.newsletterSend = 'No subscribers to send to';
+      }
+    } else {
+      results.newsletterDigest = digestResult.error || 'Generation failed';
+    }
+  } catch (error) {
+    console.error('Newsletter error in refresh:', error);
+    results.newsletterDigest = `Error: ${String(error)}`;
+  }
 
   return results;
 }

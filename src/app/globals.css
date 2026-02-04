@@ -121,7 +121,11 @@ body {
   @apply bg-space-800/60 backdrop-blur-md border border-white/[0.06] rounded-2xl
          shadow-lg shadow-black/20
          transition-all duration-300 hover:border-white/[0.12]
-         hover:-translate-y-0.5 hover:shadow-glow-sm cursor-pointer;
+         hover:-translate-y-0.5 cursor-pointer;
+}
+
+.card-interactive:hover {
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.15), 0 10px 15px -3px rgba(0, 0, 0, 0.2);
 }
 
 /* Input Styles */
@@ -152,11 +156,13 @@ body {
 
 /* Gradient Text */
 .gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-nebula-300 via-plasma-300 to-rocket-400;
+  @apply bg-clip-text text-transparent;
+  background-image: linear-gradient(to right, #8b5cf6, #22d3ee, #fb923c);
 }
 
 .gradient-text-warm {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-rocket-400 via-nebula-300 to-plasma-300;
+  @apply bg-clip-text text-transparent;
+  background-image: linear-gradient(to right, #fb923c, #8b5cf6, #22d3ee);
 }
 
 /* Section Utilities */

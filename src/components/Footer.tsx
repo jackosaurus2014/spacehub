@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import LegalDisclaimerModal from '@/components/LegalDisclaimerModal';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
 export default function Footer() {
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);
@@ -81,29 +82,24 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Column 4: Company */}
+            {/* Column 4: Newsletter */}
             <div>
-              <h4 className="text-star-200 font-semibold text-sm uppercase tracking-wider mb-4">Company</h4>
-              <ul className="space-y-2.5">
-                <li>
-                  <button
-                    onClick={() => setDisclaimerOpen(true)}
-                    className="text-star-400 hover:text-white text-sm transition-colors"
-                  >
-                    Legal Disclaimer
-                  </button>
-                </li>
-                <li>
-                  <Link href="/resource-exchange" className="text-star-400 hover:text-white text-sm transition-colors">
-                    Resource Exchange
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/dashboard" className="text-star-400 hover:text-white text-sm transition-colors">
-                    Dashboard
-                  </Link>
-                </li>
-              </ul>
+              <Suspense fallback={
+                <div>
+                  <h4 className="text-star-200 font-semibold text-sm uppercase tracking-wider mb-4">Newsletter</h4>
+                  <p className="text-star-400 text-sm mb-4">Loading...</p>
+                </div>
+              }>
+                <NewsletterSignup variant="footer" source="footer" />
+              </Suspense>
+              <div className="mt-4 pt-4 border-t border-white/5">
+                <button
+                  onClick={() => setDisclaimerOpen(true)}
+                  className="text-star-500 hover:text-star-300 text-xs transition-colors"
+                >
+                  Legal Disclaimer
+                </button>
+              </div>
             </div>
           </div>
 

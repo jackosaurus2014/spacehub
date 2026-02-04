@@ -1,8 +1,9 @@
-import Link from 'next/link';
 import Image from 'next/image';
+import { Suspense } from 'react';
 import { ModuleContainer } from '@/components/modules';
 import { getDefaultModulePreferences } from '@/lib/module-preferences';
 import HeroActions from '@/components/HeroActions';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
 // Force dynamic rendering - no static generation at build time
 export const dynamic = 'force-dynamic';
@@ -66,25 +67,20 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Newsletter CTA Section */}
       <section className="section-spacer">
         <div className="container mx-auto px-4">
-          <div className="relative card p-10 md:p-16 text-center rounded-3xl glow-border overflow-hidden">
-            {/* Decorative glow orb */}
-            <div className="absolute -top-20 -right-20 w-64 h-64 bg-nebula-500/10 rounded-full blur-[80px] pointer-events-none" />
-            <div className="relative">
-              <h2 className="text-3xl md:text-display-md font-display font-bold text-white mb-4">
-                Ready to Stay Ahead?
-              </h2>
-              <p className="text-lg text-star-300 mb-8 max-w-2xl mx-auto leading-relaxed">
-                Create a free account to personalize your dashboard, save your module preferences,
-                and get notified about the space industry updates that matter most to you.
-              </p>
-              <Link href="/register" className="btn-primary text-base py-4 px-10">
-                Get Started Free
-              </Link>
+          <Suspense fallback={
+            <div className="relative card p-10 md:p-16 text-center rounded-3xl glow-border overflow-hidden">
+              <div className="animate-pulse">
+                <div className="h-8 bg-white/10 rounded w-3/4 mx-auto mb-4"></div>
+                <div className="h-4 bg-white/10 rounded w-2/3 mx-auto mb-8"></div>
+                <div className="h-12 bg-nebula-600/50 rounded-xl w-48 mx-auto"></div>
+              </div>
             </div>
-          </div>
+          }>
+            <NewsletterSignup variant="cta" source="homepage_cta" />
+          </Suspense>
         </div>
       </section>
     </div>

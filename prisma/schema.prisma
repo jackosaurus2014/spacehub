@@ -34,6 +34,7 @@ model User {
   // Relations
   featureRequests      FeatureRequest[]
   helpRequests         HelpRequest[]
+  newsletterSubscription NewsletterSubscriber?
 }
 
 model NewsArticle {
@@ -1135,4 +1136,47 @@ model HelpRequest {
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+}
+
+// Newsletter Models
+
+model NewsletterSubscriber {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  name              String?
+  verified          Boolean   @default(false)
+  verificationToken String?   @unique
+  verifiedAt        DateTime?
+  unsubscribeToken  String    @unique
+  unsubscribedAt    DateTime?
+  source            String    @default("website")
+  userId            String?   @unique
+  user              User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([verified])
+}
+
+model DailyDigest {
+  id                 String    @id @default(cuid())
+  digestDate         DateTime  @unique
+  subject            String
+  htmlContent        String
+  plainContent       String
+  featureArticles    String    // JSON array
+  newsArticleCount   Int
+  categoriesIncluded String    // JSON array
+  status             String    @default("draft") // draft|sending|sent|failed
+  sendStartedAt      DateTime?
+  sendCompletedAt    DateTime?
+  recipientCount     Int       @default(0)
+  failureCount       Int       @default(0)
+  errorLog           String?
+  aiModel            String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([digestDate])
+  @@index([status])
 }
