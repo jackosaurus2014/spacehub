@@ -17,7 +17,7 @@ export default function CategoriesModule() {
     <div>
       <h2 className="text-2xl font-display font-bold text-white mb-6 flex items-center">
         <span className="text-3xl mr-3">📂</span>
-        Browse by Category
+        Browse News by Category
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {NEWS_CATEGORIES.map((category) => (

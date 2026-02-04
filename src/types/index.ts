@@ -185,32 +185,22 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
 export const AVAILABLE_MODULES: ModuleConfig[] = [
   // === Explore ===
   {
-    moduleId: 'categories',
-    name: 'Browse Categories',
-    description: 'Explore news by category',
-    icon: '📂',
-    section: 'explore',
-    defaultEnabled: true,
-    defaultPosition: 0,
-  },
-  {
     moduleId: 'mission-control',
     name: 'Mission Control',
     description: 'Countdown to upcoming space missions and events',
     icon: '🎯',
     section: 'explore',
     defaultEnabled: true,
-    defaultPosition: 1,
+    defaultPosition: 0,
   },
   {
-    moduleId: 'solar-exploration',
-    name: 'Solar Exploration',
-    description: 'Interactive 3D visualization of planetary bodies with rover and lander locations',
-    icon: '🌍',
+    moduleId: 'categories',
+    name: 'Browse News by Category',
+    description: 'Explore news by category',
+    icon: '📂',
     section: 'explore',
     defaultEnabled: true,
-    defaultPosition: 2,
-    isPremium: true,
+    defaultPosition: 1,
   },
   {
     moduleId: 'news-feed',
@@ -219,7 +209,17 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     icon: '📰',
     section: 'explore',
     defaultEnabled: true,
+    defaultPosition: 2,
+  },
+  {
+    moduleId: 'solar-exploration',
+    name: 'Solar Exploration',
+    description: 'Interactive 3D visualization of planetary bodies with rover and lander locations',
+    icon: '🌍',
+    section: 'explore',
+    defaultEnabled: true,
     defaultPosition: 3,
+    isPremium: true,
   },
   // === Intelligence ===
   {

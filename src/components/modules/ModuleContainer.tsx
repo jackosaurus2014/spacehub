@@ -136,7 +136,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       {/* Customization Toggle */}
       <div className="flex justify-end">
         <button
@@ -169,14 +169,14 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
         if (sectionModules.length === 0) return null;
 
         return (
-          <div key={section.value} className="space-y-6">
+          <div key={section.value} className="space-y-8">
             <div className="flex items-center gap-3">
               <h2 className="text-star-400 text-xs uppercase tracking-widest font-medium">
                 {section.label}
               </h2>
               <div className="flex-1 h-px bg-white/[0.06]" />
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {sectionModules.map((module) => {
                 const Component = MODULE_COMPONENTS[module.moduleId];
                 if (!Component) return null;
