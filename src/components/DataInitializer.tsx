@@ -2,8 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 
-const REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes
-const STALE_THRESHOLD = 60; // minutes
+const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
 
 export default function DataInitializer() {
   const [status, setStatus] = useState<'checking' | 'initializing' | 'done' | 'error'>('checking');
@@ -38,13 +37,20 @@ export default function DataInitializer() {
       const refreshRes = await fetch('/api/refresh');
       const refreshData = await refreshRes.json();
 
-      if (refreshData.stale) {
-        // Refresh in background (don't show loading screen)
-        console.log('Data is stale, refreshing in background...');
-        fetch('/api/refresh', { method: 'POST' })
+      if (refreshData.newsStale) {
+        console.log('News data is stale, refreshing in background...');
+        fetch('/api/refresh?type=news', { method: 'POST' })
           .then(r => r.json())
-          .then(data => console.log('Background refresh complete:', data))
-          .catch(err => console.error('Background refresh failed:', err));
+          .then(data => console.log('News refresh complete:', data))
+          .catch(err => console.error('News refresh failed:', err));
+      }
+
+      if (refreshData.dailyStale) {
+        console.log('Daily data is stale, refreshing in background...');
+        fetch('/api/refresh?type=daily', { method: 'POST' })
+          .then(r => r.json())
+          .then(data => console.log('Daily refresh complete:', data))
+          .catch(err => console.error('Daily refresh failed:', err));
       }
 
       setStatus('done');
@@ -61,7 +67,7 @@ export default function DataInitializer() {
     // Initial check
     checkAndRefreshData(true);
 
-    // Set up periodic refresh check (every 30 minutes)
+    // Set up periodic refresh check (every 15 minutes)
     const interval = setInterval(() => {
       checkAndRefreshData(false);
     }, REFRESH_INTERVAL);
