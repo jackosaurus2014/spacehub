@@ -142,6 +142,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
 
 export default function MissionControlModule() {
   const [events, setEvents] = useState<SpaceEvent[]>([]);
+  const [nextEvent, setNextEvent] = useState<SpaceEvent | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -150,7 +151,17 @@ export default function MissionControlModule() {
         // Fetch events in next 48 hours
         const res = await fetch('/api/events?hours=48&limit=5');
         const data = await res.json();
-        setEvents(data.events || []);
+        const upcoming = data.events || [];
+        setEvents(upcoming);
+
+        // If no events in 48 hours, fetch the next known event
+        if (upcoming.length === 0) {
+          const nextRes = await fetch('/api/events?limit=1');
+          const nextData = await nextRes.json();
+          setNextEvent(nextData.events?.[0] || null);
+        } else {
+          setNextEvent(null);
+        }
       } catch (error) {
         console.error('Failed to fetch events:', error);
       } finally {
@@ -179,7 +190,7 @@ export default function MissionControlModule() {
     );
   }
 
-  const nextEvent = events[0];
+  const firstEvent = events[0];
   const otherEvents = events.slice(1, 4);
 
   return (
@@ -195,14 +206,24 @@ export default function MissionControlModule() {
         </div>
 
         {events.length === 0 ? (
-          <div className="text-center py-8">
-            <span className="text-5xl block mb-3">🔭</span>
-            <p className="text-star-300">No events scheduled in the next 48 hours</p>
-            <p className="text-star-300/70 text-sm mt-1">Click to view all upcoming missions</p>
+          <div>
+            <div className="text-center py-4">
+              <span className="text-4xl block mb-2">🔭</span>
+              <p className="text-star-300">No events scheduled in the next 48 hours</p>
+            </div>
+            {nextEvent && (
+              <div className="mt-4">
+                <p className="text-star-300 text-xs uppercase tracking-wider mb-2">Next Known Event</p>
+                <EventCard event={nextEvent} isPrimary />
+              </div>
+            )}
+            {!nextEvent && (
+              <p className="text-star-300/70 text-sm text-center mt-2">Click to view all upcoming missions</p>
+            )}
           </div>
         ) : (
           <div className="space-y-4">
-            {nextEvent && <EventCard event={nextEvent} isPrimary />}
+            {firstEvent && <EventCard event={firstEvent} isPrimary />}
 
             {otherEvents.length > 0 && (
               <div className="space-y-2">
