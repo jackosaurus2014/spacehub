@@ -132,74 +132,6 @@ function PublicCompanyCard({
   );
 }
 
-function PrivateCompanyCard({ company }: { company: SpaceCompany }) {
-  const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
-
-  const formatValuation = (val: number | null) => {
-    if (!val) return 'N/A';
-    if (val >= 1) return `$${val.toFixed(1)}B`;
-    return `$${(val * 1000).toFixed(0)}M`;
-  };
-
-  return (
-    <div className="card p-4 hover:border-nebula-500/50 transition-all">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
-          <div>
-            <h3 className="font-semibold text-white text-sm">{company.name}</h3>
-            <span className="text-xs text-star-400">Private</span>
-          </div>
-        </div>
-        {company.isPreIPO ? (
-          <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">
-            Pre-IPO
-          </span>
-        ) : (
-          <span className="text-xs bg-space-600 text-star-300 px-2 py-0.5 rounded">
-            Private
-          </span>
-        )}
-      </div>
-
-      <div className="space-y-2 text-xs">
-        <div className="flex justify-between">
-          <span className="text-star-300">Valuation:</span>
-          <span className="text-white font-medium">{formatValuation(company.valuation)}</span>
-        </div>
-
-        {company.isPreIPO && company.expectedIPODate && (
-          <div className="flex justify-between">
-            <span className="text-star-300">Expected IPO:</span>
-            <span className="text-yellow-400">{company.expectedIPODate}</span>
-          </div>
-        )}
-
-        {company.lastFundingRound && (
-          <div className="flex justify-between">
-            <span className="text-star-300">Last Round:</span>
-            <span className="text-nebula-300">{company.lastFundingRound}</span>
-          </div>
-        )}
-      </div>
-
-      <div className="flex flex-wrap gap-1 mt-3">
-        {(company.focusAreas as string[]).slice(0, 2).map((area) => {
-          const focusInfo = FOCUS_AREAS.find((f) => f.value === area);
-          return (
-            <span
-              key={area}
-              className="text-xs bg-space-700/50 text-star-200 px-2 py-0.5 rounded"
-            >
-              {focusInfo?.icon} {focusInfo?.label || area}
-            </span>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 const MAX_SELECTED = 5;
 
 export default function MarketIntelModule() {
@@ -321,7 +253,6 @@ export default function MarketIntelModule() {
   }
 
   const publicCompanies = companies.filter((c) => c.isPublic && c.ticker);
-  const privateCompanies = companies.filter((c) => !c.isPublic);
 
   const toggleTicker = (ticker: string) => {
     setSelectedTickers((prev) => {
@@ -429,14 +360,76 @@ export default function MarketIntelModule() {
         </div>
       )}
 
-      {/* Private Companies */}
-      {privateCompanies.length > 0 && (
+      {/* All Companies List */}
+      {companies.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold text-white mb-3">Private & Pre-IPO</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {privateCompanies.slice(0, 4).map((company) => (
-              <PrivateCompanyCard key={company.id} company={company} />
-            ))}
+          <h3 className="text-lg font-semibold text-white mb-3">Space Companies</h3>
+          <div className="card overflow-hidden">
+            <div className="max-h-[480px] overflow-y-auto scrollbar-thin">
+              {companies.slice(0, 10).map((company) => {
+                const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
+                const companyStockData = company.ticker ? stockData[company.ticker] : null;
+                const isPositive = companyStockData ? companyStockData.changePercent >= 0 : true;
+
+                return (
+                  <div
+                    key={company.id}
+                    className="flex items-center justify-between px-4 py-3 border-b border-space-700 last:border-b-0 hover:bg-space-700/30 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-lg flex-shrink-0">{countryInfo?.flag || '🌐'}</span>
+                      <div className="min-w-0">
+                        <div className="font-medium text-white text-sm truncate">{company.name}</div>
+                        <div className="flex items-center gap-2 text-xs">
+                          {company.isPublic && company.ticker ? (
+                            <span className="text-nebula-300 font-mono">{company.exchange}:{company.ticker}</span>
+                          ) : (
+                            <span className="text-star-400">Private</span>
+                          )}
+                          {(company.focusAreas as string[]).slice(0, 1).map((area) => {
+                            const focusInfo = FOCUS_AREAS.find((f) => f.value === area);
+                            return (
+                              <span key={area} className="text-star-400 hidden sm:inline">
+                                {focusInfo?.icon} {focusInfo?.label || area}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 flex-shrink-0 ml-3">
+                      {company.isPublic && companyStockData ? (
+                        <>
+                          <span className="text-white text-sm font-medium">{formatPrice(companyStockData.price)}</span>
+                          <span
+                            className={`text-xs font-medium px-2 py-0.5 rounded ${
+                              isPositive
+                                ? 'bg-green-500/20 text-green-400'
+                                : 'bg-red-500/20 text-red-400'
+                            }`}
+                          >
+                            {formatChange(companyStockData.changePercent, true)}
+                          </span>
+                        </>
+                      ) : company.isPublic && company.ticker ? (
+                        <div className="h-4 w-20 bg-space-700 rounded animate-pulse" />
+                      ) : (
+                        <>
+                          {company.isPreIPO ? (
+                            <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">Pre-IPO</span>
+                          ) : company.valuation ? (
+                            <span className="text-sm text-star-300">
+                              {company.valuation >= 1 ? `$${company.valuation.toFixed(1)}B` : `$${(company.valuation * 1000).toFixed(0)}M`}
+                            </span>
+                          ) : null}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
