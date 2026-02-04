@@ -219,7 +219,6 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     section: 'explore',
     defaultEnabled: true,
     defaultPosition: 3,
-    isPremium: true,
   },
   // === Intelligence ===
   {

@@ -62,14 +62,14 @@ export function canAccessModule(tier: SubscriptionTier, moduleId: string): boole
     'market-intel': 'pro',
     'resource-exchange': 'pro',
     'business-opportunities': 'enterprise',
-    'solar-exploration': 'pro',
     'solar-flare-tracker': 'pro',
     'orbital-slots': 'pro',
-    'space-insurance': 'pro',
-    'spectrum-tracker': 'pro',
     'space-workforce': 'pro',
     'launch-windows': 'pro',
     'debris-monitor': 'pro',
+    'spectrum-tracker': 'enterprise',
+    'space-insurance': 'enterprise',
+    'compliance': 'enterprise',
   };
 
   const requiredTier = premiumModules[moduleId];
@@ -84,14 +84,14 @@ export function getRequiredTierForModule(moduleId: string): SubscriptionTier | n
     'market-intel': 'pro',
     'resource-exchange': 'pro',
     'business-opportunities': 'enterprise',
-    'solar-exploration': 'pro',
     'solar-flare-tracker': 'pro',
     'orbital-slots': 'pro',
-    'space-insurance': 'pro',
-    'spectrum-tracker': 'pro',
     'space-workforce': 'pro',
     'launch-windows': 'pro',
     'debris-monitor': 'pro',
+    'spectrum-tracker': 'enterprise',
+    'space-insurance': 'enterprise',
+    'compliance': 'enterprise',
   };
   return premiumModules[moduleId] || null;
 }
