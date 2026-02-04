@@ -200,6 +200,8 @@ function PrivateCompanyCard({ company }: { company: SpaceCompany }) {
   );
 }
 
+const MAX_SELECTED = 5;
+
 export default function MarketIntelModule() {
   const [companies, setCompanies] = useState<SpaceCompany[]>([]);
   const [stats, setStats] = useState<{
@@ -210,6 +212,7 @@ export default function MarketIntelModule() {
     byCountry: Record<string, number>;
   } | null>(null);
   const [stockData, setStockData] = useState<Record<string, StockData>>({});
+  const [selectedTickers, setSelectedTickers] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
 
@@ -220,7 +223,7 @@ export default function MarketIntelModule() {
   const fetchData = async () => {
     try {
       const [companiesRes, statsRes] = await Promise.all([
-        fetch('/api/companies?limit=12'),
+        fetch('/api/companies?limit=50'),
         fetch('/api/companies/stats'),
       ]);
 
@@ -235,6 +238,9 @@ export default function MarketIntelModule() {
           (c: SpaceCompany) => c.isPublic && c.ticker
         );
         if (publicCompanies.length > 0) {
+          setSelectedTickers(
+            publicCompanies.slice(0, MAX_SELECTED).map((c: SpaceCompany) => c.ticker!)
+          );
           fetchStockData(publicCompanies);
         }
       }
@@ -317,6 +323,25 @@ export default function MarketIntelModule() {
   const publicCompanies = companies.filter((c) => c.isPublic && c.ticker);
   const privateCompanies = companies.filter((c) => !c.isPublic);
 
+  const toggleTicker = (ticker: string) => {
+    setSelectedTickers((prev) => {
+      if (prev.includes(ticker)) {
+        // Don't deselect the last one
+        if (prev.length <= 1) return prev;
+        return prev.filter((t) => t !== ticker);
+      }
+      if (prev.length < MAX_SELECTED) {
+        return [...prev, ticker];
+      }
+      // At max: replace the oldest selection
+      return [...prev.slice(1), ticker];
+    });
+  };
+
+  const displayedCompanies = publicCompanies.filter(
+    (c) => c.ticker && selectedTickers.includes(c.ticker)
+  );
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -369,8 +394,31 @@ export default function MarketIntelModule() {
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             Live Stock Prices
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {publicCompanies.slice(0, 4).map((company) => (
+
+          {/* Company selector pills */}
+          <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-thin">
+            {publicCompanies.map((company) => {
+              const isSelected = company.ticker
+                ? selectedTickers.includes(company.ticker)
+                : false;
+              return (
+                <button
+                  key={company.id}
+                  onClick={() => company.ticker && toggleTicker(company.ticker)}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-mono font-medium transition-all ${
+                    isSelected
+                      ? 'bg-nebula-500/30 text-nebula-300 border border-nebula-500/50'
+                      : 'bg-space-700/50 text-star-400 border border-space-600 hover:border-star-400/50'
+                  }`}
+                >
+                  {company.ticker}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            {displayedCompanies.map((company) => (
               <PublicCompanyCard
                 key={company.id}
                 company={company}
