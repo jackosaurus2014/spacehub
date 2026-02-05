@@ -360,13 +360,24 @@ export default function MarketIntelModule() {
         </div>
       )}
 
-      {/* All Companies List */}
-      {companies.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-slate-800 mb-3">Publicly-Traded Space Companies <span className="text-slate-500 font-normal text-sm">(View All to see Public and Private)</span></h3>
+      {/* Publicly Traded Companies List */}
+      {publicCompanies.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+            <span className="text-green-400">📈</span>
+            Publicly Traded Companies
+            <span className="text-slate-500 font-normal text-sm">({publicCompanies.length})</span>
+          </h3>
           <div className="card overflow-hidden">
-            <div className="max-h-[480px] overflow-y-auto scrollbar-thin">
-              {companies.slice(0, 10).map((company) => {
+            {/* Table Header */}
+            <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-slate-100 border-b border-slate-200 text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <div className="col-span-5">Company</div>
+              <div className="col-span-2 text-right">Stock Price</div>
+              <div className="col-span-2 text-right">Today</div>
+              <div className="col-span-3 text-right">Market Cap</div>
+            </div>
+            <div className="max-h-[300px] overflow-y-auto scrollbar-thin">
+              {publicCompanies.slice(0, 10).map((company) => {
                 const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
                 const companyStockData = company.ticker ? stockData[company.ticker] : null;
                 const isPositive = companyStockData ? companyStockData.changePercent >= 0 : true;
@@ -374,56 +385,131 @@ export default function MarketIntelModule() {
                 return (
                   <div
                     key={company.id}
-                    className="flex items-center justify-between px-4 py-3 border-b border-slate-200 last:border-b-0 hover:bg-slate-100 transition-colors"
+                    className="grid grid-cols-12 gap-2 items-center px-4 py-3 border-b border-slate-200 last:border-b-0 hover:bg-slate-100 transition-colors"
                   >
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="col-span-5 flex items-center gap-3 min-w-0">
                       <span className="text-lg flex-shrink-0">{countryInfo?.flag || '🌐'}</span>
                       <div className="min-w-0">
                         <div className="font-medium text-slate-800 text-sm truncate">{company.name}</div>
-                        <div className="flex items-center gap-2 text-xs">
-                          {company.isPublic && company.ticker ? (
-                            <span className="text-nebula-300 font-mono">{company.exchange}:{company.ticker}</span>
-                          ) : (
-                            <span className="text-slate-500">Private</span>
-                          )}
+                        <span className="text-nebula-300 font-mono text-xs">{company.exchange}:{company.ticker}</span>
+                      </div>
+                    </div>
+
+                    <div className="col-span-2 text-right">
+                      {companyStockData ? (
+                        <span className="text-slate-800 text-sm font-medium font-mono">
+                          {formatPrice(companyStockData.price)}
+                        </span>
+                      ) : (
+                        <div className="h-4 w-16 bg-slate-100 rounded animate-pulse ml-auto" />
+                      )}
+                    </div>
+
+                    <div className="col-span-2 text-right">
+                      {companyStockData ? (
+                        <span
+                          className={`text-xs font-medium px-2 py-0.5 rounded inline-block ${
+                            isPositive
+                              ? 'bg-green-500/20 text-green-400'
+                              : 'bg-red-500/20 text-red-400'
+                          }`}
+                        >
+                          {formatChange(companyStockData.changePercent, true)}
+                        </span>
+                      ) : (
+                        <div className="h-4 w-12 bg-slate-100 rounded animate-pulse ml-auto" />
+                      )}
+                    </div>
+
+                    <div className="col-span-3 text-right text-sm text-slate-500">
+                      {company.marketCap ? (
+                        company.marketCap >= 1
+                          ? `$${company.marketCap.toFixed(1)}B`
+                          : `$${(company.marketCap * 1000).toFixed(0)}M`
+                      ) : '—'}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Private Companies List */}
+      {companies.filter(c => !c.isPublic).length > 0 && (
+        <div>
+          <h3 className="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+            <span className="text-yellow-400">🔒</span>
+            Private Companies
+            <span className="text-slate-500 font-normal text-sm">({companies.filter(c => !c.isPublic).length})</span>
+          </h3>
+          <div className="card overflow-hidden">
+            {/* Table Header */}
+            <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-slate-100 border-b border-slate-200 text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <div className="col-span-4">Company</div>
+              <div className="col-span-3 text-right">Last Funding</div>
+              <div className="col-span-2 text-right">Valuation</div>
+              <div className="col-span-3 text-right">Expected IPO</div>
+            </div>
+            <div className="max-h-[300px] overflow-y-auto scrollbar-thin">
+              {companies.filter(c => !c.isPublic).slice(0, 10).map((company) => {
+                const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
+
+                return (
+                  <div
+                    key={company.id}
+                    className="grid grid-cols-12 gap-2 items-center px-4 py-3 border-b border-slate-200 last:border-b-0 hover:bg-slate-100 transition-colors"
+                  >
+                    <div className="col-span-4 flex items-center gap-3 min-w-0">
+                      <span className="text-lg flex-shrink-0">{countryInfo?.flag || '🌐'}</span>
+                      <div className="min-w-0">
+                        <div className="font-medium text-slate-800 text-sm truncate">{company.name}</div>
+                        <div className="text-xs text-slate-500">
                           {(company.focusAreas as string[]).slice(0, 1).map((area) => {
                             const focusInfo = FOCUS_AREAS.find((f) => f.value === area);
-                            return (
-                              <span key={area} className="text-slate-500 hidden sm:inline">
-                                {focusInfo?.icon} {focusInfo?.label || area}
-                              </span>
-                            );
-                          })}
+                            return focusInfo ? `${focusInfo.icon} ${focusInfo.label}` : area;
+                          }).join('')}
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 flex-shrink-0 ml-3">
-                      {company.isPublic && companyStockData ? (
-                        <>
-                          <span className="text-slate-800 text-sm font-medium">{formatPrice(companyStockData.price)}</span>
-                          <span
-                            className={`text-xs font-medium px-2 py-0.5 rounded ${
-                              isPositive
-                                ? 'bg-green-500/20 text-green-400'
-                                : 'bg-red-500/20 text-red-400'
-                            }`}
-                          >
-                            {formatChange(companyStockData.changePercent, true)}
+                    <div className="col-span-3 text-right">
+                      {company.lastFundingRound ? (
+                        <div>
+                          <span className="text-slate-800 text-sm font-medium">
+                            {company.lastFundingAmount
+                              ? `$${company.lastFundingAmount >= 1000
+                                  ? `${(company.lastFundingAmount / 1000).toFixed(1)}B`
+                                  : `${company.lastFundingAmount}M`}`
+                              : '—'}
                           </span>
-                        </>
-                      ) : company.isPublic && company.ticker ? (
-                        <div className="h-4 w-20 bg-slate-100 rounded animate-pulse" />
+                          <div className="text-xs text-slate-500">{company.lastFundingRound}</div>
+                        </div>
                       ) : (
-                        <>
-                          {company.isPreIPO ? (
-                            <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">Pre-IPO</span>
-                          ) : company.valuation ? (
-                            <span className="text-sm text-slate-500">
-                              {company.valuation >= 1 ? `$${company.valuation.toFixed(1)}B` : `$${(company.valuation * 1000).toFixed(0)}M`}
-                            </span>
-                          ) : null}
-                        </>
+                        <span className="text-slate-400 text-sm">—</span>
+                      )}
+                    </div>
+
+                    <div className="col-span-2 text-right text-sm text-slate-500">
+                      {company.valuation ? (
+                        company.valuation >= 1
+                          ? `$${company.valuation.toFixed(1)}B`
+                          : `$${(company.valuation * 1000).toFixed(0)}M`
+                      ) : '—'}
+                    </div>
+
+                    <div className="col-span-3 text-right">
+                      {company.isPreIPO && company.expectedIPODate ? (
+                        <span className="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded">
+                          {company.expectedIPODate}
+                        </span>
+                      ) : company.isPreIPO ? (
+                        <span className="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded">
+                          Pre-IPO
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 text-sm">—</span>
                       )}
                     </div>
                   </div>
