@@ -203,13 +203,13 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     description: 'Explore news by category',
     icon: '📂',
     section: 'explore',
-    defaultEnabled: true,
+    defaultEnabled: false, // Merged into news-feed module
     defaultPosition: 1,
   },
   {
     moduleId: 'news-feed',
-    name: 'News Feed',
-    description: 'Latest space industry news',
+    name: 'News & Categories',
+    description: 'Browse by category and read the latest space industry news',
     icon: '📰',
     section: 'explore',
     defaultEnabled: true,

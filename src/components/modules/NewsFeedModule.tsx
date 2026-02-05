@@ -3,7 +3,20 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NewsCard from '@/components/NewsCard';
-import { NewsArticle } from '@/types';
+import { NewsArticle, NEWS_CATEGORIES } from '@/types';
+
+const categoryIcons: Record<string, string> = {
+  launches: '🚀',
+  missions: '🛸',
+  companies: '🏢',
+  satellites: '📡',
+  defense: '🛡️',
+  earnings: '💰',
+  mergers: '🤝',
+  development: '🔧',
+  policy: '📜',
+  debris: '💥',
+};
 
 export default function NewsFeedModule() {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
@@ -31,7 +44,7 @@ export default function NewsFeedModule() {
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-display font-bold text-white flex items-center">
             <span className="text-3xl mr-3">📰</span>
-            Latest News
+            News & Categories
           </h2>
         </div>
         <div className="flex justify-center py-12">
@@ -46,6 +59,35 @@ export default function NewsFeedModule() {
 
   return (
     <div className="space-y-6">
+      {/* Browse by Category - Compact */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-semibold text-white flex items-center">
+            <span className="text-xl mr-2">📂</span>
+            Browse by Category
+          </h3>
+          <Link
+            href="/news"
+            className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
+          >
+            View All News →
+          </Link>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {NEWS_CATEGORIES.map((category) => (
+            <Link
+              key={category.slug}
+              href={`/news?category=${category.slug}`}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-space-700/50 hover:bg-space-600/50 border border-space-600 hover:border-nebula-500/50 rounded-full text-sm transition-all"
+            >
+              <span className="text-base">{categoryIcons[category.slug] || '📁'}</span>
+              <span className="text-star-200 group-hover:text-white">{category.name}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Featured Story */}
       {featuredArticle && (
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -58,6 +100,7 @@ export default function NewsFeedModule() {
         </div>
       )}
 
+      {/* Recent News */}
       {recentArticles.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -65,12 +108,6 @@ export default function NewsFeedModule() {
               <span className="text-3xl mr-3">📰</span>
               Recent News
             </h2>
-            <Link
-              href="/news"
-              className="text-nebula-300 hover:text-nebula-200 transition-colors"
-            >
-              View All →
-            </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recentArticles.map((article) => (
