@@ -264,29 +264,72 @@ body::after {
     inset 0 0 20px rgba(16, 185, 129, 0.05);
 }
 
-/* Dark Card Text Overrides */
+/* Dark Card Text Overrides - Force light text on dark cards */
 .card, .card-elevated, .card-interactive,
 .card-nebula, .card-cyan, .card-amber, .card-emerald {
-  color: #e2e8f0; /* slate-200 */
+  color: #e2e8f0 !important; /* slate-200 */
 }
 
+/* Override dark text colors inside cards */
+.card .text-slate-900, .card .text-slate-800, .card .text-slate-700,
+.card-elevated .text-slate-900, .card-elevated .text-slate-800, .card-elevated .text-slate-700,
+.card-interactive .text-slate-900, .card-interactive .text-slate-800, .card-interactive .text-slate-700 {
+  color: #f1f5f9 !important; /* slate-100 */
+}
+
+.card .text-slate-600, .card .text-slate-500,
+.card-elevated .text-slate-600, .card-elevated .text-slate-500,
+.card-interactive .text-slate-600, .card-interactive .text-slate-500 {
+  color: #cbd5e1 !important; /* slate-300 */
+}
+
+.card .text-slate-400, .card .text-slate-300,
+.card-elevated .text-slate-400, .card-elevated .text-slate-300,
+.card-interactive .text-slate-400, .card-interactive .text-slate-300 {
+  color: #94a3b8 !important; /* slate-400 */
+}
+
+/* Override text-gray colors too */
+.card .text-gray-900, .card .text-gray-800, .card .text-gray-700,
+.card-elevated .text-gray-900, .card-elevated .text-gray-800, .card-elevated .text-gray-700,
+.card-interactive .text-gray-900, .card-interactive .text-gray-800, .card-interactive .text-gray-700 {
+  color: #f1f5f9 !important; /* slate-100 */
+}
+
+.card .text-gray-600, .card .text-gray-500,
+.card-elevated .text-gray-600, .card-elevated .text-gray-500,
+.card-interactive .text-gray-600, .card-interactive .text-gray-500 {
+  color: #cbd5e1 !important; /* slate-300 */
+}
+
+/* Headings in cards */
 .card h1, .card h2, .card h3, .card h4, .card h5, .card h6,
 .card-elevated h1, .card-elevated h2, .card-elevated h3, .card-elevated h4,
 .card-interactive h1, .card-interactive h2, .card-interactive h3, .card-interactive h4 {
-  color: #f8fafc; /* slate-50 */
+  color: #f8fafc !important; /* slate-50 */
 }
 
-.card p, .card span, .card-elevated p, .card-elevated span,
-.card-interactive p, .card-interactive span {
-  color: #cbd5e1; /* slate-300 */
-}
-
+/* Links in cards */
 .card a, .card-elevated a, .card-interactive a {
-  color: #67e8f9; /* cyan-300 */
+  color: #67e8f9 !important; /* cyan-300 */
 }
 
 .card a:hover, .card-elevated a:hover, .card-interactive a:hover {
-  color: #22d3ee; /* cyan-400 */
+  color: #22d3ee !important; /* cyan-400 */
+}
+
+/* Border colors in cards - lighten them */
+.card .border-slate-200, .card .border-slate-300,
+.card-elevated .border-slate-200, .card-elevated .border-slate-300,
+.card-interactive .border-slate-200, .card-interactive .border-slate-300 {
+  border-color: rgba(148, 163, 184, 0.3) !important; /* slate-400/30 */
+}
+
+/* Background colors in cards that should be darker */
+.card .bg-slate-50, .card .bg-slate-100, .card .bg-white,
+.card-elevated .bg-slate-50, .card-elevated .bg-slate-100, .card-elevated .bg-white,
+.card-interactive .bg-slate-50, .card-interactive .bg-slate-100, .card-interactive .bg-white {
+  background-color: rgba(51, 65, 85, 0.5) !important; /* slate-700/50 */
 }
 
 /* Input Styles */
