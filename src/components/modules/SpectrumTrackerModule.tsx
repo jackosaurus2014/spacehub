@@ -49,15 +49,15 @@ function AllocationCard({ allocation }: { allocation: SpectrumAllocation }) {
   };
 
   return (
-    <div className="p-3 bg-space-700/30 rounded-lg">
+    <div className="p-3 bg-slate-50 rounded-lg">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-lg">📡</span>
           <div>
-            <span className="text-white font-medium text-sm">
+            <span className="text-slate-800 font-medium text-sm">
               {bandInfo?.label || allocation.bandName}
             </span>
-            <span className="text-star-400 text-xs ml-2">
+            <span className="text-slate-500 text-xs ml-2">
               {formatFrequency(allocation.frequencyMin)} - {formatFrequency(allocation.frequencyMax)}
             </span>
           </div>
@@ -72,7 +72,7 @@ function AllocationCard({ allocation }: { allocation: SpectrumAllocation }) {
       </div>
 
       {/* Frequency bar visualization */}
-      <div className="h-3 bg-space-600 rounded-full overflow-hidden mb-2">
+      <div className="h-3 bg-slate-200 rounded-full overflow-hidden mb-2">
         <div
           className={`h-full ${statusInfo.bgColor} rounded-full`}
           style={{
@@ -85,13 +85,13 @@ function AllocationCard({ allocation }: { allocation: SpectrumAllocation }) {
         />
       </div>
 
-      <div className="flex justify-between text-xs text-star-400">
+      <div className="flex justify-between text-xs text-slate-500">
         <span>{serviceLabels[allocation.service] || allocation.service}</span>
         <span>{allocation.numberOfFilings} filing{allocation.numberOfFilings !== 1 ? 's' : ''}</span>
       </div>
 
       {allocation.assignedTo && (
-        <div className="mt-1 text-xs text-star-300 truncate">
+        <div className="mt-1 text-xs text-slate-500 truncate">
           Assigned: {allocation.assignedTo}
         </div>
       )}
@@ -118,15 +118,15 @@ function FilingRow({ filing }: { filing: SpectrumFiling }) {
   const filingDate = new Date(filing.filingDate);
 
   return (
-    <div className="p-3 bg-space-700/30 rounded-lg flex items-center justify-between gap-3">
+    <div className="p-3 bg-slate-50 rounded-lg flex items-center justify-between gap-3">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-white text-sm font-medium truncate">{filing.operator}</span>
+          <span className="text-slate-800 text-sm font-medium truncate">{filing.operator}</span>
           <span className={`text-xs px-2 py-0.5 rounded whitespace-nowrap ${statusClass}`}>
             {filing.status}
           </span>
         </div>
-        <div className="text-star-400 text-xs flex flex-wrap gap-x-3 gap-y-0.5">
+        <div className="text-slate-500 text-xs flex flex-wrap gap-x-3 gap-y-0.5">
           <span>{filing.system}</span>
           <span>{filing.bandName}</span>
           <span>{filing.orbitType}</span>
@@ -136,10 +136,10 @@ function FilingRow({ filing }: { filing: SpectrumFiling }) {
         </div>
       </div>
       <div className="text-right shrink-0">
-        <div className="text-star-200 text-xs">
+        <div className="text-slate-600 text-xs">
           {filingDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
-        <div className="text-star-500 text-xs">{filing.agency}</div>
+        <div className="text-slate-400 text-xs">{filing.agency}</div>
       </div>
     </div>
   );
@@ -195,8 +195,8 @@ export default function SpectrumTrackerModule() {
     return (
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">📡</span>
-        <h3 className="text-xl font-semibold text-white mb-2">Spectrum & Frequency Tracker</h3>
-        <p className="text-star-300 mb-4">
+        <h3 className="text-xl font-semibold text-slate-800 mb-2">Spectrum & Frequency Tracker</h3>
+        <p className="text-slate-500 mb-4">
           Satellite frequency allocations, filings, and spectrum availability.
         </p>
         <button
@@ -224,8 +224,8 @@ export default function SpectrumTrackerModule() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">📡</span>
           <div>
-            <h2 className="text-2xl font-display font-bold text-white">Spectrum & Frequency Tracker</h2>
-            <p className="text-star-300 text-sm">Frequency allocations, filings & availability</p>
+            <h2 className="text-2xl font-display font-bold text-slate-800">Spectrum & Frequency Tracker</h2>
+            <p className="text-slate-500 text-sm">Frequency allocations, filings & availability</p>
           </div>
         </div>
         <Link href="/spectrum" className="btn-secondary text-sm py-1.5 px-4">
@@ -236,20 +236,20 @@ export default function SpectrumTrackerModule() {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="card p-3 text-center">
-          <div className="text-2xl font-bold text-white">{data.stats.totalBands}</div>
-          <div className="text-star-300 text-xs">Total Bands</div>
+          <div className="text-2xl font-bold text-slate-800">{data.stats.totalBands}</div>
+          <div className="text-slate-500 text-xs">Total Bands</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-red-400">{data.stats.congestedBands}</div>
-          <div className="text-star-300 text-xs">Congested Bands</div>
+          <div className="text-slate-500 text-xs">Congested Bands</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-blue-400">{data.stats.totalFilings}</div>
-          <div className="text-star-300 text-xs">Total Filings</div>
+          <div className="text-slate-500 text-xs">Total Filings</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-yellow-400">{data.stats.pendingFilings}</div>
-          <div className="text-star-300 text-xs">Pending Filings</div>
+          <div className="text-slate-500 text-xs">Pending Filings</div>
         </div>
       </div>
 
@@ -257,7 +257,7 @@ export default function SpectrumTrackerModule() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Spectrum Bands */}
         <div className="lg:col-span-2 card p-4">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
             <span>📊</span> Spectrum Bands
           </h3>
           <div className="space-y-3">
@@ -269,7 +269,7 @@ export default function SpectrumTrackerModule() {
 
         {/* Recent Filings */}
         <div className="card p-4">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
             <span>📋</span> Recent Filings
           </h3>
           <div className="space-y-3">
@@ -277,7 +277,7 @@ export default function SpectrumTrackerModule() {
               <FilingRow key={filing.id} filing={filing} />
             ))}
             {data.filings.length === 0 && (
-              <p className="text-star-400 text-sm text-center py-4">No filings available</p>
+              <p className="text-slate-500 text-sm text-center py-4">No filings available</p>
             )}
           </div>
         </div>
@@ -285,14 +285,14 @@ export default function SpectrumTrackerModule() {
 
       {/* Band Legend */}
       <div className="card p-4 mt-6">
-        <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
           <span>🔑</span> Filing Status Legend
         </h3>
         <div className="flex flex-wrap gap-4">
           {Object.entries(FILING_STATUS_INFO).map(([key, info]) => (
             <div key={key} className="flex items-center gap-2 text-xs">
               <span className={`inline-block w-2.5 h-2.5 rounded-full ${info.bgColor}`} />
-              <span className="text-star-300">{info.label}</span>
+              <span className="text-slate-500">{info.label}</span>
             </div>
           ))}
         </div>

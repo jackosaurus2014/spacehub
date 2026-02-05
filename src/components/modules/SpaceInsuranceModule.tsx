@@ -143,10 +143,10 @@ export default function SpaceInsuranceModule() {
     return (
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">🛡️</span>
-        <h3 className="text-xl font-semibold text-white mb-2">
+        <h3 className="text-xl font-semibold text-slate-800 mb-2">
           Space Insurance & Risk Calculator
         </h3>
-        <p className="text-star-300 mb-4">
+        <p className="text-slate-500 mb-4">
           Explore space insurance policies, market trends, and calculate mission premiums.
         </p>
         <button
@@ -174,10 +174,10 @@ export default function SpaceInsuranceModule() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">🛡️</span>
           <div>
-            <h2 className="text-2xl font-display font-bold text-white">
+            <h2 className="text-2xl font-display font-bold text-slate-800">
               Space Insurance & Risk Calculator
             </h2>
-            <p className="text-star-300 text-sm">
+            <p className="text-slate-500 text-sm">
               Policies, market data & premium estimation
             </p>
           </div>
@@ -193,25 +193,25 @@ export default function SpaceInsuranceModule() {
           <div className="text-2xl font-bold text-nebula-300">
             {formatCurrency(stats.totalPremiums)}
           </div>
-          <div className="text-star-300 text-xs">Total Premiums</div>
+          <div className="text-slate-500 text-xs">Total Premiums</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-yellow-400">
             {stats.avgLossRatio.toFixed(1)}%
           </div>
-          <div className="text-star-300 text-xs">Avg Loss Ratio</div>
+          <div className="text-slate-500 text-xs">Avg Loss Ratio</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-green-400">
             {stats.activePolicies}
           </div>
-          <div className="text-star-300 text-xs">Active Policies</div>
+          <div className="text-slate-500 text-xs">Active Policies</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-red-400">
             {formatCurrency(stats.largestClaim)}
           </div>
-          <div className="text-star-300 text-xs">Largest Claim</div>
+          <div className="text-slate-500 text-xs">Largest Claim</div>
         </div>
       </div>
 
@@ -219,7 +219,7 @@ export default function SpaceInsuranceModule() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Market History */}
         <div className="lg:col-span-2 card p-4">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
             <span>📈</span> Market History
           </h3>
           <div className="space-y-2">
@@ -237,13 +237,13 @@ export default function SpaceInsuranceModule() {
                   : 0;
 
               return (
-                <div key={year.id} className="p-3 bg-space-700/30 rounded-lg">
+                <div key={year.id} className="p-3 bg-slate-50 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-white font-medium text-sm">
+                    <span className="text-slate-800 font-medium text-sm">
                       {year.year}
                     </span>
                     <div className="flex items-center gap-4 text-xs">
-                      <span className="text-star-300">
+                      <span className="text-slate-500">
                         Policies: {year.numberOfPolicies}
                       </span>
                       <span
@@ -262,8 +262,8 @@ export default function SpaceInsuranceModule() {
 
                   {/* Premium bar */}
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs text-star-400 w-16">Premiums</span>
-                    <div className="flex-1 h-3 bg-space-600 rounded-full overflow-hidden">
+                    <span className="text-xs text-slate-500 w-16">Premiums</span>
+                    <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-nebula-500 to-nebula-400 rounded-full"
                         style={{ width: `${Math.min(premiumWidth, 100)}%` }}
@@ -276,8 +276,8 @@ export default function SpaceInsuranceModule() {
 
                   {/* Claims bar */}
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-star-400 w-16">Claims</span>
-                    <div className="flex-1 h-3 bg-space-600 rounded-full overflow-hidden">
+                    <span className="text-xs text-slate-500 w-16">Claims</span>
+                    <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full"
                         style={{ width: `${Math.min(claimsWidth, 100)}%` }}
@@ -296,25 +296,25 @@ export default function SpaceInsuranceModule() {
         {/* Premium Calculator */}
         <div className="space-y-6">
           <div className="card p-4">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
               <span>🧮</span> Premium Calculator
             </h3>
             <div className="space-y-3">
               <div>
-                <label className="text-star-300 text-xs block mb-1">
+                <label className="text-slate-500 text-xs block mb-1">
                   Insured Value ($M)
                 </label>
                 <input
                   type="number"
                   value={calcValue}
                   onChange={(e) => setCalcValue(e.target.value)}
-                  className="w-full bg-space-700/50 border border-space-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-nebula-500"
+                  className="w-full bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 text-sm focus:outline-none focus:border-nebula-500"
                   placeholder="100"
                   min="1"
                 />
               </div>
               <div>
-                <label className="text-star-300 text-xs block mb-1">
+                <label className="text-slate-500 text-xs block mb-1">
                   Mission Type
                 </label>
                 <select
@@ -322,7 +322,7 @@ export default function SpaceInsuranceModule() {
                   onChange={(e) =>
                     setCalcMissionType(e.target.value as InsuranceMissionType)
                   }
-                  className="w-full bg-space-700/50 border border-space-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-nebula-500"
+                  className="w-full bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 text-sm focus:outline-none focus:border-nebula-500"
                 >
                   {INSURANCE_MISSION_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -347,21 +347,21 @@ export default function SpaceInsuranceModule() {
               </button>
 
               {premiumEstimate && (
-                <div className="mt-3 p-3 bg-space-700/30 rounded-lg space-y-2">
+                <div className="mt-3 p-3 bg-slate-50 rounded-lg space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-star-300">Est. Rate:</span>
-                    <span className="text-white font-medium">
+                    <span className="text-slate-500">Est. Rate:</span>
+                    <span className="text-slate-800 font-medium">
                       {premiumEstimate.premiumRate.toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-star-300">Est. Premium:</span>
+                    <span className="text-slate-500">Est. Premium:</span>
                     <span className="text-nebula-300 font-bold">
                       {formatCurrency(premiumEstimate.premiumAmount)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-star-300">Risk Category:</span>
+                    <span className="text-slate-500">Risk Category:</span>
                     <span
                       className={`font-medium ${
                         premiumEstimate.riskCategory === 'High Risk'
@@ -385,13 +385,13 @@ export default function SpaceInsuranceModule() {
 
       {/* Recent Policies */}
       <div className="card p-4 mt-6">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
           <span>📋</span> Recent Policies
         </h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-star-400 text-xs border-b border-space-600">
+              <tr className="text-slate-500 text-xs border-b border-slate-200">
                 <th className="text-left py-2 pr-4">Insurer</th>
                 <th className="text-left py-2 pr-4">Mission</th>
                 <th className="text-left py-2 pr-4">Type</th>
@@ -406,23 +406,23 @@ export default function SpaceInsuranceModule() {
                 return (
                   <tr
                     key={policy.id}
-                    className="border-b border-space-700/50 hover:bg-space-700/20"
+                    className="border-b border-slate-200 hover:bg-slate-100"
                   >
-                    <td className="py-2 pr-4 text-white font-medium">
+                    <td className="py-2 pr-4 text-slate-800 font-medium">
                       {policy.insurer}
                     </td>
-                    <td className="py-2 pr-4 text-star-200">
+                    <td className="py-2 pr-4 text-slate-600">
                       {policy.missionName || 'N/A'}
                     </td>
                     <td className="py-2 pr-4">
-                      <span className="text-xs bg-space-700/50 text-star-200 px-2 py-0.5 rounded">
+                      <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
                         {missionInfo?.icon} {missionInfo?.label || policy.missionType}
                       </span>
                     </td>
                     <td className="py-2 pr-4 text-right text-nebula-300 font-mono">
                       {policy.premiumRate.toFixed(2)}%
                     </td>
-                    <td className="py-2 pr-4 text-right text-star-200 font-mono">
+                    <td className="py-2 pr-4 text-right text-slate-600 font-mono">
                       {formatCurrency(policy.insuredValue)}
                     </td>
                     <td className="py-2">

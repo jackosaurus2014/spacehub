@@ -75,10 +75,10 @@ function ClassificationCard({ item }: { item: ExportClassification }) {
         </div>
         <span className="text-2xl">{categoryInfo?.icon || '📋'}</span>
       </div>
-      <h4 className="font-semibold text-white mb-2">{item.name}</h4>
-      <p className="text-star-300 text-sm mb-3 line-clamp-3">{item.description}</p>
+      <h4 className="font-semibold text-slate-900 mb-2">{item.name}</h4>
+      <p className="text-slate-500 text-sm mb-3 line-clamp-3">{item.description}</p>
       <div className="flex items-center justify-between text-xs">
-        <span className="text-star-400">{categoryInfo?.label || item.category}</span>
+        <span className="text-slate-500">{categoryInfo?.label || item.category}</span>
         {item.controlReason && (
           <span className="text-nebula-400">Control: {item.controlReason}</span>
         )}
@@ -102,11 +102,11 @@ function RegulationCard({ item }: { item: ProposedRegulation }) {
     <div className="card p-5 hover:border-nebula-500/50 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-nebula-300 bg-space-700 px-2 py-1 rounded">
+          <span className="text-xs font-semibold text-nebula-300 bg-slate-100 px-2 py-1 rounded">
             {item.agency}
           </span>
           {categoryInfo && (
-            <span className="text-xs text-star-400 bg-space-700/50 px-2 py-1 rounded">
+            <span className="text-xs text-slate-500 bg-slate-100/50 px-2 py-1 rounded">
               {categoryInfo.label}
             </span>
           )}
@@ -119,20 +119,20 @@ function RegulationCard({ item }: { item: ProposedRegulation }) {
               ? 'bg-yellow-500/20 text-yellow-400'
               : statusInfo?.color === 'orange'
               ? 'bg-orange-500/20 text-orange-400'
-              : 'bg-space-600 text-star-300'
+              : 'bg-space-600 text-slate-500'
           }`}
         >
           {statusInfo?.label || item.status}
         </span>
       </div>
-      <h4 className="font-semibold text-white mb-2">{item.title}</h4>
-      <p className="text-star-300 text-sm mb-3 line-clamp-3">{item.summary}</p>
+      <h4 className="font-semibold text-slate-900 mb-2">{item.title}</h4>
+      <p className="text-slate-500 text-sm mb-3 line-clamp-3">{item.summary}</p>
       <div className="flex items-center justify-between">
-        <div className="text-xs text-star-400">
+        <div className="text-xs text-slate-500">
           Published: {new Date(item.publishedDate).toLocaleDateString()}
         </div>
         {deadline && (
-          <span className={`text-xs ${isUrgent ? 'text-yellow-400 font-semibold' : 'text-star-400'}`}>
+          <span className={`text-xs ${isUrgent ? 'text-yellow-400 font-semibold' : 'text-slate-500'}`}>
             {isUrgent && '⚠️ '}Comments: {deadline.toLocaleDateString()}
           </span>
         )}
@@ -179,16 +179,16 @@ function LegalSourceCard({ source }: { source: LegalSource }) {
     >
       <span className="text-3xl">{typeInfo.icon}</span>
       <div className="flex-1 min-w-0">
-        <h4 className="font-semibold text-white mb-1">{source.name}</h4>
+        <h4 className="font-semibold text-slate-900 mb-1">{source.name}</h4>
         {source.organization && (
-          <p className="text-sm text-star-400 mb-1">{source.organization}</p>
+          <p className="text-sm text-slate-500 mb-1">{source.organization}</p>
         )}
         <span className="text-xs text-nebula-400">{typeInfo.label}</span>
         {source.description && (
-          <p className="text-xs text-star-300 mt-2 line-clamp-2">{source.description}</p>
+          <p className="text-xs text-slate-500 mt-2 line-clamp-2">{source.description}</p>
         )}
       </div>
-      <span className="text-star-400">→</span>
+      <span className="text-slate-500">→</span>
     </a>
   );
 }
@@ -198,16 +198,16 @@ function LegalUpdateCard({ update }: { update: LegalUpdate }) {
     <div className="card p-4 hover:border-nebula-500/50 transition-all">
       <div className="flex items-start justify-between mb-2">
         {update.source && (
-          <span className="text-xs font-semibold text-nebula-300 bg-space-700 px-2 py-0.5 rounded">
+          <span className="text-xs font-semibold text-nebula-300 bg-slate-100 px-2 py-0.5 rounded">
             {update.source.name}
           </span>
         )}
-        <span className="text-xs text-star-400">
+        <span className="text-xs text-slate-500">
           {new Date(update.publishedDate).toLocaleDateString()}
         </span>
       </div>
-      <h4 className="font-semibold text-white text-sm mb-2">{update.title}</h4>
-      <p className="text-star-300 text-xs line-clamp-2 mb-2">{update.summary}</p>
+      <h4 className="font-semibold text-slate-900 text-sm mb-2">{update.title}</h4>
+      <p className="text-slate-500 text-xs line-clamp-2 mb-2">{update.summary}</p>
       <a
         href={update.sourceUrl}
         target="_blank"
@@ -338,24 +338,24 @@ function ComplianceContent() {
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.classifications}</div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Classifications</div>
+            <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.classifications}</div>
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Classifications</div>
           </div>
           <div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-red-400">{stats.regimeBreakdown?.ITAR || 0}</div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">ITAR Items</div>
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">ITAR Items</div>
           </div>
           <div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-blue-400">{stats.regimeBreakdown?.EAR || 0}</div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">EAR Items</div>
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">EAR Items</div>
           </div>
           <div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-nebula-400">{stats.regulations}</div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Regulations</div>
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Regulations</div>
           </div>
           <div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-yellow-400">{stats.openRegulations}</div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Open for Comment</div>
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Open for Comment</div>
           </div>
         </div>
       )}
@@ -375,8 +375,8 @@ function ComplianceContent() {
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
               activeTab === tab.id
-                ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
-                : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
+                ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
+                : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
             }`}
           >
             <span>{tab.icon}</span>
@@ -393,7 +393,7 @@ function ComplianceContent() {
               <select
                 value={regimeFilter}
                 onChange={(e) => setRegimeFilter(e.target.value)}
-                className="bg-space-700 border border-space-600 text-star-200 rounded-lg px-3 py-2 text-sm"
+                className="bg-slate-100 border border-slate-200 text-slate-600 rounded-lg px-3 py-2 text-sm"
               >
                 <option value="">All Regimes</option>
                 {EXPORT_REGIMES.map((r) => (
@@ -403,7 +403,7 @@ function ComplianceContent() {
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="bg-space-700 border border-space-600 text-star-200 rounded-lg px-3 py-2 text-sm"
+                className="bg-slate-100 border border-slate-200 text-slate-600 rounded-lg px-3 py-2 text-sm"
               >
                 <option value="">All Categories</option>
                 {CLASSIFICATION_CATEGORIES.map((c) => (
@@ -431,7 +431,7 @@ function ComplianceContent() {
               <select
                 value={agencyFilter}
                 onChange={(e) => setAgencyFilter(e.target.value)}
-                className="bg-space-700 border border-space-600 text-star-200 rounded-lg px-3 py-2 text-sm"
+                className="bg-slate-100 border border-slate-200 text-slate-600 rounded-lg px-3 py-2 text-sm"
               >
                 <option value="">All Agencies</option>
                 <option value="FAA">FAA</option>
@@ -443,7 +443,7 @@ function ComplianceContent() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-space-700 border border-space-600 text-star-200 rounded-lg px-3 py-2 text-sm"
+                className="bg-slate-100 border border-slate-200 text-slate-600 rounded-lg px-3 py-2 text-sm"
               >
                 <option value="">All Statuses</option>
                 {REGULATION_STATUSES.map((s) => (
@@ -473,7 +473,7 @@ function ComplianceContent() {
               <select
                 value={sourceTypeFilter}
                 onChange={(e) => setSourceTypeFilter(e.target.value)}
-                className="bg-space-700 border border-space-600 text-star-200 rounded-lg px-3 py-2 text-sm"
+                className="bg-slate-100 border border-slate-200 text-slate-600 rounded-lg px-3 py-2 text-sm"
               >
                 <option value="">All Types</option>
                 <option value="law_firm">Law Firms</option>
@@ -497,7 +497,7 @@ function ComplianceContent() {
             </>
           )}
         </div>
-        <div className="mt-3 pt-3 border-t border-white/[0.06]">
+        <div className="mt-3 pt-3 border-t border-slate-200">
           <Link
             href="/workforce?tab=jobs&category=legal"
             className="text-sm text-nebula-400 hover:text-nebula-300 transition-colors"
@@ -522,7 +522,7 @@ function ComplianceContent() {
               {classifications.length === 0 && (
                 <div className="col-span-full text-center py-12">
                   <span className="text-5xl block mb-4">📋</span>
-                  <p className="text-star-300">No export classifications found.</p>
+                  <p className="text-slate-500">No export classifications found.</p>
                 </div>
               )}
             </div>
@@ -536,7 +536,7 @@ function ComplianceContent() {
               {regulations.length === 0 && (
                 <div className="col-span-full text-center py-12">
                   <span className="text-5xl block mb-4">📜</span>
-                  <p className="text-star-300">No proposed regulations found.</p>
+                  <p className="text-slate-500">No proposed regulations found.</p>
                 </div>
               )}
             </div>
@@ -550,7 +550,7 @@ function ComplianceContent() {
               {sources.length === 0 && (
                 <div className="col-span-full text-center py-12">
                   <span className="text-5xl block mb-4">⚖️</span>
-                  <p className="text-star-300">No legal sources found.</p>
+                  <p className="text-slate-500">No legal sources found.</p>
                 </div>
               )}
             </div>
@@ -564,7 +564,7 @@ function ComplianceContent() {
               {updates.length === 0 && (
                 <div className="col-span-full text-center py-12">
                   <span className="text-5xl block mb-4">📰</span>
-                  <p className="text-star-300">No legal updates available yet.</p>
+                  <p className="text-slate-500">No legal updates available yet.</p>
                 </div>
               )}
             </div>

@@ -13,10 +13,10 @@ const PlanetaryScene = dynamic(
 
 function SceneLoading() {
   return (
-    <div className="h-[300px] flex items-center justify-center bg-space-800/50 rounded-lg">
+    <div className="h-[300px] flex items-center justify-center bg-slate-50 rounded-lg">
       <div className="text-center">
         <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" style={{ borderWidth: '3px' }} />
-        <p className="text-star-400 text-sm">Loading 3D visualization...</p>
+        <p className="text-slate-500 text-sm">Loading 3D visualization...</p>
       </div>
     </div>
   );
@@ -59,7 +59,7 @@ export default function SolarExplorationModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-white flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
             <span className="text-3xl mr-3">🌍</span>
             Solar Exploration
           </h2>
@@ -75,14 +75,14 @@ export default function SolarExplorationModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-white flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
             <span className="text-3xl mr-3">🌍</span>
             Solar Exploration
           </h2>
         </div>
         <div className="card p-8 text-center">
           <span className="text-4xl block mb-4">🛸</span>
-          <p className="text-star-300">{error || 'No exploration data available'}</p>
+          <p className="text-slate-500">{error || 'No exploration data available'}</p>
         </div>
       </div>
     );
@@ -122,7 +122,7 @@ export default function SolarExplorationModule() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               selectedBodySlug === body.slug
                 ? 'bg-nebula-500 text-white'
-                : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
             }`}
           >
             {body.name}
@@ -144,16 +144,16 @@ export default function SolarExplorationModule() {
           {/* Info Panel */}
           <div className="card p-4 space-y-4">
             <div>
-              <h3 className="text-xl font-semibold text-white mb-1">{selectedBody.name}</h3>
-              <p className="text-star-400 text-sm capitalize">{selectedBody.type}</p>
+              <h3 className="text-xl font-semibold text-slate-800 mb-1">{selectedBody.name}</h3>
+              <p className="text-slate-500 text-sm capitalize">{selectedBody.type}</p>
             </div>
 
             {selectedBody.description && (
-              <p className="text-star-300 text-sm">{selectedBody.description}</p>
+              <p className="text-slate-500 text-sm">{selectedBody.description}</p>
             )}
 
-            <div className="border-t border-space-600 pt-4">
-              <h4 className="text-star-200 text-sm font-medium mb-3">Landing Statistics</h4>
+            <div className="border-t border-slate-200 pt-4">
+              <h4 className="text-slate-600 text-sm font-medium mb-3">Landing Statistics</h4>
               <div className="grid grid-cols-2 gap-3">
                 {Object.entries(LANDER_STATUS_INFO).map(([status, info]) => {
                   const count = landerStats[status] || 0;
@@ -161,7 +161,7 @@ export default function SolarExplorationModule() {
                   return (
                     <div key={status} className="flex items-center gap-2">
                       <div className={`w-3 h-3 rounded-full ${info.bgColor}`} />
-                      <span className="text-star-300 text-sm">
+                      <span className="text-slate-500 text-sm">
                         {info.label}: {count}
                       </span>
                     </div>
@@ -172,8 +172,8 @@ export default function SolarExplorationModule() {
 
             {/* Recent Landers */}
             {selectedBody.landers && selectedBody.landers.length > 0 && (
-              <div className="border-t border-space-600 pt-4">
-                <h4 className="text-star-200 text-sm font-medium mb-3">Recent Missions</h4>
+              <div className="border-t border-slate-200 pt-4">
+                <h4 className="text-slate-600 text-sm font-medium mb-3">Recent Missions</h4>
                 <div className="space-y-2">
                   {selectedBody.landers.slice(0, 3).map((lander) => {
                     const statusInfo = LANDER_STATUS_INFO[lander.status];
@@ -181,9 +181,9 @@ export default function SolarExplorationModule() {
                       <div key={lander.id} className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className={`w-2 h-2 rounded-full ${statusInfo.bgColor}`} />
-                          <span className="text-star-200 text-sm">{lander.name}</span>
+                          <span className="text-slate-600 text-sm">{lander.name}</span>
                         </div>
-                        <span className="text-star-400 text-xs">
+                        <span className="text-slate-500 text-xs">
                           {lander.agency || lander.country}
                         </span>
                       </div>
@@ -196,7 +196,7 @@ export default function SolarExplorationModule() {
             {/* View All Link */}
             <Link
               href={`/solar-exploration?body=${selectedBody.slug}`}
-              className="block w-full text-center py-2 bg-space-700/50 hover:bg-space-600/50 text-nebula-300 rounded-lg text-sm transition-colors"
+              className="block w-full text-center py-2 bg-slate-100 hover:bg-slate-200 text-nebula-300 rounded-lg text-sm transition-colors"
             >
               View All {selectedBody.name} Missions
             </Link>

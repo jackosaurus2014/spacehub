@@ -89,10 +89,10 @@ export default function NewsletterSignup({
   if (variant === 'footer') {
     return (
       <div>
-        <h4 className="text-star-200 font-semibold text-sm uppercase tracking-wider mb-4">
+        <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4">
           Newsletter
         </h4>
-        <p className="text-star-400 text-sm mb-4">
+        <p className="text-slate-500 text-sm mb-4">
           Get daily space industry insights delivered to your inbox.
         </p>
         <form onSubmit={handleSubmit} className="space-y-2">
@@ -101,7 +101,7 @@ export default function NewsletterSignup({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email"
-            className="w-full px-3 py-2 text-sm bg-space-900/50 border border-white/10 rounded-lg text-white placeholder:text-star-500 focus:outline-none focus:border-nebula-500/50 transition-colors"
+            className="w-full px-3 py-2 text-sm bg-white/80 border border-slate-300 rounded-lg text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
             required
             disabled={status === 'loading'}
           />
@@ -116,7 +116,7 @@ export default function NewsletterSignup({
         {message && (
           <p
             className={`mt-3 text-xs ${
-              status === 'success' ? 'text-emerald-400' : status === 'error' ? 'text-red-400' : 'text-star-400'
+              status === 'success' ? 'text-emerald-600' : status === 'error' ? 'text-red-500' : 'text-slate-500'
             }`}
           >
             {message}
@@ -128,26 +128,26 @@ export default function NewsletterSignup({
 
   // CTA variant (main page)
   return (
-    <div className="relative card p-10 md:p-16 text-center rounded-3xl glow-border overflow-hidden">
+    <div className="relative card p-10 md:p-16 text-center rounded-3xl overflow-hidden">
       {/* Decorative glow orb */}
-      <div className="absolute -top-20 -right-20 w-64 h-64 bg-nebula-500/10 rounded-full blur-[80px] pointer-events-none" />
+      <div className="absolute -top-20 -right-20 w-64 h-64 bg-nebula-300/20 rounded-full blur-[80px] pointer-events-none" />
       <div className="relative">
-        <h2 className="text-3xl md:text-display-md font-display font-bold text-white mb-4">
+        <h2 className="text-3xl md:text-display-md font-display font-bold text-slate-800 mb-4">
           Stay Ahead of the Curve
         </h2>
-        <p className="text-lg text-star-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-lg text-slate-500 mb-8 max-w-2xl mx-auto leading-relaxed">
           Subscribe to our daily digest and get curated space industry news, AI-powered analysis,
           and expert insights delivered to your inbox every morning.
         </p>
 
         {status === 'success' ? (
-          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-6 max-w-md mx-auto">
-            <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 max-w-md mx-auto">
+            <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <p className="text-emerald-400 font-medium">{message}</p>
+            <p className="text-emerald-700 font-medium">{message}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
@@ -157,7 +157,7 @@ export default function NewsletterSignup({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name (optional)"
-                className="flex-1 px-4 py-3 bg-space-900/50 border border-white/10 rounded-xl text-white placeholder:text-star-500 focus:outline-none focus:border-nebula-500/50 transition-colors"
+                className="flex-1 px-4 py-3 bg-white/80 border border-slate-300 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
                 disabled={status === 'loading'}
               />
               <input
@@ -165,7 +165,7 @@ export default function NewsletterSignup({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
-                className="flex-1 px-4 py-3 bg-space-900/50 border border-white/10 rounded-xl text-white placeholder:text-star-500 focus:outline-none focus:border-nebula-500/50 transition-colors"
+                className="flex-1 px-4 py-3 bg-white/80 border border-slate-300 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
                 required
                 disabled={status === 'loading'}
               />
@@ -188,12 +188,12 @@ export default function NewsletterSignup({
               )}
             </button>
             {status === 'error' && (
-              <p className="mt-4 text-red-400 text-sm">{message}</p>
+              <p className="mt-4 text-red-500 text-sm">{message}</p>
             )}
           </form>
         )}
 
-        <p className="mt-6 text-star-500 text-sm">
+        <p className="mt-6 text-slate-400 text-sm">
           Join 10,000+ space enthusiasts. Unsubscribe anytime.
         </p>
       </div>

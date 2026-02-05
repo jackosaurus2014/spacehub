@@ -50,10 +50,10 @@ export default function LoginPage() {
               height={160}
               className="mx-auto w-full max-w-xs h-auto rounded-lg mb-4"
             />
-            <h1 className="text-2xl font-display font-bold text-white">
+            <h1 className="text-2xl font-display font-bold text-slate-900">
               Welcome Back
             </h1>
-            <p className="text-star-300 mt-2">
+            <p className="text-slate-500 mt-2">
               Sign in to access your SpaceNexus account
             </p>
           </div>
@@ -66,7 +66,7 @@ export default function LoginPage() {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-star-200 text-sm mb-2">
+              <label htmlFor="email" className="block text-slate-600 text-sm mb-2">
                 Email Address
               </label>
               <input
@@ -83,7 +83,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-star-200 text-sm mb-2"
+                className="block text-slate-600 text-sm mb-2"
               >
                 Password
               </label>
@@ -115,7 +115,7 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-star-300">
+            <p className="text-slate-500">
               Don&apos;t have an account?{' '}
               <Link
                 href="/register"

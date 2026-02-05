@@ -50,17 +50,17 @@ function OpportunityCard({ opportunity }: { opportunity: BusinessOpportunity }) 
           )}
         </div>
         {opportunity.aiConfidence && (
-          <span className="text-xs text-star-400">
+          <span className="text-xs text-slate-500">
             {Math.round(opportunity.aiConfidence * 100)}% confidence
           </span>
         )}
       </div>
 
-      <h3 className="font-semibold text-white text-sm mb-2 line-clamp-2">
+      <h3 className="font-semibold text-slate-800 text-sm mb-2 line-clamp-2">
         {opportunity.title}
       </h3>
 
-      <p className="text-star-300 text-xs mb-3 line-clamp-2">
+      <p className="text-slate-500 text-xs mb-3 line-clamp-2">
         {opportunity.description}
       </p>
 
@@ -84,7 +84,7 @@ function OpportunityCard({ opportunity }: { opportunity: BusinessOpportunity }) 
             return (
               <span
                 key={audience}
-                className="text-xs bg-space-700/50 text-star-200 px-2 py-0.5 rounded"
+                className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded"
                 title={info?.label}
               >
                 {info?.icon}
@@ -182,8 +182,8 @@ export default function BusinessOpportunitiesModule() {
     return (
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">💼</span>
-        <h3 className="text-xl font-semibold text-white mb-2">Business Opportunities</h3>
-        <p className="text-star-300 mb-4">
+        <h3 className="text-xl font-semibold text-slate-800 mb-2">Business Opportunities</h3>
+        <p className="text-slate-500 mb-4">
           Discover AI-powered business opportunities in the space industry.
         </p>
         <button
@@ -210,10 +210,10 @@ export default function BusinessOpportunitiesModule() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">💼</span>
           <div>
-            <h2 className="text-2xl font-display font-bold text-white">
+            <h2 className="text-2xl font-display font-bold text-slate-800">
               Business Opportunities
             </h2>
-            <p className="text-star-300 text-sm">
+            <p className="text-slate-500 text-sm">
               AI-powered insights for entrepreneurs & investors
             </p>
           </div>
@@ -250,22 +250,22 @@ export default function BusinessOpportunitiesModule() {
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="card p-3 text-center">
-            <div className="text-2xl font-bold text-white">{stats.total}</div>
-            <div className="text-star-300 text-xs">Opportunities</div>
+            <div className="text-2xl font-bold text-slate-800">{stats.total}</div>
+            <div className="text-slate-500 text-xs">Opportunities</div>
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-yellow-400">{stats.featured}</div>
-            <div className="text-star-300 text-xs">Featured</div>
+            <div className="text-slate-500 text-xs">Featured</div>
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-green-400">{stats.recentCount}</div>
-            <div className="text-star-300 text-xs">This Week</div>
+            <div className="text-slate-500 text-xs">This Week</div>
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-nebula-300">
               {stats.byType?.ai_insight || 0}
             </div>
-            <div className="text-star-300 text-xs">AI Insights</div>
+            <div className="text-slate-500 text-xs">AI Insights</div>
           </div>
         </div>
       )}
@@ -283,7 +283,7 @@ export default function BusinessOpportunitiesModule() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="text-2xl">🚀</span>
-              <h3 className="text-xl font-display font-bold text-white">Moonshots</h3>
+              <h3 className="text-xl font-display font-bold text-slate-800">Moonshots</h3>
               <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded ml-2">
                 High Risk / High Reward
               </span>
@@ -298,7 +298,7 @@ export default function BusinessOpportunitiesModule() {
 
           {showMoonshots ? (
             <div className="space-y-4">
-              <p className="text-star-400 text-sm italic mb-4">
+              <p className="text-slate-500 text-sm italic mb-4">
                 Unconventional, high-risk opportunities that others might overlook. For educational purposes only.
               </p>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -316,34 +316,34 @@ export default function BusinessOpportunitiesModule() {
                       </span>
                     </div>
 
-                    <h4 className="text-white font-semibold mb-2">{moonshot.title}</h4>
-                    <p className="text-star-300 text-sm mb-4">{moonshot.description}</p>
+                    <h4 className="text-slate-800 font-semibold mb-2">{moonshot.title}</h4>
+                    <p className="text-slate-500 text-sm mb-4">{moonshot.description}</p>
 
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between">
-                        <span className="text-star-400">Time Horizon:</span>
-                        <span className="text-star-200">{moonshot.timeHorizon}</span>
+                        <span className="text-slate-500">Time Horizon:</span>
+                        <span className="text-slate-600">{moonshot.timeHorizon}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-star-400">Capital Required:</span>
-                        <span className="text-star-200">{moonshot.requiredCapital}</span>
+                        <span className="text-slate-500">Capital Required:</span>
+                        <span className="text-slate-600">{moonshot.requiredCapital}</span>
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-space-600">
+                    <div className="mt-4 pt-3 border-t border-slate-200">
                       <div className="mb-2">
                         <span className="text-orange-400 text-xs font-medium">Why Most Would Dismiss:</span>
-                        <p className="text-star-400 text-xs mt-1">{moonshot.whyUnlikely}</p>
+                        <p className="text-slate-500 text-xs mt-1">{moonshot.whyUnlikely}</p>
                       </div>
                       <div>
                         <span className="text-green-400 text-xs font-medium">Key Insight:</span>
-                        <p className="text-star-300 text-xs mt-1">{moonshot.keyInsight}</p>
+                        <p className="text-slate-500 text-xs mt-1">{moonshot.keyInsight}</p>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-              <p className="text-star-500 text-xs text-center mt-4">
+              <p className="text-slate-400 text-xs text-center mt-4">
                 These are speculative ideas for educational discussion. Not investment advice.
               </p>
             </div>
@@ -356,8 +356,8 @@ export default function BusinessOpportunitiesModule() {
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">🎯</span>
                   <div>
-                    <p className="text-white font-medium">{moonshots.length} Moonshot Ideas Available</p>
-                    <p className="text-star-400 text-sm">
+                    <p className="text-slate-800 font-medium">{moonshots.length} Moonshot Ideas Available</p>
+                    <p className="text-slate-500 text-sm">
                       Unconventional opportunities with extreme risk and reward potential
                     </p>
                   </div>

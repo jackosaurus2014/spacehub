@@ -20,13 +20,13 @@ const PlanetaryScene = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[500px] flex items-center justify-center bg-space-800/50 rounded-lg">
+      <div className="h-[500px] flex items-center justify-center bg-slate-50 rounded-lg">
         <div className="text-center">
           <div
             className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"
             style={{ borderWidth: '3px' }}
           />
-          <p className="text-star-400 text-sm">Loading 3D visualization...</p>
+          <p className="text-slate-500 text-sm">Loading 3D visualization...</p>
         </div>
       </div>
     ),
@@ -146,20 +146,20 @@ function SolarExplorationContent() {
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="card-elevated p-6 text-center">
-              <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.totalBodies}</div>
-              <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Bodies Explored</div>
+              <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.totalBodies}</div>
+              <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Bodies Explored</div>
             </div>
             <div className="card-elevated p-6 text-center">
-              <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.totalLanders}</div>
-              <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Total Missions</div>
+              <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.totalLanders}</div>
+              <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Total Missions</div>
             </div>
             <div className="card-elevated p-6 text-center">
               <div className="text-4xl font-bold font-display tracking-tight text-green-400">{stats.activeLanders}</div>
-              <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Active Missions</div>
+              <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Active Missions</div>
             </div>
             <div className="card-elevated p-6 text-center">
               <div className="text-4xl font-bold font-display tracking-tight text-blue-400">{stats.completedLanders}</div>
-              <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Completed</div>
+              <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Completed</div>
             </div>
           </div>
         )}
@@ -172,8 +172,8 @@ function SolarExplorationContent() {
               onClick={() => setSelectedBodySlug(body.slug)}
               className={`px-5 py-3 rounded-lg font-medium transition-all ${
                 selectedBodySlug === body.slug
-                  ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
-                  : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
+                  ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
+                  : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
               }`}
             >
               {body.name}
@@ -193,8 +193,8 @@ function SolarExplorationContent() {
 
               {/* Body Info */}
               <div className="card p-6 mt-6">
-                <h2 className="text-2xl font-semibold text-white mb-2">{selectedBody.name}</h2>
-                <div className="flex flex-wrap gap-4 text-star-400 text-sm mb-4">
+                <h2 className="text-2xl font-semibold text-slate-900 mb-2">{selectedBody.name}</h2>
+                <div className="flex flex-wrap gap-4 text-slate-500 text-sm mb-4">
                   <span className="capitalize">{selectedBody.type}</span>
                   <span>Diameter: {selectedBody.diameter.toLocaleString()} km</span>
                   {selectedBody.landers && (
@@ -202,7 +202,7 @@ function SolarExplorationContent() {
                   )}
                 </div>
                 {selectedBody.description && (
-                  <p className="text-star-300">{selectedBody.description}</p>
+                  <p className="text-slate-500">{selectedBody.description}</p>
                 )}
               </div>
             </div>
@@ -211,7 +211,7 @@ function SolarExplorationContent() {
             <div className="xl:col-span-1">
               <div className="card p-4 sticky top-20">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-slate-900">
                     Surface Missions ({filteredLanders.length})
                   </h3>
                   <ExportButton
@@ -246,7 +246,7 @@ function SolarExplorationContent() {
                   <select
                     value={statusFilter || ''}
                     onChange={(e) => setStatusFilter(e.target.value || null)}
-                    className="bg-space-700 text-star-200 text-sm rounded px-3 py-1.5 border border-space-600"
+                    className="bg-slate-100 text-slate-600 text-sm rounded px-3 py-1.5 border border-slate-200"
                   >
                     <option value="">All Status</option>
                     {Object.entries(LANDER_STATUS_INFO).map(([value, info]) => (
@@ -260,7 +260,7 @@ function SolarExplorationContent() {
                   <select
                     value={typeFilter || ''}
                     onChange={(e) => setTypeFilter(e.target.value || null)}
-                    className="bg-space-700 text-star-200 text-sm rounded px-3 py-1.5 border border-space-600"
+                    className="bg-slate-100 text-slate-600 text-sm rounded px-3 py-1.5 border border-slate-200"
                   >
                     <option value="">All Types</option>
                     {LANDER_MISSION_TYPES.map((type) => (
@@ -274,7 +274,7 @@ function SolarExplorationContent() {
                 {/* Landers List */}
                 <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
                   {filteredLanders.length === 0 ? (
-                    <p className="text-star-400 text-center py-4">No missions match filters</p>
+                    <p className="text-slate-500 text-center py-4">No missions match filters</p>
                   ) : (
                     filteredLanders.map((lander) => (
                       <LanderCard key={lander.id} lander={lander} formatDate={formatDate} />
@@ -288,25 +288,25 @@ function SolarExplorationContent() {
 
         {/* Related Modules */}
         <div className="card p-6 mt-6">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
             <span>🔗</span> Related Modules
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <Link href="/mission-control?type=moon_mission" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-nebula-300">🌙 Moon Missions</div>
-              <p className="text-xs text-star-400 mt-1">Upcoming lunar launch schedule</p>
+            <Link href="/mission-control?type=moon_mission" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
+              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">🌙 Moon Missions</div>
+              <p className="text-xs text-slate-500 mt-1">Upcoming lunar launch schedule</p>
             </Link>
-            <Link href="/mission-control?type=mars_mission" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-nebula-300">🔴 Mars Missions</div>
-              <p className="text-xs text-star-400 mt-1">Upcoming Mars launch windows</p>
+            <Link href="/mission-control?type=mars_mission" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
+              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">🔴 Mars Missions</div>
+              <p className="text-xs text-slate-500 mt-1">Upcoming Mars launch windows</p>
             </Link>
-            <Link href="/resource-exchange" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-nebula-300">🚀 Launch Providers</div>
-              <p className="text-xs text-star-400 mt-1">Vehicles and launch services</p>
+            <Link href="/resource-exchange" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
+              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">🚀 Launch Providers</div>
+              <p className="text-xs text-slate-500 mt-1">Vehicles and launch services</p>
             </Link>
-            <Link href="/space-insurance?tab=policies" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-nebula-300">🛡️ Mission Insurance</div>
-              <p className="text-xs text-star-400 mt-1">Coverage for exploration missions</p>
+            <Link href="/space-insurance?tab=policies" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
+              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">🛡️ Mission Insurance</div>
+              <p className="text-xs text-slate-500 mt-1">Coverage for exploration missions</p>
             </Link>
           </div>
         </div>
@@ -327,11 +327,11 @@ function LanderCard({
   const missionTypeInfo = LANDER_MISSION_TYPES.find((t) => t.value === lander.missionType);
 
   return (
-    <div className="bg-space-700/30 rounded-lg p-3 border border-space-600/50 hover:border-space-500 transition-colors">
+    <div className="bg-slate-100/30 rounded-lg p-3 border border-slate-200/50 hover:border-space-500 transition-colors">
       <div className="flex items-start justify-between mb-2">
         <div>
-          <h4 className="text-white font-medium">{lander.name}</h4>
-          <div className="flex items-center gap-2 text-star-400 text-xs mt-0.5">
+          <h4 className="text-slate-900 font-medium">{lander.name}</h4>
+          <div className="flex items-center gap-2 text-slate-500 text-xs mt-0.5">
             {agencyInfo && <span>{agencyInfo.flag}</span>}
             <span>{lander.agency || lander.country}</span>
             {missionTypeInfo && <span>• {missionTypeInfo.icon}</span>}
@@ -346,12 +346,12 @@ function LanderCard({
       </div>
 
       {lander.landingSite && (
-        <p className="text-star-300 text-xs mb-1">
-          <span className="text-star-400">Site:</span> {lander.landingSite}
+        <p className="text-slate-500 text-xs mb-1">
+          <span className="text-slate-500">Site:</span> {lander.landingSite}
         </p>
       )}
 
-      <div className="flex justify-between text-xs text-star-400">
+      <div className="flex justify-between text-xs text-slate-500">
         <span>
           {lander.latitude.toFixed(2)}°{lander.latitude >= 0 ? 'N' : 'S'},{' '}
           {Math.abs(lander.longitude).toFixed(2)}°{lander.longitude >= 0 ? 'E' : 'W'}
@@ -360,7 +360,7 @@ function LanderCard({
       </div>
 
       {lander.description && (
-        <p className="text-star-400 text-xs mt-2 line-clamp-2">{lander.description}</p>
+        <p className="text-slate-500 text-xs mt-2 line-clamp-2">{lander.description}</p>
       )}
     </div>
   );

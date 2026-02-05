@@ -55,14 +55,14 @@ export default function PremiumGate({
 
       {/* Upgrade overlay */}
       <div className={`${showPreview ? 'absolute inset-0' : ''} flex items-center justify-center`}>
-        <div className="card p-8 text-center max-w-md mx-auto bg-space-800/95 backdrop-blur-sm">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-nebula-500/20 flex items-center justify-center">
+        <div className="card p-8 text-center max-w-md mx-auto bg-white/95 backdrop-blur-sm">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-nebula-100 flex items-center justify-center">
             <span className="text-3xl">🚀</span>
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">
+          <h3 className="text-xl font-bold text-slate-800 mb-2">
             Upgrade to {plan?.name || 'Premium'}
           </h3>
-          <p className="text-star-300 mb-6">
+          <p className="text-slate-500 mb-6">
             This feature requires a {plan?.name || 'premium'} subscription.
             Unlock real-time data, advanced analytics, and more.
           </p>
@@ -75,7 +75,7 @@ export default function PremiumGate({
             </Link>
             <Link
               href="/pricing"
-              className="block text-star-300 hover:text-white text-sm transition-colors"
+              className="block text-slate-500 hover:text-slate-700 text-sm transition-colors"
             >
               Compare all features →
             </Link>
@@ -91,8 +91,8 @@ export function PremiumBadge({ tier }: { tier: SubscriptionTier }) {
   if (tier === 'free') return null;
 
   const colors = {
-    pro: 'bg-nebula-500/20 text-nebula-300 border-nebula-500/30',
-    enterprise: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
+    pro: 'bg-nebula-100 text-nebula-700 border-nebula-300',
+    enterprise: 'bg-yellow-100 text-yellow-700 border-yellow-300',
   };
 
   const labels = {
@@ -125,7 +125,7 @@ export function UpgradePrompt({
   return (
     <Link
       href="/pricing"
-      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-nebula-500/10 border border-nebula-500/30 text-nebula-300 text-sm hover:bg-nebula-500/20 transition-colors"
+      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-nebula-100 border border-nebula-300 text-nebula-700 text-sm hover:bg-nebula-200 transition-colors"
     >
       <span>🔒</span>
       <span>Upgrade to unlock {feature}</span>

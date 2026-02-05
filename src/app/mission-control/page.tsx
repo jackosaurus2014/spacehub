@@ -36,7 +36,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
     <div className={`card overflow-hidden ${isWithin48Hours ? 'border-green-500/50 glow-border' : ''}`}>
       <div className="flex">
         {/* Image */}
-        <div className="relative w-32 h-32 flex-shrink-0 bg-space-700">
+        <div className="relative w-32 h-32 flex-shrink-0 bg-slate-100">
           {event.imageUrl ? (
             <Image
               src={event.imageUrl}
@@ -50,7 +50,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
             </div>
           )}
           {isWithin48Hours && (
-            <div className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse">
+            <div className="absolute top-2 left-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-0.5 rounded animate-pulse">
               SOON
             </div>
           )}
@@ -61,24 +61,24 @@ function EventCard({ event }: { event: SpaceEvent }) {
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className={`${typeInfo.color} text-white text-xs font-semibold px-2 py-0.5 rounded`}>
+                <span className={`${typeInfo.color} text-slate-900 text-xs font-semibold px-2 py-0.5 rounded`}>
                   {typeInfo.icon} {typeInfo.label}
                 </span>
                 {event.country && (
-                  <span className="text-star-300 text-xs">{event.country}</span>
+                  <span className="text-slate-500 text-xs">{event.country}</span>
                 )}
               </div>
-              <h3 className={`font-semibold text-white line-clamp-2 ${isPast ? 'opacity-60' : ''}`}>
+              <h3 className={`font-semibold text-slate-900 line-clamp-2 ${isPast ? 'opacity-60' : ''}`}>
                 {event.name}
               </h3>
             </div>
           </div>
 
           {event.agency && (
-            <p className="text-star-300 text-sm mt-1">{event.agency}</p>
+            <p className="text-slate-500 text-sm mt-1">{event.agency}</p>
           )}
 
-          <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-star-300">
+          <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-500">
             {launchDate && (
               <span className={`flex items-center gap-1 ${isPast ? 'line-through opacity-60' : ''}`}>
                 <span>📅</span>
@@ -109,7 +109,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
           )}
 
           {event.description && (
-            <p className="text-star-300/70 text-xs mt-2 line-clamp-2">{event.description}</p>
+            <p className="text-slate-500/70 text-xs mt-2 line-clamp-2">{event.description}</p>
           )}
 
           <div className="flex flex-wrap gap-2 mt-2">
@@ -248,7 +248,7 @@ function MissionControlContent() {
             {/* Search */}
             <div className="flex-1">
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-star-300">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
                   🔍
                 </span>
                 <input
@@ -269,8 +269,8 @@ function MissionControlContent() {
                   onClick={() => setSelectedType(type.value)}
                   className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-1 text-sm ${
                     selectedType === type.value
-                      ? 'bg-white/[0.1] text-white border-white/[0.15] shadow-glow-sm'
-                      : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
+                      ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
+                      : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
                   }`}
                 >
                   <span>{type.icon}</span>
@@ -299,8 +299,8 @@ function MissionControlContent() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-white">{events.length}</div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Total Events</div>
+            <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{events.length}</div>
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Total Events</div>
           </div>
           <div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-green-400">
@@ -309,19 +309,19 @@ function MissionControlContent() {
                 return d && d > new Date() && d < new Date(Date.now() + 48 * 60 * 60 * 1000);
               }).length}
             </div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Next 48 Hours</div>
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Next 48 Hours</div>
           </div>
           <div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
               {events.filter(e => e.type === 'crewed_mission').length}
             </div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Crewed Missions</div>
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Crewed Missions</div>
           </div>
           <div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-rocket-400">
               {new Set(events.map(e => e.agency).filter(Boolean)).size}
             </div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">Agencies</div>
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Agencies</div>
           </div>
         </div>
 
@@ -333,8 +333,8 @@ function MissionControlContent() {
         ) : years.length === 0 ? (
           <div className="text-center py-20">
             <span className="text-6xl block mb-4">🔭</span>
-            <h2 className="text-2xl font-semibold text-white mb-2">No Events Found</h2>
-            <p className="text-star-300">
+            <h2 className="text-2xl font-semibold text-slate-900 mb-2">No Events Found</h2>
+            <p className="text-slate-500">
               {searchQuery
                 ? 'Try adjusting your search terms'
                 : 'No upcoming events available. Try fetching fresh data.'}
@@ -344,10 +344,10 @@ function MissionControlContent() {
           <div className="space-y-12">
             {years.map((year) => (
               <div key={year}>
-                <h2 className="text-2xl font-display font-bold text-white mb-6 flex items-center gap-3 sticky top-16 bg-space-900/95 backdrop-blur-sm py-3 z-10">
+                <h2 className="text-2xl font-display font-bold text-slate-900 mb-6 flex items-center gap-3 sticky top-16 bg-white/95 backdrop-blur-sm py-3 z-10">
                   <span className="text-nebula-400">📅</span>
                   {year}
-                  <span className="text-star-300 text-sm font-normal">
+                  <span className="text-slate-500 text-sm font-normal">
                     ({Object.values(groupedEvents[year]).flat().length} events)
                   </span>
                 </h2>
@@ -357,15 +357,15 @@ function MissionControlContent() {
                     <div key={`${year}-${month}`} className="relative">
                       {/* Month marker */}
                       <div className="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-nebula-500 flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">
+                        <span className="text-slate-900 text-xs font-bold">
                           {month.substring(0, 3)}
                         </span>
                       </div>
 
                       <div className="ml-6">
-                        <h3 className="text-lg font-semibold text-white mb-4">
+                        <h3 className="text-lg font-semibold text-slate-900 mb-4">
                           {month}
-                          <span className="text-star-300 text-sm font-normal ml-2">
+                          <span className="text-slate-500 text-sm font-normal ml-2">
                             ({monthEvents.length} events)
                           </span>
                         </h3>
@@ -387,25 +387,25 @@ function MissionControlContent() {
         {/* Related Intelligence */}
         {!loading && events.length > 0 && (
           <div className="card p-6 mt-8">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
               <span>🔗</span> Related Intelligence
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <Link href="/solar-flares" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
-                <div className="text-sm font-medium text-white group-hover:text-nebula-300">☀️ Solar Flares</div>
-                <p className="text-xs text-star-400 mt-1">Solar weather can delay launches</p>
+              <Link href="/solar-flares" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
+                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">☀️ Solar Flares</div>
+                <p className="text-xs text-slate-500 mt-1">Solar weather can delay launches</p>
               </Link>
-              <Link href="/debris-monitor" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
-                <div className="text-sm font-medium text-white group-hover:text-nebula-300">🛰️ Debris Monitor</div>
-                <p className="text-xs text-star-400 mt-1">Track orbital debris near missions</p>
+              <Link href="/debris-monitor" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
+                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">🛰️ Debris Monitor</div>
+                <p className="text-xs text-slate-500 mt-1">Track orbital debris near missions</p>
               </Link>
-              <Link href="/orbital-slots" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
-                <div className="text-sm font-medium text-white group-hover:text-nebula-300">📡 Orbital Slots</div>
-                <p className="text-xs text-star-400 mt-1">Satellite registry and congestion</p>
+              <Link href="/orbital-slots" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
+                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">📡 Orbital Slots</div>
+                <p className="text-xs text-slate-500 mt-1">Satellite registry and congestion</p>
               </Link>
-              <Link href="/space-insurance" className="p-3 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group">
-                <div className="text-sm font-medium text-white group-hover:text-nebula-300">🛡️ Space Insurance</div>
-                <p className="text-xs text-star-400 mt-1">Mission risk and coverage data</p>
+              <Link href="/space-insurance" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
+                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">🛡️ Space Insurance</div>
+                <p className="text-xs text-slate-500 mt-1">Mission risk and coverage data</p>
               </Link>
             </div>
           </div>

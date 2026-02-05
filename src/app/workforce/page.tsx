@@ -131,11 +131,11 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
     <div className="card p-5 hover:border-nebula-500/50 transition-all group">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-white text-base group-hover:text-nebula-300 transition-colors">
+          <h3 className="font-semibold text-slate-900 text-base group-hover:text-nebula-300 transition-colors">
             {job.title}
           </h3>
           <div className="flex items-center gap-2 mt-0.5">
-            <p className="text-star-300 text-sm">{job.company}</p>
+            <p className="text-slate-500 text-sm">{job.company}</p>
             <Link
               href={`/market-intel?search=${encodeURIComponent(job.company)}`}
               onClick={(e) => e.stopPropagation()}
@@ -160,17 +160,17 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
-        <span className="text-star-400">{job.location}</span>
-        <span className="text-space-500">|</span>
-        <span className={`px-2 py-0.5 rounded ${cat?.bg || 'bg-space-600'} ${cat?.text || 'text-star-300'}`}>
+        <span className="text-slate-500">{job.location}</span>
+        <span className="text-slate-300">|</span>
+        <span className={`px-2 py-0.5 rounded ${cat?.bg || 'bg-slate-100'} ${cat?.text || 'text-slate-500'}`}>
           {catLabel?.icon} {catLabel?.label || job.category}
         </span>
-        <span className="text-space-500">|</span>
-        <span className="text-star-300">{senLabel}</span>
+        <span className="text-slate-300">|</span>
+        <span className="text-slate-500">{senLabel}</span>
         {job.degreeRequired && (
           <>
-            <span className="text-space-500">|</span>
-            <span className="text-star-400 capitalize">{job.degreeRequired}</span>
+            <span className="text-slate-300">|</span>
+            <span className="text-slate-500 capitalize">{job.degreeRequired}</span>
           </>
         )}
       </div>
@@ -181,12 +181,12 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
             {formatSalary(job.salaryMin ?? 0)} - {formatSalary(job.salaryMax ?? 0)}
           </span>
           {job.yearsExperience !== null && job.yearsExperience !== undefined && (
-            <span className="text-xs text-star-400">
+            <span className="text-xs text-slate-500">
               {job.yearsExperience === 0 ? 'No exp required' : `${job.yearsExperience}+ years`}
             </span>
           )}
         </div>
-        <span className="text-xs text-star-400">{daysAgo(job.postedDate)}</span>
+        <span className="text-xs text-slate-500">{daysAgo(job.postedDate)}</span>
       </div>
     </div>
   );
@@ -233,7 +233,7 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
   return (
     <div className="card p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-white text-base">
+        <h3 className="font-semibold text-slate-900 text-base">
           Q{trend.quarter} {trend.year}
         </h3>
         <span
@@ -247,53 +247,53 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
 
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
-          <span className="text-star-400 text-xs block mb-1">Total Openings</span>
-          <div className="text-white font-bold text-lg">{trend.totalOpenings.toLocaleString()}</div>
+          <span className="text-slate-500 text-xs block mb-1">Total Openings</span>
+          <div className="text-slate-900 font-bold text-lg">{trend.totalOpenings.toLocaleString()}</div>
         </div>
         <div>
-          <span className="text-star-400 text-xs block mb-1">Total Hires</span>
-          <div className="text-white font-bold text-lg">{(trend.totalHires ?? 0).toLocaleString()}</div>
+          <span className="text-slate-500 text-xs block mb-1">Total Hires</span>
+          <div className="text-slate-900 font-bold text-lg">{(trend.totalHires ?? 0).toLocaleString()}</div>
         </div>
         <div>
-          <span className="text-star-400 text-xs block mb-1">Avg Salary</span>
+          <span className="text-slate-500 text-xs block mb-1">Avg Salary</span>
           <div className="text-green-400 font-bold text-lg">{formatSalary(trend.avgSalary ?? 0)}</div>
         </div>
         <div>
-          <span className="text-star-400 text-xs block mb-1">Median Salary</span>
+          <span className="text-slate-500 text-xs block mb-1">Median Salary</span>
           <div className="text-nebula-300 font-bold text-lg">{formatSalary(trend.medianSalary ?? 0)}</div>
         </div>
       </div>
 
       {/* Category breakdown */}
-      <div className="border-t border-white/[0.06] pt-3 mb-3">
-        <span className="text-star-400 text-xs block mb-2">Openings by Category</span>
+      <div className="border-t border-slate-200 pt-3 mb-3">
+        <span className="text-slate-500 text-xs block mb-2">Openings by Category</span>
         <div className="grid grid-cols-4 gap-2">
           <div className="text-center">
             <div className="text-sm text-blue-400 font-bold">{trend.engineeringOpenings.toLocaleString()}</div>
-            <div className="text-[10px] text-star-400">Eng</div>
+            <div className="text-[10px] text-slate-500">Eng</div>
           </div>
           <div className="text-center">
             <div className="text-sm text-green-400 font-bold">{trend.operationsOpenings.toLocaleString()}</div>
-            <div className="text-[10px] text-star-400">Ops</div>
+            <div className="text-[10px] text-slate-500">Ops</div>
           </div>
           <div className="text-center">
             <div className="text-sm text-yellow-400 font-bold">{trend.businessOpenings.toLocaleString()}</div>
-            <div className="text-[10px] text-star-400">Biz</div>
+            <div className="text-[10px] text-slate-500">Biz</div>
           </div>
           <div className="text-center">
             <div className="text-sm text-purple-400 font-bold">{trend.researchOpenings.toLocaleString()}</div>
-            <div className="text-[10px] text-star-400">R&D</div>
+            <div className="text-[10px] text-slate-500">R&D</div>
           </div>
         </div>
       </div>
 
       {/* Top Skills */}
       {topSkills.length > 0 && (
-        <div className="border-t border-white/[0.06] pt-3 mb-3">
-          <span className="text-star-400 text-xs block mb-2">Top Skills</span>
+        <div className="border-t border-slate-200 pt-3 mb-3">
+          <span className="text-slate-500 text-xs block mb-2">Top Skills</span>
           <div className="flex flex-wrap gap-1.5">
             {topSkills.map((skill) => (
-              <span key={skill} className="text-[10px] px-2 py-0.5 rounded bg-space-600 text-star-300">
+              <span key={skill} className="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-500">
                 {skill}
               </span>
             ))}
@@ -303,8 +303,8 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
 
       {/* Top Companies */}
       {topCompanies.length > 0 && (
-        <div className="border-t border-white/[0.06] pt-3">
-          <span className="text-star-400 text-xs block mb-2">Top Hiring</span>
+        <div className="border-t border-slate-200 pt-3">
+          <span className="text-slate-500 text-xs block mb-2">Top Hiring</span>
           <div className="flex flex-wrap gap-1.5">
             {topCompanies.map((company) => (
               <span key={company} className="text-[10px] px-2 py-0.5 rounded bg-nebula-500/10 text-nebula-300">
@@ -347,12 +347,12 @@ function BenchmarkBar({
     <div className="card p-4">
       <div className="flex items-center justify-between mb-2">
         <span className={`text-sm font-medium ${color}`}>{label}</span>
-        <span className="text-xs text-star-400">{count} roles</span>
+        <span className="text-xs text-slate-500">{count} roles</span>
       </div>
 
-      <div className="relative h-4 bg-space-800 rounded-full overflow-hidden mb-2">
+      <div className="relative h-4 bg-slate-50 rounded-full overflow-hidden mb-2">
         <div
-          className="absolute h-full bg-space-600 rounded-full"
+          className="absolute h-full bg-slate-100 rounded-full"
           style={{ left: `${minPct}%`, width: `${Math.max(maxPct - minPct, 1)}%` }}
         />
         <div
@@ -361,7 +361,7 @@ function BenchmarkBar({
         />
       </div>
 
-      <div className="flex justify-between text-xs text-star-400">
+      <div className="flex justify-between text-xs text-slate-500">
         <span>{formatSalary(avgMin)}</span>
         <span className="text-nebula-300 font-medium">Median: {formatSalary(avgMedian)}</span>
         <span>{formatSalary(avgMax)}</span>
@@ -543,10 +543,10 @@ function WorkforceContent() {
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           <div className="card-elevated p-4 text-center">
-            <div className="text-2xl font-bold font-display text-white">
+            <div className="text-2xl font-bold font-display text-slate-900">
               {stats.totalOpenings.toLocaleString()}
             </div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
               Total Openings
             </div>
           </div>
@@ -554,7 +554,7 @@ function WorkforceContent() {
             <div className="text-2xl font-bold font-display text-green-400">
               {formatSalary(stats.avgSalary)}
             </div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
               Avg Salary
             </div>
           </div>
@@ -562,7 +562,7 @@ function WorkforceContent() {
             <div className="text-2xl font-bold font-display text-nebula-300">
               {JOB_CATEGORIES.find((c) => c.value === stats.topCategory)?.label || stats.topCategory}
             </div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
               Top Category
             </div>
           </div>
@@ -570,7 +570,7 @@ function WorkforceContent() {
             <div className="text-2xl font-bold font-display text-blue-400 truncate">
               {stats.topCompany}
             </div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
               Top Employer
             </div>
           </div>
@@ -578,7 +578,7 @@ function WorkforceContent() {
             <div className="text-2xl font-bold font-display text-purple-400">
               {stats.totalCompanies}
             </div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
               Companies
             </div>
           </div>
@@ -591,7 +591,7 @@ function WorkforceContent() {
               {(stats.growthRate ?? 0) >= 0 ? '+' : ''}
               {(stats.growthRate ?? 0).toFixed(1)}%
             </div>
-            <div className="text-star-400 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
               YoY Growth
             </div>
           </div>
@@ -610,8 +610,8 @@ function WorkforceContent() {
             onClick={() => handleTabChange(tab.id)}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeTab === tab.id
-                ? 'bg-nebula-500 text-white shadow-glow-sm'
-                : 'bg-space-700/50 text-star-300 hover:bg-space-600/50'
+                ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
+                : 'bg-slate-100/50 text-slate-500 hover:bg-slate-100/50'
             }`}
           >
             {tab.label}
@@ -619,8 +619,8 @@ function WorkforceContent() {
               <span
                 className={`text-xs px-1.5 py-0.5 rounded-full ${
                   activeTab === tab.id
-                    ? 'bg-white/20 text-white'
-                    : 'bg-space-600 text-star-400'
+                    ? 'bg-white/20 text-slate-900'
+                    : 'bg-slate-100 text-slate-500'
                 }`}
               >
                 {tab.count}
@@ -642,7 +642,7 @@ function WorkforceContent() {
                   placeholder="Search jobs by title, company, location, or specialization..."
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  className="flex-1 bg-space-800 border border-white/[0.06] rounded-lg px-4 py-2.5 text-sm text-white placeholder-star-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-900 placeholder-star-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
                 />
                 <button type="submit" className="btn-primary px-6">
                   Search
@@ -655,7 +655,7 @@ function WorkforceContent() {
               <select
                 value={categoryFilter}
                 onChange={(e) => handleCategoryChange(e.target.value as JobCategory | '')}
-                className="bg-space-800 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-nebula-500/50"
+                className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-nebula-500/50"
               >
                 <option value="">All Categories</option>
                 {JOB_CATEGORIES.map((c) => (
@@ -669,7 +669,7 @@ function WorkforceContent() {
               <select
                 value={seniorityFilter}
                 onChange={(e) => handleSeniorityChange(e.target.value as SeniorityLevel | '')}
-                className="bg-space-800 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-nebula-500/50"
+                className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-nebula-500/50"
               >
                 <option value="">All Levels</option>
                 {SENIORITY_LEVELS.map((s) => (
@@ -685,7 +685,7 @@ function WorkforceContent() {
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   remoteOnly
                     ? 'bg-nebula-500/20 text-nebula-300 border border-nebula-500/30'
-                    : 'bg-space-800 text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
+                    : 'bg-slate-50 text-slate-500 border border-slate-200 hover:border-slate-200'
                 }`}
               >
                 Remote Only
@@ -695,14 +695,14 @@ function WorkforceContent() {
               {hasFilters && (
                 <button
                   onClick={clearFilters}
-                  className="px-3 py-2 rounded-lg text-sm text-star-400 hover:text-white transition-colors"
+                  className="px-3 py-2 rounded-lg text-sm text-slate-500 hover:text-slate-900 transition-colors"
                 >
                   Clear Filters
                 </button>
               )}
 
               <div className="flex items-center gap-2 ml-auto">
-                <span className="text-xs text-star-400">
+                <span className="text-xs text-slate-500">
                   {totalJobs} {totalJobs === 1 ? 'job' : 'jobs'} found
                 </span>
                 <ExportButton
@@ -722,8 +722,8 @@ function WorkforceContent() {
             </div>
           ) : jobs.length === 0 ? (
             <div className="text-center py-20">
-              <h3 className="text-xl font-semibold text-white mb-2">No jobs found</h3>
-              <p className="text-star-300 mb-4">
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">No jobs found</h3>
+              <p className="text-slate-500 mb-4">
                 {hasFilters
                   ? 'Try adjusting your filters or search terms.'
                   : 'Job postings will appear here once data is loaded.'}
@@ -774,15 +774,15 @@ function WorkforceContent() {
             </div>
           ) : trends.length === 0 ? (
             <div className="text-center py-20">
-              <h3 className="text-xl font-semibold text-white mb-2">No trend data available</h3>
-              <p className="text-star-300">Workforce trends will appear once data is loaded.</p>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">No trend data available</h3>
+              <p className="text-slate-500">Workforce trends will appear once data is loaded.</p>
             </div>
           ) : (
             <>
               {/* Summary banner */}
               <div className="card p-5 mb-6">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-white font-semibold">Industry Overview</h3>
+                  <h3 className="text-slate-900 font-semibold">Industry Overview</h3>
                   <ExportButton
                     data={trends}
                     filename="spacehub-workforce-trends"
@@ -792,13 +792,13 @@ function WorkforceContent() {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
-                    <span className="text-star-400 text-xs block mb-1">Latest Quarter</span>
-                    <span className="text-white font-bold">
+                    <span className="text-slate-500 text-xs block mb-1">Latest Quarter</span>
+                    <span className="text-slate-900 font-bold">
                       Q{trends[trends.length - 1].quarter} {trends[trends.length - 1].year}
                     </span>
                   </div>
                   <div>
-                    <span className="text-star-400 text-xs block mb-1">Openings Growth</span>
+                    <span className="text-slate-500 text-xs block mb-1">Openings Growth</span>
                     <span className="text-green-400 font-bold">
                       {trends.length >= 2
                         ? `${(((trends[trends.length - 1].totalOpenings - trends[0].totalOpenings) / trends[0].totalOpenings) * 100).toFixed(1)}%`
@@ -806,7 +806,7 @@ function WorkforceContent() {
                     </span>
                   </div>
                   <div>
-                    <span className="text-star-400 text-xs block mb-1">Salary Growth</span>
+                    <span className="text-slate-500 text-xs block mb-1">Salary Growth</span>
                     <span className="text-green-400 font-bold">
                       {trends.length >= 2
                         ? `${((((trends[trends.length - 1].avgSalary ?? 0) - (trends[0].avgSalary ?? 0)) / (trends[0].avgSalary || 1)) * 100).toFixed(1)}%`
@@ -814,8 +814,8 @@ function WorkforceContent() {
                     </span>
                   </div>
                   <div>
-                    <span className="text-star-400 text-xs block mb-1">Total Hires (Latest)</span>
-                    <span className="text-white font-bold">
+                    <span className="text-slate-500 text-xs block mb-1">Total Hires (Latest)</span>
+                    <span className="text-slate-900 font-bold">
                       {(trends[trends.length - 1].totalHires ?? 0).toLocaleString()}
                     </span>
                   </div>
@@ -841,8 +841,8 @@ function WorkforceContent() {
             </div>
           ) : benchmarksByCategory.length === 0 && benchmarksBySeniority.length === 0 ? (
             <div className="text-center py-20">
-              <h3 className="text-xl font-semibold text-white mb-2">No salary data available</h3>
-              <p className="text-star-300">Salary benchmarks will appear once data is loaded.</p>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">No salary data available</h3>
+              <p className="text-slate-500">Salary benchmarks will appear once data is loaded.</p>
             </div>
           ) : (
             <>
@@ -852,8 +852,8 @@ function WorkforceContent() {
                   onClick={() => handleSalaryViewChange('category')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     salaryView === 'category'
-                      ? 'bg-white/[0.1] text-white border border-white/[0.15] shadow-glow-sm'
-                      : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
+                      ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
+                      : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-200'
                   }`}
                 >
                   By Category
@@ -862,8 +862,8 @@ function WorkforceContent() {
                   onClick={() => handleSalaryViewChange('seniority')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     salaryView === 'seniority'
-                      ? 'bg-white/[0.1] text-white border border-white/[0.15] shadow-glow-sm'
-                      : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
+                      ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
+                      : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-200'
                   }`}
                 >
                   By Seniority Level
@@ -880,7 +880,7 @@ function WorkforceContent() {
                       <BenchmarkBar
                         key={cat}
                         label={`${catInfo?.icon || ''} ${catInfo?.label || cat}`}
-                        color={colors?.text || 'text-star-300'}
+                        color={colors?.text || 'text-slate-500'}
                         avgMin={b.avgMin}
                         avgMax={b.avgMax}
                         avgMedian={b.avgMedian}
@@ -912,16 +912,16 @@ function WorkforceContent() {
 
               {/* Salary legend */}
               <div className="card p-4 mt-6 border-dashed">
-                <div className="flex items-center gap-6 text-xs text-star-400">
+                <div className="flex items-center gap-6 text-xs text-slate-500">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-2 bg-space-600 rounded-full" />
+                    <div className="w-8 h-2 bg-slate-100 rounded-full" />
                     <span>Salary Range (Min to Max)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-1 h-4 bg-nebula-400 rounded-full" />
                     <span>Median</span>
                   </div>
-                  <span className="ml-auto text-star-400/70">
+                  <span className="ml-auto text-slate-500/70">
                     Based on {jobs.length > 0 ? totalJobs : '...'} active job postings
                   </span>
                 </div>

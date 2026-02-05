@@ -130,7 +130,7 @@ function ConjunctionCard({ event }: { event: ConjunctionEvent }) {
             <span className={`text-xs font-bold px-2.5 py-1 rounded ${riskStyle.bg} ${riskStyle.text} border ${riskStyle.border}`}>
               {riskStyle.label}
             </span>
-            <span className="text-star-400 text-xs">
+            <span className="text-slate-500 text-xs">
               {eventDate.toLocaleDateString('en-US', {
                 weekday: 'short',
                 month: 'short',
@@ -140,21 +140,21 @@ function ConjunctionCard({ event }: { event: ConjunctionEvent }) {
               })}
             </span>
             {isPast && (
-              <span className="text-xs bg-space-600 text-star-300 px-2 py-0.5 rounded">Past</span>
+              <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded">Past</span>
             )}
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-sm mt-2">
-            <div className="bg-space-700/50 rounded px-3 py-1.5">
-              <span className="text-star-400 text-xs block">Primary</span>
-              <span className="text-white font-medium">{event.primaryObject}</span>
-              <span className="text-star-500 text-xs ml-1">({event.primaryType})</span>
+            <div className="bg-slate-100/50 rounded px-3 py-1.5">
+              <span className="text-slate-500 text-xs block">Primary</span>
+              <span className="text-slate-900 font-medium">{event.primaryObject}</span>
+              <span className="text-slate-400 text-xs ml-1">({event.primaryType})</span>
             </div>
-            <span className="text-star-500 font-bold">vs</span>
-            <div className="bg-space-700/50 rounded px-3 py-1.5">
-              <span className="text-star-400 text-xs block">Secondary</span>
-              <span className="text-white font-medium">{event.secondaryObject}</span>
-              <span className="text-star-500 text-xs ml-1">({event.secondaryType})</span>
+            <span className="text-slate-400 font-bold">vs</span>
+            <div className="bg-slate-100/50 rounded px-3 py-1.5">
+              <span className="text-slate-500 text-xs block">Secondary</span>
+              <span className="text-slate-900 font-medium">{event.secondaryObject}</span>
+              <span className="text-slate-400 text-xs ml-1">({event.secondaryType})</span>
             </div>
           </div>
 
@@ -182,16 +182,16 @@ function ConjunctionCard({ event }: { event: ConjunctionEvent }) {
         </div>
 
         <div className="text-right flex-shrink-0 space-y-1">
-          <div className="text-star-300 text-sm">
-            Miss Distance: <span className="text-white font-bold">{event.missDistance.toFixed(1)} m</span>
+          <div className="text-slate-500 text-sm">
+            Miss Distance: <span className="text-slate-900 font-bold">{event.missDistance.toFixed(1)} m</span>
           </div>
-          <div className="text-star-300 text-sm">
+          <div className="text-slate-500 text-sm">
             Probability:{' '}
             <span className={`font-bold ${
               event.probability > 0.01 ? 'text-red-400' :
               event.probability > 0.001 ? 'text-orange-400' :
               event.probability > 0.0001 ? 'text-yellow-400' :
-              'text-star-200'
+              'text-slate-600'
             }`}>
               {event.probability < 0.0001
                 ? event.probability.toExponential(2)
@@ -201,14 +201,14 @@ function ConjunctionCard({ event }: { event: ConjunctionEvent }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-white/[0.06] text-xs">
-        <span className="text-star-400">
-          Altitude: <span className="text-star-200 font-medium">{event.altitude.toFixed(0)} km</span>
+      <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-slate-200 text-xs">
+        <span className="text-slate-500">
+          Altitude: <span className="text-slate-600 font-medium">{event.altitude.toFixed(0)} km</span>
         </span>
-        <span className="text-star-400">
-          Orbit: <span className="text-star-200 font-medium">{event.orbitType}</span>
+        <span className="text-slate-500">
+          Orbit: <span className="text-slate-600 font-medium">{event.orbitType}</span>
         </span>
-        <span className="text-star-400">
+        <span className="text-slate-500">
           Maneuver:{' '}
           {event.maneuverRequired ? (
             event.maneuverExecuted ? (
@@ -217,13 +217,13 @@ function ConjunctionCard({ event }: { event: ConjunctionEvent }) {
               <span className="text-red-400 font-medium animate-pulse">Required</span>
             )
           ) : (
-            <span className="text-star-300">Not Required</span>
+            <span className="text-slate-500">Not Required</span>
           )}
         </span>
       </div>
 
       {event.description && (
-        <p className="text-star-400 text-xs mt-3 leading-relaxed">{event.description}</p>
+        <p className="text-slate-500 text-xs mt-3 leading-relaxed">{event.description}</p>
       )}
     </div>
   );
@@ -235,7 +235,7 @@ function ConjunctionCard({ event }: { event: ConjunctionEvent }) {
 
 function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
   const typeInfo = DEBRIS_OBJECT_TYPES.find((t) => t.value === obj.objectType);
-  const typeColor = OBJECT_TYPE_COLORS[obj.objectType] || 'text-star-300';
+  const typeColor = OBJECT_TYPE_COLORS[obj.objectType] || 'text-slate-500';
   const isActivePayload = obj.objectType === 'payload' && obj.isActive;
 
   return (
@@ -244,14 +244,14 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-lg">{typeInfo?.icon || '?'}</span>
-            <h4 className="font-semibold text-white text-sm truncate">{obj.name}</h4>
+            <h4 className="font-semibold text-slate-900 text-sm truncate">{obj.name}</h4>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className={`px-2 py-0.5 rounded bg-space-600 ${typeColor}`}>
+            <span className={`px-2 py-0.5 rounded bg-slate-100 ${typeColor}`}>
               {typeInfo?.label || obj.objectType}
             </span>
             {obj.noradId && (
-              <span className="text-star-400">NORAD: {obj.noradId}</span>
+              <span className="text-slate-500">NORAD: {obj.noradId}</span>
             )}
             {obj.isActive && (
               <span className="text-green-400 bg-green-500/20 px-2 py-0.5 rounded">Active</span>
@@ -268,37 +268,37 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
           )}
         </div>
         <div className="text-right flex-shrink-0 ml-3">
-          <div className="text-white font-bold text-sm">{obj.altitude.toFixed(0)} km</div>
-          <div className="text-star-400 text-xs">{obj.orbitType}</div>
+          <div className="text-slate-900 font-bold text-sm">{obj.altitude.toFixed(0)} km</div>
+          <div className="text-slate-500 text-xs">{obj.orbitType}</div>
         </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
         <div>
-          <span className="text-star-400 block">Mass</span>
-          <span className="text-white font-medium">{formatMass(obj.mass)}</span>
+          <span className="text-slate-500 block">Mass</span>
+          <span className="text-slate-900 font-medium">{formatMass(obj.mass)}</span>
         </div>
         <div>
-          <span className="text-star-400 block">Size</span>
-          <span className="text-white font-medium capitalize">{obj.size || 'Unknown'}</span>
+          <span className="text-slate-500 block">Size</span>
+          <span className="text-slate-900 font-medium capitalize">{obj.size || 'Unknown'}</span>
         </div>
         <div>
-          <span className="text-star-400 block">Origin</span>
-          <span className="text-white font-medium">{obj.originCountry || 'Unknown'}</span>
+          <span className="text-slate-500 block">Origin</span>
+          <span className="text-slate-900 font-medium">{obj.originCountry || 'Unknown'}</span>
         </div>
         <div>
-          <span className="text-star-400 block">Year</span>
-          <span className="text-white font-medium">{obj.originYear || 'Unknown'}</span>
+          <span className="text-slate-500 block">Year</span>
+          <span className="text-slate-900 font-medium">{obj.originYear || 'Unknown'}</span>
         </div>
       </div>
 
       {obj.originMission && (
-        <p className="text-star-400 text-xs mt-2 truncate">Mission: {obj.originMission}</p>
+        <p className="text-slate-500 text-xs mt-2 truncate">Mission: {obj.originMission}</p>
       )}
 
       {obj.deorbitDate && (
         <div className="mt-2 text-xs">
-          <span className="text-star-400">Est. Deorbit: </span>
+          <span className="text-slate-500">Est. Deorbit: </span>
           <span className="text-nebula-300 font-medium">
             {new Date(obj.deorbitDate).toLocaleDateString('en-US', {
               month: 'short',
@@ -310,7 +310,7 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
       )}
 
       {obj.inclination !== null && obj.eccentricity !== null && (
-        <div className="flex gap-4 mt-2 text-xs text-star-400">
+        <div className="flex gap-4 mt-2 text-xs text-slate-500">
           <span>Inc: {obj.inclination.toFixed(1)}&deg;</span>
           <span>Ecc: {obj.eccentricity.toFixed(4)}</span>
         </div>
@@ -451,10 +451,10 @@ function DebrisContent() {
         ) : needsInit ? (
           <div className="card p-12 text-center">
             <span className="text-6xl block mb-4">&#128752;</span>
-            <h2 className="text-2xl font-semibold text-white mb-2">
+            <h2 className="text-2xl font-semibold text-slate-900 mb-2">
               No Debris Tracking Data Available
             </h2>
-            <p className="text-star-300 mb-6 max-w-lg mx-auto">
+            <p className="text-slate-500 mb-6 max-w-lg mx-auto">
               Load orbital debris data including tracked objects, conjunction events,
               and collision risk statistics.
             </p>
@@ -478,10 +478,10 @@ function DebrisContent() {
             {/* Quick Stats Banner */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-white">
+                <div className="text-2xl font-bold font-display text-slate-900">
                   {totalTracked.toLocaleString()}
                 </div>
-                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
                   Tracked Objects
                 </div>
               </div>
@@ -489,7 +489,7 @@ function DebrisContent() {
                 <div className={`text-2xl font-bold font-display ${getKesslerColor(stats?.kesslerRiskIndex || 0)}`}>
                   {(stats?.kesslerRiskIndex || 0).toFixed(1)}
                 </div>
-                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
                   Kessler Index
                 </div>
                 <div className={`text-[10px] mt-0.5 ${getKesslerColor(stats?.kesslerRiskIndex || 0)}`}>
@@ -497,10 +497,10 @@ function DebrisContent() {
                 </div>
               </div>
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-white">
+                <div className="text-2xl font-bold font-display text-slate-900">
                   {(stats?.conjunctionsPerDay || 0).toFixed(1)}
                 </div>
-                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
                   Conj./Day
                 </div>
               </div>
@@ -508,15 +508,15 @@ function DebrisContent() {
                 <div className={`text-2xl font-bold font-display ${criticalCount > 0 ? 'text-red-400' : 'text-green-400'}`}>
                   {criticalCount}
                 </div>
-                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
                   Critical Events
                 </div>
               </div>
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-white">
+                <div className="text-2xl font-bold font-display text-slate-900">
                   {conjunctions.length}
                 </div>
-                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
                   Active Conj.
                 </div>
               </div>
@@ -527,7 +527,7 @@ function DebrisContent() {
                 }`}>
                   {((overview?.complianceRate ?? 0) * 100).toFixed(1)}%
                 </div>
-                <div className="text-star-400 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
                   25-Yr Compliance
                 </div>
               </div>
@@ -545,15 +545,15 @@ function DebrisContent() {
                   onClick={() => handleTabChange(tab.id)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === tab.id
-                      ? 'bg-nebula-500 text-white shadow-glow-sm'
-                      : 'bg-space-700/50 text-star-300 hover:bg-space-600/50'
+                      ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
+                      : 'bg-slate-100/50 text-slate-500 hover:bg-slate-100/50'
                   }`}
                 >
                   {tab.label}
                   {tab.count !== undefined && tab.count > 0 && (
                     <span
                       className={`text-xs px-1.5 py-0.5 rounded-full ${
-                        activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-space-600 text-star-400'
+                        activeTab === tab.id ? 'bg-slate-200 text-slate-900' : 'bg-slate-100 text-slate-500'
                       }`}
                     >
                       {tab.count}
@@ -570,7 +570,7 @@ function DebrisContent() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Orbit Distribution */}
                   <div className="card p-5">
-                    <h3 className="text-lg font-semibold text-white mb-4">Distribution by Orbit</h3>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-4">Distribution by Orbit</h3>
                     <div className="space-y-4">
                       {[
                         { label: 'LEO (Low Earth Orbit)', count: stats.leoCount, color: 'from-blue-500 to-blue-400', desc: '< 2,000 km' },
@@ -582,14 +582,14 @@ function DebrisContent() {
                           <div key={orbit.label}>
                             <div className="flex items-center justify-between mb-1">
                               <div>
-                                <span className="text-star-200 text-sm">{orbit.label}</span>
-                                <span className="text-star-400 text-xs ml-2">{orbit.desc}</span>
+                                <span className="text-slate-600 text-sm">{orbit.label}</span>
+                                <span className="text-slate-500 text-xs ml-2">{orbit.desc}</span>
                               </div>
-                              <span className="text-star-300 text-sm font-medium">
+                              <span className="text-slate-500 text-sm font-medium">
                                 {orbit.count.toLocaleString()} ({pct.toFixed(1)}%)
                               </span>
                             </div>
-                            <div className="h-3 bg-space-600 rounded-full overflow-hidden">
+                            <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
                               <div
                                 className={`h-full bg-gradient-to-r ${orbit.color} rounded-full transition-all`}
                                 style={{ width: `${Math.min(pct, 100)}%` }}
@@ -603,7 +603,7 @@ function DebrisContent() {
 
                   {/* Type Distribution */}
                   <div className="card p-5">
-                    <h3 className="text-lg font-semibold text-white mb-4">Distribution by Type</h3>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-4">Distribution by Type</h3>
                     <div className="space-y-4">
                       {[
                         { label: 'Payloads (Active & Inactive)', count: stats.totalPayloads, color: 'from-green-500 to-green-400' },
@@ -615,12 +615,12 @@ function DebrisContent() {
                         return (
                           <div key={type.label}>
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-star-200 text-sm">{type.label}</span>
-                              <span className="text-star-300 text-sm font-medium">
+                              <span className="text-slate-600 text-sm">{type.label}</span>
+                              <span className="text-slate-500 text-sm font-medium">
                                 {type.count.toLocaleString()} ({pct.toFixed(1)}%)
                               </span>
                             </div>
-                            <div className="h-3 bg-space-600 rounded-full overflow-hidden">
+                            <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
                               <div
                                 className={`h-full bg-gradient-to-r ${type.color} rounded-full transition-all`}
                                 style={{ width: `${Math.min(pct, 100)}%` }}
@@ -637,8 +637,8 @@ function DebrisContent() {
                 <div className="card p-5">
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <h3 className="text-lg font-semibold text-white">25-Year Deorbit Compliance</h3>
-                      <p className="text-star-400 text-sm mt-1">
+                      <h3 className="text-lg font-semibold text-slate-900">25-Year Deorbit Compliance</h3>
+                      <p className="text-slate-500 text-sm mt-1">
                         {(stats.compliant25Year || 0).toLocaleString()} compliant /{' '}
                         {((stats.compliant25Year || 0) + (stats.nonCompliant || 0)).toLocaleString()} total objects
                       </p>
@@ -650,10 +650,10 @@ function DebrisContent() {
                       }`}>
                         {((overview?.complianceRate ?? 0) * 100).toFixed(1)}%
                       </div>
-                      <div className="text-star-400 text-xs">Compliance Rate</div>
+                      <div className="text-slate-500 text-xs">Compliance Rate</div>
                     </div>
                   </div>
-                  <div className="h-4 bg-space-600 rounded-full overflow-hidden">
+                  <div className="h-4 bg-slate-100 rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all ${
                         (overview?.complianceRate ?? 0) >= 0.8 ? 'bg-gradient-to-r from-green-500 to-green-400' :
@@ -669,7 +669,7 @@ function DebrisContent() {
                 {sortedConjunctions.filter((c) => c.riskLevel === 'critical' || c.riskLevel === 'high').length > 0 && (
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-white">Critical & High-Risk Events</h3>
+                      <h3 className="text-lg font-semibold text-slate-900">Critical & High-Risk Events</h3>
                       <button
                         onClick={() => handleTabChange('conjunctions')}
                         className="text-nebula-300 hover:text-nebula-200 text-sm transition-colors"
@@ -690,10 +690,10 @@ function DebrisContent() {
 
                 {/* Data Sources */}
                 <div className="card p-5 border-dashed">
-                  <h3 className="text-lg font-semibold text-white mb-3">Data Sources & Methodology</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-star-300">
+                  <h3 className="text-lg font-semibold text-slate-900 mb-3">Data Sources & Methodology</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-500">
                     <div>
-                      <h4 className="text-white font-medium mb-2">Tracking Data</h4>
+                      <h4 className="text-slate-900 font-medium mb-2">Tracking Data</h4>
                       <ul className="space-y-1">
                         <li>US Space Surveillance Network (18th SDS)</li>
                         <li>CelesTrak public TLE catalog</li>
@@ -702,7 +702,7 @@ function DebrisContent() {
                       </ul>
                     </div>
                     <div>
-                      <h4 className="text-white font-medium mb-2">Conjunction Assessment</h4>
+                      <h4 className="text-slate-900 font-medium mb-2">Conjunction Assessment</h4>
                       <ul className="space-y-1">
                         <li>Space-Track.org CDM data</li>
                         <li>SOCRATES (Satellite Orbital Conjunction Reports)</li>
@@ -712,7 +712,7 @@ function DebrisContent() {
                     </div>
                   </div>
                   <div className="mt-4 flex flex-wrap items-center gap-3">
-                    <p className="text-star-400 text-xs flex-1">
+                    <p className="text-slate-500 text-xs flex-1">
                       Statistics are aggregated from publicly available sources. Conjunction data reflects representative
                       scenarios based on real-world debris events and orbital mechanics. Object counts align with
                       ESA Space Environment Report and USSPACECOM public catalog data.
@@ -734,13 +734,13 @@ function DebrisContent() {
                 {/* Risk Level Filters */}
                 <div className="card p-4 mb-6">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-star-300 text-sm mr-2">Filter by risk:</span>
+                    <span className="text-slate-500 text-sm mr-2">Filter by risk:</span>
                     <button
                       onClick={() => handleRiskFilterChange('')}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         riskFilter === ''
-                          ? 'bg-white/[0.1] text-white border border-white/[0.15] shadow-glow-sm'
-                          : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
+                          ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
+                          : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       All ({conjunctions.length})
@@ -755,7 +755,7 @@ function DebrisContent() {
                           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                             riskFilter === level
                               ? `${info.bg} ${info.text} border ${info.border}`
-                              : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
+                              : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
                           }`}
                         >
                           {info.label} ({count})
@@ -778,7 +778,7 @@ function DebrisContent() {
                   <div className="text-center py-16">
                     <span className="text-5xl block mb-3">&#10003;</span>
                     <h3 className="text-xl font-semibold text-green-400 mb-2">No Events Found</h3>
-                    <p className="text-star-300">
+                    <p className="text-slate-500">
                       {riskFilter
                         ? `No ${riskFilter} risk conjunction events at this time.`
                         : 'No active conjunction events.'}
@@ -800,13 +800,13 @@ function DebrisContent() {
                 {/* Object Type Filter */}
                 <div className="card p-4 mb-6">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-star-300 text-sm mr-2">Filter by type:</span>
+                    <span className="text-slate-500 text-sm mr-2">Filter by type:</span>
                     <button
                       onClick={() => handleObjectTypeFilterChange('')}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         objectTypeFilter === ''
-                          ? 'bg-white/[0.1] text-white border border-white/[0.15] shadow-glow-sm'
-                          : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
+                          ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
+                          : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       All ({notableDebris.length})
@@ -819,8 +819,8 @@ function DebrisContent() {
                           onClick={() => handleObjectTypeFilterChange(type.value)}
                           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
                             objectTypeFilter === type.value
-                              ? 'bg-white/[0.1] text-white border border-white/[0.15] shadow-glow-sm'
-                              : 'bg-transparent text-star-300 border border-white/[0.06] hover:border-white/[0.1]'
+                              ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
+                              : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
                           }`}
                         >
                           <span>{type.icon}</span>
@@ -842,8 +842,8 @@ function DebrisContent() {
                 {/* Objects Grid */}
                 {filteredObjects.length === 0 ? (
                   <div className="text-center py-16">
-                    <h3 className="text-xl font-semibold text-white mb-2">No Objects Found</h3>
-                    <p className="text-star-300">
+                    <h3 className="text-xl font-semibold text-slate-900 mb-2">No Objects Found</h3>
+                    <p className="text-slate-500">
                       {objectTypeFilter
                         ? `No ${objectTypeFilter.replace('_', ' ')} objects in the database.`
                         : 'No tracked objects available.'}

@@ -49,7 +49,7 @@ function PublicCompanyCard({
         <div className="flex items-center gap-2">
           <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
           <div>
-            <h3 className="font-semibold text-white text-sm">{company.name}</h3>
+            <h3 className="font-semibold text-slate-800 text-sm">{company.name}</h3>
             <span className="text-xs text-nebula-300 font-mono">
               {company.exchange}:{company.ticker}
             </span>
@@ -71,7 +71,7 @@ function PublicCompanyCard({
       {stockData ? (
         <>
           <div className="mb-3">
-            <div className="text-xl font-bold text-white">
+            <div className="text-xl font-bold text-slate-800">
               {formatPrice(stockData.price)}
             </div>
             <div className={`text-xs ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
@@ -109,9 +109,9 @@ function PublicCompanyCard({
         </>
       ) : (
         <div className="animate-pulse">
-          <div className="h-6 w-24 bg-space-700 rounded mb-2" />
-          <div className="h-9 w-full bg-space-700 rounded mb-2" />
-          <div className="h-6 w-32 bg-space-700 rounded" />
+          <div className="h-6 w-24 bg-slate-100 rounded mb-2" />
+          <div className="h-9 w-full bg-slate-100 rounded mb-2" />
+          <div className="h-6 w-32 bg-slate-100 rounded" />
         </div>
       )}
 
@@ -121,7 +121,7 @@ function PublicCompanyCard({
           return (
             <span
               key={area}
-              className="text-xs bg-space-700/50 text-star-200 px-2 py-0.5 rounded"
+              className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded"
             >
               {focusInfo?.icon} {focusInfo?.label || area}
             </span>
@@ -230,8 +230,8 @@ export default function MarketIntelModule() {
     return (
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">📊</span>
-        <h3 className="text-xl font-semibold text-white mb-2">Market Intel</h3>
-        <p className="text-star-300 mb-4">
+        <h3 className="text-xl font-semibold text-slate-800 mb-2">Market Intel</h3>
+        <p className="text-slate-500 mb-4">
           Track space industry companies, stock prices, and funding rounds.
         </p>
         <button
@@ -279,8 +279,8 @@ export default function MarketIntelModule() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">📊</span>
           <div>
-            <h2 className="text-2xl font-display font-bold text-white">Market Intel</h2>
-            <p className="text-star-300 text-sm">Space industry companies & investments</p>
+            <h2 className="text-2xl font-display font-bold text-slate-800">Market Intel</h2>
+            <p className="text-slate-500 text-sm">Space industry companies & investments</p>
           </div>
         </div>
         <Link href="/market-intel" className="btn-secondary text-sm py-1.5 px-4">
@@ -292,16 +292,16 @@ export default function MarketIntelModule() {
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="card p-3 text-center">
-            <div className="text-2xl font-bold text-white">{stats.total}</div>
-            <div className="text-star-300 text-xs">Companies</div>
+            <div className="text-2xl font-bold text-slate-800">{stats.total}</div>
+            <div className="text-slate-500 text-xs">Companies</div>
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-green-400">{stats.publicCount}</div>
-            <div className="text-star-300 text-xs">Public</div>
+            <div className="text-slate-500 text-xs">Public</div>
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-yellow-400">{stats.privateCount}</div>
-            <div className="text-star-300 text-xs">Private</div>
+            <div className="text-slate-500 text-xs">Private</div>
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-nebula-300">
@@ -313,7 +313,7 @@ export default function MarketIntelModule() {
                   }`
                 : 'N/A'}
             </div>
-            <div className="text-star-300 text-xs">Total Market Cap</div>
+            <div className="text-slate-500 text-xs">Total Market Cap</div>
           </div>
         </div>
       )}
@@ -321,7 +321,7 @@ export default function MarketIntelModule() {
       {/* Live Stock Prices */}
       {publicCompanies.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             Live Stock Prices
           </h3>
@@ -339,7 +339,7 @@ export default function MarketIntelModule() {
                   className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-mono font-medium transition-all ${
                     isSelected
                       ? 'bg-nebula-500/30 text-nebula-300 border border-nebula-500/50'
-                      : 'bg-space-700/50 text-star-400 border border-space-600 hover:border-star-400/50'
+                      : 'bg-slate-100 text-slate-500 border border-slate-200 hover:border-slate-400'
                   }`}
                 >
                   {company.ticker}
@@ -363,7 +363,7 @@ export default function MarketIntelModule() {
       {/* All Companies List */}
       {companies.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold text-white mb-3">Publicly-Traded Space Companies <span className="text-star-400 font-normal text-sm">(View All to see Public and Private)</span></h3>
+          <h3 className="text-lg font-semibold text-slate-800 mb-3">Publicly-Traded Space Companies <span className="text-slate-500 font-normal text-sm">(View All to see Public and Private)</span></h3>
           <div className="card overflow-hidden">
             <div className="max-h-[480px] overflow-y-auto scrollbar-thin">
               {companies.slice(0, 10).map((company) => {
@@ -374,22 +374,22 @@ export default function MarketIntelModule() {
                 return (
                   <div
                     key={company.id}
-                    className="flex items-center justify-between px-4 py-3 border-b border-space-700 last:border-b-0 hover:bg-space-700/30 transition-colors"
+                    className="flex items-center justify-between px-4 py-3 border-b border-slate-200 last:border-b-0 hover:bg-slate-100 transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <span className="text-lg flex-shrink-0">{countryInfo?.flag || '🌐'}</span>
                       <div className="min-w-0">
-                        <div className="font-medium text-white text-sm truncate">{company.name}</div>
+                        <div className="font-medium text-slate-800 text-sm truncate">{company.name}</div>
                         <div className="flex items-center gap-2 text-xs">
                           {company.isPublic && company.ticker ? (
                             <span className="text-nebula-300 font-mono">{company.exchange}:{company.ticker}</span>
                           ) : (
-                            <span className="text-star-400">Private</span>
+                            <span className="text-slate-500">Private</span>
                           )}
                           {(company.focusAreas as string[]).slice(0, 1).map((area) => {
                             const focusInfo = FOCUS_AREAS.find((f) => f.value === area);
                             return (
-                              <span key={area} className="text-star-400 hidden sm:inline">
+                              <span key={area} className="text-slate-500 hidden sm:inline">
                                 {focusInfo?.icon} {focusInfo?.label || area}
                               </span>
                             );
@@ -401,7 +401,7 @@ export default function MarketIntelModule() {
                     <div className="flex items-center gap-3 flex-shrink-0 ml-3">
                       {company.isPublic && companyStockData ? (
                         <>
-                          <span className="text-white text-sm font-medium">{formatPrice(companyStockData.price)}</span>
+                          <span className="text-slate-800 text-sm font-medium">{formatPrice(companyStockData.price)}</span>
                           <span
                             className={`text-xs font-medium px-2 py-0.5 rounded ${
                               isPositive
@@ -413,13 +413,13 @@ export default function MarketIntelModule() {
                           </span>
                         </>
                       ) : company.isPublic && company.ticker ? (
-                        <div className="h-4 w-20 bg-space-700 rounded animate-pulse" />
+                        <div className="h-4 w-20 bg-slate-100 rounded animate-pulse" />
                       ) : (
                         <>
                           {company.isPreIPO ? (
                             <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">Pre-IPO</span>
                           ) : company.valuation ? (
-                            <span className="text-sm text-star-300">
+                            <span className="text-sm text-slate-500">
                               {company.valuation >= 1 ? `$${company.valuation.toFixed(1)}B` : `$${(company.valuation * 1000).toFixed(0)}M`}
                             </span>
                           ) : null}

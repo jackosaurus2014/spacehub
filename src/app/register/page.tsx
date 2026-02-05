@@ -72,10 +72,10 @@ export default function RegisterPage() {
               height={160}
               className="mx-auto w-full max-w-xs h-auto rounded-lg mb-4"
             />
-            <h1 className="text-2xl font-display font-bold text-white">
+            <h1 className="text-2xl font-display font-bold text-slate-900">
               Join SpaceNexus
             </h1>
-            <p className="text-star-300 mt-2">
+            <p className="text-slate-500 mt-2">
               Create your account and explore the cosmos
             </p>
           </div>
@@ -88,7 +88,7 @@ export default function RegisterPage() {
             )}
 
             <div>
-              <label htmlFor="name" className="block text-star-200 text-sm mb-2">
+              <label htmlFor="name" className="block text-slate-600 text-sm mb-2">
                 Name (Optional)
               </label>
               <input
@@ -102,7 +102,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-star-200 text-sm mb-2">
+              <label htmlFor="email" className="block text-slate-600 text-sm mb-2">
                 Email Address
               </label>
               <input
@@ -119,7 +119,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-star-200 text-sm mb-2"
+                className="block text-slate-600 text-sm mb-2"
               >
                 Password
               </label>
@@ -138,7 +138,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-star-200 text-sm mb-2"
+                className="block text-slate-600 text-sm mb-2"
               >
                 Confirm Password
               </label>
@@ -159,9 +159,9 @@ export default function RegisterPage() {
                 type="checkbox"
                 checked={agreedToDisclaimer}
                 onChange={(e) => setAgreedToDisclaimer(e.target.checked)}
-                className="mt-1 w-4 h-4 rounded border-space-600 bg-space-800 text-nebula-500 focus:ring-nebula-500 cursor-pointer"
+                className="mt-1 w-4 h-4 rounded border-slate-200 bg-slate-50 text-nebula-500 focus:ring-nebula-500 cursor-pointer"
               />
-              <label htmlFor="disclaimer" className="text-star-300 text-sm cursor-pointer">
+              <label htmlFor="disclaimer" className="text-slate-500 text-sm cursor-pointer">
                 I have read and agree to the{' '}
                 <button
                   type="button"
@@ -190,7 +190,7 @@ export default function RegisterPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-star-300">
+            <p className="text-slate-500">
               Already have an account?{' '}
               <Link
                 href="/login"

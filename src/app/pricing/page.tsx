@@ -28,12 +28,12 @@ function PricingCard({
       className={`card p-6 relative ${
         plan.highlighted
           ? 'border-nebula-500 glow-border'
-          : 'border-space-600'
+          : 'border-slate-200'
       } ${isCurrentPlan ? 'ring-2 ring-green-500' : ''}`}
     >
       {plan.highlighted && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="bg-nebula-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+          <span className="bg-nebula-500 text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
             Most Popular
           </span>
         </div>
@@ -41,20 +41,20 @@ function PricingCard({
 
       {isCurrentPlan && (
         <div className="absolute -top-3 right-4">
-          <span className="bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+          <span className="bg-green-500 text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
             Current Plan
           </span>
         </div>
       )}
 
       <div className="text-center mb-6">
-        <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
+        <h3 className="text-xl font-bold text-slate-900 mb-2">{plan.name}</h3>
         <div className="flex items-baseline justify-center gap-1">
-          <span className="text-4xl font-bold text-white">
+          <span className="text-4xl font-bold text-slate-900">
             ${price === 0 ? '0' : price}
           </span>
           {price > 0 && (
-            <span className="text-star-300">{period}</span>
+            <span className="text-slate-500">{period}</span>
           )}
         </div>
         {savings > 0 && (
@@ -66,7 +66,7 @@ function PricingCard({
         {plan.features.map((feature, index) => (
           <li key={index} className="flex items-start gap-2">
             <span className="text-green-400 mt-0.5">✓</span>
-            <span className="text-star-200 text-sm">{feature}</span>
+            <span className="text-slate-600 text-sm">{feature}</span>
           </li>
         ))}
       </ul>
@@ -74,14 +74,14 @@ function PricingCard({
       {isCurrentPlan ? (
         <button
           disabled
-          className="w-full py-3 px-4 rounded-lg bg-space-600 text-star-300 cursor-not-allowed"
+          className="w-full py-3 px-4 rounded-lg bg-slate-100 text-slate-500 cursor-not-allowed"
         >
           Current Plan
         </button>
       ) : plan.id === 'free' ? (
         <Link
           href="/register"
-          className="block w-full py-3 px-4 rounded-lg bg-space-600 text-white text-center hover:bg-space-500 transition-colors"
+          className="block w-full py-3 px-4 rounded-lg bg-slate-100 text-slate-900 text-center hover:bg-slate-200 transition-colors"
         >
           Get Started Free
         </Link>
@@ -93,8 +93,8 @@ function PricingCard({
           }}
           className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
             plan.highlighted
-              ? 'bg-nebula-500 text-white hover:bg-nebula-600'
-              : 'bg-space-600 text-white hover:bg-space-500'
+              ? 'bg-nebula-500 text-slate-900 hover:bg-nebula-600'
+              : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
           }`}
         >
           {plan.id === 'enterprise' ? 'Contact Sales' : 'Subscribe Now'}
@@ -119,13 +119,13 @@ export default function PricingPage() {
 
         {/* Billing Toggle */}
         <div className="flex items-center justify-center gap-4 mb-12">
-          <span className={`text-sm ${!isYearly ? 'text-white' : 'text-star-400'}`}>
+          <span className={`text-sm ${!isYearly ? 'text-slate-900' : 'text-slate-500'}`}>
             Monthly
           </span>
           <button
             onClick={() => setIsYearly(!isYearly)}
             className={`relative w-14 h-7 rounded-full transition-colors ${
-              isYearly ? 'bg-nebula-500' : 'bg-space-600'
+              isYearly ? 'bg-nebula-500' : 'bg-slate-100'
             }`}
           >
             <span
@@ -134,7 +134,7 @@ export default function PricingPage() {
               }`}
             />
           </button>
-          <span className={`text-sm ${isYearly ? 'text-white' : 'text-star-400'}`}>
+          <span className={`text-sm ${isYearly ? 'text-slate-900' : 'text-slate-500'}`}>
             Yearly
             <span className="ml-1 text-green-400 text-xs">Save up to 17%</span>
           </span>
@@ -154,42 +154,42 @@ export default function PricingPage() {
 
         {/* FAQ / Trust Section */}
         <div className="mt-16 text-center">
-          <h2 className="text-2xl font-bold text-white mb-6">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">
             Frequently Asked Questions
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
             <div className="card p-6">
-              <h3 className="font-semibold text-white mb-2">
+              <h3 className="font-semibold text-slate-900 mb-2">
                 Can I cancel anytime?
               </h3>
-              <p className="text-star-300 text-sm">
+              <p className="text-slate-500 text-sm">
                 Yes! You can cancel your subscription at any time. You&apos;ll continue
                 to have access until the end of your billing period.
               </p>
             </div>
             <div className="card p-6">
-              <h3 className="font-semibold text-white mb-2">
+              <h3 className="font-semibold text-slate-900 mb-2">
                 What payment methods do you accept?
               </h3>
-              <p className="text-star-300 text-sm">
+              <p className="text-slate-500 text-sm">
                 We accept all major credit cards, PayPal, and Apple Pay through
                 our secure payment processor, Stripe.
               </p>
             </div>
             <div className="card p-6">
-              <h3 className="font-semibold text-white mb-2">
+              <h3 className="font-semibold text-slate-900 mb-2">
                 Is there a free trial?
               </h3>
-              <p className="text-star-300 text-sm">
+              <p className="text-slate-500 text-sm">
                 Our Explorer plan is free forever with access to core features.
                 Upgrade anytime to unlock premium features.
               </p>
             </div>
             <div className="card p-6">
-              <h3 className="font-semibold text-white mb-2">
+              <h3 className="font-semibold text-slate-900 mb-2">
                 Do you offer team discounts?
               </h3>
-              <p className="text-star-300 text-sm">
+              <p className="text-slate-500 text-sm">
                 Yes! Contact us for Enterprise pricing with team collaboration
                 features and volume discounts.
               </p>
@@ -199,7 +199,7 @@ export default function PricingPage() {
 
         {/* CTA */}
         <div className="mt-16 text-center">
-          <p className="text-star-300 mb-4">
+          <p className="text-slate-500 mb-4">
             Have questions? We&apos;re here to help.
           </p>
           <Link

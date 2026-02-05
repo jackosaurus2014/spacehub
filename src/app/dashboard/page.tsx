@@ -64,14 +64,14 @@ export default function DashboardPage() {
         {/* Welcome Header */}
         <div className="card p-8 mb-8 glow-border">
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-nebula-500 to-rocket-500 flex items-center justify-center text-white text-xl font-bold">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-nebula-500 to-rocket-500 flex items-center justify-center text-slate-900 text-xl font-bold">
               {session.user?.name?.charAt(0)?.toUpperCase() || 'E'}
             </div>
             <div>
-              <h1 className="text-2xl font-display font-bold text-white">
+              <h1 className="text-2xl font-display font-bold text-slate-900">
                 Welcome back, {session.user?.name || 'Explorer'}!
               </h1>
-              <p className="text-star-300">{session.user?.email}</p>
+              <p className="text-slate-500">{session.user?.email}</p>
             </div>
           </div>
         </div>
@@ -82,8 +82,8 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-4">
               <span className="text-4xl">📊</span>
               <div>
-                <p className="text-star-300 text-sm">Total Articles</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-slate-500 text-sm">Total Articles</p>
+                <p className="text-2xl font-bold text-slate-900">
                   {Object.values(articleCounts).reduce((a, b) => a + b, 0)}
                 </p>
               </div>
@@ -93,8 +93,8 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-4">
               <span className="text-4xl">📂</span>
               <div>
-                <p className="text-star-300 text-sm">Categories</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-slate-500 text-sm">Categories</p>
+                <p className="text-2xl font-bold text-slate-900">
                   {NEWS_CATEGORIES.length}
                 </p>
               </div>
@@ -104,8 +104,8 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-4">
               <span className="text-4xl">🌟</span>
               <div>
-                <p className="text-star-300 text-sm">Member Since</p>
-                <p className="text-2xl font-bold text-white">Today</p>
+                <p className="text-slate-500 text-sm">Member Since</p>
+                <p className="text-2xl font-bold text-slate-900">Today</p>
               </div>
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function DashboardPage() {
 
         {/* Category Overview */}
         <div className="card p-6 mb-8">
-          <h2 className="text-xl font-display font-bold text-white mb-6 flex items-center">
+          <h2 className="text-xl font-display font-bold text-slate-900 mb-6 flex items-center">
             <span className="text-2xl mr-3">📈</span>
             Articles by Category
           </h2>
@@ -122,12 +122,12 @@ export default function DashboardPage() {
               <Link
                 key={category.slug}
                 href={`/news?category=${category.slug}`}
-                className="bg-space-700/50 border border-space-600 rounded-lg p-4 text-center hover:border-nebula-500/50 transition-all"
+                className="bg-slate-100 border border-slate-200 rounded-lg p-4 text-center hover:border-nebula-500/50 transition-all"
               >
                 <span className="text-3xl block mb-2">
                   {categoryIcons[category.slug]}
                 </span>
-                <p className="text-white font-semibold">{category.name}</p>
+                <p className="text-slate-900 font-semibold">{category.name}</p>
                 <p className="text-nebula-300 text-lg font-bold">
                   {articleCounts[category.slug] || 0}
                 </p>
@@ -138,44 +138,44 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <div className="card p-6">
-          <h2 className="text-xl font-display font-bold text-white mb-6 flex items-center">
+          <h2 className="text-xl font-display font-bold text-slate-900 mb-6 flex items-center">
             <span className="text-2xl mr-3">⚡</span>
             Quick Actions
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Link
               href="/news"
-              className="bg-space-700/50 border border-space-600 rounded-lg p-6 hover:border-nebula-500/50 transition-all group"
+              className="bg-slate-100 border border-slate-200 rounded-lg p-6 hover:border-nebula-500/50 transition-all group"
             >
               <span className="text-4xl block mb-3">📰</span>
-              <h3 className="text-white font-semibold group-hover:text-nebula-300 transition-colors">
+              <h3 className="text-slate-900 font-semibold group-hover:text-nebula-300 transition-colors">
                 Browse All News
               </h3>
-              <p className="text-star-300 text-sm mt-1">
+              <p className="text-slate-500 text-sm mt-1">
                 Explore the latest space industry updates
               </p>
             </Link>
             <Link
               href="/news?category=launches"
-              className="bg-space-700/50 border border-space-600 rounded-lg p-6 hover:border-nebula-500/50 transition-all group"
+              className="bg-slate-100 border border-slate-200 rounded-lg p-6 hover:border-nebula-500/50 transition-all group"
             >
               <span className="text-4xl block mb-3">🚀</span>
-              <h3 className="text-white font-semibold group-hover:text-nebula-300 transition-colors">
+              <h3 className="text-slate-900 font-semibold group-hover:text-nebula-300 transition-colors">
                 Upcoming Launches
               </h3>
-              <p className="text-star-300 text-sm mt-1">
+              <p className="text-slate-500 text-sm mt-1">
                 Stay updated on rocket launches
               </p>
             </Link>
             <Link
               href="/news?category=companies"
-              className="bg-space-700/50 border border-space-600 rounded-lg p-6 hover:border-nebula-500/50 transition-all group"
+              className="bg-slate-100 border border-slate-200 rounded-lg p-6 hover:border-nebula-500/50 transition-all group"
             >
               <span className="text-4xl block mb-3">🏢</span>
-              <h3 className="text-white font-semibold group-hover:text-nebula-300 transition-colors">
+              <h3 className="text-slate-900 font-semibold group-hover:text-nebula-300 transition-colors">
                 Company News
               </h3>
-              <p className="text-star-300 text-sm mt-1">
+              <p className="text-slate-500 text-sm mt-1">
                 Follow major space companies
               </p>
             </Link>
@@ -186,10 +186,10 @@ export default function DashboardPage() {
         <div className="card p-6 mt-8 border-dashed">
           <div className="text-center">
             <span className="text-5xl block mb-4">🔮</span>
-            <h2 className="text-xl font-display font-bold text-white mb-2">
+            <h2 className="text-xl font-display font-bold text-slate-900 mb-2">
               Coming Soon
             </h2>
-            <p className="text-star-300 max-w-2xl mx-auto">
+            <p className="text-slate-500 max-w-2xl mx-auto">
               Save articles, customize your news feed, receive notifications for
               launches, and more. Stay tuned for exciting new features!
             </p>

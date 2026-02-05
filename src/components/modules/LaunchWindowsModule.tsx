@@ -98,7 +98,7 @@ export default function LaunchWindowsModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-white flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
             <span className="text-3xl mr-3">🚀</span>
             Launch Windows & Mission Planner
           </h2>
@@ -114,14 +114,14 @@ export default function LaunchWindowsModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-white flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
             <span className="text-3xl mr-3">🚀</span>
             Launch Windows & Mission Planner
           </h2>
         </div>
         <div className="card p-8 text-center">
           <span className="text-4xl block mb-4">⚠️</span>
-          <p className="text-star-300">{error}</p>
+          <p className="text-slate-500">{error}</p>
         </div>
       </div>
     );
@@ -133,14 +133,14 @@ export default function LaunchWindowsModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-white flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
             <span className="text-3xl mr-3">🚀</span>
             Launch Windows & Mission Planner
           </h2>
         </div>
         <div className="card p-8 text-center">
           <span className="text-4xl block mb-4">🪐</span>
-          <p className="text-star-300 mb-4">No launch window data available yet</p>
+          <p className="text-slate-500 mb-4">No launch window data available yet</p>
           <button
             onClick={handleLoadData}
             disabled={initializing}
@@ -179,16 +179,16 @@ export default function LaunchWindowsModule() {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div className="card p-4 text-center">
-          <div className="text-3xl font-bold text-white">
+          <div className="text-3xl font-bold text-slate-800">
             {data.stats.totalDestinations}
           </div>
-          <div className="text-star-400 text-sm">Total Destinations</div>
+          <div className="text-slate-500 text-sm">Total Destinations</div>
         </div>
         <div className="card p-4 text-center">
           <div className="text-3xl font-bold text-nebula-400">
             {data.stats.upcomingWindows}
           </div>
-          <div className="text-star-400 text-sm">Upcoming Windows</div>
+          <div className="text-slate-500 text-sm">Upcoming Windows</div>
         </div>
         <div className="card p-4 text-center col-span-2 md:col-span-1">
           {data.stats.nextWindow ? (
@@ -196,14 +196,14 @@ export default function LaunchWindowsModule() {
               <div className="text-2xl font-bold text-rocket-400">
                 {data.stats.nextWindow.daysUntilOpen}d
               </div>
-              <div className="text-star-400 text-sm">
+              <div className="text-slate-500 text-sm">
                 Next: {data.stats.nextWindow.destination}
               </div>
             </>
           ) : (
             <>
-              <div className="text-2xl font-bold text-star-500">--</div>
-              <div className="text-star-400 text-sm">Next Window</div>
+              <div className="text-2xl font-bold text-slate-400">--</div>
+              <div className="text-slate-500 text-sm">Next Window</div>
             </>
           )}
         </div>
@@ -213,12 +213,12 @@ export default function LaunchWindowsModule() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Upcoming Launch Windows Timeline */}
         <div className="card p-4">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
             <span>🗓️</span> Upcoming Launch Windows
           </h3>
           <div className="space-y-3">
             {data.windows.length === 0 ? (
-              <p className="text-star-400 text-center py-4">No upcoming windows</p>
+              <p className="text-slate-500 text-center py-4">No upcoming windows</p>
             ) : (
               data.windows.slice(0, 6).map((window) => {
                 const transferStyle = TRANSFER_TYPE_COLORS[window.transferType] || TRANSFER_TYPE_COLORS.hohmann;
@@ -228,11 +228,11 @@ export default function LaunchWindowsModule() {
                 const isOpen = daysUntil <= 0;
 
                 return (
-                  <div key={window.id} className="p-3 bg-space-700/30 rounded-lg">
+                  <div key={window.id} className="p-3 bg-slate-50 rounded-lg">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <div className="text-white font-medium">{window.destination}</div>
-                        <div className="text-star-400 text-xs mt-0.5">
+                        <div className="text-slate-800 font-medium">{window.destination}</div>
+                        <div className="text-slate-500 text-xs mt-0.5">
                           {formatDate(window.windowOpen)} - {formatDate(window.windowClose)}
                         </div>
                       </div>
@@ -245,15 +245,15 @@ export default function LaunchWindowsModule() {
                             OPEN NOW
                           </span>
                         ) : (
-                          <span className="text-xs text-star-400">
+                          <span className="text-xs text-slate-500">
                             in {daysUntil}d
                           </span>
                         )}
                       </div>
                     </div>
-                    <div className="flex gap-4 text-xs text-star-300">
-                      <span>Delta-V: <span className="text-white">{window.deltaV.toFixed(2)} km/s</span></span>
-                      <span>Travel: <span className="text-white">{formatTravelTime(window.travelTime)}</span></span>
+                    <div className="flex gap-4 text-xs text-slate-500">
+                      <span>Delta-V: <span className="text-slate-800">{window.deltaV.toFixed(2)} km/s</span></span>
+                      <span>Travel: <span className="text-slate-800">{formatTravelTime(window.travelTime)}</span></span>
                     </div>
                   </div>
                 );
@@ -264,12 +264,12 @@ export default function LaunchWindowsModule() {
 
         {/* Celestial Destinations Grid */}
         <div className="card p-4">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
             <span>🪐</span> Celestial Destinations
           </h3>
           <div className="space-y-3">
             {data.destinations.length === 0 ? (
-              <p className="text-star-400 text-center py-4">No destinations available</p>
+              <p className="text-slate-500 text-center py-4">No destinations available</p>
             ) : (
               data.destinations.slice(0, 6).map((dest) => {
                 const successRate = dest.totalMissions > 0
@@ -277,14 +277,14 @@ export default function LaunchWindowsModule() {
                   : '--';
 
                 return (
-                  <div key={dest.id} className="p-3 bg-space-700/30 rounded-lg">
+                  <div key={dest.id} className="p-3 bg-slate-50 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <span className="text-white font-medium">{dest.name}</span>
-                        <span className="text-star-500 text-xs ml-2 capitalize">({dest.type})</span>
+                        <span className="text-slate-800 font-medium">{dest.name}</span>
+                        <span className="text-slate-400 text-xs ml-2 capitalize">({dest.type})</span>
                       </div>
                       <div className="text-right">
-                        <div className="text-star-200 text-sm">
+                        <div className="text-slate-600 text-sm">
                           {dest.distanceFromEarth !== null && dest.distanceFromEarth !== undefined
                             ? `${dest.distanceFromEarth} AU`
                             : 'N/A'
@@ -292,10 +292,10 @@ export default function LaunchWindowsModule() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-4 text-xs text-star-300">
+                    <div className="flex gap-4 text-xs text-slate-500">
                       <span>
                         Delta-V to orbit:{' '}
-                        <span className="text-white">
+                        <span className="text-slate-800">
                           {dest.deltaVToOrbit !== null && dest.deltaVToOrbit !== undefined
                             ? `${dest.deltaVToOrbit.toFixed(1)} km/s`
                             : 'N/A'
@@ -304,12 +304,12 @@ export default function LaunchWindowsModule() {
                       </span>
                       <span>
                         Missions:{' '}
-                        <span className="text-white">{dest.totalMissions}</span>
+                        <span className="text-slate-800">{dest.totalMissions}</span>
                       </span>
                       <span>
                         Success:{' '}
                         <span className={`${
-                          dest.totalMissions === 0 ? 'text-star-500' :
+                          dest.totalMissions === 0 ? 'text-slate-400' :
                           Number(successRate) >= 70 ? 'text-green-400' :
                           Number(successRate) >= 40 ? 'text-yellow-400' :
                           'text-red-400'

@@ -34,11 +34,11 @@ export default async function HomePage() {
               />
             </div>
             <h1 className="text-4xl md:text-display-xl font-display font-bold mb-6">
-              <span className="text-white">Your Gateway to the</span>
+              <span className="text-slate-900">Your Gateway to the</span>
               <br />
               <span className="gradient-text">Space Industry</span>
             </h1>
-            <p className="text-lg md:text-xl text-star-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-slate-500 mb-10 max-w-2xl mx-auto leading-relaxed">
               Stay informed with the latest news, launches, and insights from the
               rapidly evolving space market. Perfect for enthusiasts, investors,
               and industry professionals.
@@ -60,7 +60,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-4">
           {/* Section heading with gradient rule */}
           <div className="mb-12 text-center">
-            <h2 className="text-display-sm font-display font-bold text-white mb-4">Your Dashboard</h2>
+            <h2 className="text-display-sm font-display font-bold text-slate-900 mb-4">Your Dashboard</h2>
             <div className="mx-auto w-24 h-px bg-gradient-to-r from-transparent via-nebula-500/50 to-transparent" />
           </div>
           <ModuleContainer initialModules={modules} />
@@ -73,8 +73,8 @@ export default async function HomePage() {
           <Suspense fallback={
             <div className="relative card p-10 md:p-16 text-center rounded-3xl glow-border overflow-hidden">
               <div className="animate-pulse">
-                <div className="h-8 bg-white/10 rounded w-3/4 mx-auto mb-4"></div>
-                <div className="h-4 bg-white/10 rounded w-2/3 mx-auto mb-8"></div>
+                <div className="h-8 bg-slate-200 rounded w-3/4 mx-auto mb-4"></div>
+                <div className="h-4 bg-slate-200 rounded w-2/3 mx-auto mb-8"></div>
                 <div className="h-12 bg-nebula-600/50 rounded-xl w-48 mx-auto"></div>
               </div>
             </div>
