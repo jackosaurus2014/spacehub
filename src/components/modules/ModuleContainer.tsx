@@ -184,7 +184,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
     <div className="space-y-8">
       {/* Navigation Header - Sticky */}
       <div className="sticky top-2 z-40">
-        <div className="rounded-2xl border border-slate-200/80 backdrop-blur-xl shadow-lg shadow-slate-900/10 overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 245, 255, 0.92) 50%, rgba(240, 245, 255, 0.9) 100%)' }}>
+        <div className="rounded-2xl border border-violet-200/50 backdrop-blur-xl shadow-lg overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(245, 240, 255, 0.75) 50%, rgba(235, 230, 255, 0.7) 100%)', boxShadow: '0 10px 15px -3px rgba(139, 92, 246, 0.1), 0 4px 6px -4px rgba(139, 92, 246, 0.1)' }}>
           {/* Main Navigation Bar */}
           <div className="p-4">
             <div className="flex items-center gap-3">
@@ -235,7 +235,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                 {isDropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
-                    <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-xl border border-slate-200/80 backdrop-blur-xl shadow-2xl shadow-slate-900/15 max-h-[70vh] overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 248, 255, 0.96) 50%, rgba(245, 250, 255, 0.95) 100%)' }}>
+                    <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-xl border border-violet-200/50 backdrop-blur-xl max-h-[70vh] overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 243, 255, 0.85) 50%, rgba(240, 235, 255, 0.8) 100%)', boxShadow: '0 25px 50px -12px rgba(139, 92, 246, 0.2)' }}>
                       <div className="overflow-y-auto max-h-[70vh]">
                         {groupedModules.map((section, sectionIdx) => (
                           <div key={section.value}>
