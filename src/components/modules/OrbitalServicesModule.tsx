@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ORBITAL_SERVICE_CATEGORIES } from '@/types';
+import { ORBITAL_SERVICE_CATEGORIES, ORBITAL_SERVICE_TYPES, type OrbitalServiceCategory } from '@/types';
 
 interface OrbitalService {
   id: string;
   providerName: string;
   serviceName: string;
   category: string;
+  serviceType: string;
   priceMin: number | null;
   priceMax: number | null;
   priceUnit: string | null;
@@ -81,6 +82,40 @@ export default function OrbitalServicesModule() {
 
   const getCategoryInfo = (category: string) => {
     return ORBITAL_SERVICE_CATEGORIES.find(c => c.value === category);
+  };
+
+  const getServiceTypeInfo = (serviceType: string) => {
+    return ORBITAL_SERVICE_TYPES.find(t => t.value === serviceType) || {
+      value: serviceType,
+      label: serviceType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      icon: '📦',
+      category: 'earth_observation' as OrbitalServiceCategory,
+    };
+  };
+
+  // Group services by service type
+  const groupServicesByType = (services: OrbitalService[]) => {
+    const grouped: Record<string, OrbitalService[]> = {};
+
+    services.forEach(service => {
+      const typeKey = service.serviceType;
+      if (!grouped[typeKey]) {
+        grouped[typeKey] = [];
+      }
+      grouped[typeKey].push(service);
+    });
+
+    // Sort groups by category order
+    const sortedGroups = Object.entries(grouped).sort(([keyA], [keyB]) => {
+      const typeA = getServiceTypeInfo(keyA);
+      const typeB = getServiceTypeInfo(keyB);
+      const catOrderA = ORBITAL_SERVICE_CATEGORIES.findIndex(c => c.value === typeA.category);
+      const catOrderB = ORBITAL_SERVICE_CATEGORIES.findIndex(c => c.value === typeB.category);
+      if (catOrderA !== catOrderB) return catOrderA - catOrderB;
+      return typeA.label.localeCompare(typeB.label);
+    });
+
+    return sortedGroups;
   };
 
   const formatPrice = (min: number | null, max: number | null, unit: string | null) => {
@@ -168,69 +203,70 @@ export default function OrbitalServicesModule() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Service Categories */}
-        <div className="lg:col-span-2 card p-4">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <span>📊</span> Service Categories
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            {ORBITAL_SERVICE_CATEGORIES.map((category) => {
-              const count = data.stats.byCategory[category.value] || 0;
-              return (
-                <Link
-                  key={category.value}
-                  href={`/orbital-services?category=${category.value}`}
-                  className="p-3 bg-space-700/30 rounded-lg hover:bg-space-700/50 transition-colors"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xl">{category.icon}</span>
-                    <span className="text-white font-medium text-sm">{category.label}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-star-400 text-xs">{category.description}</span>
-                    <span className="text-nebula-300 text-xs font-medium">{count} services</span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Featured Services */}
-        <div className="card p-4">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <span>⭐</span> Featured Services
-          </h3>
-          <div className="space-y-3">
-            {data.services.slice(0, 4).map((service) => {
-              const categoryInfo = getCategoryInfo(service.category);
-              return (
-                <div key={service.id} className="p-3 bg-space-700/30 rounded-lg">
-                  <div className="flex items-start justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <span>{categoryInfo?.icon || '🌐'}</span>
-                      <span className="text-white text-sm font-medium">{service.serviceName}</span>
-                    </div>
-                  </div>
-                  <div className="text-star-400 text-xs mb-2">{service.providerName}</div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-nebula-300 text-sm font-medium">
-                      {formatPrice(service.priceMin, service.priceMax, service.priceUnit)}
-                    </span>
-                    <span className={`text-xs px-2 py-0.5 rounded ${
-                      service.availability === 'available'
-                        ? 'bg-green-500/20 text-green-400'
-                        : 'bg-yellow-500/20 text-yellow-400'
-                    }`}>
-                      {service.availability === 'available' ? 'Available' : 'Limited'}
-                    </span>
-                  </div>
+      {/* Services by Type */}
+      <div className="card p-4">
+        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <span>📦</span> Services by Type
+        </h3>
+        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+          {groupServicesByType(data.services).slice(0, 6).map(([serviceType, typeServices]) => {
+            const typeInfo = getServiceTypeInfo(serviceType);
+            return (
+              <div key={serviceType} className="pb-3 border-b border-space-700 last:border-0">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">{typeInfo.icon}</span>
+                  <span className="text-white font-medium text-sm">{typeInfo.label}</span>
+                  <span className="ml-auto text-star-500 text-xs">{typeServices.length} service{typeServices.length !== 1 ? 's' : ''}</span>
                 </div>
-              );
-            })}
-          </div>
+                <div className="space-y-2">
+                  {typeServices.slice(0, 2).map((service) => (
+                    <div key={service.id} className="flex items-center justify-between p-2 bg-space-700/30 rounded-lg">
+                      <div className="min-w-0">
+                        <div className="text-white text-sm truncate">{service.serviceName}</div>
+                        <div className="text-star-400 text-xs">{service.providerName}</div>
+                      </div>
+                      <div className="flex items-center gap-2 ml-2">
+                        <span className="text-green-400 text-sm font-medium whitespace-nowrap">
+                          {formatPrice(service.priceMin, service.priceMax, service.priceUnit)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  {typeServices.length > 2 && (
+                    <Link
+                      href={`/orbital-services?category=${typeInfo.category}`}
+                      className="text-nebula-400 text-xs hover:text-nebula-300"
+                    >
+                      +{typeServices.length - 2} more services →
+                    </Link>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Service Categories Grid */}
+      <div className="card p-4">
+        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <span>📊</span> Browse by Category
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {ORBITAL_SERVICE_CATEGORIES.map((category) => {
+            const count = data.stats.byCategory[category.value] || 0;
+            return (
+              <Link
+                key={category.value}
+                href={`/orbital-services?category=${category.value}`}
+                className="p-3 bg-space-700/30 rounded-lg hover:bg-space-700/50 transition-colors text-center"
+              >
+                <span className="text-2xl block mb-1">{category.icon}</span>
+                <span className="text-white font-medium text-sm block">{category.label}</span>
+                <span className="text-nebula-300 text-xs">{count} services</span>
+              </Link>
+            );
+          })}
         </div>
       </div>
 

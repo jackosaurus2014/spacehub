@@ -7,6 +7,7 @@ import {
   ORBITAL_PRICING_MODELS,
   ORBITAL_SERVICE_AVAILABILITY,
   ORBITAL_CUSTOMER_TYPES,
+  ORBITAL_SERVICE_TYPES,
   type OrbitalService,
   type OrbitalServiceContract,
 } from '@/types';
@@ -146,6 +147,40 @@ export default function OrbitalServicesPage() {
       label: availability,
       color: 'bg-gray-500',
     };
+  }
+
+  function getServiceTypeInfo(serviceType: string) {
+    return ORBITAL_SERVICE_TYPES.find(t => t.value === serviceType) || {
+      value: serviceType,
+      label: serviceType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      icon: '📦',
+      category: 'earth_observation' as const,
+    };
+  }
+
+  // Group services by service type
+  function groupServicesByType(services: OrbitalService[]) {
+    const grouped: Record<string, OrbitalService[]> = {};
+
+    services.forEach(service => {
+      const typeKey = service.serviceType;
+      if (!grouped[typeKey]) {
+        grouped[typeKey] = [];
+      }
+      grouped[typeKey].push(service);
+    });
+
+    // Sort groups by category order, then alphabetically within
+    const sortedGroups = Object.entries(grouped).sort(([keyA], [keyB]) => {
+      const typeA = getServiceTypeInfo(keyA);
+      const typeB = getServiceTypeInfo(keyB);
+      const catOrderA = ORBITAL_SERVICE_CATEGORIES.findIndex(c => c.value === typeA.category);
+      const catOrderB = ORBITAL_SERVICE_CATEGORIES.findIndex(c => c.value === typeB.category);
+      if (catOrderA !== catOrderB) return catOrderA - catOrderB;
+      return typeA.label.localeCompare(typeB.label);
+    });
+
+    return sortedGroups;
   }
 
   function formatPrice(service: OrbitalService): string {
@@ -309,78 +344,97 @@ export default function OrbitalServicesPage() {
                   </select>
                 </div>
 
-                {/* Services Grid */}
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {services.map((service) => {
-                    const catInfo = getCategoryInfo(service.category);
-                    const availInfo = getAvailabilityInfo(service.availability);
+                {/* Services Grouped by Type */}
+                <div className="space-y-8">
+                  {groupServicesByType(services).map(([serviceType, typeServices]) => {
+                    const typeInfo = getServiceTypeInfo(serviceType);
+                    const catInfo = getCategoryInfo(typeInfo.category);
 
                     return (
-                      <div
-                        key={service.id}
-                        className="bg-space-800 border border-space-700 rounded-xl overflow-hidden hover:border-space-500 transition-colors"
-                      >
-                        {/* Header */}
-                        <div className="p-4 border-b border-space-700">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xl">{catInfo.icon}</span>
-                                <span className="text-xs text-star-400">{catInfo.label}</span>
-                              </div>
-                              <h3 className="text-lg font-semibold text-white">
-                                {service.serviceName}
-                              </h3>
-                              <p className="text-star-400 text-sm">{service.providerName}</p>
-                            </div>
-                            <span className={`${availInfo.color} text-white text-xs px-2 py-1 rounded-full`}>
-                              {availInfo.label}
-                            </span>
+                      <div key={serviceType}>
+                        {/* Service Type Header */}
+                        <div className="flex items-center gap-3 mb-4 pb-2 border-b border-space-700">
+                          <span className="text-2xl">{typeInfo.icon}</span>
+                          <div>
+                            <h3 className="text-lg font-semibold text-white">{typeInfo.label}</h3>
+                            <span className="text-xs text-star-500">{catInfo.label}</span>
                           </div>
+                          <span className="ml-auto bg-space-700 text-star-300 text-xs px-2 py-1 rounded-full">
+                            {typeServices.length} service{typeServices.length !== 1 ? 's' : ''}
+                          </span>
                         </div>
 
-                        {/* Body */}
-                        <div className="p-4">
-                          <p className="text-star-300 text-sm mb-4 line-clamp-2">
-                            {service.description}
-                          </p>
+                        {/* Services Grid for this Type */}
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                          {typeServices.map((service) => {
+                            const availInfo = getAvailabilityInfo(service.availability);
 
-                          {/* Specs */}
-                          {service.orbitType && (
-                            <div className="flex items-center gap-4 text-xs text-star-400 mb-3">
-                              {service.orbitType && (
-                                <span>Orbit: {service.orbitType}</span>
-                              )}
-                              {service.coverage && (
-                                <span>Coverage: {service.coverage}</span>
-                              )}
-                            </div>
-                          )}
+                            return (
+                              <div
+                                key={service.id}
+                                className="bg-space-800 border border-space-700 rounded-xl overflow-hidden hover:border-space-500 transition-colors"
+                              >
+                                {/* Header */}
+                                <div className="p-4 border-b border-space-700">
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                      <h4 className="text-lg font-semibold text-white">
+                                        {service.serviceName}
+                                      </h4>
+                                      <p className="text-star-400 text-sm">{service.providerName}</p>
+                                    </div>
+                                    <span className={`${availInfo.color} text-white text-xs px-2 py-1 rounded-full`}>
+                                      {availInfo.label}
+                                    </span>
+                                  </div>
+                                </div>
 
-                          {/* Pricing */}
-                          <div className="bg-space-700/50 rounded-lg p-3">
-                            <div className="text-xl font-bold text-green-400">
-                              {formatPrice(service)}
-                            </div>
-                            {service.pricingNotes && (
-                              <p className="text-star-400 text-xs mt-1">
-                                {service.pricingNotes}
-                              </p>
-                            )}
-                          </div>
+                                {/* Body */}
+                                <div className="p-4">
+                                  <p className="text-star-300 text-sm mb-4 line-clamp-2">
+                                    {service.description}
+                                  </p>
 
-                          {/* Provider link */}
-                          {service.providerWebsite && (
-                            <a
-                              href={service.providerWebsite}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="mt-3 text-nebula-400 hover:text-nebula-300 text-sm inline-flex items-center gap-1"
-                            >
-                              Visit Provider
-                              <span>&rarr;</span>
-                            </a>
-                          )}
+                                  {/* Specs */}
+                                  {(service.orbitType || service.coverage) && (
+                                    <div className="flex items-center gap-4 text-xs text-star-400 mb-3">
+                                      {service.orbitType && (
+                                        <span>Orbit: {service.orbitType}</span>
+                                      )}
+                                      {service.coverage && (
+                                        <span>Coverage: {service.coverage}</span>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Pricing */}
+                                  <div className="bg-space-700/50 rounded-lg p-3">
+                                    <div className="text-xl font-bold text-green-400">
+                                      {formatPrice(service)}
+                                    </div>
+                                    {service.pricingNotes && (
+                                      <p className="text-star-400 text-xs mt-1">
+                                        {service.pricingNotes}
+                                      </p>
+                                    )}
+                                  </div>
+
+                                  {/* Provider link */}
+                                  {service.providerWebsite && (
+                                    <a
+                                      href={service.providerWebsite}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="mt-3 text-nebula-400 hover:text-nebula-300 text-sm inline-flex items-center gap-1"
+                                    >
+                                      Visit Provider
+                                      <span>&rarr;</span>
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     );

@@ -1579,6 +1579,38 @@ export const ORBITAL_SERVICE_AVAILABILITY: { value: OrbitalServiceAvailability; 
   { value: 'coming_soon', label: 'Coming Soon', color: 'bg-blue-500' },
 ];
 
+// Service Type Labels - human-readable labels for each service type
+export const ORBITAL_SERVICE_TYPES: { value: string; label: string; icon: string; category: OrbitalServiceCategory }[] = [
+  // Earth Observation
+  { value: 'optical_imagery', label: 'Optical Imagery', icon: '📸', category: 'earth_observation' },
+  { value: 'sar_imagery', label: 'SAR Imagery', icon: '📡', category: 'earth_observation' },
+  { value: 'hyperspectral', label: 'Hyperspectral', icon: '🌈', category: 'earth_observation' },
+  { value: 'video_imaging', label: 'Video Imaging', icon: '🎥', category: 'earth_observation' },
+  // In-Orbit Computing
+  { value: 'gpu_compute', label: 'GPU Compute', icon: '🎮', category: 'in_orbit_computing' },
+  { value: 'edge_compute', label: 'Edge Computing', icon: '⚡', category: 'in_orbit_computing' },
+  { value: 'ai_inference', label: 'AI Inference', icon: '🤖', category: 'in_orbit_computing' },
+  { value: 'datacenter', label: 'Orbital Datacenter', icon: '🏢', category: 'in_orbit_computing' },
+  // Hosted Payloads
+  { value: 'satellite_hosting', label: 'Satellite Hosting', icon: '🛰️', category: 'hosted_payload' },
+  { value: 'rideshare_hosting', label: 'Rideshare Hosting', icon: '🚀', category: 'hosted_payload' },
+  { value: 'last_mile_delivery', label: 'Last Mile Delivery', icon: '📦', category: 'hosted_payload' },
+  { value: 'payload_integration', label: 'Payload Integration', icon: '🔧', category: 'hosted_payload' },
+  // Space Solar
+  { value: 'power_beaming', label: 'Power Beaming', icon: '⚡', category: 'space_solar' },
+  { value: 'solar_power', label: 'Solar Power Generation', icon: '☀️', category: 'space_solar' },
+  // Communications
+  { value: 'ground_station', label: 'Ground Station', icon: '📡', category: 'communications' },
+  { value: 'data_relay', label: 'Data Relay', icon: '🔄', category: 'communications' },
+  { value: 'satellite_comms', label: 'Satellite Communications', icon: '📶', category: 'communications' },
+  { value: 'iot_connectivity', label: 'IoT Connectivity', icon: '🌐', category: 'communications' },
+  // Sensor Services
+  { value: 'weather_data', label: 'Weather Data', icon: '🌤️', category: 'sensor_service' },
+  { value: 'rf_monitoring', label: 'RF Monitoring', icon: '📻', category: 'sensor_service' },
+  { value: 'ais_tracking', label: 'AIS Tracking', icon: '🚢', category: 'sensor_service' },
+  { value: 'emissions_monitoring', label: 'Emissions Monitoring', icon: '🏭', category: 'sensor_service' },
+];
+
 export const ORBITAL_CONTRACT_TYPES: { value: OrbitalContractType; label: string }[] = [
   { value: 'idiq', label: 'IDIQ (Indefinite Delivery)' },
   { value: 'firm_fixed', label: 'Firm Fixed Price' },
