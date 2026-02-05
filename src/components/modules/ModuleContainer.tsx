@@ -185,7 +185,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
 
                 const globalIndex = enabledModules.findIndex(m => m.moduleId === module.moduleId);
                 const requiredTier = getRequiredTierForModule(module.moduleId);
-                const isWide = ['news-feed', 'mission-control', 'market-intel'].includes(module.moduleId);
+                const isWide = ['news-feed', 'mission-control', 'market-intel', 'categories'].includes(module.moduleId);
 
                 return (
                   <section
