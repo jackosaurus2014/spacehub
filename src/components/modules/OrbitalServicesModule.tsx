@@ -57,13 +57,14 @@ export default function OrbitalServicesModule() {
           throw new Error(servicesData.error);
         }
 
+        const stats = servicesData.stats || {};
         setData({
           services: servicesData.services || [],
-          stats: servicesData.stats || {
-            totalServices: 0,
-            totalContracts: 0,
-            totalContractValue: 0,
-            byCategory: {},
+          stats: {
+            totalServices: stats.totalServices || 0,
+            totalContracts: stats.totalContracts || 0,
+            totalContractValue: stats.totalContractValue || 0,
+            byCategory: stats.servicesByCategory || {},
           },
           contracts: contractsData.contracts || [],
         });
