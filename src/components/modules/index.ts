@@ -14,5 +14,6 @@ export { default as SpectrumTrackerModule } from './SpectrumTrackerModule';
 export { default as SpaceWorkforceModule } from './SpaceWorkforceModule';
 export { default as LaunchWindowsModule } from './LaunchWindowsModule';
 export { default as DebrisMonitorModule } from './DebrisMonitorModule';
+export { default as OrbitalServicesModule } from './OrbitalServicesModule';
 export { default as ModuleContainer } from './ModuleContainer';
 export { default as ModuleCustomizer } from './ModuleCustomizer';

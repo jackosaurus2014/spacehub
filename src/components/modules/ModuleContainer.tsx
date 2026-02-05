@@ -23,6 +23,7 @@ import SpectrumTrackerModule from './SpectrumTrackerModule';
 import SpaceWorkforceModule from './SpaceWorkforceModule';
 import LaunchWindowsModule from './LaunchWindowsModule';
 import DebrisMonitorModule from './DebrisMonitorModule';
+import OrbitalServicesModule from './OrbitalServicesModule';
 import ModuleCustomizer from './ModuleCustomizer';
 import ModuleErrorBoundary from './ModuleErrorBoundary';
 
@@ -47,6 +48,7 @@ const MODULE_COMPONENTS: Record<string, React.ComponentType> = {
   'space-workforce': SpaceWorkforceModule,
   'launch-windows': LaunchWindowsModule,
   'debris-monitor': DebrisMonitorModule,
+  'orbital-services': OrbitalServicesModule,
 };
 
 export default function ModuleContainer({ initialModules }: ModuleContainerProps) {

@@ -70,6 +70,7 @@ export function canAccessModule(tier: SubscriptionTier, moduleId: string): boole
     'spectrum-tracker': 'enterprise',
     'space-insurance': 'enterprise',
     'compliance': 'enterprise',
+    'orbital-services': 'enterprise',
   };
 
   const requiredTier = premiumModules[moduleId];
@@ -92,6 +93,7 @@ export function getRequiredTierForModule(moduleId: string): SubscriptionTier | n
     'spectrum-tracker': 'enterprise',
     'space-insurance': 'enterprise',
     'compliance': 'enterprise',
+    'orbital-services': 'enterprise',
   };
   return premiumModules[moduleId] || null;
 }
