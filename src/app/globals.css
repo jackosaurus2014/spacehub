@@ -28,6 +28,41 @@ body {
   );
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+/* Deep Background Image */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/SpaceNexus%20background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: -2;
+  opacity: 0.4;
+}
+
+/* Gradient Overlay */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--background-start-rgb), 0.85),
+    rgba(var(--background-end-rgb), 0.9)
+  );
+  z-index: -1;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
