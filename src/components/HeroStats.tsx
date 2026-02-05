@@ -110,15 +110,25 @@ export default function HeroStats() {
           const stockRes = await fetch('/api/stocks?tickers=RKLB,LUNR,ASTS,PL,RDW,SPCE,BKSY,MNTS,ASTR,LLAP,SATL,IRDM,GSAT,VSAT');
           const stockData = await stockRes.json();
           if (stockData.stocks?.length > 0) {
-            const successfulStocks = stockData.stocks.filter((s: { success: boolean }) => s.success);
-            const sorted = [...successfulStocks].sort((a: { changePercent: number }, b: { changePercent: number }) => b.changePercent - a.changePercent);
-            if (sorted[0]) {
+            const successfulStocks = stockData.stocks.filter((s: { success: boolean; changePercent?: number }) =>
+              s.success && typeof s.changePercent === 'number' && !isNaN(s.changePercent)
+            );
+
+            if (successfulStocks.length > 0) {
+              // Sort by changePercent descending (highest gain first)
+              const sorted = [...successfulStocks].sort((a: { changePercent: number }, b: { changePercent: number }) => {
+                return b.changePercent - a.changePercent;
+              });
+
+              // Get the top performer (highest changePercent, could be positive or least negative)
+              const topStock = sorted[0];
+
               setMarket({
                 type: 'top_performer',
                 topGainer: {
-                  name: sorted[0].name,
-                  ticker: sorted[0].ticker,
-                  change: sorted[0].changePercent
+                  name: topStock.name || topStock.ticker,
+                  ticker: topStock.ticker,
+                  change: topStock.changePercent
                 },
               });
             }

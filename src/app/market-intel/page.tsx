@@ -613,27 +613,199 @@ function MarketIntelContent() {
             </p>
           </div>
         ) : (
-          <div className="card overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200">
-                    <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Company</th>
-                    <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Status</th>
-                    <th className="text-right py-3 px-4 text-slate-500 font-medium text-sm">Market Cap / Valuation</th>
-                    <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Last Funding</th>
-                    <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">IPO Expected</th>
-                    <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Focus Areas</th>
-                    <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Website</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {companies.map((company) => (
-                    <CompanyRow key={company.id} company={company} />
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <div className="space-y-8">
+            {/* Publicly Traded Companies */}
+            {companies.filter(c => c.isPublic).length > 0 && (
+              <div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <span className="text-green-400">📈</span>
+                  Publicly Traded Companies
+                  <span className="text-slate-500 font-normal text-sm">({companies.filter(c => c.isPublic).length})</span>
+                </h3>
+                <div className="card overflow-hidden">
+                  <div className="max-h-[500px] overflow-y-auto">
+                    <table className="w-full">
+                      <thead className="sticky top-0 z-10">
+                        <tr className="bg-slate-50 border-b border-slate-200">
+                          <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Company</th>
+                          <th className="text-right py-3 px-4 text-slate-500 font-medium text-sm">Stock Price</th>
+                          <th className="text-right py-3 px-4 text-slate-500 font-medium text-sm">Today</th>
+                          <th className="text-right py-3 px-4 text-slate-500 font-medium text-sm">Market Cap</th>
+                          <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Focus Areas</th>
+                          <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Links</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {companies.filter(c => c.isPublic).map((company) => {
+                          const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
+                          const stock = company.ticker ? stockData[company.ticker] : null;
+                          const isPositive = stock ? stock.changePercent >= 0 : true;
+
+                          return (
+                            <tr key={company.id} className="border-b border-slate-200/50 hover:bg-slate-100/30 transition-colors">
+                              <td className="py-4 px-4">
+                                <div className="flex items-center gap-3">
+                                  <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
+                                  <div>
+                                    <div className="font-semibold text-slate-900">{company.name}</div>
+                                    <div className="text-xs text-nebula-300 font-mono">
+                                      {company.exchange}:{company.ticker}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-4 px-4 text-right">
+                                {stock ? (
+                                  <span className="font-mono font-medium text-slate-900">${stock.price.toFixed(2)}</span>
+                                ) : (
+                                  <div className="h-4 w-16 bg-slate-100 rounded animate-pulse ml-auto" />
+                                )}
+                              </td>
+                              <td className="py-4 px-4 text-right">
+                                {stock ? (
+                                  <span className={`text-sm font-medium px-2 py-0.5 rounded ${
+                                    isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                                  }`}>
+                                    {isPositive ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                                  </span>
+                                ) : (
+                                  <div className="h-4 w-14 bg-slate-100 rounded animate-pulse ml-auto" />
+                                )}
+                              </td>
+                              <td className="py-4 px-4 text-right text-slate-600">
+                                {company.marketCap ? (
+                                  company.marketCap >= 1 ? `$${company.marketCap.toFixed(1)}B` : `$${(company.marketCap * 1000).toFixed(0)}M`
+                                ) : '—'}
+                              </td>
+                              <td className="py-4 px-4">
+                                <div className="flex flex-wrap gap-1 max-w-xs">
+                                  {(company.focusAreas as string[]).slice(0, 2).map((area) => {
+                                    const focusInfo = FOCUS_AREAS.find(f => f.value === area);
+                                    return (
+                                      <span key={area} className="text-xs bg-slate-100/50 text-slate-600 px-2 py-0.5 rounded whitespace-nowrap">
+                                        {focusInfo?.icon} {focusInfo?.label || area}
+                                      </span>
+                                    );
+                                  })}
+                                </div>
+                              </td>
+                              <td className="py-4 px-4">
+                                {company.website && (
+                                  <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-nebula-400 hover:text-nebula-300 text-sm">
+                                    Visit →
+                                  </a>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Private Companies */}
+            {companies.filter(c => !c.isPublic).length > 0 && (
+              <div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <span className="text-yellow-400">🔒</span>
+                  Private Companies
+                  <span className="text-slate-500 font-normal text-sm">({companies.filter(c => !c.isPublic).length})</span>
+                </h3>
+                <div className="card overflow-hidden">
+                  <div className="max-h-[500px] overflow-y-auto">
+                    <table className="w-full">
+                      <thead className="sticky top-0 z-10">
+                        <tr className="bg-slate-50 border-b border-slate-200">
+                          <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Company</th>
+                          <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Status</th>
+                          <th className="text-right py-3 px-4 text-slate-500 font-medium text-sm">Valuation</th>
+                          <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Last Funding</th>
+                          <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">IPO Expected</th>
+                          <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Focus Areas</th>
+                          <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">Links</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {companies.filter(c => !c.isPublic).map((company) => {
+                          const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
+
+                          const formatFunding = (amount: number | null) => {
+                            if (!amount) return '—';
+                            if (amount >= 1000) return `$${(amount / 1000).toFixed(1)}B`;
+                            return `$${amount.toFixed(0)}M`;
+                          };
+
+                          return (
+                            <tr key={company.id} className="border-b border-slate-200/50 hover:bg-slate-100/30 transition-colors">
+                              <td className="py-4 px-4">
+                                <div className="flex items-center gap-3">
+                                  <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
+                                  <div>
+                                    <div className="font-semibold text-slate-900">{company.name}</div>
+                                    <div className="text-xs text-slate-500">{countryInfo?.name || company.country}</div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-4 px-4">
+                                {company.isPreIPO ? (
+                                  <span className="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded font-medium">Pre-IPO</span>
+                                ) : (
+                                  <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded">Private</span>
+                                )}
+                              </td>
+                              <td className="py-4 px-4 text-right text-slate-600">
+                                {company.valuation ? (
+                                  company.valuation >= 1 ? `$${company.valuation.toFixed(1)}B` : `$${(company.valuation * 1000).toFixed(0)}M`
+                                ) : '—'}
+                              </td>
+                              <td className="py-4 px-4">
+                                {company.lastFundingRound ? (
+                                  <div>
+                                    <div className="text-sm text-slate-900">{company.lastFundingRound}</div>
+                                    <div className="text-xs text-slate-500">{formatFunding(company.lastFundingAmount)}</div>
+                                  </div>
+                                ) : (
+                                  <span className="text-slate-400">—</span>
+                                )}
+                              </td>
+                              <td className="py-4 px-4">
+                                {company.expectedIPODate ? (
+                                  <span className="text-yellow-500 text-sm">{company.expectedIPODate}</span>
+                                ) : (
+                                  <span className="text-slate-400">—</span>
+                                )}
+                              </td>
+                              <td className="py-4 px-4">
+                                <div className="flex flex-wrap gap-1 max-w-xs">
+                                  {(company.focusAreas as string[]).slice(0, 2).map((area) => {
+                                    const focusInfo = FOCUS_AREAS.find(f => f.value === area);
+                                    return (
+                                      <span key={area} className="text-xs bg-slate-100/50 text-slate-600 px-2 py-0.5 rounded whitespace-nowrap">
+                                        {focusInfo?.icon} {focusInfo?.label || area}
+                                      </span>
+                                    );
+                                  })}
+                                </div>
+                              </td>
+                              <td className="py-4 px-4">
+                                {company.website && (
+                                  <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-nebula-400 hover:text-nebula-300 text-sm">
+                                    Visit →
+                                  </a>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
