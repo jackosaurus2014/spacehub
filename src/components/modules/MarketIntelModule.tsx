@@ -363,7 +363,7 @@ export default function MarketIntelModule() {
       {/* All Companies List */}
       {companies.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold text-white mb-3">Space Companies</h3>
+          <h3 className="text-lg font-semibold text-white mb-3">Publicly-Traded Space Companies <span className="text-star-400 font-normal text-sm">(View All to see Public and Private)</span></h3>
           <div className="card overflow-hidden">
             <div className="max-h-[480px] overflow-y-auto scrollbar-thin">
               {companies.slice(0, 10).map((company) => {
