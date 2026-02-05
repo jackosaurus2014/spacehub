@@ -34,11 +34,11 @@ export default async function HomePage() {
               />
             </div>
             <h1 className="text-4xl md:text-display-xl font-display font-bold mb-6">
-              <span className="text-slate-900">Your Gateway to the</span>
+              <span className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Your Gateway to the</span>
               <br />
-              <span className="gradient-text">Space Industry</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">Space Industry</span>
             </h1>
-            <p className="text-lg md:text-xl text-slate-500 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-slate-200 mb-10 max-w-2xl mx-auto leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
               Stay informed with the latest news, launches, and insights from the
               rapidly evolving space market. Perfect for enthusiasts, investors,
               and industry professionals.
@@ -49,8 +49,8 @@ export default async function HomePage() {
 
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float">
-          <div className="w-6 h-10 border-2 border-white/20 rounded-full flex items-start justify-center p-1.5">
-            <div className="w-1.5 h-2.5 bg-white/40 rounded-full animate-pulse" />
+          <div className="w-6 h-10 border-2 border-cyan-400/50 rounded-full flex items-start justify-center p-1.5 shadow-lg shadow-cyan-500/20">
+            <div className="w-1.5 h-2.5 bg-cyan-400/70 rounded-full animate-pulse" />
           </div>
         </div>
       </section>
@@ -60,8 +60,8 @@ export default async function HomePage() {
         <div className="container mx-auto px-4">
           {/* Section heading with gradient rule */}
           <div className="mb-12 text-center">
-            <h2 className="text-display-sm font-display font-bold text-slate-900 mb-4">Your Dashboard</h2>
-            <div className="mx-auto w-24 h-px bg-gradient-to-r from-transparent via-nebula-500/50 to-transparent" />
+            <h2 className="text-display-sm font-display font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Your Dashboard</h2>
+            <div className="mx-auto w-24 h-px bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent" />
           </div>
           <ModuleContainer initialModules={modules} />
         </div>
