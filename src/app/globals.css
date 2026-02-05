@@ -5,9 +5,9 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 226, 232, 240;
-  --background-start-rgb: 5, 5, 16;
-  --background-end-rgb: 12, 12, 36;
+  --foreground-rgb: 30, 41, 59;
+  --background-start-rgb: 248, 250, 252;
+  --background-end-rgb: 241, 245, 249;
 }
 
 html {
@@ -16,16 +16,12 @@ html {
 
 ::selection {
   background: rgba(139, 92, 246, 0.3);
-  color: #e2e8f0;
+  color: #1e293b;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-    to bottom,
-    rgb(var(--background-start-rgb)),
-    rgb(var(--background-end-rgb))
-  );
+  background: rgb(var(--background-start-rgb));
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
   position: relative;
@@ -45,10 +41,10 @@ body::before {
   background-repeat: no-repeat;
   background-attachment: fixed;
   z-index: -2;
-  opacity: 0.4;
+  opacity: 0.55;
 }
 
-/* Gradient Overlay */
+/* White Overlay for readability */
 body::after {
   content: '';
   position: fixed;
@@ -58,8 +54,8 @@ body::after {
   height: 100%;
   background: linear-gradient(
     to bottom,
-    rgba(var(--background-start-rgb), 0.85),
-    rgba(var(--background-end-rgb), 0.9)
+    rgba(255, 255, 255, 0.85),
+    rgba(248, 250, 252, 0.9)
   );
   z-index: -1;
   pointer-events: none;
@@ -119,54 +115,54 @@ body::after {
 
 /* Button Styles */
 .btn-primary {
-  @apply bg-gradient-to-r from-nebula-500 to-nebula-400 text-white font-semibold
+  @apply bg-gradient-to-r from-nebula-600 to-nebula-500 text-white font-semibold
          py-3 px-8 rounded-xl transition-all duration-300
-         hover:from-nebula-400 hover:to-nebula-300 hover:shadow-lg hover:shadow-nebula-500/25
+         hover:from-nebula-500 hover:to-nebula-400 hover:shadow-lg hover:shadow-nebula-500/30
          hover:-translate-y-0.5
          active:scale-95 tracking-wide uppercase text-sm;
 }
 
 .btn-secondary {
-  @apply border border-white/[0.12] text-star-100 font-semibold
+  @apply border border-slate-300 text-slate-700 font-semibold
          py-3 px-8 rounded-xl transition-all duration-300
-         hover:bg-white/[0.06] hover:border-white/[0.2]
+         hover:bg-slate-100 hover:border-slate-400
          hover:-translate-y-0.5
          active:scale-95 tracking-wide uppercase text-sm;
 }
 
 .btn-ghost {
-  @apply text-star-200 font-medium py-2 px-4 rounded-lg transition-all duration-200
-         hover:bg-white/[0.06] hover:text-white;
+  @apply text-slate-600 font-medium py-2 px-4 rounded-lg transition-all duration-200
+         hover:bg-slate-100 hover:text-slate-900;
 }
 
 /* Card Styles */
 .card {
-  @apply bg-space-800/60 backdrop-blur-md border border-white/[0.06] rounded-2xl
-         shadow-lg shadow-black/20
-         transition-all duration-300 hover:border-white/[0.12];
+  @apply bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-2xl
+         shadow-lg shadow-slate-900/10
+         transition-all duration-300 hover:border-slate-300/80;
 }
 
 .card-elevated {
-  @apply bg-space-800/70 backdrop-blur-lg border border-white/[0.08] rounded-2xl
-         shadow-xl shadow-black/30
-         transition-all duration-300 hover:border-nebula-500/30;
+  @apply bg-white/90 backdrop-blur-lg border border-slate-200/70 rounded-2xl
+         shadow-xl shadow-slate-900/15
+         transition-all duration-300 hover:border-nebula-400/40;
 }
 
 .card-interactive {
-  @apply bg-space-800/60 backdrop-blur-md border border-white/[0.06] rounded-2xl
-         shadow-lg shadow-black/20
-         transition-all duration-300 hover:border-white/[0.12]
+  @apply bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-2xl
+         shadow-lg shadow-slate-900/10
+         transition-all duration-300 hover:border-slate-300/80
          hover:-translate-y-0.5 cursor-pointer;
 }
 
 .card-interactive:hover {
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.15), 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.2), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 /* Input Styles */
 .input {
-  @apply w-full bg-space-700/50 border border-white/[0.08] rounded-xl px-4 py-3
-         text-star-100 placeholder-star-300/50
+  @apply w-full bg-white/90 border border-slate-300/60 rounded-xl px-4 py-3
+         text-slate-800 placeholder-slate-400
          focus:outline-none focus:border-nebula-400 focus:ring-1 focus:ring-nebula-400
          transition-all duration-200;
 }
@@ -177,16 +173,16 @@ body::after {
 }
 
 ::-webkit-scrollbar-track {
-  background: #050510;
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #4c1d95;
+  background: #a78bfa;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6d28d9;
+  background: #8b5cf6;
 }
 
 /* Gradient Text */
@@ -202,7 +198,7 @@ body::after {
 
 /* Section Utilities */
 .section-divider {
-  @apply border-t border-white/[0.04];
+  @apply border-t border-slate-200;
 }
 
 .section-spacer {
