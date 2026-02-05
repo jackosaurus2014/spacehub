@@ -1180,3 +1180,19 @@ model DailyDigest {
   @@index([digestDate])
   @@index([status])
 }
+
+// Company Addition Request
+model CompanyAddRequest {
+  id          String   @id @default(cuid())
+  companyName String
+  description String
+  website     String?
+  submitterEmail String?
+  status      String   @default("pending") // pending, approved, rejected, duplicate
+  adminNotes  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}

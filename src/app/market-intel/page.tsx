@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import StockMiniChart from '@/components/ui/StockMiniChart';
 import PageHeader from '@/components/ui/PageHeader';
 import ExportButton from '@/components/ui/ExportButton';
+import CompanyRequestDialog from '@/components/ui/CompanyRequestDialog';
 
 interface StockData {
   ticker: string;
@@ -223,6 +224,7 @@ function MarketIntelContent() {
   const [selectedFocus, setSelectedFocus] = useState<CompanyFocusArea | ''>(
     (searchParams.get('focus') as CompanyFocusArea | '') || ''
   );
+  const [showCompanyRequestDialog, setShowCompanyRequestDialog] = useState(false);
 
   // Sync filters to URL
   useEffect(() => {
@@ -363,7 +365,7 @@ function MarketIntelContent() {
             </div>
 
             {/* Country Distribution */}
-            <div className="card p-4 mb-8">
+            <div className="card p-4 mb-4">
               <h3 className="text-white font-semibold mb-3">Companies by Region</h3>
               <div className="flex flex-wrap gap-3">
                 {Object.entries(stats.byCountry).map(([country, count]) => {
@@ -380,6 +382,19 @@ function MarketIntelContent() {
                   );
                 })}
               </div>
+            </div>
+
+            {/* Request Company Addition */}
+            <div className="mb-8">
+              <button
+                onClick={() => setShowCompanyRequestDialog(true)}
+                className="text-star-400 hover:text-nebula-400 text-sm transition-colors flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Don&apos;t see your company? Request to be added.
+              </button>
             </div>
 
             {/* Live Stock Ticker */}
@@ -636,6 +651,12 @@ function MarketIntelContent() {
           </div>
         </div>
       </div>
+
+      {/* Company Request Dialog */}
+      <CompanyRequestDialog
+        isOpen={showCompanyRequestDialog}
+        onClose={() => setShowCompanyRequestDialog(false)}
+      />
     </div>
   );
 }
