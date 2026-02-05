@@ -135,137 +135,177 @@ body::after {
          hover:bg-slate-100 hover:text-slate-900;
 }
 
-/* Card Styles */
+/* Card Styles - Dark Space Theme */
 .card {
-  @apply backdrop-blur-xl border-2 border-white/60 rounded-2xl
-         transition-all duration-300 hover:border-white/80;
+  @apply backdrop-blur-xl border border-cyan-400/30 rounded-2xl
+         transition-all duration-300 hover:border-cyan-400/50;
   background: linear-gradient(145deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(240, 235, 255, 0.9) 25%,
-    rgba(230, 240, 255, 0.88) 50%,
-    rgba(235, 230, 250, 0.9) 75%,
-    rgba(245, 240, 255, 0.92) 100%);
+    rgba(15, 23, 42, 0.9) 0%,
+    rgba(30, 41, 59, 0.88) 25%,
+    rgba(51, 65, 85, 0.85) 50%,
+    rgba(30, 41, 59, 0.88) 75%,
+    rgba(15, 23, 42, 0.9) 100%);
   box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 10px 20px -5px rgba(139, 92, 246, 0.15),
-    0 0 0 1px rgba(139, 92, 246, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 10px 20px -5px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(6, 182, 212, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 20px rgba(6, 182, 212, 0.03);
 }
 
 .card-elevated {
-  @apply backdrop-blur-xl border-2 border-white/70 rounded-2xl
-         transition-all duration-300 hover:border-white/90;
+  @apply backdrop-blur-xl border border-cyan-400/40 rounded-2xl
+         transition-all duration-300 hover:border-cyan-400/60;
   background: linear-gradient(145deg,
-    rgba(255, 255, 255, 0.98) 0%,
-    rgba(245, 240, 255, 0.95) 25%,
-    rgba(235, 245, 255, 0.93) 50%,
-    rgba(240, 235, 252, 0.95) 75%,
-    rgba(250, 245, 255, 0.97) 100%);
+    rgba(15, 23, 42, 0.95) 0%,
+    rgba(30, 41, 59, 0.92) 25%,
+    rgba(51, 65, 85, 0.9) 50%,
+    rgba(30, 41, 59, 0.92) 75%,
+    rgba(15, 23, 42, 0.95) 100%);
   box-shadow:
-    0 8px 16px -4px rgba(0, 0, 0, 0.12),
-    0 20px 40px -10px rgba(139, 92, 246, 0.2),
-    0 0 0 1px rgba(139, 92, 246, 0.08),
-    inset 0 2px 0 rgba(255, 255, 255, 0.9);
+    0 8px 16px -4px rgba(0, 0, 0, 0.4),
+    0 20px 40px -10px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(6, 182, 212, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 30px rgba(6, 182, 212, 0.05);
 }
 
 .card-interactive {
-  @apply backdrop-blur-xl border-2 border-white/60 rounded-2xl
-         transition-all duration-300 hover:border-white/90
+  @apply backdrop-blur-xl border border-cyan-400/30 rounded-2xl
+         transition-all duration-300 hover:border-cyan-400/60
          hover:-translate-y-1 cursor-pointer;
   background: linear-gradient(145deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(240, 235, 255, 0.9) 25%,
-    rgba(230, 240, 255, 0.88) 50%,
-    rgba(235, 230, 250, 0.9) 75%,
-    rgba(245, 240, 255, 0.92) 100%);
+    rgba(15, 23, 42, 0.9) 0%,
+    rgba(30, 41, 59, 0.88) 25%,
+    rgba(51, 65, 85, 0.85) 50%,
+    rgba(30, 41, 59, 0.88) 75%,
+    rgba(15, 23, 42, 0.9) 100%);
   box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 10px 20px -5px rgba(139, 92, 246, 0.15),
-    0 0 0 1px rgba(139, 92, 246, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 10px 20px -5px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(6, 182, 212, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 20px rgba(6, 182, 212, 0.03);
 }
 
 .card-interactive:hover {
   background: linear-gradient(145deg,
-    rgba(255, 255, 255, 0.98) 0%,
-    rgba(245, 238, 255, 0.95) 25%,
-    rgba(235, 245, 255, 0.93) 50%,
-    rgba(240, 235, 255, 0.95) 75%,
-    rgba(250, 245, 255, 0.97) 100%);
+    rgba(15, 23, 42, 0.95) 0%,
+    rgba(30, 58, 80, 0.92) 25%,
+    rgba(51, 85, 105, 0.9) 50%,
+    rgba(30, 58, 80, 0.92) 75%,
+    rgba(15, 23, 42, 0.95) 100%);
   box-shadow:
-    0 8px 16px -4px rgba(0, 0, 0, 0.15),
-    0 25px 50px -12px rgba(139, 92, 246, 0.25),
-    0 0 20px rgba(139, 92, 246, 0.15),
-    inset 0 2px 0 rgba(255, 255, 255, 0.9);
+    0 8px 16px -4px rgba(0, 0, 0, 0.4),
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(6, 182, 212, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 40px rgba(6, 182, 212, 0.08);
 }
 
-/* Colored Card Variants */
+/* Colored Card Variants - Dark Space Theme */
 .card-nebula {
-  @apply backdrop-blur-xl border-2 border-purple-200/80 rounded-2xl
-         transition-all duration-300;
+  @apply backdrop-blur-xl border border-purple-500/40 rounded-2xl
+         transition-all duration-300 hover:border-purple-400/60;
   background: linear-gradient(145deg,
-    rgba(255, 250, 255, 0.95) 0%,
-    rgba(245, 230, 255, 0.92) 25%,
-    rgba(235, 210, 255, 0.9) 50%,
-    rgba(225, 200, 255, 0.88) 75%,
-    rgba(240, 220, 255, 0.9) 100%);
+    rgba(30, 20, 50, 0.92) 0%,
+    rgba(50, 30, 80, 0.9) 25%,
+    rgba(70, 40, 100, 0.88) 50%,
+    rgba(50, 30, 80, 0.9) 75%,
+    rgba(30, 20, 50, 0.92) 100%);
   box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 10px 20px -5px rgba(168, 85, 247, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 10px 20px -5px rgba(168, 85, 247, 0.25),
+    inset 0 0 20px rgba(168, 85, 247, 0.05);
 }
 
 .card-cyan {
-  @apply backdrop-blur-xl border-2 border-cyan-200/80 rounded-2xl
-         transition-all duration-300;
+  @apply backdrop-blur-xl border border-cyan-500/40 rounded-2xl
+         transition-all duration-300 hover:border-cyan-400/60;
   background: linear-gradient(145deg,
-    rgba(250, 255, 255, 0.95) 0%,
-    rgba(230, 250, 255, 0.92) 25%,
-    rgba(200, 245, 255, 0.9) 50%,
-    rgba(180, 240, 255, 0.88) 75%,
-    rgba(210, 248, 255, 0.9) 100%);
+    rgba(10, 30, 40, 0.92) 0%,
+    rgba(20, 50, 70, 0.9) 25%,
+    rgba(30, 70, 90, 0.88) 50%,
+    rgba(20, 50, 70, 0.9) 75%,
+    rgba(10, 30, 40, 0.92) 100%);
   box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 10px 20px -5px rgba(6, 182, 212, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 10px 20px -5px rgba(6, 182, 212, 0.25),
+    inset 0 0 20px rgba(6, 182, 212, 0.05);
 }
 
 .card-amber {
-  @apply backdrop-blur-xl border-2 border-amber-200/80 rounded-2xl
-         transition-all duration-300;
+  @apply backdrop-blur-xl border border-amber-500/40 rounded-2xl
+         transition-all duration-300 hover:border-amber-400/60;
   background: linear-gradient(145deg,
-    rgba(255, 253, 250, 0.95) 0%,
-    rgba(255, 248, 230, 0.92) 25%,
-    rgba(255, 240, 200, 0.9) 50%,
-    rgba(255, 230, 180, 0.88) 75%,
-    rgba(255, 242, 210, 0.9) 100%);
+    rgba(40, 30, 15, 0.92) 0%,
+    rgba(60, 45, 20, 0.9) 25%,
+    rgba(80, 60, 25, 0.88) 50%,
+    rgba(60, 45, 20, 0.9) 75%,
+    rgba(40, 30, 15, 0.92) 100%);
   box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 10px 20px -5px rgba(245, 158, 11, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 10px 20px -5px rgba(245, 158, 11, 0.25),
+    inset 0 0 20px rgba(245, 158, 11, 0.05);
 }
 
 .card-emerald {
-  @apply backdrop-blur-xl border-2 border-emerald-200/80 rounded-2xl
-         transition-all duration-300;
+  @apply backdrop-blur-xl border border-emerald-500/40 rounded-2xl
+         transition-all duration-300 hover:border-emerald-400/60;
   background: linear-gradient(145deg,
-    rgba(250, 255, 252, 0.95) 0%,
-    rgba(230, 255, 245, 0.92) 25%,
-    rgba(200, 250, 230, 0.9) 50%,
-    rgba(180, 245, 220, 0.88) 75%,
-    rgba(210, 252, 238, 0.9) 100%);
+    rgba(15, 35, 30, 0.92) 0%,
+    rgba(20, 55, 45, 0.9) 25%,
+    rgba(25, 75, 60, 0.88) 50%,
+    rgba(20, 55, 45, 0.9) 75%,
+    rgba(15, 35, 30, 0.92) 100%);
   box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 10px 20px -5px rgba(16, 185, 129, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 10px 20px -5px rgba(16, 185, 129, 0.25),
+    inset 0 0 20px rgba(16, 185, 129, 0.05);
+}
+
+/* Dark Card Text Overrides */
+.card, .card-elevated, .card-interactive,
+.card-nebula, .card-cyan, .card-amber, .card-emerald {
+  color: #e2e8f0; /* slate-200 */
+}
+
+.card h1, .card h2, .card h3, .card h4, .card h5, .card h6,
+.card-elevated h1, .card-elevated h2, .card-elevated h3, .card-elevated h4,
+.card-interactive h1, .card-interactive h2, .card-interactive h3, .card-interactive h4 {
+  color: #f8fafc; /* slate-50 */
+}
+
+.card p, .card span, .card-elevated p, .card-elevated span,
+.card-interactive p, .card-interactive span {
+  color: #cbd5e1; /* slate-300 */
+}
+
+.card a, .card-elevated a, .card-interactive a {
+  color: #67e8f9; /* cyan-300 */
+}
+
+.card a:hover, .card-elevated a:hover, .card-interactive a:hover {
+  color: #22d3ee; /* cyan-400 */
 }
 
 /* Input Styles */
 .input {
-  @apply w-full bg-white/90 border border-slate-300/60 rounded-xl px-4 py-3
-         text-slate-800 placeholder-slate-400
-         focus:outline-none focus:border-nebula-400 focus:ring-1 focus:ring-nebula-400
+  @apply w-full border rounded-xl px-4 py-3
+         focus:outline-none focus:ring-1
          transition-all duration-200;
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(6, 182, 212, 0.3);
+  color: #e2e8f0;
+}
+
+.input::placeholder {
+  color: #64748b;
+}
+
+.input:focus {
+  border-color: rgba(6, 182, 212, 0.6);
+  box-shadow: 0 0 0 1px rgba(6, 182, 212, 0.3);
 }
 
 /* Custom Scrollbar */

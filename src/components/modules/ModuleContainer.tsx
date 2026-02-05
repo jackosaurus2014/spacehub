@@ -184,7 +184,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
     <div className="space-y-8">
       {/* Navigation Header - Sticky */}
       <div className="sticky top-2 z-40">
-        <div className="rounded-2xl border-2 border-white/70 backdrop-blur-xl overflow-hidden" style={{ background: 'linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 240, 255, 0.92) 25%, rgba(235, 245, 255, 0.9) 50%, rgba(240, 238, 255, 0.92) 75%, rgba(250, 248, 255, 0.95) 100%)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 10px 25px -5px rgba(139, 92, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9)' }}>
+        <div className="rounded-2xl border border-cyan-400/30 backdrop-blur-xl overflow-hidden" style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 25%, rgba(51, 65, 85, 0.9) 50%, rgba(30, 41, 59, 0.92) 75%, rgba(15, 23, 42, 0.95) 100%)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(6, 182, 212, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05)' }}>
           {/* Main Navigation Bar */}
           <div className="p-4">
             <div className="flex items-center gap-3">
@@ -192,7 +192,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
               <button
                 onClick={goToPrevious}
                 disabled={isTransitioning}
-                className="group flex items-center justify-center w-12 h-12 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-700 transition-all duration-200 disabled:opacity-50"
+                className="group flex items-center justify-center w-12 h-12 rounded-xl bg-slate-700/50 hover:bg-slate-600/50 border border-cyan-400/20 hover:border-cyan-400/40 text-slate-300 hover:text-cyan-300 transition-all duration-200 disabled:opacity-50"
                 aria-label="Previous module (Left Arrow)"
                 title="Previous (←)"
               >
@@ -205,16 +205,16 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
               <div className="relative flex-1">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="w-full flex items-center gap-4 px-5 py-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-slate-300 transition-all duration-200"
+                  className="w-full flex items-center gap-4 px-5 py-3 rounded-xl bg-slate-700/40 hover:bg-slate-600/50 border border-cyan-400/20 hover:border-cyan-400/40 transition-all duration-200"
                 >
                   {/* Module Icon & Info */}
                   <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-nebula-100 to-purple-100 border border-nebula-200 flex items-center justify-center text-2xl flex-shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-900/50 to-purple-900/50 border border-cyan-400/30 flex items-center justify-center text-2xl flex-shrink-0">
                       {currentModule?.icon}
                     </div>
                     <div className="text-left min-w-0">
-                      <div className="font-semibold text-slate-800 text-lg truncate">{currentModule?.name}</div>
-                      <div className="text-sm text-slate-500">{currentSection?.label}</div>
+                      <div className="font-semibold text-slate-100 text-lg truncate">{currentModule?.name}</div>
+                      <div className="text-sm text-slate-400">{currentSection?.label}</div>
                     </div>
                   </div>
 
@@ -223,8 +223,8 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                     <span className={`text-xs font-medium px-3 py-1.5 rounded-lg border ${tierInfo.bgColor} ${tierInfo.color}`}>
                       {tierInfo.label}
                     </span>
-                    <div className={`w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>
-                      <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className={`w-8 h-8 rounded-lg bg-slate-700/50 flex items-center justify-center transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>
+                      <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
@@ -235,12 +235,12 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                 {isDropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
-                    <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-xl border-2 border-white/70 backdrop-blur-xl max-h-[70vh] overflow-hidden" style={{ background: 'linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 245, 255, 0.96) 25%, rgba(242, 248, 255, 0.95) 50%, rgba(245, 243, 255, 0.96) 75%, rgba(252, 250, 255, 0.98) 100%)', boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.12), 0 25px 50px -12px rgba(139, 92, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.9)' }}>
+                    <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-xl border border-cyan-400/30 backdrop-blur-xl max-h-[70vh] overflow-hidden" style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)', boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.15)' }}>
                       <div className="overflow-y-auto max-h-[70vh]">
                         {groupedModules.map((section, sectionIdx) => (
                           <div key={section.value}>
                             {/* Section Header */}
-                            <div className={`px-5 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 bg-slate-50 ${sectionIdx > 0 ? 'border-t border-slate-100' : ''}`}>
+                            <div className={`px-5 py-3 text-xs font-semibold uppercase tracking-wider text-cyan-400 bg-slate-800/50 ${sectionIdx > 0 ? 'border-t border-slate-700/50' : ''}`}>
                               {section.label}
                             </div>
                             {/* Section Modules */}
@@ -254,12 +254,12 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                                     onClick={() => jumpToModule(module.globalIndex)}
                                     className={`w-full flex items-center gap-4 px-5 py-3 text-left transition-all duration-150 ${
                                       isActive
-                                        ? 'bg-nebula-50 border-l-2 border-l-nebula-500'
-                                        : 'hover:bg-slate-50 border-l-2 border-l-transparent'
+                                        ? 'bg-cyan-900/30 border-l-2 border-l-cyan-400'
+                                        : 'hover:bg-slate-700/50 border-l-2 border-l-transparent'
                                     }`}
                                   >
                                     <span className="text-xl w-8 text-center">{module.icon}</span>
-                                    <span className={`flex-1 truncate ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700'}`}>
+                                    <span className={`flex-1 truncate ${isActive ? 'text-cyan-300 font-medium' : 'text-slate-300'}`}>
                                       {module.name}
                                     </span>
                                     <span className={`text-xs font-medium px-2 py-1 rounded border ${moduleTier.bgColor} ${moduleTier.color}`}>
@@ -281,7 +281,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
               <button
                 onClick={goToNext}
                 disabled={isTransitioning}
-                className="group flex items-center justify-center w-12 h-12 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-700 transition-all duration-200 disabled:opacity-50"
+                className="group flex items-center justify-center w-12 h-12 rounded-xl bg-slate-700/50 hover:bg-slate-600/50 border border-cyan-400/20 hover:border-cyan-400/40 text-slate-300 hover:text-cyan-300 transition-all duration-200 disabled:opacity-50"
                 aria-label="Next module (Right Arrow)"
                 title="Next (→)"
               >
@@ -306,7 +306,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                       className={`rounded-full transition-all duration-300 ${
                         idx === currentIndex
                           ? `w-8 h-2 ${dotTier.dotColor}`
-                          : 'w-2 h-2 bg-slate-300 hover:bg-slate-400'
+                          : 'w-2 h-2 bg-slate-600 hover:bg-slate-500'
                       }`}
                       aria-label={`Go to ${module.name}`}
                       title={module.name}
@@ -318,20 +318,20 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
           </div>
 
           {/* Counter & Legend */}
-          <div className="px-4 pb-3 flex items-center justify-between text-xs border-t border-slate-100 pt-3">
-            <span className="text-slate-500">
+          <div className="px-4 pb-3 flex items-center justify-between text-xs border-t border-slate-700/50 pt-3">
+            <span className="text-slate-400">
               {currentIndex + 1} of {enabledModules.length} modules
             </span>
             <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1.5 text-slate-500">
+              <span className="flex items-center gap-1.5 text-slate-400">
                 <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                 Enthusiast
               </span>
-              <span className="flex items-center gap-1.5 text-slate-500">
+              <span className="flex items-center gap-1.5 text-slate-400">
                 <span className="w-2 h-2 rounded-full bg-violet-500"></span>
                 Pro
               </span>
-              <span className="flex items-center gap-1.5 text-slate-500">
+              <span className="flex items-center gap-1.5 text-slate-400">
                 <span className="w-2 h-2 rounded-full bg-amber-500"></span>
                 Enterprise
               </span>
@@ -341,8 +341,8 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
 
         {/* Keyboard Hint */}
         <div className="text-center mt-2">
-          <span className="text-xs text-slate-500">
-            Use <kbd className="px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 font-mono text-[10px]">←</kbd> <kbd className="px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 font-mono text-[10px]">→</kbd> arrow keys to navigate
+          <span className="text-xs text-slate-400">
+            Use <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 font-mono text-[10px]">←</kbd> <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 font-mono text-[10px]">→</kbd> arrow keys to navigate
           </span>
         </div>
       </div>
