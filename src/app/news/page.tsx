@@ -1,13 +1,39 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, Fragment } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import NewsCard from '@/components/NewsCard';
 import NewsFilter from '@/components/NewsFilter';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
 import ExportButton from '@/components/ui/ExportButton';
+import { NativeAd } from '@/components/ads';
 import { NewsArticle } from '@/types';
+
+// Sample native ad data - in production, this would come from an ad server
+const SAMPLE_NATIVE_ADS = [
+  {
+    title: 'Revolutionize Your Satellite Operations',
+    description: 'Discover how leading space companies are using AI-powered analytics to optimize mission planning and reduce costs by up to 40%.',
+    image: '/ads/satellite-ops.jpg',
+    link: 'https://example.com/satellite-ops',
+    sponsor: 'SpaceTech Solutions',
+  },
+  {
+    title: 'The Future of Space Insurance',
+    description: 'Comprehensive coverage for your space assets. From launch to orbit, we have you covered with industry-leading protection.',
+    image: '/ads/space-insurance.jpg',
+    link: 'https://example.com/space-insurance',
+    sponsor: 'Orbital Insurance Co.',
+  },
+  {
+    title: 'Join the Space Workforce Revolution',
+    description: 'Top aerospace companies are hiring. Find your dream job in the space industry with exclusive opportunities.',
+    image: '/ads/space-jobs.jpg',
+    link: 'https://example.com/space-jobs',
+    sponsor: 'SpaceCareers',
+  },
+];
 
 function NewsContent() {
   const searchParams = useSearchParams();
@@ -114,8 +140,16 @@ function NewsContent() {
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map((article) => (
-              <NewsCard key={article.id} article={article} />
+            {articles.map((article, index) => (
+              <Fragment key={article.id}>
+                <NewsCard article={article} />
+                {/* Insert native ad after every 5th article */}
+                {(index + 1) % 5 === 0 && index < articles.length - 1 && (
+                  <NativeAd
+                    {...SAMPLE_NATIVE_ADS[(Math.floor(index / 5)) % SAMPLE_NATIVE_ADS.length]}
+                  />
+                )}
+              </Fragment>
             ))}
           </div>
 

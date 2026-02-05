@@ -3,7 +3,9 @@ import { Suspense } from 'react';
 import { ModuleContainer } from '@/components/modules';
 import { getDefaultModulePreferences } from '@/lib/module-preferences';
 import HeroActions from '@/components/HeroActions';
+import HeroStats from '@/components/HeroStats';
 import NewsletterSignup from '@/components/NewsletterSignup';
+import { AdBanner } from '@/components/ads';
 
 // Force dynamic rendering - no static generation at build time
 export const dynamic = 'force-dynamic';
@@ -55,15 +57,29 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Live Stats Section */}
+      <section className="py-8 -mt-16 relative z-10">
+        <div className="container mx-auto px-4">
+          <HeroStats />
+        </div>
+      </section>
+
       {/* Modular Content Area */}
-      <section className="section-spacer">
+      <section className="section-spacer-sm">
         <div className="container mx-auto px-4">
           {/* Section heading with gradient rule */}
-          <div className="mb-12 text-center">
+          <div className="mb-8 text-center">
             <h2 className="text-display-sm font-display font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Your Dashboard</h2>
             <div className="mx-auto w-24 h-px bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent" />
           </div>
           <ModuleContainer initialModules={modules} />
+        </div>
+      </section>
+
+      {/* Ad Banner Section */}
+      <section className="py-8">
+        <div className="container mx-auto px-4">
+          <AdBanner slot="homepage-banner-1" format="horizontal" />
         </div>
       </section>
 

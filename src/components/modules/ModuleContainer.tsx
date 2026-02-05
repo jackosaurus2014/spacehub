@@ -23,6 +23,7 @@ import SpaceWorkforceModule from './SpaceWorkforceModule';
 import LaunchWindowsModule from './LaunchWindowsModule';
 import DebrisMonitorModule from './DebrisMonitorModule';
 import OrbitalServicesModule from './OrbitalServicesModule';
+import SatelliteTrackerModule from './SatelliteTrackerModule';
 import ModuleErrorBoundary from './ModuleErrorBoundary';
 
 interface ModuleContainerProps {
@@ -47,6 +48,7 @@ const MODULE_COMPONENTS: Record<string, React.ComponentType> = {
   'launch-windows': LaunchWindowsModule,
   'debris-monitor': DebrisMonitorModule,
   'orbital-services': OrbitalServicesModule,
+  'satellite-tracker': SatelliteTrackerModule,
 };
 
 function getTierInfo(moduleId: string): { label: string; color: string; bgColor: string; dotColor: string } {

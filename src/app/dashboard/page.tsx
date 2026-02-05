@@ -2,9 +2,19 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { NEWS_CATEGORIES } from '@/types';
+import DashboardLayoutSelector from '@/components/DashboardLayoutSelector';
+import {
+  getEffectiveLayout,
+  getGridColumnsClass,
+  getModuleSizeClasses,
+  isSectionVisible,
+  type LayoutGridColumns,
+  type ModuleSize,
+  type DashboardSection,
+} from '@/lib/dashboard-layouts';
 
 const categoryIcons: Record<string, string> = {
   launches: '🚀',
@@ -19,6 +29,26 @@ export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [articleCounts, setArticleCounts] = useState<Record<string, number>>({});
+  const [layoutSelectorOpen, setLayoutSelectorOpen] = useState(false);
+
+  // Layout state
+  const [gridColumns, setGridColumns] = useState<LayoutGridColumns>(2);
+  const [moduleSize, setModuleSize] = useState<ModuleSize>('standard');
+  const [sections, setSections] = useState<DashboardSection[]>([]);
+  const [layoutLoaded, setLayoutLoaded] = useState(false);
+
+  // Load layout on mount
+  const loadLayout = useCallback(() => {
+    const layout = getEffectiveLayout();
+    setGridColumns(layout.gridColumns);
+    setModuleSize(layout.moduleSize);
+    setSections(layout.sections);
+    setLayoutLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    loadLayout();
+  }, [loadLayout]);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -46,7 +76,11 @@ export default function DashboardPage() {
     }
   }, [status]);
 
-  if (status === 'loading') {
+  const handleLayoutChange = () => {
+    loadLayout();
+  };
+
+  if (status === 'loading' || !layoutLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" />
@@ -58,144 +92,334 @@ export default function DashboardPage() {
     return null;
   }
 
+  const sizeClasses = getModuleSizeClasses(moduleSize);
+  const gridClass = getGridColumnsClass(gridColumns);
+
+  // For category grid, adjust columns based on layout
+  const categoryGridClass =
+    gridColumns === 1
+      ? 'grid-cols-2 md:grid-cols-3'
+      : gridColumns === 2
+      ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+      : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6';
+
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
+        {/* Layout Control Button */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => setLayoutSelectorOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-500 hover:text-slate-700 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-lg hover:border-nebula-300/50 transition-all shadow-sm hover:shadow-md"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+              />
+            </svg>
+            Customize Layout
+          </button>
+        </div>
+
         {/* Welcome Header */}
-        <div className="card p-8 mb-8 glow-border">
-          <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-nebula-500 to-rocket-500 flex items-center justify-center text-slate-900 text-xl font-bold">
-              {session.user?.name?.charAt(0)?.toUpperCase() || 'E'}
-            </div>
-            <div>
-              <h1 className="text-2xl font-display font-bold text-slate-900">
-                Welcome back, {session.user?.name || 'Explorer'}!
-              </h1>
-              <p className="text-slate-500">{session.user?.email}</p>
+        {isSectionVisible('welcome', sections) && (
+          <div className={`card ${sizeClasses.padding} mb-8 glow-border animate-fade-in`}>
+            <div className="flex items-center space-x-4">
+              <div
+                className={`${
+                  moduleSize === 'compact'
+                    ? 'w-12 h-12 text-lg'
+                    : moduleSize === 'expanded'
+                    ? 'w-20 h-20 text-2xl'
+                    : 'w-16 h-16 text-xl'
+                } rounded-full bg-gradient-to-br from-nebula-500 to-rocket-500 flex items-center justify-center text-slate-900 font-bold`}
+              >
+                {session.user?.name?.charAt(0)?.toUpperCase() || 'E'}
+              </div>
+              <div>
+                <h1
+                  className={`font-display font-bold text-slate-900 ${
+                    moduleSize === 'compact'
+                      ? 'text-xl'
+                      : moduleSize === 'expanded'
+                      ? 'text-3xl'
+                      : 'text-2xl'
+                  }`}
+                >
+                  Welcome back, {session.user?.name || 'Explorer'}!
+                </h1>
+                <p className={`text-slate-500 ${sizeClasses.text}`}>
+                  {session.user?.email}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <div className="card p-6">
-            <div className="flex items-center space-x-4">
-              <span className="text-4xl">📊</span>
-              <div>
-                <p className="text-slate-500 text-sm">Total Articles</p>
-                <p className="text-2xl font-bold text-slate-900">
-                  {Object.values(articleCounts).reduce((a, b) => a + b, 0)}
-                </p>
+        {isSectionVisible('quick-stats', sections) && (
+          <div className={`grid ${gridClass} ${sizeClasses.gap} mb-8`}>
+            <div className={`card ${sizeClasses.padding} animate-fade-in`} style={{ animationDelay: '0.1s' }}>
+              <div className="flex items-center space-x-4">
+                <span className={sizeClasses.icon}>📊</span>
+                <div>
+                  <p className={`text-slate-500 ${moduleSize === 'compact' ? 'text-xs' : 'text-sm'}`}>
+                    Total Articles
+                  </p>
+                  <p
+                    className={`font-bold text-slate-900 ${
+                      moduleSize === 'compact'
+                        ? 'text-xl'
+                        : moduleSize === 'expanded'
+                        ? 'text-3xl'
+                        : 'text-2xl'
+                    }`}
+                  >
+                    {Object.values(articleCounts).reduce((a, b) => a + b, 0)}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className={`card ${sizeClasses.padding} animate-fade-in`} style={{ animationDelay: '0.15s' }}>
+              <div className="flex items-center space-x-4">
+                <span className={sizeClasses.icon}>📂</span>
+                <div>
+                  <p className={`text-slate-500 ${moduleSize === 'compact' ? 'text-xs' : 'text-sm'}`}>
+                    Categories
+                  </p>
+                  <p
+                    className={`font-bold text-slate-900 ${
+                      moduleSize === 'compact'
+                        ? 'text-xl'
+                        : moduleSize === 'expanded'
+                        ? 'text-3xl'
+                        : 'text-2xl'
+                    }`}
+                  >
+                    {NEWS_CATEGORIES.length}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className={`card ${sizeClasses.padding} animate-fade-in`} style={{ animationDelay: '0.2s' }}>
+              <div className="flex items-center space-x-4">
+                <span className={sizeClasses.icon}>🌟</span>
+                <div>
+                  <p className={`text-slate-500 ${moduleSize === 'compact' ? 'text-xs' : 'text-sm'}`}>
+                    Member Since
+                  </p>
+                  <p
+                    className={`font-bold text-slate-900 ${
+                      moduleSize === 'compact'
+                        ? 'text-xl'
+                        : moduleSize === 'expanded'
+                        ? 'text-3xl'
+                        : 'text-2xl'
+                    }`}
+                  >
+                    Today
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-          <div className="card p-6">
-            <div className="flex items-center space-x-4">
-              <span className="text-4xl">📂</span>
-              <div>
-                <p className="text-slate-500 text-sm">Categories</p>
-                <p className="text-2xl font-bold text-slate-900">
-                  {NEWS_CATEGORIES.length}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="card p-6">
-            <div className="flex items-center space-x-4">
-              <span className="text-4xl">🌟</span>
-              <div>
-                <p className="text-slate-500 text-sm">Member Since</p>
-                <p className="text-2xl font-bold text-slate-900">Today</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
 
         {/* Category Overview */}
-        <div className="card p-6 mb-8">
-          <h2 className="text-xl font-display font-bold text-slate-900 mb-6 flex items-center">
-            <span className="text-2xl mr-3">📈</span>
-            Articles by Category
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {NEWS_CATEGORIES.map((category) => (
-              <Link
-                key={category.slug}
-                href={`/news?category=${category.slug}`}
-                className="bg-slate-100 border border-slate-200 rounded-lg p-4 text-center hover:border-nebula-500/50 transition-all"
-              >
-                <span className="text-3xl block mb-2">
-                  {categoryIcons[category.slug]}
-                </span>
-                <p className="text-slate-900 font-semibold">{category.name}</p>
-                <p className="text-nebula-300 text-lg font-bold">
-                  {articleCounts[category.slug] || 0}
-                </p>
-              </Link>
-            ))}
+        {isSectionVisible('category-overview', sections) && (
+          <div className={`card ${sizeClasses.padding} mb-8 animate-fade-in`} style={{ animationDelay: '0.25s' }}>
+            <h2
+              className={`font-display font-bold text-slate-900 mb-6 flex items-center ${
+                moduleSize === 'compact'
+                  ? 'text-lg'
+                  : moduleSize === 'expanded'
+                  ? 'text-2xl'
+                  : 'text-xl'
+              }`}
+            >
+              <span className={`mr-3 ${moduleSize === 'compact' ? 'text-xl' : 'text-2xl'}`}>
+                📈
+              </span>
+              Articles by Category
+            </h2>
+            <div className={`grid ${categoryGridClass} gap-4`}>
+              {NEWS_CATEGORIES.map((category) => (
+                <Link
+                  key={category.slug}
+                  href={`/news?category=${category.slug}`}
+                  className={`bg-slate-100 border border-slate-200 rounded-lg ${
+                    moduleSize === 'compact' ? 'p-3' : 'p-4'
+                  } text-center hover:border-nebula-500/50 transition-all`}
+                >
+                  <span
+                    className={`block mb-2 ${
+                      moduleSize === 'compact'
+                        ? 'text-2xl'
+                        : moduleSize === 'expanded'
+                        ? 'text-4xl'
+                        : 'text-3xl'
+                    }`}
+                  >
+                    {categoryIcons[category.slug]}
+                  </span>
+                  <p
+                    className={`text-slate-900 font-semibold ${
+                      moduleSize === 'compact' ? 'text-xs' : 'text-sm'
+                    }`}
+                  >
+                    {category.name}
+                  </p>
+                  <p
+                    className={`text-nebula-300 font-bold ${
+                      moduleSize === 'compact' ? 'text-base' : 'text-lg'
+                    }`}
+                  >
+                    {articleCounts[category.slug] || 0}
+                  </p>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Quick Actions */}
-        <div className="card p-6">
-          <h2 className="text-xl font-display font-bold text-slate-900 mb-6 flex items-center">
-            <span className="text-2xl mr-3">⚡</span>
-            Quick Actions
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Link
-              href="/news"
-              className="bg-slate-100 border border-slate-200 rounded-lg p-6 hover:border-nebula-500/50 transition-all group"
+        {isSectionVisible('quick-actions', sections) && (
+          <div className={`card ${sizeClasses.padding} animate-fade-in`} style={{ animationDelay: '0.3s' }}>
+            <h2
+              className={`font-display font-bold text-slate-900 mb-6 flex items-center ${
+                moduleSize === 'compact'
+                  ? 'text-lg'
+                  : moduleSize === 'expanded'
+                  ? 'text-2xl'
+                  : 'text-xl'
+              }`}
             >
-              <span className="text-4xl block mb-3">📰</span>
-              <h3 className="text-slate-900 font-semibold group-hover:text-nebula-300 transition-colors">
-                Browse All News
-              </h3>
-              <p className="text-slate-500 text-sm mt-1">
-                Explore the latest space industry updates
-              </p>
-            </Link>
-            <Link
-              href="/news?category=launches"
-              className="bg-slate-100 border border-slate-200 rounded-lg p-6 hover:border-nebula-500/50 transition-all group"
-            >
-              <span className="text-4xl block mb-3">🚀</span>
-              <h3 className="text-slate-900 font-semibold group-hover:text-nebula-300 transition-colors">
-                Upcoming Launches
-              </h3>
-              <p className="text-slate-500 text-sm mt-1">
-                Stay updated on rocket launches
-              </p>
-            </Link>
-            <Link
-              href="/news?category=companies"
-              className="bg-slate-100 border border-slate-200 rounded-lg p-6 hover:border-nebula-500/50 transition-all group"
-            >
-              <span className="text-4xl block mb-3">🏢</span>
-              <h3 className="text-slate-900 font-semibold group-hover:text-nebula-300 transition-colors">
-                Company News
-              </h3>
-              <p className="text-slate-500 text-sm mt-1">
-                Follow major space companies
-              </p>
-            </Link>
+              <span className={`mr-3 ${moduleSize === 'compact' ? 'text-xl' : 'text-2xl'}`}>
+                ⚡
+              </span>
+              Quick Actions
+            </h2>
+            <div className={`grid ${gridClass} gap-4`}>
+              <Link
+                href="/news"
+                className={`bg-slate-100 border border-slate-200 rounded-lg ${sizeClasses.padding} hover:border-nebula-500/50 transition-all group`}
+              >
+                <span className={`block mb-3 ${sizeClasses.icon}`}>📰</span>
+                <h3
+                  className={`text-slate-900 font-semibold group-hover:text-nebula-300 transition-colors ${
+                    moduleSize === 'compact' ? 'text-sm' : ''
+                  }`}
+                >
+                  Browse All News
+                </h3>
+                <p
+                  className={`text-slate-500 mt-1 ${
+                    moduleSize === 'compact' ? 'text-xs' : 'text-sm'
+                  }`}
+                >
+                  Explore the latest space industry updates
+                </p>
+              </Link>
+              <Link
+                href="/news?category=launches"
+                className={`bg-slate-100 border border-slate-200 rounded-lg ${sizeClasses.padding} hover:border-nebula-500/50 transition-all group`}
+              >
+                <span className={`block mb-3 ${sizeClasses.icon}`}>🚀</span>
+                <h3
+                  className={`text-slate-900 font-semibold group-hover:text-nebula-300 transition-colors ${
+                    moduleSize === 'compact' ? 'text-sm' : ''
+                  }`}
+                >
+                  Upcoming Launches
+                </h3>
+                <p
+                  className={`text-slate-500 mt-1 ${
+                    moduleSize === 'compact' ? 'text-xs' : 'text-sm'
+                  }`}
+                >
+                  Stay updated on rocket launches
+                </p>
+              </Link>
+              <Link
+                href="/news?category=companies"
+                className={`bg-slate-100 border border-slate-200 rounded-lg ${sizeClasses.padding} hover:border-nebula-500/50 transition-all group`}
+              >
+                <span className={`block mb-3 ${sizeClasses.icon}`}>🏢</span>
+                <h3
+                  className={`text-slate-900 font-semibold group-hover:text-nebula-300 transition-colors ${
+                    moduleSize === 'compact' ? 'text-sm' : ''
+                  }`}
+                >
+                  Company News
+                </h3>
+                <p
+                  className={`text-slate-500 mt-1 ${
+                    moduleSize === 'compact' ? 'text-xs' : 'text-sm'
+                  }`}
+                >
+                  Follow major space companies
+                </p>
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Future Features Teaser */}
-        <div className="card p-6 mt-8 border-dashed">
-          <div className="text-center">
-            <span className="text-5xl block mb-4">🔮</span>
-            <h2 className="text-xl font-display font-bold text-slate-900 mb-2">
-              Coming Soon
-            </h2>
-            <p className="text-slate-500 max-w-2xl mx-auto">
-              Save articles, customize your news feed, receive notifications for
-              launches, and more. Stay tuned for exciting new features!
-            </p>
+        {isSectionVisible('coming-soon', sections) && (
+          <div
+            className={`card ${sizeClasses.padding} mt-8 border-dashed animate-fade-in`}
+            style={{ animationDelay: '0.35s' }}
+          >
+            <div className="text-center">
+              <span
+                className={`block mb-4 ${
+                  moduleSize === 'compact'
+                    ? 'text-4xl'
+                    : moduleSize === 'expanded'
+                    ? 'text-6xl'
+                    : 'text-5xl'
+                }`}
+              >
+                🔮
+              </span>
+              <h2
+                className={`font-display font-bold text-slate-900 mb-2 ${
+                  moduleSize === 'compact'
+                    ? 'text-lg'
+                    : moduleSize === 'expanded'
+                    ? 'text-2xl'
+                    : 'text-xl'
+                }`}
+              >
+                Coming Soon
+              </h2>
+              <p
+                className={`text-slate-500 max-w-2xl mx-auto ${
+                  moduleSize === 'compact' ? 'text-sm' : ''
+                }`}
+              >
+                Save articles, customize your news feed, receive notifications for
+                launches, and more. Stay tuned for exciting new features!
+              </p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
+
+      {/* Layout Selector Modal */}
+      <DashboardLayoutSelector
+        isOpen={layoutSelectorOpen}
+        onClose={() => setLayoutSelectorOpen(false)}
+        onLayoutChange={handleLayoutChange}
+      />
     </div>
   );
 }

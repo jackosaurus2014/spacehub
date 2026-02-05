@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useSession, signOut } from 'next-auth/react';
 import { useState, useEffect, useRef } from 'react';
 import { useSubscription } from './SubscriptionProvider';
+import NotificationCenter from './NotificationCenter';
 
 interface DropdownItem {
   label: string;
@@ -14,6 +15,7 @@ interface DropdownItem {
 
 const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Mission Control', href: '/mission-control', description: 'Upcoming launches and events' },
+  { label: 'Live Launch Hub', href: '/live', description: 'Watch launches live with telemetry' },
   { label: 'Solar Exploration', href: '/solar-exploration', description: '3D planetary visualization' },
   { label: 'News', href: '/news', description: 'Latest space industry updates' },
 ];
@@ -25,6 +27,7 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
 
 const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
+  { label: 'Space Tourism', href: '/space-tourism', description: 'Compare space tourism experiences' },
   { label: 'Spectrum Tracker', href: '/', description: 'Frequency allocations and filings' },
   { label: 'Space Insurance', href: '/', description: 'Risk calculator and market data' },
   { label: 'Space Workforce', href: '/', description: 'Talent trends and salary benchmarks' },
@@ -215,6 +218,8 @@ export default function Navigation() {
                 Upgrade
               </Link>
             )}
+            {/* Notification Center */}
+            <NotificationCenter />
             {status === 'loading' ? (
               <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
             ) : session ? (
@@ -247,10 +252,12 @@ export default function Navigation() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden p-2 text-slate-300 hover:text-cyan-300"
-          >
+          <div className="lg:hidden flex items-center space-x-2">
+            <NotificationCenter />
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 text-slate-300 hover:text-cyan-300"
+            >
             <svg
               className="w-6 h-6"
               fill="none"
@@ -273,7 +280,8 @@ export default function Navigation() {
                 />
               )}
             </svg>
-          </button>
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
@@ -422,3 +430,4 @@ export default function Navigation() {
     </nav>
   );
 }
+

@@ -10,6 +10,7 @@ import {
   RISK_LEVEL_INFO,
   IMPACT_LEVEL_INFO,
 } from '@/types';
+import { SponsorBadge } from '@/components/ads';
 
 interface SolarFlareData {
   flares: SolarFlare[];
@@ -327,6 +328,14 @@ export default function SolarFlareTrackerModule() {
           </div>
         </div>
       )}
+
+      {/* Sponsor Badge */}
+      <div className="flex justify-end">
+        <SponsorBadge
+          sponsorName="NOAA Space Weather"
+          link="https://www.swpc.noaa.gov"
+        />
+      </div>
     </div>
   );
 }

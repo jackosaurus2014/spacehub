@@ -80,6 +80,41 @@ export default function Footer() {
                   </Link>
                 </li>
               </ul>
+
+              {/* Legal Links */}
+              <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4 mt-6">Legal</h4>
+              <ul className="space-y-2.5">
+                <li>
+                  <Link href="/privacy" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/cookies" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                    Cookie Policy
+                  </Link>
+                </li>
+              </ul>
+
+              {/* Support Links */}
+              <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4 mt-6">Support</h4>
+              <ul className="space-y-2.5">
+                <li>
+                  <Link href="/faq" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                    FAQ
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                    Contact Us
+                  </Link>
+                </li>
+              </ul>
             </div>
 
             {/* Column 4: Newsletter */}

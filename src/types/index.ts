@@ -105,13 +105,14 @@ export interface UserModulePreference {
   settings: string | null;
 }
 
-export type ModuleSection = 'explore' | 'intelligence' | 'business' | 'tools';
+export type ModuleSection = 'explore' | 'intelligence' | 'business' | 'tools' | 'data';
 
 export const MODULE_SECTIONS: { value: ModuleSection; label: string }[] = [
   { value: 'explore', label: 'Explore' },
   { value: 'intelligence', label: 'Intelligence' },
   { value: 'business', label: 'Business' },
   { value: 'tools', label: 'Tools' },
+  { value: 'data', label: 'Data' },
 ];
 
 export interface ModuleConfig {
@@ -355,6 +356,15 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 16,
     isPremium: true,
+  },
+  {
+    moduleId: 'satellite-tracker',
+    name: 'Satellite Tracker',
+    description: 'Track active satellites including ISS, Starlink, GPS, and weather satellites',
+    icon: '🛰️',
+    section: 'data',
+    defaultEnabled: true,
+    defaultPosition: 17,
   },
 ];
 

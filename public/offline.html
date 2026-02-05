@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f172a">
+  <title>Offline - SpaceNexus</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    /* Starfield background */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.5;
+      animation: twinkle 3s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      max-width: 480px;
+    }
+
+    .icon-container {
+      margin-bottom: 32px;
+    }
+
+    .offline-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .satellite {
+      width: 80px;
+      height: 80px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+      50% { transform: translate(-50%, -50%) translateY(-10px); }
+    }
+
+    .signal-waves {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .wave {
+      position: absolute;
+      border: 2px solid rgba(239, 68, 68, 0.3);
+      border-radius: 50%;
+      animation: wave 2s infinite ease-out;
+    }
+
+    .wave:nth-child(1) {
+      width: 100px;
+      height: 100px;
+      margin-left: -50px;
+      margin-top: -50px;
+      animation-delay: 0s;
+    }
+
+    .wave:nth-child(2) {
+      width: 140px;
+      height: 140px;
+      margin-left: -70px;
+      margin-top: -70px;
+      animation-delay: 0.5s;
+    }
+
+    .wave:nth-child(3) {
+      width: 180px;
+      height: 180px;
+      margin-left: -90px;
+      margin-top: -90px;
+      animation-delay: 1s;
+    }
+
+    @keyframes wave {
+      0% { opacity: 0.6; transform: scale(0.8); }
+      100% { opacity: 0; transform: scale(1.2); }
+    }
+
+    h1 {
+      color: #f1f5f9;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.025em;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 9999px;
+      color: #f87171;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 32px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .retry-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4);
+    }
+
+    .retry-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+    }
+
+    .retry-button:active {
+      transform: translateY(0);
+    }
+
+    .retry-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .retry-button.loading svg {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .tips {
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .tips h2 {
+      color: #cbd5e1;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    .tips ul {
+      list-style: none;
+      text-align: left;
+    }
+
+    .tips li {
+      color: #64748b;
+      font-size: 14px;
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+    }
+
+    .tips li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 6px;
+      background: #06b6d4;
+      border-radius: 50%;
+    }
+
+    .logo {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #475569;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+    }
+
+    .logo span {
+      color: #06b6d4;
+    }
+  </style>
+</head>
+<body>
+  <!-- Starfield background -->
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <div class="icon-container">
+      <div class="offline-icon">
+        <div class="signal-waves">
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+        </div>
+        <svg class="satellite" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 12H22" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 2C14.5013 4.73835 15.9228 8.29203 16 12C15.9228 15.708 14.5013 19.2616 12 22C9.49872 19.2616 8.07725 15.708 8 12C8.07725 8.29203 9.49872 4.73835 12 2Z" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- X mark for offline -->
+          <line x1="8" y1="8" x2="16" y2="16" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+          <line x1="16" y1="8" x2="8" y2="16" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <h1>Lost in Space</h1>
+
+    <p class="subtitle">
+      Houston, we have a problem. It looks like your connection to mission control has been interrupted.
+    </p>
+
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      No Internet Connection
+    </div>
+
+    <button class="retry-button" onclick="retryConnection()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 4v6h-6"></path>
+        <path d="M1 20v-6h6"></path>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      </svg>
+      Retry Connection
+    </button>
+
+    <div class="tips">
+      <h2>Troubleshooting Tips</h2>
+      <ul>
+        <li>Check your Wi-Fi or mobile data connection</li>
+        <li>Try moving to an area with better signal</li>
+        <li>Restart your device if the problem persists</li>
+        <li>Some content may be available offline</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="logo">SPACE<span>NEXUS</span></div>
+
+  <script>
+    // Generate random stars
+    function generateStars() {
+      const starsContainer = document.getElementById('stars');
+      const starCount = 100;
+
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        star.style.opacity = Math.random() * 0.5 + 0.3;
+        starsContainer.appendChild(star);
+      }
+    }
+
+    // Retry connection
+    function retryConnection() {
+      const button = document.querySelector('.retry-button');
+      button.classList.add('loading');
+      button.disabled = true;
+
+      // Try to fetch the home page
+      fetch('/', { method: 'HEAD', cache: 'no-store' })
+        .then(response => {
+          if (response.ok) {
+            // Connection restored, reload the page
+            window.location.reload();
+          } else {
+            throw new Error('Still offline');
+          }
+        })
+        .catch(() => {
+          // Still offline
+          button.classList.remove('loading');
+          button.disabled = false;
+
+          // Show a temporary message
+          const subtitle = document.querySelector('.subtitle');
+          const originalText = subtitle.textContent;
+          subtitle.textContent = 'Still unable to connect. Please check your internet connection.';
+          subtitle.style.color = '#f87171';
+
+          setTimeout(() => {
+            subtitle.textContent = originalText;
+            subtitle.style.color = '#94a3b8';
+          }, 3000);
+        });
+    }
+
+    // Check for online status periodically
+    function checkOnlineStatus() {
+      if (navigator.onLine) {
+        // Try to actually fetch something to confirm
+        fetch('/', { method: 'HEAD', cache: 'no-store' })
+          .then(response => {
+            if (response.ok) {
+              window.location.reload();
+            }
+          })
+          .catch(() => {
+            // Network says online but can't reach server
+          });
+      }
+    }
+
+    // Listen for online event
+    window.addEventListener('online', () => {
+      setTimeout(checkOnlineStatus, 1000);
+    });
+
+    // Initialize
+    generateStars();
+
+    // Periodically check connection
+    setInterval(checkOnlineStatus, 30000);
+  </script>
+</body>
+</html>
