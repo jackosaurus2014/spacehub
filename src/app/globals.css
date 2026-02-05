@@ -137,26 +137,87 @@ body::after {
 
 /* Card Styles */
 .card {
-  @apply bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-2xl
+  @apply backdrop-blur-md border border-slate-200/60 rounded-2xl
          shadow-lg shadow-slate-900/10
          transition-all duration-300 hover:border-slate-300/80;
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(248, 250, 255, 0.85) 50%,
+    rgba(243, 240, 255, 0.8) 100%);
 }
 
 .card-elevated {
-  @apply bg-white/90 backdrop-blur-lg border border-slate-200/70 rounded-2xl
+  @apply backdrop-blur-lg border border-slate-200/70 rounded-2xl
          shadow-xl shadow-slate-900/15
          transition-all duration-300 hover:border-nebula-400/40;
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(245, 243, 255, 0.9) 50%,
+    rgba(238, 242, 255, 0.85) 100%);
 }
 
 .card-interactive {
-  @apply bg-white/80 backdrop-blur-md border border-slate-200/60 rounded-2xl
+  @apply backdrop-blur-md border border-slate-200/60 rounded-2xl
          shadow-lg shadow-slate-900/10
          transition-all duration-300 hover:border-slate-300/80
          hover:-translate-y-0.5 cursor-pointer;
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(248, 250, 255, 0.85) 50%,
+    rgba(243, 240, 255, 0.8) 100%);
 }
 
 .card-interactive:hover {
   box-shadow: 0 0 10px rgba(139, 92, 246, 0.2), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(245, 240, 255, 0.9) 50%,
+    rgba(238, 235, 255, 0.85) 100%);
+}
+
+/* Colored Card Variants */
+.card-nebula {
+  @apply backdrop-blur-md border border-nebula-200/60 rounded-2xl
+         shadow-lg
+         transition-all duration-300;
+  background: linear-gradient(135deg,
+    rgba(250, 245, 255, 0.95) 0%,
+    rgba(243, 232, 255, 0.9) 50%,
+    rgba(233, 213, 255, 0.8) 100%);
+  box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.1), 0 4px 6px -4px rgba(139, 92, 246, 0.1);
+}
+
+.card-cyan {
+  @apply backdrop-blur-md border border-cyan-200/60 rounded-2xl
+         shadow-lg
+         transition-all duration-300;
+  background: linear-gradient(135deg,
+    rgba(245, 255, 255, 0.95) 0%,
+    rgba(224, 255, 255, 0.9) 50%,
+    rgba(207, 250, 254, 0.8) 100%);
+  box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.1), 0 4px 6px -4px rgba(6, 182, 212, 0.1);
+}
+
+.card-amber {
+  @apply backdrop-blur-md border border-amber-200/60 rounded-2xl
+         shadow-lg
+         transition-all duration-300;
+  background: linear-gradient(135deg,
+    rgba(255, 253, 245, 0.95) 0%,
+    rgba(255, 251, 235, 0.9) 50%,
+    rgba(254, 243, 199, 0.8) 100%);
+  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.1), 0 4px 6px -4px rgba(245, 158, 11, 0.1);
+}
+
+.card-emerald {
+  @apply backdrop-blur-md border border-emerald-200/60 rounded-2xl
+         shadow-lg
+         transition-all duration-300;
+  background: linear-gradient(135deg,
+    rgba(245, 255, 250, 0.95) 0%,
+    rgba(236, 253, 245, 0.9) 50%,
+    rgba(209, 250, 229, 0.8) 100%);
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1), 0 4px 6px -4px rgba(16, 185, 129, 0.1);
 }
 
 /* Input Styles */

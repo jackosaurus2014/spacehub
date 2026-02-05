@@ -82,7 +82,7 @@ function DropdownMenu({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-3 w-64 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-xl shadow-2xl shadow-slate-900/20 overflow-hidden animate-fade-in-down z-50">
+        <div className="absolute top-full left-0 mt-3 w-64 backdrop-blur-xl border border-slate-200/80 rounded-xl shadow-2xl shadow-slate-900/20 overflow-hidden animate-fade-in-down z-50" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 248, 255, 0.96) 50%, rgba(245, 250, 255, 0.95) 100%)' }}>
           <div className="p-2">
             {items.map((item) => (
               <Link
@@ -132,11 +132,15 @@ export default function Navigation() {
 
   return (
     <nav
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 z-50 transition-all duration-300 backdrop-blur-xl ${
         scrolled
-          ? 'bg-white/90 backdrop-blur-xl shadow-sm'
-          : 'bg-white/70 backdrop-blur-md'
+          ? 'shadow-sm'
+          : ''
       }`}
+      style={{ background: scrolled
+        ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 245, 255, 0.9) 50%, rgba(245, 250, 255, 0.88) 100%)'
+        : 'linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(250, 248, 255, 0.75) 50%, rgba(248, 252, 255, 0.7) 100%)'
+      }}
     >
       {/* Bottom gradient border */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-nebula-400/30 to-transparent" />
@@ -276,7 +280,7 @@ export default function Navigation() {
         {isMenuOpen && (
           <div className="lg:hidden fixed inset-0 top-[72px] z-50 animate-fade-in">
             <div className="absolute inset-0 bg-black/30" onClick={() => setIsMenuOpen(false)} />
-            <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-white/98 backdrop-blur-xl border-l border-slate-200 overflow-y-auto animate-slide-in-right">
+            <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] backdrop-blur-xl border-l border-slate-200/80 overflow-y-auto animate-slide-in-right" style={{ background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 248, 255, 0.96) 50%, rgba(245, 250, 255, 0.95) 100%)' }}>
               <div className="p-6 space-y-6">
                 {/* Explore Section */}
                 <div>

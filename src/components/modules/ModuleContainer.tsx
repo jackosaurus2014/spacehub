@@ -184,7 +184,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
     <div className="space-y-8">
       {/* Navigation Header - Sticky */}
       <div className="sticky top-2 z-40">
-        <div className="rounded-2xl border border-slate-200 bg-white/95 backdrop-blur-xl shadow-lg shadow-slate-900/10 overflow-hidden">
+        <div className="rounded-2xl border border-slate-200/80 backdrop-blur-xl shadow-lg shadow-slate-900/10 overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 245, 255, 0.92) 50%, rgba(240, 245, 255, 0.9) 100%)' }}>
           {/* Main Navigation Bar */}
           <div className="p-4">
             <div className="flex items-center gap-3">
@@ -235,7 +235,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                 {isDropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
-                    <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-xl border border-slate-200 bg-white/98 backdrop-blur-xl shadow-2xl shadow-slate-900/15 max-h-[70vh] overflow-hidden">
+                    <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-xl border border-slate-200/80 backdrop-blur-xl shadow-2xl shadow-slate-900/15 max-h-[70vh] overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 248, 255, 0.96) 50%, rgba(245, 250, 255, 0.95) 100%)' }}>
                       <div className="overflow-y-auto max-h-[70vh]">
                         {groupedModules.map((section, sectionIdx) => (
                           <div key={section.value}>
