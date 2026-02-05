@@ -346,6 +346,16 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultPosition: 15,
     isPremium: true,
   },
+  {
+    moduleId: 'orbital-services',
+    name: 'Orbital Services',
+    description: 'Marketplace for satellite-based services: compute, imaging, power, and more',
+    icon: '🌐',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 16,
+    isPremium: true,
+  },
 ];
 
 // Compliance Module Types
@@ -1456,4 +1466,128 @@ export const HELP_REQUEST_STATUSES: { value: HelpRequestStatus; label: string; c
   { value: 'in_progress', label: 'In Progress', color: 'bg-yellow-500' },
   { value: 'resolved', label: 'Resolved', color: 'bg-green-500' },
   { value: 'closed', label: 'Closed', color: 'bg-gray-500' },
+];
+
+// ============================================================
+// Orbital Services Marketplace Types
+// ============================================================
+export type OrbitalServiceCategory =
+  | 'earth_observation'
+  | 'in_orbit_computing'
+  | 'hosted_payload'
+  | 'space_solar'
+  | 'communications'
+  | 'sensor_service';
+
+export type OrbitalServiceStatus = 'active' | 'beta' | 'planned' | 'retired';
+export type OrbitalServiceAvailability = 'available' | 'limited' | 'waitlist' | 'coming_soon';
+export type OrbitalPricingModel = 'per_km2' | 'per_hour' | 'per_kg_year' | 'subscription' | 'per_gb' | 'custom';
+export type OrbitalContractType = 'idiq' | 'firm_fixed' | 'cost_plus' | 'subscription';
+export type OrbitalCustomerType = 'government' | 'commercial' | 'academic';
+
+export interface OrbitalService {
+  id: string;
+  slug: string;
+  providerName: string;
+  providerSlug: string | null;
+  providerCountry: string;
+  providerWebsite: string | null;
+  category: OrbitalServiceCategory;
+  serviceType: string;
+  serviceName: string;
+  description: string;
+  specifications: Record<string, unknown> | null;
+  orbitType: string | null;
+  coverage: string | null;
+  availability: OrbitalServiceAvailability;
+  pricingModel: OrbitalPricingModel;
+  priceMin: number | null;
+  priceMax: number | null;
+  priceUnit: string | null;
+  pricingNotes: string | null;
+  launchCostBasis: number | null;
+  operationalCost: number | null;
+  marketRate: number | null;
+  marginEstimate: number | null;
+  status: OrbitalServiceStatus;
+  launchDate: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrbitalServiceContract {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  customerName: string;
+  customerType: OrbitalCustomerType;
+  providerName: string;
+  contractValue: number | null;
+  contractType: OrbitalContractType;
+  duration: string | null;
+  serviceCategory: string;
+  scope: string | null;
+  awardDate: Date | null;
+  startDate: Date | null;
+  endDate: Date | null;
+  sourceUrl: string | null;
+  announcementDate: Date | null;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrbitalServiceRequest {
+  id: string;
+  email: string | null;
+  companyName: string | null;
+  category: string;
+  serviceType: string | null;
+  description: string;
+  requirements: Record<string, unknown> | null;
+  budget: string | null;
+  timeline: string | null;
+  status: string;
+  adminNotes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const ORBITAL_SERVICE_CATEGORIES: { value: OrbitalServiceCategory; label: string; icon: string; description: string }[] = [
+  { value: 'earth_observation', label: 'Earth Observation', icon: '🛰️', description: 'Satellite imagery, SAR, hyperspectral' },
+  { value: 'in_orbit_computing', label: 'In-Orbit Computing', icon: '🖥️', description: 'GPU clusters, edge compute, AI inference' },
+  { value: 'hosted_payload', label: 'Hosted Payloads', icon: '📦', description: 'Payload hosting on shared satellites' },
+  { value: 'space_solar', label: 'Space Solar Power', icon: '☀️', description: 'Power beaming and orbital energy' },
+  { value: 'communications', label: 'Communications', icon: '📡', description: 'Data relay, ground stations, bandwidth' },
+  { value: 'sensor_service', label: 'Sensor-as-a-Service', icon: '📊', description: 'Weather, AIS, RF monitoring' },
+];
+
+export const ORBITAL_PRICING_MODELS: { value: OrbitalPricingModel; label: string; unit: string }[] = [
+  { value: 'per_km2', label: 'Per Square Kilometer', unit: '$/km²' },
+  { value: 'per_hour', label: 'Per Hour', unit: '$/hour' },
+  { value: 'per_kg_year', label: 'Per kg/Year', unit: '$/kg/year' },
+  { value: 'subscription', label: 'Subscription', unit: '$/month' },
+  { value: 'per_gb', label: 'Per Gigabyte', unit: '$/GB' },
+  { value: 'custom', label: 'Custom Quote', unit: 'Contact' },
+];
+
+export const ORBITAL_SERVICE_AVAILABILITY: { value: OrbitalServiceAvailability; label: string; color: string }[] = [
+  { value: 'available', label: 'Available', color: 'bg-green-500' },
+  { value: 'limited', label: 'Limited', color: 'bg-yellow-500' },
+  { value: 'waitlist', label: 'Waitlist', color: 'bg-orange-500' },
+  { value: 'coming_soon', label: 'Coming Soon', color: 'bg-blue-500' },
+];
+
+export const ORBITAL_CONTRACT_TYPES: { value: OrbitalContractType; label: string }[] = [
+  { value: 'idiq', label: 'IDIQ (Indefinite Delivery)' },
+  { value: 'firm_fixed', label: 'Firm Fixed Price' },
+  { value: 'cost_plus', label: 'Cost Plus' },
+  { value: 'subscription', label: 'Subscription' },
+];
+
+export const ORBITAL_CUSTOMER_TYPES: { value: OrbitalCustomerType; label: string; icon: string }[] = [
+  { value: 'government', label: 'Government', icon: '🏛️' },
+  { value: 'commercial', label: 'Commercial', icon: '🏢' },
+  { value: 'academic', label: 'Academic', icon: '🎓' },
 ];

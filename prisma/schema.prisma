@@ -1196,3 +1196,125 @@ model CompanyAddRequest {
   @@index([status])
   @@index([createdAt])
 }
+
+// ============================================================
+// Orbital Services Module
+// ============================================================
+
+model OrbitalService {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Provider info
+  providerName    String
+  providerSlug    String?  // Link to SpaceCompany if exists
+  providerCountry String
+  providerWebsite String?
+
+  // Service classification
+  category        String   // earth_observation, in_orbit_computing, hosted_payload, space_solar, communications, sensor_service
+  serviceType     String   // Specific type within category
+  serviceName     String
+  description     String
+
+  // Capability specs
+  specifications  String?  // JSON: resolution, power, bandwidth, etc.
+  orbitType       String?  // LEO, MEO, GEO, SSO
+  coverage        String?  // Global, regional, on-demand
+  availability    String   // available, limited, waitlist, coming_soon
+
+  // Pricing
+  pricingModel    String   // per_km2, per_hour, per_kg_year, subscription, per_gb, custom
+  priceMin        Float?   // Minimum price point
+  priceMax        Float?   // Maximum price point
+  priceUnit       String?  // km², hour, kg/year, month, GB
+  pricingNotes    String?  // Volume discounts, minimums, etc.
+
+  // Estimated value metrics
+  launchCostBasis Float?   // $/kg used in cost calc
+  operationalCost Float?   // Annual ops estimate
+  marketRate      Float?   // Current market rate
+  marginEstimate  Float?   // Estimated margin %
+
+  // Status
+  status          String   @default("active") // active, beta, planned, retired
+  launchDate      DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([providerName])
+  @@index([status])
+  @@index([pricingModel])
+}
+
+model OrbitalServiceContract {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Contract details
+  title           String
+  description     String
+
+  // Parties
+  customerName    String   // NASA, NOAA, Commercial, etc.
+  customerType    String   // government, commercial, academic
+  providerName    String
+
+  // Financials
+  contractValue   Float?   // Total value in millions USD
+  contractType    String   // idiq, firm_fixed, cost_plus, subscription
+  duration        String?  // Contract duration
+
+  // Scope
+  serviceCategory String   // earth_observation, communications, etc.
+  scope           String?  // Description of services
+
+  // Timeline
+  awardDate       DateTime?
+  startDate       DateTime?
+  endDate         DateTime?
+
+  // Source
+  sourceUrl       String?
+  announcementDate DateTime?
+
+  status          String   @default("active") // active, completed, pending
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([customerType])
+  @@index([serviceCategory])
+  @@index([status])
+  @@index([awardDate])
+}
+
+model OrbitalServiceRequest {
+  id              String   @id @default(cuid())
+
+  // Requester (anonymous or logged in)
+  email           String?
+  companyName     String?
+
+  // Request details
+  category        String
+  serviceType     String?
+  description     String
+
+  // Requirements
+  requirements    String?  // JSON: specific needs
+  budget          String?  // Budget range
+  timeline        String?  // When needed
+
+  // Status
+  status          String   @default("new") // new, contacted, matched, closed
+  adminNotes      String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([status])
+}
