@@ -10,6 +10,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const country = searchParams.get('country');
     const isPublic = searchParams.get('isPublic');
+    const preIPO = searchParams.get('preIPO');
     const focusArea = searchParams.get('focusArea');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
@@ -22,6 +23,10 @@ export async function GET(request: Request) {
 
     if (isPublic !== null && isPublic !== '') {
       where.isPublic = isPublic === 'true';
+    }
+
+    if (preIPO === 'true') {
+      where.isPreIPO = true;
     }
 
     if (focusArea) {

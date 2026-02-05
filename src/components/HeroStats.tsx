@@ -11,9 +11,12 @@ interface LaunchData {
 }
 
 interface MarketData {
-  topGainer: { name: string; ticker: string; change: number };
-  topLoser: { name: string; ticker: string; change: number };
-  totalMarketCap: string;
+  // Either an upcoming IPO or the top performing stock
+  type: 'ipo' | 'top_performer';
+  // IPO data
+  ipoCompany?: { name: string; expectedDate: string; daysUntil: number };
+  // Top performer data
+  topGainer?: { name: string; ticker: string; change: number };
 }
 
 interface NewsData {
@@ -68,16 +71,58 @@ export default function HeroStats() {
           });
         }
 
-        // Fetch market data
-        const stockRes = await fetch('/api/stocks');
-        const stockData = await stockRes.json();
-        if (stockData.stocks?.length > 0) {
-          const sorted = [...stockData.stocks].sort((a, b) => b.changePercent - a.changePercent);
-          setMarket({
-            topGainer: sorted[0] ? { name: sorted[0].name, ticker: sorted[0].ticker, change: sorted[0].changePercent } : { name: 'N/A', ticker: '', change: 0 },
-            topLoser: sorted[sorted.length - 1] ? { name: sorted[sorted.length - 1].name, ticker: sorted[sorted.length - 1].ticker, change: sorted[sorted.length - 1].changePercent } : { name: 'N/A', ticker: '', change: 0 },
-            totalMarketCap: '$924B',
-          });
+        // Check for upcoming IPOs first
+        let foundIPO = false;
+        try {
+          const companiesRes = await fetch('/api/companies?preIPO=true');
+          const companiesData = await companiesRes.json();
+          if (companiesData.companies?.length > 0) {
+            // Look for companies with specific IPO dates in the next 7 days
+            const now = new Date();
+            const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+            for (const company of companiesData.companies) {
+              if (company.expectedIPODate && company.expectedIPODate !== 'TBD') {
+                // Try to parse as a specific date (YYYY-MM-DD format)
+                const ipoDate = new Date(company.expectedIPODate);
+                if (!isNaN(ipoDate.getTime()) && ipoDate >= now && ipoDate <= sevenDaysFromNow) {
+                  const daysUntil = Math.ceil((ipoDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                  setMarket({
+                    type: 'ipo',
+                    ipoCompany: {
+                      name: company.name,
+                      expectedDate: company.expectedIPODate,
+                      daysUntil,
+                    },
+                  });
+                  foundIPO = true;
+                  break;
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.error('Error fetching IPO data:', e);
+        }
+
+        // If no upcoming IPO, show top performing stock
+        if (!foundIPO) {
+          const stockRes = await fetch('/api/stocks?tickers=RKLB,LUNR,ASTS,PL,RDW,SPCE,BKSY,MNTS,ASTR,LLAP,SATL,IRDM,GSAT,VSAT');
+          const stockData = await stockRes.json();
+          if (stockData.stocks?.length > 0) {
+            const successfulStocks = stockData.stocks.filter((s: { success: boolean }) => s.success);
+            const sorted = [...successfulStocks].sort((a: { changePercent: number }, b: { changePercent: number }) => b.changePercent - a.changePercent);
+            if (sorted[0]) {
+              setMarket({
+                type: 'top_performer',
+                topGainer: {
+                  name: sorted[0].name,
+                  ticker: sorted[0].ticker,
+                  change: sorted[0].changePercent
+                },
+              });
+            }
+          }
         }
 
         // Fetch latest news
@@ -170,27 +215,40 @@ export default function HeroStats() {
         )}
       </Link>
 
-      {/* Market Movement */}
+      {/* Market Highlight */}
       <Link href="/market-intel" className="card p-4 hover:border-cyan-400/50 transition-all group">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-xl">📈</span>
-          <span className="text-xs uppercase tracking-wider text-slate-400 font-medium">Market</span>
+          <span className="text-xl">{market?.type === 'ipo' ? '🔔' : '📈'}</span>
+          <span className="text-xs uppercase tracking-wider text-slate-400 font-medium">
+            {market?.type === 'ipo' ? 'Upcoming IPO' : 'Top Performer'}
+          </span>
         </div>
         {market ? (
-          <>
-            <div className="flex items-baseline gap-2 mb-1">
-              <span className="text-lg font-bold text-emerald-400">
-                +{market.topGainer.change.toFixed(1)}%
-              </span>
-              <span className="text-xs text-slate-400">{market.topGainer.ticker}</span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-lg font-bold text-red-400">
-                {market.topLoser.change.toFixed(1)}%
-              </span>
-              <span className="text-xs text-slate-400">{market.topLoser.ticker}</span>
-            </div>
-          </>
+          market.type === 'ipo' && market.ipoCompany ? (
+            <>
+              <div className="text-2xl font-bold text-amber-400 font-mono mb-1">
+                {market.ipoCompany.daysUntil === 0 ? 'Today!' : market.ipoCompany.daysUntil === 1 ? 'Tomorrow' : `${market.ipoCompany.daysUntil}d`}
+              </div>
+              <p className="text-sm text-slate-300 truncate group-hover:text-white transition-colors">
+                {market.ipoCompany.name}
+              </p>
+              <p className="text-xs text-slate-500">IPO Date: {market.ipoCompany.expectedDate}</p>
+            </>
+          ) : market.topGainer ? (
+            <>
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className={`text-2xl font-bold font-mono ${market.topGainer.change >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {market.topGainer.change >= 0 ? '+' : ''}{market.topGainer.change.toFixed(1)}%
+                </span>
+              </div>
+              <p className="text-sm text-slate-300 truncate group-hover:text-white transition-colors">
+                {market.topGainer.name}
+              </p>
+              <p className="text-xs text-slate-500">{market.topGainer.ticker}</p>
+            </>
+          ) : (
+            <p className="text-slate-400">No market data</p>
+          )
         ) : (
           <p className="text-slate-400">Loading market data...</p>
         )}
