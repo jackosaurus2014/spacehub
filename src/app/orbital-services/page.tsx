@@ -207,16 +207,16 @@ export default function OrbitalServicesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white/90">
+    <div className="min-h-screen bg-slate-900">
       {/* Header */}
-      <header className="border-b border-slate-200 bg-slate-50/50">
+      <header className="border-b border-slate-700/50 bg-slate-800/50">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <Link href="/" className="text-slate-500 hover:text-slate-500 text-sm mb-2 inline-block">
+              <Link href="/" className="text-slate-500 hover:text-slate-400 text-sm mb-2 inline-block">
                 &larr; Back to Dashboard
               </Link>
-              <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-white flex items-center gap-3">
                 <span className="text-4xl">🌐</span>
                 Orbital Services Marketplace
               </h1>
@@ -233,8 +233,8 @@ export default function OrbitalServicesPage() {
         <div className="bg-gradient-to-r from-nebula-600/20 to-rocket-600/20 border border-nebula-500/30 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🚀</span>
-            <p className="text-slate-600">
-              <span className="font-medium text-slate-900">Have services to offer?</span>{' '}
+            <p className="text-slate-400">
+              <span className="font-medium text-white">Have services to offer?</span>{' '}
               Get your orbital services listed in our marketplace.
             </p>
           </div>
@@ -251,22 +251,22 @@ export default function OrbitalServicesPage() {
       {stats && (
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-              <div className="text-3xl font-bold text-slate-900">{stats.totalServices}</div>
+            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+              <div className="text-3xl font-bold text-white">{stats.totalServices}</div>
               <div className="text-slate-500 text-sm">Total Services</div>
             </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-              <div className="text-3xl font-bold text-slate-900">{stats.uniqueProviders}</div>
+            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+              <div className="text-3xl font-bold text-white">{stats.uniqueProviders}</div>
               <div className="text-slate-500 text-sm">Providers</div>
             </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
               <div className="text-3xl font-bold text-green-400">
                 ${(stats.totalContractValue / 1000).toFixed(1)}B
               </div>
               <div className="text-slate-500 text-sm">Known Contract Value</div>
             </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-              <div className="text-3xl font-bold text-slate-900">{stats.totalContracts}</div>
+            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+              <div className="text-3xl font-bold text-white">{stats.totalContracts}</div>
               <div className="text-slate-500 text-sm">Active Contracts</div>
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function OrbitalServicesPage() {
 
       {/* Tabs */}
       <div className="max-w-7xl mx-auto px-4">
-        <div className="border-b border-slate-200">
+        <div className="border-b border-slate-700/50">
           <nav className="flex gap-1">
             {[
               { id: 'services', label: 'Services', icon: '📦' },
@@ -288,8 +288,8 @@ export default function OrbitalServicesPage() {
                 onClick={() => setActiveTab(tab.id as TabType)}
                 className={`px-4 py-3 text-sm font-medium rounded-t-lg transition-colors ${
                   activeTab === tab.id
-                    ? 'bg-slate-50 text-slate-900 border-t border-l border-r border-slate-200'
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-slate-800/50 text-white border-t border-l border-r border-slate-700/50'
+                    : 'text-slate-500 hover:text-white hover:bg-slate-700/30'
                 }`}
               >
                 <span className="mr-2">{tab.icon}</span>
@@ -353,13 +353,13 @@ export default function OrbitalServicesPage() {
                     return (
                       <div key={serviceType}>
                         {/* Service Type Header */}
-                        <div className="flex items-center gap-3 mb-4 pb-2 border-b border-slate-200">
+                        <div className="flex items-center gap-3 mb-4 pb-2 border-b border-slate-700/50">
                           <span className="text-2xl">{typeInfo.icon}</span>
                           <div>
-                            <h3 className="text-lg font-semibold text-slate-900">{typeInfo.label}</h3>
+                            <h3 className="text-lg font-semibold text-white">{typeInfo.label}</h3>
                             <span className="text-xs text-slate-400">{catInfo.label}</span>
                           </div>
-                          <span className="ml-auto bg-slate-100 text-slate-500 text-xs px-2 py-1 rounded-full">
+                          <span className="ml-auto bg-slate-700/50 text-slate-400 text-xs px-2 py-1 rounded-full">
                             {typeServices.length} service{typeServices.length !== 1 ? 's' : ''}
                           </span>
                         </div>
@@ -372,18 +372,18 @@ export default function OrbitalServicesPage() {
                             return (
                               <div
                                 key={service.id}
-                                className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden hover:border-slate-300 transition-colors"
+                                className="bg-slate-800/50 border border-slate-700/50 rounded-xl overflow-hidden hover:border-slate-600 transition-colors"
                               >
                                 {/* Header */}
-                                <div className="p-4 border-b border-slate-200">
+                                <div className="p-4 border-b border-slate-700/50">
                                   <div className="flex items-start justify-between">
                                     <div className="flex-1">
-                                      <h4 className="text-lg font-semibold text-slate-900">
+                                      <h4 className="text-lg font-semibold text-white">
                                         {service.serviceName}
                                       </h4>
                                       <p className="text-slate-500 text-sm">{service.providerName}</p>
                                     </div>
-                                    <span className={`${availInfo.color} text-slate-900 text-xs px-2 py-1 rounded-full`}>
+                                    <span className={`${availInfo.color} text-white text-xs px-2 py-1 rounded-full`}>
                                       {availInfo.label}
                                     </span>
                                   </div>
@@ -408,7 +408,7 @@ export default function OrbitalServicesPage() {
                                   )}
 
                                   {/* Pricing */}
-                                  <div className="bg-slate-100 rounded-lg p-3">
+                                  <div className="bg-slate-700/50 rounded-lg p-3">
                                     <div className="text-xl font-bold text-green-400">
                                       {formatPrice(service)}
                                     </div>
@@ -469,35 +469,35 @@ export default function OrbitalServicesPage() {
                 </div>
 
                 {/* Contracts Table */}
-                <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+                <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-slate-100">
+                      <thead className="bg-slate-700/50">
                         <tr>
-                          <th className="text-left px-4 py-3 text-slate-500 text-sm font-medium">Contract</th>
-                          <th className="text-left px-4 py-3 text-slate-500 text-sm font-medium">Customer</th>
-                          <th className="text-left px-4 py-3 text-slate-500 text-sm font-medium">Provider</th>
-                          <th className="text-right px-4 py-3 text-slate-500 text-sm font-medium">Value</th>
-                          <th className="text-left px-4 py-3 text-slate-500 text-sm font-medium">Category</th>
-                          <th className="text-left px-4 py-3 text-slate-500 text-sm font-medium">Status</th>
+                          <th className="text-left px-4 py-3 text-slate-400 text-sm font-medium">Contract</th>
+                          <th className="text-left px-4 py-3 text-slate-400 text-sm font-medium">Customer</th>
+                          <th className="text-left px-4 py-3 text-slate-400 text-sm font-medium">Provider</th>
+                          <th className="text-right px-4 py-3 text-slate-400 text-sm font-medium">Value</th>
+                          <th className="text-left px-4 py-3 text-slate-400 text-sm font-medium">Category</th>
+                          <th className="text-left px-4 py-3 text-slate-400 text-sm font-medium">Status</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-200">
+                      <tbody className="divide-y divide-slate-700/50">
                         {contracts.map((contract) => (
-                          <tr key={contract.id} className="hover:bg-slate-100/30">
+                          <tr key={contract.id} className="hover:bg-slate-700/30">
                             <td className="px-4 py-3">
-                              <div className="text-slate-900 font-medium">{contract.title}</div>
+                              <div className="text-white font-medium">{contract.title}</div>
                               <div className="text-slate-500 text-xs mt-1 line-clamp-1">
                                 {contract.description}
                               </div>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="text-slate-600">{contract.customerName}</span>
+                              <span className="text-slate-300">{contract.customerName}</span>
                               <div className="text-slate-500 text-xs capitalize">
                                 {contract.customerType}
                               </div>
                             </td>
-                            <td className="px-4 py-3 text-slate-500">{contract.providerName}</td>
+                            <td className="px-4 py-3 text-slate-400">{contract.providerName}</td>
                             <td className="px-4 py-3 text-right">
                               <span className="text-green-400 font-semibold">
                                 {formatContractValue(contract.contractValue)}
@@ -537,16 +537,16 @@ export default function OrbitalServicesPage() {
             {/* Pricing Guide Tab */}
             {activeTab === 'pricing' && (
               <div className="space-y-8">
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
-                  <h2 className="text-xl font-semibold text-slate-900 mb-4">Pricing Benchmarks by Category</h2>
+                <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+                  <h2 className="text-xl font-semibold text-white mb-4">Pricing Benchmarks by Category</h2>
                   <p className="text-slate-500 mb-6">
                     Market rates based on published pricing, industry reports, and known contracts.
                   </p>
 
                   <div className="grid gap-6 md:grid-cols-2">
                     {/* Earth Observation */}
-                    <div className="bg-slate-100 rounded-lg p-4">
-                      <h3 className="text-lg font-medium text-slate-900 flex items-center gap-2 mb-3">
+                    <div className="bg-slate-700/50 rounded-lg p-4">
+                      <h3 className="text-lg font-medium text-white flex items-center gap-2 mb-3">
                         <span>🛰️</span> Earth Observation
                       </h3>
                       <div className="space-y-2 text-sm">
@@ -570,8 +570,8 @@ export default function OrbitalServicesPage() {
                     </div>
 
                     {/* In-Orbit Computing */}
-                    <div className="bg-slate-100 rounded-lg p-4">
-                      <h3 className="text-lg font-medium text-slate-900 flex items-center gap-2 mb-3">
+                    <div className="bg-slate-700/50 rounded-lg p-4">
+                      <h3 className="text-lg font-medium text-white flex items-center gap-2 mb-3">
                         <span>🖥️</span> In-Orbit Computing
                       </h3>
                       <div className="space-y-2 text-sm">
@@ -591,8 +591,8 @@ export default function OrbitalServicesPage() {
                     </div>
 
                     {/* Hosted Payloads */}
-                    <div className="bg-slate-100 rounded-lg p-4">
-                      <h3 className="text-lg font-medium text-slate-900 flex items-center gap-2 mb-3">
+                    <div className="bg-slate-700/50 rounded-lg p-4">
+                      <h3 className="text-lg font-medium text-white flex items-center gap-2 mb-3">
                         <span>📦</span> Hosted Payloads
                       </h3>
                       <div className="space-y-2 text-sm">
@@ -612,8 +612,8 @@ export default function OrbitalServicesPage() {
                     </div>
 
                     {/* Communications */}
-                    <div className="bg-slate-100 rounded-lg p-4">
-                      <h3 className="text-lg font-medium text-slate-900 flex items-center gap-2 mb-3">
+                    <div className="bg-slate-700/50 rounded-lg p-4">
+                      <h3 className="text-lg font-medium text-white flex items-center gap-2 mb-3">
                         <span>📡</span> Communications
                       </h3>
                       <div className="space-y-2 text-sm">
@@ -633,8 +633,8 @@ export default function OrbitalServicesPage() {
                     </div>
 
                     {/* Space Solar */}
-                    <div className="bg-slate-100 rounded-lg p-4">
-                      <h3 className="text-lg font-medium text-slate-900 flex items-center gap-2 mb-3">
+                    <div className="bg-slate-700/50 rounded-lg p-4">
+                      <h3 className="text-lg font-medium text-white flex items-center gap-2 mb-3">
                         <span>☀️</span> Space Solar Power
                       </h3>
                       <div className="space-y-2 text-sm">
@@ -654,8 +654,8 @@ export default function OrbitalServicesPage() {
                     </div>
 
                     {/* Sensor Services */}
-                    <div className="bg-slate-100 rounded-lg p-4">
-                      <h3 className="text-lg font-medium text-slate-900 flex items-center gap-2 mb-3">
+                    <div className="bg-slate-700/50 rounded-lg p-4">
+                      <h3 className="text-lg font-medium text-white flex items-center gap-2 mb-3">
                         <span>📊</span> Sensor-as-a-Service
                       </h3>
                       <div className="space-y-2 text-sm">
@@ -677,22 +677,22 @@ export default function OrbitalServicesPage() {
                 </div>
 
                 {/* Cost Factors */}
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
-                  <h2 className="text-xl font-semibold text-slate-900 mb-4">Cost Factors</h2>
+                <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+                  <h2 className="text-xl font-semibold text-white mb-4">Cost Factors</h2>
                   <div className="grid gap-4 md:grid-cols-3">
                     <div className="text-center p-4">
                       <div className="text-3xl mb-2">🚀</div>
-                      <div className="text-xl font-bold text-slate-900">$5,500/kg</div>
+                      <div className="text-xl font-bold text-white">$5,500/kg</div>
                       <div className="text-slate-500 text-sm">Rideshare to LEO</div>
                     </div>
                     <div className="text-center p-4">
                       <div className="text-3xl mb-2">⛽</div>
-                      <div className="text-xl font-bold text-slate-900">$1M-$10M</div>
+                      <div className="text-xl font-bold text-white">$1M-$10M</div>
                       <div className="text-slate-500 text-sm">Annual Ops (per satellite)</div>
                     </div>
                     <div className="text-center p-4">
                       <div className="text-3xl mb-2">📉</div>
-                      <div className="text-xl font-bold text-slate-900">30-60%</div>
+                      <div className="text-xl font-bold text-white">30-60%</div>
                       <div className="text-slate-500 text-sm">Typical Gross Margin</div>
                     </div>
                   </div>
@@ -703,8 +703,8 @@ export default function OrbitalServicesPage() {
             {/* Request Tab */}
             {activeTab === 'request' && (
               <div className="max-w-2xl mx-auto">
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
-                  <h2 className="text-xl font-semibold text-slate-900 mb-2">Request Orbital Services</h2>
+                <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+                  <h2 className="text-xl font-semibold text-white mb-2">Request Orbital Services</h2>
                   <p className="text-slate-500 mb-6">
                     Tell us about your requirements and we&apos;ll help match you with the right providers.
                   </p>
@@ -716,7 +716,7 @@ export default function OrbitalServicesPage() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
-                      <h3 className="text-lg font-semibold text-slate-900 mb-2">Request Submitted!</h3>
+                      <h3 className="text-lg font-semibold text-white mb-2">Request Submitted!</h3>
                       <p className="text-slate-500 mb-6">
                         We&apos;ll review your requirements and get back to you soon.
                       </p>
@@ -731,7 +731,7 @@ export default function OrbitalServicesPage() {
                     <form onSubmit={handleRequestSubmit} className="space-y-5">
                       <div className="grid gap-4 md:grid-cols-2">
                         <div>
-                          <label className="block text-slate-600 text-sm font-medium mb-2">
+                          <label className="block text-slate-400 text-sm font-medium mb-2">
                             Your Email
                           </label>
                           <input
@@ -743,7 +743,7 @@ export default function OrbitalServicesPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-slate-600 text-sm font-medium mb-2">
+                          <label className="block text-slate-400 text-sm font-medium mb-2">
                             Company Name
                           </label>
                           <input
@@ -757,7 +757,7 @@ export default function OrbitalServicesPage() {
                       </div>
 
                       <div>
-                        <label className="block text-slate-600 text-sm font-medium mb-2">
+                        <label className="block text-slate-400 text-sm font-medium mb-2">
                           Service Category <span className="text-red-400">*</span>
                         </label>
                         <select
@@ -776,7 +776,7 @@ export default function OrbitalServicesPage() {
                       </div>
 
                       <div>
-                        <label className="block text-slate-600 text-sm font-medium mb-2">
+                        <label className="block text-slate-400 text-sm font-medium mb-2">
                           Description of Requirements <span className="text-red-400">*</span>
                         </label>
                         <textarea
@@ -791,7 +791,7 @@ export default function OrbitalServicesPage() {
 
                       <div className="grid gap-4 md:grid-cols-2">
                         <div>
-                          <label className="block text-slate-600 text-sm font-medium mb-2">
+                          <label className="block text-slate-400 text-sm font-medium mb-2">
                             Budget Range
                           </label>
                           <input
@@ -803,7 +803,7 @@ export default function OrbitalServicesPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-slate-600 text-sm font-medium mb-2">
+                          <label className="block text-slate-400 text-sm font-medium mb-2">
                             Timeline
                           </label>
                           <input
@@ -840,39 +840,39 @@ export default function OrbitalServicesPage() {
       </main>
 
       {/* Related Modules */}
-      <div className="max-w-7xl mx-auto px-4 py-8 border-t border-slate-200">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Related Modules</h3>
+      <div className="max-w-7xl mx-auto px-4 py-8 border-t border-slate-700/50">
+        <h3 className="text-lg font-semibold text-white mb-4">Related Modules</h3>
         <div className="grid gap-4 md:grid-cols-4">
           <Link
             href="/market-intel"
-            className="bg-slate-50 border border-slate-200 rounded-lg p-4 hover:border-slate-300 transition-colors"
+            className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 hover:border-slate-600 transition-colors"
           >
             <span className="text-2xl">📊</span>
-            <h4 className="text-slate-900 font-medium mt-2">Market Intel</h4>
+            <h4 className="text-white font-medium mt-2">Market Intel</h4>
             <p className="text-slate-500 text-sm">Space company data</p>
           </Link>
           <Link
             href="/spectrum-tracker"
-            className="bg-slate-50 border border-slate-200 rounded-lg p-4 hover:border-slate-300 transition-colors"
+            className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 hover:border-slate-600 transition-colors"
           >
             <span className="text-2xl">📡</span>
-            <h4 className="text-slate-900 font-medium mt-2">Spectrum Tracker</h4>
+            <h4 className="text-white font-medium mt-2">Spectrum Tracker</h4>
             <p className="text-slate-500 text-sm">Frequency allocations</p>
           </Link>
           <Link
             href="/space-insurance"
-            className="bg-slate-50 border border-slate-200 rounded-lg p-4 hover:border-slate-300 transition-colors"
+            className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 hover:border-slate-600 transition-colors"
           >
             <span className="text-2xl">🛡️</span>
-            <h4 className="text-slate-900 font-medium mt-2">Space Insurance</h4>
+            <h4 className="text-white font-medium mt-2">Space Insurance</h4>
             <p className="text-slate-500 text-sm">Coverage & risk</p>
           </Link>
           <Link
             href="/resource-exchange"
-            className="bg-slate-50 border border-slate-200 rounded-lg p-4 hover:border-slate-300 transition-colors"
+            className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 hover:border-slate-600 transition-colors"
           >
             <span className="text-2xl">💰</span>
-            <h4 className="text-slate-900 font-medium mt-2">Resource Exchange</h4>
+            <h4 className="text-white font-medium mt-2">Resource Exchange</h4>
             <p className="text-slate-500 text-sm">Space commodities</p>
           </Link>
         </div>

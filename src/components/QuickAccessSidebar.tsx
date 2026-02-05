@@ -16,9 +16,9 @@ const MODULE_ROUTES: Record<string, string> = {
   'market-intel': '/market-intel',
   'blogs-articles': '/blogs',
   'business-opportunities': '/business-opportunities',
-  'spectrum-tracker': '/spectrum-tracker',
+  'spectrum-tracker': '/spectrum',
   'space-insurance': '/space-insurance',
-  'space-workforce': '/space-workforce',
+  'space-workforce': '/workforce',
   'orbital-services': '/orbital-services',
   'orbital-slots': '/orbital-slots',
   'resource-exchange': '/resource-exchange',
@@ -26,6 +26,7 @@ const MODULE_ROUTES: Record<string, string> = {
   'solar-flare-tracker': '/solar-flares',
   'launch-windows': '/launch-windows',
   'debris-monitor': '/debris-monitor',
+  'satellite-tracker': '/satellites',
 };
 
 // Filter out disabled modules

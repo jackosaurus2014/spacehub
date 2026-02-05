@@ -24,6 +24,190 @@ interface GroupedEvents {
   };
 }
 
+// Countdown timer component for imminent launches
+function CountdownCard({ event }: { event: SpaceEvent }) {
+  const [countdown, setCountdown] = useState<string>('');
+  const [isExpired, setIsExpired] = useState(false);
+  const typeInfo = EVENT_TYPE_INFO[event.type] || EVENT_TYPE_INFO.launch;
+  const launchDate = event.launchDate ? new Date(event.launchDate) : null;
+
+  useEffect(() => {
+    if (!launchDate) return;
+
+    const updateCountdown = () => {
+      const now = new Date();
+      const diff = launchDate.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        setIsExpired(true);
+        setCountdown('LAUNCHED');
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      if (days > 0) {
+        setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+      } else {
+        // Under 24 hours - show HH:MM:SS format
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        setCountdown(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`);
+      }
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, [launchDate]);
+
+  if (!launchDate) return null;
+
+  return (
+    <div className="relative group">
+      {/* Glow effect background */}
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 via-cyan-500 to-green-500 rounded-xl opacity-75 blur group-hover:opacity-100 transition duration-300 animate-pulse" />
+
+      <div className="relative card overflow-hidden bg-slate-900 border-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-cyan-500/10" />
+
+        <div className="relative flex">
+          {/* Image */}
+          <div className="relative w-36 h-40 flex-shrink-0 bg-slate-800">
+            {event.imageUrl ? (
+              <Image
+                src={event.imageUrl}
+                alt={event.name}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-space-700 to-cyan-500/20">
+                <span className="text-5xl">{typeInfo.icon}</span>
+              </div>
+            )}
+            <div className="absolute top-2 left-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-1 rounded-full animate-pulse flex items-center gap-1">
+              <span className="w-2 h-2 bg-slate-900 rounded-full animate-ping" />
+              LIVE
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 p-4">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`${typeInfo.color} text-slate-900 text-xs font-semibold px-2 py-0.5 rounded`}>
+                    {typeInfo.icon} {typeInfo.label}
+                  </span>
+                  {event.country && (
+                    <span className="text-slate-400 text-xs">{event.country}</span>
+                  )}
+                </div>
+                <h3 className="font-bold text-white text-lg line-clamp-2">
+                  {event.name}
+                </h3>
+              </div>
+            </div>
+
+            {event.agency && (
+              <p className="text-cyan-400 text-sm font-medium">{event.agency}</p>
+            )}
+
+            <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-400">
+              {event.location && (
+                <span className="flex items-center gap-1">
+                  <span>📍</span> {event.location}
+                </span>
+              )}
+              {event.rocket && (
+                <span className="flex items-center gap-1 text-green-400">
+                  <span>🚀</span> {event.rocket}
+                </span>
+              )}
+            </div>
+
+            {/* Countdown Display */}
+            <div className="mt-3 pt-3 border-t border-slate-700">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-500 uppercase tracking-wider">T-Minus</span>
+                <span className={`font-mono text-xl font-bold ${isExpired ? 'text-yellow-400' : 'text-green-400'}`}>
+                  {countdown}
+                </span>
+              </div>
+              <div className="text-xs text-slate-500 mt-1">
+                {launchDate.toLocaleDateString('en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                })}{' '}
+                at{' '}
+                {launchDate.toLocaleTimeString('en-US', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  timeZoneName: 'short',
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Upcoming in 48 Hours Section
+function UpcomingIn48Hours({ events }: { events: SpaceEvent[] }) {
+  const upcomingEvents = useMemo(() => {
+    const now = new Date();
+    const in48Hours = new Date(Date.now() + 48 * 60 * 60 * 1000);
+
+    return events
+      .filter(e => {
+        if (!e.launchDate) return false;
+        const launchDate = new Date(e.launchDate);
+        return launchDate > now && launchDate < in48Hours;
+      })
+      .sort((a, b) => new Date(a.launchDate!).getTime() - new Date(b.launchDate!).getTime());
+  }, [events]);
+
+  if (upcomingEvents.length === 0) {
+    return (
+      <div className="mb-8">
+        <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <span className="text-2xl">⏰</span>
+          Upcoming in 48 Hours
+        </h2>
+        <div className="card p-8 text-center bg-gradient-to-br from-slate-50 to-slate-100 border-dashed border-2 border-slate-200">
+          <span className="text-4xl block mb-3">🌙</span>
+          <p className="text-slate-500 font-medium">No launches scheduled in the next 48 hours</p>
+          <p className="text-slate-400 text-sm mt-1">Check back soon for imminent missions</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-8">
+      <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+        <span className="text-2xl animate-pulse">⏰</span>
+        Upcoming in 48 Hours
+        <span className="ml-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-1 rounded-full">
+          {upcomingEvents.length} {upcomingEvents.length === 1 ? 'launch' : 'launches'}
+        </span>
+      </h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {upcomingEvents.map((event) => (
+          <CountdownCard key={event.id} event={event} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function EventCard({ event }: { event: SpaceEvent }) {
   const typeInfo = EVENT_TYPE_INFO[event.type] || EVENT_TYPE_INFO.launch;
   const launchDate = event.launchDate ? new Date(event.launchDate) : null;
@@ -324,6 +508,9 @@ function MissionControlContent() {
             <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Agencies</div>
           </div>
         </div>
+
+        {/* Upcoming in 48 Hours Section */}
+        {!loading && <UpcomingIn48Hours events={events} />}
 
         {/* Timeline */}
         {loading ? (
