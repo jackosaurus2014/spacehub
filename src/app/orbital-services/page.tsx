@@ -11,6 +11,7 @@ import {
   type OrbitalServiceContract,
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ServiceListingDialog from '@/components/ui/ServiceListingDialog';
 
 type TabType = 'services' | 'contracts' | 'pricing' | 'request';
 
@@ -49,6 +50,7 @@ export default function OrbitalServicesPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showListingDialog, setShowListingDialog] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -190,6 +192,25 @@ export default function OrbitalServicesPage() {
           </div>
         </div>
       </header>
+
+      {/* Provider CTA */}
+      <div className="max-w-7xl mx-auto px-4 pt-6">
+        <div className="bg-gradient-to-r from-nebula-600/20 to-rocket-600/20 border border-nebula-500/30 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🚀</span>
+            <p className="text-star-200">
+              <span className="font-medium text-white">Have services to offer?</span>{' '}
+              Get your orbital services listed in our marketplace.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowListingDialog(true)}
+            className="btn-primary whitespace-nowrap"
+          >
+            List Your Service
+          </button>
+        </div>
+      </div>
 
       {/* Stats */}
       {stats && (
@@ -802,6 +823,12 @@ export default function OrbitalServicesPage() {
           </Link>
         </div>
       </div>
+
+      {/* Service Listing Dialog */}
+      <ServiceListingDialog
+        isOpen={showListingDialog}
+        onClose={() => setShowListingDialog(false)}
+      />
     </div>
   );
 }

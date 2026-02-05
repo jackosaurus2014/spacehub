@@ -1318,3 +1318,30 @@ model OrbitalServiceRequest {
   @@index([category])
   @@index([status])
 }
+
+model OrbitalServiceListing {
+  id              String   @id @default(cuid())
+
+  // Provider info
+  companyName     String
+  companyWebsite  String?
+  contactEmail    String
+
+  // Service details
+  serviceName     String
+  serviceDescription String
+  category        String?  // earth_observation, in_orbit_computing, etc.
+
+  // Pricing
+  pricingDetails  String   // Free-form pricing description
+
+  // Status
+  status          String   @default("pending") // pending, approved, rejected, listed
+  adminNotes      String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
