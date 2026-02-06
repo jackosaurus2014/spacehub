@@ -8,13 +8,37 @@ interface Breadcrumb {
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
+  description?: string;
   breadcrumbs?: Breadcrumb[];
+  backLink?: string;
+  backLabel?: string;
+  actions?: React.ReactNode;
   children?: React.ReactNode;
 }
 
-export default function PageHeader({ title, subtitle, breadcrumbs, children }: PageHeaderProps) {
+export default function PageHeader({
+  title,
+  subtitle,
+  description,
+  breadcrumbs,
+  backLink,
+  backLabel,
+  actions,
+  children
+}: PageHeaderProps) {
   return (
     <div className="pt-12 pb-8">
+      {backLink && (
+        <Link
+          href={backLink}
+          className="inline-flex items-center gap-2 text-star-400 hover:text-white text-sm mb-4 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          {backLabel || 'Back'}
+        </Link>
+      )}
       {breadcrumbs && breadcrumbs.length > 0 && (
         <div className="flex items-center gap-2 text-star-400 text-sm mb-4">
           {breadcrumbs.map((crumb, index) => (
@@ -40,8 +64,14 @@ export default function PageHeader({ title, subtitle, breadcrumbs, children }: P
           {subtitle && (
             <p className="text-star-300 mt-2 text-lg">{subtitle}</p>
           )}
+          {description && (
+            <p className="text-star-400 mt-2">{description}</p>
+          )}
         </div>
-        {children}
+        <div className="flex items-center gap-4">
+          {actions}
+          {children}
+        </div>
       </div>
     </div>
   );

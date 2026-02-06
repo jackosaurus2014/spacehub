@@ -427,6 +427,36 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultPosition: 19,
     isPremium: true,
   },
+  {
+    moduleId: 'operational-awareness',
+    name: 'Operational Awareness',
+    description: 'Conjunction monitoring, sustainability scorecards, and spectrum interference alerts',
+    icon: '🛡️',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 20,
+    isPremium: true,
+  },
+  {
+    moduleId: 'mission-cost',
+    name: 'Mission Cost Simulator',
+    description: 'Estimate launch costs, insurance premiums, and regulatory fees across all major providers',
+    icon: '💰',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 21,
+    isPremium: true,
+  },
+  {
+    moduleId: 'blueprints',
+    name: 'Blueprint Series',
+    description: 'Technical breakdowns of space hardware - rocket engines, satellite buses, and lunar landers',
+    icon: '📐',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 22,
+    isPremium: true,
+  },
 ];
 
 // Compliance Module Types

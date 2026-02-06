@@ -1515,3 +1515,597 @@ model CommodityPrice {
   @@index([category])
   @@index([pricePerKg])
 }
+
+// ============================================================
+// US Space Regulatory Agencies & Licensing Module
+// ============================================================
+
+model RegulatoryAgency {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Agency info
+  name            String   // Short name (e.g., "FAA AST")
+  fullName        String   // Full name
+  parentAgency    String   // Parent department
+  jurisdiction    String   // What they regulate
+  website         String
+  contactEmail    String?
+  description     String
+
+  // Legal framework (JSON arrays)
+  keyStatutes     String   // JSON array of enabling statutes
+  keyRegulations  String   // JSON array of CFR parts
+
+  // Relations
+  licenseTypes    SpaceLicenseType[]
+  ruleChanges     RegulatoryRuleChange[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([slug])
+}
+
+model SpaceLicenseType {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Agency relation
+  agencyId        String
+  agency          RegulatoryAgency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  // License details
+  name            String
+  description     String
+  regulatoryBasis String   // CFR reference
+
+  // Applicability (JSON array)
+  applicableTo    String   // JSON array of what this license covers
+
+  // Timeline
+  processingDaysMin Int
+  processingDaysMax Int
+  validityYears   Int?     // null = no expiration
+  isRenewable     Boolean  @default(true)
+
+  // Costs (in USD)
+  applicationFeeMin Float?
+  applicationFeeMax Float?
+  annualFee       Float?
+
+  // Requirements (JSON arrays)
+  keyRequirements String   // JSON array of main requirements
+  guidanceDocuments String? // JSON array of advisory circulars/guides
+  recentChanges   String?  // JSON array of recent updates
+
+  // Links
+  applicationUrl  String?
+  notes           String?
+  effectiveDate   DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agencyId])
+  @@index([slug])
+}
+
+model InternationalSpaceTreaty {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Treaty info
+  name            String   // Short name
+  fullName        String   // Official title
+  depositaryOrg   String   // UN, ITU, etc.
+
+  // Dates
+  adoptedDate     DateTime
+  entryIntoForce  DateTime
+  numberOfParties Int
+
+  // Content (JSON arrays)
+  keyProvisions   String   // JSON array of main provisions
+  commercialImplications String // JSON array of implications for commercial space
+  usImplementation String  // How US implements treaty
+
+  sourceUrl       String
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([slug])
+}
+
+model RegulatoryRuleChange {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Agency relation
+  agencyId        String
+  agency          RegulatoryAgency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  // Rule details
+  title           String
+  summary         String
+  federalRegisterCitation String?
+  effectiveDate   DateTime
+
+  // Impact (JSON arrays)
+  impactAreas     String   // JSON array of affected areas
+  keyChanges      String   // JSON array of specific changes
+
+  // Status
+  status          String   // proposed, final, effective, pending
+
+  sourceUrl       String
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agencyId])
+  @@index([status])
+  @@index([effectiveDate])
+}
+
+model FinancialResponsibility {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+
+  // Agency
+  agencyId        String
+  name            String
+  description     String
+
+  // Limits (in USD)
+  thirdPartyMax   Float    // Max third-party liability
+  governmentMax   Float    // Max government property liability
+
+  // Determination
+  determinationBasis String  // How MPL is calculated
+  alternatives    String   // JSON array of alternatives to insurance
+
+  notes           String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agencyId])
+}
+
+// ============================================================
+// Blueprint Series - Technical Hardware Breakdowns
+// ============================================================
+
+model Blueprint {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  category        String   // engine, satellite_bus, lander, spacecraft
+  manufacturer    String
+  specifications  String?  // JSON object with technical specs
+  propellantType  String?
+  firstFlight     DateTime?
+  missionsFlown   Int?
+  keyInnovations  String?  // JSON array of key innovations
+  description     String
+  technicalNotes  String?
+  imageUrl        String?
+  diagramUrl      String?
+  sourceUrls      String?  // JSON array of reference URLs
+  status          String   @default("operational") // operational, development, retired, proposed
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([manufacturer])
+  @@index([status])
+}
+
+// ============================================================
+// Operational Awareness & Safety Module
+// ============================================================
+
+model OperationalConjunction {
+  id                String   @id @default(cuid())
+  eventId           String   @unique
+  primaryObject     String
+  secondaryObject   String
+  tca               DateTime  // Time of Closest Approach
+  missDistance      Float     // meters
+  collisionProb     Float?
+  relativeVelocity  Float?    // m/s
+  alertLevel        String    // green, yellow, orange, red
+  status            String    // predicted, confirmed, resolved
+  createdAt         DateTime @default(now())
+
+  @@index([tca])
+  @@index([alertLevel])
+  @@index([status])
+}
+
+model SustainabilityScorecard {
+  id                String   @id @default(cuid())
+  operatorName      String   @unique
+  operatorSlug      String   @unique
+  totalSatellites   Int
+  deorbitScore      Int      // 0-100
+  maneuverScore     Int      // 0-100
+  debrisScore       Int      // 0-100
+  transparencyScore Int      // 0-100
+  overallScore      Int      // 0-100
+  grade             String   // A, B, C, D, F
+  deorbitPlan       String?
+  notes             String?
+  lastUpdated       DateTime
+
+  @@index([operatorSlug])
+  @@index([grade])
+  @@index([overallScore])
+}
+
+model SpectrumAlert {
+  id              String    @id @default(cuid())
+  alertType       String    // interference, congestion, coordination
+  frequencyBand   String
+  affectedService String?
+  location        String?
+  severity        String    // low, medium, high, critical
+  description     String
+  reportedAt      DateTime
+  resolvedAt      DateTime?
+  status          String    @default("active")
+
+  @@index([alertType])
+  @@index([frequencyBand])
+  @@index([severity])
+  @@index([status])
+}
+
+// ============================================================
+// Regulatory & Legal Intelligence Hub
+// ============================================================
+
+model PolicyChange {
+  id                      String    @id @default(cuid())
+  slug                    String    @unique
+
+  // Agency and identification
+  agency                  String    // FAA, FCC, NOAA, BIS, DDTC, NASA, DOD, DOS
+  title                   String
+  summary                 String
+  fullText                String?
+
+  // Impact assessment
+  impactAnalysis          String
+  impactSeverity          String    // low, medium, high, critical
+  impactAreas             String    // JSON array of affected areas
+
+  // Status and citations
+  status                  String    // proposed, final, effective, pending, withdrawn, superseded
+  federalRegisterCitation String?
+  docketNumber            String?
+
+  // Timeline
+  publishedDate           DateTime
+  commentDeadline         DateTime?
+  effectiveDate           DateTime?
+
+  // Details
+  keyChanges              String    // JSON array of key changes
+  affectedParties         String    // JSON array of affected parties
+  sourceUrl               String
+  relatedPolicies         String?   // JSON array of related policy slugs
+
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  @@index([agency])
+  @@index([status])
+  @@index([publishedDate])
+  @@index([effectiveDate])
+}
+
+model LicenseRequirement {
+  id                String    @id @default(cuid())
+  slug              String    @unique
+
+  // Agency and type
+  agency            String    // FAA, FCC, NOAA
+  licenseType       String
+  category          String    // launch, satellite, remote_sensing, spectrum, export
+  description       String
+  regulatoryBasis   String
+
+  // Requirements and process
+  requirements      String    // JSON array of requirements
+  processingTimeMin Int       // days
+  processingTimeMax Int       // days
+
+  // Fees
+  applicationFee    Float?    // USD
+  annualFee         Float?    // USD
+
+  // Validity
+  validityYears     Int?      // null = no expiration
+  isRenewable       Boolean   @default(true)
+
+  // Guidance
+  guidanceDocuments String    // JSON array of guidance docs
+  applicationUrl    String?
+  recentChanges     String?   // JSON array of recent updates
+  notes             String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([agency])
+  @@index([category])
+  @@index([licenseType])
+}
+
+model SpaceLawCase {
+  id                String    @id @default(cuid())
+  slug              String    @unique
+
+  // Case identification
+  caseName          String
+  citation          String?
+  year              Int
+  jurisdiction      String    // federal, state, international, arbitration, gao
+  court             String?
+
+  // Parties
+  plaintiff         String
+  defendant         String
+
+  // Subject matter
+  subjectMatter     String    // JSON array of subject matters
+
+  // Content
+  summary           String
+  facts             String
+  holdings          String    // JSON array of holdings
+
+  // Outcome
+  outcome           String    // plaintiff_victory, defendant_victory, settlement, dismissed, pending, vacated
+  damages           Float?    // USD if applicable
+  damagesDescription String?
+
+  // Significance
+  significance      String
+  precedentValue    String
+  keyQuotes         String?   // JSON array of key quotes
+  relatedCases      String?   // JSON array of related case slugs
+  sourceUrl         String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([jurisdiction])
+  @@index([year])
+  @@index([outcome])
+}
+
+model ExpertSource {
+  id                String    @id @default(cuid())
+  slug              String    @unique
+
+  // Source details
+  name              String
+  type              String    // law_firm, think_tank, government, academic, industry_association
+  organization      String?
+  url               String
+  feedUrl           String?   // RSS feed if available
+
+  // Coverage
+  topics            String    // JSON array of topics
+  description       String
+  keyContributors   String?   // JSON array of key contributors
+
+  // Status
+  isActive          Boolean   @default(true)
+  lastFetched       DateTime?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([type])
+  @@index([isActive])
+}
+
+model ECCNClassification {
+  id                  String    @id @default(cuid())
+  eccn                String    @unique
+
+  // Classification details
+  description         String
+  category            String    // EAR category (e.g., "9 - Aerospace and Propulsion")
+  productGroup        String    // A, B, C, D, or E
+
+  // Control information
+  reasonForControl    String    // JSON array (NS, RS, MT, AT, etc.)
+  licenseRequirements String
+  licenseExceptions   String    // JSON array
+
+  // Space relevance
+  spaceRelevance      String
+  examples            String    // JSON array of examples
+  relatedECCNs        String?   // JSON array of related ECCNs
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([category])
+  @@index([productGroup])
+}
+
+model USMLCategory {
+  id                  String    @id @default(cuid())
+  category            String    @unique    // Roman numeral (IV, XV, etc.)
+  subcategory         String?
+
+  // Content
+  title               String
+  description         String
+  items               String    // JSON array of controlled items
+  spaceRelevance      String
+  licensingAuthority  String
+
+  // Related info
+  exemptions          String?   // JSON array of exemptions
+  relatedCategories   String?   // JSON array of related categories
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([category])
+}
+
+model TreatyObligation {
+  id                      String    @id @default(cuid())
+  slug                    String    @unique
+
+  // Treaty identification
+  name                    String
+  fullName                String
+  type                    String    // un_treaty, bilateral, multilateral, itu, memorandum
+
+  // Dates and parties
+  adoptedDate             DateTime
+  effectiveDate           DateTime
+  parties                 Int       // number of parties
+  usRatified              Boolean   @default(true)
+
+  // Content
+  keyObligations          String    // JSON array
+  commercialImplications  String    // JSON array
+  enforcementMechanism    String
+  usImplementation        String
+  sourceUrl               String
+
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  @@index([type])
+  @@index([usRatified])
+}
+
+// ============================================================
+// Mission Cost Simulator Module
+// ============================================================
+
+model MissionLaunchCost {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  provider            String
+  vehicle             String
+  country             String
+  status              String   // operational, development, retired
+  reusable            Boolean  @default(false)
+  firstFlight         Int?
+
+  // Payload capacities (kg)
+  payloadLEO          Int?
+  payloadSSO          Int?
+  payloadGTO          Int?
+  payloadGEO          Int?
+  payloadTLI          Int?
+
+  // Pricing (JSON strings for min/max/typical)
+  dedicatedLaunchPrice String?  // JSON
+  ridesharePrice       String?  // JSON
+
+  // Cost per kg by orbit (JSON strings)
+  costPerKgLEO        String   // JSON
+  costPerKgSSO        String?  // JSON
+  costPerKgGTO        String?  // JSON
+  costPerKgGEO        String?  // JSON
+  costPerKgTLI        String?  // JSON
+
+  notes               String?  // JSON array
+  lastUpdated         String?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([provider])
+  @@index([country])
+  @@index([status])
+}
+
+model MissionInsuranceRate {
+  id                  String   @id @default(cuid())
+  category            String   // launch, in_orbit, third_party, etc.
+  coverageType        String   // full_value, partial, etc.
+  rateMin             Float
+  rateMax             Float
+  rateTypical         Float
+  factors             String?  // JSON array of factors
+  notes               String?  // JSON array
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([category, coverageType])
+  @@index([category])
+}
+
+model MissionRegulatoryFee {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  agency              String
+  country             String
+  feeType             String
+  amountMin           Float
+  amountMax           Float
+  amountTypical       Float
+  currency            String   @default("USD")
+  frequency           String   // one_time, annual, per_launch, etc.
+  notes               String?  // JSON array
+  lastUpdated         String?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([agency])
+  @@index([country])
+}
+
+model MissionMiscCost {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  category            String
+  item                String
+  costMin             Float
+  costMax             Float
+  costTypical         Float
+  currency            String   @default("USD")
+  unit                String?
+  notes               String?  // JSON array
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([category])
+}
+
+model MissionRidesharePricing {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  provider            String
+  program             String
+  pricePerKg          Float
+  minMass             Int?
+  maxMass             Int?
+  orbit               String
+  frequency           String?
+  notes               String?  // JSON array
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([provider])
+  @@index([orbit])
+}

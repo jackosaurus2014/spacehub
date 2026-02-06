@@ -36,6 +36,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [
+  { label: 'Operational Awareness', href: '/operational-awareness', description: 'Conjunctions, sustainability & spectrum' },
   { label: 'Resource Exchange', href: '/resource-exchange', description: 'Space commodity pricing' },
   { label: 'Space Mining', href: '/space-mining', description: 'Asteroid and planetary mining intelligence' },
   { label: 'Compliance', href: '/compliance', description: 'Export controls and regulations' },
