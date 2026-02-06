@@ -100,7 +100,8 @@ const COMMODITY_EXPORT_COLUMNS = [
 // Helper Functions
 // ────────────────────────────────────────
 
-function formatNumber(n: number): string {
+function formatNumber(n: number | null | undefined): string {
+  if (n === null || n === undefined) return '0';
   return n.toLocaleString();
 }
 

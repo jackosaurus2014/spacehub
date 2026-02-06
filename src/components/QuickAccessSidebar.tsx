@@ -30,6 +30,8 @@ const MODULE_ROUTES: Record<string, string> = {
   'satellite-tracker': '/satellites',
   'supply-chain': '/supply-chain',
   'space-mining': '/space-mining',
+  'mission-cost': '/mission-cost',
+  'blueprints': '/blueprints',
 };
 
 // Filter out disabled modules
