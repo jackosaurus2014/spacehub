@@ -114,6 +114,26 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
+// Forgot password schema
+export const forgotPasswordSchema = z.object({
+  email: emailSchema,
+});
+
+// Reset password schema
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Reset token is required'),
+  password: passwordSchema,
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
+});
+
+// Verify email schema
+export const verifyEmailSchema = z.object({
+  token: z.string().min(1, 'Verification token is required'),
+});
+
 // ID parameter schema
 export const idParamSchema = z.object({
   id: z.string().cuid('Invalid ID format'),
@@ -299,3 +319,6 @@ export type CompanyRequestData = z.infer<typeof companyRequestSchema>;
 export type OrbitalServiceRequestData = z.infer<typeof orbitalServiceRequestSchema>;
 export type OrbitalServiceListingData = z.infer<typeof orbitalServiceListingSchema>;
 export type SearchQueryParams = z.infer<typeof searchQuerySchema>;
+export type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
+export type VerifyEmailData = z.infer<typeof verifyEmailSchema>;

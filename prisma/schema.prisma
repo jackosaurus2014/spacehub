@@ -27,6 +27,10 @@ model User {
   // Admin
   isAdmin              Boolean   @default(false)
 
+  // Email verification & password reset
+  emailVerified     Boolean             @default(false)
+  verificationToken String?             @unique
+
   // Usage tracking (for free tier limits)
   dailyArticleViews    Int       @default(0)
   lastArticleViewReset DateTime  @default(now())
@@ -35,6 +39,17 @@ model User {
   featureRequests      FeatureRequest[]
   helpRequests         HelpRequest[]
   newsletterSubscription NewsletterSubscriber?
+  passwordResetTokens PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 model NewsArticle {

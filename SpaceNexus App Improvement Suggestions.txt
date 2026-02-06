@@ -57,8 +57,14 @@ Additional Auth Improvements Needed:
 [x] Add rate limiting on login attempts (prevent brute force)
     DONE: Middleware rate limiter in src/middleware.ts (10 req/hour for
     register, per-endpoint sliding window)
-[ ] Implement password reset functionality
-[ ] Add email verification on signup
+[x] Implement password reset functionality
+    DONE: Full flow with PasswordResetToken model, /api/auth/forgot-password,
+    /api/auth/reset-password, forgot-password and reset-password pages,
+    email template via Resend, rate limited to 5 req/hour.
+[x] Add email verification on signup
+    DONE: User model has emailVerified + verificationToken fields.
+    Registration sends verification email via Resend. /api/auth/verify-email
+    endpoint and /verify-email page handle token validation.
 [ ] Consider adding OAuth providers (Google, GitHub)
 [ ] Add two-factor authentication option
 

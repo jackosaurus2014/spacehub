@@ -348,3 +348,88 @@ export function personalizeEmail(html: string, unsubscribeToken: string): string
     .replace(/\{\{UNSUBSCRIBE_URL\}\}/g, unsubscribeUrl)
     .replace(/\{\{UNSUBSCRIBE_TOKEN\}\}/g, unsubscribeToken);
 }
+
+export function generatePasswordResetEmail(resetUrl: string): { html: string; text: string } {
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#0f172a;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;">
+    <tr><td align="center" style="padding:40px 20px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#1e293b;border-radius:12px;overflow:hidden;">
+        <!-- Header -->
+        <tr><td style="padding:32px 40px;text-align:center;border-bottom:1px solid #334155;">
+          <h1 style="margin:0;color:#06b6d4;font-size:24px;">SpaceNexus</h1>
+        </td></tr>
+        <!-- Content -->
+        <tr><td style="padding:40px;">
+          <h2 style="margin:0 0 16px;color:#f1f5f9;font-size:20px;">Password Reset Request</h2>
+          <p style="margin:0 0 24px;color:#94a3b8;font-size:15px;line-height:1.6;">
+            We received a request to reset your password. Click the button below to create a new password. This link expires in 1 hour.
+          </p>
+          <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 24px;">
+            <tr><td style="background-color:#06b6d4;border-radius:8px;padding:14px 32px;">
+              <a href="${escapeHtml(resetUrl)}" style="color:#0f172a;text-decoration:none;font-weight:bold;font-size:15px;">Reset Password</a>
+            </td></tr>
+          </table>
+          <p style="margin:0 0 16px;color:#64748b;font-size:13px;line-height:1.5;">
+            If you didn't request this, you can safely ignore this email. Your password will not be changed.
+          </p>
+          <p style="margin:0;color:#64748b;font-size:12px;line-height:1.5;border-top:1px solid #334155;padding-top:16px;">
+            If the button doesn't work, copy and paste this link into your browser:<br>
+            <a href="${escapeHtml(resetUrl)}" style="color:#06b6d4;word-break:break-all;">${escapeHtml(resetUrl)}</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  const text = `Password Reset Request\n\nWe received a request to reset your SpaceNexus password.\n\nReset your password: ${resetUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, you can safely ignore this email.`;
+
+  return { html, text };
+}
+
+export function generateVerificationEmail(verifyUrl: string, userName?: string): { html: string; text: string } {
+  const greeting = userName ? `Welcome, ${escapeHtml(userName)}!` : 'Welcome to SpaceNexus!';
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#0f172a;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;">
+    <tr><td align="center" style="padding:40px 20px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#1e293b;border-radius:12px;overflow:hidden;">
+        <!-- Header -->
+        <tr><td style="padding:32px 40px;text-align:center;border-bottom:1px solid #334155;">
+          <h1 style="margin:0;color:#06b6d4;font-size:24px;">SpaceNexus</h1>
+        </td></tr>
+        <!-- Content -->
+        <tr><td style="padding:40px;">
+          <h2 style="margin:0 0 16px;color:#f1f5f9;font-size:20px;">${greeting}</h2>
+          <p style="margin:0 0 24px;color:#94a3b8;font-size:15px;line-height:1.6;">
+            Please verify your email address to complete your registration and access all SpaceNexus features.
+          </p>
+          <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 24px;">
+            <tr><td style="background-color:#06b6d4;border-radius:8px;padding:14px 32px;">
+              <a href="${escapeHtml(verifyUrl)}" style="color:#0f172a;text-decoration:none;font-weight:bold;font-size:15px;">Verify Email</a>
+            </td></tr>
+          </table>
+          <p style="margin:0;color:#64748b;font-size:12px;line-height:1.5;border-top:1px solid #334155;padding-top:16px;">
+            If the button doesn't work, copy and paste this link into your browser:<br>
+            <a href="${escapeHtml(verifyUrl)}" style="color:#06b6d4;word-break:break-all;">${escapeHtml(verifyUrl)}</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  const text = `${greeting}\n\nPlease verify your email address to complete your SpaceNexus registration.\n\nVerify your email: ${verifyUrl}\n\nIf you didn't create this account, you can safely ignore this email.`;
+
+  return { html, text };
+}
