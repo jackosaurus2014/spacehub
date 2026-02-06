@@ -1,4 +1,5 @@
 import prisma from './db';
+import { safeJsonParse } from './errors';
 import {
   MiningBody,
   MiningResource,
@@ -1804,8 +1805,8 @@ export async function getMiningBodies(options?: {
       orbitalFamily: body.orbitalFamily as OrbitalFamily | null,
       trajectoryStatus: body.trajectoryStatus as TrajectoryStatus | null,
       valueConfidence: body.valueConfidence as ValueConfidence | null,
-      missionHistory: body.missionHistory ? JSON.parse(body.missionHistory) : null,
-      composition: body.composition ? JSON.parse(body.composition) : null,
+      missionHistory: body.missionHistory ? safeJsonParse(body.missionHistory, null) : null,
+      composition: body.composition ? safeJsonParse(body.composition, null) : null,
       resources: body.resources.map(r => ({
         ...r,
         category: r.category as MiningResourceCategory,
@@ -1833,8 +1834,8 @@ export async function getMiningBodyBySlug(slug: string): Promise<MiningBody | nu
     orbitalFamily: body.orbitalFamily as OrbitalFamily | null,
     trajectoryStatus: body.trajectoryStatus as TrajectoryStatus | null,
     valueConfidence: body.valueConfidence as ValueConfidence | null,
-    missionHistory: body.missionHistory ? JSON.parse(body.missionHistory) : null,
-    composition: body.composition ? JSON.parse(body.composition) : null,
+    missionHistory: body.missionHistory ? safeJsonParse(body.missionHistory, null) : null,
+    composition: body.composition ? safeJsonParse(body.composition, null) : null,
     resources: body.resources.map(r => ({
       ...r,
       category: r.category as MiningResourceCategory,
@@ -1882,7 +1883,7 @@ export async function getCommodityPrices(options?: {
     ...c,
     category: c.category as CommodityCategory,
     priceVolatility: c.priceVolatility as PriceVolatility | null,
-    spaceApplications: c.spaceApplications ? JSON.parse(c.spaceApplications) : null,
+    spaceApplications: c.spaceApplications ? safeJsonParse(c.spaceApplications, null) : null,
   }));
 }
 
@@ -1897,7 +1898,7 @@ export async function getCommodityBySlug(slug: string): Promise<CommodityPrice |
     ...commodity,
     category: commodity.category as CommodityCategory,
     priceVolatility: commodity.priceVolatility as PriceVolatility | null,
-    spaceApplications: commodity.spaceApplications ? JSON.parse(commodity.spaceApplications) : null,
+    spaceApplications: commodity.spaceApplications ? safeJsonParse(commodity.spaceApplications, null) : null,
   };
 }
 

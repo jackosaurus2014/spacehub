@@ -14,6 +14,7 @@ import {
 } from '@/types';
 import PageHeader from '@/components/ui/PageHeader';
 import ExportButton from '@/components/ui/ExportButton';
+import { SkeletonPage } from '@/components/ui/Skeleton';
 
 const FLARE_EXPORT_COLUMNS = [
   { key: 'classification', label: 'Classification' },
@@ -75,18 +76,7 @@ function SolarFlaresContent() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="min-h-screen">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center py-20">
-            <div
-              className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin"
-              style={{ borderWidth: '3px' }}
-            />
-          </div>
-        </div>
-      </div>
-    );
+    return <SkeletonPage statCards={5} statGridCols="grid-cols-2 md:grid-cols-5" contentCards={2} />;
   }
 
   if (!data) {

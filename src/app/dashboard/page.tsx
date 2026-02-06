@@ -6,6 +6,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { NEWS_CATEGORIES } from '@/types';
 import DashboardLayoutSelector from '@/components/DashboardLayoutSelector';
+import { SkeletonPage } from '@/components/ui/Skeleton';
 import {
   getEffectiveLayout,
   getGridColumnsClass,
@@ -81,11 +82,7 @@ export default function DashboardPage() {
   };
 
   if (status === 'loading' || !layoutLoaded) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <SkeletonPage statCards={4} statGridCols="grid-cols-2 md:grid-cols-4" contentCards={4} contentGridCols="grid-cols-1 md:grid-cols-2" />;
   }
 
   if (!session) {

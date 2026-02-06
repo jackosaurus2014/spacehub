@@ -1,5 +1,6 @@
 import prisma from './db';
 import RSSParser from 'rss-parser';
+import sanitizeHtml from 'sanitize-html';
 
 interface SpaceflightNewsArticle {
   id: number;
@@ -170,7 +171,7 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
       if (!item.link || !item.title) continue;
 
       const summary = item.contentSnippet || item.content || item.summary || '';
-      const cleanSummary = summary.replace(/<[^>]*>/g, '').slice(0, 500);
+      const cleanSummary = sanitizeHtml(summary, { allowedTags: [], allowedAttributes: {} }).slice(0, 500);
       const category = categorizeArticle(item.title, cleanSummary) !== 'missions'
         ? categorizeArticle(item.title, cleanSummary)
         : (feed.defaultCategory || 'missions');

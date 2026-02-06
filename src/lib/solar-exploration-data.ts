@@ -1,4 +1,5 @@
 import prisma from './db';
+import { safeJsonParse } from './errors';
 import { PlanetaryBody, SurfaceLander } from '@/types';
 
 // Seed data for planetary bodies
@@ -347,7 +348,7 @@ export async function getPlanetaryBodies(): Promise<PlanetaryBody[]> {
       ...l,
       missionType: l.missionType as SurfaceLander['missionType'],
       status: l.status as SurfaceLander['status'],
-      objectives: l.objectives ? JSON.parse(l.objectives) : null,
+      objectives: l.objectives ? safeJsonParse(l.objectives, null) : null,
     })),
   }));
 }
@@ -371,7 +372,7 @@ export async function getPlanetaryBodyBySlug(slug: string): Promise<PlanetaryBod
       ...l,
       missionType: l.missionType as SurfaceLander['missionType'],
       status: l.status as SurfaceLander['status'],
-      objectives: l.objectives ? JSON.parse(l.objectives) : null,
+      objectives: l.objectives ? safeJsonParse(l.objectives, null) : null,
     })),
   };
 }
@@ -401,7 +402,7 @@ export async function getSurfaceLanders(options?: {
     ...l,
     missionType: l.missionType as SurfaceLander['missionType'],
     status: l.status as SurfaceLander['status'],
-    objectives: l.objectives ? JSON.parse(l.objectives) : null,
+    objectives: l.objectives ? safeJsonParse(l.objectives, null) : null,
     planetaryBody: l.planetaryBody ? {
       ...l.planetaryBody,
       type: l.planetaryBody.type as PlanetaryBody['type'],

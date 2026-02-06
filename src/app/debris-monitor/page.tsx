@@ -13,6 +13,7 @@ import {
   DEBRIS_OBJECT_TYPES,
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { SkeletonPage } from '@/components/ui/Skeleton';
 import PageHeader from '@/components/ui/PageHeader';
 import ExportButton from '@/components/ui/ExportButton';
 
@@ -445,9 +446,7 @@ function DebrisContent() {
         />
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <LoadingSpinner size="lg" />
-          </div>
+          <SkeletonPage statCards={4} contentCards={2} />
         ) : needsInit ? (
           <div className="card p-12 text-center">
             <span className="text-6xl block mb-4">&#128752;</span>

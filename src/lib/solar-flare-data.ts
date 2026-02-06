@@ -1,4 +1,5 @@
 import prisma from './db';
+import { safeJsonParse } from './errors';
 import { SolarFlare, SolarForecast, SolarActivity, FlareClassification, RiskLevel, ImpactLevel, GeomagneticLevel, SolarStatus } from '@/types';
 import { fetchNasaDonki, fetchNoaaSwpc, getDateRange } from './external-apis';
 
@@ -272,7 +273,7 @@ export async function getSolarForecasts(days = 90): Promise<SolarForecast[]> {
     ...f,
     riskLevel: f.riskLevel as RiskLevel,
     geomagneticLevel: f.geomagneticLevel as GeomagneticLevel | null,
-    activeRegions: f.activeRegions ? JSON.parse(f.activeRegions) : null,
+    activeRegions: f.activeRegions ? safeJsonParse(f.activeRegions, null) : null,
   }));
 }
 
@@ -297,7 +298,7 @@ export async function getDangerForecasts(): Promise<SolarForecast[]> {
     ...f,
     riskLevel: f.riskLevel as RiskLevel,
     geomagneticLevel: f.geomagneticLevel as GeomagneticLevel | null,
-    activeRegions: f.activeRegions ? JSON.parse(f.activeRegions) : null,
+    activeRegions: f.activeRegions ? safeJsonParse(f.activeRegions, null) : null,
   }));
 }
 

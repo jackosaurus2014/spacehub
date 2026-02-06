@@ -289,9 +289,12 @@ function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
   };
 
   const categoryInfo = categoryLabels[commodity.category] || { label: commodity.category, color: 'text-slate-400' };
-  const spaceApplications = typeof commodity.spaceApplications === 'string'
-    ? JSON.parse(commodity.spaceApplications)
-    : commodity.spaceApplications || [];
+  let spaceApplications: string[] = [];
+  try {
+    spaceApplications = typeof commodity.spaceApplications === 'string'
+      ? JSON.parse(commodity.spaceApplications)
+      : commodity.spaceApplications || [];
+  } catch { /* ignore malformed JSON */ }
 
   return (
     <div className="card p-4 border border-slate-200 hover:border-nebula-500/50 transition-all">

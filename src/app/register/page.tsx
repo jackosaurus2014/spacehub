@@ -1,10 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import LegalDisclaimerModal from '@/components/LegalDisclaimerModal';
+
+function getPasswordStrength(password: string): { score: number; label: string; color: string } {
+  if (!password) return { score: 0, label: '', color: '' };
+  let score = 0;
+  if (password.length >= 6) score++;
+  if (password.length >= 10) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+
+  if (score <= 1) return { score: 1, label: 'Weak', color: 'bg-red-500' };
+  if (score <= 2) return { score: 2, label: 'Fair', color: 'bg-orange-500' };
+  if (score <= 3) return { score: 3, label: 'Good', color: 'bg-yellow-500' };
+  if (score <= 4) return { score: 4, label: 'Strong', color: 'bg-green-500' };
+  return { score: 5, label: 'Very Strong', color: 'bg-emerald-500' };
+}
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -16,6 +32,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [agreedToDisclaimer, setAgreedToDisclaimer] = useState(false);
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);
+  const passwordStrength = useMemo(() => getPasswordStrength(password), [password]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +115,7 @@ export default function RegisterPage() {
                 onChange={(e) => setName(e.target.value)}
                 className="input"
                 placeholder="Your name"
+                autoComplete="name"
                 aria-invalid={error ? true : undefined}
                 aria-describedby={error ? 'register-error' : undefined}
               />
@@ -115,6 +133,7 @@ export default function RegisterPage() {
                 className="input"
                 placeholder="you@example.com"
                 required
+                autoComplete="email"
                 aria-invalid={error ? true : undefined}
                 aria-describedby={error ? 'register-error' : undefined}
               />
@@ -136,9 +155,25 @@ export default function RegisterPage() {
                 placeholder="At least 6 characters"
                 required
                 minLength={6}
+                autoComplete="new-password"
                 aria-invalid={error ? true : undefined}
-                aria-describedby={error ? 'register-error' : undefined}
+                aria-describedby={error ? 'register-error password-strength' : undefined}
               />
+              {password && (
+                <div className="mt-2" id="password-strength">
+                  <div className="flex gap-1 mb-1">
+                    {[1, 2, 3, 4, 5].map((level) => (
+                      <div
+                        key={level}
+                        className={`h-1.5 flex-1 rounded-full transition-colors ${
+                          level <= passwordStrength.score ? passwordStrength.color : 'bg-slate-200'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-xs text-slate-500">{passwordStrength.label}</p>
+                </div>
+              )}
             </div>
 
             <div>
@@ -156,6 +191,7 @@ export default function RegisterPage() {
                 className="input"
                 placeholder="Confirm your password"
                 required
+                autoComplete="new-password"
                 aria-invalid={error ? true : undefined}
                 aria-describedby={error ? 'register-error' : undefined}
               />

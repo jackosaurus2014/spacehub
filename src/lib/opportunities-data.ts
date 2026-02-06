@@ -1,4 +1,5 @@
 import prisma from '@/lib/db';
+import { safeJsonParse } from '@/lib/errors';
 import Anthropic from '@anthropic-ai/sdk';
 
 // Initialize Anthropic client if API key is available
@@ -421,8 +422,8 @@ export async function getOpportunities(options?: {
   return {
     opportunities: opportunities.map((opp) => ({
       ...opp,
-      relatedTrends: opp.relatedTrends ? JSON.parse(opp.relatedTrends) : null,
-      targetAudience: opp.targetAudience ? JSON.parse(opp.targetAudience) : null,
+      relatedTrends: opp.relatedTrends ? safeJsonParse(opp.relatedTrends, null) : null,
+      targetAudience: opp.targetAudience ? safeJsonParse(opp.targetAudience, null) : null,
     })),
     total,
   };

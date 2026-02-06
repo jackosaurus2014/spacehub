@@ -1,4 +1,5 @@
 import prisma from './db';
+import { safeJsonParse } from './errors';
 
 // ============================================================
 // Blueprint Types
@@ -1305,9 +1306,9 @@ export async function getBlueprints(options: BlueprintQueryOptions = {}) {
   // Parse JSON fields
   const parsed = blueprints.map(bp => ({
     ...bp,
-    specifications: bp.specifications ? JSON.parse(bp.specifications) : {},
-    keyInnovations: bp.keyInnovations ? JSON.parse(bp.keyInnovations) : [],
-    sourceUrls: bp.sourceUrls ? JSON.parse(bp.sourceUrls) : [],
+    specifications: bp.specifications ? safeJsonParse(bp.specifications, {}) : {},
+    keyInnovations: bp.keyInnovations ? safeJsonParse(bp.keyInnovations, []) : [],
+    sourceUrls: bp.sourceUrls ? safeJsonParse(bp.sourceUrls, []) : [],
   }));
 
   return { blueprints: parsed, total };
@@ -1322,9 +1323,9 @@ export async function getBlueprintBySlug(slug: string) {
 
   return {
     ...blueprint,
-    specifications: blueprint.specifications ? JSON.parse(blueprint.specifications) : {},
-    keyInnovations: blueprint.keyInnovations ? JSON.parse(blueprint.keyInnovations) : [],
-    sourceUrls: blueprint.sourceUrls ? JSON.parse(blueprint.sourceUrls) : [],
+    specifications: blueprint.specifications ? safeJsonParse(blueprint.specifications, {}) : {},
+    keyInnovations: blueprint.keyInnovations ? safeJsonParse(blueprint.keyInnovations, []) : [],
+    sourceUrls: blueprint.sourceUrls ? safeJsonParse(blueprint.sourceUrls, []) : [],
   };
 }
 

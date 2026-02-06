@@ -60,7 +60,9 @@ export default function LiveChat() {
     }
 
     // Add system welcome message if no messages
-    if (!savedMessages || JSON.parse(savedMessages).length === 0) {
+    let parsedCount = 0;
+    try { parsedCount = savedMessages ? JSON.parse(savedMessages).length : 0; } catch { /* ignore */ }
+    if (!savedMessages || parsedCount === 0) {
       const welcomeMessage: ChatMessage = {
         id: 'system-welcome',
         username: 'System',

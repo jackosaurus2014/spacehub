@@ -77,6 +77,7 @@ export default function LoginPage() {
                 className="input"
                 placeholder="you@example.com"
                 required
+                autoComplete="email"
                 aria-invalid={error ? true : undefined}
                 aria-describedby={error ? 'login-error' : undefined}
               />
@@ -97,6 +98,7 @@ export default function LoginPage() {
                 className="input"
                 placeholder="••••••••"
                 required
+                autoComplete="current-password"
                 aria-invalid={error ? true : undefined}
                 aria-describedby={error ? 'login-error' : undefined}
               />

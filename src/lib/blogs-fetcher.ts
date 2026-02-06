@@ -1,5 +1,6 @@
 import prisma from './db';
 import Parser from 'rss-parser';
+import sanitizeHtml from 'sanitize-html';
 
 const parser = new Parser({
   customFields: {
@@ -240,8 +241,7 @@ function categorizeTopic(title: string, content: string): string {
 }
 
 function extractExcerpt(content: string, maxLength: number = 300): string {
-  // Strip HTML tags
-  const text = content.replace(/<[^>]*>/g, '').trim();
+  const text = sanitizeHtml(content, { allowedTags: [], allowedAttributes: {} }).trim();
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength).trim() + '...';
 }

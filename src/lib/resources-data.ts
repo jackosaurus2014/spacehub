@@ -1,4 +1,5 @@
 import prisma from '@/lib/db';
+import { safeJsonParse } from '@/lib/errors';
 
 // Conversion constants
 export const KG_TO_LB = 2.20462;
@@ -625,9 +626,9 @@ export async function getResources(options?: {
   return {
     resources: resources.map((r) => ({
       ...r,
-      applications: JSON.parse(r.applications),
-      usedIn: r.usedIn ? JSON.parse(r.usedIn) : null,
-      primarySuppliers: r.primarySuppliers ? JSON.parse(r.primarySuppliers) : null,
+      applications: safeJsonParse(r.applications, []),
+      usedIn: r.usedIn ? safeJsonParse(r.usedIn, null) : null,
+      primarySuppliers: r.primarySuppliers ? safeJsonParse(r.primarySuppliers, null) : null,
     })),
     total,
   };

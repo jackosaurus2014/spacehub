@@ -1,4 +1,5 @@
 import prisma from './db';
+import { safeJsonParse } from './errors';
 import { AVAILABLE_MODULES, ModuleConfig, ModuleSection } from '@/types';
 
 export interface UserModuleWithConfig {
@@ -33,7 +34,7 @@ export async function getUserModulePreferences(userId: string): Promise<UserModu
       section: module.section,
       enabled: userPref?.enabled ?? module.defaultEnabled,
       position: userPref?.position ?? module.defaultPosition,
-      settings: userPref?.settings ? JSON.parse(userPref.settings) : null,
+      settings: userPref?.settings ? safeJsonParse(userPref.settings, null) : null,
     };
   });
 

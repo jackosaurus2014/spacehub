@@ -1,6 +1,15 @@
 // Email templates for newsletter system
 // Dark-themed, inline CSS, table-based for Outlook compatibility, 600px max width
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 interface FeatureArticle {
   title: string;
   content: string;
@@ -209,10 +218,10 @@ export function renderDigestEmail(
                   Featured Analysis
                 </span>
                 <h2 style="margin: 12px 0; font-size: 20px; font-weight: 600; color: ${styles.textWhite}; line-height: 1.3;">
-                  ${article.title}
+                  ${escapeHtml(article.title)}
                 </h2>
                 <p style="margin: 0; font-size: 15px; line-height: 1.7; color: ${styles.textLight};">
-                  ${article.content}
+                  ${escapeHtml(article.content)}
                 </p>
               </td>
             </tr>
@@ -258,13 +267,13 @@ ${article.content}
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
               <tr>
                 <td style="padding: 12px 0; border-bottom: 1px solid ${styles.borderColor};">
-                  <a href="${article.url}" style="font-size: 15px; font-weight: 500; color: ${styles.textWhite}; text-decoration: none; line-height: 1.4;">
-                    ${article.title}
+                  <a href="${escapeHtml(article.url)}" style="font-size: 15px; font-weight: 500; color: ${styles.textWhite}; text-decoration: none; line-height: 1.4;">
+                    ${escapeHtml(article.title)}
                   </a>
                   <p style="margin: 8px 0 0 0; font-size: 13px; color: ${styles.textMuted};">
-                    ${article.source}
+                    ${escapeHtml(article.source)}
                   </p>
-                  ${article.summary ? `<p style="margin: 8px 0 0 0; font-size: 14px; color: ${styles.textLight}; line-height: 1.5;">${article.summary}</p>` : ''}
+                  ${article.summary ? `<p style="margin: 8px 0 0 0; font-size: 14px; color: ${styles.textLight}; line-height: 1.5;">${escapeHtml(article.summary)}</p>` : ''}
                 </td>
               </tr>
             </table>

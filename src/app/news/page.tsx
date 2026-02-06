@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import NewsCard from '@/components/NewsCard';
 import NewsFilter from '@/components/NewsFilter';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { SkeletonNewsGrid } from '@/components/ui/Skeleton';
 import PageHeader from '@/components/ui/PageHeader';
 import ExportButton from '@/components/ui/ExportButton';
 import { NativeAd } from '@/components/ads';
@@ -122,9 +123,7 @@ function NewsContent() {
 
       {/* News Grid */}
       {loading && articles.length === 0 ? (
-        <div className="flex justify-center py-20">
-          <LoadingSpinner size="lg" />
-        </div>
+        <SkeletonNewsGrid count={6} />
       ) : articles.length === 0 ? (
         <div className="text-center py-20">
           <span className="text-6xl block mb-4">🔭</span>
