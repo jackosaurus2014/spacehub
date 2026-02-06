@@ -1,5 +1,6 @@
 import prisma from './db';
 import { LaunchWindow, CelestialDestination, TransferType } from '@/types';
+import { fetchLaunchLibrary, fetchSpaceX } from './external-apis';
 
 // Helper to create dates relative to today
 const daysFromNow = (days: number) => {
@@ -416,4 +417,331 @@ export async function getLaunchWindowStats() {
     nextWindow: nextWindow as LaunchWindow | null,
     mostAccessible: mostAccessible as CelestialDestination | null,
   };
+}
+
+// ============================================================
+// External API Integration - Launch Library 2 & SpaceX
+// ============================================================
+
+// Types for Launch Library 2 API response
+interface LaunchLibraryResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: LaunchLibraryLaunch[];
+}
+
+interface LaunchLibraryLaunch {
+  id: string;
+  name: string;
+  net: string | null;
+  window_start: string | null;
+  window_end: string | null;
+  status: {
+    id: number;
+    name: string;
+    abbrev: string;
+    description: string;
+  } | null;
+  rocket: {
+    id: number;
+    configuration: {
+      id: number;
+      name: string;
+      full_name: string;
+    };
+  } | null;
+  mission: {
+    id: number;
+    name: string;
+    description: string | null;
+    type: string | null;
+  } | null;
+  pad: {
+    id: number;
+    name: string;
+    location: {
+      id: number;
+      name: string;
+      country_code: string;
+    } | null;
+  } | null;
+  launch_service_provider: {
+    id: number;
+    name: string;
+    abbrev: string;
+    type: string | null;
+  } | null;
+  image: string | null;
+  infographic: string | null;
+  webcast_live: boolean;
+  vidURLs?: Array<{ url: string }>;
+}
+
+// Types for SpaceX API response
+interface SpaceXLaunch {
+  id: string;
+  name: string;
+  date_utc: string | null;
+  date_precision: string;
+  static_fire_date_utc: string | null;
+  window: number | null;
+  rocket: string;
+  success: boolean | null;
+  details: string | null;
+  launchpad: string;
+  flight_number: number;
+  upcoming: boolean;
+  links: {
+    webcast: string | null;
+    article: string | null;
+    wikipedia: string | null;
+  } | null;
+}
+
+// Normalized launch data for merging
+export interface NormalizedLaunch {
+  externalId: string;
+  source: 'launch_library' | 'spacex';
+  name: string;
+  missionName: string | null;
+  provider: string | null;
+  vehicle: string | null;
+  windowStart: Date | null;
+  windowEnd: Date | null;
+  launchDate: Date | null;
+  launchDatePrecision: string | null;
+  status: string;
+  location: string | null;
+  country: string | null;
+  missionType: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  videoUrl: string | null;
+}
+
+/**
+ * Fetch upcoming launches from Launch Library 2 API
+ */
+export async function fetchLaunchLibraryUpcoming(limit = 50): Promise<NormalizedLaunch[]> {
+  const data = await fetchLaunchLibrary('launch/upcoming', { limit: String(limit) }) as LaunchLibraryResponse;
+
+  if (!data.results || !Array.isArray(data.results)) {
+    console.warn('Launch Library 2: No results array in response');
+    return [];
+  }
+
+  return data.results.map((launch): NormalizedLaunch => ({
+    externalId: `ll2-${launch.id}`,
+    source: 'launch_library',
+    name: launch.name,
+    missionName: launch.mission?.name || null,
+    provider: launch.launch_service_provider?.name || null,
+    vehicle: launch.rocket?.configuration?.name || null,
+    windowStart: launch.window_start ? new Date(launch.window_start) : null,
+    windowEnd: launch.window_end ? new Date(launch.window_end) : null,
+    launchDate: launch.net ? new Date(launch.net) : null,
+    launchDatePrecision: mapLaunchLibraryPrecision(launch.status?.abbrev),
+    status: mapLaunchLibraryStatus(launch.status?.abbrev || 'TBD'),
+    location: launch.pad?.name || null,
+    country: launch.pad?.location?.name || null,
+    missionType: launch.mission?.type || null,
+    description: launch.mission?.description || null,
+    imageUrl: launch.image || launch.infographic || null,
+    videoUrl: launch.vidURLs?.[0]?.url || null,
+  }));
+}
+
+/**
+ * Fetch upcoming launches from SpaceX API
+ */
+export async function fetchSpaceXUpcoming(): Promise<NormalizedLaunch[]> {
+  const data = await fetchSpaceX('launches/upcoming') as SpaceXLaunch[];
+
+  if (!Array.isArray(data)) {
+    console.warn('SpaceX API: Response is not an array');
+    return [];
+  }
+
+  return data.map((launch): NormalizedLaunch => {
+    const launchDate = launch.date_utc ? new Date(launch.date_utc) : null;
+
+    // Calculate window end based on launch window (in seconds)
+    let windowEnd: Date | null = null;
+    if (launchDate && launch.window) {
+      windowEnd = new Date(launchDate.getTime() + launch.window * 1000);
+    }
+
+    return {
+      externalId: `spacex-${launch.id}`,
+      source: 'spacex',
+      name: launch.name,
+      missionName: launch.name,
+      provider: 'SpaceX',
+      vehicle: 'Falcon 9', // SpaceX API v5 doesn't include rocket name in upcoming
+      windowStart: launchDate,
+      windowEnd: windowEnd,
+      launchDate: launchDate,
+      launchDatePrecision: mapSpaceXPrecision(launch.date_precision),
+      status: launch.upcoming ? 'upcoming' : 'tbd',
+      location: null, // Would need additional API call to get launchpad details
+      country: 'USA',
+      missionType: null,
+      description: launch.details,
+      imageUrl: null,
+      videoUrl: launch.links?.webcast || null,
+    };
+  });
+}
+
+/**
+ * Merge and deduplicate launches from multiple sources
+ * Launch Library 2 is preferred when duplicates are found
+ */
+export function mergeLaunchData(
+  launchLibraryData: NormalizedLaunch[],
+  spaceXData: NormalizedLaunch[]
+): NormalizedLaunch[] {
+  const merged = new Map<string, NormalizedLaunch>();
+
+  // Add Launch Library 2 data first (preferred source)
+  for (const launch of launchLibraryData) {
+    const key = generateDedupeKey(launch);
+    merged.set(key, launch);
+  }
+
+  // Add SpaceX data, but only if not already present
+  for (const launch of spaceXData) {
+    const key = generateDedupeKey(launch);
+    if (!merged.has(key)) {
+      merged.set(key, launch);
+    } else {
+      // If duplicate exists, merge additional data from SpaceX
+      const existing = merged.get(key)!;
+      if (!existing.videoUrl && launch.videoUrl) {
+        existing.videoUrl = launch.videoUrl;
+      }
+      if (!existing.description && launch.description) {
+        existing.description = launch.description;
+      }
+    }
+  }
+
+  return Array.from(merged.values());
+}
+
+/**
+ * Generate a deduplication key for a launch
+ * Based on provider + approximate launch date + mission name similarity
+ */
+function generateDedupeKey(launch: NormalizedLaunch): string {
+  const provider = launch.provider?.toLowerCase().replace(/\s+/g, '') || 'unknown';
+  const date = launch.launchDate
+    ? launch.launchDate.toISOString().split('T')[0]
+    : 'nodate';
+  const mission = (launch.missionName || launch.name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+    .slice(0, 20);
+
+  return `${provider}-${date}-${mission}`;
+}
+
+/**
+ * Upsert normalized launches to the SpaceEvent table
+ */
+export async function upsertLaunchEvents(
+  launches: NormalizedLaunch[]
+): Promise<{ created: number; updated: number }> {
+  let created = 0;
+  let updated = 0;
+
+  for (const launch of launches) {
+    try {
+      const existingEvent = await prisma.spaceEvent.findUnique({
+        where: { externalId: launch.externalId },
+      });
+
+      const eventData = {
+        name: launch.name,
+        description: launch.description,
+        type: 'launch' as const,
+        status: launch.status,
+        launchDate: launch.launchDate,
+        launchDatePrecision: launch.launchDatePrecision,
+        windowStart: launch.windowStart,
+        windowEnd: launch.windowEnd,
+        location: launch.location,
+        country: launch.country,
+        agency: launch.provider,
+        rocket: launch.vehicle,
+        mission: launch.missionName,
+        imageUrl: launch.imageUrl,
+        videoUrl: launch.videoUrl,
+        fetchedAt: new Date(),
+      };
+
+      if (existingEvent) {
+        await prisma.spaceEvent.update({
+          where: { externalId: launch.externalId },
+          data: eventData,
+        });
+        updated++;
+      } else {
+        await prisma.spaceEvent.create({
+          data: {
+            externalId: launch.externalId,
+            ...eventData,
+          },
+        });
+        created++;
+      }
+    } catch (error) {
+      console.error(`Failed to upsert launch ${launch.externalId}:`, error);
+    }
+  }
+
+  return { created, updated };
+}
+
+/**
+ * Map Launch Library 2 status abbreviation to our status format
+ */
+function mapLaunchLibraryStatus(abbrev: string): string {
+  const statusMap: Record<string, string> = {
+    'Go': 'go',
+    'TBD': 'tbd',
+    'TBC': 'tbc',
+    'Hold': 'upcoming',
+    'InFlight': 'in_progress',
+    'Success': 'completed',
+    'Failure': 'completed',
+    'Partial Failure': 'completed',
+  };
+  return statusMap[abbrev] || 'tbd';
+}
+
+/**
+ * Map Launch Library 2 status to precision
+ */
+function mapLaunchLibraryPrecision(abbrev: string | undefined): string | null {
+  if (!abbrev) return null;
+  if (['Go', 'TBC'].includes(abbrev)) return 'hour';
+  if (abbrev === 'TBD') return 'day';
+  return 'exact';
+}
+
+/**
+ * Map SpaceX date_precision to our format
+ */
+function mapSpaceXPrecision(precision: string): string | null {
+  const precisionMap: Record<string, string> = {
+    'year': 'year',
+    'half': 'quarter',
+    'quarter': 'quarter',
+    'month': 'month',
+    'day': 'day',
+    'hour': 'hour',
+  };
+  return precisionMap[precision] || null;
 }

@@ -155,6 +155,91 @@ export interface TreatyObligation {
 }
 
 // ============================================================================
+// FEDERAL REGISTER API TYPES
+// ============================================================================
+
+/**
+ * Raw response from Federal Register API documents.json endpoint
+ */
+export interface FederalRegisterApiResponse {
+  count: number;
+  description: string;
+  total_pages: number;
+  next_page_url: string | null;
+  results: FederalRegisterApiDocument[];
+}
+
+/**
+ * Individual document from Federal Register API
+ */
+export interface FederalRegisterApiDocument {
+  document_number: string;
+  title: string;
+  type: string;
+  abstract: string | null;
+  publication_date: string;
+  effective_on: string | null;
+  agencies: Array<{
+    raw_name: string;
+    name: string;
+    id: number;
+    url: string;
+    json_url: string;
+    parent_id: number | null;
+    slug: string;
+  }>;
+  html_url: string;
+  pdf_url: string;
+  public_inspection_pdf_url: string | null;
+  citation: string | null;
+  docket_ids: string[];
+  regulation_id_numbers: string[];
+  significant: boolean;
+}
+
+/**
+ * Transformed Federal Register document for internal use
+ */
+export interface FederalRegisterDocument {
+  documentNumber: string;
+  title: string;
+  type: string;
+  abstract: string | null;
+  publicationDate: string;
+  effectiveOn: string | null;
+  agencies: string[];
+  agencySlugs: string[];
+  htmlUrl: string;
+  pdfUrl: string;
+  citation: string | null;
+  docketIds: string[];
+  regulationIdNumbers: string[];
+  significant: boolean;
+}
+
+/**
+ * Options for fetching Federal Register updates
+ */
+export interface FederalRegisterFetchOptions {
+  agencies?: string[];
+  searchTerm?: string;
+  perPage?: number;
+  startDate?: string;
+  endDate?: string;
+  documentTypes?: string[];
+}
+
+/**
+ * Result from fetching Federal Register updates
+ */
+export interface FederalRegisterFetchResult {
+  success: boolean;
+  documents?: FederalRegisterDocument[];
+  totalCount?: number;
+  error?: string;
+}
+
+// ============================================================================
 // POLICY TRACKER DATA - FAA, FCC, NOAA Regulatory Changes
 // ============================================================================
 
@@ -1739,6 +1824,299 @@ export function getRegulatoryHubStats() {
       academic: EXPERT_SOURCES.filter(s => s.type === 'academic').length,
       industry_association: EXPERT_SOURCES.filter(s => s.type === 'industry_association').length,
     },
+  };
+}
+
+// ============================================================================
+// FEDERAL REGISTER API INTEGRATION
+// ============================================================================
+
+import { fetchFederalRegister, createFetchResult } from './external-apis';
+
+/**
+ * Map agency slug from Federal Register to our AgencyType
+ */
+function mapAgencySlugToType(slug: string): AgencyType | null {
+  const agencyMap: Record<string, AgencyType> = {
+    'federal-aviation-administration': 'FAA',
+    'federal-communications-commission': 'FCC',
+    'national-oceanic-and-atmospheric-administration': 'NOAA',
+    'national-aeronautics-and-space-administration': 'NASA',
+    'bureau-of-industry-and-security': 'BIS',
+    'department-of-defense': 'DOD',
+    'department-of-state': 'DOS',
+  };
+  return agencyMap[slug] || null;
+}
+
+/**
+ * Transform raw Federal Register API document to our internal format
+ */
+function transformFederalRegisterDocument(
+  doc: FederalRegisterApiDocument
+): FederalRegisterDocument {
+  return {
+    documentNumber: doc.document_number,
+    title: doc.title,
+    type: doc.type,
+    abstract: doc.abstract,
+    publicationDate: doc.publication_date,
+    effectiveOn: doc.effective_on,
+    agencies: doc.agencies.map(a => a.name),
+    agencySlugs: doc.agencies.map(a => a.slug),
+    htmlUrl: doc.html_url,
+    pdfUrl: doc.pdf_url,
+    citation: doc.citation,
+    docketIds: doc.docket_ids,
+    regulationIdNumbers: doc.regulation_id_numbers,
+    significant: doc.significant,
+  };
+}
+
+/**
+ * Transform Federal Register document to PolicyChange for Policy Tracker
+ */
+export function federalRegisterToPolicyChange(
+  doc: FederalRegisterDocument
+): PolicyChange {
+  // Determine the primary agency
+  const primaryAgencySlug = doc.agencySlugs[0] || '';
+  const agency = mapAgencySlugToType(primaryAgencySlug) || 'FAA';
+
+  // Determine status based on document type and dates
+  let status: PolicyStatus = 'proposed';
+  if (doc.type === 'Rule' || doc.type === 'Final Rule') {
+    if (doc.effectiveOn) {
+      const effectiveDate = new Date(doc.effectiveOn);
+      status = effectiveDate <= new Date() ? 'effective' : 'pending';
+    } else {
+      status = 'final';
+    }
+  } else if (doc.type === 'Proposed Rule') {
+    status = 'proposed';
+  } else if (doc.type === 'Notice') {
+    status = 'effective';
+  }
+
+  // Determine impact severity based on document type
+  let impactSeverity: 'low' | 'medium' | 'high' | 'critical' = 'medium';
+  if (doc.significant) {
+    impactSeverity = 'high';
+  }
+  if (doc.type === 'Final Rule' || doc.type === 'Rule') {
+    impactSeverity = doc.significant ? 'critical' : 'high';
+  }
+
+  // Build impact areas from search context
+  const impactAreas: string[] = [];
+  const titleLower = doc.title.toLowerCase();
+  const abstractLower = (doc.abstract || '').toLowerCase();
+  const combined = titleLower + ' ' + abstractLower;
+
+  if (combined.includes('satellite')) impactAreas.push('satellite_operations');
+  if (combined.includes('launch')) impactAreas.push('launch_operations');
+  if (combined.includes('orbit')) impactAreas.push('orbital_operations');
+  if (combined.includes('spectrum') || combined.includes('frequency')) impactAreas.push('spectrum');
+  if (combined.includes('debris')) impactAreas.push('debris_mitigation');
+  if (combined.includes('license') || combined.includes('licensing')) impactAreas.push('licensing');
+  if (combined.includes('safety')) impactAreas.push('safety');
+  if (combined.includes('export')) impactAreas.push('export_control');
+
+  if (impactAreas.length === 0) {
+    impactAreas.push('general_compliance');
+  }
+
+  // Build affected parties
+  const affectedParties: string[] = [];
+  if (combined.includes('operator')) affectedParties.push('operators');
+  if (combined.includes('provider')) affectedParties.push('service_providers');
+  if (combined.includes('manufacturer')) affectedParties.push('manufacturers');
+  if (combined.includes('applicant')) affectedParties.push('license_applicants');
+
+  if (affectedParties.length === 0) {
+    affectedParties.push('space_industry');
+  }
+
+  return {
+    id: `fr-${doc.documentNumber}`,
+    slug: `federal-register-${doc.documentNumber.toLowerCase()}`,
+    agency,
+    title: doc.title,
+    summary: doc.abstract || `${doc.type} published in the Federal Register.`,
+    impactAnalysis: doc.abstract || `This ${doc.type.toLowerCase()} may affect space industry operations. Review the full document for details.`,
+    impactSeverity,
+    impactAreas,
+    status,
+    federalRegisterCitation: doc.citation || doc.documentNumber,
+    docketNumber: doc.docketIds.length > 0 ? doc.docketIds[0] : undefined,
+    publishedDate: doc.publicationDate,
+    effectiveDate: doc.effectiveOn || undefined,
+    keyChanges: [], // Would need deeper parsing of document
+    affectedParties,
+    sourceUrl: doc.htmlUrl,
+  };
+}
+
+/**
+ * Fetch space-related regulatory updates from Federal Register API
+ *
+ * @param options - Fetch options including agencies, search terms, pagination
+ * @returns FederalRegisterFetchResult with transformed documents
+ *
+ * Federal Register API Documentation:
+ * https://www.federalregister.gov/developers/documentation/api/v1
+ */
+export async function fetchFederalRegisterUpdates(
+  options: FederalRegisterFetchOptions = {}
+): Promise<FederalRegisterFetchResult> {
+  const {
+    agencies = [
+      'federal-aviation-administration',
+      'federal-communications-commission',
+      'national-oceanic-and-atmospheric-administration',
+      'national-aeronautics-and-space-administration',
+    ],
+    searchTerm = 'space OR satellite OR launch OR orbit OR spectrum',
+    perPage = 25,
+    startDate,
+    endDate,
+    documentTypes,
+  } = options;
+
+  try {
+    // Build query parameters for Federal Register API
+    const params: Record<string, string> = {
+      'per_page': String(perPage),
+      'order': 'newest',
+    };
+
+    // Add search term
+    if (searchTerm) {
+      params['conditions[term]'] = searchTerm;
+    }
+
+    // Add agencies - Note: Federal Register API uses array notation for multiple agencies
+    // We need to construct the URL differently for array params
+    const agencyParams = agencies
+      .map(agency => `conditions[agencies][]=${encodeURIComponent(agency)}`)
+      .join('&');
+
+    // Add date range if specified
+    if (startDate) {
+      params['conditions[publication_date][gte]'] = startDate;
+    }
+    if (endDate) {
+      params['conditions[publication_date][lte]'] = endDate;
+    }
+
+    // Add document types if specified
+    if (documentTypes && documentTypes.length > 0) {
+      // Similar to agencies, types use array notation
+      const typeParams = documentTypes
+        .map(type => `conditions[type][]=${encodeURIComponent(type)}`)
+        .join('&');
+      // We'll append this separately
+    }
+
+    // Build the URL manually to handle array parameters correctly
+    const baseUrl = 'https://www.federalregister.gov/api/v1/documents.json';
+    const queryString = new URLSearchParams(params).toString();
+    const fullUrl = `${baseUrl}?${queryString}&${agencyParams}`;
+
+    console.log(`[Federal Register] Fetching from: ${fullUrl}`);
+
+    const response = await fetch(fullUrl, {
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Federal Register API returned ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json() as FederalRegisterApiResponse;
+
+    // Transform results to our internal format
+    const documents = data.results.map(transformFederalRegisterDocument);
+
+    console.log(`[Federal Register] Fetched ${documents.length} of ${data.count} total documents`);
+
+    return {
+      success: true,
+      documents,
+      totalCount: data.count,
+    };
+  } catch (error) {
+    console.error('[Federal Register] Fetch error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error fetching from Federal Register',
+    };
+  }
+}
+
+/**
+ * Fetch and store new Federal Register documents as policy changes
+ * Returns the count of new documents stored
+ */
+export async function syncFederalRegisterUpdates(
+  options: FederalRegisterFetchOptions = {}
+): Promise<{ success: boolean; newCount: number; error?: string }> {
+  const result = await fetchFederalRegisterUpdates(options);
+
+  if (!result.success || !result.documents) {
+    return {
+      success: false,
+      newCount: 0,
+      error: result.error,
+    };
+  }
+
+  let newCount = 0;
+
+  // Transform and store each document
+  for (const doc of result.documents) {
+    const policyChange = federalRegisterToPolicyChange(doc);
+
+    try {
+      // Check if this document already exists
+      const existing = await prisma.policyChange.findUnique({
+        where: { slug: policyChange.slug },
+      });
+
+      if (!existing) {
+        // Store new policy change
+        await prisma.policyChange.create({
+          data: {
+            slug: policyChange.slug,
+            agency: policyChange.agency,
+            title: policyChange.title,
+            summary: policyChange.summary,
+            impactAnalysis: policyChange.impactAnalysis,
+            impactSeverity: policyChange.impactSeverity,
+            impactAreas: JSON.stringify(policyChange.impactAreas),
+            status: policyChange.status,
+            federalRegisterCitation: policyChange.federalRegisterCitation,
+            docketNumber: policyChange.docketNumber,
+            publishedDate: new Date(policyChange.publishedDate),
+            effectiveDate: policyChange.effectiveDate ? new Date(policyChange.effectiveDate) : null,
+            keyChanges: JSON.stringify(policyChange.keyChanges),
+            affectedParties: JSON.stringify(policyChange.affectedParties),
+            sourceUrl: policyChange.sourceUrl,
+          },
+        });
+        newCount++;
+        console.log(`[Federal Register Sync] Stored new document: ${policyChange.slug}`);
+      }
+    } catch (error) {
+      console.error(`[Federal Register Sync] Error storing ${policyChange.slug}:`, error);
+    }
+  }
+
+  return {
+    success: true,
+    newCount,
   };
 }
 

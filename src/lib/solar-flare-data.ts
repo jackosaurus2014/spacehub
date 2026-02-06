@@ -1,5 +1,6 @@
 import prisma from './db';
 import { SolarFlare, SolarForecast, SolarActivity, FlareClassification, RiskLevel, ImpactLevel, GeomagneticLevel, SolarStatus } from '@/types';
+import { fetchNasaDonki, fetchNoaaSwpc, getDateRange } from './external-apis';
 
 // Helper to generate dates relative to now
 const daysFromNow = (days: number) => {
@@ -363,5 +364,343 @@ export async function getSolarFlareStats() {
       date: largestRecent.startTime,
     } : null,
     upcomingDangerDays,
+  };
+}
+
+// ============================================================
+// External API Integration: NASA DONKI and NOAA SWPC
+// ============================================================
+
+// NASA DONKI Solar Flare Response Type
+export interface NasaDonkiFlare {
+  flrID: string;
+  classType: string;
+  beginTime: string;
+  peakTime?: string;
+  endTime?: string;
+  sourceLocation?: string;
+  activeRegionNum?: number;
+  linkedEvents?: Array<{ activityID: string }>;
+  instruments?: Array<{ displayName: string }>;
+}
+
+// NOAA SWPC X-ray Flare Response Type
+export interface NoaaXrayFlare {
+  time_tag: string;
+  satellite: number;
+  current_class: string;
+  current_ratio: number;
+  current_int_xrlong: number;
+  begin_time: string;
+  begin_class: string;
+  max_time: string;
+  max_class: string;
+  max_xrlong: number;
+  end_time?: string;
+  end_class?: string;
+}
+
+// NOAA Planetary K-Index Response Type
+export interface NoaaKpIndex {
+  time_tag: string;
+  Kp?: string;
+  kp?: string;
+  kp_index?: number;
+  a_running?: number;
+}
+
+// Transformed flare data for database insertion
+export interface TransformedFlare {
+  flareId: string;
+  classification: string;
+  intensity: number;
+  startTime: Date;
+  peakTime: Date | null;
+  endTime: Date | null;
+  activeRegion: string | null;
+  sourceLocation: string | null;
+  radioBlackout: string | null;
+  solarRadiation: string | null;
+  geomagneticStorm: string | null;
+  description: string | null;
+  linkedCME: boolean;
+}
+
+/**
+ * Fetch solar flares from NASA DONKI FLR endpoint (last 30 days)
+ */
+export async function fetchNasaDonkiSolarFlares(): Promise<NasaDonkiFlare[]> {
+  try {
+    const { startDate, endDate } = getDateRange(30, 0);
+    const data = await fetchNasaDonki('FLR', {
+      startDate,
+      endDate,
+    });
+
+    if (!Array.isArray(data)) {
+      console.warn('NASA DONKI returned non-array data:', data);
+      return [];
+    }
+
+    return data as NasaDonkiFlare[];
+  } catch (error) {
+    console.error('Failed to fetch NASA DONKI solar flares:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch X-ray flares from NOAA SWPC (7-day data)
+ */
+export async function fetchNoaaXrayFlares(): Promise<NoaaXrayFlare[]> {
+  try {
+    const data = await fetchNoaaSwpc('/json/goes/primary/xray-flares-7-day.json');
+
+    if (!Array.isArray(data)) {
+      console.warn('NOAA SWPC xray-flares returned non-array data:', data);
+      return [];
+    }
+
+    return data as NoaaXrayFlare[];
+  } catch (error) {
+    console.error('Failed to fetch NOAA SWPC X-ray flares:', error);
+    return [];
+  }
+}
+
+/**
+ * Fetch Planetary K-Index from NOAA SWPC
+ */
+export async function fetchNoaaPlanetaryKIndex(): Promise<NoaaKpIndex[]> {
+  try {
+    const data = await fetchNoaaSwpc('/products/noaa-planetary-k-index.json');
+
+    if (!Array.isArray(data)) {
+      console.warn('NOAA SWPC K-index returned non-array data:', data);
+      return [];
+    }
+
+    // Skip header row if present (first row might be column names)
+    const kpData = data.filter((row): row is NoaaKpIndex => {
+      if (Array.isArray(row)) return false;
+      return typeof row === 'object' && row !== null;
+    });
+
+    return kpData;
+  } catch (error) {
+    console.error('Failed to fetch NOAA planetary K-index:', error);
+    return [];
+  }
+}
+
+/**
+ * Parse flare classification from class type string (e.g., "X1.5" -> { class: "X", intensity: 1.5 })
+ */
+function parseFlareClassType(classType: string): { classification: FlareClassification; intensity: number } {
+  // Default values
+  let classification: FlareClassification = 'C';
+  let intensity = 1.0;
+
+  if (!classType || typeof classType !== 'string') {
+    return { classification, intensity };
+  }
+
+  // Extract first character as classification (X, M, C, B, A)
+  const classChar = classType.charAt(0).toUpperCase();
+  if (['X', 'M', 'C', 'B', 'A'].includes(classChar)) {
+    classification = classChar as FlareClassification;
+  }
+
+  // Extract numeric intensity (e.g., "1.5" from "X1.5")
+  const intensityMatch = classType.match(/[XMCBA](\d+\.?\d*)/i);
+  if (intensityMatch && intensityMatch[1]) {
+    const parsedIntensity = parseFloat(intensityMatch[1]);
+    if (!isNaN(parsedIntensity)) {
+      intensity = parsedIntensity;
+    }
+  }
+
+  return { classification, intensity };
+}
+
+/**
+ * Estimate impact levels based on flare classification and intensity
+ */
+function estimateImpactLevels(classification: FlareClassification, intensity: number): {
+  radioBlackout: ImpactLevel;
+  solarRadiation: ImpactLevel;
+  geomagneticStorm: ImpactLevel;
+} {
+  // Radio blackout scale based on X-ray flux
+  let radioBlackout: ImpactLevel = 'none';
+  let solarRadiation: ImpactLevel = 'none';
+  let geomagneticStorm: ImpactLevel = 'none';
+
+  if (classification === 'X') {
+    if (intensity >= 10) {
+      radioBlackout = 'extreme';
+      solarRadiation = 'severe';
+      geomagneticStorm = 'severe';
+    } else if (intensity >= 5) {
+      radioBlackout = 'severe';
+      solarRadiation = 'strong';
+      geomagneticStorm = 'strong';
+    } else if (intensity >= 1) {
+      radioBlackout = 'strong';
+      solarRadiation = 'moderate';
+      geomagneticStorm = 'moderate';
+    } else {
+      radioBlackout = 'moderate';
+      solarRadiation = 'minor';
+      geomagneticStorm = 'minor';
+    }
+  } else if (classification === 'M') {
+    if (intensity >= 5) {
+      radioBlackout = 'moderate';
+      solarRadiation = 'minor';
+      geomagneticStorm = 'minor';
+    } else {
+      radioBlackout = 'minor';
+    }
+  }
+  // C, B, A classes typically have no significant impact
+
+  return { radioBlackout, solarRadiation, geomagneticStorm };
+}
+
+/**
+ * Transform NASA DONKI flare data to internal format
+ */
+export function transformNasaDonkiFlare(flare: NasaDonkiFlare): TransformedFlare {
+  const { classification, intensity } = parseFlareClassType(flare.classType);
+  const impacts = estimateImpactLevels(classification, intensity);
+
+  // Check for linked CME events
+  const linkedCME = flare.linkedEvents?.some(event =>
+    event.activityID?.includes('CME')
+  ) || false;
+
+  // Build active region string
+  const activeRegion = flare.activeRegionNum
+    ? `AR${flare.activeRegionNum}`
+    : null;
+
+  // Generate description
+  const description = `${classification}${intensity} solar flare detected${
+    flare.sourceLocation ? ` at ${flare.sourceLocation}` : ''
+  }${activeRegion ? ` from ${activeRegion}` : ''}.`;
+
+  return {
+    flareId: flare.flrID,
+    classification,
+    intensity,
+    startTime: new Date(flare.beginTime),
+    peakTime: flare.peakTime ? new Date(flare.peakTime) : null,
+    endTime: flare.endTime ? new Date(flare.endTime) : null,
+    activeRegion,
+    sourceLocation: flare.sourceLocation || null,
+    radioBlackout: impacts.radioBlackout,
+    solarRadiation: impacts.solarRadiation,
+    geomagneticStorm: impacts.geomagneticStorm,
+    description,
+    linkedCME,
+  };
+}
+
+/**
+ * Transform NOAA SWPC X-ray flare data to internal format
+ */
+export function transformNoaaXrayFlare(flare: NoaaXrayFlare): TransformedFlare {
+  // Use max_class for classification (peak intensity)
+  const { classification, intensity } = parseFlareClassType(flare.max_class);
+  const impacts = estimateImpactLevels(classification, intensity);
+
+  // Generate a unique flare ID based on timestamp and class
+  const startTime = new Date(flare.begin_time);
+  const flareId = `NOAA-${startTime.toISOString().replace(/[:.]/g, '-')}-${classification}${intensity}`;
+
+  // Generate description
+  const description = `${classification}${intensity} solar flare detected by GOES-${flare.satellite}.`;
+
+  return {
+    flareId,
+    classification,
+    intensity,
+    startTime,
+    peakTime: flare.max_time ? new Date(flare.max_time) : null,
+    endTime: flare.end_time ? new Date(flare.end_time) : null,
+    activeRegion: null, // NOAA data doesn't include active region
+    sourceLocation: null, // NOAA data doesn't include source location
+    radioBlackout: impacts.radioBlackout,
+    solarRadiation: impacts.solarRadiation,
+    geomagneticStorm: impacts.geomagneticStorm,
+    description,
+    linkedCME: false, // NOAA X-ray data doesn't have CME linkage
+  };
+}
+
+/**
+ * Merge solar flare data from multiple sources
+ * NASA DONKI data takes precedence for duplicates (matched by time window)
+ */
+export function mergeSolarFlareData(
+  nasaFlares: TransformedFlare[],
+  noaaFlares: TransformedFlare[]
+): TransformedFlare[] {
+  const merged: TransformedFlare[] = [...nasaFlares];
+  const TIME_WINDOW_MS = 30 * 60 * 1000; // 30 minutes
+
+  for (const noaaFlare of noaaFlares) {
+    // Check if there's a NASA flare within the time window with same classification
+    const isDuplicate = nasaFlares.some(nasaFlare => {
+      const timeDiff = Math.abs(
+        nasaFlare.startTime.getTime() - noaaFlare.startTime.getTime()
+      );
+      return (
+        timeDiff < TIME_WINDOW_MS &&
+        nasaFlare.classification === noaaFlare.classification
+      );
+    });
+
+    if (!isDuplicate) {
+      merged.push(noaaFlare);
+    }
+  }
+
+  // Sort by start time (newest first)
+  merged.sort((a, b) => b.startTime.getTime() - a.startTime.getTime());
+
+  return merged;
+}
+
+/**
+ * Combined fetch function that retrieves and merges data from both sources
+ */
+export async function fetchAllSolarFlareData(): Promise<{
+  flares: TransformedFlare[];
+  kpIndex: NoaaKpIndex[];
+  sources: { nasa: number; noaa: number };
+}> {
+  // Fetch from all sources in parallel
+  const [nasaFlares, noaaXrayFlares, noaaKpIndex] = await Promise.all([
+    fetchNasaDonkiSolarFlares(),
+    fetchNoaaXrayFlares(),
+    fetchNoaaPlanetaryKIndex(),
+  ]);
+
+  // Transform the data
+  const transformedNasaFlares = nasaFlares.map(transformNasaDonkiFlare);
+  const transformedNoaaFlares = noaaXrayFlares.map(transformNoaaXrayFlare);
+
+  // Merge data from both sources
+  const mergedFlares = mergeSolarFlareData(transformedNasaFlares, transformedNoaaFlares);
+
+  return {
+    flares: mergedFlares,
+    kpIndex: noaaKpIndex,
+    sources: {
+      nasa: nasaFlares.length,
+      noaa: noaaXrayFlares.length,
+    },
   };
 }

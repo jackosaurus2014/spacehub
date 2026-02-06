@@ -1,5 +1,179 @@
 import prisma from './db';
 import { DebrisObject, ConjunctionEvent, DebrisStats, DebrisObjectType, ConjunctionRisk, DebrisSize } from '@/types';
+import { fetchCelesTrak } from './external-apis';
+
+// ============================================================
+// CelesTrak GP Data Types
+// ============================================================
+
+/**
+ * CelesTrak GP (General Perturbations) data format
+ * Based on the JSON response from CelesTrak API
+ */
+export interface CelesTrakGPData {
+  OBJECT_NAME: string;
+  OBJECT_ID: string;
+  EPOCH: string;
+  MEAN_MOTION: number;
+  ECCENTRICITY: number;
+  INCLINATION: number;
+  RA_OF_ASC_NODE: number;
+  ARG_OF_PERICENTER: number;
+  MEAN_ANOMALY: number;
+  NORAD_CAT_ID: number;
+  CLASSIFICATION_TYPE?: string;
+  ELEMENT_SET_NO?: number;
+  REV_AT_EPOCH?: number;
+  BSTAR?: number;
+  MEAN_MOTION_DOT?: number;
+  MEAN_MOTION_DDOT?: number;
+}
+
+// ============================================================
+// CelesTrak Fetch Functions
+// ============================================================
+
+/**
+ * Fetch CelesTrak GP (General Perturbations) data for a specific object group.
+ * Available groups include:
+ * - 'active' - Active satellites
+ * - 'stations' - Space stations
+ * - 'analyst' - Analyst objects
+ * - 'cosmos-1408-debris' - COSMOS 1408 debris event
+ *
+ * @param group - The CelesTrak object group to fetch
+ * @returns Array of GP data objects
+ */
+export async function fetchCelesTrakGPData(group: string): Promise<CelesTrakGPData[]> {
+  try {
+    const data = await fetchCelesTrak(group, 'json');
+
+    if (!Array.isArray(data)) {
+      console.warn(`CelesTrak returned non-array data for group ${group}`);
+      return [];
+    }
+
+    return data as CelesTrakGPData[];
+  } catch (error) {
+    console.error(`Failed to fetch CelesTrak GP data for ${group}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Parse satellite/object counts from CelesTrak GP data.
+ *
+ * @param gpData - Array of GP data objects
+ * @returns Total count of objects
+ */
+export function parseSatelliteCounts(gpData: CelesTrakGPData[]): number {
+  return gpData.length;
+}
+
+/**
+ * Calculate orbit type from mean motion.
+ *
+ * Mean motion is the number of orbits per day:
+ * - LEO: mean_motion > 11.25 (period < 128 minutes)
+ * - MEO: mean_motion between 2 and 11.25 (period 128 min to 12 hours)
+ * - GEO: mean_motion < 2 (period ~24 hours)
+ *
+ * @param meanMotion - Orbits per day
+ * @returns Orbit type string
+ */
+export function getOrbitTypeFromMeanMotion(meanMotion: number): 'LEO' | 'MEO' | 'GEO' {
+  if (meanMotion > 11.25) {
+    return 'LEO';
+  } else if (meanMotion >= 2) {
+    return 'MEO';
+  } else {
+    return 'GEO';
+  }
+}
+
+/**
+ * Calculate orbital statistics (LEO vs MEO vs GEO counts) from GP data.
+ *
+ * @param gpData - Array of GP data objects
+ * @returns Object with counts by orbit type
+ */
+export function calculateOrbitalStatistics(gpData: CelesTrakGPData[]): {
+  leo: number;
+  meo: number;
+  geo: number;
+} {
+  const stats = {
+    leo: 0,
+    meo: 0,
+    geo: 0,
+  };
+
+  for (const obj of gpData) {
+    const orbitType = getOrbitTypeFromMeanMotion(obj.MEAN_MOTION);
+
+    switch (orbitType) {
+      case 'LEO':
+        stats.leo++;
+        break;
+      case 'MEO':
+        stats.meo++;
+        break;
+      case 'GEO':
+        stats.geo++;
+        break;
+    }
+  }
+
+  return stats;
+}
+
+/**
+ * Update debris statistics in the database with CelesTrak data.
+ * Creates a new snapshot with current timestamp.
+ *
+ * @param stats - Statistics to update
+ * @returns Boolean indicating success
+ */
+export async function updateDebrisStatsFromCelesTrak(stats: {
+  totalTracked: number;
+  leoCount: number;
+  meoCount: number;
+  geoCount: number;
+}): Promise<boolean> {
+  try {
+    // Create a snapshot date for today at midnight UTC
+    const snapshotDate = new Date();
+    snapshotDate.setUTCHours(0, 0, 0, 0);
+
+    // Upsert the stats using today's snapshot date
+    await prisma.debrisStats.upsert({
+      where: { snapshotDate },
+      update: {
+        totalTracked: stats.totalTracked,
+        leoCount: stats.leoCount,
+        meoCount: stats.meoCount,
+        geoCount: stats.geoCount,
+      },
+      create: {
+        snapshotDate,
+        totalTracked: stats.totalTracked,
+        leoCount: stats.leoCount,
+        meoCount: stats.meoCount,
+        geoCount: stats.geoCount,
+        // Set defaults for other fields
+        totalPayloads: 0,
+        totalRocketBodies: 0,
+        totalDebris: 0,
+        totalUnknown: 0,
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error('Failed to update debris stats from CelesTrak:', error);
+    return false;
+  }
+}
 
 // Helper to generate dates relative to now
 const daysFromNow = (days: number) => {
