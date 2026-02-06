@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
+import { validationError, forbiddenError, internalError } from '@/lib/errors';
+import { featureRequestSchema, validateBody } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,34 +11,19 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     const body = await req.json();
-    const { type, module, title, details, email } = body;
+    const bodyData = { ...body, email: session?.user?.email || body.email };
 
-    const userEmail = session?.user?.email || email;
-    if (!userEmail) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+    const validation = validateBody(featureRequestSchema, bodyData);
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0]?.[0] || 'Validation failed';
+      return validationError(firstError, validation.errors);
     }
-
-    if (!type || !title || !details) {
-      return NextResponse.json(
-        { error: 'Type, title, and details are required' },
-        { status: 400 }
-      );
-    }
-
-    if (type === 'existing_module' && !module) {
-      return NextResponse.json(
-        { error: 'Module selection is required for existing module requests' },
-        { status: 400 }
-      );
-    }
+    const { type, module, title, details, email } = validation.data;
 
     const featureRequest = await prisma.featureRequest.create({
       data: {
         userId: session?.user?.id || null,
-        email: userEmail,
+        email,
         type,
         module: module || null,
         title,
@@ -47,10 +34,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ featureRequest }, { status: 201 });
   } catch (error) {
     console.error('Error creating feature request:', error);
-    return NextResponse.json(
-      { error: 'Failed to submit feature request' },
-      { status: 500 }
-    );
+    return internalError();
   }
 }
 
@@ -59,10 +43,7 @@ export async function GET(req: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.isAdmin) {
-      return NextResponse.json(
-        { error: 'Forbidden' },
-        { status: 403 }
-      );
+      return forbiddenError();
     }
 
     const { searchParams } = new URL(req.url);
@@ -85,9 +66,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ featureRequests, total });
   } catch (error) {
     console.error('Error fetching feature requests:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch feature requests' },
-      { status: 500 }
-    );
+    return internalError();
   }
 }

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { Resend } from 'resend';
+import { validationError, conflictError, internalError } from '@/lib/errors';
+import { orbitalServiceListingSchema, validateBody } from '@/lib/validations';
 
 // Lazy initialization to avoid build-time errors
 let resendClient: Resend | null = null;
@@ -23,52 +25,23 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@spacenexus.com';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { companyName, companyWebsite, contactEmail, serviceName, serviceDescription, category, pricingDetails } = body;
 
-    // Validate required fields
-    if (!companyName || typeof companyName !== 'string' || !companyName.trim()) {
-      return NextResponse.json({ error: 'Company name is required' }, { status: 400 });
+    const validation = validateBody(orbitalServiceListingSchema, body);
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0]?.[0] || 'Validation failed';
+      return validationError(firstError, validation.errors);
     }
-
-    if (!contactEmail || typeof contactEmail !== 'string' || !contactEmail.trim()) {
-      return NextResponse.json({ error: 'Contact email is required' }, { status: 400 });
-    }
-
-    if (!serviceName || typeof serviceName !== 'string' || !serviceName.trim()) {
-      return NextResponse.json({ error: 'Service name is required' }, { status: 400 });
-    }
-
-    if (!serviceDescription || typeof serviceDescription !== 'string' || !serviceDescription.trim()) {
-      return NextResponse.json({ error: 'Service description is required' }, { status: 400 });
-    }
-
-    if (!pricingDetails || typeof pricingDetails !== 'string' || !pricingDetails.trim()) {
-      return NextResponse.json({ error: 'Pricing details are required' }, { status: 400 });
-    }
-
-    // Validate email format
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
-      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
-    }
-
-    // Validate URL if provided
-    if (companyWebsite) {
-      try {
-        new URL(companyWebsite);
-      } catch {
-        return NextResponse.json({ error: 'Invalid website URL' }, { status: 400 });
-      }
-    }
+    const { companyName, companyWebsite, contactEmail, serviceName, serviceDescription, category, pricingDetails } = validation.data;
 
     // Check for duplicate pending requests
     const existingRequest = await prisma.orbitalServiceListing.findFirst({
       where: {
         companyName: {
-          equals: companyName.trim(),
+          equals: companyName,
           mode: 'insensitive',
         },
         serviceName: {
-          equals: serviceName.trim(),
+          equals: serviceName,
           mode: 'insensitive',
         },
         status: 'pending',
@@ -76,22 +49,19 @@ export async function POST(request: Request) {
     });
 
     if (existingRequest) {
-      return NextResponse.json(
-        { error: 'A listing request for this service is already pending review' },
-        { status: 409 }
-      );
+      return conflictError('A listing request for this service is already pending review');
     }
 
     // Create the listing request
     const listingRequest = await prisma.orbitalServiceListing.create({
       data: {
-        companyName: companyName.trim(),
-        companyWebsite: companyWebsite?.trim() || null,
-        contactEmail: contactEmail.trim(),
-        serviceName: serviceName.trim(),
-        serviceDescription: serviceDescription.trim(),
-        category: category?.trim() || null,
-        pricingDetails: pricingDetails.trim(),
+        companyName,
+        companyWebsite: companyWebsite || null,
+        contactEmail,
+        serviceName,
+        serviceDescription,
+        category: category || null,
+        pricingDetails,
       },
     });
 
@@ -189,10 +159,7 @@ Submitted at: ${new Date().toISOString()}
     });
   } catch (error) {
     console.error('Error creating service listing request:', error);
-    return NextResponse.json(
-      { error: 'Failed to submit service listing request' },
-      { status: 500 }
-    );
+    return internalError();
   }
 }
 

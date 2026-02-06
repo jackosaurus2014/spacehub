@@ -175,6 +175,108 @@ export function validateSearchParams<T extends z.ZodType>(
   return validateBody(schema, params);
 }
 
+// Server-side registration schema (no confirmPassword needed)
+export const serverRegisterSchema = z.object({
+  email: emailSchema,
+  password: passwordSchema,
+  name: nameSchema.optional(),
+});
+
+// Company addition request schema
+export const companyRequestSchema = z.object({
+  companyName: z
+    .string()
+    .min(1, 'Company name is required')
+    .max(200, 'Company name is too long')
+    .transform((val) => val.trim()),
+  description: z
+    .string()
+    .min(10, 'Description must be at least 10 characters')
+    .max(5000, 'Description is too long')
+    .transform((val) => val.trim()),
+  website: z
+    .string()
+    .url('Please provide a valid URL')
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  submitterEmail: emailSchema
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+});
+
+// Orbital service request schema
+export const orbitalServiceRequestSchema = z.object({
+  email: emailSchema
+    .optional()
+    .or(z.literal('')),
+  companyName: z
+    .string()
+    .max(200, 'Company name is too long')
+    .optional()
+    .transform((val) => val?.trim()),
+  category: z
+    .string()
+    .min(1, 'Category is required')
+    .max(100, 'Category is too long')
+    .transform((val) => val.trim()),
+  serviceType: z
+    .string()
+    .max(100, 'Service type is too long')
+    .optional()
+    .transform((val) => val?.trim()),
+  description: z
+    .string()
+    .min(10, 'Description must be at least 10 characters')
+    .max(5000, 'Description is too long')
+    .transform((val) => val.trim()),
+  requirements: z.unknown().optional(),
+  budget: z
+    .string()
+    .max(200, 'Budget is too long')
+    .optional()
+    .transform((val) => val?.trim()),
+  timeline: z
+    .string()
+    .max(200, 'Timeline is too long')
+    .optional()
+    .transform((val) => val?.trim()),
+});
+
+// Orbital service listing schema
+export const orbitalServiceListingSchema = z.object({
+  companyName: z
+    .string()
+    .min(1, 'Company name is required')
+    .max(200, 'Company name is too long')
+    .transform((val) => val.trim()),
+  companyWebsite: z
+    .string()
+    .url('Please provide a valid URL')
+    .optional()
+    .or(z.literal('')),
+  contactEmail: emailSchema,
+  serviceName: z
+    .string()
+    .min(1, 'Service name is required')
+    .max(200, 'Service name is too long')
+    .transform((val) => val.trim()),
+  serviceDescription: z
+    .string()
+    .min(10, 'Service description must be at least 10 characters')
+    .max(5000, 'Service description is too long')
+    .transform((val) => val.trim()),
+  category: z
+    .string()
+    .max(100, 'Category is too long')
+    .optional()
+    .transform((val) => val?.trim()),
+  pricingDetails: z
+    .string()
+    .min(1, 'Pricing details are required')
+    .max(2000, 'Pricing details are too long')
+    .transform((val) => val.trim()),
+});
+
 // Export types
 export type ContactFormData = z.infer<typeof contactFormSchema>;
 export type FeatureRequestData = z.infer<typeof featureRequestSchema>;
@@ -183,3 +285,7 @@ export type NewsletterSubscribeData = z.infer<typeof newsletterSubscribeSchema>;
 export type RegisterData = z.infer<typeof registerSchema>;
 export type LoginData = z.infer<typeof loginSchema>;
 export type PaginationParams = z.infer<typeof paginationSchema>;
+export type ServerRegisterData = z.infer<typeof serverRegisterSchema>;
+export type CompanyRequestData = z.infer<typeof companyRequestSchema>;
+export type OrbitalServiceRequestData = z.infer<typeof orbitalServiceRequestSchema>;
+export type OrbitalServiceListingData = z.infer<typeof orbitalServiceListingSchema>;

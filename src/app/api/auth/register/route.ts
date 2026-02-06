@@ -1,36 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/db';
+import { validationError, alreadyExistsError, internalError } from '@/lib/errors';
+import { serverRegisterSchema, validateBody } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, name } = await req.json();
-
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: 'Email and password are required' },
-        { status: 400 }
-      );
+    const body = await req.json();
+    const validation = validateBody(serverRegisterSchema, body);
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0]?.[0] || 'Validation failed';
+      return validationError(firstError, validation.errors);
     }
-
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: 'Password must be at least 6 characters' },
-        { status: 400 }
-      );
-    }
+    const { email, password, name } = validation.data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: 'User already exists' },
-        { status: 400 }
-      );
+      return alreadyExistsError('User');
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -50,9 +41,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Registration error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return internalError();
   }
 }

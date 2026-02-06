@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { Resend } from 'resend';
+import { validationError, conflictError, internalError } from '@/lib/errors';
+import { companyRequestSchema, validateBody } from '@/lib/validations';
 
 // Lazy initialization to avoid build-time errors
 let resendClient: Resend | null = null;
@@ -23,36 +25,19 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@spacenexus.com';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { companyName, description, website, submitterEmail } = body;
 
-    // Validate required fields
-    if (!companyName || typeof companyName !== 'string' || !companyName.trim()) {
-      return NextResponse.json({ error: 'Company name is required' }, { status: 400 });
+    const validation = validateBody(companyRequestSchema, body);
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0]?.[0] || 'Validation failed';
+      return validationError(firstError, validation.errors);
     }
-
-    if (!description || typeof description !== 'string' || !description.trim()) {
-      return NextResponse.json({ error: 'Company description is required' }, { status: 400 });
-    }
-
-    // Validate URL if provided
-    if (website) {
-      try {
-        new URL(website);
-      } catch {
-        return NextResponse.json({ error: 'Invalid website URL' }, { status: 400 });
-      }
-    }
-
-    // Validate email if provided
-    if (submitterEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(submitterEmail)) {
-      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
-    }
+    const { companyName, description, website, submitterEmail } = validation.data;
 
     // Check for duplicate pending requests
     const existingRequest = await prisma.companyAddRequest.findFirst({
       where: {
         companyName: {
-          equals: companyName.trim(),
+          equals: companyName,
           mode: 'insensitive',
         },
         status: 'pending',
@@ -60,19 +45,16 @@ export async function POST(request: Request) {
     });
 
     if (existingRequest) {
-      return NextResponse.json(
-        { error: 'A request for this company is already pending review' },
-        { status: 409 }
-      );
+      return conflictError('A request for this company is already pending review');
     }
 
     // Create the request
     const companyRequest = await prisma.companyAddRequest.create({
       data: {
-        companyName: companyName.trim(),
-        description: description.trim(),
-        website: website?.trim() || null,
-        submitterEmail: submitterEmail?.trim() || null,
+        companyName,
+        description,
+        website: website || null,
+        submitterEmail: submitterEmail || null,
       },
     });
 
@@ -148,10 +130,7 @@ Submitted at: ${new Date().toISOString()}
     });
   } catch (error) {
     console.error('Error creating company request:', error);
-    return NextResponse.json(
-      { error: 'Failed to submit company request' },
-      { status: 500 }
-    );
+    return internalError();
   }
 }
 

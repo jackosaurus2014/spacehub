@@ -1,36 +1,30 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { validationError, internalError } from '@/lib/errors';
+import { orbitalServiceRequestSchema, validateBody } from '@/lib/validations';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, companyName, category, serviceType, description, requirements, budget, timeline } = body;
 
-    // Validate required fields
-    if (!category || typeof category !== 'string') {
-      return NextResponse.json({ error: 'Category is required' }, { status: 400 });
+    const validation = validateBody(orbitalServiceRequestSchema, body);
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0]?.[0] || 'Validation failed';
+      return validationError(firstError, validation.errors);
     }
-
-    if (!description || typeof description !== 'string' || !description.trim()) {
-      return NextResponse.json({ error: 'Description is required' }, { status: 400 });
-    }
-
-    // Validate email if provided
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
-    }
+    const { email, companyName, category, serviceType, description, requirements, budget, timeline } = validation.data;
 
     // Create the request
     const serviceRequest = await prisma.orbitalServiceRequest.create({
       data: {
-        email: email?.trim() || null,
-        companyName: companyName?.trim() || null,
-        category: category.trim(),
-        serviceType: serviceType?.trim() || null,
-        description: description.trim(),
+        email: email || null,
+        companyName: companyName || null,
+        category,
+        serviceType: serviceType || null,
+        description,
         requirements: requirements ? JSON.stringify(requirements) : null,
-        budget: budget?.trim() || null,
-        timeline: timeline?.trim() || null,
+        budget: budget || null,
+        timeline: timeline || null,
       },
     });
 
@@ -41,10 +35,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Error creating orbital service request:', error);
-    return NextResponse.json(
-      { error: 'Failed to submit service request' },
-      { status: 500 }
-    );
+    return internalError();
   }
 }
 

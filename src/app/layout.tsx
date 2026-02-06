@@ -15,6 +15,7 @@ import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 import CookieConsent from '@/components/analytics/CookieConsent';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
+import ToastContainer from '@/components/ui/Toast';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -166,6 +167,7 @@ export default function RootLayout({
               <CookieConsent />
               <PWAInstallPrompt />
               <ServiceWorkerRegistration />
+              <ToastContainer />
             </div>
           </SubscriptionProvider>
         </AuthProvider>

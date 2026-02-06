@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
+import { validationError, forbiddenError, internalError } from '@/lib/errors';
+import { helpRequestSchema, validateBody } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,27 +11,19 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     const body = await req.json();
-    const { subject, details, email } = body;
+    const bodyData = { ...body, email: session?.user?.email || body.email };
 
-    const userEmail = session?.user?.email || email;
-    if (!userEmail) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+    const validation = validateBody(helpRequestSchema, bodyData);
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0]?.[0] || 'Validation failed';
+      return validationError(firstError, validation.errors);
     }
-
-    if (!subject || !details) {
-      return NextResponse.json(
-        { error: 'Subject and details are required' },
-        { status: 400 }
-      );
-    }
+    const { subject, details, email } = validation.data;
 
     const helpRequest = await prisma.helpRequest.create({
       data: {
         userId: session?.user?.id || null,
-        email: userEmail,
+        email,
         subject,
         details,
       },
@@ -38,10 +32,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ helpRequest }, { status: 201 });
   } catch (error) {
     console.error('Error creating help request:', error);
-    return NextResponse.json(
-      { error: 'Failed to submit help request' },
-      { status: 500 }
-    );
+    return internalError();
   }
 }
 
@@ -50,10 +41,7 @@ export async function GET(req: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.isAdmin) {
-      return NextResponse.json(
-        { error: 'Forbidden' },
-        { status: 403 }
-      );
+      return forbiddenError();
     }
 
     const { searchParams } = new URL(req.url);
@@ -76,9 +64,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ helpRequests, total });
   } catch (error) {
     console.error('Error fetching help requests:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch help requests' },
-      { status: 500 }
-    );
+    return internalError();
   }
 }

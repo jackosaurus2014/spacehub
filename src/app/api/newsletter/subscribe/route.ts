@@ -3,6 +3,8 @@ import prisma from '@/lib/db';
 import { randomBytes } from 'crypto';
 import { sendVerificationEmail } from '@/lib/newsletter/email-service';
 import { renderVerificationEmail } from '@/lib/newsletter/email-templates';
+import { validationError, internalError } from '@/lib/errors';
+import { newsletterSubscribeSchema, validateBody } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,29 +15,18 @@ function generateToken(): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, name, source = 'website' } = body;
+    const { source = 'website' } = body;
 
-    if (!email || typeof email !== 'string') {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+    const validation = validateBody(newsletterSubscribeSchema, body);
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0]?.[0] || 'Validation failed';
+      return validationError(firstError, validation.errors);
     }
-
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
-
-    const normalizedEmail = email.toLowerCase().trim();
+    const { email, name } = validation.data;
 
     // Check if subscriber already exists
     const existing = await prisma.newsletterSubscriber.findUnique({
-      where: { email: normalizedEmail },
+      where: { email },
     });
 
     if (existing) {
@@ -66,7 +57,7 @@ export async function POST(request: Request) {
         const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/newsletter/verify?token=${verificationToken}`;
         const { html, plain, subject } = renderVerificationEmail(verificationUrl, name);
 
-        await sendVerificationEmail(normalizedEmail, html, plain, subject);
+        await sendVerificationEmail(email, html, plain, subject);
 
         return NextResponse.json({
           success: true,
@@ -89,7 +80,7 @@ export async function POST(request: Request) {
         const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/newsletter/verify?token=${verificationToken}`;
         const { html, plain, subject } = renderVerificationEmail(verificationUrl, name);
 
-        await sendVerificationEmail(normalizedEmail, html, plain, subject);
+        await sendVerificationEmail(email, html, plain, subject);
 
         return NextResponse.json({
           success: true,
@@ -104,7 +95,7 @@ export async function POST(request: Request) {
 
     await prisma.newsletterSubscriber.create({
       data: {
-        email: normalizedEmail,
+        email,
         name: name || null,
         verificationToken,
         unsubscribeToken,
@@ -116,7 +107,7 @@ export async function POST(request: Request) {
     const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/newsletter/verify?token=${verificationToken}`;
     const { html, plain, subject } = renderVerificationEmail(verificationUrl, name);
 
-    const emailResult = await sendVerificationEmail(normalizedEmail, html, plain, subject);
+    const emailResult = await sendVerificationEmail(email, html, plain, subject);
 
     if (!emailResult.success) {
       console.error('Failed to send verification email:', emailResult.error);
@@ -129,9 +120,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Newsletter subscribe error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process subscription' },
-      { status: 500 }
-    );
+    return internalError();
   }
 }
