@@ -311,9 +311,11 @@ function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
         <div className="bg-slate-50 rounded p-2">
           <div className="text-slate-400 text-xs">Earth Price</div>
           <div className="text-slate-900 font-bold text-sm">
-            ${commodity.pricePerKg >= 1000
-              ? formatNumber(commodity.pricePerKg)
-              : commodity.pricePerKg.toFixed(2)}/kg
+            ${commodity.pricePerKg != null
+              ? (commodity.pricePerKg >= 1000
+                  ? formatNumber(commodity.pricePerKg)
+                  : commodity.pricePerKg.toFixed(2))
+              : '0'}/kg
           </div>
         </div>
         {commodity.inSpaceValue && (
