@@ -28,10 +28,11 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
 const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
   { label: 'Space Tourism', href: '/space-tourism', description: 'Compare space tourism experiences' },
+  { label: 'Space Talent & Experts', href: '/space-jobs', description: 'Consultants, lawyers & technical webinars' },
+  { label: 'Space Workforce', href: '/workforce', description: 'Job listings and salary benchmarks' },
   { label: 'Global Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain & shortage alerts' },
   { label: 'Spectrum Tracker', href: '/spectrum', description: 'Frequency allocations and filings' },
   { label: 'Space Insurance', href: '/space-insurance', description: 'Risk calculator and market data' },
-  { label: 'Space Workforce', href: '/workforce', description: 'Talent trends and salary benchmarks' },
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [

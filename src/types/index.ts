@@ -319,9 +319,9 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
   },
   {
     moduleId: 'space-jobs',
-    name: 'Space Jobs',
-    description: 'Professional networking, expert consultants, and technical webinars',
-    icon: '💼',
+    name: 'Space Talent & Experts',
+    description: 'Connect with space industry consultants, lawyers, engineers & policy experts',
+    icon: '🎯',
     section: 'business',
     defaultEnabled: true,
     defaultPosition: 10,
