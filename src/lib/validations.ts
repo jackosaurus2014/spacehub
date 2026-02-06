@@ -277,6 +277,15 @@ export const orbitalServiceListingSchema = z.object({
     .transform((val) => val.trim()),
 });
 
+// Search query schema
+export const searchQuerySchema = z.object({
+  q: z.string().min(2, 'Search query must be at least 2 characters').max(200, 'Search query is too long').transform((val) => val.trim()),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => Math.min(Math.max(1, parseInt(val || '5', 10) || 5), 20)),
+});
+
 // Export types
 export type ContactFormData = z.infer<typeof contactFormSchema>;
 export type FeatureRequestData = z.infer<typeof featureRequestSchema>;
@@ -289,3 +298,4 @@ export type ServerRegisterData = z.infer<typeof serverRegisterSchema>;
 export type CompanyRequestData = z.infer<typeof companyRequestSchema>;
 export type OrbitalServiceRequestData = z.infer<typeof orbitalServiceRequestSchema>;
 export type OrbitalServiceListingData = z.infer<typeof orbitalServiceListingSchema>;
+export type SearchQueryParams = z.infer<typeof searchQuerySchema>;

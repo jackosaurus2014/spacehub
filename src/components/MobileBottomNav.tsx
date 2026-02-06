@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 interface NavItem {
   id: string;
   name: string;
+  fullName: string;
   icon: string;
   href: string;
 }
@@ -14,30 +15,35 @@ const MOBILE_NAV_ITEMS: NavItem[] = [
   {
     id: 'mission-control',
     name: 'Missions',
+    fullName: 'Mission Control',
     icon: 'target',
     href: '/mission-control',
   },
   {
     id: 'news',
     name: 'News',
+    fullName: 'Space News',
     icon: 'newspaper',
     href: '/news',
   },
   {
     id: 'market-intel',
     name: 'Market',
+    fullName: 'Market Intelligence',
     icon: 'chart',
     href: '/market-intel',
   },
   {
     id: 'solar-flares',
     name: 'Solar',
+    fullName: 'Solar Flares',
     icon: 'sun',
     href: '/solar-flares',
   },
   {
     id: 'dashboard',
     name: 'Hub',
+    fullName: 'Dashboard Hub',
     icon: 'grid',
     href: '/dashboard',
   },
@@ -94,6 +100,7 @@ export default function MobileBottomNav() {
 
   return (
     <nav
+      aria-label="Main navigation"
       className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
       style={{
         background: 'linear-gradient(0deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 100%)',
@@ -111,6 +118,8 @@ export default function MobileBottomNav() {
             <Link
               key={item.id}
               href={item.href}
+              aria-label={item.fullName}
+              aria-current={active ? 'page' : undefined}
               className={`flex flex-col items-center justify-center flex-1 h-full px-2 transition-all duration-200 ${
                 active
                   ? 'text-cyan-400'

@@ -82,7 +82,7 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
+              <div id="register-error" className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
                 {error}
               </div>
             )}
@@ -98,6 +98,8 @@ export default function RegisterPage() {
                 onChange={(e) => setName(e.target.value)}
                 className="input"
                 placeholder="Your name"
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? 'register-error' : undefined}
               />
             </div>
 
@@ -113,6 +115,8 @@ export default function RegisterPage() {
                 className="input"
                 placeholder="you@example.com"
                 required
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? 'register-error' : undefined}
               />
             </div>
 
@@ -132,6 +136,8 @@ export default function RegisterPage() {
                 placeholder="At least 6 characters"
                 required
                 minLength={6}
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? 'register-error' : undefined}
               />
             </div>
 
@@ -150,6 +156,8 @@ export default function RegisterPage() {
                 className="input"
                 placeholder="Confirm your password"
                 required
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? 'register-error' : undefined}
               />
             </div>
 

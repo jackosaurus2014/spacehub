@@ -142,6 +142,27 @@ export async function GET(req: NextRequest) {
     let events;
     let total;
 
+    const eventSelect = {
+      id: true,
+      name: true,
+      type: true,
+      status: true,
+      launchDate: true,
+      agency: true,
+      location: true,
+      mission: true,
+      description: true,
+      imageUrl: true,
+      videoUrl: true,
+      infoUrl: true,
+      country: true,
+      rocket: true,
+      externalId: true,
+      windowStart: true,
+      windowEnd: true,
+      launchDatePrecision: true,
+    };
+
     if (startDate && endDate) {
       events = await prisma.spaceEvent.findMany({
         where: {
@@ -152,6 +173,7 @@ export async function GET(req: NextRequest) {
           ...(type ? { type } : {}),
           ...(country ? { country } : {}),
         },
+        select: eventSelect,
         orderBy: { launchDate: 'asc' },
         take: limit,
         skip: offset,
@@ -177,6 +199,7 @@ export async function GET(req: NextRequest) {
           status: { in: ['upcoming', 'go', 'tbc', 'tbd'] },
           ...(type ? { type } : {}),
         },
+        select: eventSelect,
         orderBy: { launchDate: 'asc' },
         take: limit,
         skip: offset,
@@ -198,6 +221,7 @@ export async function GET(req: NextRequest) {
           status: { in: ['upcoming', 'go', 'tbc', 'tbd'] },
           ...(type ? { type } : {}),
         },
+        select: eventSelect,
         orderBy: { launchDate: 'asc' },
         take: limit,
         skip: offset,

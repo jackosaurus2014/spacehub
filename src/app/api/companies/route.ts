@@ -37,6 +37,19 @@ export async function GET(request: Request) {
     const [companies, total] = await Promise.all([
       prisma.spaceCompany.findMany({
         where,
+        select: {
+          id: true,
+          name: true,
+          ticker: true,
+          country: true,
+          isPublic: true,
+          isPreIPO: true,
+          marketCap: true,
+          valuation: true,
+          focusAreas: true,
+          subSectors: true,
+          description: true,
+        },
         orderBy: [
           { isPublic: 'desc' },
           { marketCap: 'desc' },

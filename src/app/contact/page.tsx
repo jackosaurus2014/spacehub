@@ -175,9 +175,11 @@ export default function ContactPage() {
                     onChange={handleChange}
                     className={`input ${errors.name ? 'border-red-500' : ''}`}
                     placeholder="Your name"
+                    aria-invalid={errors.name ? true : undefined}
+                    aria-describedby={errors.name ? 'name-error' : undefined}
                   />
                   {errors.name && (
-                    <p className="text-red-400 text-sm mt-1">{errors.name}</p>
+                    <p id="name-error" className="text-red-400 text-sm mt-1">{errors.name}</p>
                   )}
                 </div>
 
@@ -193,9 +195,11 @@ export default function ContactPage() {
                     onChange={handleChange}
                     className={`input ${errors.email ? 'border-red-500' : ''}`}
                     placeholder="you@example.com"
+                    aria-invalid={errors.email ? true : undefined}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
                   />
                   {errors.email && (
-                    <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+                    <p id="email-error" className="text-red-400 text-sm mt-1">{errors.email}</p>
                   )}
                 </div>
 
@@ -209,6 +213,8 @@ export default function ContactPage() {
                     value={formData.subject}
                     onChange={handleChange}
                     className={`input ${errors.subject ? 'border-red-500' : ''}`}
+                    aria-invalid={errors.subject ? true : undefined}
+                    aria-describedby={errors.subject ? 'subject-error' : undefined}
                   >
                     {subjectOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -217,7 +223,7 @@ export default function ContactPage() {
                     ))}
                   </select>
                   {errors.subject && (
-                    <p className="text-red-400 text-sm mt-1">{errors.subject}</p>
+                    <p id="subject-error" className="text-red-400 text-sm mt-1">{errors.subject}</p>
                   )}
                 </div>
 
@@ -233,9 +239,11 @@ export default function ContactPage() {
                     rows={6}
                     className={`input resize-none ${errors.message ? 'border-red-500' : ''}`}
                     placeholder="How can we help you?"
+                    aria-invalid={errors.message ? true : undefined}
+                    aria-describedby={errors.message ? 'message-error' : undefined}
                   />
                   {errors.message && (
-                    <p className="text-red-400 text-sm mt-1">{errors.message}</p>
+                    <p id="message-error" className="text-red-400 text-sm mt-1">{errors.message}</p>
                   )}
                 </div>
 

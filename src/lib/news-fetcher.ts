@@ -264,6 +264,16 @@ export async function getNewsArticles(options?: {
 
   const articles = await prisma.newsArticle.findMany({
     where,
+    select: {
+      id: true,
+      title: true,
+      summary: true,
+      category: true,
+      source: true,
+      imageUrl: true,
+      url: true,
+      publishedAt: true,
+    },
     orderBy: { publishedAt: 'desc' },
     take: limit,
     skip: offset,

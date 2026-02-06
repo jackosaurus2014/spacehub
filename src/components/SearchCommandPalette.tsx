@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCommandPaletteShortcut, usePlatformModifier } from '@/hooks/useKeyboardShortcut';
 
 // Search item types
-type SearchItemType = 'module' | 'page' | 'recent';
+type SearchItemType = 'module' | 'page' | 'recent' | 'result';
 
 interface SearchItem {
   id: string;
@@ -130,6 +130,12 @@ const CogIcon = () => (
 const ClockIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const MagnifyingGlassIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
   </svg>
 );
 
@@ -307,15 +313,37 @@ const ALL_SEARCH_ITEMS: SearchItem[] = [
 const RECENT_SEARCHES_KEY = 'spacenexus-recent-searches';
 const MAX_RECENT_SEARCHES = 5;
 
+// Server search result types
+interface ServerSearchResults {
+  news: Array<{ id: string; title: string; summary: string | null; url: string }>;
+  companies: Array<{ id: string; name: string; description: string | null; country: string | null }>;
+  events: Array<{ id: string; name: string; description: string | null; type: string }>;
+  opportunities: Array<{ id: string; slug: string; title: string; description: string | null }>;
+  blogs: Array<{ id: string; title: string; excerpt: string | null; url: string }>;
+}
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+}
+
 export default function SearchCommandPalette() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [serverResults, setServerResults] = useState<SearchItem[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const platformModifier = usePlatformModifier();
+
+  const debouncedQuery = useDebounce(query, 300);
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -331,6 +359,102 @@ export default function SearchCommandPalette() {
     }
   }, []);
 
+  // Server-side search
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const trimmed = debouncedQuery.trim();
+    if (trimmed.length < 2) {
+      setServerResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    let cancelled = false;
+    setIsSearching(true);
+
+    fetch(`/api/search?q=${encodeURIComponent(trimmed)}&limit=5`)
+      .then((res) => res.json())
+      .then((data: ServerSearchResults) => {
+        if (cancelled) return;
+
+        const items: SearchItem[] = [];
+
+        data.news?.forEach((item) => {
+          items.push({
+            id: `news-${item.id}`,
+            label: item.title,
+            description: item.summary?.slice(0, 80) || 'News article',
+            href: item.url,
+            icon: <NewspaperIcon />,
+            type: 'result',
+            category: 'News Results',
+          });
+        });
+
+        data.companies?.forEach((item) => {
+          items.push({
+            id: `company-${item.id}`,
+            label: item.name,
+            description: item.description?.slice(0, 80) || item.country || 'Space company',
+            href: `/market-intel?company=${encodeURIComponent(item.name)}`,
+            icon: <ChartIcon />,
+            type: 'result',
+            category: 'Company Results',
+          });
+        });
+
+        data.events?.forEach((item) => {
+          items.push({
+            id: `event-${item.id}`,
+            label: item.name,
+            description: item.description?.slice(0, 80) || item.type,
+            href: '/mission-control',
+            icon: <RocketIcon />,
+            type: 'result',
+            category: 'Event Results',
+          });
+        });
+
+        data.opportunities?.forEach((item) => {
+          items.push({
+            id: `opportunity-${item.id}`,
+            label: item.title,
+            description: item.description?.slice(0, 80) || 'Business opportunity',
+            href: `/business-opportunities/${item.slug}`,
+            icon: <BriefcaseIcon />,
+            type: 'result',
+            category: 'Opportunity Results',
+          });
+        });
+
+        data.blogs?.forEach((item) => {
+          items.push({
+            id: `blog-${item.id}`,
+            label: item.title,
+            description: item.excerpt?.slice(0, 80) || 'Blog post',
+            href: item.url,
+            icon: <DocumentTextIcon />,
+            type: 'result',
+            category: 'Blog Results',
+          });
+        });
+
+        setServerResults(items);
+        setIsSearching(false);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setServerResults([]);
+          setIsSearching(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedQuery, isOpen]);
+
   // Save recent search
   const saveRecentSearch = useCallback((itemId: string) => {
     setRecentSearches((prev) => {
@@ -341,7 +465,7 @@ export default function SearchCommandPalette() {
     });
   }, []);
 
-  // Filter items based on query
+  // Filter items based on query (client-side navigation search)
   const filteredItems = useMemo(() => {
     const lowerQuery = query.toLowerCase().trim();
 
@@ -368,11 +492,16 @@ export default function SearchCommandPalette() {
     });
   }, [query, recentSearches]);
 
+  // Combine client-side and server-side results
+  const allItems = useMemo(() => {
+    return [...filteredItems, ...serverResults];
+  }, [filteredItems, serverResults]);
+
   // Group items by category
   const groupedItems = useMemo(() => {
     const groups: Record<string, SearchItem[]> = {};
 
-    filteredItems.forEach((item) => {
+    allItems.forEach((item) => {
       const category = item.type === 'recent' ? 'Recent' : (item.category || 'Other');
       if (!groups[category]) {
         groups[category] = [];
@@ -381,7 +510,7 @@ export default function SearchCommandPalette() {
     });
 
     return groups;
-  }, [filteredItems]);
+  }, [allItems]);
 
   // Flat list for keyboard navigation
   const flatItems = useMemo(() => {
@@ -393,12 +522,16 @@ export default function SearchCommandPalette() {
     setIsOpen(true);
     setQuery('');
     setSelectedIndex(0);
+    setServerResults([]);
+    setIsSearching(false);
   }, []);
 
   const closePalette = useCallback(() => {
     setIsOpen(false);
     setQuery('');
     setSelectedIndex(0);
+    setServerResults([]);
+    setIsSearching(false);
   }, []);
 
   // Register keyboard shortcut
@@ -426,9 +559,17 @@ export default function SearchCommandPalette() {
   // Handle item selection
   const handleSelect = useCallback(
     (item: SearchItem) => {
-      saveRecentSearch(item.id);
+      // Only save navigation items to recent searches (not server results)
+      if (item.type !== 'result') {
+        saveRecentSearch(item.id);
+      }
       closePalette();
-      router.push(item.href);
+      // External URLs (news articles, blog posts) open in new tab
+      if (item.href.startsWith('http')) {
+        window.open(item.href, '_blank', 'noopener,noreferrer');
+      } else {
+        router.push(item.href);
+      }
     },
     [saveRecentSearch, closePalette, router]
   );
@@ -527,9 +668,12 @@ export default function SearchCommandPalette() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search modules, pages..."
+            placeholder="Search modules, pages, content..."
             className="flex-1 py-4 bg-transparent text-slate-100 placeholder-slate-500 text-lg focus:outline-none"
           />
+          {isSearching && (
+            <div className="w-4 h-4 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin mr-3" />
+          )}
           <div className="flex items-center gap-1 text-slate-500 text-sm">
             <kbd className="px-2 py-1 rounded bg-slate-700/50 border border-slate-600/50 text-xs font-mono">
               {shortcutKey}
@@ -580,7 +724,7 @@ export default function SearchCommandPalette() {
                             : 'bg-slate-700/50 text-slate-400'
                         }`}
                       >
-                        {item.type === 'recent' ? <ClockIcon /> : item.icon}
+                        {item.type === 'recent' ? <ClockIcon /> : item.type === 'result' ? <MagnifyingGlassIcon /> : item.icon}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
@@ -594,6 +738,11 @@ export default function SearchCommandPalette() {
                           {item.type === 'recent' && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
                               Recent
+                            </span>
+                          )}
+                          {item.type === 'result' && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                              Content
                             </span>
                           )}
                         </div>

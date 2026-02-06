@@ -6,7 +6,7 @@ export default function LoadingSpinner({ size = 'md' }: { size?: 'sm' | 'md' | '
   };
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center" role="status" aria-live="polite">
       <div className="relative">
         {/* Outer ring */}
         <div
@@ -31,6 +31,7 @@ export default function LoadingSpinner({ size = 'md' }: { size?: 'sm' | 'md' | '
           }}
         />
       </div>
+      <span className="sr-only">Loading...</span>
     </div>
   );
 }
