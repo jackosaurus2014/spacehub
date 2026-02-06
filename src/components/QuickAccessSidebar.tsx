@@ -12,6 +12,7 @@ const MODULE_ROUTES: Record<string, string> = {
   'mission-control': '/mission-control',
   'categories': '/news',
   'news-feed': '/news',
+  'operational-awareness': '/operational-awareness',
   'solar-exploration': '/solar-exploration',
   'market-intel': '/market-intel',
   'blogs-articles': '/blogs',
