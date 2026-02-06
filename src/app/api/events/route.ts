@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/db';
 import type { MissionPhase } from '@/types';
+import { constrainPagination, constrainOffset, internalError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
-
-const prisma = new PrismaClient();
 
 // Provider YouTube channel URLs for live streams
 const PROVIDER_YOUTUBE_URLS: Record<string, string> = {
@@ -130,8 +129,8 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const hours = searchParams.get('hours');
     const type = searchParams.get('type');
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = constrainPagination(parseInt(searchParams.get('limit') || '20'));
+    const offset = constrainOffset(parseInt(searchParams.get('offset') || '0'));
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
     const country = searchParams.get('country');

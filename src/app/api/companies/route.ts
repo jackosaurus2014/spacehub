@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
+import prisma from '@/lib/db';
+import { constrainPagination, constrainOffset, safeJsonParse, internalError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
   try {
@@ -12,8 +11,8 @@ export async function GET(request: Request) {
     const isPublic = searchParams.get('isPublic');
     const preIPO = searchParams.get('preIPO');
     const focusArea = searchParams.get('focusArea');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = constrainPagination(parseInt(searchParams.get('limit') || '50'));
+    const offset = constrainOffset(parseInt(searchParams.get('offset') || '0'));
 
     const where: Record<string, unknown> = {};
 
@@ -50,11 +49,11 @@ export async function GET(request: Request) {
       prisma.spaceCompany.count({ where }),
     ]);
 
-    // Parse JSON fields
+    // Parse JSON fields safely
     const parsedCompanies = companies.map((company) => ({
       ...company,
-      focusAreas: JSON.parse(company.focusAreas),
-      subSectors: company.subSectors ? JSON.parse(company.subSectors) : null,
+      focusAreas: safeJsonParse(company.focusAreas, []),
+      subSectors: company.subSectors ? safeJsonParse(company.subSectors, null) : null,
     }));
 
     return NextResponse.json({
@@ -64,9 +63,6 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('Failed to fetch companies:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch companies' },
-      { status: 500 }
-    );
+    return internalError('Failed to fetch companies');
   }
 }

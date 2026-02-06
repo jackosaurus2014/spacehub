@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
+import { getOpportunities } from '@/lib/opportunities-data';
+import { constrainPagination, constrainOffset, internalError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
-import { getOpportunities } from '@/lib/opportunities-data';
 
 export async function GET(request: Request) {
   try {
@@ -11,8 +12,8 @@ export async function GET(request: Request) {
     const sector = searchParams.get('sector') || undefined;
     const targetAudience = searchParams.get('targetAudience') || undefined;
     const featured = searchParams.get('featured');
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = constrainPagination(parseInt(searchParams.get('limit') || '20'));
+    const offset = constrainOffset(parseInt(searchParams.get('offset') || '0'));
 
     const result = await getOpportunities({
       type,
@@ -27,9 +28,6 @@ export async function GET(request: Request) {
     return NextResponse.json(result);
   } catch (error) {
     console.error('Failed to fetch opportunities:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch opportunities' },
-      { status: 500 }
-    );
+    return internalError('Failed to fetch opportunities');
   }
 }

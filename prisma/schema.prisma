@@ -1138,6 +1138,23 @@ model HelpRequest {
   @@index([createdAt])
 }
 
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String   // general, technical, billing, partnership
+  message   String
+  userId    String?
+  status    String   @default("new") // new, in_progress, resolved, closed
+  adminNotes String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subject])
+  @@index([status])
+  @@index([createdAt])
+}
+
 // Newsletter Models
 
 model NewsletterSubscriber {

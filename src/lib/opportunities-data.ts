@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
-
-const prisma = new PrismaClient();
 
 // Initialize Anthropic client if API key is available
 const anthropic = process.env.ANTHROPIC_API_KEY

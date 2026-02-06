@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import prisma from '@/lib/db';
+import {
+  validationError,
+  invalidFormatError,
+  forbiddenError,
+  internalError,
+  constrainPagination,
+  constrainOffset,
+} from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,8 +20,7 @@ interface ContactFormData {
   message: string;
 }
 
-// Mock storage for contact submissions (in production, store in database)
-const contactSubmissions: Array<ContactFormData & { id: string; createdAt: string; userId?: string }> = [];
+const VALID_SUBJECTS = ['general', 'technical', 'billing', 'partnership'];
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,65 +30,48 @@ export async function POST(req: NextRequest) {
 
     // Validate required fields
     if (!name || !name.trim()) {
-      return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 }
-      );
+      return validationError('Name is required', { name: 'Name is required' });
     }
 
     if (!email || !email.trim()) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+      return validationError('Email is required', { email: 'Email is required' });
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Please provide a valid email address' },
-        { status: 400 }
-      );
+      return invalidFormatError('email', 'valid email address');
     }
 
-    const validSubjects = ['general', 'technical', 'billing', 'partnership'];
-    if (!subject || !validSubjects.includes(subject)) {
-      return NextResponse.json(
-        { error: 'Please select a valid subject' },
-        { status: 400 }
-      );
+    if (!subject || !VALID_SUBJECTS.includes(subject)) {
+      return validationError('Please select a valid subject', {
+        subject: `Must be one of: ${VALID_SUBJECTS.join(', ')}`,
+      });
     }
 
     if (!message || !message.trim()) {
-      return NextResponse.json(
-        { error: 'Message is required' },
-        { status: 400 }
-      );
+      return validationError('Message is required', { message: 'Message is required' });
     }
 
     if (message.trim().length < 10) {
-      return NextResponse.json(
-        { error: 'Message must be at least 10 characters long' },
-        { status: 400 }
-      );
+      return validationError('Message must be at least 10 characters long', {
+        message: 'Minimum 10 characters required',
+      });
     }
 
-    // Create contact submission record
-    const submission = {
-      id: `contact_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      subject,
-      message: message.trim(),
-      userId: session?.user?.id || undefined,
-      createdAt: new Date().toISOString(),
-    };
+    // Create contact submission in database
+    const submission = await prisma.contactSubmission.create({
+      data: {
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        subject,
+        message: message.trim(),
+        userId: session?.user?.id || null,
+        status: 'new',
+      },
+    });
 
-    // Store submission (mock - in production, use database)
-    contactSubmissions.push(submission);
-
-    // Log for debugging/monitoring
+    // Log for monitoring
     console.log('Contact form submission:', {
       id: submission.id,
       name: submission.name,
@@ -91,26 +82,19 @@ export async function POST(req: NextRequest) {
       createdAt: submission.createdAt,
     });
 
-    // In production, you might also:
-    // - Send email notification to support team
-    // - Store in database using Prisma
-    // - Create a support ticket in external system
-    // - Send auto-reply to user
-
     return NextResponse.json(
       {
         success: true,
-        message: 'Your message has been received. We will get back to you soon.',
-        submissionId: submission.id,
+        data: {
+          message: 'Your message has been received. We will get back to you soon.',
+          submissionId: submission.id,
+        },
       },
       { status: 201 }
     );
   } catch (error) {
     console.error('Error processing contact form:', error);
-    return NextResponse.json(
-      { error: 'Failed to submit contact form. Please try again later.' },
-      { status: 500 }
-    );
+    return internalError('Failed to submit contact form. Please try again later.');
   }
 }
 
@@ -120,39 +104,45 @@ export async function GET(req: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.isAdmin) {
-      return NextResponse.json(
-        { error: 'Forbidden' },
-        { status: 403 }
-      );
+      return forbiddenError();
     }
 
     const { searchParams } = new URL(req.url);
     const subject = searchParams.get('subject');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const status = searchParams.get('status');
+    const limit = constrainPagination(parseInt(searchParams.get('limit') || '50'));
+    const offset = constrainOffset(parseInt(searchParams.get('offset') || '0'));
 
-    let filteredSubmissions = contactSubmissions;
+    const where: Record<string, unknown> = {};
 
-    if (subject) {
-      filteredSubmissions = filteredSubmissions.filter((s) => s.subject === subject);
+    if (subject && VALID_SUBJECTS.includes(subject)) {
+      where.subject = subject;
     }
 
-    // Sort by newest first
-    filteredSubmissions.sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    if (status) {
+      where.status = status;
+    }
 
-    const paginatedSubmissions = filteredSubmissions.slice(offset, offset + limit);
+    const [submissions, total] = await Promise.all([
+      prisma.contactSubmission.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.contactSubmission.count({ where }),
+    ]);
 
     return NextResponse.json({
-      submissions: paginatedSubmissions,
-      total: filteredSubmissions.length,
+      success: true,
+      data: {
+        submissions,
+        total,
+        hasMore: offset + submissions.length < total,
+      },
     });
   } catch (error) {
     console.error('Error fetching contact submissions:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch contact submissions' },
-      { status: 500 }
-    );
+    return internalError('Failed to fetch contact submissions');
   }
 }
