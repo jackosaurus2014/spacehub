@@ -7,14 +7,25 @@ export const dynamic = 'force-dynamic';
 const prisma = new PrismaClient();
 
 // Provider YouTube channel URLs for live streams
-const PROVIDER_STREAM_URLS: Record<string, string> = {
+const PROVIDER_YOUTUBE_URLS: Record<string, string> = {
   'SpaceX': 'https://www.youtube.com/@SpaceX/live',
   'United Launch Alliance': 'https://www.youtube.com/@ulalaunch/live',
   'Rocket Lab': 'https://www.youtube.com/@RocketLabNZ/live',
   'Blue Origin': 'https://www.youtube.com/@blueorigin/live',
   'NASA': 'https://www.youtube.com/@NASA/live',
-  'Arianespace': 'https://www.youtube.com/@araborealfly/live',
+  'Arianespace': 'https://www.youtube.com/@arianespace/live',
   'ISRO': 'https://www.youtube.com/@isaborealfly/live',
+};
+
+// Provider X.com (Twitter) URLs for live streams
+const PROVIDER_X_URLS: Record<string, string> = {
+  'SpaceX': 'https://x.com/SpaceX',
+  'United Launch Alliance': 'https://x.com/ulalaunch',
+  'Rocket Lab': 'https://x.com/RocketLab',
+  'Blue Origin': 'https://x.com/blueorigin',
+  'NASA': 'https://x.com/NASA',
+  'Arianespace': 'https://x.com/Arianespace',
+  'ISRO': 'https://x.com/isaborealfly',
 };
 
 // Generate mock live missions based on current time
@@ -49,11 +60,12 @@ function generateMockLiveMissions() {
       mission: 'Starlink Group 12-5',
       imageUrl: 'https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=800',
       infoUrl: 'https://www.spacex.com/launches/',
-      videoUrl: PROVIDER_STREAM_URLS['SpaceX'],
+      videoUrl: PROVIDER_YOUTUBE_URLS['SpaceX'],
+      xUrl: PROVIDER_X_URLS['SpaceX'],
       fetchedAt: now,
       updatedAt: now,
       isLive: true,
-      streamUrl: PROVIDER_STREAM_URLS['SpaceX'],
+      streamUrl: PROVIDER_YOUTUBE_URLS['SpaceX'],
       missionPhase: 'ascent' as MissionPhase,
     },
     {
@@ -74,11 +86,12 @@ function generateMockLiveMissions() {
       mission: 'TROPICS-3',
       imageUrl: 'https://images.unsplash.com/photo-1457364559154-aa2644600ebb?w=800',
       infoUrl: 'https://www.rocketlabusa.com/',
-      videoUrl: PROVIDER_STREAM_URLS['Rocket Lab'],
+      videoUrl: PROVIDER_YOUTUBE_URLS['Rocket Lab'],
+      xUrl: PROVIDER_X_URLS['Rocket Lab'],
       fetchedAt: now,
       updatedAt: now,
       isLive: false,
-      streamUrl: PROVIDER_STREAM_URLS['Rocket Lab'],
+      streamUrl: PROVIDER_YOUTUBE_URLS['Rocket Lab'],
       missionPhase: 'pre_launch' as MissionPhase,
     },
     {
@@ -99,11 +112,12 @@ function generateMockLiveMissions() {
       mission: 'Dream Chaser CRS-1',
       imageUrl: 'https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?w=800',
       infoUrl: 'https://www.ulalaunch.com/',
-      videoUrl: PROVIDER_STREAM_URLS['United Launch Alliance'],
+      videoUrl: PROVIDER_YOUTUBE_URLS['United Launch Alliance'],
+      xUrl: PROVIDER_X_URLS['United Launch Alliance'],
       fetchedAt: now,
       updatedAt: now,
       isLive: false,
-      streamUrl: PROVIDER_STREAM_URLS['United Launch Alliance'],
+      streamUrl: PROVIDER_YOUTUBE_URLS['United Launch Alliance'],
       missionPhase: 'countdown' as MissionPhase,
     },
   ];

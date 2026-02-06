@@ -5,9 +5,15 @@ import Image from 'next/image';
 import { SpaceEvent, MissionPhase, MISSION_PHASE_INFO, EVENT_TYPE_INFO } from '@/types';
 
 interface MissionStreamProps {
-  mission: SpaceEvent;
+  mission: SpaceEvent & { xUrl?: string };
   isLive?: boolean;
   onClose?: () => void;
+}
+
+// Check if URL is an X.com URL
+function isXUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+  return url.includes('x.com') || url.includes('twitter.com');
 }
 
 // Extract YouTube video ID from various URL formats
@@ -306,20 +312,36 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
           )}
 
           {/* Watch Live / Stream buttons */}
-          <div className="flex gap-2 mt-4">
-            {(mission.streamUrl || mission.videoUrl) && (
+          <div className="flex flex-wrap gap-2 mt-4">
+            {/* YouTube Button */}
+            {(mission.streamUrl || mission.videoUrl) && !isXUrl(mission.streamUrl) && (
               <a
                 href={mission.streamUrl || mission.videoUrl || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500 text-white font-medium text-center hover:from-red-400 hover:to-orange-400 transition-all flex items-center justify-center gap-2"
+                className="flex-1 min-w-[140px] px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-medium text-center hover:from-red-400 hover:to-red-500 transition-all flex items-center justify-center gap-2"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                 </svg>
-                {isLive ? 'Watch Live' : 'Watch Stream'}
+                YouTube
               </a>
             )}
+            {/* X.com Button */}
+            {mission.xUrl && (
+              <a
+                href={mission.xUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 min-w-[140px] px-4 py-2 rounded-lg bg-black text-white font-medium text-center hover:bg-gray-900 transition-all flex items-center justify-center gap-2 border border-gray-700"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+                X / Twitter
+              </a>
+            )}
+            {/* Info Button */}
             {mission.infoUrl && (
               <a
                 href={mission.infoUrl}

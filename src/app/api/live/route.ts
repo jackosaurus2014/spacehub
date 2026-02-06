@@ -9,6 +9,7 @@ export interface LiveStream {
   launchName: string;
   scheduledTime: string;
   youtubeVideoId: string | null;
+  xVideoId: string | null; // X.com video/space ID
   isLive: boolean;
   description: string;
   rocket: string;
@@ -20,11 +21,22 @@ export interface LiveStream {
 const PROVIDER_CHANNELS: Record<string, string> = {
   'SpaceX': 'UCtI0Hodo5o5dUb67FeUjDeA', // @SpaceX
   'United Launch Alliance': 'UCBplVKNY0p2QIwGE9GJQwig', // @ulalaunch
-  'Arianespace': 'UCu0xb5EXcRsjt2u3zCv6mdQ', // @araborealfly
+  'Arianespace': 'UCu0xb5EXcRsjt2u3zCv6mdQ', // @arborealfly
   'Blue Origin': 'UCVxTHEKKLxNjGcvVaZindlg', // @blueorigin
   'Rocket Lab': 'UCsWq7LZaizhIi-c-Yo_bcpw', // @RocketLabNZ
   'NASA': 'UCLA_DiR1FfKNvjuUpBHmylQ', // @NASA
   'ISRO': 'UCgWHOsQeVwMg_jaQ3Zcpxaw', // @isaborealfly
+};
+
+// Provider X.com (Twitter) handles for live streams
+const PROVIDER_X_HANDLES: Record<string, string> = {
+  'SpaceX': 'SpaceX',
+  'United Launch Alliance': 'ulaborealfly',
+  'Arianespace': 'Arianespace',
+  'Blue Origin': 'blueorigin',
+  'Rocket Lab': 'RocketLab',
+  'NASA': 'NASA',
+  'ISRO': 'isaborealfly',
 };
 
 // Mock data for live/upcoming streams
@@ -36,6 +48,7 @@ const mockStreams: LiveStream[] = [
     launchName: 'Falcon 9 - Starlink 12-5',
     scheduledTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
     youtubeVideoId: null, // Will be populated when stream goes live
+    xVideoId: null, // Will be populated when X stream goes live
     isLive: false,
     description: 'SpaceX Falcon 9 rocket launching 23 Starlink satellites to low Earth orbit.',
     rocket: 'Falcon 9 Block 5',
@@ -49,6 +62,7 @@ const mockStreams: LiveStream[] = [
     launchName: 'Falcon 9 - CRS-32',
     scheduledTime: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString(), // 18 hours from now
     youtubeVideoId: null,
+    xVideoId: null,
     isLive: false,
     description: 'Dragon cargo spacecraft carrying supplies and experiments to the International Space Station.',
     rocket: 'Falcon 9 Block 5',
@@ -62,6 +76,7 @@ const mockStreams: LiveStream[] = [
     launchName: 'Vulcan Centaur - Cert-2',
     scheduledTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
     youtubeVideoId: null,
+    xVideoId: null,
     isLive: false,
     description: 'ULA Vulcan Centaur second certification flight carrying commercial lunar payload.',
     rocket: 'Vulcan Centaur',
@@ -75,6 +90,7 @@ const mockStreams: LiveStream[] = [
     launchName: 'Ariane 6 - Flight 3',
     scheduledTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days from now
     youtubeVideoId: null,
+    xVideoId: null,
     isLive: false,
     description: 'European Ariane 6 rocket deploying two Galileo navigation satellites to MEO.',
     rocket: 'Ariane 6',
@@ -88,6 +104,7 @@ const mockStreams: LiveStream[] = [
     launchName: 'New Glenn - NG-2',
     scheduledTime: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000).toISOString(), // 8 days from now
     youtubeVideoId: null,
+    xVideoId: null,
     isLive: false,
     description: 'Blue Origin New Glenn heavy-lift rocket first commercial mission.',
     rocket: 'New Glenn',
@@ -101,6 +118,7 @@ const mockStreams: LiveStream[] = [
     launchName: 'Starship - IFT-8',
     scheduledTime: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000).toISOString(), // 12 days from now
     youtubeVideoId: null,
+    xVideoId: null,
     isLive: false,
     description: 'SpaceX Starship integrated test flight with orbital insertion attempt.',
     rocket: 'Starship + Super Heavy',
@@ -126,16 +144,29 @@ export async function GET() {
 
       // Get the provider's YouTube channel as fallback
       const channelId = PROVIDER_CHANNELS[stream.provider] || PROVIDER_CHANNELS['NASA'];
-      const channelUrl = `https://www.youtube.com/channel/${channelId}/live`;
+      const youtubeChannelUrl = `https://www.youtube.com/channel/${channelId}/live`;
+
+      // Get the provider's X.com handle for live streams
+      const xHandle = PROVIDER_X_HANDLES[stream.provider];
+      const xProfileUrl = xHandle ? `https://x.com/${xHandle}` : null;
 
       return {
         ...stream,
         isLive,
-        // Provide channel URL when no specific video ID is available
-        channelUrl,
+        // YouTube URLs
+        youtubeChannelUrl,
+        youtubeWatchUrl: stream.youtubeVideoId
+          ? `https://www.youtube.com/watch?v=${stream.youtubeVideoId}`
+          : youtubeChannelUrl,
+        // X.com URLs
+        xProfileUrl,
+        xWatchUrl: stream.xVideoId
+          ? `https://x.com/i/broadcasts/${stream.xVideoId}`
+          : xProfileUrl,
+        // Combined watch URLs (prefer YouTube, fallback to X)
         watchUrl: stream.youtubeVideoId
           ? `https://www.youtube.com/watch?v=${stream.youtubeVideoId}`
-          : channelUrl,
+          : youtubeChannelUrl,
       };
     });
 
@@ -149,6 +180,7 @@ export async function GET() {
       nextStream: nextStream || null,
       liveNow: streamsWithLiveStatus.filter((s) => s.isLive),
       providerChannels: PROVIDER_CHANNELS,
+      providerXHandles: PROVIDER_X_HANDLES,
     });
   } catch (error) {
     console.error('Error fetching live streams:', error);
