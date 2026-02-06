@@ -417,6 +417,16 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultPosition: 18,
     isPremium: true,
   },
+  {
+    moduleId: 'space-mining',
+    name: 'Space Mining',
+    description: 'Asteroid and planetary body mining intelligence with resource valuations and accessibility data',
+    icon: '⛏️',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 19,
+    isPremium: true,
+  },
 ];
 
 // Compliance Module Types
@@ -1948,3 +1958,236 @@ export const GOV_CONTRACT_CATEGORIES: { value: GovContractCategory; label: strin
   { value: 'propulsion', label: 'Propulsion' },
   { value: 'sbir_sttr', label: 'SBIR/STTR' },
 ];
+
+// ============================================================
+// Space Mining Module Types
+// ============================================================
+export type MiningBodyType = 'asteroid' | 'moon' | 'planet' | 'dwarf_planet';
+export type SpectralType = 'C' | 'S' | 'M' | 'V' | 'X' | 'D' | 'P' | 'E' | 'B' | 'Q';
+export type OrbitalFamily = 'NEA' | 'Main Belt' | 'Trojan' | 'Mars-crosser' | 'Trans-Neptunian' | 'Kuiper Belt' | 'Planetary Moon';
+export type TrajectoryStatus = 'accessible' | 'challenging' | 'difficult' | 'not_feasible';
+export type ValueConfidence = 'high' | 'medium' | 'low' | 'speculative';
+export type MiningResourceCategory = 'volatile' | 'metal' | 'precious_metal' | 'rare_earth' | 'silicate';
+export type ExtractionCost = 'low' | 'medium' | 'high' | 'very_high';
+export type CommodityCategory = 'precious_metal' | 'industrial_metal' | 'rare_earth' | 'volatile' | 'mineral';
+export type PriceVolatility = 'low' | 'medium' | 'high';
+
+export interface MiningBody {
+  id: string;
+  slug: string;
+  name: string;
+  designation: string | null;
+  bodyType: MiningBodyType;
+  spectralType: SpectralType | null;
+  orbitalFamily: OrbitalFamily | null;
+  diameter: number | null;
+  mass: number | null;
+  density: number | null;
+  rotationPeriod: number | null;
+  semiMajorAxis: number | null;
+  eccentricity: number | null;
+  inclination: number | null;
+  perihelion: number | null;
+  aphelion: number | null;
+  orbitalPeriod: number | null;
+  deltaV: number | null;
+  trajectoryStatus: TrajectoryStatus | null;
+  missionHistory: string[] | null;
+  estimatedValue: number | null;
+  valueConfidence: ValueConfidence | null;
+  composition: Record<string, number> | null;
+  description: string | null;
+  imageUrl: string | null;
+  resources?: MiningResource[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface MiningResource {
+  id: string;
+  miningBodyId: string;
+  miningBody?: MiningBody;
+  resourceType: string;
+  category: MiningResourceCategory;
+  abundancePercent: number | null;
+  estimatedMass: number | null;
+  estimatedValue: number | null;
+  extractionMethod: string | null;
+  extractionCost: ExtractionCost | null;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CommodityPrice {
+  id: string;
+  slug: string;
+  name: string;
+  symbol: string | null;
+  category: CommodityCategory;
+  pricePerKg: number;
+  pricePerTonne: number | null;
+  priceUnit: string | null;
+  priceSource: string | null;
+  lastPriceUpdate: Date | null;
+  annualProduction: number | null;
+  marketCap: number | null;
+  priceVolatility: PriceVolatility | null;
+  spaceApplications: string[] | null;
+  inSpaceValue: number | null;
+  description: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Mining body type info
+export const MINING_BODY_TYPES: { value: MiningBodyType; label: string; icon: string }[] = [
+  { value: 'asteroid', label: 'Asteroid', icon: '☄️' },
+  { value: 'moon', label: 'Moon', icon: '🌙' },
+  { value: 'planet', label: 'Planet', icon: '🪐' },
+  { value: 'dwarf_planet', label: 'Dwarf Planet', icon: '⚪' },
+];
+
+// Spectral type info - composition indicators
+export const SPECTRAL_TYPES: { value: SpectralType; label: string; description: string; color: string }[] = [
+  { value: 'C', label: 'C-type (Carbonaceous)', description: 'Carbon-rich, water, organics. ~75% of asteroids.', color: 'bg-gray-600' },
+  { value: 'S', label: 'S-type (Silicaceous)', description: 'Silicate rocks, iron, nickel. ~17% of asteroids.', color: 'bg-amber-600' },
+  { value: 'M', label: 'M-type (Metallic)', description: 'Iron-nickel metal, PGMs. Rare and valuable.', color: 'bg-slate-400' },
+  { value: 'V', label: 'V-type (Vestoid)', description: 'Basaltic, from Vesta family.', color: 'bg-purple-600' },
+  { value: 'X', label: 'X-type (Various)', description: 'Metallic or carbon-rich. Composition uncertain.', color: 'bg-zinc-500' },
+  { value: 'D', label: 'D-type (Dark)', description: 'Very dark, organic-rich. Outer belt.', color: 'bg-stone-700' },
+  { value: 'P', label: 'P-type (Primitive)', description: 'Organic-rich, very dark. Outer solar system.', color: 'bg-stone-600' },
+  { value: 'E', label: 'E-type (Enstatite)', description: 'High albedo, enstatite achondrites.', color: 'bg-gray-300' },
+  { value: 'B', label: 'B-type', description: 'Blue-sloped, volatile-rich C-type variant.', color: 'bg-blue-600' },
+  { value: 'Q', label: 'Q-type', description: 'Fresh, unweathered ordinary chondrite.', color: 'bg-orange-600' },
+];
+
+// Trajectory status info
+export const TRAJECTORY_STATUS_INFO: Record<TrajectoryStatus, { label: string; color: string; bgColor: string; deltaVRange: string }> = {
+  accessible: { label: 'Accessible', color: 'text-green-400', bgColor: 'bg-green-600', deltaVRange: '<6 km/s' },
+  challenging: { label: 'Challenging', color: 'text-yellow-400', bgColor: 'bg-yellow-600', deltaVRange: '6-9 km/s' },
+  difficult: { label: 'Difficult', color: 'text-orange-400', bgColor: 'bg-orange-600', deltaVRange: '9-12 km/s' },
+  not_feasible: { label: 'Not Feasible', color: 'text-red-400', bgColor: 'bg-red-600', deltaVRange: '>12 km/s' },
+};
+
+// Resource types for mining
+export const RESOURCE_TYPES: { value: string; label: string; category: MiningResourceCategory; icon: string }[] = [
+  // Volatiles
+  { value: 'water', label: 'Water Ice', category: 'volatile', icon: '💧' },
+  { value: 'hydrogen', label: 'Hydrogen', category: 'volatile', icon: '🔵' },
+  { value: 'oxygen', label: 'Oxygen', category: 'volatile', icon: '🟢' },
+  { value: 'nitrogen', label: 'Nitrogen', category: 'volatile', icon: '🟣' },
+  { value: 'carbon', label: 'Carbon', category: 'volatile', icon: '⚫' },
+  { value: 'methane', label: 'Methane', category: 'volatile', icon: '🔷' },
+  { value: 'ammonia', label: 'Ammonia', category: 'volatile', icon: '🟤' },
+  // Metals
+  { value: 'iron', label: 'Iron', category: 'metal', icon: '🔩' },
+  { value: 'nickel', label: 'Nickel', category: 'metal', icon: '🪙' },
+  { value: 'cobalt', label: 'Cobalt', category: 'metal', icon: '🔵' },
+  { value: 'copper', label: 'Copper', category: 'metal', icon: '🟠' },
+  { value: 'aluminum', label: 'Aluminum', category: 'metal', icon: '⬜' },
+  { value: 'titanium', label: 'Titanium', category: 'metal', icon: '⚪' },
+  { value: 'magnesium', label: 'Magnesium', category: 'metal', icon: '🔘' },
+  // Precious metals
+  { value: 'gold', label: 'Gold', category: 'precious_metal', icon: '🥇' },
+  { value: 'platinum', label: 'Platinum', category: 'precious_metal', icon: '💎' },
+  { value: 'palladium', label: 'Palladium', category: 'precious_metal', icon: '🔷' },
+  { value: 'rhodium', label: 'Rhodium', category: 'precious_metal', icon: '💠' },
+  { value: 'iridium', label: 'Iridium', category: 'precious_metal', icon: '✨' },
+  { value: 'osmium', label: 'Osmium', category: 'precious_metal', icon: '🌟' },
+  { value: 'ruthenium', label: 'Ruthenium', category: 'precious_metal', icon: '⭐' },
+  // Rare earths
+  { value: 'neodymium', label: 'Neodymium', category: 'rare_earth', icon: '🧲' },
+  { value: 'europium', label: 'Europium', category: 'rare_earth', icon: '📺' },
+  { value: 'yttrium', label: 'Yttrium', category: 'rare_earth', icon: '💡' },
+  // Silicates
+  { value: 'silicon', label: 'Silicon', category: 'silicate', icon: '🖥️' },
+  { value: 'olivine', label: 'Olivine', category: 'silicate', icon: '🟢' },
+  { value: 'pyroxene', label: 'Pyroxene', category: 'silicate', icon: '🟤' },
+];
+
+// Orbital family info
+export const ORBITAL_FAMILIES: { value: OrbitalFamily; label: string; description: string }[] = [
+  { value: 'NEA', label: 'Near-Earth Asteroid', description: 'Orbit crosses or approaches Earth orbit' },
+  { value: 'Main Belt', label: 'Main Asteroid Belt', description: 'Between Mars and Jupiter orbits' },
+  { value: 'Trojan', label: 'Trojan Asteroid', description: 'Shares orbit with Jupiter at L4/L5 points' },
+  { value: 'Mars-crosser', label: 'Mars-crosser', description: 'Orbit crosses Mars orbit' },
+  { value: 'Trans-Neptunian', label: 'Trans-Neptunian Object', description: 'Beyond Neptune orbit' },
+  { value: 'Kuiper Belt', label: 'Kuiper Belt Object', description: 'In the Kuiper Belt beyond Neptune' },
+  { value: 'Planetary Moon', label: 'Planetary Moon', description: 'Moon of a planet' },
+];
+
+// Commodity categories
+export const COMMODITY_CATEGORIES: { value: CommodityCategory; label: string; icon: string }[] = [
+  { value: 'precious_metal', label: 'Precious Metals', icon: '💰' },
+  { value: 'industrial_metal', label: 'Industrial Metals', icon: '🏭' },
+  { value: 'rare_earth', label: 'Rare Earth Elements', icon: '⚛️' },
+  { value: 'volatile', label: 'Volatiles', icon: '💧' },
+  { value: 'mineral', label: 'Minerals', icon: '💎' },
+];
+
+// Value confidence info
+export const VALUE_CONFIDENCE_INFO: Record<ValueConfidence, { label: string; color: string; bgColor: string }> = {
+  high: { label: 'High Confidence', color: 'text-green-400', bgColor: 'bg-green-600' },
+  medium: { label: 'Medium Confidence', color: 'text-yellow-400', bgColor: 'bg-yellow-600' },
+  low: { label: 'Low Confidence', color: 'text-orange-400', bgColor: 'bg-orange-600' },
+  speculative: { label: 'Speculative', color: 'text-red-400', bgColor: 'bg-red-600' },
+};
+
+// Extraction cost info
+export const EXTRACTION_COST_INFO: Record<ExtractionCost, { label: string; color: string; bgColor: string }> = {
+  low: { label: 'Low Cost', color: 'text-green-400', bgColor: 'bg-green-600' },
+  medium: { label: 'Medium Cost', color: 'text-yellow-400', bgColor: 'bg-yellow-600' },
+  high: { label: 'High Cost', color: 'text-orange-400', bgColor: 'bg-orange-600' },
+  very_high: { label: 'Very High Cost', color: 'text-red-400', bgColor: 'bg-red-600' },
+};
+
+// Utility function to format large values (quintillions, etc.)
+export function formatLargeValue(value: number): string {
+  if (value >= 1e18) {
+    return `$${(value / 1e18).toFixed(1)} quintillion`;
+  } else if (value >= 1e15) {
+    return `$${(value / 1e15).toFixed(1)} quadrillion`;
+  } else if (value >= 1e12) {
+    return `$${(value / 1e12).toFixed(1)} trillion`;
+  } else if (value >= 1e9) {
+    return `$${(value / 1e9).toFixed(1)} billion`;
+  } else if (value >= 1e6) {
+    return `$${(value / 1e6).toFixed(1)} million`;
+  } else if (value >= 1e3) {
+    return `$${(value / 1e3).toFixed(1)}K`;
+  }
+  return `$${value.toFixed(0)}`;
+}
+
+// Utility function to format distance in AU or km
+export function formatDistance(au: number): string {
+  if (au < 0.01) {
+    // Less than 0.01 AU, show in millions of km
+    const km = au * 149597870.7;
+    return `${(km / 1e6).toFixed(2)}M km`;
+  } else if (au < 1) {
+    return `${au.toFixed(3)} AU`;
+  } else if (au < 100) {
+    return `${au.toFixed(2)} AU`;
+  }
+  return `${au.toFixed(0)} AU`;
+}
+
+// Utility function to format mass in scientific notation
+export function formatMass(kg: number): string {
+  if (kg >= 1e21) {
+    return `${(kg / 1e21).toFixed(2)} x 10^21 kg`;
+  } else if (kg >= 1e18) {
+    return `${(kg / 1e18).toFixed(2)} x 10^18 kg`;
+  } else if (kg >= 1e15) {
+    return `${(kg / 1e15).toFixed(2)} x 10^15 kg`;
+  } else if (kg >= 1e12) {
+    return `${(kg / 1e12).toFixed(2)} x 10^12 kg`;
+  } else if (kg >= 1e9) {
+    return `${(kg / 1e9).toFixed(2)} x 10^9 kg`;
+  } else if (kg >= 1e6) {
+    return `${(kg / 1e6).toFixed(2)} x 10^6 kg`;
+  }
+  return `${kg.toLocaleString()} kg`;
+}

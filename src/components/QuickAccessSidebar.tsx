@@ -29,6 +29,7 @@ const MODULE_ROUTES: Record<string, string> = {
   'debris-monitor': '/debris-monitor',
   'satellite-tracker': '/satellites',
   'supply-chain': '/supply-chain',
+  'space-mining': '/space-mining',
 };
 
 // Filter out disabled modules

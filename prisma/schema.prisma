@@ -1393,3 +1393,125 @@ model GovernmentContract {
   @@index([category])
   @@index([postedDate])
 }
+
+// ============================================================
+// Space Mining Module
+// ============================================================
+
+model MiningBody {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  name              String
+  designation       String?  // Official designation (e.g., "162173 Ryugu")
+
+  // Classification
+  bodyType          String   // asteroid, moon, planet, dwarf_planet
+  spectralType      String?  // C-type, S-type, M-type, V-type, etc.
+  orbitalFamily     String?  // NEA, Main Belt, Trojan, Mars-crosser, etc.
+
+  // Physical properties
+  diameter          Float?   // km
+  mass              Float?   // kg (use scientific notation in data)
+  density           Float?   // g/cm^3
+  rotationPeriod    Float?   // hours
+
+  // Orbital parameters
+  semiMajorAxis     Float?   // AU
+  eccentricity      Float?   // 0-1
+  inclination       Float?   // degrees
+  perihelion        Float?   // AU
+  aphelion          Float?   // AU
+  orbitalPeriod     Float?   // years
+
+  // Mining accessibility
+  deltaV            Float?   // km/s from LEO
+  trajectoryStatus  String?  // accessible, challenging, difficult, not_feasible
+  missionHistory    String?  // JSON array of past missions
+
+  // Economic data
+  estimatedValue    Float?   // USD (total estimated value)
+  valueConfidence   String?  // high, medium, low, speculative
+
+  // Composition (stored as JSON for flexibility)
+  composition       String?  // JSON object with element percentages
+
+  description       String?
+  imageUrl          String?
+
+  // Relations
+  resources         MiningResource[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([bodyType])
+  @@index([spectralType])
+  @@index([orbitalFamily])
+  @@index([trajectoryStatus])
+}
+
+model MiningResource {
+  id                String   @id @default(cuid())
+
+  // Link to body
+  miningBodyId      String
+  miningBody        MiningBody @relation(fields: [miningBodyId], references: [id], onDelete: Cascade)
+
+  // Resource info
+  resourceType      String   // water, iron, nickel, cobalt, platinum, gold, etc.
+  category          String   // volatile, metal, precious_metal, rare_earth, silicate
+
+  // Abundance
+  abundancePercent  Float?   // Percentage by mass
+  estimatedMass     Float?   // kg of this resource
+
+  // Economic value
+  estimatedValue    Float?   // USD value of this resource on the body
+
+  // Extraction difficulty
+  extractionMethod  String?  // surface_mining, subsurface, electrolysis, etc.
+  extractionCost    String?  // low, medium, high, very_high
+
+  notes             String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([miningBodyId])
+  @@index([resourceType])
+  @@index([category])
+}
+
+model CommodityPrice {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+
+  // Commodity info
+  name              String
+  symbol            String?  // Chemical symbol or trade symbol
+  category          String   // precious_metal, industrial_metal, rare_earth, volatile, mineral
+
+  // Pricing
+  pricePerKg        Float    // USD per kg
+  pricePerTonne     Float?   // USD per metric tonne
+  priceUnit         String?  // Custom unit if different
+  priceSource       String?  // Where the price data comes from
+  lastPriceUpdate   DateTime?
+
+  // Market data
+  annualProduction  Float?   // Tonnes per year globally
+  marketCap         Float?   // Total market value
+  priceVolatility   String?  // low, medium, high
+
+  // Space relevance
+  spaceApplications String?  // JSON array of space applications
+  inSpaceValue      Float?   // Estimated value if produced in space
+
+  description       String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([category])
+  @@index([pricePerKg])
+}
