@@ -19,6 +19,7 @@ import {
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
 import ExportButton from '@/components/ui/ExportButton';
+import { ContractTicker, ContractsList } from '@/components/contracts';
 
 function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
   const [expanded, setExpanded] = useState(false);
@@ -190,11 +191,16 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
   );
 }
 
+type TabType = 'opportunities' | 'contracts';
+
 function BusinessOpportunitiesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
+  const [activeTab, setActiveTab] = useState<TabType>(
+    (searchParams.get('tab') as TabType) || 'opportunities'
+  );
   const [opportunities, setOpportunities] = useState<BusinessOpportunity[]>([]);
   const [stats, setStats] = useState<{
     total: number;
@@ -222,15 +228,16 @@ function BusinessOpportunitiesContent() {
     (searchParams.get('audience') as TargetAudience | '') || ''
   );
 
-  // Sync filters to URL
+  // Sync filters and tab to URL
   useEffect(() => {
     const params = new URLSearchParams();
+    if (activeTab !== 'opportunities') params.set('tab', activeTab);
     if (selectedType) params.set('type', selectedType);
     if (selectedCategory) params.set('category', selectedCategory);
     if (selectedAudience) params.set('audience', selectedAudience);
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  }, [selectedType, selectedCategory, selectedAudience, router, pathname]);
+  }, [activeTab, selectedType, selectedCategory, selectedAudience, router, pathname]);
 
   useEffect(() => {
     fetchData();
@@ -331,7 +338,44 @@ function BusinessOpportunitiesContent() {
           </button>
         </PageHeader>
 
-        {/* AI Analysis Result */}
+        {/* Government Contracts Ticker */}
+        <div className="mb-8">
+          <ContractTicker />
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex gap-1 mb-6 bg-slate-800/50 p-1 rounded-lg w-fit">
+          <button
+            onClick={() => setActiveTab('opportunities')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'opportunities'
+                ? 'bg-nebula-600 text-white'
+                : 'text-slate-400 hover:text-white hover:bg-slate-700'
+            }`}
+          >
+            AI Opportunities
+          </button>
+          <button
+            onClick={() => setActiveTab('contracts')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'contracts'
+                ? 'bg-nebula-600 text-white'
+                : 'text-slate-400 hover:text-white hover:bg-slate-700'
+            }`}
+          >
+            Government Contracts
+          </button>
+        </div>
+
+        {/* Government Contracts Tab Content */}
+        {activeTab === 'contracts' && (
+          <ContractsList />
+        )}
+
+        {/* AI Opportunities Tab Content */}
+        {activeTab === 'opportunities' && (
+          <>
+            {/* AI Analysis Result */}
         {analysisResult && (
           <div
             className={`card p-4 mb-6 ${
@@ -537,23 +581,25 @@ function BusinessOpportunitiesContent() {
           </div>
         )}
 
-        {/* Info Note */}
-        <div className="card p-6 mt-8 border-dashed">
-          <div className="text-center">
-            <span className="text-4xl block mb-3">🤖</span>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">
-              About AI-Powered Opportunities
-            </h3>
-            <p className="text-slate-500 text-sm max-w-3xl mx-auto">
-              Our AI system analyzes news sources, government solicitations, company reports,
-              and market trends to identify business opportunities in the space industry.
-              The &quot;AI Deep Dive&quot; feature uses advanced analysis to discover emerging
-              opportunities that may not be immediately obvious. Confidence scores indicate
-              how strongly the AI believes in the opportunity based on available data.
-              Always conduct your own due diligence before pursuing any opportunity.
-            </p>
-          </div>
-        </div>
+            {/* Info Note */}
+            <div className="card p-6 mt-8 border-dashed">
+              <div className="text-center">
+                <span className="text-4xl block mb-3">🤖</span>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                  About AI-Powered Opportunities
+                </h3>
+                <p className="text-slate-500 text-sm max-w-3xl mx-auto">
+                  Our AI system analyzes news sources, government solicitations, company reports,
+                  and market trends to identify business opportunities in the space industry.
+                  The &quot;AI Deep Dive&quot; feature uses advanced analysis to discover emerging
+                  opportunities that may not be immediately obvious. Confidence scores indicate
+                  how strongly the AI believes in the opportunity based on available data.
+                  Always conduct your own due diligence before pursuing any opportunity.
+                </p>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

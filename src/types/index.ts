@@ -62,6 +62,33 @@ export type SpaceEventStatus =
   | 'go'
   | 'tbc';
 
+export type MissionPhase =
+  | 'pre_launch'
+  | 'countdown'
+  | 'liftoff'
+  | 'max_q'
+  | 'stage_separation'
+  | 'ascent'
+  | 'orbit_insertion'
+  | 'nominal_orbit'
+  | 'payload_deployment'
+  | 'landing_attempt'
+  | 'mission_complete';
+
+export const MISSION_PHASE_INFO: Record<MissionPhase, { label: string; color: string; icon: string }> = {
+  pre_launch: { label: 'Pre-Launch', color: 'text-blue-400', icon: '⏳' },
+  countdown: { label: 'Countdown', color: 'text-yellow-400', icon: '⏱️' },
+  liftoff: { label: 'Liftoff', color: 'text-orange-400', icon: '🚀' },
+  max_q: { label: 'Max-Q', color: 'text-red-400', icon: '⚡' },
+  stage_separation: { label: 'Stage Separation', color: 'text-purple-400', icon: '🔀' },
+  ascent: { label: 'Ascent', color: 'text-cyan-400', icon: '📈' },
+  orbit_insertion: { label: 'Orbit Insertion', color: 'text-green-400', icon: '🎯' },
+  nominal_orbit: { label: 'Nominal Orbit', color: 'text-green-400', icon: '✓' },
+  payload_deployment: { label: 'Payload Deployment', color: 'text-blue-400', icon: '📦' },
+  landing_attempt: { label: 'Landing Attempt', color: 'text-orange-400', icon: '🎯' },
+  mission_complete: { label: 'Mission Complete', color: 'text-green-400', icon: '🎉' },
+};
+
 export interface SpaceEvent {
   id: string;
   externalId: string | null;
@@ -83,6 +110,10 @@ export interface SpaceEvent {
   videoUrl: string | null;
   fetchedAt: Date;
   updatedAt: Date;
+  // Live stream fields
+  isLive?: boolean;
+  streamUrl?: string | null;
+  missionPhase?: MissionPhase | null;
 }
 
 // Module System Types
@@ -287,6 +318,16 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     isPremium: true,
   },
   {
+    moduleId: 'space-jobs',
+    name: 'Space Jobs',
+    description: 'Workforce analytics, talent board, and professional development resources',
+    icon: '💼',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 10,
+    isPremium: true,
+  },
+  {
     moduleId: 'orbital-services',
     name: 'Orbital Services',
     description: 'Marketplace for satellite-based services: compute, imaging, power, and more',
@@ -365,6 +406,16 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     section: 'data',
     defaultEnabled: true,
     defaultPosition: 17,
+  },
+  {
+    moduleId: 'supply-chain',
+    name: 'Global Value Chain Map',
+    description: 'Aerospace supply chain tracking with geopolitical risk analysis and shortage alerts',
+    icon: '🗺️',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 18,
+    isPremium: true,
   },
 ];
 
@@ -1479,6 +1530,76 @@ export const HELP_REQUEST_STATUSES: { value: HelpRequestStatus; label: string; c
 ];
 
 // ============================================================
+// Space Jobs - Talent Board & Webinars Types
+// ============================================================
+export type TalentExpertiseArea = 'space_law' | 'export_controls' | 'regulatory' | 'propulsion' | 'avionics' | 'systems_engineering' | 'government_relations' | 'international_policy';
+export type TalentAvailability = 'available' | 'limited' | 'booked' | 'unavailable';
+
+export interface SpaceTalent {
+  id: string;
+  slug: string;
+  name: string;
+  title: string;
+  organization: string;
+  expertise: TalentExpertiseArea[];
+  bio: string;
+  contactEmail: string;
+  linkedIn: string | null;
+  consultingRate: number | null;
+  availability: TalentAvailability;
+  featured: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Webinar {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  speaker: string;
+  speakerBio: string;
+  topic: string;
+  date: Date;
+  duration: number; // in minutes
+  registrationUrl: string | null;
+  recordingUrl: string | null;
+  isLive: boolean;
+  isPast: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const TALENT_EXPERTISE_AREAS: { value: TalentExpertiseArea; label: string; icon: string; category: string }[] = [
+  { value: 'space_law', label: 'Space Law', icon: '⚖️', category: 'Legal' },
+  { value: 'export_controls', label: 'Export Controls', icon: '📋', category: 'Legal' },
+  { value: 'regulatory', label: 'Regulatory', icon: '📜', category: 'Legal' },
+  { value: 'propulsion', label: 'Propulsion', icon: '🚀', category: 'Engineering' },
+  { value: 'avionics', label: 'Avionics', icon: '📡', category: 'Engineering' },
+  { value: 'systems_engineering', label: 'Systems Engineering', icon: '⚙️', category: 'Engineering' },
+  { value: 'government_relations', label: 'Government Relations', icon: '🏛️', category: 'Policy' },
+  { value: 'international_policy', label: 'International Space Policy', icon: '🌍', category: 'Policy' },
+];
+
+export const TALENT_AVAILABILITY_INFO: Record<TalentAvailability, { label: string; color: string; bgColor: string }> = {
+  available: { label: 'Available', color: 'text-green-400', bgColor: 'bg-green-500' },
+  limited: { label: 'Limited Availability', color: 'text-yellow-400', bgColor: 'bg-yellow-500' },
+  booked: { label: 'Booked', color: 'text-orange-400', bgColor: 'bg-orange-500' },
+  unavailable: { label: 'Unavailable', color: 'text-red-400', bgColor: 'bg-red-500' },
+};
+
+export const WEBINAR_TOPICS: { value: string; label: string; icon: string }[] = [
+  { value: 'space_nuclear', label: 'Space Nuclear Payloads', icon: '☢️' },
+  { value: 'in_orbit_manufacturing', label: 'In-Orbit Manufacturing', icon: '🏭' },
+  { value: 'satellite_servicing', label: 'Satellite Servicing', icon: '🔧' },
+  { value: 'debris_mitigation', label: 'Space Debris Mitigation', icon: '🛡️' },
+  { value: 'lunar_isru', label: 'Lunar ISRU', icon: '🌙' },
+  { value: 'commercial_stations', label: 'Commercial Space Stations', icon: '🛰️' },
+  { value: 'propulsion_tech', label: 'Advanced Propulsion', icon: '⚡' },
+  { value: 'space_policy', label: 'Space Policy & Regulation', icon: '📜' },
+];
+
+// ============================================================
 // Orbital Services Marketplace Types
 // ============================================================
 export type OrbitalServiceCategory =
@@ -1632,4 +1753,198 @@ export const ORBITAL_CUSTOMER_TYPES: { value: OrbitalCustomerType; label: string
   { value: 'government', label: 'Government', icon: '🏛️' },
   { value: 'commercial', label: 'Commercial', icon: '🏢' },
   { value: 'academic', label: 'Academic', icon: '🎓' },
+];
+
+// ============================================================
+// Supply Chain & Global Value Chain Types
+// ============================================================
+export type SupplyChainTier = 'prime' | 'tier1' | 'tier2' | 'tier3';
+export type SupplyCriticality = 'high' | 'medium' | 'low';
+export type GeopoliticalRisk = 'high' | 'medium' | 'low' | 'none';
+export type ShortageSeverity = 'critical' | 'high' | 'medium' | 'low';
+
+export interface SupplyChainCompany {
+  id: string;
+  slug: string;
+  name: string;
+  tier: SupplyChainTier;
+  country: string;
+  countryCode: string;
+  products: string[];
+  customers: string[];
+  suppliers: string[];
+  criticality: SupplyCriticality;
+  description?: string;
+  headquarters?: string;
+  employeeCount?: number;
+  annualRevenue?: number;
+  website?: string;
+}
+
+export interface SupplyRelationship {
+  id: string;
+  supplierId: string;
+  supplierName: string;
+  customerId: string;
+  customerName: string;
+  products: string[];
+  annualValue?: number;
+  geopoliticalRisk: GeopoliticalRisk;
+  isCritical: boolean;
+  notes?: string;
+}
+
+export interface SupplyShortage {
+  id: string;
+  material: string;
+  category: string;
+  affectedProducts: string[];
+  severity: ShortageSeverity;
+  alternativeSuppliers: string[];
+  notes: string;
+  startDate?: Date;
+  estimatedResolution?: string;
+  impactedCompanies: string[];
+  geopoliticalFactors?: string[];
+}
+
+export const SUPPLY_CHAIN_TIERS: { value: SupplyChainTier; label: string; color: string; bgColor: string }[] = [
+  { value: 'prime', label: 'Prime Contractor', color: 'text-blue-400', bgColor: 'bg-blue-500' },
+  { value: 'tier1', label: 'Tier 1 Supplier', color: 'text-cyan-400', bgColor: 'bg-cyan-500' },
+  { value: 'tier2', label: 'Tier 2 Supplier', color: 'text-green-400', bgColor: 'bg-green-500' },
+  { value: 'tier3', label: 'Tier 3 Supplier', color: 'text-gray-400', bgColor: 'bg-gray-500' },
+];
+
+export const SUPPLY_CRITICALITY_INFO: Record<SupplyCriticality, { label: string; color: string; bgColor: string }> = {
+  high: { label: 'High', color: 'text-red-400', bgColor: 'bg-red-500' },
+  medium: { label: 'Medium', color: 'text-yellow-400', bgColor: 'bg-yellow-500' },
+  low: { label: 'Low', color: 'text-green-400', bgColor: 'bg-green-500' },
+};
+
+export const GEOPOLITICAL_RISK_INFO: Record<GeopoliticalRisk, { label: string; color: string; bgColor: string }> = {
+  high: { label: 'High Risk', color: 'text-red-400', bgColor: 'bg-red-500' },
+  medium: { label: 'Medium Risk', color: 'text-yellow-400', bgColor: 'bg-yellow-500' },
+  low: { label: 'Low Risk', color: 'text-green-400', bgColor: 'bg-green-500' },
+  none: { label: 'No Risk', color: 'text-gray-400', bgColor: 'bg-gray-500' },
+};
+
+export const SHORTAGE_SEVERITY_INFO: Record<ShortageSeverity, { label: string; color: string; bgColor: string; icon: string }> = {
+  critical: { label: 'Critical', color: 'text-red-400', bgColor: 'bg-red-500', icon: '🔴' },
+  high: { label: 'High', color: 'text-orange-400', bgColor: 'bg-orange-500', icon: '🟠' },
+  medium: { label: 'Medium', color: 'text-yellow-400', bgColor: 'bg-yellow-500', icon: '🟡' },
+  low: { label: 'Low', color: 'text-green-400', bgColor: 'bg-green-500', icon: '🟢' },
+};
+
+export const SUPPLY_CHAIN_COUNTRIES: Record<string, { name: string; flag: string; risk: GeopoliticalRisk }> = {
+  USA: { name: 'United States', flag: '🇺🇸', risk: 'none' },
+  CHN: { name: 'China', flag: '🇨🇳', risk: 'high' },
+  RUS: { name: 'Russia', flag: '🇷🇺', risk: 'high' },
+  JPN: { name: 'Japan', flag: '🇯🇵', risk: 'none' },
+  EUR: { name: 'Europe', flag: '🇪🇺', risk: 'none' },
+  FRA: { name: 'France', flag: '🇫🇷', risk: 'none' },
+  DEU: { name: 'Germany', flag: '🇩🇪', risk: 'none' },
+  GBR: { name: 'United Kingdom', flag: '🇬🇧', risk: 'none' },
+  IND: { name: 'India', flag: '🇮🇳', risk: 'low' },
+  KOR: { name: 'South Korea', flag: '🇰🇷', risk: 'low' },
+  TWN: { name: 'Taiwan', flag: '🇹🇼', risk: 'medium' },
+  ISR: { name: 'Israel', flag: '🇮🇱', risk: 'low' },
+  AUS: { name: 'Australia', flag: '🇦🇺', risk: 'none' },
+  CAN: { name: 'Canada', flag: '🇨🇦', risk: 'none' },
+  BRA: { name: 'Brazil', flag: '🇧🇷', risk: 'low' },
+  COD: { name: 'DR Congo', flag: '🇨🇩', risk: 'high' },
+  ZAF: { name: 'South Africa', flag: '🇿🇦', risk: 'low' },
+  MYS: { name: 'Malaysia', flag: '🇲🇾', risk: 'low' },
+  IDN: { name: 'Indonesia', flag: '🇮🇩', risk: 'low' },
+  CHL: { name: 'Chile', flag: '🇨🇱', risk: 'low' },
+};
+
+export const SUPPLY_CHAIN_PRODUCT_CATEGORIES: { value: string; label: string; icon: string }[] = [
+  { value: 'propulsion', label: 'Propulsion Systems', icon: '🚀' },
+  { value: 'avionics', label: 'Avionics & Electronics', icon: '📡' },
+  { value: 'structures', label: 'Structures & Composites', icon: '🏗️' },
+  { value: 'semiconductors', label: 'Semiconductors', icon: '💻' },
+  { value: 'rare_earth', label: 'Rare Earth Elements', icon: '⚛️' },
+  { value: 'specialty_metals', label: 'Specialty Metals', icon: '🔩' },
+  { value: 'thermal', label: 'Thermal Systems', icon: '🌡️' },
+  { value: 'power', label: 'Power Systems', icon: '⚡' },
+  { value: 'sensors', label: 'Sensors & Optics', icon: '👁️' },
+  { value: 'software', label: 'Software & Systems', icon: '💾' },
+];
+
+// ============================================================
+// Government Contracts Types
+// ============================================================
+export type GovContractAgency = 'NASA' | 'USSF' | 'ESA';
+export type GovContractType = 'RFP' | 'RFI' | 'Award' | 'IDIQ';
+export type GovContractStatus = 'open' | 'closed' | 'awarded' | 'closing_soon';
+export type GovContractCategory =
+  | 'lunar_exploration'
+  | 'earth_observation'
+  | 'satellite_launch'
+  | 'ground_systems'
+  | 'research_development'
+  | 'space_station'
+  | 'defense_systems'
+  | 'communications'
+  | 'propulsion'
+  | 'sbir_sttr';
+
+export interface GovernmentContract {
+  id: string;
+  slug: string;
+  agency: GovContractAgency;
+  title: string;
+  description: string;
+  type: GovContractType;
+  value: string | null;
+  valueMin: number | null;
+  valueMax: number | null;
+  solicitationNumber: string | null;
+  postedDate: Date;
+  dueDate: Date | null;
+  awardDate: Date | null;
+  awardee: string | null;
+  naicsCode: string | null;
+  category: GovContractCategory;
+  status: GovContractStatus;
+  sourceUrl: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Agency badge colors
+export const GOV_CONTRACT_AGENCIES: { value: GovContractAgency; label: string; color: string; bgColor: string }[] = [
+  { value: 'NASA', label: 'NASA', color: 'text-blue-300', bgColor: 'bg-blue-600' },
+  { value: 'USSF', label: 'Space Force', color: 'text-slate-200', bgColor: 'bg-slate-700' },
+  { value: 'ESA', label: 'ESA', color: 'text-blue-200', bgColor: 'bg-blue-900' },
+];
+
+// Contract type badges
+export const GOV_CONTRACT_TYPES: { value: GovContractType; label: string; color: string }[] = [
+  { value: 'RFP', label: 'RFP', color: 'bg-green-600' },
+  { value: 'RFI', label: 'RFI', color: 'bg-yellow-600' },
+  { value: 'Award', label: 'Award', color: 'bg-purple-600' },
+  { value: 'IDIQ', label: 'IDIQ', color: 'bg-cyan-600' },
+];
+
+// Status badges
+export const GOV_CONTRACT_STATUS_INFO: Record<GovContractStatus, { label: string; color: string; bgColor: string }> = {
+  open: { label: 'Open', color: 'text-green-400', bgColor: 'bg-green-600' },
+  closing_soon: { label: 'Closing Soon', color: 'text-yellow-400', bgColor: 'bg-yellow-600' },
+  awarded: { label: 'Awarded', color: 'text-purple-400', bgColor: 'bg-purple-600' },
+  closed: { label: 'Closed', color: 'text-gray-400', bgColor: 'bg-gray-600' },
+};
+
+// Category labels
+export const GOV_CONTRACT_CATEGORIES: { value: GovContractCategory; label: string }[] = [
+  { value: 'lunar_exploration', label: 'Lunar Exploration' },
+  { value: 'earth_observation', label: 'Earth Observation' },
+  { value: 'satellite_launch', label: 'Satellite Launch' },
+  { value: 'ground_systems', label: 'Ground Systems' },
+  { value: 'research_development', label: 'R&D' },
+  { value: 'space_station', label: 'Space Station' },
+  { value: 'defense_systems', label: 'Defense Systems' },
+  { value: 'communications', label: 'Communications' },
+  { value: 'propulsion', label: 'Propulsion' },
+  { value: 'sbir_sttr', label: 'SBIR/STTR' },
 ];

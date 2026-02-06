@@ -4,9 +4,10 @@ import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { SpaceEvent, EVENT_TYPE_INFO, SpaceEventType } from '@/types';
+import { SpaceEvent, EVENT_TYPE_INFO, SpaceEventType, MissionPhase, MISSION_PHASE_INFO } from '@/types';
 import PageHeader from '@/components/ui/PageHeader';
 import ExportButton from '@/components/ui/ExportButton';
+import MissionStream from '@/components/live/MissionStream';
 
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
   { value: 'all', label: 'All Events', icon: '🌌' },
@@ -138,20 +139,269 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
                   {countdown}
                 </span>
               </div>
-              <div className="text-xs text-slate-500 mt-1">
-                {launchDate.toLocaleDateString('en-US', {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric',
-                })}{' '}
-                at{' '}
-                {launchDate.toLocaleTimeString('en-US', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  timeZoneName: 'short',
-                })}
+              <div className="flex items-center justify-between mt-1">
+                <div className="text-xs text-slate-500">
+                  {launchDate.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                  })}{' '}
+                  at{' '}
+                  {launchDate.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZoneName: 'short',
+                  })}
+                </div>
+                {(event.streamUrl || event.videoUrl) && (
+                  <a
+                    href={event.streamUrl || event.videoUrl || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 px-2 py-1 rounded bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-xs font-medium"
+                  >
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                    Watch
+                  </a>
+                )}
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Helper function to check if a mission is live or within 2 hours of launch
+function isLiveOrImminent(event: SpaceEvent): boolean {
+  if (event.isLive) return true;
+
+  const now = new Date();
+  const launchDate = event.launchDate ? new Date(event.launchDate) : null;
+  const windowStart = event.windowStart ? new Date(event.windowStart) : null;
+  const windowEnd = event.windowEnd ? new Date(event.windowEnd) : null;
+
+  if (!launchDate) return false;
+
+  const timeDiff = launchDate.getTime() - now.getTime();
+  const isWithin2Hours = timeDiff > 0 && timeDiff <= 2 * 60 * 60 * 1000;
+  const isPastLaunchWithin3Hours = timeDiff < 0 && Math.abs(timeDiff) <= 3 * 60 * 60 * 1000;
+
+  // Check if within launch window
+  const inWindow = windowStart !== null && windowEnd !== null && now >= windowStart && now <= windowEnd;
+
+  return isWithin2Hours || isPastLaunchWithin3Hours || inWindow;
+}
+
+// Live Now Section - shows missions that are currently live or about to go live
+function LiveNowSection({ events }: { events: SpaceEvent[] }) {
+  const [selectedMission, setSelectedMission] = useState<SpaceEvent | null>(null);
+  const [countdown, setCountdown] = useState<Record<string, string>>({});
+
+  // Get live/imminent missions
+  const liveMissions = useMemo(() => {
+    return events
+      .filter(isLiveOrImminent)
+      .sort((a, b) => {
+        // Prioritize currently live missions
+        if (a.isLive && !b.isLive) return -1;
+        if (!a.isLive && b.isLive) return 1;
+        // Then sort by launch date
+        const aDate = a.launchDate ? new Date(a.launchDate).getTime() : 0;
+        const bDate = b.launchDate ? new Date(b.launchDate).getTime() : 0;
+        return aDate - bDate;
+      });
+  }, [events]);
+
+  // Update countdown every second
+  useEffect(() => {
+    const updateCountdowns = () => {
+      const now = new Date();
+      const newCountdowns: Record<string, string> = {};
+
+      liveMissions.forEach((mission) => {
+        if (!mission.launchDate) return;
+        const launchDate = new Date(mission.launchDate);
+        const diff = launchDate.getTime() - now.getTime();
+
+        if (diff > 0) {
+          const hours = Math.floor(diff / (1000 * 60 * 60));
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+          if (hours > 0) {
+            newCountdowns[mission.id] = `T-${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+          } else {
+            newCountdowns[mission.id] = `T-${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+          }
+        } else {
+          const elapsed = Math.abs(diff);
+          const hours = Math.floor(elapsed / (1000 * 60 * 60));
+          const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+
+          if (hours > 0) {
+            newCountdowns[mission.id] = `T+${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+          } else {
+            newCountdowns[mission.id] = `T+${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+          }
+        }
+      });
+
+      setCountdown(newCountdowns);
+    };
+
+    updateCountdowns();
+    const interval = setInterval(updateCountdowns, 1000);
+    return () => clearInterval(interval);
+  }, [liveMissions]);
+
+  // Auto-select first live mission
+  useEffect(() => {
+    if (liveMissions.length > 0 && !selectedMission) {
+      setSelectedMission(liveMissions[0]);
+    }
+  }, [liveMissions, selectedMission]);
+
+  if (liveMissions.length === 0) {
+    return (
+      <div className="mb-8">
+        <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <span className="text-2xl">📺</span>
+          Live Now
+        </h2>
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 border border-slate-700/50">
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-1000" />
+          </div>
+          <div className="relative p-8 text-center">
+            <div className="w-20 h-20 rounded-full bg-slate-800/80 flex items-center justify-center mx-auto mb-4 border border-slate-700/50">
+              <svg className="w-10 h-10 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-white font-semibold text-lg mb-2">No Live Missions</h3>
+            <p className="text-slate-400 text-sm max-w-md mx-auto">
+              There are no missions currently live or about to launch. Check the upcoming launches below for scheduled events.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-8">
+      <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+        <span className="relative flex h-3 w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+        </span>
+        <span className="text-2xl">📺</span>
+        Live Now
+        <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+          {liveMissions.length} {liveMissions.length === 1 ? 'mission' : 'missions'}
+        </span>
+      </h2>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Main Stream */}
+        <div className="lg:col-span-2">
+          {selectedMission && (
+            <MissionStream
+              mission={selectedMission}
+              isLive={selectedMission.isLive || isLiveOrImminent(selectedMission)}
+            />
+          )}
+        </div>
+
+        {/* Mission List */}
+        <div className="space-y-3">
+          <div className="text-sm font-medium text-slate-600 uppercase tracking-wider mb-2">
+            Active Streams
+          </div>
+          {liveMissions.map((mission) => {
+            const typeInfo = EVENT_TYPE_INFO[mission.type] || EVENT_TYPE_INFO.launch;
+            const isSelected = selectedMission?.id === mission.id;
+            const isActuallyLive = mission.isLive || (mission.launchDate && new Date(mission.launchDate) <= new Date());
+            const phaseInfo = mission.missionPhase ? MISSION_PHASE_INFO[mission.missionPhase] : null;
+
+            return (
+              <button
+                key={mission.id}
+                onClick={() => setSelectedMission(mission)}
+                className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-red-500/20 to-orange-500/20 border-2 border-red-500/50 shadow-lg shadow-red-500/10'
+                    : 'bg-slate-100 hover:bg-slate-200 border-2 border-transparent'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  {/* Thumbnail */}
+                  <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-slate-200">
+                    {mission.imageUrl ? (
+                      <Image
+                        src={mission.imageUrl}
+                        alt={mission.name}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-700 to-slate-800">
+                        <span className="text-2xl">{typeInfo.icon}</span>
+                      </div>
+                    )}
+                    {/* Live indicator */}
+                    {isActuallyLive && (
+                      <div className="absolute top-1 left-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                        LIVE
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`${typeInfo.color} text-slate-900 text-[10px] font-semibold px-1.5 py-0.5 rounded`}>
+                        {typeInfo.label}
+                      </span>
+                    </div>
+                    <h4 className="font-semibold text-slate-900 text-sm line-clamp-1">{mission.name}</h4>
+                    {mission.agency && (
+                      <p className="text-slate-500 text-xs">{mission.agency}</p>
+                    )}
+                    <div className="flex items-center gap-2 mt-1">
+                      {/* Countdown or phase */}
+                      {countdown[mission.id] && (
+                        <span className={`font-mono text-xs font-bold ${
+                          countdown[mission.id].startsWith('T-') ? 'text-green-500' : 'text-orange-500'
+                        }`}>
+                          {countdown[mission.id]}
+                        </span>
+                      )}
+                      {phaseInfo && (
+                        <span className={`text-xs flex items-center gap-1 ${phaseInfo.color}`}>
+                          <span>{phaseInfo.icon}</span>
+                          <span>{phaseInfo.label}</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+
+          {/* Watch live hint */}
+          <div className="text-center pt-2">
+            <p className="text-xs text-slate-400">
+              Click a mission to watch the stream
+            </p>
           </div>
         </div>
       </div>
@@ -215,9 +465,22 @@ function EventCard({ event }: { event: SpaceEvent }) {
   const isWithin48Hours = launchDate &&
     launchDate > new Date() &&
     launchDate < new Date(Date.now() + 48 * 60 * 60 * 1000);
+  const isLiveOrImminent = event.isLive || (launchDate && isLiveOrImminentCheck(event));
+  const phaseInfo = event.missionPhase ? MISSION_PHASE_INFO[event.missionPhase] : null;
+
+  // Helper to check live status
+  function isLiveOrImminentCheck(e: SpaceEvent): boolean {
+    const now = new Date();
+    const ld = e.launchDate ? new Date(e.launchDate) : null;
+    if (!ld) return false;
+    const timeDiff = ld.getTime() - now.getTime();
+    const within2Hours = timeDiff > 0 && timeDiff <= 2 * 60 * 60 * 1000;
+    const pastWithin3Hours = timeDiff < 0 && Math.abs(timeDiff) <= 3 * 60 * 60 * 1000;
+    return within2Hours || pastWithin3Hours;
+  }
 
   return (
-    <div className={`card overflow-hidden ${isWithin48Hours ? 'border-green-500/50 glow-border' : ''}`}>
+    <div className={`card overflow-hidden ${isWithin48Hours ? 'border-green-500/50 glow-border' : ''} ${isLiveOrImminent ? 'border-red-500/50' : ''}`}>
       <div className="flex">
         {/* Image */}
         <div className="relative w-32 h-32 flex-shrink-0 bg-slate-100">
@@ -233,7 +496,13 @@ function EventCard({ event }: { event: SpaceEvent }) {
               <span className="text-4xl">{typeInfo.icon}</span>
             </div>
           )}
-          {isWithin48Hours && (
+          {event.isLive && (
+            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-white rounded-full" />
+              LIVE
+            </div>
+          )}
+          {!event.isLive && isWithin48Hours && (
             <div className="absolute top-2 left-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-0.5 rounded animate-pulse">
               SOON
             </div>
@@ -244,15 +513,21 @@ function EventCard({ event }: { event: SpaceEvent }) {
         <div className="flex-1 p-4">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <span className={`${typeInfo.color} text-slate-900 text-xs font-semibold px-2 py-0.5 rounded`}>
                   {typeInfo.icon} {typeInfo.label}
                 </span>
                 {event.country && (
                   <span className="text-slate-500 text-xs">{event.country}</span>
                 )}
+                {phaseInfo && (
+                  <span className={`text-xs flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 ${phaseInfo.color}`}>
+                    <span>{phaseInfo.icon}</span>
+                    <span>{phaseInfo.label}</span>
+                  </span>
+                )}
               </div>
-              <h3 className={`font-semibold text-slate-900 line-clamp-2 ${isPast ? 'opacity-60' : ''}`}>
+              <h3 className={`font-semibold text-slate-900 line-clamp-2 ${isPast && !event.isLive ? 'opacity-60' : ''}`}>
                 {event.name}
               </h3>
             </div>
@@ -264,7 +539,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
 
           <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-500">
             {launchDate && (
-              <span className={`flex items-center gap-1 ${isPast ? 'line-through opacity-60' : ''}`}>
+              <span className={`flex items-center gap-1 ${isPast && !event.isLive ? 'line-through opacity-60' : ''}`}>
                 <span>📅</span>
                 {launchDate.toLocaleDateString('en-US', {
                   weekday: 'short',
@@ -297,12 +572,30 @@ function EventCard({ event }: { event: SpaceEvent }) {
           )}
 
           <div className="flex flex-wrap gap-2 mt-2">
+            {/* Watch Live/Stream button */}
+            {(event.streamUrl || event.videoUrl) && (
+              <a
+                href={event.streamUrl || event.videoUrl || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`text-xs font-medium px-2 py-1 rounded transition-colors flex items-center gap-1 ${
+                  event.isLive || isLiveOrImminent
+                    ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                {event.isLive ? 'Watch Live' : 'Stream'}
+              </a>
+            )}
             {event.type === 'launch' && (
               <Link
                 href="/resource-exchange"
                 className="text-xs text-rocket-400 hover:text-rocket-300 bg-rocket-500/10 px-2 py-1 rounded transition-colors"
               >
-                Launch providers →
+                Launch providers
               </Link>
             )}
             {event.type === 'satellite' && (
@@ -310,7 +603,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
                 href="/orbital-slots?tab=operators"
                 className="text-xs text-nebula-400 hover:text-nebula-300 bg-nebula-500/10 px-2 py-1 rounded transition-colors"
               >
-                Orbital slots →
+                Orbital slots
               </Link>
             )}
             {event.type === 'moon_mission' && (
@@ -318,7 +611,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
                 href="/solar-exploration?body=moon"
                 className="text-xs text-yellow-400 hover:text-yellow-300 bg-yellow-500/10 px-2 py-1 rounded transition-colors"
               >
-                Moon exploration →
+                Moon exploration
               </Link>
             )}
             {event.type === 'mars_mission' && (
@@ -326,7 +619,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
                 href="/solar-exploration?body=mars"
                 className="text-xs text-red-400 hover:text-red-300 bg-red-500/10 px-2 py-1 rounded transition-colors"
               >
-                Mars exploration →
+                Mars exploration
               </Link>
             )}
           </div>
@@ -508,6 +801,9 @@ function MissionControlContent() {
             <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Agencies</div>
           </div>
         </div>
+
+        {/* Live Now Section */}
+        {!loading && <LiveNowSection events={events} />}
 
         {/* Upcoming in 48 Hours Section */}
         {!loading && <UpcomingIn48Hours events={events} />}

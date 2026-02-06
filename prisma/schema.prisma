@@ -1345,3 +1345,51 @@ model OrbitalServiceListing {
   @@index([status])
   @@index([createdAt])
 }
+
+// ============================================================
+// Government Contracts Module
+// ============================================================
+
+model GovernmentContract {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+
+  // Agency info
+  agency            String   // NASA, USSF, ESA
+
+  // Contract details
+  title             String
+  description       String
+  type              String   // RFP, RFI, Award, IDIQ
+  value             String?  // Display value (e.g., "$150M", "TBD")
+  valueMin          Float?   // Numeric min for filtering
+  valueMax          Float?   // Numeric max for filtering
+
+  // Solicitation info
+  solicitationNumber String?
+  naicsCode         String?
+  category          String   // lunar_exploration, earth_observation, satellite_launch, ground_systems, research_development, space_station, defense_systems, communications, propulsion, sbir_sttr
+
+  // Timeline
+  postedDate        DateTime
+  dueDate           DateTime?
+  awardDate         DateTime?
+
+  // Award info
+  awardee           String?
+
+  // Status
+  status            String   @default("open") // open, closed, awarded, closing_soon
+
+  // Source
+  sourceUrl         String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([agency])
+  @@index([type])
+  @@index([status])
+  @@index([category])
+  @@index([postedDate])
+}
