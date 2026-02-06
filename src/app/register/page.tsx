@@ -22,6 +22,30 @@ function getPasswordStrength(password: string): { score: number; label: string; 
   return { score: 5, label: 'Very Strong', color: 'bg-emerald-500' };
 }
 
+const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+function getRegisterFieldError(field: string, value: string, password?: string): string | null {
+  switch (field) {
+    case 'name':
+      if (!value.trim()) return 'Name is required';
+      return null;
+    case 'email':
+      if (!value.trim()) return 'Email is required';
+      if (!isValidEmail(value)) return 'Please enter a valid email';
+      return null;
+    case 'password':
+      if (!value) return 'Password is required';
+      if (value.length < 8) return 'Password must be at least 8 characters';
+      return null;
+    case 'confirmPassword':
+      if (!value) return 'Please confirm your password';
+      if (password && value !== password) return 'Passwords do not match';
+      return null;
+    default:
+      return null;
+  }
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState('');
@@ -33,6 +57,14 @@ export default function RegisterPage() {
   const [agreedToDisclaimer, setAgreedToDisclaimer] = useState(false);
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);
   const passwordStrength = useMemo(() => getPasswordStrength(password), [password]);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const handleBlur = (field: string) => setTouched(prev => ({ ...prev, [field]: true }));
+
+  const nameError = touched.name ? getRegisterFieldError('name', name) : null;
+  const emailError = touched.email ? getRegisterFieldError('email', email) : null;
+  const passwordError = touched.password ? getRegisterFieldError('password', password) : null;
+  const confirmPasswordError = touched.confirmPassword ? getRegisterFieldError('confirmPassword', confirmPassword, password) : null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +116,7 @@ export default function RegisterPage() {
           <div className="text-center mb-8">
             <Image
               src="/spacenexus-logo.png"
-              alt="SpaceNexus"
+              alt="SpaceNexus logo"
               width={320}
               height={160}
               className="mx-auto w-full max-w-xs h-auto rounded-lg mb-4"
@@ -113,12 +145,16 @@ export default function RegisterPage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="input"
+                onBlur={() => handleBlur('name')}
+                className={`input ${nameError ? 'border-red-500' : ''}`}
                 placeholder="Your name"
                 autoComplete="name"
-                aria-invalid={error ? true : undefined}
-                aria-describedby={error ? 'register-error' : undefined}
+                aria-invalid={nameError ? true : error ? true : undefined}
+                aria-describedby={nameError ? 'name-error' : error ? 'register-error' : undefined}
               />
+              {nameError && (
+                <p id="name-error" className="text-red-400 text-sm mt-1">{nameError}</p>
+              )}
             </div>
 
             <div>
@@ -128,15 +164,20 @@ export default function RegisterPage() {
               <input
                 id="email"
                 type="email"
+                inputMode="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="input"
+                onBlur={() => handleBlur('email')}
+                className={`input ${emailError ? 'border-red-500' : ''}`}
                 placeholder="you@example.com"
                 required
                 autoComplete="email"
-                aria-invalid={error ? true : undefined}
-                aria-describedby={error ? 'register-error' : undefined}
+                aria-invalid={emailError ? true : error ? true : undefined}
+                aria-describedby={emailError ? 'email-error' : error ? 'register-error' : undefined}
               />
+              {emailError && (
+                <p id="email-error" className="text-red-400 text-sm mt-1">{emailError}</p>
+              )}
             </div>
 
             <div>
@@ -151,14 +192,18 @@ export default function RegisterPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="input"
-                placeholder="At least 6 characters"
+                onBlur={() => handleBlur('password')}
+                className={`input ${passwordError ? 'border-red-500' : ''}`}
+                placeholder="At least 8 characters"
                 required
-                minLength={6}
+                minLength={8}
                 autoComplete="new-password"
-                aria-invalid={error ? true : undefined}
-                aria-describedby={error ? 'register-error password-strength' : undefined}
+                aria-invalid={passwordError ? true : error ? true : undefined}
+                aria-describedby={passwordError ? 'password-error' : error ? 'register-error password-strength' : undefined}
               />
+              {passwordError && (
+                <p id="password-error" className="text-red-400 text-sm mt-1">{passwordError}</p>
+              )}
               {password && (
                 <div className="mt-2" id="password-strength">
                   <div className="flex gap-1 mb-1">
@@ -188,13 +233,17 @@ export default function RegisterPage() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="input"
+                onBlur={() => handleBlur('confirmPassword')}
+                className={`input ${confirmPasswordError ? 'border-red-500' : ''}`}
                 placeholder="Confirm your password"
                 required
                 autoComplete="new-password"
-                aria-invalid={error ? true : undefined}
-                aria-describedby={error ? 'register-error' : undefined}
+                aria-invalid={confirmPasswordError ? true : error ? true : undefined}
+                aria-describedby={confirmPasswordError ? 'confirmPassword-error' : error ? 'register-error' : undefined}
               />
+              {confirmPasswordError && (
+                <p id="confirmPassword-error" className="text-red-400 text-sm mt-1">{confirmPasswordError}</p>
+              )}
             </div>
 
             <div className="flex items-start gap-3">

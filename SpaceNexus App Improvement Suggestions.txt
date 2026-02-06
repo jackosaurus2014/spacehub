@@ -163,7 +163,8 @@ Fixes:
 3.4 BUNDLE SIZE OPTIMIZATION
 ----------------------------
 [ ] Review and optimize Three.js imports (tree shaking)
-[ ] Lazy load heavy components (3D visualizations)
+[x] Lazy load heavy components (3D visualizations)
+    DONE: Dynamic imports with next/dynamic for heavy components where found.
 [ ] Add bundle analyzer to identify large dependencies
 [ ] Consider dynamic imports for route-specific code
 
@@ -184,13 +185,17 @@ Fixes:
 [ ] Implement keyboard navigation for dropdowns (arrow keys, Enter, Escape)
 [ ] Add "recently viewed" quick access
 [ ] Improve mobile navigation (only 5 items in bottom nav)
-[ ] Add loading states during navigation transitions
+[x] Add loading states during navigation transitions
+    DONE: NavigationProgress component in src/components/ui/NavigationProgress.tsx
+    Shows gradient progress bar at top of viewport during route changes.
 
 4.3 FORM ENHANCEMENTS
 ---------------------
 [x] Preserve form state on validation errors
     DONE: Forms already use controlled components; state preserved on errors
-[ ] Add real-time field validation (on blur)
+[x] Add real-time field validation (on blur)
+    DONE: Added onBlur validation with touched state tracking to login,
+    register, and contact forms. Shows inline errors when fields lose focus.
 [x] Show password strength indicator
     DONE: Register page shows 5-bar strength meter (Weak/Fair/Good/Strong/Very Strong)
 [x] Add autocomplete attributes for better UX
@@ -250,8 +255,11 @@ Fixes:
 
 5.3 SCREEN READER SUPPORT
 -------------------------
-[ ] Add alt text to all images
-[ ] Use semantic HTML throughout
+[x] Add alt text to all images
+    DONE: Audited and fixed missing alt attributes on img/Image components.
+[x] Use semantic HTML throughout
+    DONE: Verified nav, main, footer, section, article elements used
+    correctly in layout, navigation, and page components.
 [ ] Add screen reader-only content for data visualizations
 [ ] Test with NVDA/JAWS/VoiceOver
 
@@ -280,8 +288,12 @@ Consider adding:
 [x] GET /api/search - Global search across modules
     DONE: src/app/api/search/route.ts - searches news, companies, events,
     opportunities, blogs with Zod validation and pagination
-[ ] GET /api/export/{module} - Bulk data export (CSV/JSON)
-[ ] GET /api/dashboard/overview - Aggregated stats
+[x] GET /api/export/{module} - Bulk data export (CSV/JSON)
+    DONE: src/app/api/export/[module]/route.ts - supports JSON and CSV
+    format for companies, events, news. Includes CSV conversion helper.
+[x] GET /api/dashboard/overview - Aggregated stats
+    DONE: src/app/api/dashboard/overview/route.ts - returns counts for
+    companies, news, events, contacts, subscribers, and more via Promise.all.
 [ ] GET /api/events/calendar.ics - Calendar format export
 [ ] POST /api/webhooks/subscribe - Event webhooks
 [ ] GET /api/cache/status - Cache health monitoring
@@ -374,9 +386,13 @@ Based on research and space industry trends:
 --------------------------
 [ ] Expand mobile bottom nav (more than 5 items)
 [ ] Add swipe gestures (back, refresh)
-[ ] Optimize touch targets (44x44px minimum)
+[x] Optimize touch targets (44x44px minimum)
+    DONE: Added min-h-[44px] min-w-[44px] to mobile nav items, modal close
+    buttons, toast dismiss buttons, and other small interactive elements.
 [ ] Add pull-to-refresh
-[ ] Improve form input types for mobile keyboards
+[x] Improve form input types for mobile keyboards
+    DONE: Added inputMode="email" to email inputs on login, register,
+    and contact forms for optimized mobile keyboard.
 
 8.3 APP STORE PREPARATION
 -------------------------
@@ -388,23 +404,29 @@ See companion document: "How to Publish SpaceNexus on App Stores.txt"
 
 9.1 CODE ORGANIZATION
 ---------------------
-[ ] Move MODULE_ROUTES to centralized config (avoid duplication)
+[x] Move MODULE_ROUTES to centralized config (avoid duplication)
+    DONE: Created src/lib/module-routes.ts as single source of truth.
+    Updated all files to import from centralized location.
 [x] Create shared error handling utilities
     DONE: src/lib/errors.ts with full suite of error helpers
 [x] Standardize API response formats
     DONE: All routes use error helpers for consistent responses
-[ ] Remove unused imports and dead code
+[x] Remove unused imports and dead code
+    DONE: Cleaned up unused imports identified by linter across modified files.
 
 9.2 DEPENDENCY UPDATES
 ----------------------
 [ ] Update NextAuth to v5 (when stable)
 [ ] Review Three.js version and optimization
 [ ] Pin dependency versions (remove ^ from package.json)
-[ ] Run npm audit and fix vulnerabilities
+[x] Run npm audit and fix vulnerabilities
+    DONE: Ran npm audit fix to resolve fixable vulnerabilities.
 
 9.3 DOCUMENTATION
 -----------------
-[ ] Update CLAUDE.md with recent changes
+[x] Update CLAUDE.md with recent changes
+    DONE: Updated with validation, error handling, toast, testing, CI/CD,
+    security, skeleton components, and PWA documentation sections.
 [ ] Document API endpoints
 [ ] Add inline code comments for complex logic
 [ ] Create developer onboarding guide
@@ -419,7 +441,9 @@ See companion document: "How to Publish SpaceNexus on App Stores.txt"
     DONE: Replaced bare JSON.parse with safeJsonParse() across 10+ data files
     (blueprint-data, module-preferences, opportunities-data, solar-flare-data,
     solar-exploration-data, resources-data, space-mining-data, LiveChat, etc.)
-[ ] Add stricter TypeScript settings
+[x] Add stricter TypeScript settings
+    DONE: Enabled forceConsistentCasingInFileNames and
+    noFallthroughCasesInSwitch in tsconfig.json.
 
 ================================================================================
 10. OPERATIONAL IMPROVEMENTS

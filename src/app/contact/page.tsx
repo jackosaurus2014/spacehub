@@ -20,6 +20,27 @@ interface FormErrors {
   message?: string;
 }
 
+function getFieldError(field: string, value: string): string | null {
+  switch (field) {
+    case 'name':
+      if (!value.trim()) return 'Name is required';
+      return null;
+    case 'email':
+      if (!value.trim()) return 'Email is required';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email address';
+      return null;
+    case 'subject':
+      if (!value) return 'Please select a subject';
+      return null;
+    case 'message':
+      if (!value.trim()) return 'Message is required';
+      if (value.trim().length < 10) return 'Message must be at least 10 characters';
+      return null;
+    default:
+      return null;
+  }
+}
+
 export default function ContactPage() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -30,6 +51,22 @@ export default function ContactPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const handleBlur = (field: string) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    // Validate the single field on blur and merge into errors
+    const newError = getFieldError(field, formData[field as keyof FormData]);
+    setErrors(prev => {
+      const updated = { ...prev };
+      if (newError) {
+        (updated as Record<string, string>)[field] = newError;
+      } else {
+        delete (updated as Record<string, string | undefined>)[field];
+      }
+      return updated;
+    });
+  };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -88,6 +125,7 @@ export default function ContactPage() {
         subject: 'general',
         message: '',
       });
+      setTouched({});
     } catch (error) {
       setStatus('error');
       setErrorMessage(error instanceof Error ? error.message : 'An unexpected error occurred');
@@ -173,6 +211,7 @@ export default function ContactPage() {
                     type="text"
                     value={formData.name}
                     onChange={handleChange}
+                    onBlur={() => handleBlur('name')}
                     className={`input ${errors.name ? 'border-red-500' : ''}`}
                     placeholder="Your name"
                     aria-invalid={errors.name ? true : undefined}
@@ -191,8 +230,10 @@ export default function ContactPage() {
                     id="email"
                     name="email"
                     type="email"
+                    inputMode="email"
                     value={formData.email}
                     onChange={handleChange}
+                    onBlur={() => handleBlur('email')}
                     className={`input ${errors.email ? 'border-red-500' : ''}`}
                     placeholder="you@example.com"
                     aria-invalid={errors.email ? true : undefined}
@@ -212,6 +253,7 @@ export default function ContactPage() {
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
+                    onBlur={() => handleBlur('subject')}
                     className={`input ${errors.subject ? 'border-red-500' : ''}`}
                     aria-invalid={errors.subject ? true : undefined}
                     aria-describedby={errors.subject ? 'subject-error' : undefined}
@@ -236,6 +278,7 @@ export default function ContactPage() {
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
+                    onBlur={() => handleBlur('message')}
                     rows={6}
                     className={`input resize-none ${errors.message ? 'border-red-500' : ''}`}
                     placeholder="How can we help you?"

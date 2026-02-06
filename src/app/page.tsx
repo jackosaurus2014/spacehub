@@ -28,7 +28,7 @@ export default async function HomePage() {
             <div className="mb-10 w-full">
               <Image
                 src="/spacenexus-logo.png"
-                alt="SpaceNexus"
+                alt="SpaceNexus logo"
                 width={1200}
                 height={600}
                 className="w-full h-auto rounded-lg opacity-90"

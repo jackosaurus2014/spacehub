@@ -1,30 +1,80 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
 import { UserModuleWithConfig } from '@/lib/module-preferences';
 import PremiumGate from '@/components/PremiumGate';
 import { getRequiredTierForModule } from '@/lib/subscription';
 import { MODULE_SECTIONS } from '@/types';
-import MissionControlModule from './MissionControlModule';
-import BlogsArticlesModule from './BlogsArticlesModule';
-import NewsFeedModule from './NewsFeedModule';
-import CategoriesModule from './CategoriesModule';
-import MarketIntelModule from './MarketIntelModule';
-import ResourceExchangeModule from './ResourceExchangeModule';
-import BusinessOpportunitiesModule from './BusinessOpportunitiesModule';
-import ComplianceModule from './ComplianceModule';
-import SolarExplorationModule from './SolarExplorationModule';
-import SolarFlareTrackerModule from './SolarFlareTrackerModule';
-import OrbitalSlotsModule from './OrbitalSlotsModule';
-import SpaceInsuranceModule from './SpaceInsuranceModule';
-import SpectrumTrackerModule from './SpectrumTrackerModule';
-import SpaceWorkforceModule from './SpaceWorkforceModule';
-import LaunchWindowsModule from './LaunchWindowsModule';
-import DebrisMonitorModule from './DebrisMonitorModule';
-import OrbitalServicesModule from './OrbitalServicesModule';
-import SatelliteTrackerModule from './SatelliteTrackerModule';
 import ModuleErrorBoundary from './ModuleErrorBoundary';
+
+// Loading placeholder for dynamically imported modules
+function ModuleLoadingFallback() {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 gap-4">
+      <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+      <p className="text-slate-500 text-sm">Loading module...</p>
+    </div>
+  );
+}
+
+// Dynamic imports for all modules — only the active module is loaded at a time
+const MissionControlModule = dynamic(() => import('./MissionControlModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const BlogsArticlesModule = dynamic(() => import('./BlogsArticlesModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const NewsFeedModule = dynamic(() => import('./NewsFeedModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const CategoriesModule = dynamic(() => import('./CategoriesModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const MarketIntelModule = dynamic(() => import('./MarketIntelModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const ResourceExchangeModule = dynamic(() => import('./ResourceExchangeModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const BusinessOpportunitiesModule = dynamic(() => import('./BusinessOpportunitiesModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const ComplianceModule = dynamic(() => import('./ComplianceModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const SolarExplorationModule = dynamic(() => import('./SolarExplorationModule'), {
+  loading: () => <ModuleLoadingFallback />,
+  ssr: false, // Contains Three.js 3D scene internally
+});
+const SolarFlareTrackerModule = dynamic(() => import('./SolarFlareTrackerModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const OrbitalSlotsModule = dynamic(() => import('./OrbitalSlotsModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const SpaceInsuranceModule = dynamic(() => import('./SpaceInsuranceModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const SpectrumTrackerModule = dynamic(() => import('./SpectrumTrackerModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const SpaceWorkforceModule = dynamic(() => import('./SpaceWorkforceModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const LaunchWindowsModule = dynamic(() => import('./LaunchWindowsModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const DebrisMonitorModule = dynamic(() => import('./DebrisMonitorModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const OrbitalServicesModule = dynamic(() => import('./OrbitalServicesModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
+const SatelliteTrackerModule = dynamic(() => import('./SatelliteTrackerModule'), {
+  loading: () => <ModuleLoadingFallback />,
+});
 
 interface ModuleContainerProps {
   initialModules?: UserModuleWithConfig[];

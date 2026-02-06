@@ -74,7 +74,7 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
           </div>
 
           {/* Expand icon */}
-          <button className="text-slate-400 hover:text-white transition-colors p-1">
+          <button className="text-slate-400 hover:text-white transition-colors p-1 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <svg
               className={`w-5 h-5 transition-transform ${expanded ? 'rotate-180' : ''}`}
               fill="none"

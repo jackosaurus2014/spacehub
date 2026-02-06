@@ -18,7 +18,7 @@ export default function Footer() {
             <div>
               <Image
                 src="/spacenexus-logo.png"
-                alt="SpaceNexus"
+                alt="SpaceNexus logo"
                 width={140}
                 height={70}
                 className="h-9 w-auto mb-4 opacity-80"

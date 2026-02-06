@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { AVAILABLE_MODULES, MODULE_ROUTES, getModuleRoute } from '@/types';
+import { AVAILABLE_MODULES } from '@/types';
+import { getModuleRoute } from '@/lib/module-routes';
 
 const STORAGE_KEY = 'spacenexus-pinned-modules';
 
@@ -88,7 +89,7 @@ export default function QuickAccessSidebar() {
         </button>
 
         {/* Modules List */}
-        <nav className="flex-1 overflow-y-auto py-4 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent">
+        <nav aria-label="Quick access modules" className="flex-1 overflow-y-auto py-4 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent">
           {/* Pinned Section Header */}
           {pinnedModules.length > 0 && isExpanded && (
             <div className="px-4 mb-2">

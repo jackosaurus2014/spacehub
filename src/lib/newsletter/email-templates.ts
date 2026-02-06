@@ -103,7 +103,7 @@ function getHeader(title?: string): string {
   return `
     <tr>
       <td align="center" style="padding: 30px 20px; background: linear-gradient(135deg, ${styles.bgCard} 0%, ${styles.bgDark} 100%); border-radius: 12px 12px 0 0;">
-        <img src="${APP_URL}/spacenexus-logo.png" alt="SpaceNexus" width="180" style="display: block; margin-bottom: 10px;">
+        <img src="${APP_URL}/spacenexus-logo.png" alt="SpaceNexus logo" width="180" style="display: block; margin-bottom: 10px;">
         ${title ? `<h1 style="margin: 10px 0 0 0; font-size: 24px; font-weight: 600; color: ${styles.textWhite};">${title}</h1>` : ''}
       </td>
     </tr>`;
@@ -116,7 +116,7 @@ function getFooter(unsubscribeUrl: string): string {
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
           <tr>
             <td align="center">
-              <img src="${APP_URL}/spacenexus-logo.png" alt="SpaceNexus" width="120" style="display: block; opacity: 0.7; margin-bottom: 15px;">
+              <img src="${APP_URL}/spacenexus-logo.png" alt="SpaceNexus logo" width="120" style="display: block; opacity: 0.7; margin-bottom: 15px;">
               <p style="margin: 0 0 10px 0; font-size: 13px; color: ${styles.textMuted};">
                 Your gateway to the space industry
               </p>

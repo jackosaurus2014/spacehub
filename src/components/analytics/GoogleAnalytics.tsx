@@ -3,7 +3,7 @@
 import Script from 'next/script';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
-import { initDataLayer, trackPageView, isTrackingAllowed } from '@/lib/analytics';
+import { trackPageView, isTrackingAllowed } from '@/lib/analytics';
 
 interface GoogleAnalyticsProps {
   /**

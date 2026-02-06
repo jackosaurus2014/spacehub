@@ -6,12 +6,34 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
+const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+function getFieldError(field: string, value: string): string | null {
+  switch (field) {
+    case 'email':
+      if (!value.trim()) return 'Email is required';
+      if (!isValidEmail(value)) return 'Please enter a valid email';
+      return null;
+    case 'password':
+      if (!value) return 'Password is required';
+      return null;
+    default:
+      return null;
+  }
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const handleBlur = (field: string) => setTouched(prev => ({ ...prev, [field]: true }));
+
+  const emailError = touched.email ? getFieldError('email', email) : null;
+  const passwordError = touched.password ? getFieldError('password', password) : null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +67,7 @@ export default function LoginPage() {
           <div className="text-center mb-8">
             <Image
               src="/spacenexus-logo.png"
-              alt="SpaceNexus"
+              alt="SpaceNexus logo"
               width={320}
               height={160}
               className="mx-auto w-full max-w-xs h-auto rounded-lg mb-4"
@@ -72,15 +94,20 @@ export default function LoginPage() {
               <input
                 id="email"
                 type="email"
+                inputMode="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="input"
+                onBlur={() => handleBlur('email')}
+                className={`input ${emailError ? 'border-red-500' : ''}`}
                 placeholder="you@example.com"
                 required
                 autoComplete="email"
-                aria-invalid={error ? true : undefined}
-                aria-describedby={error ? 'login-error' : undefined}
+                aria-invalid={emailError ? true : error ? true : undefined}
+                aria-describedby={emailError ? 'email-error' : error ? 'login-error' : undefined}
               />
+              {emailError && (
+                <p id="email-error" className="text-red-400 text-sm mt-1">{emailError}</p>
+              )}
             </div>
 
             <div>
@@ -95,13 +122,17 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="input"
+                onBlur={() => handleBlur('password')}
+                className={`input ${passwordError ? 'border-red-500' : ''}`}
                 placeholder="••••••••"
                 required
                 autoComplete="current-password"
-                aria-invalid={error ? true : undefined}
-                aria-describedby={error ? 'login-error' : undefined}
+                aria-invalid={passwordError ? true : error ? true : undefined}
+                aria-describedby={passwordError ? 'password-error' : error ? 'login-error' : undefined}
               />
+              {passwordError && (
+                <p id="password-error" className="text-red-400 text-sm mt-1">{passwordError}</p>
+              )}
             </div>
 
             <button

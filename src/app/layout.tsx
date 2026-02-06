@@ -16,6 +16,7 @@ import CookieConsent from '@/components/analytics/CookieConsent';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import ToastContainer from '@/components/ui/Toast';
+import NavigationProgress from '@/components/ui/NavigationProgress';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -151,6 +152,7 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
+        <NavigationProgress />
         <AuthProvider>
           <SubscriptionProvider>
             <DataInitializer />

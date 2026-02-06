@@ -78,6 +78,7 @@ function DropdownMenu({
     <div ref={ref} className="relative">
       <button
         onClick={onToggle}
+        aria-expanded={isOpen}
         className="text-slate-200 hover:text-cyan-300 transition-colors text-sm font-medium flex items-center gap-1"
       >
         {label}
@@ -86,6 +87,7 @@ function DropdownMenu({
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
@@ -123,7 +125,7 @@ function DropdownMenu({
 
 export default function Navigation() {
   const { data: session, status } = useSession();
-  const { tier, isPro } = useSubscription();
+  const { isPro } = useSubscription();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -142,6 +144,7 @@ export default function Navigation() {
 
   return (
     <nav
+      aria-label="Main navigation"
       className={`sticky top-0 z-50 transition-all duration-300 backdrop-blur-xl`}
       style={{
         background: scrolled
@@ -161,7 +164,7 @@ export default function Navigation() {
           <Link href="/" className="flex items-center opacity-90 hover:opacity-100 transition-opacity">
             <Image
               src="/spacenexus-logo.png"
-              alt="SpaceNexus"
+              alt="SpaceNexus logo"
               width={160}
               height={80}
               className="h-5 w-auto"
@@ -263,13 +266,16 @@ export default function Navigation() {
             <NotificationCenter />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-slate-300 hover:text-cyan-300"
+              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-cyan-300"
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMenuOpen}
             >
             <svg
               className="w-6 h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               {isMenuOpen ? (
                 <path
