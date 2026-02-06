@@ -19,6 +19,7 @@ const MODULE_ROUTES: Record<string, string> = {
   'spectrum-tracker': '/spectrum',
   'space-insurance': '/space-insurance',
   'space-workforce': '/workforce',
+  'space-jobs': '/space-jobs',
   'orbital-services': '/orbital-services',
   'orbital-slots': '/orbital-slots',
   'resource-exchange': '/resource-exchange',
@@ -27,6 +28,7 @@ const MODULE_ROUTES: Record<string, string> = {
   'launch-windows': '/launch-windows',
   'debris-monitor': '/debris-monitor',
   'satellite-tracker': '/satellites',
+  'supply-chain': '/supply-chain',
 };
 
 // Filter out disabled modules

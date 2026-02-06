@@ -110,18 +110,23 @@ export default function HeroStats() {
           const stockRes = await fetch('/api/stocks?tickers=RKLB,LUNR,ASTS,PL,RDW,SPCE,BKSY,MNTS,ASTR,LLAP,SATL,IRDM,GSAT,VSAT');
           const stockData = await stockRes.json();
           if (stockData.stocks?.length > 0) {
-            const successfulStocks = stockData.stocks.filter((s: { success: boolean; changePercent?: number }) =>
-              s.success && typeof s.changePercent === 'number' && !isNaN(s.changePercent)
-            );
+            // Filter for stocks with valid numeric changePercent values
+            const successfulStocks = stockData.stocks.filter((s: { success: boolean; changePercent?: number | null }) => {
+              if (!s.success) return false;
+              if (s.changePercent === undefined || s.changePercent === null) return false;
+              if (typeof s.changePercent !== 'number') return false;
+              if (isNaN(s.changePercent) || !isFinite(s.changePercent)) return false;
+              return true;
+            });
 
             if (successfulStocks.length > 0) {
-              // Sort by changePercent descending (highest gain first)
-              const sorted = [...successfulStocks].sort((a: { changePercent: number }, b: { changePercent: number }) => {
-                return b.changePercent - a.changePercent;
-              });
-
-              // Get the top performer (highest changePercent, could be positive or least negative)
-              const topStock = sorted[0];
+              // Find the stock with the highest changePercent (best performer)
+              let topStock = successfulStocks[0];
+              for (let i = 1; i < successfulStocks.length; i++) {
+                if (successfulStocks[i].changePercent > topStock.changePercent) {
+                  topStock = successfulStocks[i];
+                }
+              }
 
               setMarket({
                 type: 'top_performer',

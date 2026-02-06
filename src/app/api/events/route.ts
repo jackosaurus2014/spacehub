@@ -6,6 +6,17 @@ export const dynamic = 'force-dynamic';
 
 const prisma = new PrismaClient();
 
+// Provider YouTube channel URLs for live streams
+const PROVIDER_STREAM_URLS: Record<string, string> = {
+  'SpaceX': 'https://www.youtube.com/@SpaceX/live',
+  'United Launch Alliance': 'https://www.youtube.com/@ulalaunch/live',
+  'Rocket Lab': 'https://www.youtube.com/@RocketLabNZ/live',
+  'Blue Origin': 'https://www.youtube.com/@blueorigin/live',
+  'NASA': 'https://www.youtube.com/@NASA/live',
+  'Arianespace': 'https://www.youtube.com/@araborealfly/live',
+  'ISRO': 'https://www.youtube.com/@isaborealfly/live',
+};
+
 // Generate mock live missions based on current time
 function generateMockLiveMissions() {
   const now = new Date();
@@ -38,11 +49,11 @@ function generateMockLiveMissions() {
       mission: 'Starlink Group 12-5',
       imageUrl: 'https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=800',
       infoUrl: 'https://www.spacex.com/launches/',
-      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      videoUrl: PROVIDER_STREAM_URLS['SpaceX'],
       fetchedAt: now,
       updatedAt: now,
       isLive: true,
-      streamUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      streamUrl: PROVIDER_STREAM_URLS['SpaceX'],
       missionPhase: 'ascent' as MissionPhase,
     },
     {
@@ -63,11 +74,11 @@ function generateMockLiveMissions() {
       mission: 'TROPICS-3',
       imageUrl: 'https://images.unsplash.com/photo-1457364559154-aa2644600ebb?w=800',
       infoUrl: 'https://www.rocketlabusa.com/',
-      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      videoUrl: PROVIDER_STREAM_URLS['Rocket Lab'],
       fetchedAt: now,
       updatedAt: now,
       isLive: false,
-      streamUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      streamUrl: PROVIDER_STREAM_URLS['Rocket Lab'],
       missionPhase: 'pre_launch' as MissionPhase,
     },
     {
@@ -88,11 +99,11 @@ function generateMockLiveMissions() {
       mission: 'Dream Chaser CRS-1',
       imageUrl: 'https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?w=800',
       infoUrl: 'https://www.ulalaunch.com/',
-      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      videoUrl: PROVIDER_STREAM_URLS['United Launch Alliance'],
       fetchedAt: now,
       updatedAt: now,
       isLive: false,
-      streamUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      streamUrl: PROVIDER_STREAM_URLS['United Launch Alliance'],
       missionPhase: 'countdown' as MissionPhase,
     },
   ];

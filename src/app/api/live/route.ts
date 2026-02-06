@@ -16,6 +16,17 @@ export interface LiveStream {
   launchSite: string;
 }
 
+// Provider YouTube channel IDs for live streams
+const PROVIDER_CHANNELS: Record<string, string> = {
+  'SpaceX': 'UCtI0Hodo5o5dUb67FeUjDeA', // @SpaceX
+  'United Launch Alliance': 'UCBplVKNY0p2QIwGE9GJQwig', // @ulalaunch
+  'Arianespace': 'UCu0xb5EXcRsjt2u3zCv6mdQ', // @araborealfly
+  'Blue Origin': 'UCVxTHEKKLxNjGcvVaZindlg', // @blueorigin
+  'Rocket Lab': 'UCsWq7LZaizhIi-c-Yo_bcpw', // @RocketLabNZ
+  'NASA': 'UCLA_DiR1FfKNvjuUpBHmylQ', // @NASA
+  'ISRO': 'UCgWHOsQeVwMg_jaQ3Zcpxaw', // @isaborealfly
+};
+
 // Mock data for live/upcoming streams
 const mockStreams: LiveStream[] = [
   {
@@ -24,7 +35,7 @@ const mockStreams: LiveStream[] = [
     provider: 'SpaceX',
     launchName: 'Falcon 9 - Starlink 12-5',
     scheduledTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
-    youtubeVideoId: 'dQw4w9WgXcQ', // Placeholder
+    youtubeVideoId: null, // Will be populated when stream goes live
     isLive: false,
     description: 'SpaceX Falcon 9 rocket launching 23 Starlink satellites to low Earth orbit.',
     rocket: 'Falcon 9 Block 5',
@@ -112,7 +123,20 @@ export async function GET() {
       const diffMinutes = (scheduledMs - now) / (1000 * 60);
       // Consider "live" if within -30 to +10 minutes of scheduled time
       const isLive = diffMinutes >= -30 && diffMinutes <= 10;
-      return { ...stream, isLive };
+
+      // Get the provider's YouTube channel as fallback
+      const channelId = PROVIDER_CHANNELS[stream.provider] || PROVIDER_CHANNELS['NASA'];
+      const channelUrl = `https://www.youtube.com/channel/${channelId}/live`;
+
+      return {
+        ...stream,
+        isLive,
+        // Provide channel URL when no specific video ID is available
+        channelUrl,
+        watchUrl: stream.youtubeVideoId
+          ? `https://www.youtube.com/watch?v=${stream.youtubeVideoId}`
+          : channelUrl,
+      };
     });
 
     // Find the next upcoming stream
@@ -124,6 +148,7 @@ export async function GET() {
       streams: streamsWithLiveStatus,
       nextStream: nextStream || null,
       liveNow: streamsWithLiveStatus.filter((s) => s.isLive),
+      providerChannels: PROVIDER_CHANNELS,
     });
   } catch (error) {
     console.error('Error fetching live streams:', error);

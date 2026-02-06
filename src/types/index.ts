@@ -310,7 +310,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
   {
     moduleId: 'space-workforce',
     name: 'Space Workforce',
-    description: 'Job market analytics, salary benchmarks, and talent trends',
+    description: 'Job listings, salary benchmarks, and industry hiring trends',
     icon: '👩‍🚀',
     section: 'business',
     defaultEnabled: true,
@@ -320,7 +320,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
   {
     moduleId: 'space-jobs',
     name: 'Space Jobs',
-    description: 'Workforce analytics, talent board, and professional development resources',
+    description: 'Professional networking, expert consultants, and technical webinars',
     icon: '💼',
     section: 'business',
     defaultEnabled: true,
@@ -409,7 +409,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
   },
   {
     moduleId: 'supply-chain',
-    name: 'Global Value Chain Map',
+    name: 'Global Supply Chain',
     description: 'Aerospace supply chain tracking with geopolitical risk analysis and shortage alerts',
     icon: '🗺️',
     section: 'business',

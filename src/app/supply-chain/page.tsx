@@ -499,9 +499,9 @@ export default function SupplyChainPage() {
     <div className="min-h-screen bg-space-900">
       <div className="container mx-auto px-4">
         <PageHeader
-          title="Global Value Chain Map"
+          title="Global Supply Chain"
           subtitle="Aerospace supply chain tracking with geopolitical risk analysis"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Supply Chain' }]}
+          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Global Supply Chain' }]}
         >
           <Link href="/" className="btn-secondary text-sm py-2 px-4">
             ← Back to Dashboard
