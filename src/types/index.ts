@@ -2173,7 +2173,8 @@ export const EXTRACTION_COST_INFO: Record<ExtractionCost, { label: string; color
 };
 
 // Utility function to format large values (quintillions, etc.)
-export function formatLargeValue(value: number): string {
+export function formatLargeValue(value: number | null | undefined): string {
+  if (value == null) return '$0';
   if (value >= 1e18) {
     return `$${(value / 1e18).toFixed(1)} quintillion`;
   } else if (value >= 1e15) {
@@ -2191,7 +2192,8 @@ export function formatLargeValue(value: number): string {
 }
 
 // Utility function to format distance in AU or km
-export function formatDistance(au: number): string {
+export function formatDistance(au: number | null | undefined): string {
+  if (au == null) return 'Unknown';
   if (au < 0.01) {
     // Less than 0.01 AU, show in millions of km
     const km = au * 149597870.7;
@@ -2205,7 +2207,8 @@ export function formatDistance(au: number): string {
 }
 
 // Utility function to format mass in scientific notation
-export function formatMass(kg: number): string {
+export function formatMass(kg: number | null | undefined): string {
+  if (kg == null) return 'Unknown';
   if (kg >= 1e21) {
     return `${(kg / 1e21).toFixed(2)} x 10^21 kg`;
   } else if (kg >= 1e18) {
