@@ -26,7 +26,8 @@
     "resend": "^6.9.1",
     "rss-parser": "^3.13.0",
     "three": "^0.182.0",
-    "yahoo-finance2": "^3.13.0"
+    "yahoo-finance2": "^3.13.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

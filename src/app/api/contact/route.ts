@@ -4,68 +4,38 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import {
   validationError,
-  invalidFormatError,
   forbiddenError,
   internalError,
   constrainPagination,
   constrainOffset,
 } from '@/lib/errors';
+import { contactFormSchema, validateBody } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
-
-interface ContactFormData {
-  name: string;
-  email: string;
-  subject: 'general' | 'technical' | 'billing' | 'partnership';
-  message: string;
-}
 
 const VALID_SUBJECTS = ['general', 'technical', 'billing', 'partnership'];
 
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    const body: ContactFormData = await req.json();
-    const { name, email, subject, message } = body;
+    const body = await req.json();
 
-    // Validate required fields
-    if (!name || !name.trim()) {
-      return validationError('Name is required', { name: 'Name is required' });
+    // Validate with Zod schema
+    const validation = validateBody(contactFormSchema, body);
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0]?.[0] || 'Validation failed';
+      return validationError(firstError, validation.errors);
     }
 
-    if (!email || !email.trim()) {
-      return validationError('Email is required', { email: 'Email is required' });
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return invalidFormatError('email', 'valid email address');
-    }
-
-    if (!subject || !VALID_SUBJECTS.includes(subject)) {
-      return validationError('Please select a valid subject', {
-        subject: `Must be one of: ${VALID_SUBJECTS.join(', ')}`,
-      });
-    }
-
-    if (!message || !message.trim()) {
-      return validationError('Message is required', { message: 'Message is required' });
-    }
-
-    if (message.trim().length < 10) {
-      return validationError('Message must be at least 10 characters long', {
-        message: 'Minimum 10 characters required',
-      });
-    }
+    const { name, email, subject, message } = validation.data;
 
     // Create contact submission in database
     const submission = await prisma.contactSubmission.create({
       data: {
-        name: name.trim(),
-        email: email.trim().toLowerCase(),
+        name,
+        email,
         subject,
-        message: message.trim(),
+        message,
         userId: session?.user?.id || null,
         status: 'new',
       },
