@@ -71,9 +71,37 @@ function CountdownDisplay({ targetDate }: { targetDate: Date }) {
   );
 }
 
+const PROVIDER_STREAM_URLS: Record<string, string> = {
+  'SpaceX': 'https://www.spacex.com/launches/',
+  'Rocket Lab': 'https://www.rocketlabusa.com/live-stream/',
+  'United Launch Alliance': 'https://www.ulalaunch.com/webcast',
+  'Blue Origin': 'https://www.blueorigin.com/webcast',
+  'NASA': 'https://www.nasa.gov/live',
+};
+
+function getStreamUrl(event: SpaceEvent): string | null {
+  if (event.agency && PROVIDER_STREAM_URLS[event.agency]) {
+    return PROVIDER_STREAM_URLS[event.agency];
+  }
+  return event.streamUrl || event.videoUrl || event.infoUrl || null;
+}
+
+function isEventLive(event: SpaceEvent): boolean {
+  if (event.isLive) return true;
+  if (event.status === 'in_progress') return true;
+  if (event.launchDate) {
+    const launchTime = new Date(event.launchDate).getTime();
+    const now = Date.now();
+    if (now >= launchTime && now <= launchTime + 3 * 60 * 60 * 1000) return true;
+  }
+  return false;
+}
+
 function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?: boolean }) {
   const typeInfo = EVENT_TYPE_INFO[event.type] || EVENT_TYPE_INFO.launch;
   const launchDate = event.launchDate ? new Date(event.launchDate) : null;
+  const live = isEventLive(event);
+  const streamUrl = getStreamUrl(event);
 
   if (isPrimary && launchDate) {
     return (
@@ -83,9 +111,16 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
             <span className={`${typeInfo.color} text-white text-xs font-semibold px-2 py-1 rounded`}>
               {typeInfo.icon} {typeInfo.label}
             </span>
-            <span className="text-green-400 text-xs font-semibold px-2 py-1 bg-green-500/20 rounded">
-              NEXT UP
-            </span>
+            {live ? (
+              <span className="flex items-center gap-1.5 text-white text-xs font-semibold px-2 py-1 bg-red-500 rounded">
+                <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                LIVE
+              </span>
+            ) : (
+              <span className="text-green-400 text-xs font-semibold px-2 py-1 bg-green-500/20 rounded">
+                NEXT UP
+              </span>
+            )}
           </div>
         </div>
         <h3 className="text-xl font-bold text-slate-800 mb-2 line-clamp-2">{event.name}</h3>
@@ -93,7 +128,25 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
           <p className="text-slate-500 text-sm mb-4">{event.agency}</p>
         )}
         <div className="mb-4">
-          <CountdownDisplay targetDate={launchDate} />
+          {live ? (
+            <div className="flex items-center gap-3">
+              <span className="text-red-500 font-bold text-lg">Live Now</span>
+              {streamUrl && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.open(streamUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+                >
+                  Watch Launch →
+                </button>
+              )}
+            </div>
+          ) : (
+            <CountdownDisplay targetDate={launchDate} />
+          )}
         </div>
         <div className="flex items-center gap-4 text-sm text-slate-500">
           {event.location && (
@@ -120,11 +173,19 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
       <div className="flex items-start gap-3">
         <span className="text-2xl">{typeInfo.icon}</span>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-slate-800 text-sm line-clamp-1">{event.name}</h4>
+          <div className="flex items-center gap-2">
+            <h4 className="font-semibold text-slate-800 text-sm line-clamp-1">{event.name}</h4>
+            {live && (
+              <span className="flex items-center gap-1 text-white text-[10px] font-semibold px-1.5 py-0.5 bg-red-500 rounded shrink-0">
+                <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                LIVE
+              </span>
+            )}
+          </div>
           {event.agency && (
             <p className="text-slate-500 text-xs mt-0.5">{event.agency}</p>
           )}
-          {launchDate && (
+          {launchDate && !live && (
             <p className="text-nebula-300 text-xs mt-1">
               {launchDate.toLocaleDateString('en-US', {
                 month: 'short',
@@ -133,6 +194,18 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
                 minute: '2-digit',
               })}
             </p>
+          )}
+          {live && streamUrl && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.open(streamUrl, '_blank', 'noopener,noreferrer');
+              }}
+              className="text-red-500 hover:text-red-600 text-xs font-semibold mt-1 transition-colors"
+            >
+              Watch Live →
+            </button>
           )}
         </div>
       </div>
