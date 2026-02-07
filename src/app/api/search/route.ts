@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { searchQuerySchema, validateSearchParams } from '@/lib/validations';
 import { validationError, internalError } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -122,7 +123,7 @@ export async function GET(req: NextRequest) {
       blogs,
     });
   } catch (error) {
-    console.error('Search failed:', error);
+    logger.error('Search failed', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Search failed');
   }
 }

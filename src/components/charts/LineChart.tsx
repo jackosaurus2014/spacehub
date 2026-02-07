@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 export interface LineChartSeries {
   name: string;
@@ -43,6 +44,9 @@ export default function LineChart({
   xAxisLabel,
   className = '',
 }: LineChartProps) {
+  const isMobile = useIsMobile();
+  const labelFontSize = isMobile ? '10px' : '12px';
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height });
   const [tooltip, setTooltip] = useState<{
@@ -326,6 +330,7 @@ export default function LineChart({
                   textAnchor="end"
                   dominantBaseline="middle"
                   className="text-xs fill-slate-400"
+                  style={{ fontSize: labelFontSize }}
                 >
                   {tick.value.toLocaleString(undefined, { maximumFractionDigits: 1 })}
                 </text>
@@ -356,8 +361,12 @@ export default function LineChart({
             />
             {labels.length > 0 && labels.map((label, i) => {
               const x = (i / Math.max(labels.length - 1, 1)) * chartWidth;
-              // Only show some labels to avoid overcrowding
-              const showLabel = labels.length <= 7 || i % Math.ceil(labels.length / 7) === 0 || i === labels.length - 1;
+              // On mobile, show fewer labels to prevent overlap (every other label);
+              // on desktop, use the existing density logic
+              const maxVisible = isMobile ? Math.floor(labels.length / 2) || 1 : 7;
+              const showLabel = labels.length <= maxVisible
+                || i % Math.ceil(labels.length / maxVisible) === 0
+                || i === labels.length - 1;
               if (!showLabel) return null;
 
               return (
@@ -374,8 +383,10 @@ export default function LineChart({
                     y={chartHeight + 18}
                     textAnchor="middle"
                     className="text-xs fill-slate-400"
+                    style={{ fontSize: labelFontSize }}
                   >
                     {label}
+                    <title>{label}</title>
                   </text>
                 </g>
               );

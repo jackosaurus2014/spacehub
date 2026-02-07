@@ -5,6 +5,7 @@ import {
   getUpcomingEvents,
   getOrbitalStats,
 } from '@/lib/orbital-slots-data';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ export async function GET() {
       stats,
     });
   } catch (error) {
-    console.error('Failed to fetch orbital data:', error);
+    logger.error('Failed to fetch orbital data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch orbital data' },
       { status: 500 }

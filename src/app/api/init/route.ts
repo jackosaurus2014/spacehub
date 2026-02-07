@@ -7,6 +7,7 @@ import { initializeCompanies } from '@/lib/companies-data';
 import { initializeResources } from '@/lib/resources-data';
 import { initializeOpportunities } from '@/lib/opportunities-data';
 import { initializeComplianceData } from '@/lib/compliance-data';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -84,7 +85,7 @@ export async function POST() {
       results,
     });
   } catch (error) {
-    console.error('Initialization error:', error);
+    logger.error('Initialization error', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: String(error), results },
       { status: 500 }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { validationError, internalError } from '@/lib/errors';
 import { orbitalServiceRequestSchema, validateBody } from '@/lib/validations';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: Request) {
   try {
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
       id: serviceRequest.id,
     });
   } catch (error) {
-    console.error('Error creating orbital service request:', error);
+    logger.error('Error creating orbital service request', { error: error instanceof Error ? error.message : String(error) });
     return internalError();
   }
 }
@@ -48,7 +49,7 @@ export async function GET() {
 
     return NextResponse.json({ requests });
   } catch (error) {
-    console.error('Error fetching orbital service requests:', error);
+    logger.error('Error fetching orbital service requests', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch service requests' },
       { status: 500 }

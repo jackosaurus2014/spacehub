@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
+import { logger } from '@/lib/logger';
 
 export async function PATCH(
   req: NextRequest,
@@ -31,7 +32,7 @@ export async function PATCH(
 
     return NextResponse.json({ featureRequest });
   } catch (error) {
-    console.error('Error updating feature request:', error);
+    logger.error('Error updating feature request', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to update feature request' },
       { status: 500 }

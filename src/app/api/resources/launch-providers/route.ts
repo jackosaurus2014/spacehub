@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 import { getLaunchProviders } from '@/lib/resources-data';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: Request) {
   try {
@@ -13,7 +14,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ providers });
   } catch (error) {
-    console.error('Failed to fetch launch providers:', error);
+    logger.error('Failed to fetch launch providers', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch launch providers' },
       { status: 500 }

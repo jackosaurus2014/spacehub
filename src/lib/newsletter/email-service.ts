@@ -1,6 +1,7 @@
 // Email service for newsletter system using Resend
 import { Resend } from 'resend';
 import { personalizeEmail } from './email-templates';
+import { logger } from '@/lib/logger';
 
 // Lazy initialization to avoid build-time errors when API key is not set
 let resendClient: Resend | null = null;
@@ -54,14 +55,14 @@ export async function sendVerificationEmail(
     });
 
     if (error) {
-      console.error('Failed to send verification email:', error);
+      logger.error('Failed to send verification email', { error: error.message });
       return { success: false, error: error.message };
     }
 
-    console.log(`Verification email sent to ${to}, id: ${data?.id}`);
+    logger.info(`Verification email sent to ${to}`, { emailId: data?.id });
     return { success: true };
   } catch (err) {
-    console.error('Error sending verification email:', err);
+    logger.error('Error sending verification email', { error: err instanceof Error ? err.message : String(err) });
     return { success: false, error: String(err) };
   }
 }
@@ -91,11 +92,11 @@ export async function sendDailyDigest(
     batches.push(subscribers.slice(i, i + BATCH_SIZE));
   }
 
-  console.log(`Sending digest to ${subscribers.length} subscribers in ${batches.length} batches`);
+  logger.info(`Sending digest to ${subscribers.length} subscribers in ${batches.length} batches`);
 
   for (let i = 0; i < batches.length; i++) {
     const batch = batches[i];
-    console.log(`Processing batch ${i + 1}/${batches.length} (${batch.length} subscribers)`);
+    logger.info(`Processing batch ${i + 1}/${batches.length}`, { subscriberCount: batch.length });
 
     try {
       // Prepare batch emails with personalized unsubscribe links
@@ -116,7 +117,7 @@ export async function sendDailyDigest(
       const { data, error } = await resend.batch.send(emails);
 
       if (error) {
-        console.error(`Batch ${i + 1} failed:`, error);
+        logger.error(`Batch ${i + 1} failed`, { error: error.message });
         result.failedCount += batch.length;
         result.errors.push(`Batch ${i + 1}: ${error.message}`);
         result.success = false;
@@ -133,10 +134,10 @@ export async function sendDailyDigest(
           result.errors.push(`Batch ${i + 1}: ${failCount} emails failed`);
         }
 
-        console.log(`Batch ${i + 1} completed: ${successCount} sent, ${failCount} failed`);
+        logger.info(`Batch ${i + 1} completed`, { sentCount: successCount, failedCount: failCount });
       }
     } catch (err) {
-      console.error(`Batch ${i + 1} error:`, err);
+      logger.error(`Batch ${i + 1} error`, { error: err instanceof Error ? err.message : String(err) });
       result.failedCount += batch.length;
       result.errors.push(`Batch ${i + 1}: ${String(err)}`);
       result.success = false;
@@ -151,7 +152,7 @@ export async function sendDailyDigest(
   // Set overall success based on whether majority succeeded
   result.success = result.sentCount > result.failedCount;
 
-  console.log(`Digest send complete: ${result.sentCount} sent, ${result.failedCount} failed`);
+  logger.info('Digest send complete', { sentCount: result.sentCount, failedCount: result.failedCount });
   return result;
 }
 
@@ -177,14 +178,14 @@ export async function sendSingleDigest(
     });
 
     if (error) {
-      console.error('Failed to send digest email:', error);
+      logger.error('Failed to send digest email', { error: error.message });
       return { success: false, error: error.message };
     }
 
-    console.log(`Digest email sent to ${to}, id: ${data?.id}`);
+    logger.info(`Digest email sent to ${to}`, { emailId: data?.id });
     return { success: true };
   } catch (err) {
-    console.error('Error sending digest email:', err);
+    logger.error('Error sending digest email', { error: err instanceof Error ? err.message : String(err) });
     return { success: false, error: String(err) };
   }
 }

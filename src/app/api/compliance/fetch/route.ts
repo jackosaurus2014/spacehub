@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchFederalRegisterUpdates, type FederalRegisterDocument } from '@/lib/regulatory-hub-data';
+import { apiCache, CacheTTL } from '@/lib/api-cache';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +15,8 @@ const SPACE_AGENCIES = [
 
 // Space-related search terms
 const SEARCH_TERMS = ['space', 'satellite', 'launch', 'orbit', 'spectrum'];
+
+const CACHE_KEY = 'compliance:fetch-result';
 
 interface FetchRequestBody {
   agencies?: string[];
@@ -28,6 +32,10 @@ interface FetchResponse {
   newDocumentsCount: number;
   documents: FederalRegisterDocument[];
   fetchedAt: string;
+  source?: string;
+  cached?: boolean;
+  cachedAt?: string;
+  warning?: string;
   error?: string;
 }
 
@@ -68,12 +76,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<FetchResp
     // Build combined search term for the API
     const combinedSearchTerm = searchTerms.join(' OR ');
 
-    console.log(`[Federal Register Fetch] Starting fetch with params:`, {
-      agencies,
+    logger.info(`[Federal Register Fetch] Starting fetch`, {
+      agencies: agencies.join(', '),
       searchTerm: combinedSearchTerm,
-      perPage: validPerPage,
-      startDate,
-      endDate,
+      perPage: String(validPerPage),
     });
 
     // Fetch from Federal Register API
@@ -86,59 +92,81 @@ export async function POST(request: NextRequest): Promise<NextResponse<FetchResp
     });
 
     if (!result.success) {
-      console.error(`[Federal Register Fetch] API error:`, result.error);
-      return NextResponse.json(
-        {
-          success: false,
-          documentsCount: 0,
-          newDocumentsCount: 0,
-          documents: [],
-          fetchedAt: new Date().toISOString(),
-          error: result.error,
-        },
-        { status: 500 }
-      );
+      logger.error(`[Federal Register Fetch] API error`, { error: result.error || 'Unknown' });
+
+      // Try cached data on API failure
+      const cached = apiCache.getStale<FetchResponse>(CACHE_KEY);
+      if (cached) {
+        logger.info(`[Compliance] Serving cached data on API failure (stale: ${cached.isStale})`);
+        return NextResponse.json({
+          ...cached.value,
+          source: 'cache',
+          cached: true,
+          cachedAt: new Date(cached.storedAt).toISOString(),
+          warning: 'Federal Register API returned an error. Showing previously fetched data.',
+        });
+      }
+
+      return NextResponse.json({
+        success: false,
+        documentsCount: 0,
+        newDocumentsCount: 0,
+        documents: [],
+        fetchedAt: new Date().toISOString(),
+        source: 'fallback',
+        error: result.error,
+      });
     }
 
     const documents = result.documents || [];
 
-    // Log fetched documents for now
-    // In production, this would store to database
-    console.log(`[Federal Register Fetch] Fetched ${documents.length} documents:`);
-    for (const doc of documents) {
-      console.log(`  - [${doc.documentNumber}] ${doc.title} (${doc.type})`);
-      console.log(`    Agencies: ${doc.agencies.join(', ')}`);
-      console.log(`    Published: ${doc.publicationDate}`);
-      if (doc.effectiveOn) {
-        console.log(`    Effective: ${doc.effectiveOn}`);
-      }
-    }
+    logger.info(`[Federal Register Fetch] Fetched ${documents.length} documents`);
 
     // TODO: Store new regulations in database
     // For now, we return all fetched documents
     // In production, compare with existing records to determine newDocumentsCount
     const newDocumentsCount = documents.length;
 
-    return NextResponse.json({
+    const responseData: FetchResponse = {
       success: true,
       documentsCount: documents.length,
       newDocumentsCount,
       documents,
       fetchedAt: new Date().toISOString(),
-    });
+      source: 'live',
+    };
+
+    // Cache the successful result
+    apiCache.set(CACHE_KEY, responseData, CacheTTL.VERY_SLOW);
+
+    return NextResponse.json(responseData);
   } catch (error) {
-    console.error('[Federal Register Fetch] Unexpected error:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        documentsCount: 0,
-        newDocumentsCount: 0,
-        documents: [],
-        fetchedAt: new Date().toISOString(),
-        error: error instanceof Error ? error.message : 'An unexpected error occurred',
-      },
-      { status: 500 }
-    );
+    logger.error('[Federal Register Fetch] Unexpected error', { error: error instanceof Error ? error.message : String(error) });
+
+    // Try to return cached result
+    const cached = apiCache.getStale<FetchResponse>(CACHE_KEY);
+
+    if (cached) {
+      logger.info(`[Compliance] Serving cached fetch result (stale: ${cached.isStale})`);
+      return NextResponse.json({
+        ...cached.value,
+        source: 'cache',
+        cached: true,
+        cachedAt: new Date(cached.storedAt).toISOString(),
+        warning: 'Federal Register API is temporarily unavailable. Showing previously fetched data.',
+      });
+    }
+
+    // No cache -- return graceful fallback instead of 500
+    return NextResponse.json({
+      success: false,
+      documentsCount: 0,
+      newDocumentsCount: 0,
+      documents: [],
+      fetchedAt: new Date().toISOString(),
+      source: 'fallback',
+      error: 'Federal Register API is temporarily unavailable.',
+    });
   }
 }
 

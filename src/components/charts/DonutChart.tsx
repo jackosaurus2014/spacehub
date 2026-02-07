@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 export interface DonutChartSegment {
   label: string;
@@ -58,6 +59,10 @@ export default function DonutChart({
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [animationProgress, setAnimationProgress] = useState(animate ? 0 : 1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+
+  const legendFontSize = isMobile ? '10px' : undefined;
+  const maxLegendLabelLength = isMobile ? 12 : Infinity;
 
   // Animation effect
   useEffect(() => {
@@ -288,10 +293,19 @@ export default function DonutChart({
                     }}
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm text-slate-200 truncate">
-                      {segment.data.label}
+                    <div
+                      className="text-sm text-slate-200 truncate"
+                      style={legendFontSize ? { fontSize: legendFontSize } : undefined}
+                      title={segment.data.label}
+                    >
+                      {segment.data.label.length > maxLegendLabelLength
+                        ? `${segment.data.label.slice(0, maxLegendLabelLength)}...`
+                        : segment.data.label}
                     </div>
-                    <div className="text-xs text-slate-400">
+                    <div
+                      className="text-xs text-slate-400"
+                      style={legendFontSize ? { fontSize: legendFontSize } : undefined}
+                    >
                       {valueFormatter(segment.data.value)} ({segment.percentage.toFixed(1)}%)
                     </div>
                   </div>

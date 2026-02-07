@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getLegalSources, getLegalUpdates } from '@/lib/compliance-data';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ updates, total });
   } catch (error) {
-    console.error('Failed to fetch legal data:', error);
+    logger.error('Failed to fetch legal data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch legal data' },
       { status: 500 }

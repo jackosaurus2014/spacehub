@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import type { MissionPhase } from '@/types';
 import { constrainPagination, constrainOffset, internalError } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -255,7 +256,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ events: allEvents, total: total + (includeMockLive ? 3 : 0) });
   } catch (error) {
-    console.error('Error fetching events:', error);
+    logger.error('Error fetching events', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch events', details: String(error) },
       { status: 500 }

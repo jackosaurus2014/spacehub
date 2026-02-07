@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { generateDailyDigest } from '@/lib/newsletter/digest-generator';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +14,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    console.log('Starting daily digest generation...');
+    logger.info('Starting daily digest generation');
 
     const result = await generateDailyDigest();
 
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Digest generation error:', error);
+    logger.error('Digest generation error', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: String(error) },
       { status: 500 }

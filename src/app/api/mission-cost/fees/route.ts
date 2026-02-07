@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 // ────────────────────────────────────────
 // Types
@@ -464,7 +465,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error('Failed to calculate regulatory fees:', error);
+    logger.error('Failed to calculate regulatory fees', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to calculate regulatory fees' },
       { status: 500 }

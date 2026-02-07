@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { logger } from '@/lib/logger';
 import {
   REGULATORY_AGENCIES,
   FAA_LICENSE_TYPES,
@@ -51,7 +52,7 @@ export async function POST() {
         });
         agenciesCount++;
       } catch (error) {
-        console.error(`Failed to save agency ${agencyData.slug}:`, error);
+        logger.error(`Failed to save agency ${agencyData.slug}`, { error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -70,7 +71,7 @@ export async function POST() {
         const agencySlug = licenseData.agencyId.replace('_', '-');
         const agencyId = agencyMap.get(agencySlug);
         if (!agencyId) {
-          console.warn(`Agency not found for license ${licenseData.slug}: ${agencySlug}`);
+          logger.warn(`Agency not found for license ${licenseData.slug}`, { agencySlug });
           continue;
         }
 
@@ -130,7 +131,7 @@ export async function POST() {
         });
         licenseTypesCount++;
       } catch (error) {
-        console.error(`Failed to save license type ${licenseData.slug}:`, error);
+        logger.error(`Failed to save license type ${licenseData.slug}`, { error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -167,7 +168,7 @@ export async function POST() {
         });
         treatiesCount++;
       } catch (error) {
-        console.error(`Failed to save treaty ${treatyData.slug}:`, error);
+        logger.error(`Failed to save treaty ${treatyData.slug}`, { error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -177,7 +178,7 @@ export async function POST() {
         const agencySlug = ruleData.agencyId.replace('_', '-');
         const agencyId = agencyMap.get(agencySlug);
         if (!agencyId) {
-          console.warn(`Agency not found for rule change ${ruleData.slug}: ${agencySlug}`);
+          logger.warn(`Agency not found for rule change ${ruleData.slug}`, { agencySlug });
           continue;
         }
 
@@ -209,7 +210,7 @@ export async function POST() {
         });
         ruleChangesCount++;
       } catch (error) {
-        console.error(`Failed to save rule change ${ruleData.slug}:`, error);
+        logger.error(`Failed to save rule change ${ruleData.slug}`, { error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -242,7 +243,7 @@ export async function POST() {
         });
         financialResponsibilityCount++;
       } catch (error) {
-        console.error(`Failed to save financial responsibility ${finReqData.id}:`, error);
+        logger.error(`Failed to save financial responsibility ${finReqData.id}`, { error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -258,7 +259,7 @@ export async function POST() {
       },
     });
   } catch (error) {
-    console.error('Error initializing regulatory agencies data:', error);
+    logger.error('Error initializing regulatory agencies data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to initialize regulatory agencies data', details: String(error) },
       { status: 500 }

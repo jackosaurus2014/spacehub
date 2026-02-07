@@ -1,5 +1,6 @@
 import prisma from './db';
 import { ExportRegime, ClassificationCategory, RegulationType, RegulationCategory, RegulationStatus } from '@/types';
+import { logger } from './logger';
 
 // Seed data for EAR/ITAR Export Classifications
 const EXPORT_CLASSIFICATIONS_SEED = [
@@ -327,7 +328,7 @@ export async function initializeComplianceData(): Promise<{ classifications: num
       });
       classificationsCount++;
     } catch (error) {
-      console.error(`Failed to save classification ${classificationSeed.slug}:`, error);
+      logger.error(`Failed to save classification ${classificationSeed.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -341,7 +342,7 @@ export async function initializeComplianceData(): Promise<{ classifications: num
       });
       regulationsCount++;
     } catch (error) {
-      console.error(`Failed to save regulation ${regulation.slug}:`, error);
+      logger.error(`Failed to save regulation ${regulation.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -355,7 +356,7 @@ export async function initializeComplianceData(): Promise<{ classifications: num
       });
       sourcesCount++;
     } catch (error) {
-      console.error(`Failed to save legal source ${source.slug}:`, error);
+      logger.error(`Failed to save legal source ${source.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -386,6 +387,20 @@ export async function getExportClassifications(options?: {
 
   return prisma.exportClassification.findMany({
     where,
+    select: {
+      id: true,
+      slug: true,
+      regime: true,
+      classification: true,
+      name: true,
+      description: true,
+      category: true,
+      subCategory: true,
+      controlReason: true,
+      licenseRequired: true,
+      technicalNotes: true,
+      exceptions: true,
+    },
     orderBy: [{ regime: 'asc' }, { classification: 'asc' }],
   });
 }
@@ -411,6 +426,25 @@ export async function getProposedRegulations(options?: {
 
   return prisma.proposedRegulation.findMany({
     where,
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      summary: true,
+      agency: true,
+      docketNumber: true,
+      type: true,
+      category: true,
+      impactAreas: true,
+      impactSeverity: true,
+      publishedDate: true,
+      commentDeadline: true,
+      status: true,
+      sourceUrl: true,
+      commentUrl: true,
+      keyChanges: true,
+      industryImpact: true,
+    },
     orderBy: { publishedDate: 'desc' },
     take: options?.limit || 50,
   });
@@ -432,6 +466,16 @@ export async function getLegalSources(options?: {
 
   return prisma.legalSource.findMany({
     where,
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      type: true,
+      organization: true,
+      specialty: true,
+      url: true,
+      isActive: true,
+    },
     orderBy: { name: 'asc' },
   });
 }

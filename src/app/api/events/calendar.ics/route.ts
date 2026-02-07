@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { internalError } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -136,7 +137,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('Error generating calendar export:', error);
+    logger.error('Error generating calendar export', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to generate calendar export');
   }
 }

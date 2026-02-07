@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { sendDailyDigest } from '@/lib/newsletter/email-service';
 import { getLatestDigest } from '@/lib/newsletter/digest-generator';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log(`Starting digest send to ${subscribers.length} subscribers...`);
+    logger.info(`Starting digest send to ${subscribers.length} subscribers`);
 
     // Update digest status to sending
     await prisma.dailyDigest.update({
@@ -76,7 +77,7 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log(`Digest send complete: ${result.sentCount} sent, ${result.failedCount} failed`);
+    logger.info('Digest send complete', { sentCount: result.sentCount, failedCount: result.failedCount });
 
     return NextResponse.json({
       success: result.success,
@@ -89,7 +90,7 @@ export async function POST(request: Request) {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Digest send error:', error);
+    logger.error('Digest send error', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: String(error) },
       { status: 500 }

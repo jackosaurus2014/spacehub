@@ -17,6 +17,7 @@ import { initializeLaunchWindowsData } from '@/lib/launch-windows-data';
 import { initializeDebrisData } from '@/lib/debris-data';
 import { generateDailyDigest } from '@/lib/newsletter/digest-generator';
 import { sendDailyDigest } from '@/lib/newsletter/email-service';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -134,7 +135,7 @@ async function refreshDaily(): Promise<Record<string, string>> {
       results.newsletterDigest = digestResult.error || 'Generation failed';
     }
   } catch (error) {
-    console.error('Newsletter error in refresh:', error);
+    logger.error('Newsletter error in refresh', { error: error instanceof Error ? error.message : String(error) });
     results.newsletterDigest = `Error: ${String(error)}`;
   }
 
@@ -165,7 +166,7 @@ export async function POST(request: Request) {
       Object.assign(results, dailyResults);
     }
 
-    console.log(`[${new Date().toISOString()}] Data refresh completed (type=${type || 'all'}):`, results);
+    logger.info(`Data refresh completed (type=${type || 'all'})`, results);
 
     return NextResponse.json({
       success: true,
@@ -175,7 +176,7 @@ export async function POST(request: Request) {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Refresh error:', error);
+    logger.error('Refresh error', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: String(error), results },
       { status: 500 }

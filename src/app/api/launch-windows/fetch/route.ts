@@ -5,8 +5,12 @@ import {
   mergeLaunchData,
   upsertLaunchEvents,
 } from '@/lib/launch-windows-data';
+import { apiCache, CacheTTL } from '@/lib/api-cache';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
+
+const CACHE_KEY = 'launch-windows:fetch-result';
 
 export async function POST() {
   try {
@@ -24,7 +28,7 @@ export async function POST() {
       launchLibraryData = await fetchLaunchLibraryUpcoming();
       results.launchLibrary.fetched = launchLibraryData.length;
     } catch (error) {
-      console.error('Launch Library 2 fetch error:', error);
+      logger.error('Launch Library 2 fetch error', { error: error instanceof Error ? error.message : String(error) });
       results.launchLibrary.error = error instanceof Error ? error.message : 'Unknown error';
     }
 
@@ -34,7 +38,7 @@ export async function POST() {
       spaceXData = await fetchSpaceXUpcoming();
       results.spaceX.fetched = spaceXData.length;
     } catch (error) {
-      console.error('SpaceX API fetch error:', error);
+      logger.error('SpaceX API fetch error', { error: error instanceof Error ? error.message : String(error) });
       results.spaceX.error = error instanceof Error ? error.message : 'Unknown error';
     }
 
@@ -49,19 +53,45 @@ export async function POST() {
       results.updated = upsertResult.updated;
     }
 
-    return NextResponse.json({
+    const responseData = {
       success: true,
       timestamp: new Date().toISOString(),
+      source: 'live' as const,
       ...results,
-    });
+    };
+
+    // Cache the successful result
+    apiCache.set(CACHE_KEY, responseData, CacheTTL.DEFAULT);
+
+    return NextResponse.json(responseData);
   } catch (error) {
-    console.error('Failed to fetch launch data:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch launch data',
-      },
-      { status: 500 }
-    );
+    logger.error('Failed to fetch launch data', { error: error instanceof Error ? error.message : String(error) });
+
+    // Try to return cached result
+    const cached = apiCache.getStale<Record<string, unknown>>(CACHE_KEY);
+
+    if (cached) {
+      logger.info(`[LaunchWindows] Serving cached fetch result (stale: ${cached.isStale})`);
+      return NextResponse.json({
+        ...cached.value,
+        source: 'cache',
+        cached: true,
+        cachedAt: new Date(cached.storedAt).toISOString(),
+        warning: 'Launch data APIs are temporarily unavailable. Showing previously fetched data.',
+      });
+    }
+
+    // No cache -- return graceful fallback instead of 500
+    return NextResponse.json({
+      success: false,
+      message: 'Launch data APIs (Launch Library, SpaceX) are temporarily unavailable. Previously saved data is still available via GET /api/launch-windows.',
+      source: 'fallback',
+      launchLibrary: { fetched: 0, error: 'Service unavailable' },
+      spaceX: { fetched: 0, error: 'Service unavailable' },
+      merged: 0,
+      created: 0,
+      updated: 0,
+      timestamp: new Date().toISOString(),
+    });
   }
 }

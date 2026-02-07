@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { updateModulePreference, getUserModulePreferences } from '@/lib/module-preferences';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +33,7 @@ export async function PATCH(
     const modules = await getUserModulePreferences(session.user.id);
     return NextResponse.json({ modules });
   } catch (error) {
-    console.error('Error updating module:', error);
+    logger.error('Error updating module', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to update module' },
       { status: 500 }

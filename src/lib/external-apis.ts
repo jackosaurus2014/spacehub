@@ -1,5 +1,8 @@
 // External API Configuration and Utilities for Real-Time Data Integration
 
+import { createCircuitBreaker } from './circuit-breaker';
+import { logger } from './logger';
+
 export const EXTERNAL_APIS = {
   NASA_DONKI: {
     baseUrl: 'https://api.nasa.gov/DONKI',
@@ -32,6 +35,36 @@ export const EXTERNAL_APIS = {
   },
 };
 
+// Circuit breakers for each external API
+const nasaDonkiBreaker = createCircuitBreaker('nasa-donki', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const noaaSwpcBreaker = createCircuitBreaker('noaa-swpc', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const launchLibBreaker = createCircuitBreaker('launch-library-api', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const spacexBreaker = createCircuitBreaker('spacex-api', {
+  failureThreshold: 3,
+  resetTimeout: 60_000,
+});
+const celestrakBreaker = createCircuitBreaker('celestrak', {
+  failureThreshold: 3,
+  resetTimeout: 300_000, // 5 minutes — very strict rate limits
+});
+const spaceflightNewsBreaker = createCircuitBreaker('spaceflight-news-api', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const federalRegisterBreaker = createCircuitBreaker('federal-register', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+
 // Fetch with retry and exponential backoff
 export async function fetchWithRetry(
   url: string,
@@ -57,7 +90,7 @@ export async function fetchWithRetry(
       // Rate limited - wait and retry
       if (response.status === 429) {
         const waitTime = Math.pow(2, i) * 1000; // Exponential backoff
-        console.log(`Rate limited, waiting ${waitTime}ms before retry ${i + 1}/${retries}`);
+        logger.warn(`Rate limited, waiting ${waitTime}ms before retry ${i + 1}/${retries}`);
         await new Promise(r => setTimeout(r, waitTime));
         continue;
       }
@@ -65,7 +98,7 @@ export async function fetchWithRetry(
       // Server error - retry
       if (response.status >= 500) {
         const waitTime = Math.pow(2, i) * 1000;
-        console.log(`Server error ${response.status}, waiting ${waitTime}ms before retry ${i + 1}/${retries}`);
+        logger.warn(`Server error ${response.status}, waiting ${waitTime}ms before retry ${i + 1}/${retries}`);
         await new Promise(r => setTimeout(r, waitTime));
         continue;
       }
@@ -76,7 +109,7 @@ export async function fetchWithRetry(
       lastError = error as Error;
       if (i < retries - 1) {
         const waitTime = Math.pow(2, i) * 1000;
-        console.log(`Fetch error, waiting ${waitTime}ms before retry ${i + 1}/${retries}:`, error);
+        logger.warn(`Fetch error, waiting ${waitTime}ms before retry ${i + 1}/${retries}`, { error: error instanceof Error ? error.message : String(error) });
         await new Promise(r => setTimeout(r, waitTime));
       }
     }
@@ -90,21 +123,25 @@ export async function fetchNasaDonki(
   endpoint: string,
   params: Record<string, string> = {}
 ): Promise<unknown> {
-  const searchParams = new URLSearchParams({
-    api_key: EXTERNAL_APIS.NASA_DONKI.apiKey,
-    ...params,
-  });
+  return nasaDonkiBreaker.execute(async () => {
+    const searchParams = new URLSearchParams({
+      api_key: EXTERNAL_APIS.NASA_DONKI.apiKey,
+      ...params,
+    });
 
-  const url = `${EXTERNAL_APIS.NASA_DONKI.baseUrl}/${endpoint}?${searchParams}`;
-  const response = await fetchWithRetry(url);
-  return response.json();
+    const url = `${EXTERNAL_APIS.NASA_DONKI.baseUrl}/${endpoint}?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
 }
 
 // NOAA SWPC API helpers
 export async function fetchNoaaSwpc(endpoint: string): Promise<unknown> {
-  const url = `${EXTERNAL_APIS.NOAA_SWPC.baseUrl}${endpoint}`;
-  const response = await fetchWithRetry(url);
-  return response.json();
+  return noaaSwpcBreaker.execute(async () => {
+    const url = `${EXTERNAL_APIS.NOAA_SWPC.baseUrl}${endpoint}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
 }
 
 // Launch Library 2 API helpers
@@ -112,17 +149,21 @@ export async function fetchLaunchLibrary(
   endpoint: string,
   params: Record<string, string> = {}
 ): Promise<unknown> {
-  const searchParams = new URLSearchParams(params);
-  const url = `${EXTERNAL_APIS.LAUNCH_LIBRARY.baseUrl}/${endpoint}?${searchParams}`;
-  const response = await fetchWithRetry(url);
-  return response.json();
+  return launchLibBreaker.execute(async () => {
+    const searchParams = new URLSearchParams(params);
+    const url = `${EXTERNAL_APIS.LAUNCH_LIBRARY.baseUrl}/${endpoint}?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
 }
 
 // SpaceX API helpers
 export async function fetchSpaceX(endpoint: string): Promise<unknown> {
-  const url = `${EXTERNAL_APIS.SPACEX.baseUrl}/${endpoint}`;
-  const response = await fetchWithRetry(url);
-  return response.json();
+  return spacexBreaker.execute(async () => {
+    const url = `${EXTERNAL_APIS.SPACEX.baseUrl}/${endpoint}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
 }
 
 // CelesTrak API helpers
@@ -130,9 +171,11 @@ export async function fetchCelesTrak(
   group: string,
   format: 'json' | 'tle' | '3le' = 'json'
 ): Promise<unknown> {
-  const url = `${EXTERNAL_APIS.CELESTRAK.baseUrl}/gp.php?GROUP=${group}&FORMAT=${format}`;
-  const response = await fetchWithRetry(url);
-  return response.json();
+  return celestrakBreaker.execute(async () => {
+    const url = `${EXTERNAL_APIS.CELESTRAK.baseUrl}/gp.php?GROUP=${group}&FORMAT=${format}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
 }
 
 // Spaceflight News API helpers
@@ -140,20 +183,24 @@ export async function fetchSpaceflightNews(
   endpoint: string,
   params: Record<string, string> = {}
 ): Promise<unknown> {
-  const searchParams = new URLSearchParams(params);
-  const url = `${EXTERNAL_APIS.SPACEFLIGHT_NEWS.baseUrl}/${endpoint}?${searchParams}`;
-  const response = await fetchWithRetry(url);
-  return response.json();
+  return spaceflightNewsBreaker.execute(async () => {
+    const searchParams = new URLSearchParams(params);
+    const url = `${EXTERNAL_APIS.SPACEFLIGHT_NEWS.baseUrl}/${endpoint}?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
 }
 
 // Federal Register API helpers
 export async function fetchFederalRegister(
   params: Record<string, string> = {}
 ): Promise<unknown> {
-  const searchParams = new URLSearchParams(params);
-  const url = `${EXTERNAL_APIS.FEDERAL_REGISTER.baseUrl}/documents.json?${searchParams}`;
-  const response = await fetchWithRetry(url);
-  return response.json();
+  return federalRegisterBreaker.execute(async () => {
+    const searchParams = new URLSearchParams(params);
+    const url = `${EXTERNAL_APIS.FEDERAL_REGISTER.baseUrl}/documents.json?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
 }
 
 // Date formatting helpers

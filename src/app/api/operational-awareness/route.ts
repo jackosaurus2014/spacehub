@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { getOperationalOverview } from '@/lib/operational-awareness-data';
+import { logger } from '@/lib/logger';
 
 export async function GET() {
   try {
@@ -9,7 +10,7 @@ export async function GET() {
 
     return NextResponse.json(overview);
   } catch (error) {
-    console.error('Failed to fetch operational awareness overview:', error);
+    logger.error('Failed to fetch operational awareness overview', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch operational awareness overview' },
       { status: 500 }

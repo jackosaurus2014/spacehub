@@ -1,4 +1,5 @@
 import prisma from '@/lib/db';
+import { logger } from '@/lib/logger';
 import type {
   OrbitalServiceCategory,
   OrbitalServiceAvailability,
@@ -965,7 +966,7 @@ export async function initializeOrbitalServices(): Promise<{ services: number; c
       });
       servicesCreated++;
     } catch (error) {
-      console.error(`Error creating service ${service.slug}:`, error);
+      logger.error(`Error creating service ${service.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -1012,7 +1013,7 @@ export async function initializeOrbitalServices(): Promise<{ services: number; c
       });
       contractsCreated++;
     } catch (error) {
-      console.error(`Error creating contract ${contract.slug}:`, error);
+      logger.error(`Error creating contract ${contract.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -1049,6 +1050,33 @@ export async function getOrbitalServices(filters?: {
 
   return prisma.orbitalService.findMany({
     where,
+    select: {
+      id: true,
+      slug: true,
+      providerName: true,
+      providerSlug: true,
+      providerCountry: true,
+      providerWebsite: true,
+      category: true,
+      serviceType: true,
+      serviceName: true,
+      description: true,
+      specifications: true,
+      orbitType: true,
+      coverage: true,
+      availability: true,
+      pricingModel: true,
+      priceMin: true,
+      priceMax: true,
+      priceUnit: true,
+      pricingNotes: true,
+      launchCostBasis: true,
+      operationalCost: true,
+      marketRate: true,
+      marginEstimate: true,
+      status: true,
+      launchDate: true,
+    },
     orderBy: [{ category: 'asc' }, { providerName: 'asc' }],
   });
 }
@@ -1072,6 +1100,25 @@ export async function getOrbitalContracts(filters?: {
 
   return prisma.orbitalServiceContract.findMany({
     where,
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      description: true,
+      customerName: true,
+      customerType: true,
+      providerName: true,
+      contractValue: true,
+      contractType: true,
+      duration: true,
+      serviceCategory: true,
+      scope: true,
+      awardDate: true,
+      startDate: true,
+      endDate: true,
+      sourceUrl: true,
+      status: true,
+    },
     orderBy: [{ contractValue: 'desc' }],
   });
 }

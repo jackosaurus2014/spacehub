@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getScorecards, getScorecardBySlug, ScorecardGrade } from '@/lib/operational-awareness-data';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -51,7 +52,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Failed to fetch sustainability scorecards:', error);
+    logger.error('Failed to fetch sustainability scorecards', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch sustainability scorecards' },
       { status: 500 }

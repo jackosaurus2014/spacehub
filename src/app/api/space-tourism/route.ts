@@ -7,6 +7,7 @@ import {
   ExperienceType,
   TourismStatus,
 } from '@/lib/space-tourism-data';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: Request) {
   try {
@@ -69,7 +70,7 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    console.error('Failed to fetch space tourism data:', error);
+    logger.error('Failed to fetch space tourism data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch space tourism data' },
       { status: 500 }

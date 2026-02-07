@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 // ────────────────────────────────────────
 // Types
@@ -352,7 +353,7 @@ export async function GET(request: Request) {
       totalMissionLifetimeInsurance,
     });
   } catch (error) {
-    console.error('Failed to calculate insurance rates:', error);
+    logger.error('Failed to calculate insurance rates', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to calculate insurance rates' },
       { status: 500 }

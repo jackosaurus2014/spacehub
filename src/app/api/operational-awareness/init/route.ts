@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { initializeOperationalAwarenessData } from '@/lib/operational-awareness-data';
+import { logger } from '@/lib/logger';
 
 export async function POST() {
   try {
@@ -11,7 +12,7 @@ export async function POST() {
       ...result,
     });
   } catch (error) {
-    console.error('Failed to initialize operational awareness data:', error);
+    logger.error('Failed to initialize operational awareness data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to initialize operational awareness data' },
       { status: 500 }
@@ -28,7 +29,7 @@ export async function GET() {
       ...result,
     });
   } catch (error) {
-    console.error('Failed to initialize operational awareness data:', error);
+    logger.error('Failed to initialize operational awareness data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to initialize operational awareness data' },
       { status: 500 }

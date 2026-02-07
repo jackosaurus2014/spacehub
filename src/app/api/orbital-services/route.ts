@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getOrbitalServices, getOrbitalServicesStats } from '@/lib/orbital-services-data';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
       stats,
     });
   } catch (error) {
-    console.error('Error fetching orbital services:', error);
+    logger.error('Error fetching orbital services', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch orbital services' },
       { status: 500 }

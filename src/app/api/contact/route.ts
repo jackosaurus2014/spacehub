@@ -10,6 +10,7 @@ import {
   constrainOffset,
 } from '@/lib/errors';
 import { contactFormSchema, validateBody } from '@/lib/validations';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,14 +43,13 @@ export async function POST(req: NextRequest) {
     });
 
     // Log for monitoring
-    console.log('Contact form submission:', {
+    logger.info('Contact form submission', {
       id: submission.id,
       name: submission.name,
       email: submission.email,
       subject: submission.subject,
       messageLength: submission.message.length,
       userId: submission.userId,
-      createdAt: submission.createdAt,
     });
 
     return NextResponse.json(
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error processing contact form:', error);
+    logger.error('Error processing contact form', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to submit contact form. Please try again later.');
   }
 }
@@ -112,7 +112,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching contact submissions:', error);
+    logger.error('Error fetching contact submissions', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to fetch contact submissions');
   }
 }

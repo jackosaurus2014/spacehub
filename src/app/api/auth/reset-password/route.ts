@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import prisma from '@/lib/db';
 import { validateBody, resetPasswordSchema } from '@/lib/validations';
 import { validationError, internalError } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   try {
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
       message: 'Password has been reset successfully.',
     });
   } catch (error) {
-    console.error('Reset password error:', error);
+    logger.error('Reset password error', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to reset password');
   }
 }

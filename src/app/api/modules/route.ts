@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 import {
@@ -22,7 +23,7 @@ export async function GET() {
     const modules = await getDefaultModulePreferences();
     return NextResponse.json({ modules });
   } catch (error) {
-    console.error('Error fetching module preferences:', error);
+    logger.error('Error fetching module preferences', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch module preferences' },
       { status: 500 }
@@ -55,7 +56,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ modules });
   } catch (error) {
-    console.error('Error updating module order:', error);
+    logger.error('Error updating module order', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to update module order' },
       { status: 500 }

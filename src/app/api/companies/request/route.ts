@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { Resend } from 'resend';
 import { validationError, conflictError, internalError } from '@/lib/errors';
 import { companyRequestSchema, validateBody } from '@/lib/validations';
+import { logger } from '@/lib/logger';
 
 // Lazy initialization to avoid build-time errors
 let resendClient: Resend | null = null;
@@ -11,7 +12,7 @@ function getResend(): Resend | null {
   if (!resendClient) {
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
-      console.warn('RESEND_API_KEY not set - admin notifications disabled');
+      logger.warn('RESEND_API_KEY not set - admin notifications disabled');
       return null;
     }
     resendClient = new Resend(apiKey);
@@ -116,10 +117,10 @@ Request ID: ${companyRequest.id}
 Submitted at: ${new Date().toISOString()}
           `,
         });
-        console.log('Admin notification sent for company request:', companyRequest.id);
+        logger.info('Admin notification sent for company request', { id: companyRequest.id });
       } catch (emailError) {
         // Log but don't fail the request if email fails
-        console.error('Failed to send admin notification:', emailError);
+        logger.error('Failed to send admin notification', { error: emailError instanceof Error ? emailError.message : String(emailError) });
       }
     }
 
@@ -129,7 +130,7 @@ Submitted at: ${new Date().toISOString()}
       id: companyRequest.id,
     });
   } catch (error) {
-    console.error('Error creating company request:', error);
+    logger.error('Error creating company request', { error: error instanceof Error ? error.message : String(error) });
     return internalError();
   }
 }
@@ -144,7 +145,7 @@ export async function GET() {
 
     return NextResponse.json({ requests });
   } catch (error) {
-    console.error('Error fetching company requests:', error);
+    logger.error('Error fetching company requests', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch company requests' },
       { status: 500 }

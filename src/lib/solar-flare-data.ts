@@ -2,6 +2,7 @@ import prisma from './db';
 import { safeJsonParse } from './errors';
 import { SolarFlare, SolarForecast, SolarActivity, FlareClassification, RiskLevel, ImpactLevel, GeomagneticLevel, SolarStatus } from '@/types';
 import { fetchNasaDonki, fetchNoaaSwpc, getDateRange } from './external-apis';
+import { logger } from './logger';
 
 // Helper to generate dates relative to now
 const daysFromNow = (days: number) => {
@@ -439,13 +440,13 @@ export async function fetchNasaDonkiSolarFlares(): Promise<NasaDonkiFlare[]> {
     });
 
     if (!Array.isArray(data)) {
-      console.warn('NASA DONKI returned non-array data:', data);
+      logger.warn('NASA DONKI returned non-array data');
       return [];
     }
 
     return data as NasaDonkiFlare[];
   } catch (error) {
-    console.error('Failed to fetch NASA DONKI solar flares:', error);
+    logger.error('Failed to fetch NASA DONKI solar flares', { error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }
@@ -458,13 +459,13 @@ export async function fetchNoaaXrayFlares(): Promise<NoaaXrayFlare[]> {
     const data = await fetchNoaaSwpc('/json/goes/primary/xray-flares-7-day.json');
 
     if (!Array.isArray(data)) {
-      console.warn('NOAA SWPC xray-flares returned non-array data:', data);
+      logger.warn('NOAA SWPC xray-flares returned non-array data');
       return [];
     }
 
     return data as NoaaXrayFlare[];
   } catch (error) {
-    console.error('Failed to fetch NOAA SWPC X-ray flares:', error);
+    logger.error('Failed to fetch NOAA SWPC X-ray flares', { error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }
@@ -477,7 +478,7 @@ export async function fetchNoaaPlanetaryKIndex(): Promise<NoaaKpIndex[]> {
     const data = await fetchNoaaSwpc('/products/noaa-planetary-k-index.json');
 
     if (!Array.isArray(data)) {
-      console.warn('NOAA SWPC K-index returned non-array data:', data);
+      logger.warn('NOAA SWPC K-index returned non-array data');
       return [];
     }
 
@@ -489,7 +490,7 @@ export async function fetchNoaaPlanetaryKIndex(): Promise<NoaaKpIndex[]> {
 
     return kpData;
   } catch (error) {
-    console.error('Failed to fetch NOAA planetary K-index:', error);
+    logger.error('Failed to fetch NOAA planetary K-index', { error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }

@@ -1875,6 +1875,26 @@ export async function getCommodityPrices(options?: {
 
   const commodities = await prisma.commodityPrice.findMany({
     where,
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      symbol: true,
+      category: true,
+      pricePerKg: true,
+      pricePerTonne: true,
+      priceUnit: true,
+      priceSource: true,
+      annualProduction: true,
+      marketCap: true,
+      priceVolatility: true,
+      spaceApplications: true,
+      inSpaceValue: true,
+      description: true,
+      lastPriceUpdate: true,
+      createdAt: true,
+      updatedAt: true,
+    },
     orderBy,
     take: limit,
   });
@@ -1883,8 +1903,8 @@ export async function getCommodityPrices(options?: {
     ...c,
     category: c.category as CommodityCategory,
     priceVolatility: c.priceVolatility as PriceVolatility | null,
-    spaceApplications: c.spaceApplications ? safeJsonParse(c.spaceApplications, null) : null,
-  }));
+    spaceApplications: c.spaceApplications ? safeJsonParse(c.spaceApplications, null) as string[] | null : null,
+  })) as CommodityPrice[];
 }
 
 export async function getCommodityBySlug(slug: string): Promise<CommodityPrice | null> {
@@ -1960,7 +1980,9 @@ export async function calculateBodyValue(
   composition: Record<string, number>,
   totalMass: number
 ): Promise<{ totalValue: number; breakdown: Array<{ resource: string; mass: number; value: number }> }> {
-  const commodities = await prisma.commodityPrice.findMany();
+  const commodities = await prisma.commodityPrice.findMany({
+    select: { slug: true, pricePerKg: true },
+  });
   const commodityMap = new Map(commodities.map(c => [c.slug, c.pricePerKg]));
 
   const breakdown: Array<{ resource: string; mass: number; value: number }> = [];

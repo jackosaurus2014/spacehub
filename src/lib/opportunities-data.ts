@@ -1,6 +1,7 @@
 import prisma from '@/lib/db';
 import { safeJsonParse } from '@/lib/errors';
 import Anthropic from '@anthropic-ai/sdk';
+import { logger } from '@/lib/logger';
 
 // Initialize Anthropic client if API key is available
 const anthropic = process.env.ANTHROPIC_API_KEY
@@ -409,6 +410,33 @@ export async function getOpportunities(options?: {
   const [opportunities, total] = await Promise.all([
     prisma.businessOpportunity.findMany({
       where,
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        description: true,
+        type: true,
+        category: true,
+        sector: true,
+        estimatedValue: true,
+        timeframe: true,
+        difficulty: true,
+        sourceType: true,
+        sourceUrl: true,
+        sourceName: true,
+        agency: true,
+        dueDate: true,
+        contractType: true,
+        setAside: true,
+        aiConfidence: true,
+        aiReasoning: true,
+        relatedTrends: true,
+        targetAudience: true,
+        status: true,
+        featured: true,
+        discoveredAt: true,
+        expiresAt: true,
+      },
       orderBy: [
         { featured: 'desc' },
         { discoveredAt: 'desc' },
@@ -561,7 +589,7 @@ Return your response as a JSON array of opportunity objects.`;
         }));
       }
     } catch {
-      console.error('Failed to parse AI response');
+      logger.error('Failed to parse AI response');
     }
 
     // Store new opportunities

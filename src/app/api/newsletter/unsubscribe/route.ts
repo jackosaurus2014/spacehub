@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +47,7 @@ export async function GET(request: Request) {
       `${process.env.NEXT_PUBLIC_APP_URL}/?newsletter=unsubscribed`
     );
   } catch (error) {
-    console.error('Newsletter unsubscribe error:', error);
+    logger.error('Newsletter unsubscribe error', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.redirect(
       `${process.env.NEXT_PUBLIC_APP_URL}/?newsletter=error&reason=server_error`
     );
@@ -114,7 +115,7 @@ export async function POST(request: Request) {
       message: 'Successfully unsubscribed',
     });
   } catch (error) {
-    console.error('Newsletter unsubscribe POST error:', error);
+    logger.error('Newsletter unsubscribe POST error', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to unsubscribe' },
       { status: 500 }

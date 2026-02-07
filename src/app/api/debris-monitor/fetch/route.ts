@@ -7,6 +7,8 @@ import {
   calculateOrbitalStatistics,
   updateDebrisStatsFromCelesTrak,
 } from '@/lib/debris-data';
+import { apiCache, CacheTTL } from '@/lib/api-cache';
+import { logger } from '@/lib/logger';
 
 // CelesTrak object groups to fetch
 const CELESTRAK_GROUPS = {
@@ -17,6 +19,8 @@ const CELESTRAK_GROUPS = {
 } as const;
 
 type CelesTrakGroup = keyof typeof CELESTRAK_GROUPS;
+
+const CACHE_KEY = 'debris-monitor:fetch-result';
 
 export async function POST() {
   try {
@@ -34,7 +38,7 @@ export async function POST() {
     // Fetch data for each group
     for (const [group, description] of Object.entries(CELESTRAK_GROUPS)) {
       try {
-        console.log(`Fetching CelesTrak data for: ${description}`);
+        logger.info(`Fetching CelesTrak data for: ${description}`);
 
         const gpData = await fetchCelesTrakGPData(group);
 
@@ -52,7 +56,7 @@ export async function POST() {
           totalMeo += orbitalStats.meo;
           totalGeo += orbitalStats.geo;
 
-          console.log(`${description}: ${count} objects (LEO: ${orbitalStats.leo}, MEO: ${orbitalStats.meo}, GEO: ${orbitalStats.geo})`);
+          logger.info(`${description}: ${count} objects (LEO: ${orbitalStats.leo}, MEO: ${orbitalStats.meo}, GEO: ${orbitalStats.geo})`);
         } else {
           results[group] = {
             count: 0,
@@ -61,7 +65,7 @@ export async function POST() {
           };
         }
       } catch (error) {
-        console.error(`Error fetching ${group}:`, error);
+        logger.error(`Error fetching ${group}`, { error: error instanceof Error ? error.message : String(error) });
         results[group] = {
           count: 0,
           orbitalStats: { leo: 0, meo: 0, geo: 0 },
@@ -70,15 +74,18 @@ export async function POST() {
       }
     }
 
-    // Update database with new statistics
-    const statsUpdate = await updateDebrisStatsFromCelesTrak({
-      totalTracked: totalObjects,
-      leoCount: totalLeo,
-      meoCount: totalMeo,
-      geoCount: totalGeo,
-    });
+    // Update database with new statistics (only if we got data)
+    let statsUpdate = false;
+    if (totalObjects > 0) {
+      statsUpdate = await updateDebrisStatsFromCelesTrak({
+        totalTracked: totalObjects,
+        leoCount: totalLeo,
+        meoCount: totalMeo,
+        geoCount: totalGeo,
+      });
+    }
 
-    return NextResponse.json({
+    const responseData = {
       success: true,
       timestamp: new Date().toISOString(),
       summary: {
@@ -91,15 +98,39 @@ export async function POST() {
       },
       byGroup: results,
       databaseUpdated: statsUpdate,
-    });
+      source: 'live' as const,
+    };
+
+    // Cache the successful result
+    apiCache.set(CACHE_KEY, responseData, CacheTTL.SLOW);
+
+    return NextResponse.json(responseData);
   } catch (error) {
-    console.error('Failed to fetch CelesTrak data:', error);
-    return NextResponse.json(
-      {
-        error: 'Failed to fetch satellite/debris tracking data',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    );
+    logger.error('Failed to fetch CelesTrak data', { error: error instanceof Error ? error.message : String(error) });
+
+    // Try to return cached result
+    const cached = apiCache.getStale<Record<string, unknown>>(CACHE_KEY);
+
+    if (cached) {
+      logger.info(`[DebrisMonitor] Serving cached fetch result (stale: ${cached.isStale})`);
+      return NextResponse.json({
+        ...cached.value,
+        source: 'cache',
+        cached: true,
+        cachedAt: new Date(cached.storedAt).toISOString(),
+        warning: 'CelesTrak is temporarily unavailable. Showing previously fetched data.',
+      });
+    }
+
+    // No cache -- return graceful fallback instead of 500
+    return NextResponse.json({
+      success: false,
+      message: 'CelesTrak is temporarily unavailable. Previously saved debris data is still available via GET /api/debris-monitor.',
+      source: 'fallback',
+      summary: { totalObjects: 0, byOrbit: { leo: 0, meo: 0, geo: 0 } },
+      byGroup: {},
+      databaseUpdated: false,
+      timestamp: new Date().toISOString(),
+    });
   }
 }

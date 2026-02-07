@@ -1,4 +1,5 @@
 import prisma from './db';
+import { logger } from './logger';
 
 // Government Contract Types
 export type ContractAgency = 'NASA' | 'USSF' | 'ESA';
@@ -592,7 +593,7 @@ export async function initializeGovernmentContracts(): Promise<{ count: number }
       });
       count++;
     } catch (error) {
-      console.error(`Failed to save contract ${contract.slug}:`, error);
+      logger.error(`Failed to save contract ${contract.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -626,6 +627,28 @@ export async function getGovernmentContracts(options?: {
   const [contracts, total] = await Promise.all([
     prisma.governmentContract.findMany({
       where,
+      select: {
+        id: true,
+        slug: true,
+        agency: true,
+        title: true,
+        description: true,
+        type: true,
+        value: true,
+        valueMin: true,
+        valueMax: true,
+        solicitationNumber: true,
+        postedDate: true,
+        dueDate: true,
+        awardDate: true,
+        awardee: true,
+        naicsCode: true,
+        category: true,
+        status: true,
+        sourceUrl: true,
+        createdAt: true,
+        updatedAt: true,
+      },
       orderBy: [
         { status: 'asc' }, // Open first
         { postedDate: 'desc' },
@@ -642,6 +665,28 @@ export async function getGovernmentContracts(options?: {
 // Get recent contracts for ticker
 export async function getRecentContracts(limit: number = 10): Promise<GovernmentContract[]> {
   const contracts = await prisma.governmentContract.findMany({
+    select: {
+      id: true,
+      slug: true,
+      agency: true,
+      title: true,
+      description: true,
+      type: true,
+      value: true,
+      valueMin: true,
+      valueMax: true,
+      solicitationNumber: true,
+      postedDate: true,
+      dueDate: true,
+      awardDate: true,
+      awardee: true,
+      naicsCode: true,
+      category: true,
+      status: true,
+      sourceUrl: true,
+      createdAt: true,
+      updatedAt: true,
+    },
     orderBy: { postedDate: 'desc' },
     take: limit,
   });

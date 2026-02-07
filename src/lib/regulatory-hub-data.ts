@@ -13,6 +13,7 @@
  */
 
 import prisma from './db';
+import { logger } from './logger';
 
 // ============================================================================
 // TYPES
@@ -2023,7 +2024,7 @@ export async function fetchFederalRegisterUpdates(
     const queryString = new URLSearchParams(params).toString();
     const fullUrl = `${baseUrl}?${queryString}&${agencyParams}`;
 
-    console.log(`[Federal Register] Fetching from: ${fullUrl}`);
+    logger.info(`[Federal Register] Fetching from: ${fullUrl}`);
 
     const response = await fetch(fullUrl, {
       headers: {
@@ -2040,7 +2041,7 @@ export async function fetchFederalRegisterUpdates(
     // Transform results to our internal format
     const documents = data.results.map(transformFederalRegisterDocument);
 
-    console.log(`[Federal Register] Fetched ${documents.length} of ${data.count} total documents`);
+    logger.info(`[Federal Register] Fetched ${documents.length} of ${data.count} total documents`);
 
     return {
       success: true,
@@ -2048,7 +2049,7 @@ export async function fetchFederalRegisterUpdates(
       totalCount: data.count,
     };
   } catch (error) {
-    console.error('[Federal Register] Fetch error:', error);
+    logger.error('[Federal Register] Fetch error', { error: error instanceof Error ? error.message : String(error) });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error fetching from Federal Register',
@@ -2107,10 +2108,10 @@ export async function syncFederalRegisterUpdates(
           },
         });
         newCount++;
-        console.log(`[Federal Register Sync] Stored new document: ${policyChange.slug}`);
+        logger.info(`[Federal Register Sync] Stored new document: ${policyChange.slug}`);
       }
     } catch (error) {
-      console.error(`[Federal Register Sync] Error storing ${policyChange.slug}:`, error);
+      logger.error(`[Federal Register Sync] Error storing ${policyChange.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -2185,7 +2186,7 @@ export async function initializeRegulatoryHubData(): Promise<{
       });
       policiesCount++;
     } catch (error) {
-      console.error(`Failed to save policy ${policy.slug}:`, error);
+      logger.error(`Failed to save policy ${policy.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -2234,7 +2235,7 @@ export async function initializeRegulatoryHubData(): Promise<{
       });
       licensesCount++;
     } catch (error) {
-      console.error(`Failed to save license ${license.slug}:`, error);
+      logger.error(`Failed to save license ${license.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -2289,7 +2290,7 @@ export async function initializeRegulatoryHubData(): Promise<{
       });
       casesCount++;
     } catch (error) {
-      console.error(`Failed to save case ${lawCase.slug}:`, error);
+      logger.error(`Failed to save case ${lawCase.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -2324,7 +2325,7 @@ export async function initializeRegulatoryHubData(): Promise<{
       });
       sourcesCount++;
     } catch (error) {
-      console.error(`Failed to save source ${source.slug}:`, error);
+      logger.error(`Failed to save source ${source.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -2359,7 +2360,7 @@ export async function initializeRegulatoryHubData(): Promise<{
       });
       eccnsCount++;
     } catch (error) {
-      console.error(`Failed to save ECCN ${eccn.eccn}:`, error);
+      logger.error(`Failed to save ECCN ${eccn.eccn}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -2392,7 +2393,7 @@ export async function initializeRegulatoryHubData(): Promise<{
       });
       usmlCount++;
     } catch (error) {
-      console.error(`Failed to save USML ${usml.category}:`, error);
+      logger.error(`Failed to save USML ${usml.category}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 

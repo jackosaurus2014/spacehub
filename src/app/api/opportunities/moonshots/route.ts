@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -108,7 +109,7 @@ Format as JSON array with these fields. Be creative and think beyond conventiona
 
     return SEED_MOONSHOTS;
   } catch (error) {
-    console.error('Failed to generate AI moonshots:', error);
+    logger.error('Failed to generate AI moonshots', { error: error instanceof Error ? error.message : String(error) });
     return SEED_MOONSHOTS;
   }
 }
@@ -123,7 +124,7 @@ export async function GET() {
       disclaimer: 'These are speculative, high-risk ideas for educational purposes. Not investment advice.',
     });
   } catch (error) {
-    console.error('Failed to fetch moonshots:', error);
+    logger.error('Failed to fetch moonshots', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch moonshots' },
       { status: 500 }
@@ -142,7 +143,7 @@ export async function POST() {
       disclaimer: 'These are speculative, high-risk ideas for educational purposes. Not investment advice.',
     });
   } catch (error) {
-    console.error('Failed to generate moonshots:', error);
+    logger.error('Failed to generate moonshots', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to generate moonshots' },
       { status: 500 }

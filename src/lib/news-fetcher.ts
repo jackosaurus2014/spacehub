@@ -1,6 +1,18 @@
 import prisma from './db';
 import RSSParser from 'rss-parser';
 import sanitizeHtml from 'sanitize-html';
+import { createCircuitBreaker } from './circuit-breaker';
+import { logger } from './logger';
+
+const snapiBreaker = createCircuitBreaker('snapi', {
+  failureThreshold: 3,
+  resetTimeout: 120_000, // 2 minutes
+});
+
+const rssBreaker = createCircuitBreaker('rss-news', {
+  failureThreshold: 5,
+  resetTimeout: 60_000, // 1 minute
+});
 
 interface SpaceflightNewsArticle {
   id: number;
@@ -42,51 +54,53 @@ export function categorizeArticle(title: string, summary: string): string {
 // --- SNAPI (Spaceflight News API) fetching ---
 
 async function fetchSNAPIEndpoint(endpoint: string, limit: number): Promise<number> {
-  const response = await fetch(
-    `https://api.spaceflightnewsapi.net/v4/${endpoint}/?limit=${limit}&ordering=-published_at`,
-    { next: { revalidate: 300 } }
-  );
+  return snapiBreaker.execute(async () => {
+    const response = await fetch(
+      `https://api.spaceflightnewsapi.net/v4/${endpoint}/?limit=${limit}&ordering=-published_at`,
+      { next: { revalidate: 300 } }
+    );
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${endpoint}: ${response.status}`);
-  }
-
-  const data = await response.json();
-  const articles: SpaceflightNewsArticle[] = data.results;
-
-  let savedCount = 0;
-
-  for (const article of articles) {
-    const category = categorizeArticle(article.title, article.summary || '');
-
-    try {
-      await prisma.newsArticle.upsert({
-        where: { url: article.url },
-        update: {
-          title: article.title,
-          summary: article.summary || null,
-          source: article.news_site,
-          category,
-          imageUrl: article.image_url || null,
-          publishedAt: new Date(article.published_at),
-        },
-        create: {
-          title: article.title,
-          summary: article.summary || null,
-          url: article.url,
-          source: article.news_site,
-          category,
-          imageUrl: article.image_url || null,
-          publishedAt: new Date(article.published_at),
-        },
-      });
-      savedCount++;
-    } catch {
-      continue;
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${endpoint}: ${response.status}`);
     }
-  }
 
-  return savedCount;
+    const data = await response.json();
+    const articles: SpaceflightNewsArticle[] = data.results;
+
+    let savedCount = 0;
+
+    for (const article of articles) {
+      const category = categorizeArticle(article.title, article.summary || '');
+
+      try {
+        await prisma.newsArticle.upsert({
+          where: { url: article.url },
+          update: {
+            title: article.title,
+            summary: article.summary || null,
+            source: article.news_site,
+            category,
+            imageUrl: article.image_url || null,
+            publishedAt: new Date(article.published_at),
+          },
+          create: {
+            title: article.title,
+            summary: article.summary || null,
+            url: article.url,
+            source: article.news_site,
+            category,
+            imageUrl: article.image_url || null,
+            publishedAt: new Date(article.published_at),
+          },
+        });
+        savedCount++;
+      } catch {
+        continue;
+      }
+    }
+
+    return savedCount;
+  }, 0); // fallback: 0 saved articles
 }
 
 export async function fetchSpaceflightNews(): Promise<number> {
@@ -99,20 +113,20 @@ export async function fetchSpaceflightNews(): Promise<number> {
     ]);
 
     const totalSNAPI = articlesCount + blogsCount + reportsCount;
-    console.log(`[SNAPI] Fetched ${articlesCount} articles, ${blogsCount} blogs, ${reportsCount} reports`);
+    logger.info(`[SNAPI] Fetched ${articlesCount} articles, ${blogsCount} blogs, ${reportsCount} reports`);
 
     // Fetch RSS feeds
     let rssCount = 0;
     try {
       rssCount = await fetchRSSFeeds();
-      console.log(`[RSS] Fetched ${rssCount} articles from RSS feeds`);
+      logger.info(`[RSS] Fetched ${rssCount} articles from RSS feeds`);
     } catch (rssError) {
-      console.error('[RSS] Error fetching RSS feeds:', rssError);
+      logger.error('[RSS] Error fetching RSS feeds', { error: rssError instanceof Error ? rssError.message : String(rssError) });
     }
 
     return totalSNAPI + rssCount;
   } catch (error) {
-    console.error('Error fetching spaceflight news:', error);
+    logger.error('Error fetching spaceflight news', { error: error instanceof Error ? error.message : String(error) });
     throw error;
   }
 }
@@ -161,60 +175,62 @@ const rssParser = new RSSParser({
 });
 
 async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
-  try {
-    const parsed = await rssParser.parseURL(feed.url);
-    let savedCount = 0;
+  return rssBreaker.execute(async () => {
+    try {
+      const parsed = await rssParser.parseURL(feed.url);
+      let savedCount = 0;
 
-    const items = (parsed.items || []).slice(0, 25); // Max 25 per feed
+      const items = (parsed.items || []).slice(0, 25); // Max 25 per feed
 
-    for (const item of items) {
-      if (!item.link || !item.title) continue;
+      for (const item of items) {
+        if (!item.link || !item.title) continue;
 
-      const summary = item.contentSnippet || item.content || item.summary || '';
-      const cleanSummary = sanitizeHtml(summary, { allowedTags: [], allowedAttributes: {} }).slice(0, 500);
-      const category = categorizeArticle(item.title, cleanSummary) !== 'missions'
-        ? categorizeArticle(item.title, cleanSummary)
-        : (feed.defaultCategory || 'missions');
+        const summary = item.contentSnippet || item.content || item.summary || '';
+        const cleanSummary = sanitizeHtml(summary, { allowedTags: [], allowedAttributes: {} }).slice(0, 500);
+        const category = categorizeArticle(item.title, cleanSummary) !== 'missions'
+          ? categorizeArticle(item.title, cleanSummary)
+          : (feed.defaultCategory || 'missions');
 
-      const publishedAt = item.pubDate ? new Date(item.pubDate) : new Date();
-      // Skip articles older than 7 days
-      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-      if (publishedAt < sevenDaysAgo) continue;
+        const publishedAt = item.pubDate ? new Date(item.pubDate) : new Date();
+        // Skip articles older than 7 days
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        if (publishedAt < sevenDaysAgo) continue;
 
-      const imageUrl = extractImageFromRSS(item);
+        const imageUrl = extractImageFromRSS(item);
 
-      try {
-        await prisma.newsArticle.upsert({
-          where: { url: item.link },
-          update: {
-            title: item.title,
-            summary: cleanSummary || null,
-            source: feed.name,
-            category,
-            imageUrl,
-            publishedAt,
-          },
-          create: {
-            title: item.title,
-            summary: cleanSummary || null,
-            url: item.link,
-            source: feed.name,
-            category,
-            imageUrl,
-            publishedAt,
-          },
-        });
-        savedCount++;
-      } catch {
-        continue;
+        try {
+          await prisma.newsArticle.upsert({
+            where: { url: item.link },
+            update: {
+              title: item.title,
+              summary: cleanSummary || null,
+              source: feed.name,
+              category,
+              imageUrl,
+              publishedAt,
+            },
+            create: {
+              title: item.title,
+              summary: cleanSummary || null,
+              url: item.link,
+              source: feed.name,
+              category,
+              imageUrl,
+              publishedAt,
+            },
+          });
+          savedCount++;
+        } catch {
+          continue;
+        }
       }
-    }
 
-    return savedCount;
-  } catch (error) {
-    console.warn(`[RSS] Failed to fetch ${feed.name}: ${error}`);
-    return 0;
-  }
+      return savedCount;
+    } catch (error) {
+      logger.warn(`[RSS] Failed to fetch ${feed.name}`, { error: String(error) });
+      throw error; // Re-throw so the circuit breaker can track the failure
+    }
+  }, 0); // fallback: 0 saved articles
 }
 
 function extractImageFromRSS(item: RSSParser.Item & Record<string, unknown>): string | null {

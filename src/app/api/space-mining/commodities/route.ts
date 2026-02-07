@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { getCommodityPrices } from '@/lib/space-mining-data';
 import { CommodityCategory } from '@/types';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
       total: commodities.length,
     });
   } catch (error) {
-    console.error('Failed to fetch commodity prices:', error);
+    logger.error('Failed to fetch commodity prices', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch commodity prices' },
       { status: 500 }

@@ -1,6 +1,13 @@
 import prisma from './db';
 import Parser from 'rss-parser';
 import sanitizeHtml from 'sanitize-html';
+import { createCircuitBreaker } from './circuit-breaker';
+import { logger } from './logger';
+
+const blogRssBreaker = createCircuitBreaker('rss-blogs', {
+  failureThreshold: 5,
+  resetTimeout: 60_000, // 1 minute
+});
 
 const parser = new Parser({
   customFields: {
@@ -275,7 +282,7 @@ export async function initializeBlogSources(): Promise<number> {
       });
       count++;
     } catch (err) {
-      console.error(`Failed to add source ${source.name}:`, err);
+      logger.error(`Failed to add source ${source.name}`, { error: err instanceof Error ? err.message : String(err) });
     }
   }
 
@@ -285,6 +292,12 @@ export async function initializeBlogSources(): Promise<number> {
 export async function fetchBlogPosts(): Promise<number> {
   const sources = await prisma.blogSource.findMany({
     where: { isActive: true, feedUrl: { not: null } },
+    select: {
+      id: true,
+      name: true,
+      feedUrl: true,
+      authorName: true,
+    },
   });
 
   let totalSaved = 0;
@@ -292,8 +305,14 @@ export async function fetchBlogPosts(): Promise<number> {
   for (const source of sources) {
     if (!source.feedUrl) continue;
 
-    try {
-      const feed = await parser.parseURL(source.feedUrl);
+    const feedUrl = source.feedUrl;
+    const sourceName = source.name;
+    const sourceId = source.id;
+    const sourceAuthorName = source.authorName;
+
+    const saved = await blogRssBreaker.execute(async () => {
+      const feed = await parser.parseURL(feedUrl);
+      let count = 0;
 
       for (const item of feed.items.slice(0, 20)) {
         if (!item.link || !item.title) continue;
@@ -308,7 +327,7 @@ export async function fetchBlogPosts(): Promise<number> {
             update: {
               title: item.title,
               excerpt,
-              authorName: item['dc:creator'] || item.creator || source.authorName,
+              authorName: item['dc:creator'] || item.creator || sourceAuthorName,
               topic,
               publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
             },
@@ -316,13 +335,13 @@ export async function fetchBlogPosts(): Promise<number> {
               title: item.title,
               excerpt,
               url: item.link,
-              sourceId: source.id,
-              authorName: item['dc:creator'] || item.creator || source.authorName,
+              sourceId: sourceId,
+              authorName: item['dc:creator'] || item.creator || sourceAuthorName,
               topic,
               publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
             },
           });
-          totalSaved++;
+          count++;
         } catch {
           // Skip duplicates or errors
           continue;
@@ -331,13 +350,18 @@ export async function fetchBlogPosts(): Promise<number> {
 
       // Update last fetched time
       await prisma.blogSource.update({
-        where: { id: source.id },
+        where: { id: sourceId },
         data: { lastFetched: new Date() },
       });
-    } catch (err) {
-      console.error(`Failed to fetch from ${source.name}:`, err);
-      continue;
+
+      return count;
+    }, 0); // fallback: 0 saved posts
+
+    if (saved === 0 && blogRssBreaker.getStatus().state !== 'CLOSED') {
+      logger.warn(`[Blogs] Circuit breaker active - skipped ${sourceName}`);
     }
+
+    totalSaved += saved;
   }
 
   return totalSaved;
@@ -368,7 +392,15 @@ export async function getBlogPosts(options?: {
 
   const posts = await prisma.blogPost.findMany({
     where,
-    include: {
+    select: {
+      id: true,
+      title: true,
+      excerpt: true,
+      url: true,
+      authorName: true,
+      topic: true,
+      publishedAt: true,
+      sourceId: true,
       source: {
         select: {
           name: true,
@@ -402,7 +434,18 @@ export async function getBlogSources(options?: {
 
   return prisma.blogSource.findMany({
     where,
-    include: {
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      url: true,
+      feedUrl: true,
+      type: true,
+      authorType: true,
+      description: true,
+      imageUrl: true,
+      isActive: true,
+      lastFetched: true,
       _count: {
         select: { posts: true },
       },
@@ -413,7 +456,14 @@ export async function getBlogSources(options?: {
 
 export async function getRecentBlogPosts(limit: number = 6) {
   return prisma.blogPost.findMany({
-    include: {
+    select: {
+      id: true,
+      title: true,
+      excerpt: true,
+      url: true,
+      authorName: true,
+      topic: true,
+      publishedAt: true,
       source: {
         select: {
           name: true,

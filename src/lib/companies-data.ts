@@ -1,4 +1,5 @@
 import prisma from './db';
+import { logger } from './logger';
 
 export interface CompanyData {
   slug: string;
@@ -2425,7 +2426,7 @@ export async function initializeCompanies(): Promise<number> {
       });
       count++;
     } catch (err) {
-      console.error(`Failed to add company ${company.name}:`, err);
+      logger.error(`Failed to add company ${company.name}`, { error: err instanceof Error ? err.message : String(err) });
     }
   }
 

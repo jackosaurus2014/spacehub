@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,7 +61,7 @@ export async function GET() {
       dailyArticleViews: isNewDay ? 0 : user.dailyArticleViews,
     });
   } catch (error) {
-    console.error('Failed to fetch subscription:', error);
+    logger.error('Failed to fetch subscription', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch subscription' },
       { status: 500 }
@@ -116,7 +117,7 @@ export async function POST(request: Request) {
       remaining: 10 - currentViews - 1,
     });
   } catch (error) {
-    console.error('Failed to track article view:', error);
+    logger.error('Failed to track article view', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json({ success: true }); // Don't block on error
   }
 }

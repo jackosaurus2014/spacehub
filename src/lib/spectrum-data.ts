@@ -290,6 +290,24 @@ export async function initializeSpectrumData() {
 // Query functions
 export async function getSpectrumAllocations(): Promise<SpectrumAllocation[]> {
   const allocations = await prisma.spectrumAllocation.findMany({
+    select: {
+      id: true,
+      slug: true,
+      bandName: true,
+      frequencyMin: true,
+      frequencyMax: true,
+      bandwidth: true,
+      service: true,
+      region: true,
+      allocationType: true,
+      assignedTo: true,
+      filingStatus: true,
+      numberOfFilings: true,
+      ituReference: true,
+      fccReference: true,
+      coordinationRequired: true,
+      description: true,
+    },
     orderBy: { frequencyMin: 'asc' },
   });
 
@@ -319,6 +337,24 @@ export async function getSpectrumFilings(options?: {
 
   const filings = await prisma.spectrumFiling.findMany({
     where,
+    select: {
+      id: true,
+      filingId: true,
+      operator: true,
+      system: true,
+      agency: true,
+      bandName: true,
+      frequencyMin: true,
+      frequencyMax: true,
+      orbitType: true,
+      numberOfSatellites: true,
+      status: true,
+      filingDate: true,
+      grantDate: true,
+      expiryDate: true,
+      description: true,
+      country: true,
+    },
     orderBy: { filingDate: 'desc' },
   });
 
@@ -326,8 +362,16 @@ export async function getSpectrumFilings(options?: {
 }
 
 export async function getSpectrumStats() {
-  const allocations = await prisma.spectrumAllocation.findMany();
-  const filings = await prisma.spectrumFiling.findMany();
+  const allocations = await prisma.spectrumAllocation.findMany({
+    select: {
+      bandName: true,
+      filingStatus: true,
+      numberOfFilings: true,
+    },
+  });
+  const filings = await prisma.spectrumFiling.findMany({
+    select: { status: true },
+  });
 
   const totalBands = allocations.length;
   const congestedBands = allocations.filter(a => a.filingStatus === 'congested').length;

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBlogPosts, getBlogSources } from '@/lib/blogs-fetcher';
 import { constrainPagination, constrainOffset, internalError } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ posts, total });
   } catch (error) {
-    console.error('Error fetching blogs:', error);
+    logger.error('Error fetching blogs', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to fetch blogs');
   }
 }

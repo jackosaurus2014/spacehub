@@ -9,6 +9,7 @@ import {
   SpectrumAlertStatus,
   FREQUENCY_BANDS,
 } from '@/lib/operational-awareness-data';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
       frequencyBands: includeBandInfo ? FREQUENCY_BANDS : undefined,
     });
   } catch (error) {
-    console.error('Failed to fetch spectrum alerts:', error);
+    logger.error('Failed to fetch spectrum alerts', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch spectrum alerts' },
       { status: 500 }

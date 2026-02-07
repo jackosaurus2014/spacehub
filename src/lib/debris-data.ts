@@ -1,6 +1,7 @@
 import prisma from './db';
 import { DebrisObject, ConjunctionEvent, DebrisStats, DebrisObjectType, ConjunctionRisk, DebrisSize } from '@/types';
 import { fetchCelesTrak } from './external-apis';
+import { logger } from './logger';
 
 // ============================================================
 // CelesTrak GP Data Types
@@ -49,13 +50,13 @@ export async function fetchCelesTrakGPData(group: string): Promise<CelesTrakGPDa
     const data = await fetchCelesTrak(group, 'json');
 
     if (!Array.isArray(data)) {
-      console.warn(`CelesTrak returned non-array data for group ${group}`);
+      logger.warn(`CelesTrak returned non-array data for group ${group}`);
       return [];
     }
 
     return data as CelesTrakGPData[];
   } catch (error) {
-    console.error(`Failed to fetch CelesTrak GP data for ${group}:`, error);
+    logger.error(`Failed to fetch CelesTrak GP data for ${group}`, { error: error instanceof Error ? error.message : String(error) });
     throw error;
   }
 }
@@ -170,7 +171,7 @@ export async function updateDebrisStatsFromCelesTrak(stats: {
 
     return true;
   } catch (error) {
-    console.error('Failed to update debris stats from CelesTrak:', error);
+    logger.error('Failed to update debris stats from CelesTrak', { error: error instanceof Error ? error.message : String(error) });
     return false;
   }
 }
@@ -1009,6 +1010,22 @@ export async function getConjunctionEvents(options?: {
 
   const events = await prisma.conjunctionEvent.findMany({
     where,
+    select: {
+      id: true,
+      eventTime: true,
+      probability: true,
+      missDistance: true,
+      primaryObject: true,
+      secondaryObject: true,
+      primaryType: true,
+      secondaryType: true,
+      altitude: true,
+      orbitType: true,
+      riskLevel: true,
+      maneuverRequired: true,
+      maneuverExecuted: true,
+      description: true,
+    },
     orderBy: { eventTime: 'asc' },
     ...(options?.limit ? { take: options.limit } : {}),
   });
@@ -1024,6 +1041,24 @@ export async function getConjunctionEvents(options?: {
  */
 export async function getNotableDebris(limit = 10): Promise<DebrisObject[]> {
   const objects = await prisma.debrisObject.findMany({
+    select: {
+      id: true,
+      noradId: true,
+      name: true,
+      objectType: true,
+      orbitType: true,
+      altitude: true,
+      inclination: true,
+      eccentricity: true,
+      size: true,
+      mass: true,
+      originMission: true,
+      originCountry: true,
+      originYear: true,
+      isActive: true,
+      trackable: true,
+      deorbitDate: true,
+    },
     orderBy: [
       { mass: 'desc' },
     ],

@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { initializeBlueprintData } from '@/lib/blueprint-data';
+import { logger } from '@/lib/logger';
 
 export async function POST() {
   try {
@@ -13,7 +14,7 @@ export async function POST() {
       ...result,
     });
   } catch (error) {
-    console.error('Error initializing blueprint data:', error);
+    logger.error('Error initializing blueprint data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to initialize blueprint data' },
       { status: 500 }

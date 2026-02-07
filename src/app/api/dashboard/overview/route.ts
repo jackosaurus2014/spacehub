@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { internalError } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -133,7 +134,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Failed to fetch dashboard overview:', error);
+    logger.error('Failed to fetch dashboard overview', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to fetch dashboard overview');
   }
 }

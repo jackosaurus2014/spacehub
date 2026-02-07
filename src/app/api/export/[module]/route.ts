@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { constrainPagination, internalError, validationError } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,7 +90,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error('Export error:', error);
+    logger.error('Export error', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to export data');
   }
 }

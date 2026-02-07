@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import prisma from '@/lib/db';
 import { validateBody } from '@/lib/validations';
 import { forgotPasswordSchema } from '@/lib/validations';
+import { logger } from '@/lib/logger';
 import { validationError, internalError } from '@/lib/errors';
 import { generatePasswordResetEmail } from '@/lib/newsletter/email-templates';
 
@@ -57,13 +58,13 @@ export async function POST(req: NextRequest) {
         text,
       });
     } catch (emailError) {
-      console.error('Failed to send password reset email:', emailError);
+      logger.error('Failed to send password reset email', { error: emailError instanceof Error ? emailError.message : String(emailError) });
       // Don't expose email sending failures to client
     }
 
     return successResponse;
   } catch (error) {
-    console.error('Forgot password error:', error);
+    logger.error('Forgot password error', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to process password reset request');
   }
 }

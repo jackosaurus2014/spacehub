@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getProposedRegulations } from '@/lib/compliance-data';
 import { RegulationCategory, RegulationStatus } from '@/types';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +22,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ regulations });
   } catch (error) {
-    console.error('Failed to fetch proposed regulations:', error);
+    logger.error('Failed to fetch proposed regulations', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch proposed regulations' },
       { status: 500 }

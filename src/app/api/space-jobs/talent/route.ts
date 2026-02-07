@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TalentExpertiseArea, TalentAvailability } from '@/types';
 import { getTalentBoard, getTalentStats } from '@/lib/talent-board-data';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
       stats,
     });
   } catch (error) {
-    console.error('Failed to fetch talent data:', error);
+    logger.error('Failed to fetch talent data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch talent data' },
       { status: 500 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSurfaceLanders } from '@/lib/solar-exploration-data';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ landers, total: landers.length });
   } catch (error) {
-    console.error('Failed to fetch landers:', error);
+    logger.error('Failed to fetch landers', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch landers' },
       { status: 500 }

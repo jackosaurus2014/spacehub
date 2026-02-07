@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPlanetaryBodyBySlug } from '@/lib/solar-exploration-data';
+import { logger } from '@/lib/logger';
 
 export async function GET(
   request: NextRequest,
@@ -18,7 +19,7 @@ export async function GET(
 
     return NextResponse.json({ body });
   } catch (error) {
-    console.error('Failed to fetch planetary body:', error);
+    logger.error('Failed to fetch planetary body', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch planetary body' },
       { status: 500 }

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { validationError, forbiddenError, internalError } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 import { helpRequestSchema, validateBody } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ helpRequest }, { status: 201 });
   } catch (error) {
-    console.error('Error creating help request:', error);
+    logger.error('Error creating help request', { error: error instanceof Error ? error.message : String(error) });
     return internalError();
   }
 }
@@ -63,7 +64,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ helpRequests, total });
   } catch (error) {
-    console.error('Error fetching help requests:', error);
+    logger.error('Error fetching help requests', { error: error instanceof Error ? error.message : String(error) });
     return internalError();
   }
 }

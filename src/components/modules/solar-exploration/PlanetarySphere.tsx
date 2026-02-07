@@ -1,8 +1,8 @@
 'use client';
 
 import { useRef, useMemo } from 'react';
-import { useFrame, useLoader } from '@react-three/fiber';
-import * as THREE from 'three';
+import { useFrame } from '@react-three/fiber';
+import { Mesh, Group, TextureLoader, BackSide } from 'three';
 import { PlanetaryBody, SurfaceLander } from '@/types';
 import LanderMarker from './LanderMarker';
 
@@ -12,13 +12,13 @@ interface PlanetarySphereProps {
 }
 
 export default function PlanetarySphere({ body, onLanderHover }: PlanetarySphereProps) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const groupRef = useRef<THREE.Group>(null);
+  const meshRef = useRef<Mesh>(null);
+  const groupRef = useRef<Group>(null);
 
   // Load texture if available
   const texture = useMemo(() => {
     if (body.textureUrl) {
-      const loader = new THREE.TextureLoader();
+      const loader = new TextureLoader();
       try {
         return loader.load(body.textureUrl);
       } catch {
@@ -58,7 +58,7 @@ export default function PlanetarySphere({ body, onLanderHover }: PlanetarySphere
             color={fallbackColor}
             transparent
             opacity={0.1}
-            side={THREE.BackSide}
+            side={BackSide}
           />
         </mesh>
       )}

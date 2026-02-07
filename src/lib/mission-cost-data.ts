@@ -15,6 +15,7 @@
  */
 
 import prisma from './db';
+import { logger } from './logger';
 
 // =============================================================================
 // LAUNCH PROVIDER COSTS
@@ -1526,7 +1527,7 @@ export async function initializeMissionCostData() {
       });
       launchProviders++;
     } catch (error) {
-      console.error(`Failed to upsert launch provider ${provider.slug}:`, error);
+      logger.error(`Failed to upsert launch provider ${provider.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -1559,7 +1560,7 @@ export async function initializeMissionCostData() {
       });
       insuranceRates++;
     } catch (error) {
-      console.error(`Failed to upsert insurance rate ${rate.category}:`, error);
+      logger.error(`Failed to upsert insurance rate ${rate.category}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -1597,7 +1598,7 @@ export async function initializeMissionCostData() {
       });
       regulatoryFees++;
     } catch (error) {
-      console.error(`Failed to upsert regulatory fee ${slug}:`, error);
+      logger.error(`Failed to upsert regulatory fee ${slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -1631,7 +1632,7 @@ export async function initializeMissionCostData() {
       });
       miscCosts++;
     } catch (error) {
-      console.error(`Failed to upsert misc cost ${slug}:`, error);
+      logger.error(`Failed to upsert misc cost ${slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -1665,7 +1666,7 @@ export async function initializeMissionCostData() {
       });
       ridesharePricing++;
     } catch (error) {
-      console.error(`Failed to upsert rideshare pricing ${slug}:`, error);
+      logger.error(`Failed to upsert rideshare pricing ${slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 

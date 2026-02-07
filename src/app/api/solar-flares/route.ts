@@ -5,6 +5,7 @@ import {
   getCurrentSolarActivity,
   getSolarFlareStats,
 } from '@/lib/solar-flare-data';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest) {
       stats,
     });
   } catch (error) {
-    console.error('Failed to fetch solar flare data:', error);
+    logger.error('Failed to fetch solar flare data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch solar flare data' },
       { status: 500 }

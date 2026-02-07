@@ -379,6 +379,26 @@ export async function initializeOrbitalData() {
 // Query functions
 export async function getOrbitalSlots(): Promise<OrbitalSlot[]> {
   const slots = await prisma.orbitalSlot.findMany({
+    select: {
+      id: true,
+      slug: true,
+      orbitType: true,
+      orbitName: true,
+      altitudeMin: true,
+      altitudeMax: true,
+      inclinationMin: true,
+      inclinationMax: true,
+      activeSatellites: true,
+      inactiveSatellites: true,
+      debrisCount: true,
+      projected1Year: true,
+      projected5Year: true,
+      description: true,
+      congestionLevel: true,
+      slotAvailability: true,
+      createdAt: true,
+      updatedAt: true,
+    },
     orderBy: { activeSatellites: 'desc' },
   });
 
@@ -392,6 +412,23 @@ export async function getOrbitalSlots(): Promise<OrbitalSlot[]> {
 
 export async function getTopOperators(limit = 10): Promise<SatelliteOperator[]> {
   const operators = await prisma.satelliteOperator.findMany({
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      country: true,
+      leoCount: true,
+      meoCount: true,
+      geoCount: true,
+      otherCount: true,
+      totalActive: true,
+      primaryPurpose: true,
+      constellationName: true,
+      planned1Year: true,
+      planned5Year: true,
+      createdAt: true,
+      updatedAt: true,
+    },
     orderBy: { totalActive: 'desc' },
     take: limit,
   });
@@ -413,6 +450,19 @@ export async function getUpcomingEvents(days = 30): Promise<OrbitalEvent[]> {
         lte: endDate,
       },
     },
+    select: {
+      id: true,
+      eventType: true,
+      orbitType: true,
+      expectedDate: true,
+      dateConfidence: true,
+      satelliteCount: true,
+      operatorName: true,
+      missionName: true,
+      description: true,
+      createdAt: true,
+      updatedAt: true,
+    },
     orderBy: { expectedDate: 'asc' },
   });
 
@@ -423,7 +473,15 @@ export async function getUpcomingEvents(days = 30): Promise<OrbitalEvent[]> {
 }
 
 export async function getOrbitalStats() {
-  const slots = await prisma.orbitalSlot.findMany();
+  const slots = await prisma.orbitalSlot.findMany({
+    select: {
+      activeSatellites: true,
+      inactiveSatellites: true,
+      debrisCount: true,
+      projected1Year: true,
+      projected5Year: true,
+    },
+  });
 
   const totalActive = slots.reduce((sum, s) => sum + s.activeSatellites, 0);
   const totalInactive = slots.reduce((sum, s) => sum + s.inactiveSatellites, 0);
@@ -432,6 +490,11 @@ export async function getOrbitalStats() {
   const projected5Year = slots.reduce((sum, s) => sum + s.projected5Year, 0);
 
   const operators = await prisma.satelliteOperator.findMany({
+    select: {
+      name: true,
+      totalActive: true,
+      constellationName: true,
+    },
     orderBy: { totalActive: 'desc' },
     take: 5,
   });

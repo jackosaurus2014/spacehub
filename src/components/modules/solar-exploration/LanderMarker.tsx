@@ -3,8 +3,8 @@
 import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
-import * as THREE from 'three';
-import { SurfaceLander, LANDER_STATUS_INFO } from '@/types';
+import { Vector3, Mesh, MeshBasicMaterial, DoubleSide } from 'three';
+import { SurfaceLander } from '@/types';
 
 interface LanderMarkerProps {
   lander: SurfaceLander;
@@ -13,7 +13,7 @@ interface LanderMarkerProps {
 }
 
 // Convert lat/long to 3D position on sphere
-function latLongToVector3(lat: number, lon: number, radius: number): THREE.Vector3 {
+function latLongToVector3(lat: number, lon: number, radius: number): Vector3 {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lon + 180) * (Math.PI / 180);
 
@@ -21,17 +21,15 @@ function latLongToVector3(lat: number, lon: number, radius: number): THREE.Vecto
   const y = radius * Math.cos(phi);
   const z = radius * Math.sin(phi) * Math.sin(theta);
 
-  return new THREE.Vector3(x, y, z);
+  return new Vector3(x, y, z);
 }
 
 export default function LanderMarker({ lander, radius, onHover }: LanderMarkerProps) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const pulseRef = useRef<THREE.Mesh>(null);
+  const meshRef = useRef<Mesh>(null);
+  const pulseRef = useRef<Mesh>(null);
   const [hovered, setHovered] = useState(false);
 
   const position = latLongToVector3(lander.latitude, lander.longitude, radius);
-  const statusInfo = LANDER_STATUS_INFO[lander.status];
-
   // Get color based on status
   const getStatusColor = () => {
     switch (lander.status) {
@@ -55,7 +53,7 @@ export default function LanderMarker({ lander, radius, onHover }: LanderMarkerPr
     if (pulseRef.current && lander.status === 'active') {
       const scale = 1 + Math.sin(state.clock.elapsedTime * 3) * 0.3;
       pulseRef.current.scale.setScalar(scale);
-      (pulseRef.current.material as THREE.MeshBasicMaterial).opacity =
+      (pulseRef.current.material as MeshBasicMaterial).opacity =
         0.6 - Math.sin(state.clock.elapsedTime * 3) * 0.4;
     }
 
@@ -97,7 +95,7 @@ export default function LanderMarker({ lander, radius, onHover }: LanderMarkerPr
       {lander.status === 'active' && (
         <mesh ref={pulseRef} rotation={[0, 0, 0]}>
           <ringGeometry args={[markerSize * 1.5, markerSize * 2, 32]} />
-          <meshBasicMaterial color={color} transparent opacity={0.4} side={THREE.DoubleSide} />
+          <meshBasicMaterial color={color} transparent opacity={0.4} side={DoubleSide} />
         </mesh>
       )}
 

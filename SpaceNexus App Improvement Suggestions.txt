@@ -147,8 +147,9 @@ Issues found:
 - Pagination without max limits
 
 Fixes:
-[ ] Add .select() to limit returned fields on remaining routes
-    NOTE: Some routes (e.g. /api/events) already use .select()
+[x] Add .select() to limit returned fields on remaining routes
+    DONE: Added .select() to companies, news, events, blogs, opportunities,
+    and debris API routes to return only needed fields. Reduces payload size.
 [ ] Consider Prisma JSON field types instead of string
 [x] Add database indexes review
     DONE: Added @@index directives to prisma/schema.prisma for commonly
@@ -167,13 +168,20 @@ Issues:
 Fixes:
 [x] Implement rate limiting tracking
     DONE: Sliding window rate limiter in middleware
-[ ] Add circuit breaker pattern
+[x] Add circuit breaker pattern
+    DONE: src/lib/circuit-breaker.ts implements open/half-open/closed states
+    with configurable failure thresholds. Applied to RSS and external fetchers.
 [ ] Batch requests where possible
-[ ] Add fallback data when APIs fail
+[x] Add fallback data when APIs fail
+    DONE: src/lib/api-cache.ts provides in-memory TTL cache. External API
+    calls cache successful responses; on failure, serve cached data as
+    fallback. Empty arrays returned when no cache exists.
 
 3.4 BUNDLE SIZE OPTIMIZATION
 ----------------------------
-[ ] Review and optimize Three.js imports (tree shaking)
+[x] Review and optimize Three.js imports (tree shaking)
+    DONE: Converted wildcard THREE imports to specific named imports where
+    beneficial. Verified @react-three/drei uses named imports correctly.
 [x] Lazy load heavy components (3D visualizations)
     DONE: Dynamic imports with next/dynamic for heavy components where found.
 [x] Add bundle analyzer to identify large dependencies
@@ -232,7 +240,10 @@ Fixes:
 
 4.5 DATA VISUALIZATION IMPROVEMENTS
 -----------------------------------
-[ ] Make chart axis labels responsive to viewport size
+[x] Make chart axis labels responsive to viewport size
+    DONE: Charts use useIsMobile() hook to truncate labels on small
+    viewports. Smaller font sizes on mobile, every-other label on
+    LineChart to prevent overlap.
 [ ] Add zoom/pan capabilities on large datasets
 [ ] Implement export functionality (CSV, PNG)
 [x] Add loading skeletons while data fetches
@@ -256,7 +267,9 @@ Fixes:
     DONE: focus:ring classes found across 22+ files and 54+ occurrences
 [x] Support arrow key navigation in dropdowns
     DONE: See Navigation.tsx keyboard navigation implementation above.
-[ ] Add keyboard shortcuts documentation
+[x] Add keyboard shortcuts documentation
+    DONE: KeyboardShortcutsModal component shows all shortcuts organized by
+    section. Opens with '?' key globally. Accessible from navigation.
 
 5.2 ARIA IMPROVEMENTS
 ---------------------
@@ -321,7 +334,9 @@ Consider adding:
     format with VEVENT entries for space events. Returns text/calendar
     content type with attachment disposition.
 [ ] POST /api/webhooks/subscribe - Event webhooks
-[ ] GET /api/cache/status - Cache health monitoring
+[x] GET /api/cache/status - Cache health monitoring
+    DONE: src/app/api/cache/status/route.ts reports uptime, memory usage,
+    Node version, circuit breaker states, and request timestamp.
 
 6.3 API DOCUMENTATION
 ---------------------
@@ -481,7 +496,10 @@ See companion document: "How to Publish SpaceNexus on App Stores.txt"
 
 10.1 MONITORING & LOGGING
 -------------------------
-[ ] Add structured logging (replace console.error)
+[x] Add structured logging (replace console.error)
+    DONE: src/lib/logger.ts with info/warn/error/debug levels. JSON output
+    in production, human-readable in dev. Replaced console.error/log across
+    all API routes and lib files.
 [ ] Integrate error tracking (Sentry)
 [ ] Add performance monitoring
 [ ] Set up uptime monitoring

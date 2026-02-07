@@ -17,6 +17,7 @@ import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import ToastContainer from '@/components/ui/Toast';
 import NavigationProgress from '@/components/ui/NavigationProgress';
+import KeyboardShortcutsModal from '@/components/ui/KeyboardShortcutsModal';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -170,6 +171,7 @@ export default function RootLayout({
               <PWAInstallPrompt />
               <ServiceWorkerRegistration />
               <ToastContainer />
+              <KeyboardShortcutsModal />
             </div>
           </SubscriptionProvider>
         </AuthProvider>

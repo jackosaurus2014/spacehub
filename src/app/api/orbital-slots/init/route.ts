@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { initializeOrbitalData } from '@/lib/orbital-slots-data';
+import { logger } from '@/lib/logger';
 
 export async function POST() {
   try {
@@ -9,7 +10,7 @@ export async function POST() {
       ...results,
     });
   } catch (error) {
-    console.error('Failed to initialize orbital data:', error);
+    logger.error('Failed to initialize orbital data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to initialize data' },
       { status: 500 }

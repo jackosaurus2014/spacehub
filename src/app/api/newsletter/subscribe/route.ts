@@ -5,6 +5,7 @@ import { sendVerificationEmail } from '@/lib/newsletter/email-service';
 import { renderVerificationEmail } from '@/lib/newsletter/email-templates';
 import { validationError, internalError } from '@/lib/errors';
 import { newsletterSubscribeSchema, validateBody } from '@/lib/validations';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -110,7 +111,8 @@ export async function POST(request: Request) {
     const emailResult = await sendVerificationEmail(email, html, plain, subject);
 
     if (!emailResult.success) {
-      console.error('Failed to send verification email:', emailResult.error);
+      const errVal = emailResult.error as unknown;
+      logger.error('Failed to send verification email', { error: errVal instanceof Error ? errVal.message : String(errVal) });
       // Still return success - subscriber is created, they can request resend
     }
 
@@ -119,7 +121,7 @@ export async function POST(request: Request) {
       message: 'Verification email sent. Please check your inbox to confirm your subscription.',
     });
   } catch (error) {
-    console.error('Newsletter subscribe error:', error);
+    logger.error('Newsletter subscribe error', { error: error instanceof Error ? error.message : String(error) });
     return internalError();
   }
 }

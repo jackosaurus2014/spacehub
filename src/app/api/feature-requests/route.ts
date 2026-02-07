@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { validationError, forbiddenError, internalError } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 import { featureRequestSchema, validateBody } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ featureRequest }, { status: 201 });
   } catch (error) {
-    console.error('Error creating feature request:', error);
+    logger.error('Error creating feature request', { error: error instanceof Error ? error.message : String(error) });
     return internalError();
   }
 }
@@ -65,7 +66,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ featureRequests, total });
   } catch (error) {
-    console.error('Error fetching feature requests:', error);
+    logger.error('Error fetching feature requests', { error: error instanceof Error ? error.message : String(error) });
     return internalError();
   }
 }

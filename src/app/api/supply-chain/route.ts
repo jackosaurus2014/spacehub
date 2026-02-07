@@ -13,6 +13,7 @@ import {
   getShortagesByCategory,
 } from '@/lib/supply-chain-data';
 import { SupplyChainTier } from '@/types';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -128,7 +129,7 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Invalid type parameter' }, { status: 400 });
     }
   } catch (error) {
-    console.error('Supply chain API error:', error);
+    logger.error('Supply chain API error', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch supply chain data' },
       { status: 500 }

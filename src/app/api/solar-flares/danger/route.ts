@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getDangerForecasts } from '@/lib/solar-flare-data';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('Failed to fetch danger forecasts:', error);
+    logger.error('Failed to fetch danger forecasts', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch danger forecasts' },
       { status: 500 }

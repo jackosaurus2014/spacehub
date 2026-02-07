@@ -7,6 +7,7 @@ import {
   getInsuranceMarketHistory,
   getInsuranceStats,
 } from '@/lib/space-insurance-data';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: Request) {
   try {
@@ -27,7 +28,7 @@ export async function GET(request: Request) {
       stats,
     });
   } catch (error) {
-    console.error('Failed to fetch space insurance data:', error);
+    logger.error('Failed to fetch space insurance data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch space insurance data' },
       { status: 500 }

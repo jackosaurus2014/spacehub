@@ -3,6 +3,7 @@
 
 import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
+import { logger } from '@/lib/logger';
 import { renderDigestEmail } from './email-templates';
 
 interface NewsItem {
@@ -141,21 +142,21 @@ Respond with valid JSON in this exact format:
     // Extract text content
     const textContent = response.content.find((block) => block.type === 'text');
     if (!textContent || textContent.type !== 'text') {
-      console.error('No text content in AI response');
+      logger.error('No text content in AI response');
       return [];
     }
 
     // Parse JSON response
     const jsonMatch = textContent.text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      console.error('No JSON found in AI response');
+      logger.error('No JSON found in AI response');
       return [];
     }
 
     const parsed = JSON.parse(jsonMatch[0]);
     return parsed.articles || [];
   } catch (error) {
-    console.error('Error generating feature articles:', error);
+    logger.error('Error generating feature articles', { error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }
@@ -265,7 +266,7 @@ export async function generateDailyDigest(): Promise<DigestResult> {
       },
     });
 
-    console.log(`Digest generated for ${digestDate.toISOString().split('T')[0]}: ${news.length} articles, ${featureArticles.length} features`);
+    logger.info(`Digest generated for ${digestDate.toISOString().split('T')[0]}`, { newsCount: news.length, featureCount: featureArticles.length });
 
     return {
       success: true,
@@ -275,7 +276,7 @@ export async function generateDailyDigest(): Promise<DigestResult> {
       featureArticles,
     };
   } catch (error) {
-    console.error('Error generating daily digest:', error);
+    logger.error('Error generating daily digest', { error: error instanceof Error ? error.message : String(error) });
     return {
       success: false,
       error: String(error),

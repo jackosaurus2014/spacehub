@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getBlueprintBySlug } from '@/lib/blueprint-data';
+import { logger } from '@/lib/logger';
 
 export async function GET(
   request: NextRequest,
@@ -20,7 +21,7 @@ export async function GET(
 
     return NextResponse.json({ blueprint });
   } catch (error) {
-    console.error('Failed to fetch blueprint:', error);
+    logger.error('Failed to fetch blueprint', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch blueprint' },
       { status: 500 }

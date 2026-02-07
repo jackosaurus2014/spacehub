@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 // ────────────────────────────────────────
 // Types
@@ -607,7 +608,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error('Failed to calculate mission cost:', error);
+    logger.error('Failed to calculate mission cost', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to calculate mission cost' },
       { status: 500 }
@@ -638,7 +639,7 @@ export async function POST(request: Request) {
     const response = await GET(new Request(url.toString()));
     return response;
   } catch (error) {
-    console.error('Failed to calculate mission cost:', error);
+    logger.error('Failed to calculate mission cost', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to calculate mission cost' },
       { status: 500 }

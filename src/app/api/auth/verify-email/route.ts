@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { validateBody, verifyEmailSchema } from '@/lib/validations';
 import { validationError, internalError } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
       message: 'Email verified successfully!',
     });
   } catch (error) {
-    console.error('Verify email error:', error);
+    logger.error('Verify email error', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to verify email');
   }
 }

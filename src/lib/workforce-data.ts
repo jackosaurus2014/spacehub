@@ -1,5 +1,6 @@
 import prisma from './db';
 import { SpaceJobPosting, WorkforceTrend, JobCategory, SeniorityLevel } from '@/types';
+import { logger } from './logger';
 
 // Seed data for Space Job Postings
 export const JOB_POSTINGS_SEED = [
@@ -934,7 +935,7 @@ export async function initializeWorkforceData(): Promise<{ jobPostings: number; 
       });
       jobPostingsCount++;
     } catch (error) {
-      console.error(`Failed to save job posting "${jobSeed.title}" at ${jobSeed.company}:`, error);
+      logger.error(`Failed to save job posting "${jobSeed.title}" at ${jobSeed.company}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -948,7 +949,7 @@ export async function initializeWorkforceData(): Promise<{ jobPostings: number; 
       });
       trendsCount++;
     } catch (error) {
-      console.error(`Failed to save workforce trend ${trendSeed.period}:`, error);
+      logger.error(`Failed to save workforce trend ${trendSeed.period}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -991,6 +992,25 @@ export async function getJobPostings(options?: {
   const [results, total] = await Promise.all([
     prisma.spaceJobPosting.findMany({
       where,
+      select: {
+        id: true,
+        title: true,
+        company: true,
+        location: true,
+        remoteOk: true,
+        category: true,
+        specialization: true,
+        seniorityLevel: true,
+        salaryMin: true,
+        salaryMax: true,
+        salaryMedian: true,
+        yearsExperience: true,
+        clearanceRequired: true,
+        degreeRequired: true,
+        isActive: true,
+        postedDate: true,
+        sourceUrl: true,
+      },
       orderBy: { postedDate: 'desc' },
       take: options?.limit || 20,
       skip: options?.offset || 0,

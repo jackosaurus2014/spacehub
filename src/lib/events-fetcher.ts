@@ -1,5 +1,12 @@
 import prisma from './db';
 import { SpaceEventType, SpaceEventStatus } from '@/types';
+import { createCircuitBreaker } from './circuit-breaker';
+import { logger } from './logger';
+
+const launchLibraryBreaker = createCircuitBreaker('launch-library', {
+  failureThreshold: 3,
+  resetTimeout: 120_000, // 2 minutes
+});
 
 interface LaunchLibraryLaunch {
   id: string;
@@ -98,7 +105,7 @@ function determineEventType(launch: LaunchLibraryLaunch): SpaceEventType {
 }
 
 export async function fetchLaunchLibraryEvents(): Promise<number> {
-  try {
+  return launchLibraryBreaker.execute(async () => {
     // Fetch upcoming launches (next 5 years worth)
     const launchResponse = await fetch(
       'https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=100&mode=detailed',
@@ -111,8 +118,7 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
     );
 
     if (!launchResponse.ok) {
-      console.error(`Launch Library API error: ${launchResponse.status}`);
-      return 0;
+      throw new Error(`Launch Library API error: ${launchResponse.status}`);
     }
 
     const launchData = await launchResponse.json();
@@ -166,7 +172,7 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
         });
         savedCount++;
       } catch (err) {
-        console.error(`Failed to save launch ${launch.id}:`, err);
+        logger.error(`Failed to save launch ${launch.id}`, { error: err instanceof Error ? err.message : String(err) });
         continue;
       }
     }
@@ -227,14 +233,11 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
         }
       }
     } catch (err) {
-      console.error('Failed to fetch events:', err);
+      logger.error('Failed to fetch events', { error: err instanceof Error ? err.message : String(err) });
     }
 
     return savedCount;
-  } catch (error) {
-    console.error('Error fetching space events:', error);
-    throw error;
-  }
+  }, 0); // fallback: 0 saved events
 }
 
 export async function getUpcomingEvents(options?: {

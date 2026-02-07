@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getNewsArticles } from '@/lib/news-fetcher';
 import { constrainPagination, constrainOffset, internalError } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ articles, total });
   } catch (error) {
-    console.error('Error fetching news:', error);
+    logger.error('Error fetching news', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to fetch news');
   }
 }

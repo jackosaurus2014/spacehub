@@ -1,6 +1,7 @@
 import prisma from './db';
 import { LaunchWindow, CelestialDestination, TransferType } from '@/types';
 import { fetchLaunchLibrary, fetchSpaceX } from './external-apis';
+import { logger } from './logger';
 
 // Helper to create dates relative to today
 const daysFromNow = (days: number) => {
@@ -527,7 +528,7 @@ export async function fetchLaunchLibraryUpcoming(limit = 50): Promise<Normalized
   const data = await fetchLaunchLibrary('launch/upcoming', { limit: String(limit) }) as LaunchLibraryResponse;
 
   if (!data.results || !Array.isArray(data.results)) {
-    console.warn('Launch Library 2: No results array in response');
+    logger.warn('Launch Library 2: No results array in response');
     return [];
   }
 
@@ -559,7 +560,7 @@ export async function fetchSpaceXUpcoming(): Promise<NormalizedLaunch[]> {
   const data = await fetchSpaceX('launches/upcoming') as SpaceXLaunch[];
 
   if (!Array.isArray(data)) {
-    console.warn('SpaceX API: Response is not an array');
+    logger.warn('SpaceX API: Response is not an array');
     return [];
   }
 
@@ -697,7 +698,7 @@ export async function upsertLaunchEvents(
         created++;
       }
     } catch (error) {
-      console.error(`Failed to upsert launch ${launch.externalId}:`, error);
+      logger.error(`Failed to upsert launch ${launch.externalId}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 

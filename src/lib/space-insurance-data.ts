@@ -1,5 +1,6 @@
 import prisma from './db';
 import { InsuranceMissionType, InsuranceCoverageType, InsuranceStatus, InsurancePolicy, InsuranceMarketData } from '@/types';
+import { logger } from './logger';
 
 // Seed data for insurance market history (2021-2025)
 export const INSURANCE_MARKET_SEED = [
@@ -251,7 +252,7 @@ export async function initializeSpaceInsuranceData(): Promise<{ marketRecords: n
       });
       marketRecords++;
     } catch (error) {
-      console.error(`Failed to upsert insurance market data for year ${marketData.year}:`, error);
+      logger.error(`Failed to upsert insurance market data for year ${marketData.year}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -265,7 +266,7 @@ export async function initializeSpaceInsuranceData(): Promise<{ marketRecords: n
       });
       policies++;
     } catch (error) {
-      console.error(`Failed to upsert insurance policy ${policyData.slug}:`, error);
+      logger.error(`Failed to upsert insurance policy ${policyData.slug}`, { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -300,6 +301,28 @@ export async function getInsurancePolicies(options?: {
 
   const policies = await prisma.insurancePolicy.findMany({
     where,
+    select: {
+      id: true,
+      slug: true,
+      missionType: true,
+      coverageType: true,
+      insurer: true,
+      country: true,
+      premiumRate: true,
+      insuredValue: true,
+      premiumAmount: true,
+      deductible: true,
+      maxPayout: true,
+      missionName: true,
+      launchVehicle: true,
+      operator: true,
+      yearWritten: true,
+      claimFiled: true,
+      claimAmount: true,
+      claimPaid: true,
+      claimReason: true,
+      status: true,
+    },
     orderBy: { yearWritten: 'desc' },
     take: options?.limit || 50,
   });

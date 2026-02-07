@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 // Satellite Types
 export type OrbitType = 'LEO' | 'MEO' | 'GEO' | 'HEO' | 'SSO' | 'Polar';
@@ -741,7 +742,7 @@ export async function GET(request: NextRequest) {
       total: filteredSatellites.length,
     });
   } catch (error) {
-    console.error('Failed to fetch satellite data:', error);
+    logger.error('Failed to fetch satellite data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch satellite data' },
       { status: 500 }

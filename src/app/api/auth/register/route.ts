@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/db';
 import { validationError, alreadyExistsError, internalError } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 import { serverRegisterSchema, validateBody } from '@/lib/validations';
 import { generateVerificationEmail } from '@/lib/newsletter/email-templates';
 
@@ -58,7 +59,7 @@ export async function POST(req: NextRequest) {
         text,
       });
     } catch (emailError) {
-      console.error('Failed to send verification email:', emailError);
+      logger.error('Failed to send verification email', { error: emailError instanceof Error ? emailError.message : String(emailError) });
     }
 
     return NextResponse.json({
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
       name: user.name,
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    logger.error('Registration error', { error: error instanceof Error ? error.message : String(error) });
     return internalError();
   }
 }

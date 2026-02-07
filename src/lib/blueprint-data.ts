@@ -1,5 +1,6 @@
 import prisma from './db';
 import { safeJsonParse } from './errors';
+import { logger } from './logger';
 
 // ============================================================
 // Blueprint Types
@@ -1239,7 +1240,7 @@ export async function initializeBlueprintData() {
         results.created++;
       }
     } catch (error) {
-      console.error(`Error processing blueprint ${blueprint.slug}:`, error);
+      logger.error(`Error processing blueprint ${blueprint.slug}`, { error: error instanceof Error ? error.message : String(error) });
       results.errors++;
     }
   }

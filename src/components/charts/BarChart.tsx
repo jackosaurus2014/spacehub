@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 export interface BarChartData {
   label: string;
@@ -45,6 +46,10 @@ export default function BarChart({
   const [dimensions, setDimensions] = useState({ width: 0, height });
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isAnimated, setIsAnimated] = useState(false);
+  const isMobile = useIsMobile();
+
+  const labelFontSize = isMobile ? '10px' : '12px';
+  const maxLabelLength = isMobile ? 8 : 10;
 
   // Responsive sizing
   useEffect(() => {
@@ -222,10 +227,11 @@ export default function BarChart({
                     textAnchor="middle"
                     className="text-xs fill-slate-400"
                     style={{
-                      fontSize: totalBars > 10 ? '10px' : '12px',
+                      fontSize: totalBars > 10 ? '10px' : labelFontSize,
                     }}
                   >
-                    {d.label.length > 10 ? `${d.label.slice(0, 10)}...` : d.label}
+                    {d.label.length > maxLabelLength ? `${d.label.slice(0, maxLabelLength)}...` : d.label}
+                    <title>{d.label}</title>
                   </text>
                 </g>
               );
@@ -276,8 +282,10 @@ export default function BarChart({
                     textAnchor="end"
                     dominantBaseline="middle"
                     className="text-xs fill-slate-400"
+                    style={{ fontSize: labelFontSize }}
                   >
-                    {d.label.length > 15 ? `${d.label.slice(0, 15)}...` : d.label}
+                    {d.label.length > (isMobile ? 10 : 15) ? `${d.label.slice(0, isMobile ? 10 : 15)}...` : d.label}
+                    <title>{d.label}</title>
                   </text>
                 </g>
               );
@@ -313,6 +321,7 @@ export default function BarChart({
                       textAnchor="end"
                       dominantBaseline="middle"
                       className="text-xs fill-slate-400"
+                      style={{ fontSize: labelFontSize }}
                     >
                       {valueFormatter(value)}
                     </text>

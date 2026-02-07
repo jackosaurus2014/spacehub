@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { initializeSpaceMiningData } from '@/lib/space-mining-data';
+import { logger } from '@/lib/logger';
 
 export async function POST() {
   try {
@@ -13,7 +14,7 @@ export async function POST() {
       ...result,
     });
   } catch (error) {
-    console.error('Error initializing space mining data:', error);
+    logger.error('Error initializing space mining data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to initialize space mining data' },
       { status: 500 }

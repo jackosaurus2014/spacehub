@@ -6,6 +6,7 @@ import {
   getWorkforceStats,
   getSalaryBenchmarks,
 } from '@/lib/workforce-data';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,7 +44,7 @@ export async function GET(request: Request) {
       salaryBenchmarks,
     });
   } catch (error) {
-    console.error('Failed to fetch workforce data:', error);
+    logger.error('Failed to fetch workforce data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch workforce data' },
       { status: 500 }

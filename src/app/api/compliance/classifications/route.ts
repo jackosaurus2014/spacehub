@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getExportClassifications } from '@/lib/compliance-data';
 import { ExportRegime, ClassificationCategory } from '@/types';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ classifications });
   } catch (error) {
-    console.error('Failed to fetch export classifications:', error);
+    logger.error('Failed to fetch export classifications', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { error: 'Failed to fetch export classifications' },
       { status: 500 }

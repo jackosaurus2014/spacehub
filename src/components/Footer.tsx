@@ -141,7 +141,24 @@ export default function Footer() {
           {/* Bottom bar */}
           <div className="border-t border-slate-200 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-slate-500 text-sm">
             <p>&copy; {new Date().getFullYear()} SpaceNexus. All rights reserved.</p>
-            <p>Powered by Spaceflight News API</p>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => {
+                  const opener = (window as unknown as Record<string, unknown>).__openKeyboardShortcuts;
+                  if (typeof opener === 'function') {
+                    (opener as () => void)();
+                  }
+                }}
+                className="text-slate-400 hover:text-slate-600 text-xs transition-colors flex items-center gap-1"
+                aria-label="Open keyboard shortcuts help"
+              >
+                Keyboard shortcuts
+                <kbd className="inline-flex items-center justify-center min-w-[20px] h-5 bg-slate-200 border border-slate-300 rounded px-1 py-0 font-mono text-[10px] text-slate-500 ml-0.5">
+                  ?
+                </kbd>
+              </button>
+              <p>Powered by Spaceflight News API</p>
+            </div>
           </div>
         </div>
       </footer>
