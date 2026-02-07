@@ -87,7 +87,8 @@ function checkRateLimit(
   const now = Date.now();
   const windowStart = now - config.windowMs;
 
-  // Determine the rate limit key based on route group
+  // Group routes into buckets so sub-paths share a single counter
+  // (e.g., /api/auth/register and /api/auth/register/resend share one limit)
   let routeKey: string;
   if (pathname.startsWith('/api/auth/register')) {
     routeKey = 'auth-register';
@@ -101,12 +102,14 @@ function checkRateLimit(
 
   const key = `${ip}:${routeKey}`;
 
-  // Get existing timestamps and filter to current window
+  // Sliding window: keep only timestamps within the current window,
+  // then count them to decide if the request is allowed
   const timestamps = rateLimitStore.get(key) || [];
   const validTimestamps = timestamps.filter((ts) => ts > windowStart);
 
   if (validTimestamps.length >= config.maxRequests) {
-    // Rate limited - calculate retry after
+    // Retry-After = when the oldest request in the window expires,
+    // opening a slot for a new request
     const oldestInWindow = validTimestamps[0];
     const retryAfterMs = oldestInWindow + config.windowMs - now;
     const retryAfterSeconds = Math.ceil(retryAfterMs / 1000);
@@ -179,7 +182,8 @@ function checkCsrf(req: NextRequest): boolean {
     }
   }
 
-  // No Origin or Referer header - reject for safety
+  // No Origin or Referer = likely a direct/scripted request, not a browser;
+  // reject to prevent CSRF from clients that strip these headers
   return false;
 }
 

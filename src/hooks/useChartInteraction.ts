@@ -47,8 +47,10 @@ export function useChartInteraction(): UseChartInteractionResult {
 
   const clampTranslation = useCallback(
     (tx: number, ty: number, scale: number) => {
-      // When zoomed in, allow panning within the enlarged area
-      const maxTranslate = ((scale - 1) / scale) * 50; // percentage-based clamping
+      // Limit pan distance proportionally to zoom level: at 2x zoom the
+      // content extends 50% beyond the viewport in each direction, so
+      // maxTranslate scales from 0% (no zoom) to ~50% (max zoom)
+      const maxTranslate = ((scale - 1) / scale) * 50;
       const clampedX = Math.max(-maxTranslate, Math.min(maxTranslate, tx));
       const clampedY = Math.max(-maxTranslate, Math.min(maxTranslate, ty));
       return { x: clampedX, y: clampedY };
@@ -109,7 +111,8 @@ export function useChartInteraction(): UseChartInteractionResult {
       const dx = e.clientX - panStart.current.x;
       const dy = e.clientY - panStart.current.y;
 
-      // Convert pixel movement to a percentage-ish offset relative to zoom
+      // Divide by scale so dragging feels consistent regardless of zoom level:
+      // at higher zoom, each pixel of mouse movement maps to less content shift
       const sensitivity = 0.5 / transform.scale;
       const newTx = lastTranslate.current.x + dx * sensitivity;
       const newTy = lastTranslate.current.y + dy * sensitivity;
@@ -158,7 +161,8 @@ export function useChartInteraction(): UseChartInteractionResult {
         lastPinchDist.current = getTouchDistance(e.touches);
         e.preventDefault();
       } else if (e.touches.length === 1) {
-        // Double-tap detection
+        // Double-tap detection: if a timer from a previous tap is still active
+        // (< 300ms ago), treat this as a double-tap and reset zoom
         if (doubleTapTimer.current) {
           clearTimeout(doubleTapTimer.current);
           doubleTapTimer.current = null;
@@ -193,6 +197,8 @@ export function useChartInteraction(): UseChartInteractionResult {
         // Pinch zoom
         e.preventDefault();
         const dist = getTouchDistance(e.touches);
+        // Convert pixel-distance change to a small zoom delta (0.01 factor
+        // prevents the zoom from jumping wildly on each touch move event)
         const delta = (dist - lastPinchDist.current) * 0.01;
         lastPinchDist.current = dist;
 

@@ -64,7 +64,8 @@ export class CircuitBreaker {
   async execute<T>(fn: () => Promise<T>, fallback?: T): Promise<T> {
     // --- OPEN state handling ---
     if (this.state === CircuitState.OPEN) {
-      // Check whether enough time has passed to probe
+      // After resetTimeout elapses, allow exactly one "probe" request through
+      // to test if the downstream service has recovered (OPEN -> HALF_OPEN)
       if (this.lastFailureTime && Date.now() - this.lastFailureTime >= this.resetTimeout) {
         this.state = CircuitState.HALF_OPEN;
         logger.info(`CircuitBreaker:${this.name} transitioning to HALF_OPEN — allowing probe request`);
@@ -90,12 +91,12 @@ export class CircuitBreaker {
     } catch (error) {
       this.recordFailure();
 
-      // In HALF_OPEN, a single failure reopens immediately
+      // HALF_OPEN only permits one probe: any failure trips back to OPEN immediately,
+      // unlike CLOSED which tolerates up to failureThreshold failures
       if (this.state === CircuitState.HALF_OPEN) {
         this.trip();
       }
 
-      // In CLOSED, check if threshold has been reached
       if (this.failures >= this.failureThreshold) {
         this.trip();
       }
@@ -112,7 +113,8 @@ export class CircuitBreaker {
 
   /** Return the current status of this circuit breaker. */
   getStatus(): CircuitBreakerStatus {
-    // Auto-transition to HALF_OPEN for status reporting accuracy
+    // Eagerly transition so status endpoints reflect the real state,
+    // even if no execute() call has triggered the timeout check yet
     if (
       this.state === CircuitState.OPEN &&
       this.lastFailureTime &&

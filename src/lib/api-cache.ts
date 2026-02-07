@@ -48,7 +48,8 @@ class ApiCache {
     // Run cleanup every 5 minutes to prevent memory leaks
     if (typeof setInterval !== 'undefined') {
       this.cleanupInterval = setInterval(() => this.cleanup(), 300_000);
-      // Allow the process to exit even if the interval is still running
+      // unref() prevents this interval from keeping the Node.js event loop alive,
+      // so the process can exit cleanly during serverless cold-shutdown
       if (this.cleanupInterval && typeof this.cleanupInterval === 'object' && 'unref' in this.cleanupInterval) {
         this.cleanupInterval.unref();
       }
@@ -136,9 +137,9 @@ class ApiCache {
     const now = Date.now();
     let removed = 0;
 
-    // Note: we keep stale entries for a grace period (10x the TTL)
-    // so they can still be used as fallbacks. Only truly ancient entries
-    // are removed.
+    // Expired entries aren't deleted immediately because getStale() uses them
+    // as fallbacks when external APIs are down. We only evict entries that are
+    // 10x past their TTL -- old enough that the data is no longer useful.
     const STALE_GRACE = 10;
 
     for (const [key, entry] of Array.from(this.store.entries())) {

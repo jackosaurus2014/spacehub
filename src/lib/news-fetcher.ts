@@ -38,6 +38,8 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
 };
 
 export function categorizeArticle(title: string, summary: string): string {
+  // First-match wins: CATEGORY_KEYWORDS is ordered by specificity,
+  // so "launches" is checked before the broader "missions" category
   const text = `${title} ${summary}`.toLowerCase();
 
   for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
@@ -48,7 +50,7 @@ export function categorizeArticle(title: string, summary: string): string {
     }
   }
 
-  return 'missions'; // default category
+  return 'missions'; // default fallback for uncategorizable articles
 }
 
 // --- SNAPI (Spaceflight News API) fetching ---
@@ -187,6 +189,9 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
 
         const summary = item.contentSnippet || item.content || item.summary || '';
         const cleanSummary = sanitizeHtml(summary, { allowedTags: [], allowedAttributes: {} }).slice(0, 500);
+        // Use keyword-based categorization when it finds a specific match;
+        // fall back to the feed's default category only when categorizeArticle
+        // returns the generic 'missions' default (meaning no keywords matched)
         const category = categorizeArticle(item.title, cleanSummary) !== 'missions'
           ? categorizeArticle(item.title, cleanSummary)
           : (feed.defaultCategory || 'missions');

@@ -26,6 +26,7 @@ async function deliverWebhook(
   eventType: string,
   payload: object
 ): Promise<boolean> {
+  // Include timestamp in the signed payload so recipients can reject replays
   const timestamp = Date.now().toString();
   const body = JSON.stringify({
     event: eventType,
@@ -33,6 +34,8 @@ async function deliverWebhook(
     data: payload,
   });
 
+  // HMAC-SHA256 lets the recipient verify the payload came from us
+  // and wasn't tampered with, using their shared secret
   const signature = signPayload(body, secret);
 
   try {
@@ -113,6 +116,8 @@ async function handleFailure(
       },
     });
 
+    // Auto-deactivate persistently failing subscriptions to stop wasting
+    // resources on dead endpoints (subscribers must re-activate manually)
     if (updated.failureCount > MAX_FAILURE_COUNT) {
       await prisma.webhookSubscription.update({
         where: { id: subscriptionId },
@@ -145,7 +150,8 @@ async function handleFailure(
  * @param payload   - The event payload object to deliver
  */
 export function dispatchWebhook(eventType: string, payload: object): void {
-  // Fire-and-forget: run the async work without awaiting
+  // Fire-and-forget: void swallows the promise so callers aren't blocked
+  // by webhook delivery latency or failures
   void (async () => {
     try {
       const subscriptions = await prisma.webhookSubscription.findMany({

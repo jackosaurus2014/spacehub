@@ -17,7 +17,8 @@ export async function POST(req: NextRequest) {
 
     const { email } = validation.data;
 
-    // Always return success to prevent user enumeration
+    // Anti-enumeration: always return the same response regardless of whether
+    // the email exists, so attackers can't probe for valid accounts
     const successResponse = NextResponse.json({
       success: true,
       message: 'If an account with that email exists, a password reset link has been sent.',
@@ -26,7 +27,8 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) return successResponse;
 
-    // Invalidate any existing unused tokens for this user
+    // Invalidate prior tokens so only the latest reset link works,
+    // preventing confusion from multiple outstanding emails
     await prisma.passwordResetToken.updateMany({
       where: { userId: user.id, used: false },
       data: { used: true },
@@ -59,7 +61,7 @@ export async function POST(req: NextRequest) {
       });
     } catch (emailError) {
       logger.error('Failed to send password reset email', { error: emailError instanceof Error ? emailError.message : String(emailError) });
-      // Don't expose email sending failures to client
+      // Swallow email errors: exposing them would leak whether the account exists
     }
 
     return successResponse;

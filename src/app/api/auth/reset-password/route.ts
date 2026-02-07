@@ -40,7 +40,9 @@ export async function POST(req: NextRequest) {
     // Hash the new password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Update password and mark token as used in a transaction
+    // Atomic transaction: password update and token invalidation must both
+    // succeed or both rollback, otherwise a crash between the two steps
+    // could leave the token reusable or the password partially updated
     await prisma.$transaction([
       prisma.user.update({
         where: { id: resetToken.userId },

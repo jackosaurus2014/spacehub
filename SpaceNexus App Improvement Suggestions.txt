@@ -507,8 +507,13 @@ See companion document: "How to Publish SpaceNexus on App Stores.txt"
     DONE: Updated with validation, error handling, toast, testing, CI/CD,
     security, skeleton components, and PWA documentation sections.
 [ ] Document API endpoints
-[ ] Add inline code comments for complex logic
-[ ] Create developer onboarding guide
+[x] Add inline code comments for complex logic
+    DONE: Added comments to circuit-breaker, middleware, api-cache,
+    webhook-dispatcher, auth routes, news-fetcher, and chart interaction
+    hook. Focus on "why" not "what" for non-obvious logic.
+[x] Create developer onboarding guide
+    DONE: CONTRIBUTING.md with getting started, project architecture,
+    key patterns, API route guide, testing, deployment, and code style.
 
 9.4 TYPE SAFETY
 ---------------
@@ -636,9 +641,41 @@ v0.4.1 → v0.4.2:
 - Screen reader content for all data visualizations
 - Bundle analyzer integration (@next/bundle-analyzer)
 
+v0.4.2 continued (feature work session):
+Batch 1 - Foundations:
+- Structured logging (src/lib/logger.ts) replacing console.error/log across 100+ files
+- Circuit breaker (src/lib/circuit-breaker.ts) for external API resilience
+- Cache status endpoint (GET /api/cache/status) for monitoring
+- Keyboard shortcuts modal (press '?' to open)
+
+Batch 2 - Performance:
+- Prisma .select() on companies, news, events, blogs, opportunities, debris routes
+- Three.js tree shaking (specific named imports)
+- In-memory API cache (src/lib/api-cache.ts) with TTL fallback data
+- Responsive chart axis labels with useIsMobile() hook
+
+Batch 3 - UI/UX:
+- ProgressBar component with determinate/indeterminate modes
+- Chart export buttons (CSV/PNG) on all three chart types
+- Recently viewed pages feature with localStorage and navigation dropdown
+- Expanded mobile bottom nav with categorized "More" menu
+
+Batch 4 - A11y + Mobile + API + Charts:
+- WCAG AA color contrast audit and fixes across 40+ pages
+- High-contrast mode toggle with CSS custom properties
+- Advanced search page (/search) with filters and URL params
+- Webhook subscription system with HMAC-signed delivery
+- Chart zoom/pan (mouse wheel, pinch-to-zoom) with touch tooltips
+- Swipe gestures (back navigation) and pull-to-refresh for mobile
+
+Batch 5 - Documentation:
+- Inline code comments for complex logic sections
+- CONTRIBUTING.md developer onboarding guide
+
 REMAINING ITEMS THAT REQUIRE EXTERNAL SERVICES OR MANUAL WORK:
 - Credential rotation and secret management (Railway dashboard)
 - OAuth providers (Google, GitHub) - requires app registration
+- Two-factor authentication - requires TOTP library + UI
 - Redis/Upstash caching layer - requires external service setup
 - Sentry error tracking - requires account setup
 - E2E tests with Playwright - requires significant test authoring
@@ -646,7 +683,17 @@ REMAINING ITEMS THAT REQUIRE EXTERNAL SERVICES OR MANUAL WORK:
 - Database backups and connection pooling - Railway config
 - Google Analytics setup - requires GA account
 - Push notifications and background sync - requires service config
+- Maskable PWA icons for adaptive displays
 - App store preparation - see companion document
+- NVDA/JAWS/VoiceOver testing - requires manual screen reader testing
+- Update NextAuth to v5 - waiting for stable release
+- Batch external API requests - requires API-specific analysis
+- WebSocket/SSE for live data - significant architecture change
+- Undo actions for destructive operations - requires UX design
+- Notification preferences settings - requires UI and backend
+- API versioning (v1, v2) - requires strategy decision
+- Prisma JSON field types - risky schema migration
+- Request batching for external APIs - API-specific optimization
 
 ================================================================================
 END OF DOCUMENT

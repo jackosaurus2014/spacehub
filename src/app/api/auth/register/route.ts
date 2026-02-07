@@ -37,7 +37,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Generate verification token and send email
+    // Store a verification token on the user record; the account remains
+    // unverified until the user clicks the emailed link, which clears this token
     const verificationToken = randomUUID();
     await prisma.user.update({
       where: { id: user.id },
@@ -59,6 +60,8 @@ export async function POST(req: NextRequest) {
         text,
       });
     } catch (emailError) {
+      // Email failure is non-fatal: the user can still request a new
+      // verification email later, so we don't block registration
       logger.error('Failed to send verification email', { error: emailError instanceof Error ? emailError.message : String(emailError) });
     }
 
