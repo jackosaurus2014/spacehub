@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import ChartExportButton from '@/components/charts/ChartExportButton';
 
 export interface LineChartSeries {
   name: string;
@@ -183,6 +184,20 @@ export default function LineChart({
     setTooltip(null);
   }, []);
 
+  // Prepare export data: one row per label, with a column per series
+  const exportData = useMemo(() => {
+    const maxLen = Math.max(...series.map((s) => s.data.length), 0);
+    const rows: Record<string, unknown>[] = [];
+    for (let i = 0; i < maxLen; i++) {
+      const row: Record<string, unknown> = { label: labels[i] || `Point ${i + 1}` };
+      series.forEach((s) => {
+        row[s.name] = s.data[i] ?? '';
+      });
+      rows.push(row);
+    }
+    return rows;
+  }, [series, labels]);
+
   if (!series.length) {
     return (
       <div
@@ -195,7 +210,12 @@ export default function LineChart({
   }
 
   return (
-    <div ref={containerRef} className={`relative ${className}`} role="img" aria-label={title || 'Line chart'}>
+    <div ref={containerRef} className={`relative group ${className}`} role="img" aria-label={title || 'Line chart'}>
+      <ChartExportButton
+        data={exportData}
+        chartRef={containerRef}
+        filename={title ? title.replace(/\s+/g, '_').toLowerCase() : 'line-chart'}
+      />
       {title && (
         <h3 className="text-slate-100 font-semibold mb-4">{title}</h3>
       )}

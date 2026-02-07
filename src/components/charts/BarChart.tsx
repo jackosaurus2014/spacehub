@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import ChartExportButton from '@/components/charts/ChartExportButton';
 
 export interface BarChartData {
   label: string;
@@ -106,8 +107,19 @@ export default function BarChart({
     );
   }
 
+  // Prepare export data
+  const exportData = useMemo(
+    () => data.map((d) => ({ label: d.label, value: d.value })),
+    [data]
+  );
+
   return (
-    <div ref={containerRef} className={`relative ${className}`} role="img" aria-label={title || 'Bar chart'}>
+    <div ref={containerRef} className={`relative group ${className}`} role="img" aria-label={title || 'Bar chart'}>
+      <ChartExportButton
+        data={exportData}
+        chartRef={containerRef}
+        filename={title ? title.replace(/\s+/g, '_').toLowerCase() : 'bar-chart'}
+      />
       {title && (
         <h3 className="text-slate-100 font-semibold mb-4">{title}</h3>
       )}

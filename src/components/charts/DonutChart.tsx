@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import ChartExportButton from '@/components/charts/ChartExportButton';
 
 export interface DonutChartSegment {
   label: string;
@@ -152,6 +153,17 @@ export default function DonutChart({
     `;
   };
 
+  // Prepare export data
+  const exportData = useMemo(
+    () =>
+      segments.map((seg) => ({
+        label: seg.data.label,
+        value: seg.data.value,
+        percentage: `${seg.percentage.toFixed(1)}%`,
+      })),
+    [segments]
+  );
+
   if (!data.length) {
     return (
       <div
@@ -164,7 +176,12 @@ export default function DonutChart({
   }
 
   return (
-    <div ref={containerRef} className={`${className}`} role="img" aria-label={title || 'Donut chart'}>
+    <div ref={containerRef} className={`relative group ${className}`} role="img" aria-label={title || 'Donut chart'}>
+      <ChartExportButton
+        data={exportData}
+        chartRef={containerRef}
+        filename={title ? title.replace(/\s+/g, '_').toLowerCase() : 'donut-chart'}
+      />
       {title && (
         <h3 className="text-slate-100 font-semibold mb-4 text-center">{title}</h3>
       )}

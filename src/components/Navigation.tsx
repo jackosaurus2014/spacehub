@@ -6,6 +6,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSubscription } from './SubscriptionProvider';
 import NotificationCenter from './NotificationCenter';
+import RecentlyViewed from './ui/RecentlyViewed';
 
 interface DropdownItem {
   label: string;
@@ -316,6 +317,8 @@ export default function Navigation() {
                 Upgrade
               </Link>
             )}
+            {/* Recently Viewed */}
+            <RecentlyViewed />
             {/* Notification Center */}
             <NotificationCenter />
             {status === 'loading' ? (
