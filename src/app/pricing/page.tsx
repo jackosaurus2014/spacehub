@@ -5,16 +5,33 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { SUBSCRIPTION_PLANS, SubscriptionTier } from '@/types';
 import { useSubscription } from '@/components/SubscriptionProvider';
+import { toast } from '@/lib/toast';
 import PageHeader from '@/components/ui/PageHeader';
+
+function TrialDaysLeft(trialEndsAt: Date | null): number {
+  if (!trialEndsAt) return 0;
+  const diff = new Date(trialEndsAt).getTime() - Date.now();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
 
 function PricingCard({
   plan,
   isYearly,
   currentTier,
+  isTrialing,
+  trialEndsAt,
+  onStartTrial,
+  isStartingTrial,
+  isLoggedIn,
 }: {
   plan: typeof SUBSCRIPTION_PLANS[0];
   isYearly: boolean;
   currentTier: SubscriptionTier;
+  isTrialing: boolean;
+  trialEndsAt: Date | null;
+  onStartTrial: (tier: SubscriptionTier) => void;
+  isStartingTrial: boolean;
+  isLoggedIn: boolean;
 }) {
   const price = isYearly ? plan.priceYearly : plan.price;
   const period = isYearly ? '/year' : '/month';
@@ -22,6 +39,9 @@ function PricingCard({
   const savings = isYearly && plan.price > 0
     ? Math.round((1 - plan.priceYearly / (plan.price * 12)) * 100)
     : 0;
+
+  const isTrialingThisPlan = isTrialing && plan.id === currentTier;
+  const daysLeft = TrialDaysLeft(trialEndsAt);
 
   return (
     <div
@@ -39,10 +59,18 @@ function PricingCard({
         </div>
       )}
 
-      {isCurrentPlan && (
+      {isCurrentPlan && !isTrialing && (
         <div className="absolute -top-3 right-4">
           <span className="bg-green-500 text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
             Current Plan
+          </span>
+        </div>
+      )}
+
+      {isTrialingThisPlan && (
+        <div className="absolute -top-3 right-4">
+          <span className="bg-amber-400 text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
+            Trial Active &mdash; {daysLeft} day{daysLeft !== 1 ? 's' : ''} left
           </span>
         </div>
       )}
@@ -60,23 +88,33 @@ function PricingCard({
         {savings > 0 && (
           <p className="text-green-400 text-sm mt-1">Save {savings}% yearly</p>
         )}
+        {plan.trialDays && plan.trialDays > 0 && (
+          <p className="text-amber-400 text-xs mt-1">{plan.trialDays}-day free trial available</p>
+        )}
       </div>
 
       <ul className="space-y-3 mb-6">
         {plan.features.map((feature, index) => (
           <li key={index} className="flex items-start gap-2">
-            <span className="text-green-400 mt-0.5">✓</span>
+            <span className="text-green-400 mt-0.5">&#10003;</span>
             <span className="text-slate-400 text-sm">{feature}</span>
           </li>
         ))}
       </ul>
 
-      {isCurrentPlan ? (
+      {isCurrentPlan && !isTrialing ? (
         <button
           disabled
           className="w-full py-3 px-4 rounded-lg bg-slate-100 text-slate-500 cursor-not-allowed"
         >
           Current Plan
+        </button>
+      ) : isTrialingThisPlan ? (
+        <button
+          disabled
+          className="w-full py-3 px-4 rounded-lg bg-amber-100 text-amber-700 cursor-not-allowed font-semibold"
+        >
+          Trial Active &mdash; {daysLeft} day{daysLeft !== 1 ? 's' : ''} left
         </button>
       ) : plan.id === 'free' ? (
         <Link
@@ -85,10 +123,25 @@ function PricingCard({
         >
           Get Started Free
         </Link>
+      ) : isLoggedIn && plan.trialDays && !isTrialing ? (
+        <button
+          onClick={() => onStartTrial(plan.id)}
+          disabled={isStartingTrial}
+          className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
+            plan.highlighted
+              ? 'bg-nebula-500 text-slate-900 hover:bg-nebula-600'
+              : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
+          } ${isStartingTrial ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {isStartingTrial ? 'Starting Trial...' : `Start ${plan.trialDays}-Day Free Trial`}
+        </button>
       ) : (
         <button
           onClick={() => {
-            // TODO: Integrate with Stripe
+            if (!isLoggedIn) {
+              toast.info('Please sign in to start a free trial.');
+              return;
+            }
             alert('Payment integration coming soon! For now, contact us for enterprise access.');
           }}
           className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
@@ -106,8 +159,39 @@ function PricingCard({
 
 export default function PricingPage() {
   const { data: session } = useSession();
-  const { tier } = useSubscription();
+  const { tier, isTrialing, trialEndsAt, refreshSubscription } = useSubscription();
   const [isYearly, setIsYearly] = useState(true);
+  const [isStartingTrial, setIsStartingTrial] = useState(false);
+
+  const handleStartTrial = async (planTier: SubscriptionTier) => {
+    if (!session?.user) {
+      toast.info('Please sign in to start a free trial.');
+      return;
+    }
+
+    setIsStartingTrial(true);
+    try {
+      const res = await fetch('/api/subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'start-trial', tier: planTier }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to start trial.');
+        return;
+      }
+
+      toast.success(`Your 3-day ${planTier === 'pro' ? 'Professional' : 'Enterprise'} trial has started!`);
+      refreshSubscription();
+    } catch {
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setIsStartingTrial(false);
+    }
+  };
 
   return (
     <div className="min-h-screen pb-12">
@@ -148,6 +232,11 @@ export default function PricingPage() {
               plan={plan}
               isYearly={isYearly}
               currentTier={tier}
+              isTrialing={isTrialing}
+              trialEndsAt={trialEndsAt}
+              onStartTrial={handleStartTrial}
+              isStartingTrial={isStartingTrial}
+              isLoggedIn={!!session?.user}
             />
           ))}
         </div>
@@ -181,8 +270,8 @@ export default function PricingPage() {
                 Is there a free trial?
               </h3>
               <p className="text-slate-400 text-sm">
-                Our Enthusiast plan is free forever with access to core features.
-                Upgrade anytime to unlock premium features.
+                Yes! All paid plans include a 3-day free trial. Try any plan with
+                full access before you subscribe &mdash; no credit card required.
               </p>
             </div>
             <div className="card p-6">
@@ -206,7 +295,7 @@ export default function PricingPage() {
             href="mailto:support@spacenexus.com"
             className="text-nebula-300 hover:text-nebula-200 transition-colors"
           >
-            Contact Support →
+            Contact Support &rarr;
           </Link>
         </div>
       </div>

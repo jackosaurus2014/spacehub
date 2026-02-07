@@ -50,6 +50,11 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
   },
 };
 
+export function isTrialActive(trialEndDate: Date | null): boolean {
+  if (!trialEndDate) return false;
+  return new Date() < new Date(trialEndDate);
+}
+
 export function canAccessFeature(
   tier: SubscriptionTier,
   feature: keyof typeof TIER_ACCESS['free']

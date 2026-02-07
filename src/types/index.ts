@@ -170,6 +170,7 @@ export interface SubscriptionPlan {
   priceYearly: number;
   features: string[];
   highlighted?: boolean;
+  trialDays?: number;
 }
 
 export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
@@ -192,6 +193,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     price: 9.99,
     priceYearly: 99,
     highlighted: true,
+    trialDays: 3,
     features: [
       'Everything in Enthusiast',
       'Unlimited article access',
@@ -208,6 +210,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     name: 'Enterprise',
     price: 29.99,
     priceYearly: 250,
+    trialDays: 3,
     features: [
       'Everything in Professional',
       'AI-powered opportunities',

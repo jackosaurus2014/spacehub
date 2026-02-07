@@ -18,7 +18,7 @@ export default function PremiumGate({
   children,
   showPreview = true,
 }: PremiumGateProps) {
-  const { tier, canAccess, isLoading } = useSubscription();
+  const { tier, canAccess, isLoading, isTrialing, trialEndsAt } = useSubscription();
 
   // Determine required tier
   const requiredTier = propRequiredTier || (moduleId ? getRequiredTierForModule(moduleId) : null);
@@ -28,9 +28,18 @@ export default function PremiumGate({
     return <>{children}</>;
   }
 
-  // If user has access, show children
+  // If user has access, show children (with trial badge if trialing)
   if (moduleId ? canAccess(moduleId) : true) {
-    return <>{children}</>;
+    const tierOrder: SubscriptionTier[] = ['free', 'pro', 'enterprise'];
+    const hasAccess = tierOrder.indexOf(tier) >= tierOrder.indexOf(requiredTier);
+    if (hasAccess) {
+      return (
+        <>
+          {isTrialing && <TrialBanner trialEndsAt={trialEndsAt} />}
+          {children}
+        </>
+      );
+    }
   }
 
   // Check access based on required tier
@@ -38,7 +47,12 @@ export default function PremiumGate({
   const hasAccess = tierOrder.indexOf(tier) >= tierOrder.indexOf(requiredTier);
 
   if (hasAccess) {
-    return <>{children}</>;
+    return (
+      <>
+        {isTrialing && <TrialBanner trialEndsAt={trialEndsAt} />}
+        {children}
+      </>
+    );
   }
 
   // Show upgrade prompt
@@ -104,6 +118,25 @@ export function PremiumBadge({ tier }: { tier: SubscriptionTier }) {
     <span className={`text-xs font-semibold px-2 py-0.5 rounded border ${colors[tier]}`}>
       {labels[tier]}
     </span>
+  );
+}
+
+// Trial banner shown when accessing premium content via trial
+function TrialBanner({ trialEndsAt }: { trialEndsAt: Date | null }) {
+  if (!trialEndsAt) return null;
+  const diff = new Date(trialEndsAt).getTime() - Date.now();
+  const daysLeft = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+
+  return (
+    <div className="mb-4 px-4 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-center gap-2">
+      <span>&#127919;</span>
+      <span>
+        Trial Active &mdash; Expires in {daysLeft} day{daysLeft !== 1 ? 's' : ''}.{' '}
+        <Link href="/pricing" className="underline font-medium hover:text-amber-900">
+          Subscribe to keep access
+        </Link>
+      </span>
+    </div>
   );
 }
 

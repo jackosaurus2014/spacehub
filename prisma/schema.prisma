@@ -24,6 +24,11 @@ model User {
   stripeCustomerId     String?   @unique
   stripeSubscriptionId String?   @unique
 
+  // Free trial
+  trialTier       String?   // The tier being trialed: "pro" or "enterprise"
+  trialStartDate  DateTime?
+  trialEndDate    DateTime?
+
   // Admin
   isAdmin              Boolean   @default(false)
 
