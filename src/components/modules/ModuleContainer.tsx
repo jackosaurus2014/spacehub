@@ -29,9 +29,6 @@ const BlogsArticlesModule = dynamic(() => import('./BlogsArticlesModule'), {
 const NewsFeedModule = dynamic(() => import('./NewsFeedModule'), {
   loading: () => <ModuleLoadingFallback />,
 });
-const CategoriesModule = dynamic(() => import('./CategoriesModule'), {
-  loading: () => <ModuleLoadingFallback />,
-});
 const MarketIntelModule = dynamic(() => import('./MarketIntelModule'), {
   loading: () => <ModuleLoadingFallback />,
 });
@@ -48,9 +45,6 @@ const SolarExplorationModule = dynamic(() => import('./SolarExplorationModule'),
   loading: () => <ModuleLoadingFallback />,
   ssr: false, // Contains Three.js 3D scene internally
 });
-const SolarFlareTrackerModule = dynamic(() => import('./SolarFlareTrackerModule'), {
-  loading: () => <ModuleLoadingFallback />,
-});
 const OrbitalSlotsModule = dynamic(() => import('./OrbitalSlotsModule'), {
   loading: () => <ModuleLoadingFallback />,
 });
@@ -60,16 +54,7 @@ const SpaceInsuranceModule = dynamic(() => import('./SpaceInsuranceModule'), {
 const SpectrumTrackerModule = dynamic(() => import('./SpectrumTrackerModule'), {
   loading: () => <ModuleLoadingFallback />,
 });
-const SpaceWorkforceModule = dynamic(() => import('./SpaceWorkforceModule'), {
-  loading: () => <ModuleLoadingFallback />,
-});
 const LaunchWindowsModule = dynamic(() => import('./LaunchWindowsModule'), {
-  loading: () => <ModuleLoadingFallback />,
-});
-const DebrisMonitorModule = dynamic(() => import('./DebrisMonitorModule'), {
-  loading: () => <ModuleLoadingFallback />,
-});
-const OrbitalServicesModule = dynamic(() => import('./OrbitalServicesModule'), {
   loading: () => <ModuleLoadingFallback />,
 });
 const SatelliteTrackerModule = dynamic(() => import('./SatelliteTrackerModule'), {
@@ -84,21 +69,17 @@ const MODULE_COMPONENTS: Record<string, React.ComponentType> = {
   'mission-control': MissionControlModule,
   'blogs-articles': BlogsArticlesModule,
   'news-feed': NewsFeedModule,
-  'categories': CategoriesModule,
   'market-intel': MarketIntelModule,
   'resource-exchange': ResourceExchangeModule,
   'business-opportunities': BusinessOpportunitiesModule,
-  'compliance': ComplianceModule,
   'solar-exploration': SolarExplorationModule,
-  'solar-flare-tracker': SolarFlareTrackerModule,
-  'orbital-slots': OrbitalSlotsModule,
   'space-insurance': SpaceInsuranceModule,
-  'spectrum-tracker': SpectrumTrackerModule,
-  'space-workforce': SpaceWorkforceModule,
   'launch-windows': LaunchWindowsModule,
-  'debris-monitor': DebrisMonitorModule,
-  'orbital-services': OrbitalServicesModule,
   'satellite-tracker': SatelliteTrackerModule,
+  // Merged module IDs mapped to closest existing dashboard components
+  'regulatory-hub': ComplianceModule,
+  'spectrum-management': SpectrumTrackerModule,
+  'orbital-management': OrbitalSlotsModule,
 };
 
 function getTierInfo(moduleId: string): { label: string; color: string; bgColor: string; dotColor: string } {

@@ -299,7 +299,7 @@ export default function HeroStats() {
       </Link>
 
       {/* Solar Activity */}
-      <Link href="/solar-flares" className="card p-4 hover:border-cyan-400/50 transition-all group">
+      <Link href="/space-environment" className="card p-4 hover:border-cyan-400/50 transition-all group">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl">☀️</span>
           <span className="text-xs uppercase tracking-wider text-slate-400 font-medium">Space Weather</span>

@@ -83,6 +83,23 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // v0.7.0 module consolidation - preserve legacy URLs
+      { source: '/lunar-gateway', destination: '/cislunar?tab=gateway', permanent: true },
+      { source: '/spectrum-auctions', destination: '/spectrum?tab=auctions', permanent: true },
+      { source: '/space-jobs', destination: '/space-talent?tab=jobs', permanent: true },
+      { source: '/workforce', destination: '/space-talent?tab=workforce', permanent: true },
+      { source: '/solar-flares', destination: '/space-environment?tab=weather', permanent: true },
+      { source: '/debris-monitor', destination: '/space-environment?tab=debris', permanent: true },
+      { source: '/operational-awareness', destination: '/space-environment?tab=operations', permanent: true },
+      { source: '/space-law', destination: '/compliance?tab=treaties', permanent: true },
+      { source: '/regulatory-filings', destination: '/compliance?tab=filings', permanent: true },
+      { source: '/orbital-services', destination: '/orbital-slots?tab=services', permanent: true },
+      { source: '/space-comms', destination: '/spaceports?tab=communications', permanent: true },
+      { source: '/imagery-marketplace', destination: '/space-manufacturing?tab=imagery', permanent: true },
+    ];
+  },
 }
 
 module.exports = withBundleAnalyzer(nextConfig)

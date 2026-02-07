@@ -61,24 +61,24 @@ interface MenuCategory {
 
 const MORE_MENU_CATEGORIES: MenuCategory[] = [
   {
-    title: 'News & Intelligence',
+    title: 'Market Intelligence',
     items: [
       { id: 'market-intel', label: 'Market Intel', icon: 'chart', href: '/market-intel' },
       { id: 'space-economy', label: 'Space Economy', icon: 'chart', href: '/space-economy' },
-      { id: 'blogs', label: 'Blogs & Articles', icon: 'newspaper', href: '/blogs' },
       { id: 'startups', label: 'Space Startups', icon: 'lightbulb', href: '/startups' },
+      { id: 'blogs', label: 'Blogs & Articles', icon: 'newspaper', href: '/blogs' },
       { id: 'space-defense', label: 'Space Defense', icon: 'shield', href: '/space-defense' },
     ],
   },
   {
-    title: 'Business Opportunities',
+    title: 'Business & Talent',
     items: [
       { id: 'business-opportunities', label: 'Opportunities', icon: 'lightbulb', href: '/business-opportunities' },
+      { id: 'space-talent', label: 'Space Talent Hub', icon: 'briefcase', href: '/space-talent' },
       { id: 'supply-chain', label: 'Supply Chain', icon: 'truck', href: '/supply-chain' },
       { id: 'space-mining', label: 'Space Mining', icon: 'mining', href: '/space-mining' },
-      { id: 'spectrum-auctions', label: 'Spectrum Auctions', icon: 'spectrum', href: '/spectrum-auctions' },
-      { id: 'space-manufacturing', label: 'Manufacturing', icon: 'mining', href: '/space-manufacturing' },
-      { id: 'imagery-marketplace', label: 'Imagery', icon: 'satellite', href: '/imagery-marketplace' },
+      { id: 'space-insurance', label: 'Space Insurance', icon: 'shield', href: '/space-insurance' },
+      { id: 'manufacturing-imagery', label: 'Manufacturing & Imagery', icon: 'mining', href: '/space-manufacturing' },
       { id: 'patents', label: 'Patents & IP', icon: 'clipboard', href: '/patents' },
     ],
   },
@@ -87,9 +87,9 @@ const MORE_MENU_CATEGORIES: MenuCategory[] = [
     items: [
       { id: 'mission-cost', label: 'Cost Simulator', icon: 'chart', href: '/mission-cost' },
       { id: 'launch-vehicles', label: 'Launch Vehicles', icon: 'rocket', href: '/launch-vehicles' },
-      { id: 'space-insurance', label: 'Space Insurance', icon: 'shield', href: '/space-insurance' },
       { id: 'resource-exchange', label: 'Resource Exchange', icon: 'exchange', href: '/resource-exchange' },
       { id: 'launch-windows', label: 'Launch Windows', icon: 'calendar', href: '/launch-windows' },
+      { id: 'blueprints', label: 'Blueprints', icon: 'clipboard', href: '/blueprints' },
     ],
   },
   {
@@ -97,36 +97,27 @@ const MORE_MENU_CATEGORIES: MenuCategory[] = [
     items: [
       { id: 'satellites', label: 'Satellites', icon: 'satellite', href: '/satellites' },
       { id: 'space-stations', label: 'Space Stations', icon: 'satellite', href: '/space-stations' },
-      { id: 'orbital-slots', label: 'Orbital Slots', icon: 'orbit', href: '/orbital-slots' },
-      { id: 'debris-monitor', label: 'Debris Monitor', icon: 'debris', href: '/debris-monitor' },
+      { id: 'orbital-management', label: 'Orbital Management', icon: 'orbit', href: '/orbital-slots' },
       { id: 'constellations', label: 'Constellations', icon: 'orbit', href: '/constellations' },
       { id: 'ground-stations', label: 'Ground Stations', icon: 'satellite', href: '/ground-stations' },
-      { id: 'spaceports', label: 'Spaceports', icon: 'rocket', href: '/spaceports' },
-      { id: 'space-comms', label: 'Space Comms', icon: 'satellite', href: '/space-comms' },
+      { id: 'infrastructure', label: 'Infrastructure', icon: 'rocket', href: '/spaceports' },
     ],
   },
   {
-    title: 'Legal & Compliance',
+    title: 'Regulatory & Compliance',
     items: [
-      { id: 'compliance', label: 'Compliance', icon: 'clipboard', href: '/compliance' },
-      { id: 'space-law', label: 'Space Law', icon: 'clipboard', href: '/space-law' },
-      { id: 'regulatory-filings', label: 'Reg. Filings', icon: 'clipboard', href: '/regulatory-filings' },
-      { id: 'spectrum', label: 'Spectrum', icon: 'spectrum', href: '/spectrum' },
-      { id: 'space-jobs', label: 'Space Talent', icon: 'briefcase', href: '/space-jobs' },
-      { id: 'workforce', label: 'Workforce', icon: 'briefcase', href: '/workforce' },
+      { id: 'regulatory-hub', label: 'Regulatory Hub', icon: 'clipboard', href: '/compliance' },
+      { id: 'spectrum', label: 'Spectrum Mgmt', icon: 'spectrum', href: '/spectrum' },
     ],
   },
   {
     title: 'Exploration & Environment',
     items: [
       { id: 'solar-exploration', label: 'Solar System', icon: 'planet', href: '/solar-exploration' },
-      { id: 'lunar-gateway', label: 'Lunar Gateway', icon: 'rocket', href: '/lunar-gateway' },
       { id: 'mars-planner', label: 'Mars Planner', icon: 'planet', href: '/mars-planner' },
-      { id: 'cislunar', label: 'Cislunar Economy', icon: 'rocket', href: '/cislunar' },
+      { id: 'cislunar', label: 'Cislunar Ecosystem', icon: 'rocket', href: '/cislunar' },
       { id: 'asteroid-watch', label: 'Asteroid Watch', icon: 'planet', href: '/asteroid-watch' },
-      { id: 'solar-flares', label: 'Solar Flares', icon: 'sun', href: '/solar-flares' },
-      { id: 'operational-awareness', label: 'Op. Awareness', icon: 'shield', href: '/operational-awareness' },
-      { id: 'blueprints', label: 'Blueprints', icon: 'clipboard', href: '/blueprints' },
+      { id: 'space-environment', label: 'Space Environment', icon: 'sun', href: '/space-environment' },
     ],
   },
 ];
