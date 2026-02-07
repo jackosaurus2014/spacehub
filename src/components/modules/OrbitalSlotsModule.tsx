@@ -107,7 +107,10 @@ export default function OrbitalSlotsModule() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4" role="region" aria-label="Orbital statistics">
+        <span className="sr-only">
+          {`Orbital overview: ${data.stats.totalActive.toLocaleString()} active satellites, ${data.stats.totalInactive.toLocaleString()} inactive, ${data.stats.totalDebris.toLocaleString()} debris objects, ${data.stats.growth1Year.toLocaleString()} projected 1-year growth`}
+        </span>
         <div className="card p-4 text-center">
           <div className="text-3xl font-bold text-slate-800">
             {data.stats.totalActive.toLocaleString()}
@@ -167,12 +170,15 @@ export default function OrbitalSlotsModule() {
                   </div>
 
                   {/* Bar visualization */}
-                  <div className="h-4 bg-slate-200 rounded-full overflow-hidden mb-2">
+                  <div className="h-4 bg-slate-200 rounded-full overflow-hidden mb-2" aria-hidden="true">
                     <div
                       className="h-full bg-gradient-to-r from-green-500 to-green-400"
                       style={{ width: `${Math.min(activePercent, 100)}%` }}
                     />
                   </div>
+                  <span className="sr-only">
+                    {`${slot.orbitName}: ${activePercent.toFixed(0)}% active, ${slot.activeSatellites.toLocaleString()} active satellites, ${slot.inactiveSatellites.toLocaleString()} inactive, ${slot.debrisCount.toLocaleString()} debris objects`}
+                  </span>
 
                   <div className="flex justify-between text-xs text-slate-500">
                     <span>Active: {slot.activeSatellites.toLocaleString()}</span>

@@ -149,7 +149,10 @@ function SolarFlaresContent() {
         )}
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8" role="region" aria-label="Solar activity statistics">
+          <span className="sr-only">
+            {`Solar activity overview: ${data.stats.last30Days.xClass} X-class flares in the last 30 days, ${data.stats.last30Days.mClass} M-class flares in the last 30 days, ${data.stats.upcomingDangerDays} danger days forecasted in the next 90 days, solar wind speed ${data.activity ? Math.round(data.activity.solarWindSpeed || 0) + ' km/s' : 'unavailable'}, sunspot number ${data.activity ? (data.activity.sunspotNumber || 0) : 'unavailable'}`}
+          </span>
           <div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{data.stats.last30Days.xClass}</div>
             <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">X-Class (30d)</div>

@@ -190,7 +190,10 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
   };
 
   return (
-    <div className="bg-gradient-to-br from-space-900/95 via-space-800/95 to-space-900/95 rounded-xl border border-slate-700/50 overflow-hidden">
+    <div className="bg-gradient-to-br from-space-900/95 via-space-800/95 to-space-900/95 rounded-xl border border-slate-700/50 overflow-hidden" role="region" aria-label="Live telemetry data">
+      <span className="sr-only">
+        {`Telemetry: ${telemetry.status}, mission elapsed time ${formatMET(telemetry.missionElapsedTime)}, altitude ${telemetry.altitude.toFixed(1)} km, velocity ${telemetry.velocity.toFixed(0)} m/s, acceleration ${telemetry.acceleration.toFixed(1)} m/s squared, stage ${telemetry.stage}. Milestones: Max-Q ${telemetry.maxQ ? 'complete' : 'pending'}, MECO ${telemetry.mecoComplete ? 'complete' : 'pending'}, stage separation ${telemetry.stageSeparation ? 'complete' : 'pending'}, fairing separation ${telemetry.fairingSeparation ? 'complete' : 'pending'}, SECO ${telemetry.secondEngineCutoff ? 'complete' : 'pending'}, orbit insertion ${telemetry.orbitInsertion ? 'complete' : 'pending'}.`}
+      </span>
       {/* Header */}
       <div className="px-4 py-3 border-b border-slate-700/50 bg-space-800/50">
         <div className="flex items-center justify-between">

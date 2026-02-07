@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, signOut } from 'next-auth/react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSubscription } from './SubscriptionProvider';
 import NotificationCenter from './NotificationCenter';
 
@@ -63,6 +63,29 @@ function DropdownMenu({
   isPro: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+
+  // Reset refs array when items change
+  useEffect(() => {
+    itemRefs.current = itemRefs.current.slice(0, items.length);
+  }, [items.length]);
+
+  // Focus first item when dropdown opens, reset when it closes
+  useEffect(() => {
+    if (isOpen) {
+      // Small delay to ensure DOM is rendered before focusing
+      requestAnimationFrame(() => {
+        if (itemRefs.current[0]) {
+          itemRefs.current[0].focus();
+          setFocusedIndex(0);
+        }
+      });
+    } else {
+      setFocusedIndex(-1);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -74,11 +97,66 @@ function DropdownMenu({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onToggle]);
 
+  const handleTriggerKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (!isOpen) {
+        onToggle();
+      }
+    }
+  }, [isOpen, onToggle]);
+
+  const handleMenuKeyDown = useCallback((e: React.KeyboardEvent) => {
+    switch (e.key) {
+      case 'ArrowDown': {
+        e.preventDefault();
+        const nextIndex = focusedIndex < items.length - 1 ? focusedIndex + 1 : 0;
+        itemRefs.current[nextIndex]?.focus();
+        setFocusedIndex(nextIndex);
+        break;
+      }
+      case 'ArrowUp': {
+        e.preventDefault();
+        const prevIndex = focusedIndex > 0 ? focusedIndex - 1 : items.length - 1;
+        itemRefs.current[prevIndex]?.focus();
+        setFocusedIndex(prevIndex);
+        break;
+      }
+      case 'Escape': {
+        e.preventDefault();
+        onToggle();
+        triggerRef.current?.focus();
+        break;
+      }
+      case 'Tab': {
+        // Let default Tab behavior happen but close the dropdown
+        onToggle();
+        break;
+      }
+      case 'Home': {
+        e.preventDefault();
+        itemRefs.current[0]?.focus();
+        setFocusedIndex(0);
+        break;
+      }
+      case 'End': {
+        e.preventDefault();
+        const lastIndex = items.length - 1;
+        itemRefs.current[lastIndex]?.focus();
+        setFocusedIndex(lastIndex);
+        break;
+      }
+    }
+  }, [focusedIndex, items.length, onToggle]);
+
   return (
     <div ref={ref} className="relative">
       <button
+        ref={triggerRef}
         onClick={onToggle}
+        onKeyDown={handleTriggerKeyDown}
         aria-expanded={isOpen}
+        aria-haspopup="menu"
         className="text-slate-200 hover:text-cyan-300 transition-colors text-sm font-medium flex items-center gap-1"
       >
         {label}
@@ -94,14 +172,24 @@ function DropdownMenu({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-3 w-64 backdrop-blur-xl border border-cyan-400/30 rounded-xl overflow-hidden animate-fade-in-down z-50" style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)', boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.15)' }}>
+        <div
+          role="menu"
+          aria-label={`${label} submenu`}
+          onKeyDown={handleMenuKeyDown}
+          className="absolute top-full left-0 mt-3 w-64 backdrop-blur-xl border border-cyan-400/30 rounded-xl overflow-hidden animate-fade-in-down z-50"
+          style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)', boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.15)' }}
+        >
           <div className="p-2">
-            {items.map((item) => (
+            {items.map((item, index) => (
               <Link
                 key={item.href}
+                ref={(el) => { itemRefs.current[index] = el; }}
                 href={item.href}
-                className="block px-3 py-2.5 rounded-lg hover:bg-slate-700/50 transition-colors group"
+                role="menuitem"
+                tabIndex={-1}
+                className={`block px-3 py-2.5 rounded-lg hover:bg-slate-700/50 transition-colors group ${focusedIndex === index ? 'bg-slate-700/50' : ''}`}
                 onClick={onToggle}
+                onMouseEnter={() => setFocusedIndex(index)}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-slate-200 text-sm font-medium group-hover:text-cyan-300 transition-colors">

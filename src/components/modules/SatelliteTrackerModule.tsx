@@ -139,7 +139,10 @@ export default function SatelliteTrackerModule() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4" role="region" aria-label="Satellite statistics">
+        <span className="sr-only">
+          {`Satellite statistics: ${stats.total.toLocaleString()} total satellites, ${stats.byStatus.active.toLocaleString()} active, ${stats.byOrbitType.LEO.toLocaleString()} in low Earth orbit, ${stats.byOrbitType.GEO.toLocaleString()} in geostationary orbit`}
+        </span>
         <div className="card p-4 text-center">
           <div className="text-3xl font-bold text-slate-800">
             {stats.total.toLocaleString()}
@@ -267,7 +270,10 @@ export default function SatelliteTrackerModule() {
         <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
           <span>🏢</span> Top Operators
         </h3>
-        <div className="space-y-2">
+        <span className="sr-only">
+          {`Top satellite operators: ${stats.topOperators.slice(0, 5).map((op, i) => `${i + 1}. ${op.name} with ${op.count} satellites (${((op.count / stats.total) * 100).toFixed(1)}%)`).join(', ')}`}
+        </span>
+        <div className="space-y-2" aria-hidden="true">
           {stats.topOperators.slice(0, 5).map((operator, idx) => {
             const pct = (operator.count / stats.total) * 100;
             return (

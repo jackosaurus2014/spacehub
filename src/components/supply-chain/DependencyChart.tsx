@@ -128,8 +128,17 @@ export default function DependencyChart({
     return entries.sort((a, b) => b[1].length - a[1].length);
   }, [groupedCompanies, viewMode]);
 
+  const highRiskCompanies = companies.filter(c => {
+    const countryRisk = SUPPLY_CHAIN_COUNTRIES[c.countryCode]?.risk;
+    return countryRisk === 'high';
+  });
+  const criticalRels = filteredRelationships.filter(r => r.isCritical || r.geopoliticalRisk === 'high');
+
   return (
-    <div className="bg-space-800 rounded-xl border border-space-700">
+    <div className="bg-space-800 rounded-xl border border-space-700" role="region" aria-label="Supply chain dependency visualization">
+      <span className="sr-only">
+        {`Supply chain dependency chart showing ${companies.length} companies across ${orderedGroups.length} groups, grouped by ${viewMode}. ${highRiskCompanies.length} high-risk companies identified. ${criticalRels.length} high-risk or critical relationships out of ${filteredRelationships.length} total relationships.`}
+      </span>
       {/* Header with view mode selector */}
       <div className="p-4 border-b border-space-700">
         <div className="flex items-center justify-between flex-wrap gap-3">

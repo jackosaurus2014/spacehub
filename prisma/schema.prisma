@@ -50,6 +50,10 @@ model PasswordResetToken {
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([used])
 }
 
 model NewsArticle {
@@ -67,6 +71,7 @@ model NewsArticle {
   @@index([category])
   @@index([publishedAt])
   @@index([source])
+  @@index([category, publishedAt])
 }
 
 model Category {
@@ -102,6 +107,7 @@ model SpaceEvent {
   @@index([status])
   @@index([launchDate])
   @@index([country])
+  @@index([status, launchDate])
 }
 
 model UserModulePreference {
@@ -167,6 +173,7 @@ model BlogPost {
   @@index([sourceId])
   @@index([publishedAt])
   @@index([topic])
+  @@index([sourceId, publishedAt])
 }
 
 model SpaceCompany {
@@ -211,6 +218,7 @@ model SpaceCompany {
 
   @@index([country])
   @@index([isPublic])
+  @@index([isPreIPO])
   @@index([ticker])
 }
 
@@ -316,6 +324,7 @@ model BusinessOpportunity {
   @@index([status])
   @@index([discoveredAt])
   @@index([featured])
+  @@index([status, discoveredAt])
 }
 
 model AIAnalysisRun {
@@ -913,6 +922,8 @@ model SpaceJobPosting {
   @@index([category])
   @@index([specialization])
   @@index([seniorityLevel])
+  @@index([isActive])
+  @@index([postedDate])
 }
 
 model WorkforceTrend {

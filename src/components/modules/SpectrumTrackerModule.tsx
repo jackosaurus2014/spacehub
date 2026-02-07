@@ -72,7 +72,7 @@ function AllocationCard({ allocation }: { allocation: SpectrumAllocation }) {
       </div>
 
       {/* Frequency bar visualization */}
-      <div className="h-3 bg-slate-200 rounded-full overflow-hidden mb-2">
+      <div className="h-3 bg-slate-200 rounded-full overflow-hidden mb-2" role="img" aria-hidden="true">
         <div
           className={`h-full ${statusInfo.bgColor} rounded-full`}
           style={{
@@ -84,6 +84,9 @@ function AllocationCard({ allocation }: { allocation: SpectrumAllocation }) {
           }}
         />
       </div>
+      <span className="sr-only">
+        {`${bandInfo?.label || allocation.bandName} band, ${formatFrequency(allocation.frequencyMin)} to ${formatFrequency(allocation.frequencyMax)}, status: ${statusInfo.label}, ${allocation.numberOfFilings} filing${allocation.numberOfFilings !== 1 ? 's' : ''}`}
+      </span>
 
       <div className="flex justify-between text-xs text-slate-500">
         <span>{serviceLabels[allocation.service] || allocation.service}</span>
@@ -234,7 +237,10 @@ export default function SpectrumTrackerModule() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" role="region" aria-label="Spectrum statistics">
+        <span className="sr-only">
+          {`Spectrum overview: ${data.stats.totalBands} total bands, ${data.stats.congestedBands} congested, ${data.stats.totalFilings} total filings, ${data.stats.pendingFilings} pending filings`}
+        </span>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-slate-800">{data.stats.totalBands}</div>
           <div className="text-slate-500 text-xs">Total Bands</div>

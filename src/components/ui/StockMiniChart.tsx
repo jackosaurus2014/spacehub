@@ -48,28 +48,39 @@ export default function StockMiniChart({
   const color = positive ? '#4ade80' : '#f87171'; // green-400 or red-400
   const gradientId = `gradient-${Math.random().toString(36).substr(2, 9)}`;
 
+  const first = data[0];
+  const last = data[data.length - 1];
+  const changePercent = first !== 0 ? ((last - first) / first) * 100 : 0;
+  const trend = positive ? 'upward' : 'downward';
+
   return (
-    <svg
-      width={width}
-      height={height}
-      className="overflow-visible"
-      viewBox={`0 0 ${width} ${height}`}
-    >
-      <defs>
-        <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={fillD} fill={`url(#${gradientId})`} />
-      <path
-        d={pathD}
-        fill="none"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <div className="inline-block">
+      <svg
+        width={width}
+        height={height}
+        className="overflow-visible"
+        viewBox={`0 0 ${width} ${height}`}
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={fillD} fill={`url(#${gradientId})`} />
+        <path
+          d={pathD}
+          fill="none"
+          stroke={color}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <span className="sr-only">
+        {`Stock trend chart showing ${trend} movement, ${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(1)}% change over ${data.length} data points`}
+      </span>
+    </div>
   );
 }

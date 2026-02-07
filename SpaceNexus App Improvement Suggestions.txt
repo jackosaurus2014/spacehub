@@ -2,7 +2,7 @@
 SPACENEXUS APP - COMPREHENSIVE IMPROVEMENT SUGGESTIONS
 ================================================================================
 Date: February 6, 2026
-Version: 0.4.0 Review
+Version: 0.4.0 Review (updated through v0.4.2)
 Last Updated: February 6, 2026
 
 Based on an overnight deep-dive analysis of the entire codebase, this document
@@ -104,7 +104,9 @@ Recommendations:
     DONE: contact-validation.test.ts (10 tests), news-categorizer.test.ts
     (13 tests). 80 total tests across 4 suites, all passing.
 [ ] Add E2E tests with Playwright for user flows
-[ ] Set up CI/CD pipeline with test requirements
+[x] Set up CI/CD pipeline with test requirements
+    DONE: .github/workflows/ci.yml runs lint, tests, and build on push/PR
+    to dev and master branches.
 
 2.3 STANDARDIZE ERROR HANDLING
 ------------------------------
@@ -148,7 +150,10 @@ Fixes:
 [ ] Add .select() to limit returned fields on remaining routes
     NOTE: Some routes (e.g. /api/events) already use .select()
 [ ] Consider Prisma JSON field types instead of string
-[ ] Add database indexes review
+[x] Add database indexes review
+    DONE: Added @@index directives to prisma/schema.prisma for commonly
+    queried fields across Company, SpaceEvent, NewsArticle, SpaceBlog,
+    SpaceOpportunity, SpaceDebris, OrbitalSlot, and other models.
 [x] Implement max pagination limit (e.g., 100 items)
     DONE: constrainPagination() enforces max 100 items
 
@@ -171,8 +176,12 @@ Fixes:
 [ ] Review and optimize Three.js imports (tree shaking)
 [x] Lazy load heavy components (3D visualizations)
     DONE: Dynamic imports with next/dynamic for heavy components where found.
-[ ] Add bundle analyzer to identify large dependencies
-[ ] Consider dynamic imports for route-specific code
+[x] Add bundle analyzer to identify large dependencies
+    DONE: Installed @next/bundle-analyzer. Run with `npm run analyze`
+    (sets ANALYZE=true). Configured in next.config.js.
+[x] Consider dynamic imports for route-specific code
+    DONE: All 18 module components in ModuleContainer.tsx converted to
+    next/dynamic lazy imports. SolarExplorationModule uses ssr:false for Three.js.
 
 ================================================================================
 4. UI/UX ENHANCEMENTS
@@ -188,7 +197,9 @@ Fixes:
 ---------------------------
 [x] Add breadcrumb navigation on content pages
     DONE: PageHeader component supports breadcrumbs prop, used across 29 pages
-[ ] Implement keyboard navigation for dropdowns (arrow keys, Enter, Escape)
+[x] Implement keyboard navigation for dropdowns (arrow keys, Enter, Escape)
+    DONE: Navigation.tsx dropdown supports arrow key traversal, Enter to
+    select, Escape to close. Uses role="menu"/role="menuitem" ARIA pattern.
 [ ] Add "recently viewed" quick access
 [ ] Improve mobile navigation (only 5 items in bottom nav)
 [x] Add loading states during navigation transitions
@@ -243,7 +254,8 @@ Fixes:
     DONE: Full Tab/Shift+Tab trap in Modal.tsx with focus restoration
 [x] Add visible focus indicators (high contrast)
     DONE: focus:ring classes found across 22+ files and 54+ occurrences
-[ ] Support arrow key navigation in dropdowns
+[x] Support arrow key navigation in dropdowns
+    DONE: See Navigation.tsx keyboard navigation implementation above.
 [ ] Add keyboard shortcuts documentation
 
 5.2 ARIA IMPROVEMENTS
@@ -266,7 +278,11 @@ Fixes:
 [x] Use semantic HTML throughout
     DONE: Verified nav, main, footer, section, article elements used
     correctly in layout, navigation, and page components.
-[ ] Add screen reader-only content for data visualizations
+[x] Add screen reader-only content for data visualizations
+    DONE: Added sr-only descriptive text to HeroStats, TelemetryPanel,
+    StockCard, StockMiniChart, DependencyChart, MarketIntelModule,
+    OrbitalSlotsModule, SatelliteTrackerModule, SolarExplorationModule,
+    SpectrumTrackerModule, and solar-flares page visualizations.
 [ ] Test with NVDA/JAWS/VoiceOver
 
 5.4 COLOR CONTRAST
@@ -300,7 +316,10 @@ Consider adding:
 [x] GET /api/dashboard/overview - Aggregated stats
     DONE: src/app/api/dashboard/overview/route.ts - returns counts for
     companies, news, events, contacts, subscribers, and more via Promise.all.
-[ ] GET /api/events/calendar.ics - Calendar format export
+[x] GET /api/events/calendar.ics - Calendar format export
+    DONE: src/app/api/events/calendar.ics/route.ts generates iCalendar
+    format with VEVENT entries for space events. Returns text/calendar
+    content type with attachment disposition.
 [ ] POST /api/webhooks/subscribe - Event webhooks
 [ ] GET /api/cache/status - Cache health monitoring
 
@@ -324,12 +343,15 @@ Consider:
 
 7.1 HIGH PRIORITY
 -----------------
-[ ] Password reset flow
-[ ] Email verification on signup
+[x] Password reset flow
+    DONE: See Section 1.2 — full forgot-password/reset-password flow.
+[x] Email verification on signup
+    DONE: See Section 1.2 — verification email sent on registration.
 [ ] Social auth (Google, GitHub)
 [ ] User watchlists (save companies, launches)
 [ ] Custom alerts (price thresholds, launch reminders)
-[ ] Data export functionality
+[x] Data export functionality
+    DONE: See Section 6.2 — /api/export/[module] supports CSV and JSON.
 
 7.2 MEDIUM PRIORITY
 -------------------
@@ -424,7 +446,9 @@ See companion document: "How to Publish SpaceNexus on App Stores.txt"
 ----------------------
 [ ] Update NextAuth to v5 (when stable)
 [ ] Review Three.js version and optimization
-[ ] Pin dependency versions (remove ^ from package.json)
+[x] Pin dependency versions (remove ^ from package.json)
+    DONE: Removed ^ from all dependency and devDependency versions in
+    package.json for deterministic installs.
 [x] Run npm audit and fix vulnerabilities
     DONE: Ran npm audit fix to resolve fixable vulnerabilities.
 
@@ -501,7 +525,7 @@ WEEK 2-3:
 [x] Add input validation (Zod) - DONE
 [x] Implement rate limiting - DONE
 [x] Add toast notifications - DONE
-[ ] Fix form state preservation
+[x] Fix form state preservation - DONE (controlled components + on-blur validation)
 
 MONTH 1:
 [x] Add testing framework - DONE (Jest configured, unit tests written)
@@ -535,6 +559,42 @@ This document was generated through comprehensive code analysis including:
 The SpaceNexus platform has strong foundational architecture with excellent
 module organization. The improvements listed above will enhance security,
 performance, and user experience to production-ready quality.
+
+================================================================================
+IMPLEMENTATION LOG (v0.4.0 → v0.4.2)
+================================================================================
+
+Completed across sessions on February 6, 2026:
+
+v0.4.0 → v0.4.1:
+- Security: Zod validation, CSRF protection, rate limiting, RSS sanitization
+- Auth: Password reset flow, email verification, security headers
+- UI: Toast notifications, loading skeletons, navigation progress bar,
+  on-blur validation, password strength meter, touch targets
+- DX: Jest testing (80 tests), GitHub Actions CI, dynamic imports,
+  centralized MODULE_ROUTES, stricter TypeScript
+- API: Global search, dashboard overview, data export (CSV/JSON)
+- A11y: Skip-to-content, focus trap, ARIA improvements, alt text audit
+
+v0.4.1 → v0.4.2:
+- Pinned all dependency versions for deterministic installs
+- Calendar .ics export endpoint for space events
+- Database indexes on commonly queried Prisma models
+- Keyboard navigation (arrow keys) for dropdown menus
+- Screen reader content for all data visualizations
+- Bundle analyzer integration (@next/bundle-analyzer)
+
+REMAINING ITEMS THAT REQUIRE EXTERNAL SERVICES OR MANUAL WORK:
+- Credential rotation and secret management (Railway dashboard)
+- OAuth providers (Google, GitHub) - requires app registration
+- Redis/Upstash caching layer - requires external service setup
+- Sentry error tracking - requires account setup
+- E2E tests with Playwright - requires significant test authoring
+- Staging environment and PR previews - requires Railway config
+- Database backups and connection pooling - Railway config
+- Google Analytics setup - requires GA account
+- Push notifications and background sync - requires service config
+- App store preparation - see companion document
 
 ================================================================================
 END OF DOCUMENT

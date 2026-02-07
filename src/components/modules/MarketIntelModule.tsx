@@ -45,6 +45,11 @@ function PublicCompanyCard({
 
   return (
     <div className="card p-4 hover:border-nebula-500/50 transition-all">
+      {stockData && (
+        <span className="sr-only">
+          {`${company.name} (${company.exchange}:${company.ticker}): Price ${formatPrice(stockData.price)}, ${isPositive ? 'up' : 'down'} ${formatChange(stockData.changePercent, true)} today, 30-day change ${formatChange(stockData.change30D, true)}`}
+        </span>
+      )}
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
@@ -290,7 +295,16 @@ export default function MarketIntelModule() {
 
       {/* Quick Stats */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" role="region" aria-label="Market intelligence statistics">
+          <span className="sr-only">
+            {`Market overview: ${stats.total} companies tracked, ${stats.publicCount} publicly traded, ${stats.privateCount} private, total market cap ${
+              stats.totalMarketCap
+                ? stats.totalMarketCap >= 1000
+                  ? `$${(stats.totalMarketCap / 1000).toFixed(1)} trillion`
+                  : `$${stats.totalMarketCap.toFixed(0)} billion`
+                : 'not available'
+            }`}
+          </span>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-slate-800">{stats.total}</div>
             <div className="text-slate-500 text-xs">Companies</div>

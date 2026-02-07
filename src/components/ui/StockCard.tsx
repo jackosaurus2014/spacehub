@@ -109,6 +109,9 @@ export default function StockCard({
 
   return (
     <div className="card p-4 hover:border-nebula-500/50 transition-all">
+      <span className="sr-only">
+        {`${companyName} (${exchange}:${ticker}): Price ${formatPrice(data.price)}, ${isPositive ? 'up' : 'down'} ${formatChange(data.changePercent, true)} today, 30-day change ${formatChange(data.change30D, true)}, market cap ${formatMarketCap(data.marketCap)}`}
+      </span>
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-mono text-nebula-300">

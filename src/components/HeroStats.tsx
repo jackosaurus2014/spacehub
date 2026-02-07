@@ -208,7 +208,18 @@ export default function HeroStats() {
   };
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8" role="region" aria-label="Key space industry metrics">
+      <span className="sr-only">
+        {`Dashboard overview: ${launch ? `Next launch ${launch.name} by ${launch.provider} in ${launch.timeUntil}` : 'No upcoming launches'}. ${
+          market?.type === 'ipo' && market.ipoCompany
+            ? `Upcoming IPO: ${market.ipoCompany.name} in ${market.ipoCompany.daysUntil} days`
+            : market?.topGainer
+              ? `Top performer: ${market.topGainer.name} (${market.topGainer.ticker}) ${market.topGainer.change >= 0 ? '+' : ''}${market.topGainer.change.toFixed(1)}%`
+              : 'No market data'
+        }. ${news ? `Latest news: ${news.headline} from ${news.source}` : 'No recent news'}. ${
+          solar ? `Space weather: ${solarStatusLabels[solar.status]}, Kp index ${solar.kpIndex}${solar.flareClass ? `, latest flare ${solar.flareClass}` : ''}` : 'Solar data loading'
+        }.`}
+      </span>
       {/* Next Launch */}
       <Link href="/mission-control" className="card p-4 hover:border-cyan-400/50 transition-all group">
         <div className="flex items-center gap-2 mb-2">

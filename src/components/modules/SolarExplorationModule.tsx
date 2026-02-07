@@ -138,6 +138,9 @@ export default function SolarExplorationModule() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* 3D Viewer */}
           <div className="lg:col-span-2 card overflow-hidden">
+            <span className="sr-only">
+              {`3D visualization of ${selectedBody.name}, a ${selectedBody.type}. ${selectedBody.landers?.length || 0} missions recorded${selectedBody.description ? `. ${selectedBody.description}` : ''}`}
+            </span>
             <PlanetaryScene body={selectedBody} height="350px" />
           </div>
 
@@ -154,6 +157,12 @@ export default function SolarExplorationModule() {
 
             <div className="border-t border-slate-200 pt-4">
               <h4 className="text-slate-600 text-sm font-medium mb-3">Landing Statistics</h4>
+              <span className="sr-only">
+                {`Landing statistics for ${selectedBody.name}: ${Object.entries(LANDER_STATUS_INFO)
+                  .filter(([status]) => (landerStats[status] || 0) > 0)
+                  .map(([status, info]) => `${info.label}: ${landerStats[status]}`)
+                  .join(', ') || 'No landings recorded'}`}
+              </span>
               <div className="grid grid-cols-2 gap-3">
                 {Object.entries(LANDER_STATUS_INFO).map(([status, info]) => {
                   const count = landerStats[status] || 0;
