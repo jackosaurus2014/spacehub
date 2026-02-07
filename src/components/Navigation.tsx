@@ -17,37 +17,55 @@ interface DropdownItem {
 
 const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Mission Control', href: '/mission-control', description: 'Upcoming launches and events' },
-  { label: 'Live Launch Hub', href: '/live', description: 'Watch launches live with telemetry' },
-  { label: 'Solar Exploration', href: '/solar-exploration', description: '3D planetary visualization' },
-  { label: 'News', href: '/news', description: 'Latest space industry updates' },
+  { label: 'News & Categories', href: '/news', description: 'Latest space industry updates' },
+  { label: 'Solar System Expansion', href: '/solar-exploration', description: '3D planetary visualization' },
+  { label: 'Lunar Gateway', href: '/lunar-gateway', description: 'Artemis lunar station program' },
+  { label: 'Mars Mission Planner', href: '/mars-planner', description: 'Mars missions and launch windows' },
+  { label: 'Cislunar Economy', href: '/cislunar', description: 'Artemis, CLPS, and lunar economy' },
+  { label: 'Asteroid Watch', href: '/asteroid-watch', description: 'NEOs, planetary defense, and mining' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Market Intel', href: '/market-intel', description: 'Companies and stock tracking' },
-  { label: 'Blogs', href: '/blogs', description: 'Expert industry insights' },
+  { label: 'Space Economy', href: '/space-economy', description: 'Market size, investment & budgets' },
+  { label: 'Blogs & Articles', href: '/blogs', description: 'Expert industry insights' },
+  { label: 'Compliance', href: '/compliance', description: 'Export controls and regulations' },
+  { label: 'Space Law & Treaties', href: '/space-law', description: 'International space law tracker' },
+  { label: 'Regulatory Filings', href: '/regulatory-filings', description: 'FCC, FAA, ITU filing tracker' },
+  { label: 'Space Startups', href: '/startups', description: 'Startup funding and ecosystem' },
+  { label: 'Space Defense', href: '/space-defense', description: 'Military space & national security' },
+  { label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
-  { label: 'Space Tourism', href: '/space-tourism', description: 'Compare space tourism experiences' },
   { label: 'Space Talent & Experts', href: '/space-jobs', description: 'Consultants, lawyers & technical webinars' },
   { label: 'Space Workforce', href: '/workforce', description: 'Job listings and salary benchmarks' },
   { label: 'Global Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain & shortage alerts' },
-  { label: 'Spectrum Tracker', href: '/spectrum', description: 'Frequency allocations and filings' },
+  { label: 'Space Mining', href: '/space-mining', description: 'Asteroid and planetary mining intelligence' },
   { label: 'Space Insurance', href: '/space-insurance', description: 'Risk calculator and market data' },
+  { label: 'Spectrum Auctions', href: '/spectrum-auctions', description: 'Auction monitoring and analysis' },
+  { label: 'Space Manufacturing', href: '/space-manufacturing', description: 'In-space manufacturing ventures' },
+  { label: 'Imagery Marketplace', href: '/imagery-marketplace', description: 'EO & SAR provider comparison' },
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [
-  { label: 'Operational Awareness', href: '/operational-awareness', description: 'Conjunctions, sustainability & spectrum' },
   { label: 'Mission Cost Simulator', href: '/mission-cost', description: 'Estimate launch costs and fees' },
-  { label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
-  { label: 'Resource Exchange', href: '/resource-exchange', description: 'Space commodity pricing' },
-  { label: 'Space Mining', href: '/space-mining', description: 'Asteroid and planetary mining intelligence' },
-  { label: 'Compliance', href: '/compliance', description: 'Export controls and regulations' },
-  { label: 'Solar Flares', href: '/solar-flares', description: 'Real-time solar activity' },
-  { label: 'Debris Monitor', href: '/debris-monitor', description: 'Collision risk and tracking' },
+  { label: 'Launch Vehicle Comparison', href: '/launch-vehicles', description: 'Compare rocket specs and costs' },
+  { label: 'Satellite Tracker', href: '/satellites', description: 'Track ISS, Starlink & weather satellites' },
+  { label: 'Space Station Tracker', href: '/space-stations', description: 'ISS, Tiangong & commercial stations' },
   { label: 'Orbital Slots', href: '/orbital-slots', description: 'Satellite population by orbit' },
+  { label: 'Resource Exchange', href: '/resource-exchange', description: 'Space commodity pricing' },
   { label: 'Launch Windows', href: '/launch-windows', description: 'Optimal launch timing' },
+  { label: 'Debris Monitor', href: '/debris-monitor', description: 'Collision risk and tracking' },
+  { label: 'Solar Flares', href: '/solar-flares', description: 'Real-time solar activity' },
+  { label: 'Operational Awareness', href: '/operational-awareness', description: 'Conjunctions, sustainability & spectrum' },
+  { label: 'Spectrum Tracker', href: '/spectrum', description: 'Frequency allocations and filings' },
+  { label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
+  { label: 'Constellation Tracker', href: '/constellations', description: 'Satellite constellation monitoring' },
+  { label: 'Ground Stations', href: '/ground-stations', description: 'Global ground station networks' },
+  { label: 'Spaceport Directory', href: '/spaceports', description: 'Global launch sites & capabilities' },
+  { label: 'Space Communications', href: '/space-comms', description: 'DSN, relay networks & laser comms' },
   { label: 'Dashboard', href: '/dashboard', description: 'Your personalized hub' },
 ];
 

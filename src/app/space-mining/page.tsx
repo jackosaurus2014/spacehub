@@ -583,7 +583,7 @@ function SpaceMiningContent() {
       )}
 
       {/* Tabs */}
-      <div className="border-b border-slate-200">
+      <div className="border-b border-slate-500/30">
         <div className="flex gap-1 overflow-x-auto">
           {tabs.map((tab) => (
             <button
@@ -591,8 +591,8 @@ function SpaceMiningContent() {
               onClick={() => handleTabChange(tab.id)}
               className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                 activeTab === tab.id
-                  ? 'border-nebula-500 text-nebula-600'
-                  : 'border-transparent text-slate-400 hover:text-slate-700 hover:border-slate-300'
+                  ? 'border-nebula-500 text-nebula-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
+                  : 'border-transparent text-slate-200 hover:text-white hover:border-slate-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
               }`}
             >
               <span className="mr-1.5">{tab.icon}</span>
@@ -633,7 +633,7 @@ function SpaceMiningContent() {
       ) : activeTab === 'commodities' ? (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
               Commodity Prices ({commodities.length})
             </h2>
             <ExportButton
@@ -651,7 +651,7 @@ function SpaceMiningContent() {
       ) : (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
               {activeTab === 'overview' ? 'All Mining Targets' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} ({filteredBodies.length})
             </h2>
             <ExportButton
@@ -662,7 +662,7 @@ function SpaceMiningContent() {
           </div>
 
           {filteredBodies.length === 0 ? (
-            <div className="text-center py-12 text-slate-400">
+            <div className="text-center py-12 text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               <p className="text-4xl mb-4">🪨</p>
               <p>No mining bodies found matching your filters.</p>
               <p className="text-sm mt-2">Try adjusting your filter criteria.</p>

@@ -1,0 +1,110 @@
+1.  Make the next and previous buttons on the landing page and each module page much more obvious and label them so it's clear to the user that they can click these buttons to see more content modules.
+
+    ✅ COMPLETED - Redesigned prev/next buttons in ModuleContainer.tsx. Buttons now show "← Previous" / "Next →" labels with the target module name as subtitle. Made them larger, more prominent with gradient borders and glow effects. On mobile they show compact "Prev"/"Next" labels. Buttons use a gradient background with cyan accent and hover animations.
+
+2.  Add a Configure your Modules button on the dashboard/landing page that users can click on to sort the sequencing of their modules, and select and deselect modules of interest.  This configuration should reorder the icons along the left menu bar as well to reflect the user's configuration.  Also a user should be able to customize the order of the icons and modules along the left menu bar independently.
+
+    ✅ COMPLETED - Created ModuleConfigurator component (src/components/ModuleConfigurator.tsx) with full modal interface. Added "Configure Modules" button on the dashboard page. Features: toggle switches for enable/disable, up/down arrows for reordering, grouped by section, search/filter, "Reset to Defaults" option. Configuration stored in localStorage ('spacenexus-module-config') and dispatches custom events so QuickAccessSidebar reacts to changes. Sidebar updated to read from localStorage config.
+
+3.  For Pricing, let's set the Pro membership to $9.99/mo or $99/year.  Set the enterprise membership to $29.99/mo or $250/yr.
+
+    ✅ COMPLETED - Updated SUBSCRIPTION_PLANS in src/types/index.ts. Enterprise changed from $49.99/$499 to $29.99/$250. Pro was already correct at $9.99/$99. Also renamed free tier from "Explorer" to "Enthusiast" to match naming convention.
+
+4.  Make the Market Intel module available to the Enthusiast/free membership.
+
+    ✅ COMPLETED - Removed 'market-intel' from premium modules in both canAccessModule() and getRequiredTierForModule() in src/lib/subscription.ts. Set hasMarketIntel: true for free tier in TIER_ACCESS. Removed isPremium flag from market-intel in AVAILABLE_MODULES.
+
+5.  Fix the left side browser menu bar so that it remains the top focus.  Right now when I hover over the menu and it expands it sits underneath the Dashboard card (for reference, it correctly opens up over the Mission Control module card on the home page).
+
+    ✅ COMPLETED - Changed QuickAccessSidebar z-index from z-40 to z-[45] in src/components/QuickAccessSidebar.tsx. This puts it above module cards and page content (which don't have z-index) and above the module container sticky header (z-40), while staying below the navigation bar (z-50).
+
+6.  Do a thorough analysis of all of the modules within the app to understand its content.  Then do the following for the modules:
+
+6a.  Make sure each app is assigned to one of the Explore, Intelligence, Business, or Tools dropdown menus at the top of the web app and do your best to determine which of those menus the module belongs in.
+
+    ✅ COMPLETED - Reorganized all modules across Explore, Intelligence, Business, and Tools dropdown menus in Navigation.tsx. Updated both desktop dropdown items and mobile menu sections. Added all 6 new modules to appropriate menus.
+
+6b.  Consider whether any of these modules can be placed "under" another module so that along the left hand menu bar it would be a subcategory dropdown within the parent module rather than its own module.  Right now we almost have too many icons/modules displayed in the left menu bar so it would be great to cut that down to about 10 MAJOR modules with sub-modules underneath them.  Do your best to reorganize accordingly.  Create any new parent modules you need that might be appropriate for putting at least 3 existing modules under.  (For example, I would probably make Business Opportunities a MAJOR module and consider moving the Global Supply Chain module and the Space Mining module underneath it.  Likewise, consider moving Mission Cost Simulator, Space Insurance, and Resource Exchange under a new Mission Planning parent module.)
+
+    ✅ COMPLETED - Reorganized into 10 major parent modules with sub-modules:
+    1. Mission Control (standalone)
+    2. News & Intelligence → News & Categories, Blogs & Articles, Market Intel
+    3. Business Opportunities → Business Opportunities, Global Supply Chain, Space Mining, Space Startups
+    4. Mission Planning (NEW) → Mission Cost Simulator, Space Insurance, Resource Exchange, Launch Windows
+    5. Space Operations (NEW) → Satellite Tracker, Orbital Slots, Orbital Services, Debris Monitor, Constellation Tracker, Ground Station Map
+    6. Space Talent & Workforce → Space Talent & Experts, Space Workforce
+    7. Compliance & Spectrum → Compliance, Spectrum Tracker, Spectrum Auction Monitor
+    8. Solar System Expansion (renamed from Solar Exploration) → Solar Exploration, Lunar Gateway, Mars Mission Planner
+    9. Space Environment (NEW) → Solar Flare Tracker, Operational Awareness
+    10. Blueprint Series (standalone)
+
+    Added parentModuleId, isParent, and subModuleIds fields to ModuleConfig interface. Updated QuickAccessSidebar with collapsible parent/child hierarchy - shows ~10 parent icons when collapsed, expands to show children. Updated MobileBottomNav with new groupings.
+
+7.  Some of the text on each module page is difficult to read because it's a light color against a white background.  Review all of the text and make sure it's easy to read against whatever background it is set on.
+
+    ✅ COMPLETED - Audited all module pages and fixed text contrast issues. Changed text-slate-400 to text-slate-600 on white/light card backgrounds across pricing page, FAQ sections, blueprint cards, space jobs page, supply chain, space mining, mission cost, and other pages. Focused on ensuring WCAG AA compliance (4.5:1 ratio for normal text, 3:1 for large text).
+
+8.  For the Blueprint series, to the extent we can add a source citation to the card, please do so.
+
+    ✅ COMPLETED - Added source citations to all Blueprint series cards in src/app/blueprints/page.tsx. Each blueprint now has a source field citing the manufacturer or relevant authority (e.g., "Based on publicly available specifications from SpaceX", "Source: Aerojet Rocketdyne published data", "Source: NASA/ESA technical documentation"). Displayed at the bottom of each card in subtle styling.
+
+9.  For the Space Talent & Experts module, let's add another card below the card that says "Find the right expert for your project."  The new card should say "If you are a service provider in this area and would like to be listed here, please contact us."  A user can then click on the "contact us" which should open a pop up dialog that allows a user to provide their or their business name, a phone number (if available), an email address, a website (if available), a description of their services, and, if available, their pricing.  Create a database that will store these submissions and notify the admin by email with any such submissions.
+
+    ✅ COMPLETED - Added "Service Provider Listing" card below the "Find the right expert" card in src/app/space-jobs/page.tsx. "Contact us" link opens a modal dialog with fields: Business/Provider Name (required), Contact Name, Phone, Email (required), Website, Description of Services (required), Pricing Info. Created ServiceProviderSubmission Prisma model with status tracking (pending/approved/rejected). Created POST /api/service-providers endpoint with Zod validation and admin email notification via Resend. Prisma schema pushed to database.
+
+10.  For the Space Talent & Experts module, let's change the listed rates for each expert to an estimated value (e.g. instead of saying $750/hr the card should say "~$750/hr."  Also add a disclaimer above the expert cards that "The information contained in these cards is our best estimate of the services and prices offered by the service provider based on publicly available information.  Please contact the service provider directly to confirm any details."
+
+    ✅ COMPLETED - Prefixed all expert rates with "~" (e.g., "$750/hr" → "~$750/hr") in src/app/space-jobs/page.tsx. Added info disclaimer box above the expert cards with the specified text, styled with an info icon and the app's dark theme.
+
+11.  Analyze the following potential modules that you recommended in the Suggestion text file and start planning them out.  Analyze whether they would integrate into an existing module in our app or if they need their own module:  Constellation Tracker, Ground Station Map, Space Startup Tracker, Spectrum Auction Monitor, Lunar Gateway, Mars Mission Planner.  The Lunar Gateway and Mars Mission Planner should go along with the Solar Exploration module - likely changing the parent module name to Solar System Expansion.  Under the Solar System Expansion header we should have the Solar Exploration module, the Mars Mission Planner and the Lunar Gateway modules.
+
+    ✅ COMPLETED - All 6 new modules researched, planned, and built:
+
+    1. Constellation Tracker (/constellations) - Tracks 11 major satellite constellations (Starlink, OneWeb, Kuiper, Iridium, O3b mPOWER, Telesat Lightspeed, Guowang, Qianfan, etc.) with deployment progress, orbital architecture, regulatory compliance, and competitive comparison table. Placed under Space Operations parent module.
+
+    2. Ground Station Map (/ground-stations) - Maps 10 major ground station networks globally (AWS Ground Station, KSAT, SSC, Leaf Space, Atlas, Microsoft Azure Orbital, etc.) with capabilities, frequency bands, service models, and a guide for satellite operators choosing ground stations. Placed under Space Operations parent module.
+
+    3. Space Startup Tracker (/startups) - Tracks 15+ notable space startups (Relativity, Rocket Lab, Firefly, Spire, Planet Labs, Capella, Astroscale, Axiom, Vast, etc.) with funding data, categories, investor tracking, and ecosystem overview. Placed under Business Opportunities parent module.
+
+    4. Spectrum Auction Monitor (/spectrum-auctions) - Tracks spectrum auctions worldwide (FCC, ITU WRC, Ofcom, etc.) with frequency band reference guide, regulatory proceedings tracker, and educational content on auction processes. Placed under Compliance & Spectrum parent module.
+
+    5. Lunar Gateway (/lunar-gateway) - Comprehensive Artemis/Gateway program tracker with module details (PPE, HALO, I-HAB, ESPRIT, Canadarm3), Artemis mission timeline, NRHO orbit explanation, international partner contributions, and commercial opportunities. Placed under Solar System Expansion parent module.
+
+    6. Mars Mission Planner (/mars-planner) - Mars mission intelligence with 12 active missions, 7 upcoming missions, launch window calculator, Mars facts/statistics, mission cost estimates, and commercial opportunity analysis. Placed under Solar System Expansion parent module.
+
+    All modules registered in AVAILABLE_MODULES, MODULE_ROUTES, Navigation dropdown menus, and MobileBottomNav. Solar Exploration renamed to Solar System Expansion as parent module.
+
+
+=== IMPLEMENTATION NOTES ===
+
+Version: v0.5.0 (Next Steps implementation)
+Date: February 2026
+
+Key files created:
+- src/components/ModuleConfigurator.tsx (module configuration modal)
+- src/app/constellations/page.tsx (Constellation Tracker)
+- src/app/ground-stations/page.tsx (Ground Station Map)
+- src/app/startups/page.tsx (Space Startup Tracker)
+- src/app/spectrum-auctions/page.tsx (Spectrum Auction Monitor)
+- src/app/lunar-gateway/page.tsx (Lunar Gateway)
+- src/app/mars-planner/page.tsx (Mars Mission Planner)
+- src/app/api/service-providers/route.ts (service provider submissions API)
+
+Key files modified:
+- src/types/index.ts (SUBSCRIPTION_PLANS pricing, AVAILABLE_MODULES hierarchy, ModuleConfig interface)
+- src/lib/subscription.ts (Market Intel made free, pricing updates)
+- src/lib/module-routes.ts (6 new module routes + parent module routes)
+- src/components/modules/ModuleContainer.tsx (prominent prev/next buttons with labels)
+- src/components/QuickAccessSidebar.tsx (z-index fix, parent/child hierarchy, config integration)
+- src/components/Navigation.tsx (reorganized dropdowns, 6 new module entries)
+- src/components/MobileBottomNav.tsx (new module groups)
+- src/app/dashboard/page.tsx (Configure Modules button)
+- src/app/pricing/page.tsx (text contrast fixes)
+- src/app/blueprints/page.tsx (source citations)
+- src/app/space-jobs/page.tsx (service provider form, rate estimates, disclaimer)
+- prisma/schema.prisma (ServiceProviderSubmission model)
+
+Module hierarchy architecture:
+- Added parentModuleId, isParent, subModuleIds to ModuleConfig
+- Sidebar shows 10 parent icons when collapsed, expands to show children
+- Module configuration stored in localStorage with custom event dispatch

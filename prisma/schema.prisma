@@ -2172,3 +2172,20 @@ model WebhookSubscription {
   @@index([isActive])
   @@index([userId])
 }
+
+model ServiceProviderSubmission {
+  id          String   @id @default(cuid())
+  businessName String
+  contactName  String?
+  phone       String?
+  email       String
+  website     String?
+  description String
+  pricing     String?
+  status      String   @default("pending") // pending, approved, rejected
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}

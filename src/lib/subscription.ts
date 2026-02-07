@@ -21,7 +21,7 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
   free: {
     maxDailyArticles: 10,
     hasStockTracking: false,
-    hasMarketIntel: false,
+    hasMarketIntel: true,
     hasResourceExchange: false,
     hasAIOpportunities: false,
     hasAlerts: false,
@@ -59,7 +59,6 @@ export function canAccessFeature(
 
 export function canAccessModule(tier: SubscriptionTier, moduleId: string): boolean {
   const premiumModules: Record<string, SubscriptionTier> = {
-    'market-intel': 'pro',
     'resource-exchange': 'pro',
     'business-opportunities': 'enterprise',
     'solar-flare-tracker': 'pro',
@@ -82,7 +81,6 @@ export function canAccessModule(tier: SubscriptionTier, moduleId: string): boole
 
 export function getRequiredTierForModule(moduleId: string): SubscriptionTier | null {
   const premiumModules: Record<string, SubscriptionTier> = {
-    'market-intel': 'pro',
     'resource-exchange': 'pro',
     'business-opportunities': 'enterprise',
     'solar-flare-tracker': 'pro',

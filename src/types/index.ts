@@ -155,6 +155,9 @@ export interface ModuleConfig {
   defaultEnabled: boolean;
   defaultPosition: number;
   isPremium?: boolean;
+  parentModuleId?: string;    // If this is a sub-module, which parent it belongs to
+  isParent?: boolean;         // If this is a parent module container
+  subModuleIds?: string[];    // For parent modules, list of child module IDs
 }
 
 // Subscription tiers
@@ -172,7 +175,7 @@ export interface SubscriptionPlan {
 export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'free',
-    name: 'Explorer',
+    name: 'Enthusiast',
     price: 0,
     priceYearly: 0,
     features: [
@@ -190,7 +193,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     priceYearly: 99,
     highlighted: true,
     features: [
-      'Everything in Explorer',
+      'Everything in Enthusiast',
       'Unlimited article access',
       'Real-time stock tracking',
       'Market Intel dashboard',
@@ -203,8 +206,8 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'enterprise',
     name: 'Enterprise',
-    price: 49.99,
-    priceYearly: 499,
+    price: 29.99,
+    priceYearly: 250,
     features: [
       'Everything in Professional',
       'AI-powered opportunities',
@@ -219,7 +222,11 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
 ];
 
 export const AVAILABLE_MODULES: ModuleConfig[] = [
-  // === Explore ===
+  // ═══════════════════════════════════════════════════════════════════
+  // PARENT MODULES (navigation containers - 10 major modules)
+  // ═══════════════════════════════════════════════════════════════════
+
+  // 1. Mission Control (standalone)
   {
     moduleId: 'mission-control',
     name: 'Mission Control',
@@ -229,6 +236,128 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 0,
   },
+
+  // 2. News & Intelligence (parent)
+  {
+    moduleId: 'news-intelligence',
+    name: 'News & Intelligence',
+    description: 'Space news, blogs, and market intelligence',
+    icon: '📰',
+    section: 'explore',
+    defaultEnabled: true,
+    defaultPosition: 1,
+    isParent: true,
+    subModuleIds: ['news-feed', 'blogs-articles', 'market-intel', 'space-economy', 'space-defense'],
+  },
+
+  // 3. Business Opportunities (parent)
+  {
+    moduleId: 'business-opportunities-group',
+    name: 'Business Opportunities',
+    description: 'AI opportunities, supply chain, and space mining',
+    icon: '💼',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 2,
+    isParent: true,
+    subModuleIds: ['business-opportunities', 'supply-chain', 'space-mining', 'startup-tracker', 'patent-tracker', 'space-manufacturing', 'imagery-marketplace'],
+  },
+
+  // 4. Mission Planning (parent, NEW)
+  {
+    moduleId: 'mission-planning',
+    name: 'Mission Planning',
+    description: 'Cost simulation, insurance, resources, and launch timing',
+    icon: '🗺️',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 3,
+    isParent: true,
+    subModuleIds: ['mission-cost', 'space-insurance', 'resource-exchange', 'launch-windows', 'launch-vehicles'],
+  },
+
+  // 5. Space Operations (parent, NEW)
+  {
+    moduleId: 'space-operations',
+    name: 'Space Operations',
+    description: 'Satellite tracking, orbital management, and debris monitoring',
+    icon: '🛰️',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 4,
+    isParent: true,
+    subModuleIds: ['satellite-tracker', 'orbital-slots', 'orbital-services', 'constellation-tracker', 'debris-monitor', 'ground-station-map', 'space-stations', 'spaceport-directory', 'space-comms'],
+  },
+
+  // 6. Space Talent & Workforce (parent)
+  {
+    moduleId: 'talent-workforce',
+    name: 'Space Talent & Workforce',
+    description: 'Expert consultants, job listings, and hiring trends',
+    icon: '👩‍🚀',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 5,
+    isParent: true,
+    subModuleIds: ['space-jobs', 'space-workforce'],
+  },
+
+  // 7. Compliance & Spectrum (parent)
+  {
+    moduleId: 'compliance-spectrum',
+    name: 'Compliance & Spectrum',
+    description: 'Export controls, regulations, and spectrum management',
+    icon: '⚖️',
+    section: 'intelligence',
+    defaultEnabled: true,
+    defaultPosition: 6,
+    isParent: true,
+    subModuleIds: ['compliance', 'spectrum-tracker', 'spectrum-auction-monitor', 'space-law', 'regulatory-filings'],
+  },
+
+  // 8. Solar System Expansion (parent, renamed from Solar Exploration)
+  {
+    moduleId: 'solar-system-expansion',
+    name: 'Solar System Expansion',
+    description: 'Planetary exploration and future expansion planning',
+    icon: '🌍',
+    section: 'explore',
+    defaultEnabled: true,
+    defaultPosition: 7,
+    isParent: true,
+    subModuleIds: ['solar-exploration', 'mars-planner', 'lunar-gateway', 'cislunar-tracker', 'asteroid-watch'],
+  },
+
+  // 9. Space Environment (parent, NEW)
+  {
+    moduleId: 'space-environment',
+    name: 'Space Environment',
+    description: 'Solar activity monitoring and operational awareness',
+    icon: '☀️',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 8,
+    isParent: true,
+    subModuleIds: ['solar-flare-tracker', 'operational-awareness'],
+  },
+
+  // 10. Blueprint Series (standalone)
+  {
+    moduleId: 'blueprints',
+    name: 'Blueprint Series',
+    description: 'Technical breakdowns of space hardware - rocket engines, satellite buses, and lunar landers',
+    icon: '📐',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 9,
+    isPremium: true,
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // CHILD MODULES (sub-modules under parents)
+  // ═══════════════════════════════════════════════════════════════════
+
+  // --- News & Intelligence children ---
   {
     moduleId: 'categories',
     name: 'Browse News by Category',
@@ -236,7 +365,8 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     icon: '📂',
     section: 'explore',
     defaultEnabled: false, // Merged into news-feed module
-    defaultPosition: 1,
+    defaultPosition: 10,
+    parentModuleId: 'news-intelligence',
   },
   {
     moduleId: 'news-feed',
@@ -245,27 +375,8 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     icon: '📰',
     section: 'explore',
     defaultEnabled: true,
-    defaultPosition: 2,
-  },
-  {
-    moduleId: 'solar-exploration',
-    name: 'Solar Exploration',
-    description: 'Interactive 3D visualization of planetary bodies with rover and lander locations',
-    icon: '🌍',
-    section: 'tools',
-    defaultEnabled: true,
-    defaultPosition: 14,
-  },
-  // === Intelligence ===
-  {
-    moduleId: 'market-intel',
-    name: 'Market Intel',
-    description: 'Space industry companies, stocks, and funding data',
-    icon: '📊',
-    section: 'intelligence',
-    defaultEnabled: true,
-    defaultPosition: 3,
-    isPremium: true,
+    defaultPosition: 11,
+    parentModuleId: 'news-intelligence',
   },
   {
     moduleId: 'blogs-articles',
@@ -274,9 +385,21 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     icon: '✍️',
     section: 'intelligence',
     defaultEnabled: true,
-    defaultPosition: 4,
+    defaultPosition: 12,
+    parentModuleId: 'news-intelligence',
   },
-  // === Business ===
+  {
+    moduleId: 'market-intel',
+    name: 'Market Intel',
+    description: 'Space industry companies, stocks, and funding data',
+    icon: '📊',
+    section: 'intelligence',
+    defaultEnabled: true,
+    defaultPosition: 13,
+    parentModuleId: 'news-intelligence',
+  },
+
+  // --- Business Opportunities children ---
   {
     moduleId: 'business-opportunities',
     name: 'Business Opportunities',
@@ -284,128 +407,9 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     icon: '💼',
     section: 'business',
     defaultEnabled: true,
-    defaultPosition: 6,
+    defaultPosition: 14,
     isPremium: true,
-  },
-  {
-    moduleId: 'spectrum-tracker',
-    name: 'Spectrum Tracker',
-    description: 'Satellite frequency allocations, filings, and spectrum availability',
-    icon: '📡',
-    section: 'business',
-    defaultEnabled: true,
-    defaultPosition: 7,
-    isPremium: true,
-  },
-  {
-    moduleId: 'space-insurance',
-    name: 'Space Insurance',
-    description: 'Insurance market data, premium calculator, and risk assessment',
-    icon: '🛡️',
-    section: 'business',
-    defaultEnabled: true,
-    defaultPosition: 8,
-    isPremium: true,
-  },
-  {
-    moduleId: 'space-workforce',
-    name: 'Space Workforce',
-    description: 'Job listings, salary benchmarks, and industry hiring trends',
-    icon: '👩‍🚀',
-    section: 'business',
-    defaultEnabled: true,
-    defaultPosition: 9,
-    isPremium: true,
-  },
-  {
-    moduleId: 'space-jobs',
-    name: 'Space Talent & Experts',
-    description: 'Connect with space industry consultants, lawyers, engineers & policy experts',
-    icon: '🎯',
-    section: 'business',
-    defaultEnabled: true,
-    defaultPosition: 10,
-    isPremium: true,
-  },
-  {
-    moduleId: 'orbital-services',
-    name: 'Orbital Services',
-    description: 'Marketplace for satellite-based services: compute, imaging, power, and more',
-    icon: '🌐',
-    section: 'business',
-    defaultEnabled: true,
-    defaultPosition: 10,
-    isPremium: true,
-  },
-  {
-    moduleId: 'orbital-slots',
-    name: 'Orbital Slots',
-    description: 'Satellite population by orbit with 1Y and 5Y projections',
-    icon: '🛰️',
-    section: 'business',
-    defaultEnabled: true,
-    defaultPosition: 11,
-    isPremium: true,
-  },
-  // === Tools ===
-  {
-    moduleId: 'resource-exchange',
-    name: 'Resource Exchange',
-    description: 'Space commodities pricing - Earth vs orbit costs',
-    icon: '💰',
-    section: 'tools',
-    defaultEnabled: true,
-    defaultPosition: 12,
-    isPremium: true,
-  },
-  {
-    moduleId: 'compliance',
-    name: 'Compliance',
-    description: 'Export controls, regulations, and legal updates for space industry',
-    icon: '⚖️',
-    section: 'intelligence',
-    defaultEnabled: true,
-    defaultPosition: 5,
-    isPremium: true,
-  },
-  {
-    moduleId: 'solar-flare-tracker',
-    name: 'Solar Flare Tracker',
-    description: 'Real-time solar activity monitoring with 90-day danger forecasts',
-    icon: '☀️',
-    section: 'tools',
-    defaultEnabled: true,
-    defaultPosition: 13,
-    isPremium: true,
-  },
-  {
-    moduleId: 'launch-windows',
-    name: 'Launch Windows',
-    description: 'Optimal launch windows and mission planning for planetary destinations',
-    icon: '🪟',
-    section: 'tools',
-    defaultEnabled: true,
-    defaultPosition: 15,
-    isPremium: true,
-  },
-  {
-    moduleId: 'debris-monitor',
-    name: 'Debris Monitor',
-    description: 'Space debris tracking, collision risk, and Kessler syndrome monitoring',
-    icon: '⚠️',
-    section: 'tools',
-    defaultEnabled: true,
-    defaultPosition: 16,
-    isPremium: true,
-  },
-  {
-    moduleId: 'satellite-tracker',
-    name: 'Satellite Tracker',
-    description: 'Track active satellites including ISS, Starlink, GPS, and weather satellites',
-    icon: '🛰️',
-    section: 'data',
-    defaultEnabled: true,
-    defaultPosition: 17,
+    parentModuleId: 'business-opportunities-group',
   },
   {
     moduleId: 'supply-chain',
@@ -414,8 +418,9 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     icon: '🗺️',
     section: 'business',
     defaultEnabled: true,
-    defaultPosition: 18,
+    defaultPosition: 15,
     isPremium: true,
+    parentModuleId: 'business-opportunities-group',
   },
   {
     moduleId: 'space-mining',
@@ -424,8 +429,239 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     icon: '⛏️',
     section: 'tools',
     defaultEnabled: true,
+    defaultPosition: 16,
+    isPremium: true,
+    parentModuleId: 'business-opportunities-group',
+  },
+  {
+    moduleId: 'startup-tracker',
+    name: 'Space Startup Tracker',
+    description: 'Track space startups, funding rounds, investors, and the startup ecosystem',
+    icon: '🚀',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 25,
+    isPremium: true,
+    parentModuleId: 'business-opportunities-group',
+  },
+
+  // --- Mission Planning children ---
+  {
+    moduleId: 'mission-cost',
+    name: 'Mission Cost Simulator',
+    description: 'Estimate launch costs, insurance premiums, and regulatory fees across all major providers',
+    icon: '💰',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 17,
+    isPremium: true,
+    parentModuleId: 'mission-planning',
+  },
+  {
+    moduleId: 'space-insurance',
+    name: 'Space Insurance',
+    description: 'Insurance market data, premium calculator, and risk assessment',
+    icon: '🛡️',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 18,
+    isPremium: true,
+    parentModuleId: 'mission-planning',
+  },
+  {
+    moduleId: 'resource-exchange',
+    name: 'Resource Exchange',
+    description: 'Space commodities pricing - Earth vs orbit costs',
+    icon: '💰',
+    section: 'tools',
+    defaultEnabled: true,
     defaultPosition: 19,
     isPremium: true,
+    parentModuleId: 'mission-planning',
+  },
+  {
+    moduleId: 'launch-windows',
+    name: 'Launch Windows',
+    description: 'Optimal launch windows and mission planning for planetary destinations',
+    icon: '🪟',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 20,
+    isPremium: true,
+    parentModuleId: 'mission-planning',
+  },
+
+  // --- Space Operations children ---
+  {
+    moduleId: 'satellite-tracker',
+    name: 'Satellite Tracker',
+    description: 'Track active satellites including ISS, Starlink, GPS, and weather satellites',
+    icon: '🛰️',
+    section: 'data',
+    defaultEnabled: true,
+    defaultPosition: 21,
+    parentModuleId: 'space-operations',
+  },
+  {
+    moduleId: 'orbital-slots',
+    name: 'Orbital Slots',
+    description: 'Satellite population by orbit with 1Y and 5Y projections',
+    icon: '🛰️',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 22,
+    isPremium: true,
+    parentModuleId: 'space-operations',
+  },
+  {
+    moduleId: 'orbital-services',
+    name: 'Orbital Services',
+    description: 'Marketplace for satellite-based services: compute, imaging, power, and more',
+    icon: '🌐',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 23,
+    isPremium: true,
+    parentModuleId: 'space-operations',
+  },
+  {
+    moduleId: 'constellation-tracker',
+    name: 'Constellation Tracker',
+    description: 'Track major satellite constellations - deployments, coverage, and regulatory compliance',
+    icon: '🛸',
+    section: 'data',
+    defaultEnabled: true,
+    defaultPosition: 23,
+    isPremium: true,
+    parentModuleId: 'space-operations',
+  },
+  {
+    moduleId: 'debris-monitor',
+    name: 'Debris Monitor',
+    description: 'Space debris tracking, collision risk, and Kessler syndrome monitoring',
+    icon: '⚠️',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 24,
+    isPremium: true,
+    parentModuleId: 'space-operations',
+  },
+  {
+    moduleId: 'ground-station-map',
+    name: 'Ground Station Map',
+    description: 'Global ground station networks - locations, capabilities, and service comparison',
+    icon: '📡',
+    section: 'data',
+    defaultEnabled: true,
+    defaultPosition: 24,
+    isPremium: true,
+    parentModuleId: 'space-operations',
+  },
+
+  // --- Space Talent & Workforce children ---
+  {
+    moduleId: 'space-jobs',
+    name: 'Space Talent & Experts',
+    description: 'Connect with space industry consultants, lawyers, engineers & policy experts',
+    icon: '🎯',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 25,
+    isPremium: true,
+    parentModuleId: 'talent-workforce',
+  },
+  {
+    moduleId: 'space-workforce',
+    name: 'Space Workforce',
+    description: 'Job listings, salary benchmarks, and industry hiring trends',
+    icon: '👩‍🚀',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 26,
+    isPremium: true,
+    parentModuleId: 'talent-workforce',
+  },
+
+  // --- Compliance & Spectrum children ---
+  {
+    moduleId: 'compliance',
+    name: 'Compliance',
+    description: 'Export controls, regulations, and legal updates for space industry',
+    icon: '⚖️',
+    section: 'intelligence',
+    defaultEnabled: true,
+    defaultPosition: 27,
+    isPremium: true,
+    parentModuleId: 'compliance-spectrum',
+  },
+  {
+    moduleId: 'spectrum-tracker',
+    name: 'Spectrum Tracker',
+    description: 'Satellite frequency allocations, filings, and spectrum availability',
+    icon: '📡',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 28,
+    isPremium: true,
+    parentModuleId: 'compliance-spectrum',
+  },
+  {
+    moduleId: 'spectrum-auction-monitor',
+    name: 'Spectrum Auction Monitor',
+    description: 'Track spectrum auctions, allocations, and regulatory proceedings for satellite communications',
+    icon: '📻',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 26,
+    isPremium: true,
+    parentModuleId: 'compliance-spectrum',
+  },
+
+  // --- Solar System Expansion children ---
+  {
+    moduleId: 'mars-planner',
+    name: 'Mars Mission Planner',
+    description: 'Mars missions, launch windows, costs, and mission planning intelligence',
+    icon: '🔴',
+    section: 'explore',
+    defaultEnabled: true,
+    defaultPosition: 28,
+    isPremium: true,
+    parentModuleId: 'solar-system-expansion',
+  },
+  {
+    moduleId: 'solar-exploration',
+    name: 'Solar Exploration',
+    description: 'Interactive 3D visualization of planetary bodies with rover and lander locations',
+    icon: '🌍',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 29,
+    parentModuleId: 'solar-system-expansion',
+  },
+  {
+    moduleId: 'lunar-gateway',
+    name: 'Lunar Gateway',
+    description: 'Track NASA Lunar Gateway station modules, Artemis missions, and international partnerships',
+    icon: '🌙',
+    section: 'explore',
+    defaultEnabled: true,
+    defaultPosition: 27,
+    isPremium: true,
+    parentModuleId: 'solar-system-expansion',
+  },
+
+  // --- Space Environment children ---
+  {
+    moduleId: 'solar-flare-tracker',
+    name: 'Solar Flare Tracker',
+    description: 'Real-time solar activity monitoring with 90-day danger forecasts',
+    icon: '☀️',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 30,
+    isPremium: true,
+    parentModuleId: 'space-environment',
   },
   {
     moduleId: 'operational-awareness',
@@ -434,30 +670,184 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     icon: '🛡️',
     section: 'tools',
     defaultEnabled: true,
-    defaultPosition: 20,
+    defaultPosition: 31,
     isPremium: true,
+    parentModuleId: 'space-environment',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // NEW MODULES (v0.6.0)
+  // ═══════════════════════════════════════════════════════════════════
+
+  // --- News & Intelligence new children ---
+  {
+    moduleId: 'space-economy',
+    name: 'Space Economy Dashboard',
+    description: 'Macro-level space economy data, market size, investment trends, and government budgets',
+    icon: '📈',
+    section: 'intelligence',
+    defaultEnabled: true,
+    defaultPosition: 32,
+    isPremium: true,
+    parentModuleId: 'news-intelligence',
   },
   {
-    moduleId: 'mission-cost',
-    name: 'Mission Cost Simulator',
-    description: 'Estimate launch costs, insurance premiums, and regulatory fees across all major providers',
-    icon: '💰',
-    section: 'tools',
+    moduleId: 'space-defense',
+    name: 'Space Defense & National Security',
+    description: 'OSINT military space programs, defense procurement, and counterspace threat assessment',
+    icon: '🛡️',
+    section: 'intelligence',
     defaultEnabled: true,
-    defaultPosition: 21,
+    defaultPosition: 33,
     isPremium: true,
+    parentModuleId: 'news-intelligence',
+  },
+
+  // --- Business Opportunities new children ---
+  {
+    moduleId: 'patent-tracker',
+    name: 'Patent & IP Tracker',
+    description: 'Space technology patents, filing trends, company portfolios, and NASA technology transfer',
+    icon: '📜',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 34,
+    isPremium: true,
+    parentModuleId: 'business-opportunities-group',
   },
   {
-    moduleId: 'blueprints',
-    name: 'Blueprint Series',
-    description: 'Technical breakdowns of space hardware - rocket engines, satellite buses, and lunar landers',
-    icon: '📐',
+    moduleId: 'space-manufacturing',
+    name: 'Space Manufacturing',
+    description: 'In-space manufacturing ventures, ISS National Lab, and commercial space station utilization',
+    icon: '🏭',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 35,
+    isPremium: true,
+    parentModuleId: 'business-opportunities-group',
+  },
+  {
+    moduleId: 'imagery-marketplace',
+    name: 'Satellite Imagery Marketplace',
+    description: 'Earth observation and SAR provider comparison, resolution, pricing, and coverage analysis',
+    icon: '🌐',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 36,
+    isPremium: true,
+    parentModuleId: 'business-opportunities-group',
+  },
+
+  // --- Mission Planning new child ---
+  {
+    moduleId: 'launch-vehicles',
+    name: 'Launch Vehicle Comparison',
+    description: 'Interactive comparison of launch vehicles: specs, costs, reliability, and availability',
+    icon: '🚀',
     section: 'tools',
     defaultEnabled: true,
-    defaultPosition: 22,
+    defaultPosition: 37,
     isPremium: true,
+    parentModuleId: 'mission-planning',
+  },
+
+  // --- Space Operations new children ---
+  {
+    moduleId: 'space-stations',
+    name: 'Space Station Tracker',
+    description: 'ISS, Tiangong, and commercial space stations: crew, modules, visiting vehicles',
+    icon: '🏠',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 38,
+    isPremium: true,
+    parentModuleId: 'space-operations',
+  },
+  {
+    moduleId: 'spaceport-directory',
+    name: 'Spaceport Directory',
+    description: 'Global launch sites: capabilities, licensing, traffic data, and infrastructure',
+    icon: '🏗️',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 39,
+    isPremium: true,
+    parentModuleId: 'space-operations',
+  },
+  {
+    moduleId: 'space-comms',
+    name: 'Space Communications',
+    description: 'DSN status, relay networks, laser comms, and lunar communication infrastructure',
+    icon: '📡',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 40,
+    isPremium: true,
+    parentModuleId: 'space-operations',
+  },
+
+  // --- Compliance & Spectrum new children ---
+  {
+    moduleId: 'space-law',
+    name: 'Space Law & Treaty Monitor',
+    description: 'International treaties, Artemis Accords, national legislation, and legal proceedings',
+    icon: '📋',
+    section: 'intelligence',
+    defaultEnabled: true,
+    defaultPosition: 41,
+    isPremium: true,
+    parentModuleId: 'compliance-spectrum',
+  },
+  {
+    moduleId: 'regulatory-filings',
+    name: 'Regulatory Filing Tracker',
+    description: 'FCC satellite filings, FAA licenses, ITU filings, and SEC space company reports',
+    icon: '📄',
+    section: 'intelligence',
+    defaultEnabled: true,
+    defaultPosition: 42,
+    isPremium: true,
+    parentModuleId: 'compliance-spectrum',
+  },
+
+  // --- Solar System Expansion new children ---
+  {
+    moduleId: 'cislunar-tracker',
+    name: 'Cislunar Economy Tracker',
+    description: 'Artemis program, CLPS missions, ISRU development, and lunar infrastructure',
+    icon: '🌙',
+    section: 'explore',
+    defaultEnabled: true,
+    defaultPosition: 43,
+    isPremium: true,
+    parentModuleId: 'solar-system-expansion',
+  },
+  {
+    moduleId: 'asteroid-watch',
+    name: 'Asteroid Watch',
+    description: 'Near-Earth objects, planetary defense, mining targets, and discovery statistics',
+    icon: '☄️',
+    section: 'explore',
+    defaultEnabled: true,
+    defaultPosition: 44,
+    isPremium: true,
+    parentModuleId: 'solar-system-expansion',
   },
 ];
+
+// Helper: Get only parent modules + standalone modules (for sidebar top-level)
+export const PARENT_MODULES: ModuleConfig[] = AVAILABLE_MODULES.filter(
+  m => !m.parentModuleId
+);
+
+// Helper: Get child modules for a given parent
+export function getChildModules(parentModuleId: string): ModuleConfig[] {
+  const parent = AVAILABLE_MODULES.find(m => m.moduleId === parentModuleId);
+  if (!parent?.subModuleIds) return [];
+  return parent.subModuleIds
+    .map(id => AVAILABLE_MODULES.find(m => m.moduleId === id))
+    .filter((m): m is ModuleConfig => m !== undefined);
+}
 
 // Re-export centralized module routes for backward compatibility
 export { MODULE_ROUTES, getModuleRoute } from '@/lib/module-routes';

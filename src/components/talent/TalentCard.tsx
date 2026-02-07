@@ -9,7 +9,7 @@ interface TalentCardProps {
 
 function formatRate(rate: number | null): string {
   if (!rate) return 'Contact for rates';
-  return `$${rate}/hr`;
+  return `~$${rate}/hr`;
 }
 
 export default function TalentCard({ talent, compact = false }: TalentCardProps) {

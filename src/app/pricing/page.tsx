@@ -119,13 +119,13 @@ export default function PricingPage() {
 
         {/* Billing Toggle */}
         <div className="flex items-center justify-center gap-4 mb-12">
-          <span className={`text-sm ${!isYearly ? 'text-slate-900' : 'text-slate-400'}`}>
+          <span className={`text-sm font-medium ${!isYearly ? 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]' : 'text-slate-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'}`}>
             Monthly
           </span>
           <button
             onClick={() => setIsYearly(!isYearly)}
             className={`relative w-14 h-7 rounded-full transition-colors ${
-              isYearly ? 'bg-nebula-500' : 'bg-slate-100'
+              isYearly ? 'bg-nebula-500' : 'bg-slate-500'
             }`}
           >
             <span
@@ -134,9 +134,9 @@ export default function PricingPage() {
               }`}
             />
           </button>
-          <span className={`text-sm ${isYearly ? 'text-slate-900' : 'text-slate-400'}`}>
+          <span className={`text-sm font-medium ${isYearly ? 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]' : 'text-slate-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'}`}>
             Yearly
-            <span className="ml-1 text-green-400 text-xs">Save up to 17%</span>
+            <span className="ml-1 text-green-400 text-xs drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">Save up to 17%</span>
           </span>
         </div>
 
@@ -154,7 +154,7 @@ export default function PricingPage() {
 
         {/* FAQ / Trust Section */}
         <div className="mt-16 text-center">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             Frequently Asked Questions
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
@@ -181,7 +181,7 @@ export default function PricingPage() {
                 Is there a free trial?
               </h3>
               <p className="text-slate-400 text-sm">
-                Our Explorer plan is free forever with access to core features.
+                Our Enthusiast plan is free forever with access to core features.
                 Upgrade anytime to unlock premium features.
               </p>
             </div>
@@ -199,7 +199,7 @@ export default function PricingPage() {
 
         {/* CTA */}
         <div className="mt-16 text-center">
-          <p className="text-slate-400 mb-4">
+          <p className="text-slate-200 mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
             Have questions? We&apos;re here to help.
           </p>
           <Link

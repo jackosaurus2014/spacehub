@@ -815,7 +815,7 @@ function MissionCostContent() {
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
-                      : 'bg-slate-100/50 text-slate-500 hover:bg-slate-100'
+                      : 'bg-slate-800/60 text-slate-200 hover:bg-slate-700/70 hover:text-white border border-slate-600/30'
                   }`}
                 >
                   {tab.icon && <span>{tab.icon}</span>}
@@ -825,7 +825,7 @@ function MissionCostContent() {
                       className={`text-xs px-1.5 py-0.5 rounded-full ${
                         activeTab === tab.id
                           ? 'bg-slate-200 text-slate-900'
-                          : 'bg-slate-200 text-slate-500'
+                          : 'bg-slate-600/50 text-slate-200'
                       }`}
                     >
                       {tab.count}

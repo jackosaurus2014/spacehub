@@ -1,0 +1,1979 @@
+================================================================================
+SPACENEXUS - NEW MODULE BRAINSTORMING RESEARCH
+Comprehensive Analysis for Space Industry Intelligence Platform Expansion
+================================================================================
+Date: February 2026
+Status: Research & Evaluation Document
+
+TABLE OF CONTENTS
+-----------------
+  I.   Executive Summary
+  II.  Module Analysis (15 Modules)
+  III. Competitive Landscape Analysis
+  IV.  Industry Data Gap Analysis
+  V.   Prioritized Roadmap Recommendation
+  VI.  Data Source Master List
+
+================================================================================
+I. EXECUTIVE SUMMARY
+================================================================================
+
+SpaceNexus already covers an impressive range of space industry intelligence,
+from launch tracking and market data to compliance monitoring and resource
+exchange. The 15 proposed modules below represent the next frontier of
+differentiation. After thorough analysis, the highest-priority additions are:
+
+  TOP TIER (Build First):
+  1. Space Law & Treaty Monitor          - Unique, high-value for lawyers/CEOs
+  2. Regulatory Filing Tracker            - Real-time actionable intelligence
+  3. Space Economy Dashboard              - Executive-level strategic tool
+  4. Launch Vehicle Comparison Tool       - High utility, moderate complexity
+  5. Space Weather & Radiation            - Critical operational data
+
+  SECOND TIER (Build Next):
+  6. Space Station Tracker
+  7. Cislunar Economy Tracker
+  8. Spaceport Directory
+  9. Space Sustainability & ESG
+  10. Asteroid Watch
+
+  THIRD TIER (Future Roadmap):
+  11. Patent & IP Tracker
+  12. Space Manufacturing & In-Space Economy
+  13. Space Communications Network
+  14. Satellite Imagery Marketplace
+  15. Space Defense & National Security
+
+================================================================================
+II. MODULE ANALYSIS
+================================================================================
+
+------------------------------------------------------------------------------
+MODULE 1: SPACE WEATHER & RADIATION INTELLIGENCE
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+A comprehensive space weather intelligence module that goes far beyond basic
+solar flare tracking. This module would provide radiation environment data
+across multiple domains: the Van Allen radiation belts, galactic cosmic ray
+(GCR) forecasts, solar energetic particle (SEP) events, geomagnetic storm
+impacts on terrestrial and space infrastructure, and real-time radiation dose
+estimates for spacecraft and astronaut missions.
+
+KEY DATA TO DISPLAY:
+- Real-time solar wind speed, density, and magnetic field (Bz component)
+- Kp index (geomagnetic activity) current and 3-day forecast
+- GOES satellite X-ray flux (solar flare detection)
+- Proton flux levels at geostationary orbit (SEP events)
+- Van Allen belt radiation intensity maps (dynamic models)
+- Galactic cosmic ray flux (neutron monitor data)
+- Radiation dose rate estimates by orbital altitude/inclination
+- Geomagnetic storm impact assessments:
+  * Satellite drag increase estimates (LEO operators)
+  * Single-event upset (SEU) probability by orbit
+  * HF radio blackout zones
+  * GPS accuracy degradation maps
+  * Power grid vulnerability (GIC maps)
+- Historical space weather event database
+- Solar cycle progression charts (Solar Cycle 25 tracking)
+- Coronal mass ejection (CME) arrival time predictions
+- D-region absorption predictions (DRAP)
+
+TARGET AUDIENCE:
+- Satellite operators (HIGH) - drag, charging, SEU risk
+- Launch providers (HIGH) - radiation constraints for crew missions
+- Insurance underwriters (HIGH) - risk assessment for space assets
+- Airlines (MEDIUM) - polar route radiation exposure
+- Power grid operators (MEDIUM) - geomagnetically induced currents
+- Space enthusiasts (MEDIUM) - aurora forecasts, solar activity
+
+DATA SOURCES:
+- NOAA Space Weather Prediction Center (SWPC)
+  * API: https://services.swpc.noaa.gov/
+  * Real-time solar wind, Kp index, X-ray flux, proton flux
+  * 3-day forecasts, alerts, warnings, watches
+  * Free, public API with JSON endpoints
+- NASA DONKI (Database Of Notifications, Knowledge, Information)
+  * API: https://api.nasa.gov/ (DONKI endpoints)
+  * CME analysis, SEP events, geomagnetic storms
+  * Free with API key
+- ESA Space Weather Service Network
+  * https://swe.ssa.esa.int/
+  * European space weather data and forecasts
+- GOES Satellite Data (real-time)
+  * X-ray flux, proton flux, magnetometer data
+- ACE/DSCOVR real-time solar wind data (L1 point)
+- World Data Center for Geomagnetism (Kyoto)
+  * Dst index, AE index historical data
+- Neutron Monitor Database (NMDB)
+  * Galactic cosmic ray measurements
+  * http://www.nmdb.eu/
+- AE-9/AP-9 radiation belt models (for Van Allen data)
+- CelesTrak space weather indices
+
+STANDALONE VS INTEGRATED:
+Standalone module, but with integration points to:
+- Solar Flare Tracker (existing) - extend with radiation context
+- Operational Awareness (existing) - feed space weather into ops dashboard
+- Satellite Tracker (existing) - overlay radiation risk on orbital paths
+- Launch Windows (existing) - add radiation constraint filtering
+- Space Insurance (existing) - radiation risk scoring
+
+PRIORITY: HIGH
+Rationale: Critical operational data that directly affects satellite operations,
+launch decisions, and insurance pricing. NOAA SWPC provides excellent free APIs.
+The existing Solar Flare Tracker module provides a natural foundation to build
+on. No major competitors offer this level of integrated space weather
+intelligence in a business context.
+
+
+------------------------------------------------------------------------------
+MODULE 2: SPACE LAW & TREATY MONITOR
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+A comprehensive legal intelligence module tracking the rapidly evolving
+landscape of international space law, bilateral agreements, national
+legislation, and regulatory frameworks. As the space economy grows, legal
+complexity is exploding -- from the Outer Space Treaty's resource extraction
+ambiguities to new national space laws being enacted yearly.
+
+KEY DATA TO DISPLAY:
+- International Treaty Status Dashboard:
+  * Outer Space Treaty (1967) - 115 parties, signatories
+  * Rescue Agreement (1968)
+  * Liability Convention (1972)
+  * Registration Convention (1975)
+  * Moon Agreement (1979) - notably few ratifications
+  * Artemis Accords - 43+ signatories as of late 2025
+- National Space Legislation Tracker:
+  * Country-by-country space law database
+  * New legislation alerts (US, EU, UK, Japan, India, UAE, etc.)
+  * Licensing framework comparisons
+  * National space policy documents
+- Regulatory Body Directory:
+  * UNOOSA (UN Office for Outer Space Affairs)
+  * COPUOS (Committee on the Peaceful Uses of Outer Space)
+  * ITU (International Telecommunication Union)
+  * FAA/AST (US commercial space transportation)
+  * FCC (US satellite communications)
+  * OFCOM (UK), CNES (France), etc.
+- Active Legal Proceedings & Disputes:
+  * Orbital slot disputes
+  * Spectrum interference cases
+  * Liability claims
+  * National court cases involving space companies
+- Policy Analysis & Commentary:
+  * Expert analysis of legal developments
+  * Impact assessments for commercial operators
+  * Treaty interpretation debates
+- Artemis Accords Deep Dive:
+  * Signatory map and timeline
+  * Key principles breakdown
+  * Implementation status by country
+  * Bilateral implementing agreements
+
+TARGET AUDIENCE:
+- Space lawyers (CRITICAL) - primary professional tool
+- CEOs/executives (HIGH) - regulatory risk assessment
+- Government affairs teams (HIGH) - policy tracking
+- Investors (HIGH) - regulatory risk evaluation
+- Academic researchers (MEDIUM) - legal scholarship
+- Compliance officers (HIGH) - regulatory compliance
+
+DATA SOURCES:
+- UNOOSA Treaty Status Database
+  * https://www.unoosa.org/oosa/en/ourwork/spacelaw/treaties.html
+  * Official treaty ratification status
+- UNOOSA National Space Law Collection
+  * https://www.unoosa.org/oosa/en/ourwork/spacelaw/nationalspacelaw/index.html
+  * Comprehensive database of national space legislation
+- COPUOS Reports & Documents
+  * Meeting reports, working group outputs
+  * Annual sessions documentation
+- US Congressional Records
+  * Space-related bills and hearings
+  * Via congress.gov API or GovTrack
+- Federal Register (US)
+  * FAA, FCC rulemaking related to space
+  * API available
+- EUR-Lex (European Union)
+  * EU space regulations and directives
+- State Department (Artemis Accords)
+  * Signatory announcements
+- McGill University Institute of Air and Space Law
+  * Academic research database
+- Journal of Space Law
+- The Space Review, SpaceNews legal analysis
+- Secure World Foundation publications
+  * Excellent policy briefs and analyses
+
+STANDALONE VS INTEGRATED:
+Standalone module, with connections to:
+- Compliance (existing) - legal framework underpinning compliance
+- Spectrum Tracker (existing) - ITU legal framework
+- Orbital Slots (existing) - legal disputes over slots
+
+PRIORITY: HIGH
+Rationale: No competitor offers a comprehensive space law tracking platform.
+Lawyers and compliance teams currently piece together information from dozens
+of sources. This module would be genuinely unique and commands premium value.
+The legal audience has high willingness to pay for specialized intelligence.
+Relatively achievable since much data is publicly available through UNOOSA and
+government publications.
+
+
+------------------------------------------------------------------------------
+MODULE 3: SPACE SUSTAINABILITY & ESG
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+Track and rate the environmental, social, and governance performance of space
+companies and missions. As ESG investing grows and space debris becomes a
+mainstream concern, this module provides sustainability intelligence that
+investors, regulators, and the public increasingly demand.
+
+KEY DATA TO DISPLAY:
+- Launch Carbon Footprint Calculator:
+  * CO2 emissions per launch vehicle type
+  * Black carbon (soot) deposition in stratosphere
+  * Fuel type environmental profiles (RP-1, LH2, CH4, solid)
+  * Comparison to aviation/other industries for context
+  * Annual emissions by operator
+- Debris Mitigation Scorecard:
+  * Operator compliance with 25-year deorbiting guideline
+  * Passivation practices (spent stage venting)
+  * Collision avoidance maneuver frequency
+  * Active debris removal commitments
+  * Post-mission disposal success rates
+  * Space Sustainability Rating (SSR) from WEF/EPFL
+- Operator Sustainability Profiles:
+  * Environmental practices
+  * Workforce diversity metrics
+  * Corporate governance ratings
+  * Supply chain sustainability
+  * Community impact (launch site areas)
+- ESG Investment Metrics:
+  * ESG scores for publicly traded space companies
+  * Sustainability-linked bond issuances
+  * Green financing in space sector
+  * ESG fund exposure to space stocks
+- Regulatory Compliance:
+  * FCC debris mitigation rule compliance (5-year rule)
+  * ESA Zero Debris Charter signatories
+  * National debris mitigation guidelines adherence
+- Industry Benchmarking:
+  * Best practices leaderboard
+  * Year-over-year improvement trends
+  * Peer comparison tools
+
+TARGET AUDIENCE:
+- ESG-focused investors (HIGH) - portfolio analysis
+- Space company executives (HIGH) - benchmarking, reporting
+- Regulators (HIGH) - compliance monitoring
+- Insurance underwriters (MEDIUM) - risk assessment
+- Environmental advocates (MEDIUM) - accountability
+- General public (LOW) - transparency
+
+DATA SOURCES:
+- Space Sustainability Rating (SSR)
+  * World Economic Forum / EPFL initiative
+  * Rates satellite missions on sustainability criteria
+  * https://spacesustainabilityrating.org/
+- ESA Space Debris Office
+  * Annual Space Environment Report
+  * DISCOS database (Database and Information System Characterizing Objects in Space)
+- NASA Orbital Debris Program Office
+  * Orbital Debris Quarterly News
+  * Debris mitigation standard practices
+- FCC Satellite Filings
+  * Debris mitigation plans in applications
+  * License conditions
+- European Space Agency Clean Space initiative
+- Corporate sustainability reports (annual filings)
+- MSCI, Sustainalytics ESG data (for public companies)
+- Launch emission studies (academic literature)
+  * Dallas et al. (2020) - launch emissions modeling
+  * Ross & Sheaffer - black carbon studies
+- World Economic Forum Space reports
+- Space Data Association (SDA) best practices
+
+STANDALONE VS INTEGRATED:
+Standalone module, with integration to:
+- Market Intel (existing) - ESG overlay on company data
+- Debris Monitor (existing) - debris data feeds ESG scoring
+- Space Insurance (existing) - sustainability risk factors
+- Space Startup Tracker (existing) - ESG profiles for startups
+
+PRIORITY: MEDIUM-HIGH
+Rationale: ESG is increasingly important to investors and regulators. The FCC's
+2024 5-year deorbiting rule and ESA's Zero Debris Charter signal growing
+regulatory momentum. However, comprehensive data collection is challenging --
+many metrics require manual research or corporate self-reporting. Start with
+debris mitigation scoring (most data available) and expand.
+
+
+------------------------------------------------------------------------------
+MODULE 4: CISLUNAR ECONOMY TRACKER
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+Track the emerging economic ecosystem between Earth and the Moon, including
+the Lunar Gateway station, Artemis program developments, commercial lunar
+landers, lunar surface operations, and in-situ resource utilization (ISRU)
+developments. The cislunar economy is projected to become a multi-billion
+dollar market within the next decade.
+
+KEY DATA TO DISPLAY:
+- Artemis Program Dashboard:
+  * Mission timeline and status (Artemis I through future missions)
+  * SLS/Orion status
+  * HLS (Human Landing System) development status
+  * Gateway module development and integration timeline
+  * International partner contributions
+- Commercial Lunar Services:
+  * CLPS (Commercial Lunar Payload Services) missions
+  * Intuitive Machines, Astrobotic, Firefly missions
+  * Payload manifests and delivery status
+  * Lunar surface operations status
+- ISRU Development Tracker:
+  * Water ice extraction technology readiness levels
+  * VIPER rover mission data (ice prospecting)
+  * Oxygen production experiments
+  * Regolith processing technologies
+  * Key company/agency programs
+- Cislunar Infrastructure:
+  * Gateway construction timeline
+  * Communication relay capabilities
+  * Navigation infrastructure (LunaNet)
+  * Power systems development
+- Investment & Contracts:
+  * NASA contract awards (CLPS, HLS, Gateway)
+  * Commercial investment in lunar ventures
+  * International lunar program budgets
+  * Public-private partnership structures
+- Lunar Resource Maps:
+  * Ice deposit locations (from orbital data)
+  * Mineral resource estimates
+  * Solar power availability by location
+  * Landing site analysis
+
+TARGET AUDIENCE:
+- Aerospace executives (HIGH) - business development opportunities
+- Investors (HIGH) - emerging market intelligence
+- Government program managers (HIGH) - program coordination
+- Engineers/scientists (MEDIUM) - technical status tracking
+- Enthusiasts (MEDIUM) - mission following
+
+DATA SOURCES:
+- NASA Artemis Program updates
+  * https://www.nasa.gov/artemis/
+  * Press releases, mission status
+- NASA CLPS Program
+  * Contract awards, mission manifests
+  * https://www.nasa.gov/clps
+- ESA Lunar Exploration updates
+  * Gateway contributions (I-HAB, ESPRIT, etc.)
+- JAXA, CSA, other partner agency updates
+- Lunar Reconnaissance Orbiter (LRO) data
+  * LROC imagery, LAMP UV data
+  * Diviner thermal data
+  * Publicly available via PDS
+- USGS Astrogeology Science Center
+  * Lunar maps and geological data
+- Commercial company press releases & SEC filings
+  * Intuitive Machines (LUNR - publicly traded)
+  * Astrobotic (private, NASA contracts)
+  * iSpace (Japan, publicly traded)
+- Government budget documents
+  * NASA budget requests, Congressional appropriations
+- Lunar Surface Innovation Consortium (LSIC)
+
+STANDALONE VS INTEGRATED:
+Standalone module, with connections to:
+- Lunar Gateway (existing) - this module extends and deepens it
+- Space Mining (existing) - lunar ISRU is a subset of space mining
+- Mission Control (existing) - Artemis mission tracking
+- Business Opportunities (existing) - lunar contract opportunities
+
+Note: Consider whether this should EXTEND the existing Lunar Gateway module
+rather than being fully standalone. The existing module could be expanded to
+become "Cislunar Economy & Lunar Gateway."
+
+PRIORITY: MEDIUM-HIGH
+Rationale: The cislunar economy is real and growing rapidly. Multiple commercial
+lunar missions have landed or are manifested. However, data is scattered and
+mostly comes from press releases and government sources rather than structured
+APIs. This module would aggregate nicely but requires significant manual
+curation. Could be phased -- start by extending the existing Lunar Gateway
+module.
+
+
+------------------------------------------------------------------------------
+MODULE 5: SPACE DEFENSE & NATIONAL SECURITY
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+An open-source intelligence (OSINT) module tracking unclassified developments
+in military space programs worldwide. Covers Space Force activities, allied
+space defense cooperation, counterspace threat assessments, space domain
+awareness initiatives, and defense procurement.
+
+KEY DATA TO DISPLAY:
+- US Space Force Tracker:
+  * Organizational structure and leadership
+  * Budget trends and program funding
+  * Major acquisitions and contracts
+  * Launch manifest (national security payloads)
+  * Space Development Agency (SDA) programs
+  * Commercial integration initiatives
+- Allied Space Defense:
+  * Combined Space Operations (CSpO) initiative
+  * NATO Space Centre of Excellence developments
+  * Five Eyes space cooperation
+  * Allied nation military space programs
+  * UK Space Command, French Space Command, etc.
+- Counterspace Threat Monitor:
+  * Known ASAT (anti-satellite) test history
+  * Rendezvous/proximity operations (RPO) by nation
+  * Electronic warfare/jamming incidents
+  * Cyber threats to space systems
+  * Directed energy developments
+- Defense Procurement:
+  * Contract awards (SAM.gov data)
+  * RFIs and RFPs for space systems
+  * Small business opportunities
+  * SBIR/STTR awards in space
+- Space Domain Awareness:
+  * Sensor network developments
+  * Commercial SDA providers
+  * Deep space tracking capabilities
+  * SSA data sharing agreements
+- Policy & Doctrine:
+  * Space policy directives
+  * Military doctrine updates
+  * Congressional oversight activities
+  * International norms of behavior discussions
+
+TARGET AUDIENCE:
+- Defense contractors (HIGH) - business development
+- Government officials (HIGH) - program awareness
+- Policy analysts (HIGH) - strategic assessment
+- Investors in defense-space companies (HIGH) - market intelligence
+- Academic researchers (MEDIUM) - security studies
+- Journalists (MEDIUM) - reporting
+
+DATA SOURCES:
+- US Space Force official releases
+  * https://www.spaceforce.mil/
+- Department of Defense press releases
+- SAM.gov (System for Award Management)
+  * Federal contract awards, opportunities
+  * API available
+- CSIS Aerospace Security Project
+  * Excellent analysis and datasets
+  * Space Threat Assessment (annual)
+- Secure World Foundation
+  * Global Counterspace Capabilities report (annual)
+  * Comprehensive OSINT analysis
+- Congressional Research Service (CRS) reports
+  * Space-related defense reports
+- Government Accountability Office (GAO)
+  * Space program assessments
+- Defense One, Breaking Defense, SpaceNews defense coverage
+- SIPRI (Stockholm International Peace Research Institute)
+- UN Register of Objects Launched into Outer Space
+- Open-source satellite tracking (Hobbyist community)
+  * For monitoring military satellite behaviors
+
+STANDALONE VS INTEGRATED:
+Standalone module (sensitive content area warrants separation).
+Integration points to:
+- Compliance (existing) - ITAR/export control context
+- Satellite Tracker (existing) - military constellation tracking
+- Business Opportunities (existing) - defense contracts
+
+PRIORITY: MEDIUM
+Rationale: High value for a specific audience (defense industry), but
+politically sensitive. Must be carefully scoped to OSINT only. Competitors like
+SpaceNews cover this well. The real value-add is aggregation of contract data
+from SAM.gov with strategic analysis. Consider starting with just the
+procurement/contracts aspect, which is less sensitive and more actionable.
+
+
+------------------------------------------------------------------------------
+MODULE 6: LAUNCH VEHICLE COMPARISON TOOL
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+An interactive comparison tool allowing users to evaluate launch vehicles
+side-by-side across multiple dimensions: cost, payload capacity (to various
+orbits), physical dimensions, reliability history, launch cadence, availability,
+and upcoming manifest. Think of it as "the PCPartPicker of rockets."
+
+KEY DATA TO DISPLAY:
+- Vehicle Specifications:
+  * Height, diameter, mass
+  * Stage configuration
+  * Engine types and quantities
+  * Propellant types
+  * Fairing dimensions and volume
+- Performance Metrics:
+  * Payload to LEO (kg)
+  * Payload to GTO (kg)
+  * Payload to TLI (kg)
+  * Payload to Mars/escape (kg)
+  * Payload to SSO (kg)
+- Cost & Availability:
+  * Published launch price (or estimated)
+  * Cost per kg to LEO
+  * Typical lead time for booking
+  * Launch cadence (launches per year)
+  * Next available launch slot
+- Reliability Statistics:
+  * Total launches
+  * Successes / failures / partial failures
+  * Success rate (overall and recent 20)
+  * Consecutive success streak
+  * Years in service
+- Reusability:
+  * Reusable stages (yes/no, which stages)
+  * Demonstrated reuse count
+  * Turnaround time
+  * Cost savings from reuse
+- Active Vehicles to Track:
+  * SpaceX: Falcon 9, Falcon Heavy, Starship
+  * Rocket Lab: Electron, Neutron
+  * ULA: Vulcan Centaur, (Atlas V retiring)
+  * Arianespace: Ariane 6, Vega-C
+  * JAXA: H3
+  * ISRO: PSLV, GSLV Mk III (LVM3)
+  * China: Long March series, Ceres-1, various commercial
+  * Russia: Soyuz, Proton, Angara (limited market access)
+  * Relativity Space: Terran R
+  * Blue Origin: New Glenn
+  * Firefly: Alpha, MLV
+  * ABL Space: RS1
+  * And 20+ others in development
+- Interactive Features:
+  * Side-by-side comparison (up to 4 vehicles)
+  * Filter by orbit capability
+  * Sort by any metric
+  * Payload capacity calculator (given orbit parameters)
+
+TARGET AUDIENCE:
+- Satellite operators (CRITICAL) - procurement decisions
+- Mission planners (HIGH) - trade studies
+- Investors (HIGH) - market analysis
+- Students/educators (MEDIUM) - learning tool
+- Enthusiasts (MEDIUM) - reference material
+- Journalists (MEDIUM) - fact-checking
+
+DATA SOURCES:
+- Manufacturer websites and user guides
+  * SpaceX, Rocket Lab, ULA, etc. all publish user guides
+- Jonathan McDowell's Launch Log
+  * http://planet4589.org/space/log/
+  * Comprehensive historical launch data
+  * Highly authoritative
+- Gunter's Space Page
+  * https://space.skyrocket.de/
+  * Detailed vehicle specifications
+- Space Launch Report (Kyle)
+  * Launch reliability statistics
+- Next Spaceflight
+  * https://nextspaceflight.com/
+  * Launch manifests and vehicle data
+- Spaceflight Now launch schedule
+- FAA launch license data
+- Bryce Tech / Quilty Analytics reports (for pricing data)
+- SEC filings (for publicly traded companies like RKLB)
+
+STANDALONE VS INTEGRATED:
+Standalone module (utility tool with broad appeal).
+Integration points:
+- Launch Windows (existing) - link vehicle availability to windows
+- Mission Cost Simulator (existing) - pull vehicle costs
+- Business Opportunities (existing) - match opportunities to vehicles
+
+PRIORITY: HIGH
+Rationale: This is a "table stakes" feature for any serious space intelligence
+platform. Every space professional needs this data, and while some of it exists
+in scattered sources, no single platform offers a comprehensive, up-to-date,
+interactive comparison. Relatively straightforward to build since most data is
+publicly available and changes infrequently. High SEO value as well.
+
+
+------------------------------------------------------------------------------
+MODULE 7: SATELLITE IMAGERY MARKETPLACE COMPARISON
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+A comparison and discovery tool for Earth observation (EO) and synthetic
+aperture radar (SAR) imagery providers. Allows users to compare resolution,
+spectral bands, revisit rates, pricing, coverage, and tasking availability
+across the growing constellation of imagery providers.
+
+KEY DATA TO DISPLAY:
+- Provider Profiles:
+  * Company overview, constellation size, orbit details
+  * Sensor specifications (optical, SAR, multispectral, hyperspectral)
+  * Ground sample distance (GSD) / resolution
+  * Swath width
+  * Spectral bands
+  * Revisit time (current and planned)
+  * Archive depth
+- Pricing Comparison:
+  * Archive imagery per sq km
+  * New tasking per sq km
+  * Subscription/platform access fees
+  * Volume discounts
+  * Government vs commercial pricing tiers
+- Coverage Analysis:
+  * Global coverage percentage
+  * Revisit frequency by latitude
+  * Cloud-free guarantee availability
+  * Nighttime collection capability (SAR)
+- Providers to Track:
+  * Maxar (WorldView, Legion)
+  * Airbus Defence & Space (Pleiades Neo, SPOT)
+  * Planet Labs (PlanetScope, SkySat, Tanager)
+  * BlackBridge/Planet (RapidEye legacy)
+  * Capella Space (SAR)
+  * ICEYE (SAR)
+  * Satellogic
+  * Umbra (SAR)
+  * Pixxel (hyperspectral)
+  * Wyvern (hyperspectral)
+  * SatVu (thermal infrared)
+  * Albedo (very high resolution)
+  * BlackSky
+  * And emerging providers
+- Use Case Matching:
+  * Recommend best provider for: agriculture, defense, insurance,
+    infrastructure monitoring, environmental, maritime, etc.
+
+TARGET AUDIENCE:
+- Government procurement (HIGH) - vendor comparison
+- Enterprise buyers (HIGH) - imagery sourcing
+- GIS analysts (HIGH) - data discovery
+- Insurance companies (MEDIUM) - claims verification
+- Investors (MEDIUM) - market landscape
+- Academic researchers (MEDIUM) - data access
+
+DATA SOURCES:
+- Provider websites and spec sheets
+- eoPortal (ESA)
+  * https://www.eoportal.org/
+  * Comprehensive satellite mission database
+- OSCAR (WMO Observing Systems Capability Analysis)
+- Industry reports (Euroconsult, NSR/Quilty Analytics)
+- Provider API documentation
+- Conference presentations (GEOINT, etc.)
+- Manual research and outreach to providers
+
+STANDALONE VS INTEGRATED:
+Standalone module.
+Integration points:
+- Satellite Tracker (existing) - link to tracked satellites
+- Constellation Tracker (existing) - EO constellation data
+- Market Intel (existing) - company financial data
+
+PRIORITY: LOW-MEDIUM
+Rationale: Valuable for a specific audience, but challenging to maintain
+accurate pricing data (providers rarely publish pricing publicly). Existing
+tools like UP42, SkyWatch, and provider marketplaces already serve this need
+to some degree. Better positioned as a feature comparison guide than an
+actual marketplace. Consider a simpler "EO Provider Directory" first.
+
+
+------------------------------------------------------------------------------
+MODULE 8: SPACE MANUFACTURING & IN-SPACE ECONOMY
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+Track the emerging in-space manufacturing and processing industry, including
+ISS National Lab experiments, commercial space station plans, and companies
+developing space-based manufacturing capabilities (pharmaceuticals, fiber
+optics, semiconductors, bioprinting).
+
+KEY DATA TO DISPLAY:
+- ISS National Lab Experiment Tracker:
+  * Active experiments by category
+  * Research results and publications
+  * Commercial vs academic vs government experiments
+  * Upcoming payloads manifested
+- Commercial Manufacturing Ventures:
+  * Company profiles and technology readiness
+  * Varda Space Industries (re-entry capsule manufacturing)
+  * Redwire (Made In Space heritage - ZBLAN fiber, ceramics)
+  * Space Forge (semiconductor manufacturing)
+  * Gitai (robotic assembly)
+  * Orbital Assembly (construction)
+  * Axiom Space (commercial station modules)
+  * Vast (Haven-1, future stations)
+  * Sierra Space (LIFE habitat)
+  * Nanoracks (outpost, airlock)
+- Product Categories:
+  * ZBLAN fiber optics
+  * Pharmaceutical crystallization
+  * Bioprinting (organs, tissues)
+  * Semiconductor wafers
+  * Advanced alloys
+  * Optical components
+- Investment Tracker:
+  * Funding rounds for in-space manufacturing companies
+  * Government grants and contracts
+  * Market size projections
+- Technology Readiness:
+  * TRL (Technology Readiness Level) tracking
+  * Demonstration missions completed
+  * Path to commercial viability
+
+TARGET AUDIENCE:
+- Investors (HIGH) - emerging market opportunity
+- Pharmaceutical companies (MEDIUM) - R&D opportunities
+- Materials scientists (MEDIUM) - research tracking
+- Space station operators (HIGH) - utilization planning
+- Entrepreneurs (MEDIUM) - market opportunity identification
+- Policy makers (MEDIUM) - economic development
+
+DATA SOURCES:
+- ISS National Lab
+  * https://www.issnationallab.org/
+  * Experiment database, results
+- NASA Technology Transfer Program
+- Company press releases and SEC filings
+  * Varda Space, Redwire (RDW), Rocket Lab (RKLB)
+- CASIS (Center for Advancement of Science in Space)
+- SpaceNews, Space.com industry coverage
+- Patent databases (for technology development)
+- Academic publications (crystallography, materials science)
+- Conference proceedings (ISS R&D Conference)
+
+STANDALONE VS INTEGRATED:
+Standalone module.
+Integration points:
+- Space Station Tracker (proposed) - station utilization
+- Market Intel (existing) - company financial data
+- Space Startup Tracker (existing) - startup profiles
+- Business Opportunities (existing) - manufacturing opportunities
+
+PRIORITY: MEDIUM
+Rationale: The in-space manufacturing economy is nascent but growing rapidly.
+Varda's successful re-entry missions and Redwire's ISS manufacturing
+activities demonstrate real progress. However, the addressable audience is
+currently small. This module becomes more valuable as commercial space stations
+come online (2027-2030). Good candidate for a lightweight initial version
+that grows over time.
+
+
+------------------------------------------------------------------------------
+MODULE 9: SPACEPORT DIRECTORY
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+A comprehensive global directory of all active, under construction, and
+planned spaceports and launch sites, with detailed information on capabilities,
+licensing status, recent traffic, and upcoming launches.
+
+KEY DATA TO DISPLAY:
+- Spaceport Profiles:
+  * Location (coordinates, country, region)
+  * Operator/owner
+  * Licensing status (FAA, national authority)
+  * Year established / operational since
+  * Orbital inclinations accessible
+  * Maximum payload capacity supported
+  * Available launch pads and their status
+- Capabilities:
+  * Orbital launch capable (yes/no)
+  * Suborbital capable
+  * Horizontal launch capable
+  * Reusable vehicle landing facilities
+  * Integration facilities
+  * Fueling capabilities (propellant types)
+  * Range safety systems
+- Traffic Data:
+  * Historical launches per year
+  * Upcoming launch manifest
+  * Launch success rate from site
+  * Primary vehicles launched from site
+- Major Sites to Track:
+  * Cape Canaveral / KSC (US)
+  * Vandenberg SFB (US)
+  * Wallops Flight Facility (US)
+  * SpaceX Starbase, Boca Chica (US)
+  * Mid-Atlantic Regional Spaceport (US)
+  * Pacific Spaceport Complex Alaska (US)
+  * Spaceport America (US)
+  * Cecil Spaceport (US)
+  * Houston Spaceport (US)
+  * Kourou / Guiana Space Centre (ESA)
+  * Baikonur (Kazakhstan/Russia)
+  * Vostochny (Russia)
+  * Jiuquan, Xichang, Wenchang, Taiyuan (China)
+  * Sriharikota / SDSC (India)
+  * Tanegashima, Uchinoura (Japan)
+  * Mahia Peninsula (New Zealand - Rocket Lab)
+  * Alcantara (Brazil)
+  * SaxaVord (UK Shetland)
+  * Sutherland (UK Scotland)
+  * Andoya (Norway)
+  * Esrange (Sweden)
+  * And 20+ more planned worldwide
+- Interactive Map:
+  * Global map with all sites
+  * Filter by capability, status, region
+  * Click for detailed profile
+
+TARGET AUDIENCE:
+- Launch customers (HIGH) - site selection
+- Launch providers (HIGH) - expansion planning
+- Government planners (HIGH) - infrastructure development
+- Investors (MEDIUM) - infrastructure investment
+- Journalists (MEDIUM) - reference
+- Enthusiasts (MEDIUM) - launch viewing planning
+
+DATA SOURCES:
+- FAA Licensed Launch Sites
+  * https://www.faa.gov/space/licenses
+  * Official US spaceport licenses
+- Gunter's Space Page (launch site database)
+- Jonathan McDowell's launch log (site-specific data)
+- National space agency websites
+- Spaceport company websites
+- FCC/ITU filings (ground station co-locations)
+- OpenStreetMap / satellite imagery for location data
+- BryceTech state of the space industry reports
+- Local government economic development publications
+
+STANDALONE VS INTEGRATED:
+Standalone module.
+Integration points:
+- Ground Station Map (existing) - often co-located
+- Launch Windows (existing) - site determines launch azimuth
+- Launch Vehicle Comparison (proposed) - vehicle-site compatibility
+- Mission Control (existing) - launch site for upcoming missions
+
+PRIORITY: MEDIUM
+Rationale: Useful reference tool with broad appeal. The data is relatively
+static (spaceports don't change frequently) which makes maintenance easy.
+The interactive map feature would be visually compelling. However, it's more
+of a reference tool than an intelligence tool -- it tells you what exists
+rather than providing actionable insights. Could be a quick win due to
+simplicity. Consider combining with Ground Station Map for a
+"Space Infrastructure Map" super-module.
+
+
+------------------------------------------------------------------------------
+MODULE 10: SPACE COMMUNICATIONS NETWORK
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+Track the status and capabilities of space communication networks including
+NASA's Deep Space Network, commercial relay satellite networks, optical/laser
+communication developments, and the emerging lunar communication infrastructure.
+
+KEY DATA TO DISPLAY:
+- Deep Space Network (DSN) Status:
+  * Real-time dish allocation (Goldstone, Canberra, Madrid)
+  * Which spacecraft each antenna is communicating with
+  * Signal strength, data rate, round-trip light time
+  * Upcoming contacts scheduled
+  * Maintenance windows
+- Commercial Relay Networks:
+  * TDRS (Tracking and Data Relay Satellite) constellation status
+  * SpaceX Starshield/Starlink for government
+  * SDA Transport Layer
+  * Inmarsat, Iridium, Globalstar relay capabilities
+  * O3b/SES mPOWER
+- Optical Communication:
+  * LCRD (Laser Communications Relay Demonstration) status
+  * DSOC (Deep Space Optical Communications) results
+  * Commercial laser comm providers (Mynaric, CACI, SA Photonics)
+  * Technology demonstrations and results
+- Lunar Communications:
+  * LunaNet architecture development
+  * Lunar relay satellite plans
+  * Surface communication infrastructure
+- Ground Station Networks:
+  * ESTRACK (ESA)
+  * CCSDS (Consultative Committee for Space Data Systems) standards
+  * Commercial ground station providers (AWS Ground Station, Azure Orbital,
+    KSAT, SSC, Leaf Space, Atlas Space Operations)
+- Network Performance Metrics:
+  * Latency by orbit type
+  * Throughput capabilities
+  * Coverage gaps
+  * Congestion/demand trends
+
+TARGET AUDIENCE:
+- Mission operators (HIGH) - communication planning
+- Satellite operators (HIGH) - data relay services
+- Ground segment companies (HIGH) - competitive landscape
+- Engineers (MEDIUM) - technical reference
+- Researchers (MEDIUM) - deep space mission planning
+
+DATA SOURCES:
+- NASA DSN Now
+  * https://eyes.nasa.gov/dsn/dsn.html
+  * Real-time antenna status (excellent visual tool)
+  * JSON data feed available
+- NASA LCRD / DSOC mission updates
+- ESA ESTRACK status
+- ITU filings (satellite communication bands)
+- FCC satellite application filings
+- Company websites and spec sheets
+- CCSDS standards documents
+- Conference papers (SpaceOps, IEEE Aerospace)
+- AWS Ground Station / Azure Orbital documentation
+
+STANDALONE VS INTEGRATED:
+Could be integrated into Ground Station Map (existing) as an expansion.
+Or standalone if scope is broad enough.
+Integration points:
+- Ground Station Map (existing) - natural extension
+- Satellite Tracker (existing) - communication links
+- Spectrum Tracker (existing) - frequency allocation context
+
+PRIORITY: LOW-MEDIUM
+Rationale: Niche but valuable for mission operators. The DSN real-time feed
+is a compelling data source and already has a visual interface from NASA.
+The real value-add would be aggregating commercial ground station and relay
+network data, which is harder to source. Consider as an extension to the
+existing Ground Station Map module rather than standalone.
+
+
+------------------------------------------------------------------------------
+MODULE 11: ASTEROID WATCH
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+Track near-Earth objects (NEOs), potentially hazardous asteroids (PHAs),
+planetary defense missions, and asteroid mining targets. Combines public
+safety awareness with commercial opportunity tracking.
+
+KEY DATA TO DISPLAY:
+- Near-Earth Object Dashboard:
+  * Next 30 close approaches (within 0.05 AU)
+  * Potentially hazardous asteroids (PHA) watch list
+  * Recently discovered NEOs
+  * Torino Scale / Palermo Scale ratings
+  * Close approach visualizations
+- Object Database:
+  * Size, composition estimates, orbital parameters
+  * Discovery date, observatory
+  * Observation arc quality
+  * Spectral type (C, S, M, etc.)
+  * Albedo, rotation period
+- Planetary Defense:
+  * DART mission results and follow-up
+  * Hera mission (ESA) status and data
+  * NEO Surveyor mission status
+  * Planetary Defense Coordination Office updates
+  * IAWN (International Asteroid Warning Network) alerts
+  * SMPAG (Space Mission Planning Advisory Group) activities
+- Mining Targets:
+  * Highest-value asteroid targets
+  * Delta-v accessibility rankings
+  * Estimated resource content (water, metals, PGMs)
+  * Mission feasibility assessments
+  * Companies pursuing asteroid mining
+    (AstroForge, TransAstra, Karman+)
+- Discovery Statistics:
+  * Cumulative NEO discoveries over time
+  * Discovery completeness by size category
+  * Survey telescope contributions (Catalina, Pan-STARRS, ATLAS)
+  * Vera Rubin Observatory impact (future)
+
+TARGET AUDIENCE:
+- Planetary scientists (HIGH) - research tracking
+- Mining/resource companies (HIGH) - target identification
+- Insurance industry (MEDIUM) - impact risk assessment
+- Space enthusiasts (HIGH) - public interest
+- Educators (MEDIUM) - teaching tool
+- Policy makers (MEDIUM) - planetary defense policy
+
+DATA SOURCES:
+- NASA Center for Near Earth Object Studies (CNEOS)
+  * https://cneos.jpl.nasa.gov/
+  * Close approach data, Sentry (risk assessment)
+  * API: https://api.nasa.gov/ (NeoWs - Near Earth Object Web Service)
+  * Free, excellent API
+- Minor Planet Center (MPC)
+  * https://www.minorplanetcenter.net/
+  * Official IAU clearinghouse for asteroid data
+  * Observation and orbital data
+- ESA Near-Earth Object Coordination Centre (NEOCC)
+  * https://neo.ssa.esa.int/
+  * European NEO data, risk assessment
+- JPL Small-Body Database
+  * https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html
+  * Comprehensive orbital and physical data
+- Asterank (mining value estimates)
+  * http://asterank.com/
+  * Open-source asteroid value database
+- Planetary Defense Conference proceedings
+- Academic literature on asteroid composition
+
+STANDALONE VS INTEGRATED:
+Standalone module (distinct enough from existing Space Mining module).
+Integration points:
+- Space Mining (existing) - mining targets overlap
+- Mission Control (existing) - planetary defense missions
+- Solar Exploration (existing) - small body science missions
+
+PRIORITY: MEDIUM
+Rationale: NASA provides excellent free APIs for NEO data. Public interest
+in planetary defense is high (especially post-DART). The mining angle adds
+commercial relevance. Relatively easy to build an impressive module since
+the data sources are well-structured. However, the direct commercial
+audience beyond mining companies is limited.
+
+
+------------------------------------------------------------------------------
+MODULE 12: SPACE STATION TRACKER
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+A dedicated module tracking all current and planned space stations worldwide,
+including the International Space Station, China's Tiangong, and the emerging
+fleet of commercial space stations. Provides operational status, crew
+information, visiting vehicle schedules, and research activities.
+
+KEY DATA TO DISPLAY:
+- Active Stations:
+  * ISS: real-time position, crew (Expedition number), visiting vehicles,
+    module status, upcoming EVAs, deorbit planning timeline
+  * Tiangong: position, crew (Shenzhou missions), module status,
+    Tianzhou cargo missions
+- Commercial Stations in Development:
+  * Axiom Space: Axiom Station (modules on ISS then free-flying)
+    - Development status, launch timeline, partner nations
+  * Vast: Haven-1 (single-module station)
+    - Launch date, capabilities, customer pipeline
+  * Orbital Reef (Blue Origin / Sierra Space)
+    - Development status, architecture, timeline
+  * Starlab (Voyager Space / Airbus)
+    - Status, capabilities, international partners
+  * Orbital Assembly: Voyager Station (rotational gravity)
+    - Concept status
+- Station Comparison Table:
+  * Pressurized volume
+  * Crew capacity
+  * Power generation
+  * Research facilities
+  * Docking ports
+  * Orbit altitude/inclination
+  * Operational date (actual or planned)
+  * Estimated lifetime
+- ISS Transition Planning:
+  * NASA CLD (Commercial LEO Destinations) program status
+  * ISS deorbit timeline and plan
+  * Capability gap analysis
+  * Budget transition planning
+- Crew Tracker:
+  * Current crew for each station
+  * Crew rotation schedule
+  * Nationality breakdown
+  * Mission duration tracking
+- Visiting Vehicle Schedule:
+  * Cargo missions (Dragon, Cygnus, Progress, Tianzhou, HTV-X, Dream Chaser)
+  * Crew missions (Crew Dragon, Starliner, Soyuz, Shenzhou)
+  * Upcoming docking/undocking events
+
+TARGET AUDIENCE:
+- Space agencies (HIGH) - operations coordination
+- Commercial station companies (HIGH) - competitive intelligence
+- Researchers (HIGH) - facility access planning
+- Space tourism operators (MEDIUM) - destination tracking
+- Journalists (HIGH) - crew and mission coverage
+- Enthusiasts (HIGH) - popular topic
+
+DATA SOURCES:
+- NASA ISS data
+  * ISS position: TLE data from CelesTrak / Space-Track
+  * Crew information: NASA press releases
+  * Visiting vehicle schedule: NASA manifest
+  * https://www.nasa.gov/international-space-station/
+- NASA CLD program updates
+- China Manned Space Agency
+  * Tiangong mission updates
+  * http://www.cmse.gov.cn/ (Chinese, translation needed)
+- Axiom Space, Vast, Blue Origin, Voyager Space press releases
+- FAA crew mission licenses
+- Spaceflight Now manifest
+- Jonathan McDowell's crew logs
+- ESA ISS utilization data
+- Arianespace, SpaceX, Roscosmos visiting vehicle manifests
+
+STANDALONE VS INTEGRATED:
+Standalone module (this is a flagship feature worth highlighting).
+Integration points:
+- Satellite Tracker (existing) - orbital position data
+- Space Manufacturing (proposed) - station utilization
+- Space Tourism (existing) - commercial crew missions
+- Mission Control (existing) - launch/docking events
+
+PRIORITY: MEDIUM-HIGH
+Rationale: Space stations are a high-interest topic with broad appeal.
+The ISS transition to commercial stations is a major story. Real-time ISS
+tracking is a proven crowd-pleaser. The data is mostly available from public
+sources. This module would be visually compelling and serve as a good
+engagement driver.
+
+
+------------------------------------------------------------------------------
+MODULE 13: REGULATORY FILING TRACKER
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+A real-time tracker for regulatory filings related to the space industry,
+including FCC satellite applications, ITU spectrum filings, FAA launch and
+reentry licenses, NOAA remote sensing licenses, and other relevant regulatory
+submissions. This is actionable intelligence for business development,
+competitive analysis, and compliance.
+
+KEY DATA TO DISPLAY:
+- FCC Satellite Filings:
+  * New applications (Part 25, NGSO, GSO)
+  * Application amendments
+  * Grant/denial decisions
+  * Public comment periods
+  * Spectrum coordination status
+  * Market access requests (foreign operators)
+  * Filing company, orbital parameters, frequency bands
+  * Timeline from filing to decision
+- FAA Licenses:
+  * Launch licenses (vehicle operator)
+  * Reentry licenses
+  * Launch site operator licenses
+  * Experimental permits
+  * License modifications
+  * Safety approvals
+- ITU Filings:
+  * Advance Publication Information (API)
+  * Coordination requests
+  * Notification filings
+  * Due diligence milestones
+  * Harmful interference cases
+- NOAA Remote Sensing:
+  * Remote sensing license applications
+  * Conditions and restrictions
+  * Imaging resolution tiers
+- FTC/SEC:
+  * Space company SEC filings (10-K, 10-Q, 8-K)
+  * SPAC merger filings
+  * FTC merger reviews for space companies
+- Export Control:
+  * ITAR/EAR significant determinations
+  * Technology transfer agreements (TAAs)
+  * Commodity jurisdiction requests
+- Alert System:
+  * Custom alerts by company, frequency band, orbit type
+  * Comment period deadline reminders
+  * Decision notifications
+
+TARGET AUDIENCE:
+- Satellite operators (CRITICAL) - competitive intelligence, coordination
+- Space lawyers (CRITICAL) - client work, compliance
+- Spectrum managers (HIGH) - interference management
+- Business development teams (HIGH) - market entry intelligence
+- Investors (HIGH) - new venture signals
+- Compliance officers (HIGH) - regulatory tracking
+- Government affairs (HIGH) - regulatory advocacy
+
+DATA SOURCES:
+- FCC IBFS (International Bureau Filing System)
+  * https://www.fcc.gov/ibfs
+  * All satellite applications and decisions
+  * Searchable database, some API access
+- FCC EDOCS
+  * Orders, public notices
+  * API available
+- FCC ULS (Universal Licensing System)
+  * For earth station licenses
+- FAA Licenses and Permits
+  * https://www.faa.gov/space/licenses
+  * Launch, reentry, site operator licenses
+- ITU BRIFIC (BR International Frequency Information Circular)
+  * Satellite network filings
+  * https://www.itu.int/snl/
+- ITU Space Network List
+- NOAA Remote Sensing Licensing
+  * https://www.nesdis.noaa.gov/about/our-offices/office-of-commercial-remote-sensing-regulatory-affairs
+- SEC EDGAR
+  * https://www.sec.gov/edgar/
+  * Financial filings for public space companies
+  * API available
+- Federal Register
+  * Rulemaking, public notices
+  * API: https://www.federalregister.gov/developers/api
+
+STANDALONE VS INTEGRATED:
+Standalone module (different enough to warrant separation).
+Integration points:
+- Compliance (existing) - regulatory context
+- Spectrum Tracker (existing) - FCC/ITU filings feed into spectrum data
+- Spectrum Auction Monitor (existing) - auction-related filings
+- Orbital Slots (existing) - filings for orbital positions
+- Market Intel (existing) - SEC filing data
+
+PRIORITY: HIGH
+Rationale: This is genuine intelligence that professionals will pay for.
+Tracking FCC satellite filings provides early signals of competitive moves
+(e.g., when a company files for a new constellation, it signals market entry
+months before any announcement). FAA license data shows launch activity
+trends. The data sources have APIs or structured databases making this
+technically feasible. This module would be highly differentiated from
+competitors.
+
+
+------------------------------------------------------------------------------
+MODULE 14: SPACE ECONOMY DASHBOARD
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+An executive-level dashboard aggregating macro-level space economy data:
+total market size, sector breakdowns, growth projections, public vs private
+investment, workforce trends, and key economic indicators. Designed to give
+C-suite executives and investors a quick pulse on the space economy.
+
+KEY DATA TO DISPLAY:
+- Market Size Overview:
+  * Total global space economy (estimated $570B+ in 2025)
+  * Year-over-year growth rate
+  * Breakdown by segment:
+    - Satellite services (largest segment)
+    - Ground equipment
+    - Launch industry
+    - Satellite manufacturing
+    - Government budgets
+  * 5-year and 10-year projections
+- Investment Tracker:
+  * Venture capital investment in space (quarterly)
+  * Number of deals and average deal size
+  * Top investors and their portfolios
+  * SPAC activity (largely declined but tracking)
+  * Government investment (NASA, ESA, CNSA, ISRO budgets)
+  * Sovereign wealth fund space investments
+- Public Market Performance:
+  * Space-related stock indices (custom or S&P Kensho)
+  * Individual stock performance
+  * IPO pipeline
+  * Market cap leaderboard
+- Employment & Workforce:
+  * Total space workforce by country
+  * Job posting trends
+  * Salary benchmarks
+  * STEM pipeline indicators
+  * Workforce diversity metrics
+- Government Budget Tracker:
+  * NASA budget (enacted vs requested, by directorate)
+  * DoD space spending
+  * ESA budget by program
+  * Other national agency budgets
+  * Trends over time
+- Economic Indicators:
+  * Launch cost trends ($/kg to orbit)
+  * Satellite cost trends
+  * Ground equipment price trends
+  * Insurance rate trends
+  * Revenue per satellite trends
+- Regional Analysis:
+  * US, Europe, China, India, Japan, Middle East, Africa
+  * Regional growth rates
+  * Policy environment comparison
+  * Regional specialty areas
+
+TARGET AUDIENCE:
+- CEOs/executives (CRITICAL) - strategic planning
+- Investors (CRITICAL) - market analysis
+- Government policy makers (HIGH) - budget justification
+- Business development teams (HIGH) - market sizing
+- Consultants (HIGH) - client presentations
+- Journalists (MEDIUM) - industry overview
+
+DATA SOURCES:
+- Space Foundation Space Report
+  * Annual report on global space economy
+  * https://www.spacefoundation.org/
+  * Key market size data
+- Satellite Industry Association (SIA)
+  * Annual "State of the Satellite Industry" report
+  * Market sizing by segment
+  * https://sia.org/
+- Bryce Tech (now merged with Quilty Analytics)
+  * "State of the Satellite Industry" (for SIA)
+  * "Start-Up Space" VC investment report
+  * Defense/civil space analysis
+  * https://brycetech.com/
+- Quilty Space (formerly Quilty Analytics + Bryce Tech)
+  * Comprehensive market analysis
+- Euroconsult
+  * Government space program budgets database
+  * Market forecasts by segment
+  * Highly authoritative (premium/paid)
+- OECD Space Economy initiative
+  * The Space Economy in Figures report
+  * Cross-country comparisons
+- Space Capital (VC firm)
+  * Quarterly space investment reports
+  * https://www.spacecapital.com/quarterly
+  * Free, excellent data
+- Seraphim Space (VC)
+  * Space Tech index
+- NASA budget documents
+  * Annual budget request, Congressional justification
+- OMB (Office of Management and Budget)
+- Bureau of Labor Statistics (workforce data)
+- Pitchbook/Crunchbase (VC deal data)
+- Yahoo Finance / Bloomberg (public market data)
+
+STANDALONE VS INTEGRATED:
+Standalone module -- this is the "executive summary" module.
+Integration points:
+- Market Intel (existing) - company-level feeds into macro
+- Space Startup Tracker (existing) - startup data
+- Space Workforce (existing) - employment data
+- Space Insurance (existing) - insurance rate trends
+
+PRIORITY: HIGH
+Rationale: Every space industry report from every major consulting firm leads
+with these macro numbers. CEOs, investors, and policy makers need this data
+constantly. While some data sources are premium (Euroconsult, NSR), enough
+free or publicly available data exists (Space Capital quarterly, SIA report,
+Space Foundation) to build a valuable overview. This module positions SpaceNexus
+as a serious executive tool rather than just a data aggregator.
+
+
+------------------------------------------------------------------------------
+MODULE 15: PATENT & IP TRACKER
+------------------------------------------------------------------------------
+
+DESCRIPTION:
+Track space technology patents, intellectual property trends, and innovation
+indicators. Analyze patent filing patterns to identify technology trends,
+competitive positioning, and emerging innovation areas.
+
+KEY DATA TO DISPLAY:
+- Patent Dashboard:
+  * Total space-related patents filed (by year)
+  * Top patent holders (companies, agencies, universities)
+  * Growth rate and trends
+  * Geographic distribution
+- Technology Category Breakdown:
+  * Propulsion systems
+  * Satellite communications
+  * Earth observation
+  * In-space manufacturing
+  * Space debris removal
+  * Life support systems
+  * Reusable vehicle systems
+  * Optical communications
+  * Space-based solar power
+  * In-situ resource utilization
+- Company Patent Profiles:
+  * Patent portfolio size and growth
+  * Key technology areas
+  * Citation analysis (patent quality/influence)
+  * Freedom-to-operate indicators
+- Trend Analysis:
+  * Emerging technology areas (patent acceleration)
+  * Patent cliff warnings (expiring patents)
+  * Technology transfer opportunities
+  * Patent landscape maps (visual clusters)
+- IP Deals & Litigation:
+  * Patent licensing agreements
+  * IP litigation cases
+  * Technology transfer agreements
+  * NASA patent licensing program
+
+TARGET AUDIENCE:
+- Patent attorneys (HIGH) - professional tool
+- R&D teams (HIGH) - competitive intelligence, freedom-to-operate
+- Technology scouts (HIGH) - emerging tech identification
+- Investors (MEDIUM) - innovation assessment
+- Startup founders (MEDIUM) - landscape awareness
+- Academic researchers (MEDIUM) - technology trends
+
+DATA SOURCES:
+- USPTO (United States Patent and Trademark Office)
+  * PatentsView API: https://patentsview.org/
+  * Full-text patent search
+  * Free, comprehensive API
+- EPO (European Patent Office)
+  * Espacenet: https://worldwide.espacenet.com/
+  * European and international patents
+  * Open Patent Services API
+- WIPO (World Intellectual Property Organization)
+  * Global patent statistics
+  * PCT application data
+- Google Patents
+  * https://patents.google.com/
+  * Free search across multiple patent offices
+- NASA Patent Portfolio
+  * https://technology.nasa.gov/patents
+  * NASA-developed technologies available for licensing
+- Lens.org
+  * Free patent and scholarly publication search
+  * Good API for patent analysis
+- Clarivate / Derwent Innovation (premium)
+- Academic patent analysis studies
+
+STANDALONE VS INTEGRATED:
+Standalone module.
+Integration points:
+- Market Intel (existing) - company innovation metrics
+- Space Manufacturing (proposed) - technology readiness
+- Space Startup Tracker (existing) - startup IP portfolios
+
+PRIORITY: LOW-MEDIUM
+Rationale: Patent analysis is a specialized niche with a smaller target
+audience. Building good patent analytics requires significant NLP/ML
+investment to classify patents into relevant technology categories. The
+value is real for technology scouts and patent attorneys, but this is a
+"nice to have" rather than a "must have" for most users. Consider
+starting with a simpler "NASA Technology Transfer" feature that highlights
+licensable NASA patents -- much easier to build and has broad appeal.
+
+
+================================================================================
+III. COMPETITIVE LANDSCAPE ANALYSIS
+================================================================================
+
+SPACENEWS (spacenews.com)
+--------------------------
+What they offer:
+- News coverage: Launch, satellite, military, civil, financial
+- SpaceNews Intelligence (premium): In-depth analysis reports
+- Event coverage: conferences, policy hearings
+- Job board (SpaceJobs)
+- Newsletters: daily and specialized
+- Magazine (legacy)
+What they DON'T offer:
+- No interactive data tools
+- No real-time tracking of any kind
+- No structured databases (just articles)
+- No financial data/market intelligence tools
+- No regulatory filing tracker
+- No satellite/debris monitoring
+
+SPACENEXUS ADVANTAGE: SpaceNexus is a DATA PLATFORM, SpaceNews is a NEWS
+OUTLET. They are complementary, not competitive. SpaceNexus could even
+integrate SpaceNews RSS feeds.
+
+VIA SATELLITE (viasatellite.com / satellitetoday.com)
+-----------------------------------------------------
+What they offer:
+- News coverage focused on satellite communications
+- Conference events (Satellite conference, annual)
+- Market reports (premium)
+- Executive interviews, features
+- Regulatory coverage
+What they DON'T offer:
+- No interactive tools
+- No real-time data
+- No comparison tools
+- Limited beyond satcom industry
+
+SPACENEXUS ADVANTAGE: Much broader scope, interactive tools, and real-time
+data vs. their editorial-only model.
+
+SATELLITE INDUSTRY ASSOCIATION (sia.org)
+-----------------------------------------
+What they offer:
+- "State of the Satellite Industry" annual report
+  * Market size, revenue breakdown, growth rates
+  * Satellite manufacturing, launch, services, ground equipment
+- Policy advocacy materials
+- Regulatory filings (spectrum, debris, licensing)
+- Industry events
+What they DON'T offer:
+- Data is annual (not real-time)
+- No interactive tools
+- No individual company data
+- Member-facing (not public intelligence platform)
+
+SPACENEXUS ADVANTAGE: Real-time vs annual data, interactive tools,
+company-level intelligence, broader scope.
+
+SPACE FOUNDATION (spacefoundation.org)
+---------------------------------------
+What they offer:
+- "The Space Report" (annual, premium $250+)
+  * Comprehensive space economy overview
+  * Government budgets worldwide
+  * Workforce data
+  * Market forecasts
+- Space Symposium (major annual event)
+- Space Commerce Institute
+- Workforce programs
+What they DON'T offer:
+- No real-time data
+- No interactive tools
+- Annual publication cycle only
+- Report is expensive and static
+
+SPACENEXUS ADVANTAGE: Continuously updated data, interactive visualization,
+broader tool set, more accessible pricing.
+
+BRYCE TECH / QUILTY ANALYTICS (now Quilty Space)
+--------------------------------------------------
+What they offer:
+- Premium consulting and reports:
+  * "Start-Up Space" - annual VC investment report
+  * "State of the Satellite Industry" (produced for SIA)
+  * Custom market analysis
+  * Government advisory services
+- Defense and intelligence community analysis
+- Visualization tools (for clients)
+What they DON'T offer:
+- No public-facing platform
+- Extremely expensive (consulting rates)
+- Not real-time
+- Not self-service
+
+SPACENEXUS ADVANTAGE: Self-service platform accessible to anyone, real-time
+updates, interactive tools, far more accessible price point.
+
+EUROCONSULT
+------------
+What they offer:
+- Premium reports ($3,000-$10,000+ each):
+  * Government Space Programs (comprehensive)
+  * Satellites to be Built & Launched
+  * Satellite Communications & Broadcasting
+  * Earth Observation market analysis
+- Consulting services
+- Very high quality, industry-standard data
+What they DON'T offer:
+- No real-time data platform
+- Very expensive (prohibitive for individuals)
+- No interactive tools
+- Publication-based model
+
+SPACENEXUS ADVANTAGE: Real-time, affordable, interactive, self-service.
+Note: Euroconsult data quality is excellent -- SpaceNexus could complement
+rather than replace for deep analysis.
+
+OTHER COMPETITORS / ADJACENT TOOLS:
+- Seradata SpaceTrak: Launch vehicle database, but expensive and dated UI
+- Slingshot Aerospace: Space domain awareness for government, not public
+- LeoLabs: Debris and conjunction monitoring, B2B focus
+- ExoAnalytic: Space domain awareness, primarily government/military
+- AGI (Ansys): STK software, engineering tool not intelligence platform
+- Privateer Space: Graph-based space data, environmental focus
+- Northern Sky Research (NSR, now Quilty): Premium satellite market reports
+- Space Capital: VC firm with quarterly investment reports (free)
+- Payload Space: Newsletter/media company
+- The Space Report: Annual publication
+- CSIS Aerospace: Excellent free reports on defense space
+
+KEY GAP IN THE MARKET:
+Nobody offers a comprehensive, affordable, real-time, interactive space
+industry intelligence platform. The market is split between:
+1. News outlets (articles, not data)
+2. Premium consulting firms (expensive, not real-time)
+3. Government tools (narrow focus, not business-oriented)
+4. Engineering tools (technical, not business intelligence)
+
+SpaceNexus sits in a unique position to be THE comprehensive platform.
+
+
+================================================================================
+IV. INDUSTRY DATA GAP ANALYSIS
+================================================================================
+
+What Space Industry Professionals Currently Lack:
+--------------------------------------------------
+
+1. INTEGRATED REGULATORY INTELLIGENCE
+   Professionals currently must manually check FCC IBFS, FAA licenses, ITU
+   BRIFIC, and Federal Register separately. There is no single platform that
+   aggregates all space-related regulatory filings and provides alerts.
+   >> ADDRESSED BY: Regulatory Filing Tracker module
+
+2. REAL-TIME MARKET INTELLIGENCE
+   SIA, Space Foundation, and Euroconsult publish annual reports. There is
+   no continuously-updated view of the space economy. Investors and executives
+   rely on stale data for fast-moving decisions.
+   >> ADDRESSED BY: Space Economy Dashboard module
+
+3. LAUNCH VEHICLE TRADE STUDY TOOLS
+   Mission planners currently build their own spreadsheets comparing launch
+   vehicles. No public tool offers a comprehensive, maintained, interactive
+   comparison.
+   >> ADDRESSED BY: Launch Vehicle Comparison Tool module
+
+4. LEGAL & POLICY TRACKING
+   Space lawyers must subscribe to multiple newsletters and manually track
+   legislation across dozens of countries. No aggregated legal intelligence
+   platform exists for space law.
+   >> ADDRESSED BY: Space Law & Treaty Monitor module
+
+5. ESG / SUSTAINABILITY METRICS
+   As ESG requirements grow, there are no standardized sustainability
+   ratings for space companies or missions. The Space Sustainability Rating
+   (SSR) from WEF/EPFL is nascent and covers only individual missions, not
+   companies holistically.
+   >> ADDRESSED BY: Space Sustainability & ESG module
+
+6. PATENT LANDSCAPE VISIBILITY
+   Space technology patent analysis requires expensive tools (Clarivate) or
+   manual searching. No space-specific patent intelligence tool exists.
+   >> ADDRESSED BY: Patent & IP Tracker module
+
+7. COMMERCIAL STATION COMPARISON
+   With 4+ commercial stations in development, there is no tool to compare
+   their capabilities, timelines, and pricing for potential customers.
+   >> ADDRESSED BY: Space Station Tracker module
+
+8. CISLUNAR ECONOMY OVERVIEW
+   The cislunar economy data is scattered across NASA program pages, company
+   press releases, and conference presentations. No consolidated view exists.
+   >> ADDRESSED BY: Cislunar Economy Tracker module
+
+
+================================================================================
+V. PRIORITIZED ROADMAP RECOMMENDATION
+================================================================================
+
+PHASE 1 - HIGH PRIORITY (Build in next 1-3 months)
+====================================================
+
+1. SPACE LAW & TREATY MONITOR [HIGH]
+   - Unique differentiator, no competitors
+   - High-value audience (lawyers, executives)
+   - Data available from government sources
+   - Moderate development effort
+   - Strong revenue potential (legal audience pays well)
+
+2. REGULATORY FILING TRACKER [HIGH]
+   - Actionable intelligence (not just information)
+   - Multiple good data sources with APIs (FCC, FAA, SEC)
+   - Competitive moat (complex to build well)
+   - Alert system drives engagement
+   - Natural extension of existing Compliance module
+
+3. SPACE ECONOMY DASHBOARD [HIGH]
+   - Executive-level appeal (decision makers)
+   - Positions SpaceNexus as premium platform
+   - Free data sources available (Space Capital, SIA)
+   - Visually compelling (charts, maps)
+   - Good "homepage" for C-suite users
+
+4. LAUNCH VEHICLE COMPARISON TOOL [HIGH]
+   - Broad appeal (everyone in space needs this)
+   - Straightforward data (specs don't change daily)
+   - SEO magnet (high search volume)
+   - Good user engagement tool
+   - Relatively easy to build and maintain
+
+5. SPACE WEATHER & RADIATION [HIGH]
+   - Excellent free APIs (NOAA SWPC)
+   - Extends existing Solar Flare module
+   - Operational value for satellite operators
+   - Insurance pricing relevance
+   - Real-time data drives return visits
+
+PHASE 2 - MEDIUM-HIGH PRIORITY (Build in 3-6 months)
+=====================================================
+
+6. SPACE STATION TRACKER [MEDIUM-HIGH]
+   - High public interest
+   - ISS transition is major story
+   - Good real-time visual component
+   - Broad audience appeal
+
+7. CISLUNAR ECONOMY TRACKER [MEDIUM-HIGH]
+   - Growing market with increasing activity
+   - Could extend existing Lunar Gateway module
+   - Strategic positioning for future relevance
+   - Investment community interest
+
+8. SPACEPORT DIRECTORY [MEDIUM]
+   - Quick win (mostly static data)
+   - Good visual map feature
+   - Useful reference tool
+   - Consider combining with Ground Station Map
+
+9. SPACE SUSTAINABILITY & ESG [MEDIUM-HIGH]
+   - Growing regulatory drivers
+   - Investor demand increasing
+   - Start with debris mitigation scoring
+   - Expand as ESG standards mature
+
+PHASE 3 - MEDIUM PRIORITY (Build in 6-12 months)
+=================================================
+
+10. ASTEROID WATCH [MEDIUM]
+    - Excellent free APIs (NASA NeoWs)
+    - High public interest
+    - Mining angle adds commercial relevance
+    - Fun, engaging module
+
+11. SPACE DEFENSE & NATIONAL SECURITY [MEDIUM]
+    - High value for defense audience
+    - Start with procurement/contracts (SAM.gov)
+    - Sensitive -- requires careful scoping
+    - Good for government user acquisition
+
+12. SPACE MANUFACTURING & IN-SPACE ECONOMY [MEDIUM]
+    - Emerging market, growing rapidly
+    - Becomes more relevant as commercial stations launch
+    - Lighter initial version, grow over time
+
+PHASE 4 - LOWER PRIORITY (Build in 12+ months)
+===============================================
+
+13. PATENT & IP TRACKER [LOW-MEDIUM]
+    - Niche audience
+    - Requires NLP/ML for classification
+    - Start with NASA Tech Transfer feature
+
+14. SPACE COMMUNICATIONS NETWORK [LOW-MEDIUM]
+    - Niche operational audience
+    - Consider as extension to Ground Station Map
+    - DSN real-time feed is cool but niche
+
+15. SATELLITE IMAGERY MARKETPLACE [LOW]
+    - Pricing data hard to maintain
+    - Existing marketplace platforms compete
+    - Better as a simpler "EO Provider Directory"
+
+
+================================================================================
+VI. DATA SOURCE MASTER LIST
+================================================================================
+
+FREE / PUBLIC APIs:
+-------------------
+- NASA APIs (api.nasa.gov)
+  * DONKI (space weather events)
+  * NeoWs (near-Earth objects)
+  * TechTransfer (NASA patents)
+  * APOD, Mars Rover, etc.
+
+- NOAA SWPC (services.swpc.noaa.gov)
+  * Real-time space weather data
+  * Solar wind, Kp index, flare data
+  * JSON endpoints, no auth required
+
+- FCC APIs
+  * ECFS (Electronic Comment Filing System)
+  * IBFS (International Bureau Filing System)
+  * EDOCS (Electronic Document Management System)
+
+- Federal Register API (federalregister.gov/developers)
+  * Space-related federal notices and rules
+
+- SEC EDGAR (efts.sec.gov)
+  * Space company financial filings
+  * Full-text search API
+
+- SAM.gov (Contract data)
+  * Federal contract awards
+  * Opportunities
+
+- USPTO PatentsView (patentsview.org)
+  * Patent search and analytics API
+
+- CelesTrak (celestrak.org)
+  * TLE data for satellite tracking
+  * Space weather indices
+
+- Space-Track (space-track.org)
+  * Official US Space Command TLE data
+  * Free registration required
+
+- UNOOSA databases
+  * Treaty status, national space law
+  * Online registration of space objects
+
+- Jonathan McDowell's data (planet4589.org)
+  * Launch log, satellite catalog
+  * Well-structured data files
+
+- Gunter's Space Page (space.skyrocket.de)
+  * Launch vehicle and satellite specifications
+
+PREMIUM / PAID DATA SOURCES:
+------------------------------
+- Euroconsult reports ($3K-$10K+)
+- Quilty Space / Bryce Tech (consulting)
+- Northern Sky Research (NSR) reports
+- Seradata SpaceTrak database
+- Pitchbook / Crunchbase (VC data)
+- Bloomberg / Refinitiv (financial data)
+- Clarivate / Derwent (patent analytics)
+- MSCI / Sustainalytics (ESG data)
+
+REGULAR PUBLICATIONS (Free summaries):
+---------------------------------------
+- Space Foundation "Space Report"
+- SIA "State of the Satellite Industry"
+- Bryce Tech "Start-Up Space"
+- Space Capital Quarterly Reports
+- Secure World Foundation annual reports
+- CSIS Aerospace Security Project
+- NASA Orbital Debris Quarterly News
+- SWPC Space Weather forecasts
+
+
+================================================================================
+END OF RESEARCH DOCUMENT
+================================================================================
+
+================================================================================
+IMPLEMENTATION STATUS (v0.6.0 - February 2026)
+================================================================================
+
+13 of 15 modules have been researched, designed, and built. The 2 modules NOT
+built (per user request) are: #5 Space Weather & Radiation, #9 Space Sustainability & ESG.
+
+COMPLETED MODULES:
+==================
+
+1. SPACE LAW & TREATY MONITOR [TOP TIER 1] - COMPLETED
+   Route: /space-law
+   File: src/app/space-law/page.tsx
+   Parent Module: Compliance & Spectrum (compliance-spectrum)
+   Features: 5 tabs (Treaties, National Laws, Artemis Accords, Legal Proceedings, Regulatory Bodies)
+   Data: International treaties with ratification counts, 15+ countries' national legislation,
+         43+ Artemis Accords signatories, regulatory body directory
+   Sources researched: UNOOSA, COPUOS, congress.gov, Federal Register, State Dept, Secure World Foundation
+
+2. REGULATORY FILING TRACKER [TOP TIER 2] - COMPLETED
+   Route: /regulatory-filings
+   File: src/app/regulatory-filings/page.tsx
+   Parent Module: Compliance & Spectrum (compliance-spectrum)
+   Features: 5 tabs (FCC Filings, FAA Licenses, ITU Filings, SEC & Financial, Federal Register)
+   Data: Real FCC satellite applications, FAA launch licenses, ITU filings, SEC EDGAR data
+   Sources researched: FCC IBFS, FAA licenses, ITU BRIFIC, SEC EDGAR API, Federal Register API
+
+3. SPACE ECONOMY DASHBOARD [TOP TIER 3] - COMPLETED
+   Route: /space-economy
+   File: src/app/space-economy/page.tsx
+   Parent Module: News & Intelligence (news-intelligence)
+   Features: 5 tabs (Market Overview, Investment, Government Budgets, Public Markets, Workforce & Trends)
+   Data: $630B+ global space economy, VC investment trends, NASA/ESA/CNSA budgets, workforce stats
+   Sources researched: Space Foundation, SIA, Space Capital, Euroconsult, OECD, BLS
+
+4. LAUNCH VEHICLE COMPARISON TOOL [TOP TIER 4] - COMPLETED
+   Route: /launch-vehicles
+   File: src/app/launch-vehicles/page.tsx
+   Parent Module: Mission Planning (mission-planning)
+   Features: 4 tabs (Vehicle Database, Compare, Reliability, Cost Analysis)
+   Data: 15+ active/development vehicles with real specs, costs, reliability stats
+   Sources researched: Manufacturer user guides, Jonathan McDowell, Gunter's Space Page, FAA data
+
+5. SPACE STATION TRACKER [SECOND TIER 6] - COMPLETED
+   Route: /space-stations
+   File: src/app/space-stations/page.tsx
+   Parent Module: Space Operations (space-operations)
+   Features: 5 tabs (Active Stations, Commercial Stations, Station Comparison, Crew Tracker, ISS Transition)
+   Data: ISS, Tiangong, Axiom, Vast Haven-1, Orbital Reef, Starlab with crew/module details
+   Sources researched: NASA ISS, China Manned Space Agency, company press releases, CelesTrak
+
+6. CISLUNAR ECONOMY TRACKER [SECOND TIER 7] - COMPLETED
+   Route: /cislunar
+   File: src/app/cislunar/page.tsx
+   Parent Module: Solar System Expansion (solar-system-expansion)
+   Features: 5 tabs (Artemis Program, Commercial Lunar, ISRU & Resources, Infrastructure, Investment)
+   Data: Artemis I-V timeline, CLPS missions (IM-1, Peregrine, Blue Ghost), ISRU tech, contracts
+   Sources researched: NASA Artemis/CLPS, USGS, LRO data, company SEC filings, LSIC
+
+7. SPACEPORT DIRECTORY [SECOND TIER 8] - COMPLETED
+   Route: /spaceports
+   File: src/app/spaceports/page.tsx
+   Parent Module: Space Operations (space-operations)
+   Features: 4 tabs (Active Sites, Emerging Sites, Site Comparison, Traffic Data)
+   Data: 20+ global launch sites with coordinates, capabilities, launch counts, vehicle compatibility
+   Sources researched: FAA licensed sites, Gunter's Space Page, national agency websites
+
+8. ASTEROID WATCH [SECOND TIER 10] - COMPLETED
+   Route: /asteroid-watch
+   File: src/app/asteroid-watch/page.tsx
+   Parent Module: Solar System Expansion (solar-system-expansion)
+   Features: 5 tabs (Close Approaches, Known Objects, Planetary Defense, Mining Targets, Discovery)
+   Data: 35,000+ NEOs, DART results (33 min period change), Apophis 2029, mining target rankings
+   Sources researched: NASA CNEOS, Minor Planet Center, JPL SBDB, Asterank, ESA NEOCC
+
+9. PATENT & IP TRACKER [THIRD TIER 11] - COMPLETED
+   Route: /patents
+   File: src/app/patents/page.tsx
+   Parent Module: Business Opportunities (business-opportunities-group)
+   Features: 4 tabs (Dashboard, Company Portfolios, Technology Trends, NASA Patents)
+   Data: Patent filing trends, top 15 holders, technology categories, NASA Tech Transfer
+   Sources researched: USPTO PatentsView, EPO Espacenet, WIPO, NASA Patent Portfolio, Lens.org
+
+10. SPACE MANUFACTURING [THIRD TIER 12] - COMPLETED
+    Route: /space-manufacturing
+    File: src/app/space-manufacturing/page.tsx
+    Parent Module: Business Opportunities (business-opportunities-group)
+    Features: 4 tabs (Overview, Companies, ISS Lab, Products & Markets)
+    Data: 10+ companies (Varda, Redwire, Space Forge), ISS experiments, product categories, TRL
+    Sources researched: ISS National Lab, NASA Tech Transfer, company SEC filings, CASIS
+
+11. SPACE COMMUNICATIONS NETWORK [THIRD TIER 13] - COMPLETED
+    Route: /space-comms
+    File: src/app/space-comms/page.tsx
+    Parent Module: Space Operations (space-operations)
+    Features: 5 tabs (DSN Status, Relay Networks, Optical Comms, Lunar Comms, Standards)
+    Data: DSN complexes, TDRS constellation, LCRD/DSOC results, LunaNet architecture
+    Sources researched: NASA DSN Now, ESA ESTRACK, CCSDS, company documentation
+
+12. SATELLITE IMAGERY MARKETPLACE [THIRD TIER 14] - COMPLETED
+    Route: /imagery-marketplace
+    File: src/app/imagery-marketplace/page.tsx
+    Parent Module: Business Opportunities (business-opportunities-group)
+    Features: 4 tabs (Providers, Compare, Use Cases, Market Overview)
+    Data: 12+ providers (Maxar, Planet, Capella, ICEYE), specs, pricing tiers, use case matching
+    Sources researched: eoPortal (ESA), OSCAR (WMO), provider spec sheets, industry reports
+
+13. SPACE DEFENSE & NATIONAL SECURITY [THIRD TIER 15] - COMPLETED
+    Route: /space-defense
+    File: src/app/space-defense/page.tsx
+    Parent Module: News & Intelligence (news-intelligence)
+    Features: 5 tabs (Space Forces, Programs, Procurement, Threat Assessment, Alliances)
+    Data: Space Force budget/structure, SDA programs, ASAT test history, allied space commands
+    Sources researched: Space Force releases, SAM.gov, CSIS, Secure World Foundation, GAO
+
+NOT BUILT (per user request):
+- #5 Space Weather & Radiation Intelligence
+- #9 Space Sustainability & ESG
+
+MODULE HIERARCHY UPDATES:
+=========================
+Parent modules updated with new children:
+- News & Intelligence: +space-economy, +space-defense
+- Business Opportunities: +patent-tracker, +space-manufacturing, +imagery-marketplace
+- Mission Planning: +launch-vehicles
+- Space Operations: +space-stations, +spaceport-directory, +space-comms
+- Compliance & Spectrum: +space-law, +regulatory-filings
+- Solar System Expansion: +cislunar-tracker, +asteroid-watch
+
+FILES CREATED (13):
+- src/app/space-law/page.tsx
+- src/app/regulatory-filings/page.tsx
+- src/app/space-economy/page.tsx
+- src/app/launch-vehicles/page.tsx
+- src/app/space-stations/page.tsx
+- src/app/cislunar/page.tsx
+- src/app/spaceports/page.tsx
+- src/app/asteroid-watch/page.tsx
+- src/app/patents/page.tsx
+- src/app/space-manufacturing/page.tsx
+- src/app/space-comms/page.tsx
+- src/app/imagery-marketplace/page.tsx
+- src/app/space-defense/page.tsx
+
+FILES MODIFIED:
+- src/types/index.ts (13 new module configs, parent subModuleIds updated)
+- src/lib/module-routes.ts (13 new routes)
+- src/components/Navigation.tsx (all 4 dropdown menus updated)
+- src/components/MobileBottomNav.tsx (all categories updated)
+
+Build verified: All modules compile cleanly with npm run build.

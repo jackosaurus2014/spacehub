@@ -244,13 +244,22 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
               <button
                 onClick={goToPrevious}
                 disabled={isTransitioning}
-                className="group flex items-center justify-center w-12 h-12 rounded-xl bg-slate-700/50 hover:bg-slate-600/50 border border-cyan-400/20 hover:border-cyan-400/40 text-slate-300 hover:text-cyan-300 transition-all duration-200 disabled:opacity-50"
-                aria-label="Previous module (Left Arrow)"
-                title="Previous (←)"
+                className="group flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-cyan-900/60 to-slate-700/60 hover:from-cyan-800/70 hover:to-slate-600/70 border border-cyan-400/30 hover:border-cyan-400/60 text-slate-200 hover:text-cyan-200 transition-all duration-300 disabled:opacity-50 shadow-lg shadow-cyan-900/20 hover:shadow-cyan-700/30 hover:scale-[1.03] active:scale-95"
+                aria-label={`Previous module: ${enabledModules[currentIndex > 0 ? currentIndex - 1 : enabledModules.length - 1]?.name} (Left Arrow)`}
+                title={`Previous: ${enabledModules[currentIndex > 0 ? currentIndex - 1 : enabledModules.length - 1]?.name}`}
               >
-                <svg className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 group-hover:-translate-x-1 transition-transform duration-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
                 </svg>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-xs sm:text-sm font-bold tracking-wide">
+                    <span className="hidden sm:inline">Previous</span>
+                    <span className="sm:hidden">Prev</span>
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-cyan-400/80 truncate max-w-[60px] sm:max-w-[100px]">
+                    {enabledModules[currentIndex > 0 ? currentIndex - 1 : enabledModules.length - 1]?.name}
+                  </span>
+                </div>
               </button>
 
               {/* Module Selector */}
@@ -333,12 +342,21 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
               <button
                 onClick={goToNext}
                 disabled={isTransitioning}
-                className="group flex items-center justify-center w-12 h-12 rounded-xl bg-slate-700/50 hover:bg-slate-600/50 border border-cyan-400/20 hover:border-cyan-400/40 text-slate-300 hover:text-cyan-300 transition-all duration-200 disabled:opacity-50"
-                aria-label="Next module (Right Arrow)"
-                title="Next (→)"
+                className="group flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-slate-700/60 to-cyan-900/60 hover:from-slate-600/70 hover:to-cyan-800/70 border border-cyan-400/30 hover:border-cyan-400/60 text-slate-200 hover:text-cyan-200 transition-all duration-300 disabled:opacity-50 shadow-lg shadow-cyan-900/20 hover:shadow-cyan-700/30 hover:scale-[1.03] active:scale-95"
+                aria-label={`Next module: ${enabledModules[currentIndex < enabledModules.length - 1 ? currentIndex + 1 : 0]?.name} (Right Arrow)`}
+                title={`Next: ${enabledModules[currentIndex < enabledModules.length - 1 ? currentIndex + 1 : 0]?.name}`}
               >
-                <svg className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <div className="flex flex-col items-end leading-tight">
+                  <span className="text-xs sm:text-sm font-bold tracking-wide">
+                    <span className="hidden sm:inline">Next</span>
+                    <span className="sm:hidden">Next</span>
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-cyan-400/80 truncate max-w-[60px] sm:max-w-[100px]">
+                    {enabledModules[currentIndex < enabledModules.length - 1 ? currentIndex + 1 : 0]?.name}
+                  </span>
+                </div>
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform duration-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
             </div>
