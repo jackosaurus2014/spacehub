@@ -297,6 +297,46 @@ export const orbitalServiceListingSchema = z.object({
     .transform((val) => val.trim()),
 });
 
+// Webhook event types
+export const WEBHOOK_EVENT_TYPES = [
+  'launch.upcoming',
+  'launch.completed',
+  'news.published',
+  'alert.solar_flare',
+  'company.updated',
+] as const;
+
+export type WebhookEventType = (typeof WEBHOOK_EVENT_TYPES)[number];
+
+// Webhook subscribe schema
+export const webhookSubscribeSchema = z.object({
+  url: z
+    .string()
+    .url('Please provide a valid webhook URL')
+    .max(2048, 'URL is too long'),
+  events: z
+    .array(
+      z.enum(WEBHOOK_EVENT_TYPES, {
+        message: `Invalid event type. Valid types: ${WEBHOOK_EVENT_TYPES.join(', ')}`,
+      })
+    )
+    .min(1, 'At least one event type is required')
+    .max(WEBHOOK_EVENT_TYPES.length, `Maximum ${WEBHOOK_EVENT_TYPES.length} event types`),
+});
+
+// Webhook unsubscribe (delete) schema
+export const webhookUnsubscribeSchema = z.object({
+  id: z.string().cuid('Invalid subscription ID format'),
+});
+
+// Valid search modules
+export const SEARCH_MODULES = ['news', 'companies', 'events', 'opportunities', 'blogs'] as const;
+export type SearchModule = (typeof SEARCH_MODULES)[number];
+
+// Sort options for search
+export const SEARCH_SORT_OPTIONS = ['relevance', 'date', 'title'] as const;
+export type SearchSortBy = (typeof SEARCH_SORT_OPTIONS)[number];
+
 // Search query schema
 export const searchQuerySchema = z.object({
   q: z.string().min(2, 'Search query must be at least 2 characters').max(200, 'Search query is too long').transform((val) => val.trim()),
@@ -304,6 +344,40 @@ export const searchQuerySchema = z.object({
     .string()
     .optional()
     .transform((val) => Math.min(Math.max(1, parseInt(val || '5', 10) || 5), 20)),
+  modules: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val) return SEARCH_MODULES as unknown as SearchModule[];
+      const requested = val.split(',').map((m) => m.trim().toLowerCase());
+      return requested.filter((m): m is SearchModule =>
+        (SEARCH_MODULES as readonly string[]).includes(m)
+      );
+    }),
+  dateFrom: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? undefined : d;
+    }),
+  dateTo: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? undefined : d;
+    }),
+  sortBy: z
+    .enum(['relevance', 'date', 'title'])
+    .optional()
+    .default('relevance'),
+  sortOrder: z
+    .enum(['asc', 'desc'])
+    .optional()
+    .default('desc'),
 });
 
 // Export types
@@ -322,3 +396,5 @@ export type SearchQueryParams = z.infer<typeof searchQuerySchema>;
 export type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
 export type VerifyEmailData = z.infer<typeof verifyEmailSchema>;
+export type WebhookSubscribeData = z.infer<typeof webhookSubscribeSchema>;
+export type WebhookUnsubscribeData = z.infer<typeof webhookUnsubscribeSchema>;

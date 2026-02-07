@@ -56,7 +56,7 @@ function ResourceRow({
           <span className="text-lg">{categoryInfo?.icon || '📦'}</span>
           <div>
             <div className="font-semibold text-slate-900">{resource.name}</div>
-            <div className="text-xs text-slate-500">{categoryInfo?.label}</div>
+            <div className="text-xs text-slate-400">{categoryInfo?.label}</div>
           </div>
         </div>
       </td>
@@ -69,11 +69,11 @@ function ResourceRow({
       </td>
       <td className="py-4 px-4 text-right">
         <div className="text-green-400 font-semibold">{formatPrice(earthPriceKg)}</div>
-        <div className="text-slate-500 text-xs">{formatPrice(earthPriceLb)}/lb</div>
+        <div className="text-slate-400 text-xs">{formatPrice(earthPriceLb)}/lb</div>
       </td>
       <td className="py-4 px-4 text-right">
         <div className="text-rocket-400 font-semibold">{formatPrice(spacePriceKg)}</div>
-        <div className="text-slate-500 text-xs">{formatPrice(spacePriceLb)}/lb</div>
+        <div className="text-slate-400 text-xs">{formatPrice(spacePriceLb)}/lb</div>
       </td>
       <td className="py-4 px-4 text-right">
         <div className="text-nebula-300 font-medium">
@@ -95,7 +95,7 @@ function ResourceRow({
             </span>
           ))}
           {(resource.applications as string[]).length > 2 && (
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-slate-400">
               +{(resource.applications as string[]).length - 2}
             </span>
           )}
@@ -131,18 +131,18 @@ function LaunchProviderCard({
           </span>
         )}
       </div>
-      <div className="text-slate-500 text-xs mb-2">{provider.name}</div>
+      <div className="text-slate-400 text-xs mb-2">{provider.name}</div>
       <div className="text-rocket-400 font-bold">
         ${provider.costPerKgToLEO.toLocaleString()}/kg
       </div>
-      <div className="text-slate-500 text-xs mb-2">
+      <div className="text-slate-400 text-xs mb-2">
         to LEO • {provider.payloadToLEO?.toLocaleString() || 'N/A'} kg capacity
       </div>
       <div className="flex flex-wrap gap-1.5">
         <Link
           href={`/market-intel?search=${encodeURIComponent(provider.name)}`}
           onClick={(e) => e.stopPropagation()}
-          className="text-xs text-nebula-400 hover:text-nebula-300 bg-nebula-500/10 px-1.5 py-0.5 rounded transition-colors"
+          className="text-xs text-nebula-300 hover:text-nebula-200 bg-nebula-500/10 px-1.5 py-0.5 rounded transition-colors"
         >
           Company info
         </Link>
@@ -294,25 +294,25 @@ function ResourceExchangeContent() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="card-elevated p-6 text-center">
                 <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.total}</div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Resources Tracked</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Resources Tracked</div>
               </div>
               <div className="card-elevated p-6 text-center">
                 <div className="text-4xl font-bold font-display tracking-tight text-green-400">
                   {Object.keys(stats.byCategory).length}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Categories</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Categories</div>
               </div>
               <div className="card-elevated p-6 text-center">
                 <div className="text-4xl font-bold font-display tracking-tight text-rocket-400">
                   ${stats.launchCosts.min?.toLocaleString()}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Min Launch $/kg</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Min Launch $/kg</div>
               </div>
               <div className="card-elevated p-6 text-center">
                 <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
                   {providers.length}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Launch Providers</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Launch Providers</div>
               </div>
             </div>
 
@@ -340,7 +340,7 @@ function ResourceExchangeContent() {
             <div className="card p-4 mb-6">
               <div className="flex flex-wrap items-center gap-6">
                 <div>
-                  <label className="block text-slate-500 text-sm mb-2">Destination</label>
+                  <label className="block text-slate-400 text-sm mb-2">Destination</label>
                   <div className="flex gap-2">
                     {(['LEO', 'GEO', 'Moon', 'Mars'] as const).map((dest) => (
                       <button
@@ -349,7 +349,7 @@ function ResourceExchangeContent() {
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                           destination === dest
                             ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                            : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
+                            : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
                         }`}
                       >
                         {dest === 'LEO' && '🌍 '}
@@ -363,7 +363,7 @@ function ResourceExchangeContent() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-500 text-sm mb-2">Category</label>
+                  <label className="block text-slate-400 text-sm mb-2">Category</label>
                   <select
                     value={selectedCategory}
                     onChange={(e) =>
@@ -395,11 +395,11 @@ function ResourceExchangeContent() {
                 </div>
 
                 <div className="ml-auto text-right">
-                  <div className="text-slate-500 text-sm">Current Launch Cost</div>
+                  <div className="text-slate-400 text-sm">Current Launch Cost</div>
                   <div className="text-2xl font-bold text-rocket-400">
                     ${launchCost.toLocaleString()}/kg
                   </div>
-                  <div className="text-slate-500 text-xs">
+                  <div className="text-slate-400 text-xs">
                     ${(launchCost / KG_TO_LB).toFixed(0)}/lb to {destination}
                   </div>
                 </div>
@@ -417,7 +417,7 @@ function ResourceExchangeContent() {
           <div className="card p-12 text-center">
             <span className="text-6xl block mb-4">💰</span>
             <h2 className="text-2xl font-semibold text-slate-900 mb-2">No Resource Data</h2>
-            <p className="text-slate-500 mb-6">
+            <p className="text-slate-400 mb-6">
               Initialize the database with space commodities and launch costs.
             </p>
             <button
@@ -441,22 +441,22 @@ function ResourceExchangeContent() {
               <table className="w-full">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200">
-                    <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">
+                    <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">
                       Resource
                     </th>
-                    <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">
+                    <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">
                       Availability
                     </th>
-                    <th className="text-right py-3 px-4 text-slate-500 font-medium text-sm">
+                    <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">
                       Earth Price/kg
                     </th>
-                    <th className="text-right py-3 px-4 text-slate-500 font-medium text-sm">
+                    <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">
                       {destination} Price/kg
                     </th>
-                    <th className="text-right py-3 px-4 text-slate-500 font-medium text-sm">
+                    <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">
                       Markup
                     </th>
-                    <th className="text-left py-3 px-4 text-slate-500 font-medium text-sm">
+                    <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">
                       Applications
                     </th>
                   </tr>
@@ -483,7 +483,7 @@ function ResourceExchangeContent() {
             <h3 className="text-lg font-semibold text-slate-900 mb-2">
               Understanding Space Pricing
             </h3>
-            <p className="text-slate-500 text-sm max-w-3xl mx-auto">
+            <p className="text-slate-400 text-sm max-w-3xl mx-auto">
               Space prices are calculated by adding the Earth market price to the launch cost
               per kilogram. The actual cost can vary based on factors like payload integration,
               insurance, and specific mission requirements. Launch costs shown are approximate

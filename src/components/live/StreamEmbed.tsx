@@ -133,7 +133,7 @@ export default function StreamEmbed({
         </div>
 
         {/* Scheduled time */}
-        <p className="text-slate-500 text-sm mt-4">
+        <p className="text-slate-400 text-sm mt-4">
           {new Date(scheduledTime).toLocaleDateString('en-US', {
             weekday: 'long',
             month: 'long',
@@ -146,7 +146,7 @@ export default function StreamEmbed({
 
         {/* Notification hint */}
         {timeUntilStream > 60 * 60 * 1000 && (
-          <div className="mt-6 flex items-center gap-2 text-slate-500 text-sm">
+          <div className="mt-6 flex items-center gap-2 text-slate-400 text-sm">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"

@@ -114,7 +114,7 @@ export default function SatelliteTrackerModule() {
         </div>
         <div className="card p-8 text-center">
           <span className="text-4xl block mb-4">⚠️</span>
-          <p className="text-slate-500">{error || 'No data available'}</p>
+          <p className="text-slate-400">{error || 'No data available'}</p>
         </div>
       </div>
     );
@@ -147,25 +147,25 @@ export default function SatelliteTrackerModule() {
           <div className="text-3xl font-bold text-slate-800">
             {stats.total.toLocaleString()}
           </div>
-          <div className="text-slate-500 text-sm">Total Satellites</div>
+          <div className="text-slate-400 text-sm">Total Satellites</div>
         </div>
         <div className="card p-4 text-center">
           <div className="text-3xl font-bold text-green-500">
             {stats.byStatus.active.toLocaleString()}
           </div>
-          <div className="text-slate-500 text-sm">Active</div>
+          <div className="text-slate-400 text-sm">Active</div>
         </div>
         <div className="card p-4 text-center">
           <div className="text-3xl font-bold text-blue-500">
             {stats.byOrbitType.LEO.toLocaleString()}
           </div>
-          <div className="text-slate-500 text-sm">LEO</div>
+          <div className="text-slate-400 text-sm">LEO</div>
         </div>
         <div className="card p-4 text-center">
           <div className="text-3xl font-bold text-amber-500">
             {stats.byOrbitType.GEO.toLocaleString()}
           </div>
-          <div className="text-slate-500 text-sm">GEO</div>
+          <div className="text-slate-400 text-sm">GEO</div>
         </div>
       </div>
 
@@ -190,11 +190,11 @@ export default function SatelliteTrackerModule() {
             <div className="flex items-center gap-4 text-sm">
               <div className="text-center">
                 <div className="text-lg font-bold text-white">{iss.altitude.toLocaleString()} km</div>
-                <div className="text-slate-500 text-xs">Altitude</div>
+                <div className="text-slate-400 text-xs">Altitude</div>
               </div>
               <div className="text-center">
                 <div className="text-lg font-bold text-nebula-300">{iss.velocity.toFixed(2)} km/s</div>
-                <div className="text-slate-500 text-xs">Velocity</div>
+                <div className="text-slate-400 text-xs">Velocity</div>
               </div>
             </div>
           </div>
@@ -244,7 +244,7 @@ export default function SatelliteTrackerModule() {
                     <span className="text-xl flex-shrink-0">{purposeIcon}</span>
                     <div className="min-w-0">
                       <h4 className="font-medium text-slate-800 text-sm truncate">{sat.name}</h4>
-                      <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <div className="flex items-center gap-2 text-xs text-slate-400">
                         <span>{sat.operator}</span>
                         <span className="text-slate-300">|</span>
                         <span>{sat.orbitType}</span>
@@ -255,7 +255,7 @@ export default function SatelliteTrackerModule() {
                     {statusStyle.label}
                   </span>
                 </div>
-                <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
                   <span>Alt: <span className="text-slate-700 font-medium">{sat.altitude.toLocaleString()} km</span></span>
                   <span>Vel: <span className="text-slate-700 font-medium">{sat.velocity.toFixed(2)} km/s</span></span>
                 </div>
@@ -282,7 +282,7 @@ export default function SatelliteTrackerModule() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-slate-700 text-sm font-medium truncate">{operator.name}</span>
-                    <span className="text-slate-500 text-xs">{operator.count}</span>
+                    <span className="text-slate-400 text-xs">{operator.count}</span>
                   </div>
                   <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
                     <div

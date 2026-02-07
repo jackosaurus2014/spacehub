@@ -275,7 +275,7 @@ function SupplyChainContent() {
                 type="checkbox"
                 checked={showHighRiskOnly}
                 onChange={(e) => setShowHighRiskOnly(e.target.checked)}
-                className="rounded bg-space-700 border-space-600 text-nebula-500 focus:ring-nebula-500"
+                className="rounded bg-space-700 border-space-600 text-nebula-300 focus:ring-nebula-500"
               />
               Show high-risk only
             </label>
@@ -343,7 +343,7 @@ function SupplyChainContent() {
                 </div>
                 <button
                   onClick={() => setActiveTab('shortages')}
-                  className="mt-4 text-sm text-nebula-400 hover:text-nebula-300"
+                  className="mt-4 text-sm text-nebula-300 hover:text-nebula-200"
                 >
                   View all shortages →
                 </button>
@@ -467,7 +467,7 @@ function SupplyChainContent() {
                             <div className="text-sm font-medium text-green-400">
                               ${(rel.annualValue / 1000000).toFixed(0)}M/yr
                             </div>
-                            <div className="text-xs text-slate-500">Annual value</div>
+                            <div className="text-xs text-slate-400">Annual value</div>
                           </div>
                         )}
                       </div>

@@ -182,7 +182,7 @@ export default function LiveChat() {
           )}
           <button
             onClick={clearChat}
-            className="text-xs text-slate-500 hover:text-red-400 transition-colors"
+            className="text-xs text-slate-400 hover:text-red-400 transition-colors"
             title="Clear chat"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,7 +206,7 @@ export default function LiveChat() {
                 onChange={(e) => setTempUsername(e.target.value)}
                 placeholder="Enter username"
                 maxLength={20}
-                className="w-full px-4 py-2 rounded-lg bg-space-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 mb-4"
+                className="w-full px-4 py-2 rounded-lg bg-space-900 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 mb-4"
                 autoFocus
               />
               <div className="flex gap-2">
@@ -266,7 +266,7 @@ export default function LiveChat() {
                   >
                     {msg.username}
                   </span>
-                  <span className="text-slate-600 text-xs">{formatTimestamp(msg.timestamp)}</span>
+                  <span className="text-slate-400 text-xs">{formatTimestamp(msg.timestamp)}</span>
                 </div>
                 <div
                   className={`px-3 py-2 rounded-lg text-sm ${
@@ -293,7 +293,7 @@ export default function LiveChat() {
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder={username ? 'Type a message...' : 'Set username to chat'}
             maxLength={500}
-            className="flex-1 px-4 py-2 rounded-lg bg-space-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 text-sm"
+            className="flex-1 px-4 py-2 rounded-lg bg-space-900 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 text-sm"
           />
           <button
             type="submit"

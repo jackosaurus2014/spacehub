@@ -8,6 +8,106 @@
   --foreground-rgb: 30, 41, 59;
   --background-start-rgb: 248, 250, 252;
   --background-end-rgb: 241, 245, 249;
+
+  /* High-contrast CSS custom properties — default (normal) values */
+  --hc-text-primary: #f1f5f9;     /* slate-100 */
+  --hc-text-secondary: #94a3b8;   /* slate-400 */
+  --hc-text-muted: #94a3b8;       /* slate-400 — improved contrast for muted text */
+  --hc-border-default: rgba(6, 182, 212, 0.3);  /* cyan-400/30 */
+  --hc-border-strong: rgba(6, 182, 212, 0.5);
+  --hc-card-bg-alpha: 0.9;
+  --hc-btn-border: rgba(148, 163, 184, 0.3);    /* slate-400/30 */
+}
+
+/* High-contrast mode overrides */
+html.high-contrast {
+  --hc-text-primary: #ffffff;      /* pure white */
+  --hc-text-secondary: #e2e8f0;   /* slate-200 (was slate-400) */
+  --hc-text-muted: #cbd5e1;       /* slate-300 (was slate-500) */
+  --hc-border-default: rgba(6, 182, 212, 0.55); /* brighter border */
+  --hc-border-strong: rgba(6, 182, 212, 0.75);
+  --hc-card-bg-alpha: 0.96;
+  --hc-btn-border: rgba(148, 163, 184, 0.55);
+}
+
+/* Also honour the OS-level prefers-contrast media query as defaults */
+@media (prefers-contrast: more) {
+  :root {
+    --hc-text-primary: #ffffff;
+    --hc-text-secondary: #e2e8f0;
+    --hc-text-muted: #cbd5e1;
+    --hc-border-default: rgba(6, 182, 212, 0.55);
+    --hc-border-strong: rgba(6, 182, 212, 0.75);
+    --hc-card-bg-alpha: 0.96;
+    --hc-btn-border: rgba(148, 163, 184, 0.55);
+  }
+}
+
+/* ——— High-contrast text overrides ——— */
+html.high-contrast .text-slate-400 {
+  color: #e2e8f0 !important; /* slate-200 */
+}
+
+html.high-contrast .text-slate-500 {
+  color: #cbd5e1 !important; /* slate-300 */
+}
+
+html.high-contrast .text-slate-300 {
+  color: #f1f5f9 !important; /* slate-100 */
+}
+
+html.high-contrast .text-slate-200 {
+  color: #ffffff !important;
+}
+
+/* ——— High-contrast border overrides ——— */
+html.high-contrast .border-slate-700 {
+  border-color: #64748b !important; /* slate-500 */
+}
+
+html.high-contrast .border-slate-700\/50 {
+  border-color: rgba(100, 116, 139, 0.7) !important;
+}
+
+html.high-contrast .border-cyan-400\/30 {
+  border-color: rgba(34, 211, 238, 0.55) !important;
+}
+
+html.high-contrast .border-cyan-400\/40 {
+  border-color: rgba(34, 211, 238, 0.65) !important;
+}
+
+/* ——— High-contrast card backgrounds (slightly lighter) ——— */
+html.high-contrast .card,
+html.high-contrast .card-interactive {
+  background: linear-gradient(145deg,
+    rgba(20, 30, 52, 0.96) 0%,
+    rgba(38, 50, 72, 0.94) 25%,
+    rgba(60, 75, 98, 0.92) 50%,
+    rgba(38, 50, 72, 0.94) 75%,
+    rgba(20, 30, 52, 0.96) 100%) !important;
+}
+
+html.high-contrast .card-elevated {
+  background: linear-gradient(145deg,
+    rgba(20, 30, 52, 0.98) 0%,
+    rgba(38, 50, 72, 0.96) 25%,
+    rgba(60, 75, 98, 0.95) 50%,
+    rgba(38, 50, 72, 0.96) 75%,
+    rgba(20, 30, 52, 0.98) 100%) !important;
+}
+
+/* ——— High-contrast button improvements ——— */
+html.high-contrast .btn-primary {
+  @apply from-nebula-500 to-nebula-400 shadow-lg;
+}
+
+html.high-contrast .btn-secondary {
+  @apply border-slate-400 text-slate-800;
+}
+
+html.high-contrast .btn-ghost {
+  @apply text-slate-800;
 }
 
 html {
@@ -131,7 +231,7 @@ body::after {
 }
 
 .btn-ghost {
-  @apply text-slate-600 font-medium py-2 px-4 rounded-lg transition-all duration-200
+  @apply text-slate-400 font-medium py-2 px-4 rounded-lg transition-all duration-200
          hover:bg-slate-100 hover:text-slate-900;
 }
 
@@ -277,16 +377,16 @@ body::after {
   color: #f1f5f9 !important; /* slate-100 */
 }
 
-.card .text-slate-600, .card .text-slate-500,
-.card-elevated .text-slate-600, .card-elevated .text-slate-500,
-.card-interactive .text-slate-600, .card-interactive .text-slate-500 {
-  color: #cbd5e1 !important; /* slate-300 */
+.card .text-slate-600, .card .text-slate-500, .card .text-slate-400,
+.card-elevated .text-slate-600, .card-elevated .text-slate-500, .card-elevated .text-slate-400,
+.card-interactive .text-slate-600, .card-interactive .text-slate-500, .card-interactive .text-slate-400 {
+  color: #cbd5e1 !important; /* slate-300 — ~8:1 contrast on dark card bg */
 }
 
-.card .text-slate-400, .card .text-slate-300,
-.card-elevated .text-slate-400, .card-elevated .text-slate-300,
-.card-interactive .text-slate-400, .card-interactive .text-slate-300 {
-  color: #94a3b8 !important; /* slate-400 */
+.card .text-slate-300,
+.card-elevated .text-slate-300,
+.card-interactive .text-slate-300 {
+  color: #cbd5e1 !important; /* slate-300 — preserve original high contrast */
 }
 
 /* Override text-gray colors too */
@@ -296,9 +396,9 @@ body::after {
   color: #f1f5f9 !important; /* slate-100 */
 }
 
-.card .text-gray-600, .card .text-gray-500,
-.card-elevated .text-gray-600, .card-elevated .text-gray-500,
-.card-interactive .text-gray-600, .card-interactive .text-gray-500 {
+.card .text-gray-600, .card .text-gray-500, .card .text-gray-400,
+.card-elevated .text-gray-600, .card-elevated .text-gray-500, .card-elevated .text-gray-400,
+.card-interactive .text-gray-600, .card-interactive .text-gray-500, .card-interactive .text-gray-400 {
   color: #cbd5e1 !important; /* slate-300 */
 }
 
@@ -343,7 +443,7 @@ body::after {
 }
 
 .input::placeholder {
-  color: #64748b;
+  color: #94a3b8; /* slate-400 — improved contrast on dark input bg */
 }
 
 .input:focus {
@@ -382,7 +482,7 @@ body::after {
 
 /* Section Utilities */
 .section-divider {
-  @apply border-t border-slate-200;
+  @apply border-t border-slate-700;
 }
 
 .section-spacer {

@@ -75,7 +75,7 @@ export default function LoginPage() {
             <h1 className="text-2xl font-display font-bold text-slate-900">
               Welcome Back
             </h1>
-            <p className="text-slate-500 mt-2">
+            <p className="text-slate-400 mt-2">
               Sign in to access your SpaceNexus account
             </p>
           </div>
@@ -88,7 +88,7 @@ export default function LoginPage() {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-slate-600 text-sm mb-2">
+              <label htmlFor="email" className="block text-slate-400 text-sm mb-2">
                 Email Address
               </label>
               <input
@@ -114,7 +114,7 @@ export default function LoginPage() {
               <div className="flex items-center justify-between mb-2">
                 <label
                   htmlFor="password"
-                  className="block text-slate-600 text-sm"
+                  className="block text-slate-400 text-sm"
                 >
                   Password
                 </label>
@@ -157,7 +157,7 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-slate-500">
+            <p className="text-slate-400">
               Don&apos;t have an account?{' '}
               <Link
                 href="/register"

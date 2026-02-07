@@ -62,7 +62,7 @@ export default function PremiumGate({
           <h3 className="text-xl font-bold text-slate-800 mb-2">
             Upgrade to {plan?.name || 'Premium'}
           </h3>
-          <p className="text-slate-500 mb-6">
+          <p className="text-slate-400 mb-6">
             This feature requires a {plan?.name || 'premium'} subscription.
             Unlock real-time data, advanced analytics, and more.
           </p>
@@ -75,7 +75,7 @@ export default function PremiumGate({
             </Link>
             <Link
               href="/pricing"
-              className="block text-slate-500 hover:text-slate-700 text-sm transition-colors"
+              className="block text-slate-400 hover:text-slate-700 text-sm transition-colors"
             >
               Compare all features →
             </Link>

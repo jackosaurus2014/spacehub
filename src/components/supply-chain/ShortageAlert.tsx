@@ -88,15 +88,15 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
 
         {/* Quick stats */}
         <div className="flex flex-wrap items-center gap-3 mt-3 text-xs">
-          <span className="text-slate-500">
+          <span className="text-slate-400">
             <span className="text-slate-300 font-medium">{shortage.affectedProducts.length}</span> affected products
           </span>
-          <span className="text-slate-500">
+          <span className="text-slate-400">
             <span className="text-slate-300 font-medium">{shortage.impactedCompanies.length}</span> companies impacted
           </span>
           {shortage.estimatedResolution && (
-            <span className="text-slate-500">
-              Est. resolution: <span className="text-nebula-400">{shortage.estimatedResolution}</span>
+            <span className="text-slate-400">
+              Est. resolution: <span className="text-nebula-300">{shortage.estimatedResolution}</span>
             </span>
           )}
         </div>

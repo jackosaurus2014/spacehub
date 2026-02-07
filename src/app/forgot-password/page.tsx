@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
             <h1 className="text-2xl font-display font-bold text-slate-900">
               Reset Password
             </h1>
-            <p className="text-slate-500 mt-2">
+            <p className="text-slate-400 mt-2">
               Enter your email and we&apos;ll send you a reset link.
             </p>
           </div>
@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
                 </svg>
               </div>
               <h2 className="text-lg font-semibold text-slate-900 mb-2">Check Your Email</h2>
-              <p className="text-slate-500 mb-6">
+              <p className="text-slate-400 mb-6">
                 If an account with that email exists, we&apos;ve sent a password reset link. Check your inbox and spam folder.
               </p>
               <Link href="/login" className="text-plasma-400 hover:text-plasma-300 transition-colors">
@@ -71,7 +71,7 @@ export default function ForgotPasswordPage() {
               )}
 
               <div>
-                <label htmlFor="email" className="block text-slate-600 text-sm mb-2">
+                <label htmlFor="email" className="block text-slate-400 text-sm mb-2">
                   Email Address
                 </label>
                 <input
@@ -103,7 +103,7 @@ export default function ForgotPasswordPage() {
               </button>
 
               <div className="text-center">
-                <p className="text-slate-500">
+                <p className="text-slate-400">
                   Remember your password?{' '}
                   <Link href="/login" className="text-plasma-400 hover:text-plasma-300 transition-colors">
                     Sign in

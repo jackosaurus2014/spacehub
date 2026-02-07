@@ -73,17 +73,17 @@ function BlogPostCard({ post }: { post: BlogPost }) {
                   {topic.icon} {topic.label}
                 </span>
               )}
-              <span className="text-slate-500/70 text-xs">
+              <span className="text-slate-400/70 text-xs">
                 {post.source.name}
               </span>
             </div>
-            <h3 className="font-semibold text-slate-900 text-lg group-hover:text-nebula-300 transition-colors line-clamp-2">
+            <h3 className="font-semibold text-slate-900 text-lg group-hover:text-nebula-200 transition-colors line-clamp-2">
               {post.title}
             </h3>
             {post.excerpt && (
-              <p className="text-slate-500 text-sm mt-2 line-clamp-3">{post.excerpt}</p>
+              <p className="text-slate-400 text-sm mt-2 line-clamp-3">{post.excerpt}</p>
             )}
-            <div className="flex items-center gap-3 mt-3 text-xs text-slate-500">
+            <div className="flex items-center gap-3 mt-3 text-xs text-slate-400">
               {post.authorName && (
                 <>
                   <span className="font-medium">{post.authorName}</span>
@@ -98,7 +98,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
       {/* Cross-module links */}
       {isComplianceRelated && (
         <div className="mt-3 pt-3 border-t border-slate-200 flex items-center gap-2">
-          <span className="text-[10px] text-slate-500">Related:</span>
+          <span className="text-[10px] text-slate-400">Related:</span>
           <Link
             href="/compliance"
             className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-300 hover:bg-orange-500/20 transition-colors"
@@ -217,14 +217,14 @@ function BlogsContent() {
         <div className="space-y-4">
           {/* Topic Filter */}
           <div>
-            <p className="text-slate-500 text-sm mb-2">Filter by topic:</p>
+            <p className="text-slate-400 text-sm mb-2">Filter by topic:</p>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => handleTopicChange(null)}
                 className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm ${
                   selectedTopic === null
                     ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                    : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
+                    : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
                 }`}
               >
                 All Topics
@@ -236,7 +236,7 @@ function BlogsContent() {
                   className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm flex items-center gap-1 ${
                     selectedTopic === topic.value
                       ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                      : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
+                      : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
                   }`}
                 >
                   <span>{topic.icon}</span>
@@ -248,14 +248,14 @@ function BlogsContent() {
 
           {/* Author Type Filter */}
           <div>
-            <p className="text-slate-500 text-sm mb-2">Filter by author:</p>
+            <p className="text-slate-400 text-sm mb-2">Filter by author:</p>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => handleAuthorTypeChange(null)}
                 className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm ${
                   selectedAuthorType === null
                     ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                    : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
+                    : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
                 }`}
               >
                 All Authors
@@ -267,7 +267,7 @@ function BlogsContent() {
                   className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm flex items-center gap-1 ${
                     selectedAuthorType === type.value
                       ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                      : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
+                      : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
                   }`}
                 >
                   <span>{type.icon}</span>
@@ -286,7 +286,7 @@ function BlogsContent() {
             <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{total}</div>
           </div>
           <div className="flex items-center justify-center gap-2 mt-1">
-            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Total Articles</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Articles</div>
             <ExportButton
               data={posts}
               filename="spacehub-blog-posts"
@@ -297,15 +297,15 @@ function BlogsContent() {
         </div>
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{BLOG_TOPICS.length}</div>
-          <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Topics</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Topics</div>
         </div>
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-rocket-400">{AUTHOR_TYPES.length}</div>
-          <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Author Types</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Author Types</div>
         </div>
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-green-400">23</div>
-          <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Sources</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Sources</div>
         </div>
       </div>
 
@@ -318,7 +318,7 @@ function BlogsContent() {
         <div className="text-center py-20">
           <span className="text-6xl block mb-4">📚</span>
           <h2 className="text-2xl font-semibold text-slate-900 mb-2">No Articles Found</h2>
-          <p className="text-slate-500 mb-6">
+          <p className="text-slate-400 mb-6">
             {selectedTopic || selectedAuthorType
               ? 'Try adjusting your filters or fetch new articles.'
               : 'Click "Fetch New Articles" to load content from space industry blogs.'}
@@ -366,7 +366,7 @@ function BlogsContent() {
         <div className="text-center">
           <span className="text-4xl block mb-3">💡</span>
           <h3 className="text-lg font-semibold text-slate-900 mb-2">About This Section</h3>
-          <p className="text-slate-500 text-sm max-w-2xl mx-auto">
+          <p className="text-slate-400 text-sm max-w-2xl mx-auto">
             We aggregate articles and blog posts from 23 space industry sources including law firm
             blogs (StarLaw, Space Legal Issues, Sheppard Mullin), policy analysis (CSIS, Space Policy Online),
             technical coverage (NASASpaceflight, Everyday Astronaut, Ars Technica), and industry news

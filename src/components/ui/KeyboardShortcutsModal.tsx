@@ -70,7 +70,7 @@ function ShortcutRow({ shortcut }: { shortcut: ShortcutEntry }) {
       <div className="flex items-center gap-1 ml-4 shrink-0">
         {shortcut.keys.map((key, index) => (
           <span key={index} className="flex items-center gap-1">
-            {index > 0 && <span className="text-slate-500 text-xs">+</span>}
+            {index > 0 && <span className="text-slate-400 text-xs">+</span>}
             <Kbd>{key}</Kbd>
           </span>
         ))}
@@ -144,7 +144,7 @@ export default function KeyboardShortcutsModal() {
           ))}
         </div>
         <div className="mt-6 pt-4 border-t border-slate-700/50">
-          <p className="text-slate-500 text-xs text-center">
+          <p className="text-slate-400 text-xs text-center">
             Press <Kbd>?</Kbd> anywhere to toggle this dialog
           </p>
         </div>

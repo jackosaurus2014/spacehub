@@ -63,9 +63,9 @@ function ClassificationCard({ item }: { item: ExportClassification }) {
         <span className="text-lg">{categoryInfo?.icon || '📋'}</span>
       </div>
       <h4 className="font-semibold text-slate-800 text-sm mb-1 line-clamp-1">{item.name}</h4>
-      <p className="text-slate-500 text-xs line-clamp-2 mb-2">{item.description}</p>
+      <p className="text-slate-400 text-xs line-clamp-2 mb-2">{item.description}</p>
       {item.controlReason && (
-        <span className="text-xs text-slate-500">Control: {item.controlReason}</span>
+        <span className="text-xs text-slate-400">Control: {item.controlReason}</span>
       )}
     </div>
   );
@@ -97,10 +97,10 @@ function RegulationCard({ item }: { item: ProposedRegulation }) {
         </span>
       </div>
       <h4 className="font-semibold text-slate-800 text-sm mb-1 line-clamp-2">{item.title}</h4>
-      <p className="text-slate-500 text-xs line-clamp-2 mb-2">{item.summary}</p>
+      <p className="text-slate-400 text-xs line-clamp-2 mb-2">{item.summary}</p>
       <div className="flex items-center justify-between">
         {deadline && (
-          <span className={`text-xs ${isUrgent ? 'text-yellow-400' : 'text-slate-500'}`}>
+          <span className={`text-xs ${isUrgent ? 'text-yellow-400' : 'text-slate-400'}`}>
             {isUrgent && '⚠️ '}Comments due: {deadline.toLocaleDateString()}
           </span>
         )}
@@ -108,7 +108,7 @@ function RegulationCard({ item }: { item: ProposedRegulation }) {
           href={item.sourceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-nebula-400 hover:text-nebula-300"
+          className="text-xs text-nebula-300 hover:text-nebula-200"
         >
           View →
         </a>
@@ -136,9 +136,9 @@ function LegalSourceCard({ source }: { source: LegalSource }) {
       <span className="text-xl">{typeInfo.icon}</span>
       <div className="flex-1 min-w-0">
         <h4 className="font-medium text-slate-800 text-sm truncate">{source.name}</h4>
-        <span className="text-xs text-slate-500">{typeInfo.label}</span>
+        <span className="text-xs text-slate-400">{typeInfo.label}</span>
       </div>
-      <span className="text-slate-500">→</span>
+      <span className="text-slate-400">→</span>
     </a>
   );
 }
@@ -214,7 +214,7 @@ export default function ComplianceModule() {
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">⚖️</span>
         <h3 className="text-xl font-semibold text-slate-800 mb-2">Compliance</h3>
-        <p className="text-slate-500 mb-4">
+        <p className="text-slate-400 mb-4">
           Export controls, regulations, and legal updates for the space industry.
         </p>
         <button
@@ -242,7 +242,7 @@ export default function ComplianceModule() {
           <span className="text-3xl">⚖️</span>
           <div>
             <h2 className="text-2xl font-display font-bold text-slate-800">Compliance</h2>
-            <p className="text-slate-500 text-sm">Export controls, regulations & legal updates</p>
+            <p className="text-slate-400 text-sm">Export controls, regulations & legal updates</p>
           </div>
         </div>
         <Link href="/compliance" className="btn-secondary text-sm py-1.5 px-4">
@@ -256,19 +256,19 @@ export default function ComplianceModule() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-slate-800">{stats.classifications}</div>
-          <div className="text-slate-500 text-xs">Classifications</div>
+          <div className="text-slate-400 text-xs">Classifications</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-red-400">{stats.regimeBreakdown?.ITAR || 0}</div>
-          <div className="text-slate-500 text-xs">ITAR Items</div>
+          <div className="text-slate-400 text-xs">ITAR Items</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-blue-400">{stats.regimeBreakdown?.EAR || 0}</div>
-          <div className="text-slate-500 text-xs">EAR Items</div>
+          <div className="text-slate-400 text-xs">EAR Items</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-yellow-400">{stats.openRegulations}</div>
-          <div className="text-slate-500 text-xs">Open for Comment</div>
+          <div className="text-slate-400 text-xs">Open for Comment</div>
         </div>
       </div>
 

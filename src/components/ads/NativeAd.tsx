@@ -40,7 +40,7 @@ export default function NativeAd({
           <div className="w-full h-full bg-gradient-to-br from-slate-800 to-nebula-900 flex items-center justify-center">
             <div className="w-12 h-12 rounded-full bg-nebula-500/20 flex items-center justify-center">
               <svg
-                className="w-6 h-6 text-nebula-400"
+                className="w-6 h-6 text-nebula-300"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -76,7 +76,7 @@ export default function NativeAd({
         {/* Sponsor attribution */}
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-700/50">
           <div className="flex items-center gap-2">
-            <span className="text-slate-500 text-xs">Sponsored by</span>
+            <span className="text-slate-400 text-xs">Sponsored by</span>
             <span className="text-slate-300 text-xs font-medium">{sponsor}</span>
           </div>
 

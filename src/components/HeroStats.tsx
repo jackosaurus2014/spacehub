@@ -234,7 +234,7 @@ export default function HeroStats() {
             <p className="text-sm text-slate-300 truncate group-hover:text-white transition-colors">
               {launch.name}
             </p>
-            <p className="text-xs text-slate-500">{launch.provider}</p>
+            <p className="text-xs text-slate-400">{launch.provider}</p>
           </>
         ) : (
           <p className="text-slate-400">No upcoming launches</p>
@@ -258,7 +258,7 @@ export default function HeroStats() {
               <p className="text-sm text-slate-300 truncate group-hover:text-white transition-colors">
                 {market.ipoCompany.name}
               </p>
-              <p className="text-xs text-slate-500">IPO Date: {market.ipoCompany.expectedDate}</p>
+              <p className="text-xs text-slate-400">IPO Date: {market.ipoCompany.expectedDate}</p>
             </>
           ) : market.topGainer ? (
             <>
@@ -270,7 +270,7 @@ export default function HeroStats() {
               <p className="text-sm text-slate-300 truncate group-hover:text-white transition-colors">
                 {market.topGainer.name}
               </p>
-              <p className="text-xs text-slate-500">{market.topGainer.ticker}</p>
+              <p className="text-xs text-slate-400">{market.topGainer.ticker}</p>
             </>
           ) : (
             <p className="text-slate-400">No market data</p>
@@ -291,7 +291,7 @@ export default function HeroStats() {
             <p className="text-sm text-slate-200 line-clamp-2 group-hover:text-white transition-colors">
               {news.headline}
             </p>
-            <p className="text-xs text-slate-500 mt-1">{news.source}</p>
+            <p className="text-xs text-slate-400 mt-1">{news.source}</p>
           </>
         ) : (
           <p className="text-slate-400">No recent news</p>

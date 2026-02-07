@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useSession, signOut } from 'next-auth/react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSubscription } from './SubscriptionProvider';
+import { useHighContrast } from '@/hooks/useHighContrast';
 import NotificationCenter from './NotificationCenter';
 import RecentlyViewed from './ui/RecentlyViewed';
 
@@ -215,6 +216,7 @@ function DropdownMenu({
 export default function Navigation() {
   const { data: session, status } = useSession();
   const { isPro } = useSubscription();
+  const { isHighContrast, toggleHighContrast } = useHighContrast();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -317,6 +319,31 @@ export default function Navigation() {
                 Upgrade
               </Link>
             )}
+            {/* High Contrast Toggle */}
+            <button
+              onClick={toggleHighContrast}
+              className={`relative p-2 rounded-lg transition-colors group ${
+                isHighContrast
+                  ? 'text-cyan-300 bg-slate-700/60'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/40'
+              }`}
+              aria-label="Toggle high contrast mode"
+              aria-pressed={isHighContrast}
+              title="Toggle high contrast mode"
+            >
+              {/* Eye / contrast icon */}
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor" />
+              </svg>
+            </button>
             {/* Recently Viewed */}
             <RecentlyViewed />
             {/* Notification Center */}
@@ -485,6 +512,32 @@ export default function Navigation() {
                     </Link>
                   </div>
                 )}
+
+                {/* Accessibility */}
+                <div className="pt-4 border-t border-slate-700/50">
+                  <button
+                    onClick={toggleHighContrast}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                      isHighContrast
+                        ? 'text-cyan-300 bg-slate-700/50'
+                        : 'text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300'
+                    }`}
+                    aria-pressed={isHighContrast}
+                  >
+                    <svg
+                      className="w-4 h-4 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor" />
+                    </svg>
+                    High Contrast {isHighContrast ? 'On' : 'Off'}
+                  </button>
+                </div>
 
                 {/* Auth Section */}
                 <div className="pt-4 border-t border-slate-700/50 space-y-2">

@@ -148,7 +148,7 @@ export default function SupplyChainNode({
             </span>
           ))}
           {company.products.length > 4 && (
-            <span className="text-xs text-slate-500">+{company.products.length - 4} more</span>
+            <span className="text-xs text-slate-400">+{company.products.length - 4} more</span>
           )}
         </div>
       </div>
@@ -165,13 +165,13 @@ export default function SupplyChainNode({
           <div className="grid grid-cols-2 gap-3 text-sm">
             {company.headquarters && (
               <div>
-                <span className="text-slate-500">HQ:</span>
+                <span className="text-slate-400">HQ:</span>
                 <span className="text-slate-300 ml-2">{company.headquarters}</span>
               </div>
             )}
             {company.employeeCount && (
               <div>
-                <span className="text-slate-500">Employees:</span>
+                <span className="text-slate-400">Employees:</span>
                 <span className="text-slate-300 ml-2">{company.employeeCount.toLocaleString()}</span>
               </div>
             )}
@@ -259,7 +259,7 @@ export default function SupplyChainNode({
                   e.stopPropagation();
                   onSelectCompany(company.id);
                 }}
-                className="text-sm text-nebula-400 hover:text-nebula-300 transition-colors"
+                className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors"
               >
                 View Full Supply Chain →
               </button>

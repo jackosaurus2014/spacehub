@@ -170,33 +170,33 @@ function ProviderCard({
             <h3 className="font-semibold text-slate-900">{provider.providerName}</h3>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-slate-500">{provider.vehicleName}</span>
+            <span className="text-slate-400">{provider.vehicleName}</span>
             <span className={`font-mono text-xs ${getReliabilityColor(provider.reliability)}`}>
               {(provider.reliability * 100).toFixed(0)}% reliability
             </span>
           </div>
         </div>
         <div className="text-right">
-          <div className={`text-xl font-bold font-display ${isViable ? 'text-nebula-300' : 'text-slate-500'}`}>
+          <div className={`text-xl font-bold font-display ${isViable ? 'text-nebula-300' : 'text-slate-400'}`}>
             {formatCurrency(provider.typicalCost, true)}
           </div>
-          <div className="text-slate-500 text-xs">typical cost</div>
+          <div className="text-slate-400 text-xs">typical cost</div>
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-3 mb-4 text-sm">
         <div>
-          <span className="text-slate-500 text-xs block">Cost/kg</span>
+          <span className="text-slate-400 text-xs block">Cost/kg</span>
           <span className="text-slate-900 font-mono">
             ${provider.costPerKg.min.toLocaleString()} - ${provider.costPerKg.max.toLocaleString()}
           </span>
         </div>
         <div>
-          <span className="text-slate-500 text-xs block">Min Cost</span>
+          <span className="text-slate-400 text-xs block">Min Cost</span>
           <span className="text-slate-900 font-mono">{formatCurrency(provider.minCost, true)}</span>
         </div>
         <div>
-          <span className="text-slate-500 text-xs block">Max Cost</span>
+          <span className="text-slate-400 text-xs block">Max Cost</span>
           <span className="text-slate-900 font-mono">{formatCurrency(provider.maxCost, true)}</span>
         </div>
       </div>
@@ -225,7 +225,7 @@ function ProviderCard({
 
       {/* Notes */}
       {provider.notes.length > 0 && (
-        <div className="text-xs text-slate-500 border-t border-slate-200 pt-3 space-y-1">
+        <div className="text-xs text-slate-400 border-t border-slate-200 pt-3 space-y-1">
           {provider.notes.map((note, idx) => (
             <p key={idx}>{note}</p>
           ))}
@@ -249,7 +249,7 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
         <span className="text-3xl">💰</span>
         <div>
           <h3 className="text-xl font-display font-bold text-slate-900">Mission Cost Summary</h3>
-          <p className="text-slate-500 text-sm">
+          <p className="text-slate-400 text-sm">
             {formatMass(input.payloadMass)} to {input.orbitType} | {PAYLOAD_OPTIONS.find(p => p.value === input.payloadType)?.label}
           </p>
         </div>
@@ -258,11 +258,11 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
       {/* Total cost highlight */}
       <div className="bg-gradient-to-r from-nebula-500/10 to-plasma-500/10 rounded-xl p-6 mb-6">
         <div className="text-center">
-          <div className="text-slate-500 text-sm mb-2">Estimated Total Mission Cost</div>
+          <div className="text-slate-400 text-sm mb-2">Estimated Total Mission Cost</div>
           <div className="text-4xl font-display font-bold text-nebula-300 mb-2">
             {formatCurrency(summary.totalCost.typical, true)}
           </div>
-          <div className="text-slate-500 text-sm">
+          <div className="text-slate-400 text-sm">
             Range: {formatCurrency(summary.totalCost.min, true)} - {formatCurrency(summary.totalCost.max, true)}
           </div>
         </div>
@@ -275,12 +275,12 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
             <span className="text-xl">🚀</span>
             <div>
               <span className="text-slate-900 font-medium">Launch Services</span>
-              <p className="text-slate-500 text-xs">{viableProviders.length} viable providers</p>
+              <p className="text-slate-400 text-xs">{viableProviders.length} viable providers</p>
             </div>
           </div>
           <div className="text-right">
             <div className="text-slate-900 font-bold">{formatCurrency(summary.launchCost.typical, true)}</div>
-            <div className="text-slate-500 text-xs">
+            <div className="text-slate-400 text-xs">
               {formatCurrency(summary.launchCost.min, true)} - {formatCurrency(summary.launchCost.max, true)}
             </div>
           </div>
@@ -292,12 +292,12 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
               <span className="text-xl">🛡️</span>
               <div>
                 <span className="text-slate-900 font-medium">Insurance</span>
-                <p className="text-slate-500 text-xs">Launch + In-orbit + Liability</p>
+                <p className="text-slate-400 text-xs">Launch + In-orbit + Liability</p>
               </div>
             </div>
             <div className="text-right">
               <div className="text-slate-900 font-bold">{formatCurrency(summary.insurance.totalInsurance.typical, true)}</div>
-              <div className="text-slate-500 text-xs">
+              <div className="text-slate-400 text-xs">
                 {formatCurrency(summary.insurance.totalInsurance.min, true)} - {formatCurrency(summary.insurance.totalInsurance.max, true)}
               </div>
             </div>
@@ -310,7 +310,7 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
               <span className="text-xl">📋</span>
               <div>
                 <span className="text-slate-900 font-medium">Regulatory Fees</span>
-                <p className="text-slate-500 text-xs">FAA, FCC, NOAA, ITU</p>
+                <p className="text-slate-400 text-xs">FAA, FCC, NOAA, ITU</p>
               </div>
             </div>
             <div className="text-right">
@@ -322,7 +322,7 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
 
       {/* Disclaimer */}
       <div className="mt-6 p-4 bg-slate-100/50 rounded-lg text-xs text-slate-500">
-        <p className="font-medium text-slate-600 mb-1">Important Notes:</p>
+        <p className="font-medium text-slate-400 mb-1">Important Notes:</p>
         <ul className="space-y-1">
           <li>Estimates based on publicly available pricing and industry benchmarks</li>
           <li>Actual costs vary based on mission specifics, negotiations, and market conditions</li>
@@ -370,7 +370,7 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
           <span className="text-2xl">🛡️</span>
           <div>
             <h3 className="text-lg font-semibold text-slate-900">Insurance Cost Breakdown</h3>
-            <p className="text-slate-500 text-sm">Based on payload value of {formatCurrency(payloadValue)}</p>
+            <p className="text-slate-400 text-sm">Based on payload value of {formatCurrency(payloadValue)}</p>
           </div>
         </div>
 
@@ -384,10 +384,10 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
               <div className="text-2xl font-bold text-nebula-300 mb-1">
                 {formatCurrency(coverage.data.typical, true)}
               </div>
-              <div className="text-slate-500 text-xs mb-2">
+              <div className="text-slate-400 text-xs mb-2">
                 {formatCurrency(coverage.data.min, true)} - {formatCurrency(coverage.data.max, true)}
               </div>
-              <p className="text-slate-500 text-xs">{coverage.description}</p>
+              <p className="text-slate-400 text-xs">{coverage.description}</p>
               <div className="mt-2 text-xs text-slate-400">Rate: {coverage.rateRange}</div>
             </div>
           ))}
@@ -400,7 +400,7 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
               <div className="text-xl font-bold text-nebula-300">
                 {formatCurrency(insurance.totalInsurance.typical, true)}
               </div>
-              <div className="text-slate-500 text-xs">
+              <div className="text-slate-400 text-xs">
                 {formatCurrency(insurance.totalInsurance.min, true)} - {formatCurrency(insurance.totalInsurance.max, true)}
               </div>
             </div>
@@ -423,7 +423,7 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
           ].map((provider) => (
             <div key={provider.name} className="p-3 bg-slate-100/30 rounded-lg">
               <div className="text-slate-900 font-medium truncate">{provider.name}</div>
-              <div className="text-slate-500 text-xs">{provider.share} market share</div>
+              <div className="text-slate-400 text-xs">{provider.share} market share</div>
             </div>
           ))}
         </div>
@@ -452,7 +452,7 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
           <span className="text-2xl">📋</span>
           <div>
             <h3 className="text-lg font-semibold text-slate-900">Regulatory Filing Fees</h3>
-            <p className="text-slate-500 text-sm">US-based mission regulatory requirements</p>
+            <p className="text-slate-400 text-sm">US-based mission regulatory requirements</p>
           </div>
         </div>
 
@@ -463,7 +463,7 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
                 <span className="text-lg">{item.icon}</span>
                 <div>
                   <span className="text-slate-900 font-medium">{item.name}</span>
-                  <p className="text-slate-500 text-xs">{item.agency}</p>
+                  <p className="text-slate-400 text-xs">{item.agency}</p>
                 </div>
               </div>
               <div className="text-slate-900 font-bold font-mono">
@@ -486,8 +486,8 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
           <h4 className="font-semibold text-slate-900 mb-3">Additional Requirements</h4>
           <ul className="space-y-2">
             {fees.notes.map((note, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-sm text-slate-600">
-                <span className="text-nebula-400 mt-0.5">*</span>
+              <li key={idx} className="flex items-start gap-2 text-sm text-slate-400">
+                <span className="text-nebula-300 mt-0.5">*</span>
                 {note}
               </li>
             ))}
@@ -499,8 +499,8 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
         <h4 className="font-semibold text-slate-900 mb-3">Typical Licensing Timeline</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
-            <h5 className="text-slate-600 font-medium mb-2">US Regulatory Path</h5>
-            <ul className="space-y-1 text-slate-500">
+            <h5 className="text-slate-400 font-medium mb-2">US Regulatory Path</h5>
+            <ul className="space-y-1 text-slate-400">
               <li>FAA Launch License: 6-12 months</li>
               <li>FCC Authorization: 12-18 months</li>
               <li>NOAA License: 4-6 months</li>
@@ -508,8 +508,8 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
             </ul>
           </div>
           <div>
-            <h5 className="text-slate-600 font-medium mb-2">Key Milestones</h5>
-            <ul className="space-y-1 text-slate-500">
+            <h5 className="text-slate-400 font-medium mb-2">Key Milestones</h5>
+            <ul className="space-y-1 text-slate-400">
               <li>Start licensing 18-24 months before launch</li>
               <li>ITU filings should begin 3-5 years ahead</li>
               <li>Environmental review concurrent with FAA</li>
@@ -652,7 +652,7 @@ function MissionCostContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Payload Mass */}
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">
+              <label className="block text-sm font-medium text-slate-400 mb-2">
                 Payload Mass (kg)
               </label>
               <input
@@ -682,7 +682,7 @@ function MissionCostContent() {
 
             {/* Orbit Type */}
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">
+              <label className="block text-sm font-medium text-slate-400 mb-2">
                 Target Orbit
               </label>
               <select
@@ -700,7 +700,7 @@ function MissionCostContent() {
 
             {/* Payload Type */}
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">
+              <label className="block text-sm font-medium text-slate-400 mb-2">
                 Payload Type
               </label>
               <select
@@ -718,7 +718,7 @@ function MissionCostContent() {
 
             {/* Payload Value */}
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">
+              <label className="block text-sm font-medium text-slate-400 mb-2">
                 Payload Value (for insurance)
               </label>
               <input
@@ -753,9 +753,9 @@ function MissionCostContent() {
                 type="checkbox"
                 checked={includeInsurance}
                 onChange={(e) => setIncludeInsurance(e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 text-nebula-500 focus:ring-nebula-500"
+                className="w-4 h-4 rounded border-slate-300 text-nebula-300 focus:ring-nebula-500"
               />
-              <span className="text-sm text-slate-600">Include Insurance Estimate</span>
+              <span className="text-sm text-slate-400">Include Insurance Estimate</span>
             </label>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -763,9 +763,9 @@ function MissionCostContent() {
                 type="checkbox"
                 checked={includeRegulatory}
                 onChange={(e) => setIncludeRegulatory(e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 text-nebula-500 focus:ring-nebula-500"
+                className="w-4 h-4 rounded border-slate-300 text-nebula-300 focus:ring-nebula-500"
               />
-              <span className="text-sm text-slate-600">Include Regulatory Fees</span>
+              <span className="text-sm text-slate-400">Include Regulatory Fees</span>
             </label>
 
             <button
@@ -845,13 +845,13 @@ function MissionCostContent() {
                     <span className="text-slate-900 font-medium">
                       {viableProviders.length} of {data.providers.length} providers can support this mission
                     </span>
-                    <p className="text-slate-500 text-sm">
+                    <p className="text-slate-400 text-sm">
                       {formatMass(data.input.payloadMass)} to {data.input.orbitType}
                     </p>
                   </div>
                   {bestValueProvider && (
                     <div className="text-right">
-                      <span className="text-slate-500 text-sm">Best value:</span>
+                      <span className="text-slate-400 text-sm">Best value:</span>
                       <span className="ml-2 text-nebula-300 font-bold">
                         {bestValueProvider.providerName} {bestValueProvider.vehicleName}
                       </span>
@@ -889,11 +889,11 @@ function MissionCostContent() {
             <h2 className="text-2xl font-semibold text-slate-900 mb-2">
               Configure Your Mission
             </h2>
-            <p className="text-slate-500 mb-6 max-w-lg mx-auto">
+            <p className="text-slate-400 mb-6 max-w-lg mx-auto">
               Enter your payload mass, target orbit, and mission type above, then click
               &quot;Calculate Cost&quot; to get a comprehensive cost breakdown.
             </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-400">
               <div className="flex items-center gap-2">
                 <span>🚀</span> Launch provider comparison
               </div>
@@ -915,37 +915,37 @@ function MissionCostContent() {
               href="/space-insurance"
               className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">
+              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">
                 🛡️ Space Insurance
               </div>
-              <p className="text-xs text-slate-500 mt-1">Market data and policy information</p>
+              <p className="text-xs text-slate-400 mt-1">Market data and policy information</p>
             </Link>
             <Link
               href="/resource-exchange"
               className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">
+              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">
                 💰 Resource Exchange
               </div>
-              <p className="text-xs text-slate-500 mt-1">Space commodities pricing</p>
+              <p className="text-xs text-slate-400 mt-1">Space commodities pricing</p>
             </Link>
             <Link
               href="/compliance"
               className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">
+              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">
                 ⚖️ Compliance
               </div>
-              <p className="text-xs text-slate-500 mt-1">Export controls and regulations</p>
+              <p className="text-xs text-slate-400 mt-1">Export controls and regulations</p>
             </Link>
             <Link
               href="/launch-windows"
               className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">
+              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">
                 🪟 Launch Windows
               </div>
-              <p className="text-xs text-slate-500 mt-1">Optimal launch timing</p>
+              <p className="text-xs text-slate-400 mt-1">Optimal launch timing</p>
             </Link>
           </div>
         </div>

@@ -73,16 +73,16 @@ function PolicyCard({ policy }: { policy: PolicyChange }) {
       </div>
 
       <h4 className="font-semibold text-slate-900 mb-2">{policy.title}</h4>
-      <p className="text-slate-500 text-sm mb-3 line-clamp-3">{policy.summary}</p>
+      <p className="text-slate-400 text-sm mb-3 line-clamp-3">{policy.summary}</p>
 
       <div className="bg-slate-50 rounded-lg p-3 mb-3">
         <h5 className="text-xs font-semibold text-slate-700 mb-1">Impact Analysis</h5>
-        <p className="text-xs text-slate-600 line-clamp-2">{policy.impactAnalysis}</p>
+        <p className="text-xs text-slate-400 line-clamp-2">{policy.impactAnalysis}</p>
       </div>
 
       <div className="flex flex-wrap gap-1 mb-3">
         {policy.affectedParties.slice(0, 3).map((party, i) => (
-          <span key={i} className="text-xs bg-nebula-500/10 text-nebula-400 px-2 py-0.5 rounded">
+          <span key={i} className="text-xs bg-nebula-500/10 text-nebula-300 px-2 py-0.5 rounded">
             {party.replace(/_/g, ' ')}
           </span>
         ))}
@@ -92,11 +92,11 @@ function PolicyCard({ policy }: { policy: PolicyChange }) {
       </div>
 
       <div className="flex items-center justify-between text-xs">
-        <span className="text-slate-500">
+        <span className="text-slate-400">
           {policy.federalRegisterCitation || `Published: ${new Date(policy.publishedDate).toLocaleDateString()}`}
         </span>
         {deadline && (
-          <span className={`${isUrgent ? 'text-yellow-500 font-semibold' : 'text-slate-500'}`}>
+          <span className={`${isUrgent ? 'text-yellow-500 font-semibold' : 'text-slate-400'}`}>
             {isUrgent && '⚠️ '}Comments due: {deadline.toLocaleDateString()}
           </span>
         )}
@@ -106,7 +106,7 @@ function PolicyCard({ policy }: { policy: PolicyChange }) {
         href={policy.sourceUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center text-sm text-nebula-400 hover:text-nebula-300 mt-3"
+        className="inline-flex items-center text-sm text-nebula-300 hover:text-nebula-200 mt-3"
       >
         View Full Policy →
       </a>
@@ -136,7 +136,7 @@ function PolicyTrackerTab() {
             {upcomingDeadlines.slice(0, 3).map((d, i) => (
               <div key={i} className="bg-white rounded p-3">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-semibold text-slate-600">{d.policy.agency}</span>
+                  <span className="text-xs font-semibold text-slate-400">{d.policy.agency}</span>
                   <span className={`text-xs px-2 py-0.5 rounded ${
                     d.deadlineType === 'comment' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'
                   }`}>
@@ -144,7 +144,7 @@ function PolicyTrackerTab() {
                   </span>
                 </div>
                 <p className="text-sm text-slate-800 line-clamp-1">{d.policy.title}</p>
-                <p className="text-xs text-slate-500 mt-1">{d.date.toLocaleDateString()}</p>
+                <p className="text-xs text-slate-400 mt-1">{d.date.toLocaleDateString()}</p>
               </div>
             ))}
           </div>
@@ -223,15 +223,15 @@ function LicenseCard({ license }: { license: LicenseRequirement }) {
         <span className={`text-xs font-bold px-2 py-1 rounded border ${agencyColors[license.agency] || 'bg-slate-100 text-slate-600'}`}>
           {license.agency}
         </span>
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-slate-400">
           {license.processingTimeMin}-{license.processingTimeMax} days
         </span>
       </div>
 
       <h4 className="font-semibold text-slate-900 mb-2">{license.licenseType}</h4>
-      <p className="text-slate-500 text-sm mb-3">{license.description}</p>
+      <p className="text-slate-400 text-sm mb-3">{license.description}</p>
 
-      <div className="flex items-center gap-4 text-xs text-slate-600 mb-3">
+      <div className="flex items-center gap-4 text-xs text-slate-400 mb-3">
         {license.applicationFee && (
           <span>Application: ${license.applicationFee.toLocaleString()}</span>
         )}
@@ -245,7 +245,7 @@ function LicenseCard({ license }: { license: LicenseRequirement }) {
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm text-nebula-400 hover:text-nebula-300 mb-3"
+        className="text-sm text-nebula-300 hover:text-nebula-200 mb-3"
       >
         {expanded ? 'Hide Requirements ▲' : 'Show Requirements ▼'}
       </button>
@@ -255,22 +255,22 @@ function LicenseCard({ license }: { license: LicenseRequirement }) {
           <h5 className="text-xs font-semibold text-slate-700 mb-2">Requirements Checklist</h5>
           <ul className="space-y-1">
             {(JSON.parse(JSON.stringify(license.requirements)) as string[]).map((req, i) => (
-              <li key={i} className="flex items-start gap-2 text-xs text-slate-600">
-                <span className="text-nebula-400 mt-0.5">☐</span>
+              <li key={i} className="flex items-start gap-2 text-xs text-slate-400">
+                <span className="text-nebula-300 mt-0.5">☐</span>
                 {req}
               </li>
             ))}
           </ul>
           <div className="mt-3 pt-3 border-t border-slate-200">
             <h5 className="text-xs font-semibold text-slate-700 mb-1">Regulatory Basis</h5>
-            <p className="text-xs text-slate-600">{license.regulatoryBasis}</p>
+            <p className="text-xs text-slate-400">{license.regulatoryBasis}</p>
           </div>
           {license.applicationUrl && (
             <a
               href={license.applicationUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-3 text-xs text-nebula-400 hover:text-nebula-300"
+              className="inline-block mt-3 text-xs text-nebula-300 hover:text-nebula-200"
             >
               Apply Now →
             </a>
@@ -294,8 +294,8 @@ function ComplianceWizardTab() {
   return (
     <div>
       <div className="bg-nebula-500/10 border border-nebula-500/30 rounded-lg p-4 mb-6">
-        <h4 className="font-semibold text-nebula-400 mb-2">License Requirements Guide</h4>
-        <p className="text-sm text-slate-600">
+        <h4 className="font-semibold text-nebula-300 mb-2">License Requirements Guide</h4>
+        <p className="text-sm text-slate-400">
           Select your mission type below to see required licenses. Each license includes a checklist of requirements,
           processing times, fees, and links to application forms.
         </p>
@@ -344,8 +344,8 @@ function ComplianceWizardTab() {
                   <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">US Ratified</span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 mb-2">{treaty.fullName}</p>
-              <div className="text-xs text-slate-600">
+              <p className="text-xs text-slate-400 mb-2">{treaty.fullName}</p>
+              <div className="text-xs text-slate-400">
                 <p><strong>Parties:</strong> {treaty.parties} nations</p>
                 <p className="mt-1"><strong>US Implementation:</strong> {treaty.usImplementation}</p>
               </div>
@@ -353,7 +353,7 @@ function ComplianceWizardTab() {
                 href={treaty.sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block mt-2 text-xs text-nebula-400 hover:text-nebula-300"
+                className="inline-block mt-2 text-xs text-nebula-300 hover:text-nebula-200"
               >
                 View Treaty Text →
               </a>
@@ -394,7 +394,7 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-xl">{jurisdictionIcons[lawCase.jurisdiction]}</span>
-          <span className="text-xs text-slate-500">{lawCase.year}</span>
+          <span className="text-xs text-slate-400">{lawCase.year}</span>
         </div>
         <span className={`text-xs px-2 py-1 rounded ${outcomeColors[lawCase.outcome]}`}>
           {lawCase.outcome.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
@@ -403,14 +403,14 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
 
       <h4 className="font-semibold text-slate-900 mb-1">{lawCase.caseName}</h4>
       {lawCase.citation && (
-        <p className="text-xs text-slate-500 mb-2 font-mono">{lawCase.citation}</p>
+        <p className="text-xs text-slate-400 mb-2 font-mono">{lawCase.citation}</p>
       )}
 
-      <p className="text-slate-500 text-sm mb-3 line-clamp-3">{lawCase.summary}</p>
+      <p className="text-slate-400 text-sm mb-3 line-clamp-3">{lawCase.summary}</p>
 
       <div className="flex flex-wrap gap-1 mb-3">
         {lawCase.subjectMatter.map((subject, i) => (
-          <span key={i} className="text-xs bg-nebula-500/10 text-nebula-400 px-2 py-0.5 rounded">
+          <span key={i} className="text-xs bg-nebula-500/10 text-nebula-300 px-2 py-0.5 rounded">
             {subject.replace(/_/g, ' ')}
           </span>
         ))}
@@ -424,7 +424,7 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm text-nebula-400 hover:text-nebula-300"
+        className="text-sm text-nebula-300 hover:text-nebula-200"
       >
         {expanded ? 'Show Less ▲' : 'Read More ▼'}
       </button>
@@ -433,7 +433,7 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
         <div className="mt-4 space-y-4">
           <div>
             <h5 className="text-xs font-semibold text-slate-700 mb-1">Parties</h5>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-slate-400">
               <strong>Plaintiff:</strong> {lawCase.parties.plaintiff}<br />
               <strong>Defendant:</strong> {lawCase.parties.defendant}
             </p>
@@ -441,12 +441,12 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
 
           <div>
             <h5 className="text-xs font-semibold text-slate-700 mb-1">Facts</h5>
-            <p className="text-xs text-slate-600">{lawCase.facts}</p>
+            <p className="text-xs text-slate-400">{lawCase.facts}</p>
           </div>
 
           <div>
             <h5 className="text-xs font-semibold text-slate-700 mb-1">Holdings</h5>
-            <ul className="text-xs text-slate-600 list-disc list-inside space-y-1">
+            <ul className="text-xs text-slate-400 list-disc list-inside space-y-1">
               {lawCase.holdings.map((holding, i) => (
                 <li key={i}>{holding}</li>
               ))}
@@ -455,19 +455,19 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
 
           <div>
             <h5 className="text-xs font-semibold text-slate-700 mb-1">Significance</h5>
-            <p className="text-xs text-slate-600">{lawCase.significance}</p>
+            <p className="text-xs text-slate-400">{lawCase.significance}</p>
           </div>
 
           <div>
             <h5 className="text-xs font-semibold text-slate-700 mb-1">Precedent Value</h5>
-            <p className="text-xs text-slate-600">{lawCase.precedentValue}</p>
+            <p className="text-xs text-slate-400">{lawCase.precedentValue}</p>
           </div>
 
           {lawCase.keyQuotes && lawCase.keyQuotes.length > 0 && (
             <div>
               <h5 className="text-xs font-semibold text-slate-700 mb-1">Key Quotes</h5>
               {lawCase.keyQuotes.map((quote, i) => (
-                <blockquote key={i} className="text-xs text-slate-600 italic border-l-2 border-nebula-500 pl-2 mb-1">
+                <blockquote key={i} className="text-xs text-slate-400 italic border-l-2 border-nebula-500 pl-2 mb-1">
                   &ldquo;{quote}&rdquo;
                 </blockquote>
               ))}
@@ -479,7 +479,7 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
               href={lawCase.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block text-xs text-nebula-400 hover:text-nebula-300"
+              className="inline-block text-xs text-nebula-300 hover:text-nebula-200"
             >
               View Source →
             </a>
@@ -512,23 +512,23 @@ function CaseLawArchiveTab() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="card-elevated p-4 text-center">
           <div className="text-2xl font-bold text-slate-900">{filteredCases.length}</div>
-          <div className="text-xs text-slate-500">Cases</div>
+          <div className="text-xs text-slate-400">Cases</div>
         </div>
         <div className="card-elevated p-4 text-center">
           <div className="text-2xl font-bold text-green-400">${(totalDamages / 1e9).toFixed(2)}B</div>
-          <div className="text-xs text-slate-500">Total Damages</div>
+          <div className="text-xs text-slate-400">Total Damages</div>
         </div>
         <div className="card-elevated p-4 text-center">
-          <div className="text-2xl font-bold text-nebula-400">
+          <div className="text-2xl font-bold text-nebula-300">
             {filteredCases.filter(c => c.outcome === 'plaintiff_victory').length}
           </div>
-          <div className="text-xs text-slate-500">Plaintiff Wins</div>
+          <div className="text-xs text-slate-400">Plaintiff Wins</div>
         </div>
         <div className="card-elevated p-4 text-center">
           <div className="text-2xl font-bold text-yellow-400">
             {filteredCases.filter(c => c.outcome === 'settlement').length}
           </div>
-          <div className="text-xs text-slate-500">Settlements</div>
+          <div className="text-xs text-slate-400">Settlements</div>
         </div>
       </div>
 
@@ -646,7 +646,7 @@ function ExportControlMonitorTab() {
         <div>
           <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-6">
             <h4 className="font-semibold text-blue-600 mb-2">Export Administration Regulations (EAR)</h4>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-slate-400">
               The Commerce Control List (CCL) classifies dual-use items by Export Control Classification Number (ECCN).
               Commercial satellites were transferred from ITAR to EAR via the 9x515 series in 2014.
             </p>
@@ -660,7 +660,7 @@ function ExportControlMonitorTab() {
                   <span className="text-xs bg-slate-100 px-2 py-1 rounded">{eccn.category}</span>
                 </div>
                 <h4 className="font-semibold text-slate-900 mb-2">{eccn.description}</h4>
-                <p className="text-sm text-slate-600 mb-3">{eccn.spaceRelevance}</p>
+                <p className="text-sm text-slate-400 mb-3">{eccn.spaceRelevance}</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                   <div>
@@ -687,7 +687,7 @@ function ExportControlMonitorTab() {
 
                 <div className="mt-3">
                   <h5 className="text-xs font-semibold text-slate-700 mb-1">Examples</h5>
-                  <ul className="text-xs text-slate-600 list-disc list-inside">
+                  <ul className="text-xs text-slate-400 list-disc list-inside">
                     {eccn.examples.slice(0, 3).map((ex, i) => (
                       <li key={i}>{ex}</li>
                     ))}
@@ -704,7 +704,7 @@ function ExportControlMonitorTab() {
         <div>
           <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
             <h4 className="font-semibold text-red-600 mb-2">International Traffic in Arms Regulations (ITAR)</h4>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-slate-400">
               The United States Munitions List (USML) controls defense articles. Launch vehicles and defense spacecraft
               remain on USML. All exports require DDTC authorization with no license exceptions.
             </p>
@@ -718,11 +718,11 @@ function ExportControlMonitorTab() {
                   <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">ITAR</span>
                 </div>
                 <h4 className="font-semibold text-slate-900 mb-2">{usml.title}</h4>
-                <p className="text-sm text-slate-600 mb-3">{usml.description}</p>
+                <p className="text-sm text-slate-400 mb-3">{usml.description}</p>
 
                 <div className="mb-3">
                   <h5 className="text-xs font-semibold text-slate-700 mb-1">Controlled Items</h5>
-                  <ul className="text-xs text-slate-600 list-disc list-inside">
+                  <ul className="text-xs text-slate-400 list-disc list-inside">
                     {usml.items.map((item, i) => (
                       <li key={i}>{item}</li>
                     ))}
@@ -731,13 +731,13 @@ function ExportControlMonitorTab() {
 
                 <div className="bg-slate-50 rounded p-3">
                   <h5 className="text-xs font-semibold text-slate-700 mb-1">Space Relevance</h5>
-                  <p className="text-xs text-slate-600">{usml.spaceRelevance}</p>
+                  <p className="text-xs text-slate-400">{usml.spaceRelevance}</p>
                 </div>
 
                 {usml.exemptions && usml.exemptions.length > 0 && (
                   <div className="mt-3">
                     <h5 className="text-xs font-semibold text-slate-700 mb-1">Exemptions / Notes</h5>
-                    <ul className="text-xs text-slate-600 list-disc list-inside">
+                    <ul className="text-xs text-slate-400 list-disc list-inside">
                       {usml.exemptions.map((ex, i) => (
                         <li key={i}>{ex}</li>
                       ))}
@@ -776,8 +776,8 @@ function ExpertCommentaryTab() {
   return (
     <div>
       <div className="bg-nebula-500/10 border border-nebula-500/30 rounded-lg p-4 mb-6">
-        <h4 className="font-semibold text-nebula-400 mb-2">Expert Sources & Commentary</h4>
-        <p className="text-sm text-slate-600">
+        <h4 className="font-semibold text-nebula-300 mb-2">Expert Sources & Commentary</h4>
+        <p className="text-sm text-slate-400">
           Curated collection of authoritative sources for space law, policy analysis, and industry commentary.
           Follow these sources for the latest expert insights on regulatory developments.
         </p>
@@ -825,13 +825,13 @@ function ExpertCommentaryTab() {
                   {typeInfo?.label || source.type}
                 </span>
               </div>
-              <h4 className="font-semibold text-slate-900 mb-1 group-hover:text-nebula-500 transition-colors">
+              <h4 className="font-semibold text-slate-900 mb-1 group-hover:text-nebula-300 transition-colors">
                 {source.name}
               </h4>
               {source.organization && (
-                <p className="text-sm text-slate-500 mb-2">{source.organization}</p>
+                <p className="text-sm text-slate-400 mb-2">{source.organization}</p>
               )}
-              <p className="text-xs text-slate-600 mb-3 line-clamp-2">{source.description}</p>
+              <p className="text-xs text-slate-400 mb-3 line-clamp-2">{source.description}</p>
 
               <div className="flex flex-wrap gap-1">
                 {source.topics.slice(0, 3).map((topic, i) => (
@@ -843,7 +843,7 @@ function ExpertCommentaryTab() {
 
               {source.keyContributors && source.keyContributors.length > 0 && (
                 <div className="mt-3 pt-3 border-t border-slate-100">
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-400">
                     <strong>Contributors:</strong> {source.keyContributors.join(', ')}
                   </p>
                 </div>
@@ -886,23 +886,23 @@ function RegulatoryHubContent() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.totalPolicies}</div>
-          <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Policy Changes</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Policy Changes</div>
         </div>
         <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-nebula-400">{stats.totalLicenseTypes}</div>
-          <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">License Types</div>
+          <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{stats.totalLicenseTypes}</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">License Types</div>
         </div>
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-green-400">{stats.totalCases}</div>
-          <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Case Law</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Case Law</div>
         </div>
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-blue-400">{stats.totalECCNs + stats.totalUSMLCategories}</div>
-          <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Export Controls</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Export Controls</div>
         </div>
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-purple-400">{stats.totalExpertSources}</div>
-          <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Expert Sources</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Expert Sources</div>
         </div>
       </div>
 
@@ -923,7 +923,7 @@ function RegulatoryHubContent() {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
               activeTab === tab.id
                 ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
+                : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
             }`}
           >
             <span>{tab.icon}</span>

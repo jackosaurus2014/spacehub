@@ -506,7 +506,7 @@ function SpaceTourismContent() {
 
             {/* Disclaimer */}
             <div className="mt-8 text-center">
-              <p className="text-slate-500 text-sm">
+              <p className="text-slate-400 text-sm">
                 Prices and availability are subject to change. All information is provided for educational purposes.
                 Please visit official provider websites for the most current details.
               </p>

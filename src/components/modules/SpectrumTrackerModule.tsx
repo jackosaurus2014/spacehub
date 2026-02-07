@@ -57,7 +57,7 @@ function AllocationCard({ allocation }: { allocation: SpectrumAllocation }) {
             <span className="text-slate-800 font-medium text-sm">
               {bandInfo?.label || allocation.bandName}
             </span>
-            <span className="text-slate-500 text-xs ml-2">
+            <span className="text-slate-400 text-xs ml-2">
               {formatFrequency(allocation.frequencyMin)} - {formatFrequency(allocation.frequencyMax)}
             </span>
           </div>
@@ -88,13 +88,13 @@ function AllocationCard({ allocation }: { allocation: SpectrumAllocation }) {
         {`${bandInfo?.label || allocation.bandName} band, ${formatFrequency(allocation.frequencyMin)} to ${formatFrequency(allocation.frequencyMax)}, status: ${statusInfo.label}, ${allocation.numberOfFilings} filing${allocation.numberOfFilings !== 1 ? 's' : ''}`}
       </span>
 
-      <div className="flex justify-between text-xs text-slate-500">
+      <div className="flex justify-between text-xs text-slate-400">
         <span>{serviceLabels[allocation.service] || allocation.service}</span>
         <span>{allocation.numberOfFilings} filing{allocation.numberOfFilings !== 1 ? 's' : ''}</span>
       </div>
 
       {allocation.assignedTo && (
-        <div className="mt-1 text-xs text-slate-500 truncate">
+        <div className="mt-1 text-xs text-slate-400 truncate">
           Assigned: {allocation.assignedTo}
         </div>
       )}
@@ -129,7 +129,7 @@ function FilingRow({ filing }: { filing: SpectrumFiling }) {
             {filing.status}
           </span>
         </div>
-        <div className="text-slate-500 text-xs flex flex-wrap gap-x-3 gap-y-0.5">
+        <div className="text-slate-400 text-xs flex flex-wrap gap-x-3 gap-y-0.5">
           <span>{filing.system}</span>
           <span>{filing.bandName}</span>
           <span>{filing.orbitType}</span>
@@ -139,7 +139,7 @@ function FilingRow({ filing }: { filing: SpectrumFiling }) {
         </div>
       </div>
       <div className="text-right shrink-0">
-        <div className="text-slate-600 text-xs">
+        <div className="text-slate-400 text-xs">
           {filingDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
         <div className="text-slate-400 text-xs">{filing.agency}</div>
@@ -199,7 +199,7 @@ export default function SpectrumTrackerModule() {
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">📡</span>
         <h3 className="text-xl font-semibold text-slate-800 mb-2">Spectrum & Frequency Tracker</h3>
-        <p className="text-slate-500 mb-4">
+        <p className="text-slate-400 mb-4">
           Satellite frequency allocations, filings, and spectrum availability.
         </p>
         <button
@@ -228,7 +228,7 @@ export default function SpectrumTrackerModule() {
           <span className="text-3xl">📡</span>
           <div>
             <h2 className="text-2xl font-display font-bold text-slate-800">Spectrum & Frequency Tracker</h2>
-            <p className="text-slate-500 text-sm">Frequency allocations, filings & availability</p>
+            <p className="text-slate-400 text-sm">Frequency allocations, filings & availability</p>
           </div>
         </div>
         <Link href="/spectrum" className="btn-secondary text-sm py-1.5 px-4">
@@ -243,19 +243,19 @@ export default function SpectrumTrackerModule() {
         </span>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-slate-800">{data.stats.totalBands}</div>
-          <div className="text-slate-500 text-xs">Total Bands</div>
+          <div className="text-slate-400 text-xs">Total Bands</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-red-400">{data.stats.congestedBands}</div>
-          <div className="text-slate-500 text-xs">Congested Bands</div>
+          <div className="text-slate-400 text-xs">Congested Bands</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-blue-400">{data.stats.totalFilings}</div>
-          <div className="text-slate-500 text-xs">Total Filings</div>
+          <div className="text-slate-400 text-xs">Total Filings</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-yellow-400">{data.stats.pendingFilings}</div>
-          <div className="text-slate-500 text-xs">Pending Filings</div>
+          <div className="text-slate-400 text-xs">Pending Filings</div>
         </div>
       </div>
 
@@ -283,7 +283,7 @@ export default function SpectrumTrackerModule() {
               <FilingRow key={filing.id} filing={filing} />
             ))}
             {data.filings.length === 0 && (
-              <p className="text-slate-500 text-sm text-center py-4">No filings available</p>
+              <p className="text-slate-400 text-sm text-center py-4">No filings available</p>
             )}
           </div>
         </div>
@@ -298,7 +298,7 @@ export default function SpectrumTrackerModule() {
           {Object.entries(FILING_STATUS_INFO).map(([key, info]) => (
             <div key={key} className="flex items-center gap-2 text-xs">
               <span className={`inline-block w-2.5 h-2.5 rounded-full ${info.bgColor}`} />
-              <span className="text-slate-500">{info.label}</span>
+              <span className="text-slate-400">{info.label}</span>
             </div>
           ))}
         </div>

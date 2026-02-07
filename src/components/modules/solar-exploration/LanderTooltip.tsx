@@ -112,13 +112,13 @@ export default function LanderTooltip({ lander, position }: LanderTooltipProps) 
         {/* Details Grid */}
         <div className="space-y-1.5 text-xs">
           <div className="flex justify-between gap-2">
-            <span className="text-star-400 shrink-0">Type:</span>
+            <span className="text-star-300 shrink-0">Type:</span>
             <span className="text-star-200 capitalize text-right">{lander.missionType.replace('_', ' ')}</span>
           </div>
 
           {lander.landingSite && (
             <div className="flex justify-between gap-2">
-              <span className="text-star-400 shrink-0">Site:</span>
+              <span className="text-star-300 shrink-0">Site:</span>
               <span className="text-star-200 text-right truncate" title={lander.landingSite}>
                 {lander.landingSite}
               </span>
@@ -126,7 +126,7 @@ export default function LanderTooltip({ lander, position }: LanderTooltipProps) 
           )}
 
           <div className="flex justify-between gap-2">
-            <span className="text-star-400 shrink-0">Coords:</span>
+            <span className="text-star-300 shrink-0">Coords:</span>
             <span className="text-star-200 text-right">
               {lander.latitude.toFixed(2)}°{lander.latitude >= 0 ? 'N' : 'S'},{' '}
               {Math.abs(lander.longitude).toFixed(2)}°{lander.longitude >= 0 ? 'E' : 'W'}
@@ -135,28 +135,28 @@ export default function LanderTooltip({ lander, position }: LanderTooltipProps) 
 
           {lander.landingDate && (
             <div className="flex justify-between gap-2">
-              <span className="text-star-400 shrink-0">Landed:</span>
+              <span className="text-star-300 shrink-0">Landed:</span>
               <span className="text-star-200 text-right">{formatDate(lander.landingDate)}</span>
             </div>
           )}
 
           {lander.endDate && (
             <div className="flex justify-between gap-2">
-              <span className="text-star-400 shrink-0">Ended:</span>
+              <span className="text-star-300 shrink-0">Ended:</span>
               <span className="text-star-200 text-right">{formatDate(lander.endDate)}</span>
             </div>
           )}
 
           {lander.mass && (
             <div className="flex justify-between gap-2">
-              <span className="text-star-400 shrink-0">Mass:</span>
+              <span className="text-star-300 shrink-0">Mass:</span>
               <span className="text-star-200 text-right">{lander.mass.toLocaleString()} kg</span>
             </div>
           )}
 
           {lander.powerSource && (
             <div className="flex justify-between gap-2">
-              <span className="text-star-400 shrink-0">Power:</span>
+              <span className="text-star-300 shrink-0">Power:</span>
               <span className="text-star-200 capitalize text-right">{lander.powerSource}</span>
             </div>
           )}
@@ -172,16 +172,16 @@ export default function LanderTooltip({ lander, position }: LanderTooltipProps) 
         {/* Objectives */}
         {lander.objectives && lander.objectives.length > 0 && (
           <div className="mt-2 border-t border-space-600 pt-2">
-            <span className="text-star-400 text-xs font-medium">Objectives:</span>
+            <span className="text-star-300 text-xs font-medium">Objectives:</span>
             <ul className="mt-1 space-y-0.5">
               {lander.objectives.slice(0, 3).map((obj, i) => (
                 <li key={i} className="text-star-200 text-xs flex items-start gap-1">
-                  <span className="text-nebula-400 shrink-0">•</span>
+                  <span className="text-nebula-300 shrink-0">•</span>
                   <span className="line-clamp-2">{obj}</span>
                 </li>
               ))}
               {lander.objectives.length > 3 && (
-                <li className="text-star-400 text-xs italic">
+                <li className="text-star-300 text-xs italic">
                   +{lander.objectives.length - 3} more...
                 </li>
               )}

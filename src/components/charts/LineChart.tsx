@@ -2,7 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { useChartInteraction } from '@/hooks/useChartInteraction';
 import ChartExportButton from '@/components/charts/ChartExportButton';
+import ChartTooltip from '@/components/charts/ChartTooltip';
 
 export interface LineChartSeries {
   name: string;
@@ -58,6 +60,19 @@ export default function LineChart({
     value: number;
     label: string;
   } | null>(null);
+  const [tappedTooltip, setTappedTooltip] = useState<{
+    show: boolean;
+    x: number;
+    y: number;
+    seriesName: string;
+    value: number;
+    label: string;
+  } | null>(null);
+
+  const { transform, handlers, isZoomed, resetZoom } = useChartInteraction();
+
+  // The active tooltip: on mobile use tap, on desktop use hover
+  const activeTooltip = isMobile ? tappedTooltip : tooltip;
 
   // Responsive sizing
   useEffect(() => {
@@ -81,7 +96,7 @@ export default function LineChart({
   const chartHeight = dimensions.height - padding.top - padding.bottom;
 
   // Calculate min/max values across all series
-  const { minValue, maxValue, allData } = useMemo(() => {
+  const { minValue, maxValue } = useMemo(() => {
     const allData = series.flatMap(s => s.data);
     const min = Math.min(...allData);
     const max = Math.max(...allData);
@@ -129,60 +144,94 @@ export default function LineChart({
     return ticks;
   }, [minValue, valueRange, chartHeight]);
 
-  // Handle mouse interactions
-  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
-    if (!series.length || chartWidth <= 0) return;
+  // Find tooltip data for a given position
+  const findTooltipData = useCallback(
+    (clientX: number, clientY: number, svgEl: SVGSVGElement | null) => {
+      if (!series.length || chartWidth <= 0 || !svgEl) return null;
 
-    const svg = e.currentTarget;
-    const rect = svg.getBoundingClientRect();
-    const x = e.clientX - rect.left - padding.left;
-    const y = e.clientY - rect.top - padding.top;
+      const rect = svgEl.getBoundingClientRect();
+      const x = clientX - rect.left - padding.left;
+      const y = clientY - rect.top - padding.top;
 
-    if (x < 0 || x > chartWidth || y < 0 || y > chartHeight) {
-      setTooltip(null);
-      return;
-    }
-
-    // Find closest data point
-    const dataLength = series[0]?.data.length || 0;
-    const index = Math.round((x / chartWidth) * (dataLength - 1));
-
-    if (index < 0 || index >= dataLength) {
-      setTooltip(null);
-      return;
-    }
-
-    // Find the series with the closest value to the cursor
-    let closestSeries = series[0];
-    let closestDistance = Infinity;
-
-    series.forEach(s => {
-      const value = s.data[index];
-      const pointY = chartHeight - ((value - minValue) / valueRange) * chartHeight;
-      const distance = Math.abs(pointY - y);
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestSeries = s;
+      if (x < 0 || x > chartWidth || y < 0 || y > chartHeight) {
+        return null;
       }
-    });
 
-    const value = closestSeries.data[index];
-    const pointX = (index / Math.max(dataLength - 1, 1)) * chartWidth + padding.left;
-    const pointY = chartHeight - ((value - minValue) / valueRange) * chartHeight + padding.top;
+      const dataLength = series[0]?.data.length || 0;
+      const index = Math.round((x / chartWidth) * (dataLength - 1));
 
-    setTooltip({
-      show: true,
-      x: pointX,
-      y: pointY,
-      seriesName: closestSeries.name,
-      value,
-      label: labels[index] || `Point ${index + 1}`,
-    });
-  }, [series, chartWidth, chartHeight, labels, minValue, valueRange, padding.left, padding.top]);
+      if (index < 0 || index >= dataLength) {
+        return null;
+      }
+
+      let closestSeries = series[0];
+      let closestDistance = Infinity;
+
+      series.forEach(s => {
+        const value = s.data[index];
+        const pointY = chartHeight - ((value - minValue) / valueRange) * chartHeight;
+        const distance = Math.abs(pointY - y);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestSeries = s;
+        }
+      });
+
+      const value = closestSeries.data[index];
+      const pointX = (index / Math.max(dataLength - 1, 1)) * chartWidth + padding.left;
+      const pointY = chartHeight - ((value - minValue) / valueRange) * chartHeight + padding.top;
+
+      return {
+        show: true,
+        x: pointX,
+        y: pointY,
+        seriesName: closestSeries.name,
+        value,
+        label: labels[index] || `Point ${index + 1}`,
+      };
+    },
+    [series, chartWidth, chartHeight, labels, minValue, valueRange, padding.left, padding.top]
+  );
+
+  // Handle mouse interactions (desktop) - composed with zoom/pan handlers
+  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    handlers.onMouseMove(e as unknown as React.MouseEvent);
+    if (isMobile) return;
+    const data = findTooltipData(e.clientX, e.clientY, e.currentTarget);
+    setTooltip(data);
+  }, [isMobile, findTooltipData, handlers]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    handlers.onMouseDown(e as unknown as React.MouseEvent);
+  }, [handlers]);
+
+  const handleMouseUp = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    handlers.onMouseUp(e as unknown as React.MouseEvent);
+  }, [handlers]);
 
   const handleMouseLeave = useCallback(() => {
-    setTooltip(null);
-  }, []);
+    if (!isMobile) {
+      setTooltip(null);
+    }
+  }, [isMobile]);
+
+  // Handle tap interactions (mobile)
+  const handleSvgClick = useCallback(
+    (e: React.MouseEvent<SVGSVGElement>) => {
+      if (!isMobile) return;
+      const data = findTooltipData(e.clientX, e.clientY, e.currentTarget);
+      if (data) {
+        setTappedTooltip((prev) => {
+          // If tapping the same point, dismiss
+          if (prev && prev.x === data.x && prev.y === data.y) return null;
+          return data;
+        });
+      } else {
+        setTappedTooltip(null);
+      }
+    },
+    [isMobile, findTooltipData]
+  );
 
   // Prepare export data: one row per label, with a column per series
   const exportData = useMemo(() => {
@@ -209,6 +258,9 @@ export default function LineChart({
     );
   }
 
+  // Build SVG transform string for zoom/pan
+  const svgTransformStr = `translate(${transform.translateX}, ${transform.translateY}) scale(${transform.scale})`;
+
   return (
     <div ref={containerRef} className={`relative group ${className}`} role="img" aria-label={title || 'Line chart'}>
       <ChartExportButton
@@ -220,13 +272,36 @@ export default function LineChart({
         <h3 className="text-slate-100 font-semibold mb-4">{title}</h3>
       )}
 
+      {/* Zoom controls */}
+      {isZoomed && (
+        <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+          <span className="text-xs text-cyan-400 bg-slate-800/80 px-2 py-1 rounded border border-slate-600">
+            {transform.scale.toFixed(1)}x
+          </span>
+          <button
+            onClick={resetZoom}
+            className="text-xs text-slate-300 bg-slate-800/80 hover:bg-slate-700/80 px-2 py-1 rounded border border-slate-600 transition-colors"
+          >
+            Reset zoom
+          </button>
+        </div>
+      )}
+
       <svg
         width="100%"
         height={height}
-        className="overflow-visible"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        className={`overflow-hidden ${isZoomed ? 'cursor-grab active:cursor-grabbing' : ''}`}
         aria-hidden="true"
+        onWheel={handlers.onWheel}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handlers.onTouchStart}
+        onTouchMove={handlers.onTouchMove}
+        onTouchEnd={handlers.onTouchEnd}
+        onDoubleClick={handlers.onDoubleClick}
+        onClick={handleSvgClick}
       >
         <defs>
           {series.map((s, i) => {
@@ -248,214 +323,219 @@ export default function LineChart({
           })}
         </defs>
 
-        <g transform={`translate(${padding.left}, ${padding.top})`}>
-          {/* Grid lines */}
-          {showGrid && (
-            <g className="grid-lines">
-              {yTicks.map((tick, i) => (
-                <line
-                  key={`grid-${i}`}
-                  x1={0}
-                  y1={tick.y}
-                  x2={chartWidth}
-                  y2={tick.y}
-                  stroke="rgba(148, 163, 184, 0.1)"
-                  strokeDasharray="4 4"
-                />
-              ))}
-            </g>
-          )}
-
-          {/* Area fills */}
-          {series.map((s, i) => (
-            <path
-              key={`area-${i}`}
-              d={generateAreaPath(s.data)}
-              fill={`url(#line-gradient-${i})`}
-              className="transition-opacity duration-300"
-            />
-          ))}
-
-          {/* Lines */}
-          {series.map((s, i) => {
-            const colorKey = s.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
-            const colors = COLORS[colorKey];
-            return (
-              <path
-                key={`line-${i}`}
-                d={generatePath(s.data)}
-                fill="none"
-                stroke={colors.stroke}
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="transition-all duration-300"
-                style={{
-                  filter: `drop-shadow(0 0 6px ${colors.stroke})`,
-                }}
-              />
-            );
-          })}
-
-          {/* Data points on hover */}
-          {tooltip && series.map((s, i) => {
-            const colorKey = s.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
-            const colors = COLORS[colorKey];
-            const dataLength = s.data.length;
-            const index = Math.round(((tooltip.x - padding.left) / chartWidth) * (dataLength - 1));
-            if (index < 0 || index >= dataLength) return null;
-
-            const value = s.data[index];
-            const pointX = (index / Math.max(dataLength - 1, 1)) * chartWidth;
-            const pointY = chartHeight - ((value - minValue) / valueRange) * chartHeight;
-
-            return (
-              <circle
-                key={`point-${i}`}
-                cx={pointX}
-                cy={pointY}
-                r={4}
-                fill={colors.stroke}
-                stroke="rgba(15, 23, 42, 0.8)"
-                strokeWidth="2"
-                className="transition-all duration-150"
-                style={{
-                  filter: `drop-shadow(0 0 4px ${colors.stroke})`,
-                }}
-              />
-            );
-          })}
-
-          {/* Y-axis */}
-          <g className="y-axis">
-            <line
-              x1={0}
-              y1={0}
-              x2={0}
-              y2={chartHeight}
-              stroke="rgba(148, 163, 184, 0.3)"
-            />
-            {yTicks.map((tick, i) => (
-              <g key={`y-tick-${i}`}>
-                <line
-                  x1={-5}
-                  y1={tick.y}
-                  x2={0}
-                  y2={tick.y}
-                  stroke="rgba(148, 163, 184, 0.5)"
-                />
-                <text
-                  x={-10}
-                  y={tick.y}
-                  textAnchor="end"
-                  dominantBaseline="middle"
-                  className="text-xs fill-slate-400"
-                  style={{ fontSize: labelFontSize }}
-                >
-                  {tick.value.toLocaleString(undefined, { maximumFractionDigits: 1 })}
-                </text>
+        <g
+          transform={`translate(${padding.left}, ${padding.top})`}
+          style={{ transition: 'transform 0.2s ease-out' }}
+        >
+          <g
+            transform={svgTransformStr}
+            style={{ transformOrigin: `${chartWidth / 2}px ${chartHeight / 2}px`, transition: 'transform 0.2s ease-out' }}
+          >
+            {/* Grid lines */}
+            {showGrid && (
+              <g className="grid-lines">
+                {yTicks.map((tick, i) => (
+                  <line
+                    key={`grid-${i}`}
+                    x1={0}
+                    y1={tick.y}
+                    x2={chartWidth}
+                    y2={tick.y}
+                    stroke="rgba(148, 163, 184, 0.1)"
+                    strokeDasharray="4 4"
+                  />
+                ))}
               </g>
-            ))}
-            {yAxisLabel && (
-              <text
-                x={-padding.left + 15}
-                y={chartHeight / 2}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                transform={`rotate(-90, ${-padding.left + 15}, ${chartHeight / 2})`}
-                className="text-xs fill-slate-400"
-              >
-                {yAxisLabel}
-              </text>
             )}
-          </g>
 
-          {/* X-axis */}
-          <g className="x-axis">
-            <line
-              x1={0}
-              y1={chartHeight}
-              x2={chartWidth}
-              y2={chartHeight}
-              stroke="rgba(148, 163, 184, 0.3)"
-            />
-            {labels.length > 0 && labels.map((label, i) => {
-              const x = (i / Math.max(labels.length - 1, 1)) * chartWidth;
-              // On mobile, show fewer labels to prevent overlap (every other label);
-              // on desktop, use the existing density logic
-              const maxVisible = isMobile ? Math.floor(labels.length / 2) || 1 : 7;
-              const showLabel = labels.length <= maxVisible
-                || i % Math.ceil(labels.length / maxVisible) === 0
-                || i === labels.length - 1;
-              if (!showLabel) return null;
+            {/* Area fills */}
+            {series.map((s, i) => (
+              <path
+                key={`area-${i}`}
+                d={generateAreaPath(s.data)}
+                fill={`url(#line-gradient-${i})`}
+                className="transition-opacity duration-300"
+              />
+            ))}
+
+            {/* Lines */}
+            {series.map((s, i) => {
+              const colorKey = s.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
+              const colors = COLORS[colorKey];
+              return (
+                <path
+                  key={`line-${i}`}
+                  d={generatePath(s.data)}
+                  fill="none"
+                  stroke={colors.stroke}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="transition-all duration-300"
+                  style={{
+                    filter: `drop-shadow(0 0 6px ${colors.stroke})`,
+                  }}
+                />
+              );
+            })}
+
+            {/* Data points on hover/tap */}
+            {activeTooltip && series.map((s, i) => {
+              const colorKey = s.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
+              const colors = COLORS[colorKey];
+              const dataLength = s.data.length;
+              const index = Math.round(((activeTooltip.x - padding.left) / chartWidth) * (dataLength - 1));
+              if (index < 0 || index >= dataLength) return null;
+
+              const value = s.data[index];
+              const pointX = (index / Math.max(dataLength - 1, 1)) * chartWidth;
+              const pointY = chartHeight - ((value - minValue) / valueRange) * chartHeight;
 
               return (
-                <g key={`x-tick-${i}`}>
+                <circle
+                  key={`point-${i}`}
+                  cx={pointX}
+                  cy={pointY}
+                  r={4}
+                  fill={colors.stroke}
+                  stroke="rgba(15, 23, 42, 0.8)"
+                  strokeWidth="2"
+                  className="transition-all duration-150"
+                  style={{
+                    filter: `drop-shadow(0 0 4px ${colors.stroke})`,
+                  }}
+                />
+              );
+            })}
+
+            {/* Y-axis */}
+            <g className="y-axis">
+              <line
+                x1={0}
+                y1={0}
+                x2={0}
+                y2={chartHeight}
+                stroke="rgba(148, 163, 184, 0.3)"
+              />
+              {yTicks.map((tick, i) => (
+                <g key={`y-tick-${i}`}>
                   <line
-                    x1={x}
-                    y1={chartHeight}
-                    x2={x}
-                    y2={chartHeight + 5}
+                    x1={-5}
+                    y1={tick.y}
+                    x2={0}
+                    y2={tick.y}
                     stroke="rgba(148, 163, 184, 0.5)"
                   />
                   <text
-                    x={x}
-                    y={chartHeight + 18}
-                    textAnchor="middle"
+                    x={-10}
+                    y={tick.y}
+                    textAnchor="end"
+                    dominantBaseline="middle"
                     className="text-xs fill-slate-400"
                     style={{ fontSize: labelFontSize }}
                   >
-                    {label}
-                    <title>{label}</title>
+                    {tick.value.toLocaleString(undefined, { maximumFractionDigits: 1 })}
                   </text>
                 </g>
-              );
-            })}
-            {xAxisLabel && (
-              <text
-                x={chartWidth / 2}
-                y={chartHeight + 35}
-                textAnchor="middle"
-                className="text-xs fill-slate-400"
-              >
-                {xAxisLabel}
-              </text>
+              ))}
+              {yAxisLabel && (
+                <text
+                  x={-padding.left + 15}
+                  y={chartHeight / 2}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  transform={`rotate(-90, ${-padding.left + 15}, ${chartHeight / 2})`}
+                  className="text-xs fill-slate-400"
+                >
+                  {yAxisLabel}
+                </text>
+              )}
+            </g>
+
+            {/* X-axis */}
+            <g className="x-axis">
+              <line
+                x1={0}
+                y1={chartHeight}
+                x2={chartWidth}
+                y2={chartHeight}
+                stroke="rgba(148, 163, 184, 0.3)"
+              />
+              {labels.length > 0 && labels.map((label, i) => {
+                const x = (i / Math.max(labels.length - 1, 1)) * chartWidth;
+                // On mobile, show fewer labels to prevent overlap (every other label);
+                // on desktop, use the existing density logic
+                const maxVisible = isMobile ? Math.floor(labels.length / 2) || 1 : 7;
+                const showLabel = labels.length <= maxVisible
+                  || i % Math.ceil(labels.length / maxVisible) === 0
+                  || i === labels.length - 1;
+                if (!showLabel) return null;
+
+                return (
+                  <g key={`x-tick-${i}`}>
+                    <line
+                      x1={x}
+                      y1={chartHeight}
+                      x2={x}
+                      y2={chartHeight + 5}
+                      stroke="rgba(148, 163, 184, 0.5)"
+                    />
+                    <text
+                      x={x}
+                      y={chartHeight + 18}
+                      textAnchor="middle"
+                      className="text-xs fill-slate-400"
+                      style={{ fontSize: labelFontSize }}
+                    >
+                      {label}
+                      <title>{label}</title>
+                    </text>
+                  </g>
+                );
+              })}
+              {xAxisLabel && (
+                <text
+                  x={chartWidth / 2}
+                  y={chartHeight + 35}
+                  textAnchor="middle"
+                  className="text-xs fill-slate-400"
+                >
+                  {xAxisLabel}
+                </text>
+              )}
+            </g>
+
+            {/* Vertical hover line */}
+            {activeTooltip && (
+              <line
+                x1={activeTooltip.x - padding.left}
+                y1={0}
+                x2={activeTooltip.x - padding.left}
+                y2={chartHeight}
+                stroke="rgba(148, 163, 184, 0.3)"
+                strokeDasharray="4 4"
+              />
             )}
           </g>
-
-          {/* Vertical hover line */}
-          {tooltip && (
-            <line
-              x1={tooltip.x - padding.left}
-              y1={0}
-              x2={tooltip.x - padding.left}
-              y2={chartHeight}
-              stroke="rgba(148, 163, 184, 0.3)"
-              strokeDasharray="4 4"
-            />
-          )}
         </g>
       </svg>
 
       {/* Tooltip */}
-      {tooltip && (
-        <div
-          className="absolute pointer-events-none z-10 px-3 py-2 rounded-lg text-sm"
-          style={{
-            left: tooltip.x,
-            top: tooltip.y - 50,
-            transform: 'translateX(-50%)',
-            background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95))',
-            border: '1px solid rgba(6, 182, 212, 0.3)',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
-          }}
-        >
-          <div className="text-slate-300 text-xs">{tooltip.label}</div>
-          <div className="text-cyan-400 font-semibold">
-            {tooltip.seriesName}: {tooltip.value.toLocaleString()}
-          </div>
-        </div>
-      )}
+      <ChartTooltip
+        x={activeTooltip ? activeTooltip.x : 0}
+        y={activeTooltip ? activeTooltip.y - 50 : 0}
+        visible={activeTooltip !== null}
+        content={
+          activeTooltip ? (
+            <>
+              <div className="text-slate-300 text-xs">{activeTooltip.label}</div>
+              <div className="text-cyan-400 font-semibold">
+                {activeTooltip.seriesName}: {activeTooltip.value.toLocaleString()}
+              </div>
+            </>
+          ) : null
+        }
+      />
 
       {/* Legend */}
       {showLegend && series.length > 1 && (

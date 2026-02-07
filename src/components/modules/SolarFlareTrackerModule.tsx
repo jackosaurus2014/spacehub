@@ -82,7 +82,7 @@ export default function SolarFlareTrackerModule() {
         </div>
         <div className="card p-8 text-center">
           <span className="text-4xl block mb-4">⚠️</span>
-          <p className="text-slate-500">{error || 'No data available'}</p>
+          <p className="text-slate-400">{error || 'No data available'}</p>
         </div>
       </div>
     );
@@ -136,15 +136,15 @@ export default function SolarFlareTrackerModule() {
                     </span>
                   )}
                 </div>
-                <p className="text-slate-500 text-sm">Current solar activity status</p>
+                <p className="text-slate-400 text-sm">Current solar activity status</p>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-slate-600 text-sm">X-Class Probability</div>
+              <div className="text-slate-400 text-sm">X-Class Probability</div>
               <div className={`text-2xl font-bold ${
                 todayForecast.probX >= 20 ? 'text-red-400' :
                 todayForecast.probX >= 10 ? 'text-orange-400' :
-                'text-slate-600'
+                'text-slate-400'
               }`}>
                 {todayForecast.probX}%
               </div>
@@ -159,13 +159,13 @@ export default function SolarFlareTrackerModule() {
           <div className="text-2xl font-bold text-slate-800">
             {data.stats.last30Days.xClass}
           </div>
-          <div className="text-slate-500 text-sm">X-Class (30d)</div>
+          <div className="text-slate-400 text-sm">X-Class (30d)</div>
         </div>
         <div className="card p-4 text-center">
           <div className="text-2xl font-bold text-slate-800">
             {data.stats.last30Days.mClass}
           </div>
-          <div className="text-slate-500 text-sm">M-Class (30d)</div>
+          <div className="text-slate-400 text-sm">M-Class (30d)</div>
         </div>
         <div className="card p-4 text-center">
           <div className={`text-2xl font-bold ${
@@ -175,7 +175,7 @@ export default function SolarFlareTrackerModule() {
           }`}>
             {data.stats.upcomingDangerDays}
           </div>
-          <div className="text-slate-500 text-sm">Danger Days (90d)</div>
+          <div className="text-slate-400 text-sm">Danger Days (90d)</div>
         </div>
         <div className="card p-4 text-center">
           {data.stats.largestRecent ? (
@@ -183,12 +183,12 @@ export default function SolarFlareTrackerModule() {
               <div className="text-2xl font-bold text-red-400">
                 {data.stats.largestRecent.classification}{data.stats.largestRecent.intensity}
               </div>
-              <div className="text-slate-500 text-sm">Largest Recent</div>
+              <div className="text-slate-400 text-sm">Largest Recent</div>
             </>
           ) : (
             <>
-              <div className="text-2xl font-bold text-slate-500">-</div>
-              <div className="text-slate-500 text-sm">Largest Recent</div>
+              <div className="text-2xl font-bold text-slate-400">-</div>
+              <div className="text-slate-400 text-sm">Largest Recent</div>
             </>
           )}
         </div>
@@ -203,7 +203,7 @@ export default function SolarFlareTrackerModule() {
           </h3>
           <div className="space-y-3">
             {data.flares.length === 0 ? (
-              <p className="text-slate-500 text-center py-4">No recent flares</p>
+              <p className="text-slate-400 text-center py-4">No recent flares</p>
             ) : (
               data.flares.slice(0, 5).map((flare) => {
                 const classInfo = FLARE_CLASSIFICATIONS.find(c => c.value === flare.classification);
@@ -217,7 +217,7 @@ export default function SolarFlareTrackerModule() {
                         <div className="text-slate-800 text-sm font-medium">
                           {flare.activeRegion || 'Unknown Region'}
                         </div>
-                        <div className="text-slate-500 text-xs">
+                        <div className="text-slate-400 text-xs">
                           {new Date(flare.startTime).toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric',
@@ -266,22 +266,22 @@ export default function SolarFlareTrackerModule() {
                         <span className={`font-medium ${riskInfo.color}`}>
                           {riskInfo.label}
                         </span>
-                        <span className="text-slate-500 text-sm">
+                        <span className="text-slate-400 text-sm">
                           {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </span>
                       </div>
-                      <div className="text-slate-500 text-sm">
+                      <div className="text-slate-400 text-sm">
                         X: {forecast.probX}% | M: {forecast.probM}%
                       </div>
                     </div>
                     {forecast.notes && (
-                      <p className="text-slate-500 text-xs mt-1">{forecast.notes}</p>
+                      <p className="text-slate-400 text-xs mt-1">{forecast.notes}</p>
                     )}
                   </div>
                 );
               })}
               {dangerForecasts.length > 5 && (
-                <p className="text-slate-500 text-sm text-center">
+                <p className="text-slate-400 text-sm text-center">
                   +{dangerForecasts.length - 5} more danger periods
                 </p>
               )}
@@ -301,19 +301,19 @@ export default function SolarFlareTrackerModule() {
               <div className="text-xl font-bold text-slate-800">
                 {Math.round(data.activity.solarWindSpeed || 0)} km/s
               </div>
-              <div className="text-slate-500 text-sm">Solar Wind</div>
+              <div className="text-slate-400 text-sm">Solar Wind</div>
             </div>
             <div className="text-center">
               <div className="text-xl font-bold text-slate-800">
                 Kp {(data.activity.kpIndex || 0).toFixed(1)}
               </div>
-              <div className="text-slate-500 text-sm">Kp Index</div>
+              <div className="text-slate-400 text-sm">Kp Index</div>
             </div>
             <div className="text-center">
               <div className="text-xl font-bold text-slate-800">
                 {data.activity.sunspotNumber || 0}
               </div>
-              <div className="text-slate-500 text-sm">Sunspot Number</div>
+              <div className="text-slate-400 text-sm">Sunspot Number</div>
             </div>
             <div className="text-center">
               <div className={`text-xl font-bold capitalize ${
@@ -323,7 +323,7 @@ export default function SolarFlareTrackerModule() {
               }`}>
                 {data.activity.overallStatus}
               </div>
-              <div className="text-slate-500 text-sm">Status</div>
+              <div className="text-slate-400 text-sm">Status</div>
             </div>
           </div>
         </div>

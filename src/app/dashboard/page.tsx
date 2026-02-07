@@ -153,7 +153,7 @@ export default function DashboardPage() {
                 >
                   Welcome back, {session.user?.name || 'Explorer'}!
                 </h1>
-                <p className={`text-slate-500 ${sizeClasses.text}`}>
+                <p className={`text-slate-400 ${sizeClasses.text}`}>
                   {session.user?.email}
                 </p>
               </div>
@@ -168,7 +168,7 @@ export default function DashboardPage() {
               <div className="flex items-center space-x-4">
                 <span className={sizeClasses.icon}>📊</span>
                 <div>
-                  <p className={`text-slate-500 ${moduleSize === 'compact' ? 'text-xs' : 'text-sm'}`}>
+                  <p className={`text-slate-400 ${moduleSize === 'compact' ? 'text-xs' : 'text-sm'}`}>
                     Total Articles
                   </p>
                   <p
@@ -189,7 +189,7 @@ export default function DashboardPage() {
               <div className="flex items-center space-x-4">
                 <span className={sizeClasses.icon}>📂</span>
                 <div>
-                  <p className={`text-slate-500 ${moduleSize === 'compact' ? 'text-xs' : 'text-sm'}`}>
+                  <p className={`text-slate-400 ${moduleSize === 'compact' ? 'text-xs' : 'text-sm'}`}>
                     Categories
                   </p>
                   <p
@@ -210,7 +210,7 @@ export default function DashboardPage() {
               <div className="flex items-center space-x-4">
                 <span className={sizeClasses.icon}>🌟</span>
                 <div>
-                  <p className={`text-slate-500 ${moduleSize === 'compact' ? 'text-xs' : 'text-sm'}`}>
+                  <p className={`text-slate-400 ${moduleSize === 'compact' ? 'text-xs' : 'text-sm'}`}>
                     Member Since
                   </p>
                   <p
@@ -311,14 +311,14 @@ export default function DashboardPage() {
               >
                 <span className={`block mb-3 ${sizeClasses.icon}`}>📰</span>
                 <h3
-                  className={`text-slate-900 font-semibold group-hover:text-nebula-300 transition-colors ${
+                  className={`text-slate-900 font-semibold group-hover:text-nebula-200 transition-colors ${
                     moduleSize === 'compact' ? 'text-sm' : ''
                   }`}
                 >
                   Browse All News
                 </h3>
                 <p
-                  className={`text-slate-500 mt-1 ${
+                  className={`text-slate-400 mt-1 ${
                     moduleSize === 'compact' ? 'text-xs' : 'text-sm'
                   }`}
                 >
@@ -331,14 +331,14 @@ export default function DashboardPage() {
               >
                 <span className={`block mb-3 ${sizeClasses.icon}`}>🚀</span>
                 <h3
-                  className={`text-slate-900 font-semibold group-hover:text-nebula-300 transition-colors ${
+                  className={`text-slate-900 font-semibold group-hover:text-nebula-200 transition-colors ${
                     moduleSize === 'compact' ? 'text-sm' : ''
                   }`}
                 >
                   Upcoming Launches
                 </h3>
                 <p
-                  className={`text-slate-500 mt-1 ${
+                  className={`text-slate-400 mt-1 ${
                     moduleSize === 'compact' ? 'text-xs' : 'text-sm'
                   }`}
                 >
@@ -351,14 +351,14 @@ export default function DashboardPage() {
               >
                 <span className={`block mb-3 ${sizeClasses.icon}`}>🏢</span>
                 <h3
-                  className={`text-slate-900 font-semibold group-hover:text-nebula-300 transition-colors ${
+                  className={`text-slate-900 font-semibold group-hover:text-nebula-200 transition-colors ${
                     moduleSize === 'compact' ? 'text-sm' : ''
                   }`}
                 >
                   Company News
                 </h3>
                 <p
-                  className={`text-slate-500 mt-1 ${
+                  className={`text-slate-400 mt-1 ${
                     moduleSize === 'compact' ? 'text-xs' : 'text-sm'
                   }`}
                 >
@@ -399,7 +399,7 @@ export default function DashboardPage() {
                 Coming Soon
               </h2>
               <p
-                className={`text-slate-500 max-w-2xl mx-auto ${
+                className={`text-slate-400 max-w-2xl mx-auto ${
                   moduleSize === 'compact' ? 'text-sm' : ''
                 }`}
               >

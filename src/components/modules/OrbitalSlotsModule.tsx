@@ -84,7 +84,7 @@ export default function OrbitalSlotsModule() {
         </div>
         <div className="card p-8 text-center">
           <span className="text-4xl block mb-4">⚠️</span>
-          <p className="text-slate-500">{error || 'No data available'}</p>
+          <p className="text-slate-400">{error || 'No data available'}</p>
         </div>
       </div>
     );
@@ -115,25 +115,25 @@ export default function OrbitalSlotsModule() {
           <div className="text-3xl font-bold text-slate-800">
             {data.stats.totalActive.toLocaleString()}
           </div>
-          <div className="text-slate-500 text-sm">Active Satellites</div>
+          <div className="text-slate-400 text-sm">Active Satellites</div>
         </div>
         <div className="card p-4 text-center">
           <div className="text-3xl font-bold text-yellow-400">
             {data.stats.totalInactive.toLocaleString()}
           </div>
-          <div className="text-slate-500 text-sm">Inactive</div>
+          <div className="text-slate-400 text-sm">Inactive</div>
         </div>
         <div className="card p-4 text-center">
           <div className="text-3xl font-bold text-red-400">
             {data.stats.totalDebris.toLocaleString()}
           </div>
-          <div className="text-slate-500 text-sm">Debris Objects</div>
+          <div className="text-slate-400 text-sm">Debris Objects</div>
         </div>
         <div className="card p-4 text-center">
           <div className="text-3xl font-bold text-green-400">
             +{data.stats.growth1Year.toLocaleString()}
           </div>
-          <div className="text-slate-500 text-sm">1-Year Growth</div>
+          <div className="text-slate-400 text-sm">1-Year Growth</div>
         </div>
       </div>
 
@@ -158,7 +158,7 @@ export default function OrbitalSlotsModule() {
                       <span className="text-xl">{orbitInfo?.icon || '🛰️'}</span>
                       <div>
                         <span className="text-slate-800 font-medium">{slot.orbitName}</span>
-                        <span className="text-slate-500 text-sm ml-2">({orbitInfo?.altitude})</span>
+                        <span className="text-slate-400 text-sm ml-2">({orbitInfo?.altitude})</span>
                       </div>
                     </div>
                     {congestion && (
@@ -180,7 +180,7 @@ export default function OrbitalSlotsModule() {
                     {`${slot.orbitName}: ${activePercent.toFixed(0)}% active, ${slot.activeSatellites.toLocaleString()} active satellites, ${slot.inactiveSatellites.toLocaleString()} inactive, ${slot.debrisCount.toLocaleString()} debris objects`}
                   </span>
 
-                  <div className="flex justify-between text-xs text-slate-500">
+                  <div className="flex justify-between text-xs text-slate-400">
                     <span>Active: {slot.activeSatellites.toLocaleString()}</span>
                     <span>Inactive: {slot.inactiveSatellites.toLocaleString()}</span>
                     <span>Debris: {slot.debrisCount.toLocaleString()}</span>
@@ -188,10 +188,10 @@ export default function OrbitalSlotsModule() {
 
                   {/* Projections */}
                   <div className="flex gap-4 mt-2 pt-2 border-t border-slate-200 text-xs">
-                    <span className="text-slate-500">
+                    <span className="text-slate-400">
                       1Y: <span className="text-green-400">+{(slot.projected1Year - slot.activeSatellites).toLocaleString()}</span>
                     </span>
-                    <span className="text-slate-500">
+                    <span className="text-slate-400">
                       5Y: <span className="text-blue-400">+{(slot.projected5Year - slot.activeSatellites).toLocaleString()}</span>
                     </span>
                   </div>
@@ -220,13 +220,13 @@ export default function OrbitalSlotsModule() {
                       <div>
                         <div className="text-slate-800 text-sm">{operator.name}</div>
                         {operator.constellationName && (
-                          <div className="text-slate-500 text-xs">{operator.constellationName}</div>
+                          <div className="text-slate-400 text-xs">{operator.constellationName}</div>
                         )}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-slate-800 font-medium">{operator.totalActive.toLocaleString()}</div>
-                      <div className="text-slate-500 text-xs">satellites</div>
+                      <div className="text-slate-400 text-xs">satellites</div>
                     </div>
                   </div>
                 );
@@ -253,15 +253,15 @@ export default function OrbitalSlotsModule() {
                           <div className="text-slate-800 text-sm font-medium">
                             {event.missionName || 'Unknown Mission'}
                           </div>
-                          <div className="text-slate-500 text-xs">
+                          <div className="text-slate-400 text-xs">
                             {event.operatorName} • {event.satelliteCount} sat{event.satelliteCount !== 1 ? 's' : ''}
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-slate-600 text-sm">
+                          <div className="text-slate-400 text-sm">
                             {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </div>
-                          <div className="text-slate-500 text-xs">{event.orbitType}</div>
+                          <div className="text-slate-400 text-xs">{event.orbitType}</div>
                         </div>
                       </div>
                     </div>
@@ -279,7 +279,7 @@ export default function OrbitalSlotsModule() {
             <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
               <span>📈</span> 5-Year Projection
             </h3>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-slate-400 text-sm mt-1">
               Expected satellite population growth from {data.stats.totalActive.toLocaleString()} to {data.stats.projected5Year.toLocaleString()}
             </p>
           </div>
@@ -287,7 +287,7 @@ export default function OrbitalSlotsModule() {
             <div className="text-3xl font-bold text-blue-400">
               +{(data.stats.totalActive > 0 ? (data.stats.growth5Year / data.stats.totalActive) * 100 : 0).toFixed(0)}%
             </div>
-            <div className="text-slate-500 text-sm">Growth</div>
+            <div className="text-slate-400 text-sm">Growth</div>
           </div>
         </div>
       </div>

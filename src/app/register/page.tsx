@@ -124,7 +124,7 @@ export default function RegisterPage() {
             <h1 className="text-2xl font-display font-bold text-slate-900">
               Join SpaceNexus
             </h1>
-            <p className="text-slate-500 mt-2">
+            <p className="text-slate-400 mt-2">
               Create your account and explore the cosmos
             </p>
           </div>
@@ -137,7 +137,7 @@ export default function RegisterPage() {
             )}
 
             <div>
-              <label htmlFor="name" className="block text-slate-600 text-sm mb-2">
+              <label htmlFor="name" className="block text-slate-400 text-sm mb-2">
                 Name (Optional)
               </label>
               <input
@@ -158,7 +158,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-slate-600 text-sm mb-2">
+              <label htmlFor="email" className="block text-slate-400 text-sm mb-2">
                 Email Address
               </label>
               <input
@@ -183,7 +183,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-slate-600 text-sm mb-2"
+                className="block text-slate-400 text-sm mb-2"
               >
                 Password
               </label>
@@ -216,7 +216,7 @@ export default function RegisterPage() {
                       />
                     ))}
                   </div>
-                  <p className="text-xs text-slate-500">{passwordStrength.label}</p>
+                  <p className="text-xs text-slate-400">{passwordStrength.label}</p>
                 </div>
               )}
             </div>
@@ -224,7 +224,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-slate-600 text-sm mb-2"
+                className="block text-slate-400 text-sm mb-2"
               >
                 Confirm Password
               </label>
@@ -252,14 +252,14 @@ export default function RegisterPage() {
                 type="checkbox"
                 checked={agreedToDisclaimer}
                 onChange={(e) => setAgreedToDisclaimer(e.target.checked)}
-                className="mt-1 w-4 h-4 rounded border-slate-200 bg-slate-50 text-nebula-500 focus:ring-nebula-500 cursor-pointer"
+                className="mt-1 w-4 h-4 rounded border-slate-200 bg-slate-50 text-nebula-300 focus:ring-nebula-500 cursor-pointer"
               />
-              <label htmlFor="disclaimer" className="text-slate-500 text-sm cursor-pointer">
+              <label htmlFor="disclaimer" className="text-slate-400 text-sm cursor-pointer">
                 I have read and agree to the{' '}
                 <button
                   type="button"
                   onClick={() => setDisclaimerOpen(true)}
-                  className="text-nebula-400 hover:text-nebula-300 transition-colors underline underline-offset-2"
+                  className="text-nebula-300 hover:text-nebula-200 transition-colors underline underline-offset-2"
                 >
                   Legal Disclaimer
                 </button>
@@ -283,7 +283,7 @@ export default function RegisterPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-slate-500">
+            <p className="text-slate-400">
               Already have an account?{' '}
               <Link
                 href="/login"

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense, Fragment } from 'react';
+import { useState, useEffect, useCallback, Suspense, Fragment } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import NewsCard from '@/components/NewsCard';
 import NewsFilter from '@/components/NewsFilter';
@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { SkeletonNewsGrid } from '@/components/ui/Skeleton';
 import PageHeader from '@/components/ui/PageHeader';
 import ExportButton from '@/components/ui/ExportButton';
+import PullToRefresh from '@/components/ui/PullToRefresh';
 import { NativeAd } from '@/components/ads';
 import { NewsArticle } from '@/types';
 
@@ -59,22 +60,19 @@ function NewsContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [selectedCategory, router, pathname]);
 
-  useEffect(() => {
-    fetchNews();
-  }, [selectedCategory, offset]);
-
-  const fetchNews = async () => {
+  const fetchNews = useCallback(async (currentOffset?: number) => {
+    const off = currentOffset ?? offset;
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (selectedCategory) params.set('category', selectedCategory);
       params.set('limit', limit.toString());
-      params.set('offset', offset.toString());
+      params.set('offset', off.toString());
 
       const res = await fetch(`/api/news?${params}`);
       const data = await res.json();
 
-      if (offset === 0) {
+      if (off === 0) {
         setArticles(data.articles);
       } else {
         setArticles((prev) => [...prev, ...data.articles]);
@@ -85,7 +83,16 @@ function NewsContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCategory, offset]);
+
+  useEffect(() => {
+    fetchNews();
+  }, [fetchNews]);
+
+  const handleRefresh = useCallback(async () => {
+    setOffset(0);
+    await fetchNews(0);
+  }, [fetchNews]);
 
   const handleCategoryChange = (category: string | null) => {
     setSelectedCategory(category);
@@ -98,7 +105,7 @@ function NewsContent() {
   };
 
   return (
-    <>
+    <PullToRefresh onRefresh={handleRefresh}>
       {/* Filters */}
       <div className="mb-8">
         <div className="flex items-center justify-between gap-4 mb-4">
@@ -130,7 +137,7 @@ function NewsContent() {
           <h2 className="text-2xl font-semibold text-slate-900 mb-2">
             No articles found
           </h2>
-          <p className="text-slate-500">
+          <p className="text-slate-400">
             {selectedCategory
               ? `No articles in ${selectedCategory} category yet.`
               : 'No articles available. Try refreshing the page.'}
@@ -173,7 +180,7 @@ function NewsContent() {
           )}
         </>
       )}
-    </>
+    </PullToRefresh>
   );
 }
 

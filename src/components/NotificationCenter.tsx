@@ -188,10 +188,10 @@ export default function NotificationCenter() {
               /* Empty State */
               <div className="flex flex-col items-center justify-center py-12 px-4">
                 <div className="w-16 h-16 rounded-full bg-slate-700/50 flex items-center justify-center mb-4">
-                  <BellIcon className="w-8 h-8 text-slate-500" />
+                  <BellIcon className="w-8 h-8 text-slate-400" />
                 </div>
                 <p className="text-slate-400 text-sm text-center">No notifications yet</p>
-                <p className="text-slate-500 text-xs text-center mt-1">
+                <p className="text-slate-400 text-xs text-center mt-1">
                   We&apos;ll notify you about launches, price alerts, and news
                 </p>
               </div>
@@ -264,7 +264,7 @@ function NotificationContent({ notification }: { notification: Notification }) {
         <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
           {notification.message}
         </p>
-        <p className="text-[10px] text-slate-500 mt-1">
+        <p className="text-[10px] text-slate-400 mt-1">
           {formatRelativeTime(notification.timestamp)}
         </p>
       </div>

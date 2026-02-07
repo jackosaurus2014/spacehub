@@ -67,7 +67,7 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
             <div className="flex items-center gap-2 mb-1">
               {getStatusBadge()}
               {topicInfo && (
-                <span className="text-xs text-slate-500">{topicInfo.icon} {topicInfo.label}</span>
+                <span className="text-xs text-slate-400">{topicInfo.icon} {topicInfo.label}</span>
               )}
             </div>
             <h4 className="font-semibold text-white text-sm line-clamp-2">{webinar.title}</h4>
@@ -78,7 +78,7 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
           <span>{formatDuration(webinar.duration)}</span>
         </div>
         <div className="flex items-center justify-between mt-3">
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-slate-400">
             {webinar.isLive ? 'Happening now!' : formatDate(webinar.date)}
           </span>
           {webinar.isLive || webinar.registrationUrl ? (
@@ -183,7 +183,7 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
             Watch Recording
           </a>
         ) : (
-          <span className="flex-1 text-center text-slate-500 text-sm py-2">
+          <span className="flex-1 text-center text-slate-400 text-sm py-2">
             Recording not available
           </span>
         )}

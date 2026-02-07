@@ -75,7 +75,7 @@ export default function RecentlyViewed() {
           <div className="max-h-80 overflow-y-auto">
             {items.length === 0 ? (
               <div className="px-4 py-8 text-center">
-                <p className="text-slate-500 text-sm">No recently viewed pages</p>
+                <p className="text-slate-400 text-sm">No recently viewed pages</p>
               </div>
             ) : (
               <div className="py-1">
@@ -89,7 +89,7 @@ export default function RecentlyViewed() {
                     <span className="text-sm text-slate-300 group-hover:text-cyan-300 transition-colors truncate mr-3">
                       {item.title}
                     </span>
-                    <span className="text-xs text-slate-500 whitespace-nowrap flex-shrink-0">
+                    <span className="text-xs text-slate-400 whitespace-nowrap flex-shrink-0">
                       {formatRelativeTime(item.timestamp)}
                     </span>
                   </Link>
@@ -106,7 +106,7 @@ export default function RecentlyViewed() {
                   clearRecent();
                   setIsOpen(false);
                 }}
-                className="text-xs text-slate-500 hover:text-slate-300 transition-colors w-full text-center"
+                className="text-xs text-slate-400 hover:text-slate-300 transition-colors w-full text-center"
               >
                 Clear history
               </button>

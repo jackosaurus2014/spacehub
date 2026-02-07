@@ -84,7 +84,7 @@ function SolarFlaresContent() {
       <div className="min-h-screen">
         <div className="container mx-auto px-4 text-center py-20">
           <span className="text-5xl block mb-4">⚠️</span>
-          <p className="text-slate-500">Failed to load solar activity data</p>
+          <p className="text-slate-400">Failed to load solar activity data</p>
         </div>
       </div>
     );
@@ -125,22 +125,22 @@ function SolarFlaresContent() {
                       </span>
                     )}
                   </div>
-                  <p className="text-slate-500 mt-1">
+                  <p className="text-slate-400 mt-1">
                     Current geomagnetic conditions: {todayForecast.geomagneticLevel || 'Quiet'}
                   </p>
                 </div>
               </div>
               <div className="flex gap-6">
                 <div className="text-center">
-                  <div className="text-slate-500 text-sm">C-Class</div>
+                  <div className="text-slate-400 text-sm">C-Class</div>
                   <div className="text-2xl font-bold text-slate-900">{todayForecast.probC}%</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-slate-500 text-sm">M-Class</div>
+                  <div className="text-slate-400 text-sm">M-Class</div>
                   <div className="text-2xl font-bold text-orange-400">{todayForecast.probM}%</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-slate-500 text-sm">X-Class</div>
+                  <div className="text-slate-400 text-sm">X-Class</div>
                   <div className="text-2xl font-bold text-red-400">{todayForecast.probX}%</div>
                 </div>
               </div>
@@ -155,11 +155,11 @@ function SolarFlaresContent() {
           </span>
           <div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{data.stats.last30Days.xClass}</div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">X-Class (30d)</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">X-Class (30d)</div>
           </div>
           <div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{data.stats.last30Days.mClass}</div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">M-Class (30d)</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">M-Class (30d)</div>
           </div>
           <div className="card-elevated p-6 text-center">
             <div className={`text-4xl font-bold font-display tracking-tight ${
@@ -167,18 +167,18 @@ function SolarFlaresContent() {
             }`}>
               {data.stats.upcomingDangerDays}
             </div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Danger Days (90d)</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Danger Days (90d)</div>
           </div>
           <div className="card-elevated p-6 text-center">
             {data.activity ? (
               <>
                 <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{Math.round(data.activity.solarWindSpeed || 0)}</div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Solar Wind (km/s)</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Solar Wind (km/s)</div>
               </>
             ) : (
               <>
                 <div className="text-4xl font-bold font-display tracking-tight text-slate-400">-</div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Solar Wind</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Solar Wind</div>
               </>
             )}
           </div>
@@ -186,12 +186,12 @@ function SolarFlaresContent() {
             {data.activity ? (
               <>
                 <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{data.activity.sunspotNumber || 0}</div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Sunspot Number</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Sunspot Number</div>
               </>
             ) : (
               <>
                 <div className="text-4xl font-bold font-display tracking-tight text-slate-400">-</div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Sunspots</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Sunspots</div>
               </>
             )}
           </div>
@@ -206,7 +206,7 @@ function SolarFlaresContent() {
               className={`px-4 py-2 rounded-lg font-medium capitalize transition-all ${
                 selectedTab === tab
                   ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                  : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
+                  : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
               }`}
             >
               {tab}
@@ -227,7 +227,7 @@ function SolarFlaresContent() {
                 <div className="text-center py-8">
                   <span className="text-5xl block mb-4">✓</span>
                   <p className="text-green-400 text-lg">No significant danger periods forecasted</p>
-                  <p className="text-slate-500 mt-2">Solar activity expected to remain at normal levels</p>
+                  <p className="text-slate-400 mt-2">Solar activity expected to remain at normal levels</p>
                 </div>
               ) : (
                 <div className="space-y-3 max-h-[400px] overflow-y-auto">
@@ -252,7 +252,7 @@ function SolarFlaresContent() {
                                 {riskInfo.label} Risk
                               </span>
                             </div>
-                            <div className="text-slate-500 text-sm mt-1">
+                            <div className="text-slate-400 text-sm mt-1">
                               {date.toLocaleDateString('en-US', {
                                 weekday: 'short',
                                 month: 'short',
@@ -264,12 +264,12 @@ function SolarFlaresContent() {
                             </div>
                           </div>
                           <div className="text-right text-sm">
-                            <div className="text-slate-600">X: {forecast.probX}%</div>
-                            <div className="text-slate-500">M: {forecast.probM}%</div>
+                            <div className="text-slate-400">X: {forecast.probX}%</div>
+                            <div className="text-slate-400">M: {forecast.probM}%</div>
                           </div>
                         </div>
                         {forecast.notes && (
-                          <p className="text-slate-500 text-sm mt-2 border-t border-slate-200 pt-2">
+                          <p className="text-slate-400 text-sm mt-2 border-t border-slate-200 pt-2">
                             {forecast.notes}
                           </p>
                         )}
@@ -313,7 +313,7 @@ function SolarFlaresContent() {
                               </span>
                             )}
                           </div>
-                          <div className="text-slate-500 text-sm">
+                          <div className="text-slate-400 text-sm">
                             {new Date(flare.startTime).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
@@ -323,7 +323,7 @@ function SolarFlaresContent() {
                             })}
                           </div>
                           {flare.description && (
-                            <p className="text-slate-500 text-sm mt-2">{flare.description}</p>
+                            <p className="text-slate-400 text-sm mt-2">{flare.description}</p>
                           )}
                           {/* Impact indicators */}
                           <div className="flex gap-4 mt-2 text-xs">
@@ -354,20 +354,20 @@ function SolarFlaresContent() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <Link href="/debris-monitor" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">🛰️ Debris Monitor</div>
-                <p className="text-xs text-slate-500 mt-1">Solar storms can alter debris orbits</p>
+                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">🛰️ Debris Monitor</div>
+                <p className="text-xs text-slate-400 mt-1">Solar storms can alter debris orbits</p>
               </Link>
               <Link href="/orbital-slots" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">📡 Orbital Slots</div>
-                <p className="text-xs text-slate-500 mt-1">Check satellite exposure to solar events</p>
+                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">📡 Orbital Slots</div>
+                <p className="text-xs text-slate-400 mt-1">Check satellite exposure to solar events</p>
               </Link>
               <Link href="/space-insurance" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">🛡️ Space Insurance</div>
-                <p className="text-xs text-slate-500 mt-1">Solar activity affects insurance risk</p>
+                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">🛡️ Space Insurance</div>
+                <p className="text-xs text-slate-400 mt-1">Solar activity affects insurance risk</p>
               </Link>
               <Link href="/mission-control" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">🎯 Mission Control</div>
-                <p className="text-xs text-slate-500 mt-1">Solar weather impacts launch windows</p>
+                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">🎯 Mission Control</div>
+                <p className="text-xs text-slate-400 mt-1">Solar weather impacts launch windows</p>
               </Link>
             </div>
           </div>
@@ -395,7 +395,7 @@ function SolarFlaresContent() {
                         style={{ opacity: 0.3 + (forecast.probX / 100) * 0.7 }}
                       />
                       {isWeekStart && (
-                        <div className="absolute -bottom-5 left-0 text-xs text-slate-500 whitespace-nowrap">
+                        <div className="absolute -bottom-5 left-0 text-xs text-slate-400 whitespace-nowrap">
                           {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </div>
                       )}
@@ -406,7 +406,7 @@ function SolarFlaresContent() {
                             {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </div>
                           <div className={riskInfo.color}>{riskInfo.label} Risk</div>
-                          <div className="text-slate-500 text-xs mt-1">
+                          <div className="text-slate-400 text-xs mt-1">
                             C: {forecast.probC}% | M: {forecast.probM}% | X: {forecast.probX}%
                           </div>
                         </div>
@@ -421,7 +421,7 @@ function SolarFlaresContent() {
               {Object.entries(RISK_LEVEL_INFO).map(([level, info]) => (
                 <div key={level} className="flex items-center gap-2">
                   <div className={`w-4 h-4 rounded ${info.bgColor}`} />
-                  <span className="text-slate-500 text-sm">{info.label}</span>
+                  <span className="text-slate-400 text-sm">{info.label}</span>
                 </div>
               ))}
             </div>
@@ -437,7 +437,7 @@ function SolarFlaresContent() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-slate-500 border-b border-slate-200">
+                  <tr className="text-left text-slate-400 border-b border-slate-200">
                     <th className="pb-3 pr-4">Class</th>
                     <th className="pb-3 pr-4">Date/Time</th>
                     <th className="pb-3 pr-4">Region</th>
@@ -457,7 +457,7 @@ function SolarFlaresContent() {
                             {flare.classification}{flare.intensity}
                           </span>
                         </td>
-                        <td className="py-3 pr-4 text-slate-600">
+                        <td className="py-3 pr-4 text-slate-400">
                           {new Date(flare.startTime).toLocaleString('en-US', {
                             month: 'short',
                             day: 'numeric',
@@ -465,7 +465,7 @@ function SolarFlaresContent() {
                             minute: '2-digit',
                           })}
                         </td>
-                        <td className="py-3 pr-4 text-slate-500">{flare.activeRegion || '-'}</td>
+                        <td className="py-3 pr-4 text-slate-400">{flare.activeRegion || '-'}</td>
                         <td className="py-3 pr-4">
                           {flare.radioBlackout && flare.radioBlackout !== 'none' ? (
                             <span className={IMPACT_LEVEL_INFO[flare.radioBlackout].color}>
@@ -511,7 +511,7 @@ function SolarFlaresContent() {
                 </div>
                 <div>
                   <div className="text-slate-900 font-medium">{cls.label}</div>
-                  <div className="text-slate-500 text-xs">{cls.description}</div>
+                  <div className="text-slate-400 text-xs">{cls.description}</div>
                 </div>
               </div>
             ))}

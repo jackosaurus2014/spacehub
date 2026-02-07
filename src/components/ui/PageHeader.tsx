@@ -31,7 +31,7 @@ export default function PageHeader({
       {backLink && (
         <Link
           href={backLink}
-          className="inline-flex items-center gap-2 text-star-400 hover:text-white text-sm mb-4 transition-colors"
+          className="inline-flex items-center gap-2 text-star-300 hover:text-white text-sm mb-4 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -40,10 +40,10 @@ export default function PageHeader({
         </Link>
       )}
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <div className="flex items-center gap-2 text-star-400 text-sm mb-4">
+        <div className="flex items-center gap-2 text-star-300 text-sm mb-4">
           {breadcrumbs.map((crumb, index) => (
             <span key={index} className="flex items-center gap-2">
-              {index > 0 && <span className="text-star-400/50">/</span>}
+              {index > 0 && <span className="text-star-300/50">/</span>}
               {crumb.href ? (
                 <Link href={crumb.href} className="hover:text-white transition-colors">
                   {crumb.label}
@@ -65,7 +65,7 @@ export default function PageHeader({
             <p className="text-star-300 mt-2 text-lg">{subtitle}</p>
           )}
           {description && (
-            <p className="text-star-400 mt-2">{description}</p>
+            <p className="text-star-300 mt-2">{description}</p>
           )}
         </div>
         <div className="flex items-center gap-4">

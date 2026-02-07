@@ -104,7 +104,7 @@ export default function ModuleCustomizer({
         {modulesBySection.map(section => (
           section.modules.length > 0 && (
             <div key={section.value}>
-              <h4 className="text-star-400 text-xs uppercase tracking-widest font-medium mb-2">
+              <h4 className="text-star-300 text-xs uppercase tracking-widest font-medium mb-2">
                 {section.label}
               </h4>
               <div className="space-y-2">

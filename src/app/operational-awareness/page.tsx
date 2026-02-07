@@ -170,22 +170,22 @@ function ConjunctionCard({ event }: { event: OperationalConjunction }) {
 
           <div className="flex flex-wrap items-center gap-2 text-sm mt-2">
             <div className="bg-slate-800/50 rounded px-3 py-1.5">
-              <span className="text-slate-500 text-xs block">Primary</span>
+              <span className="text-slate-400 text-xs block">Primary</span>
               <span className="text-slate-200 font-medium">{event.primaryObject}</span>
             </div>
-            <span className="text-slate-500 font-bold">vs</span>
+            <span className="text-slate-400 font-bold">vs</span>
             <div className="bg-slate-800/50 rounded px-3 py-1.5">
-              <span className="text-slate-500 text-xs block">Secondary</span>
+              <span className="text-slate-400 text-xs block">Secondary</span>
               <span className="text-slate-200 font-medium">{event.secondaryObject}</span>
             </div>
           </div>
         </div>
 
         <div className="text-right flex-shrink-0 space-y-1">
-          <div className={`text-xl font-bold ${isPast ? 'text-slate-500' : alertInfo.color}`}>
+          <div className={`text-xl font-bold ${isPast ? 'text-slate-400' : alertInfo.color}`}>
             {timeUntil}
           </div>
-          <div className="text-slate-500 text-xs">
+          <div className="text-slate-400 text-xs">
             TCA: {tcaDate.toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
@@ -197,10 +197,10 @@ function ConjunctionCard({ event }: { event: OperationalConjunction }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-slate-700/50 text-xs">
-        <span className="text-slate-500">
+        <span className="text-slate-400">
           Miss Distance: <span className="text-slate-300 font-bold">{event.missDistance.toFixed(1)} m</span>
         </span>
-        <span className="text-slate-500">
+        <span className="text-slate-400">
           Collision Prob: <span className={`font-bold ${
             (event.collisionProb || 0) > 0.0001 ? 'text-red-400' : 'text-slate-300'
           }`}>
@@ -208,7 +208,7 @@ function ConjunctionCard({ event }: { event: OperationalConjunction }) {
           </span>
         </span>
         {event.relativeVelocity && (
-          <span className="text-slate-500">
+          <span className="text-slate-400">
             Rel. Velocity: <span className="text-slate-300 font-medium">{event.relativeVelocity.toFixed(1)} m/s</span>
           </span>
         )}
@@ -229,11 +229,11 @@ function ScorecardCard({ scorecard }: { scorecard: SustainabilityScorecard }) {
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-slate-100">{scorecard.operatorName}</h3>
-          <p className="text-slate-500 text-sm">{scorecard.totalSatellites.toLocaleString()} satellites</p>
+          <p className="text-slate-400 text-sm">{scorecard.totalSatellites.toLocaleString()} satellites</p>
         </div>
         <div className="text-center">
           <div className={`text-3xl font-bold ${gradeInfo.color}`}>{scorecard.grade}</div>
-          <div className="text-slate-500 text-xs">{scorecard.overallScore}/100</div>
+          <div className="text-slate-400 text-xs">{scorecard.overallScore}/100</div>
         </div>
       </div>
 
@@ -246,7 +246,7 @@ function ScorecardCard({ scorecard }: { scorecard: SustainabilityScorecard }) {
         ].map((item) => (
           <div key={item.label} className="bg-slate-800/50 rounded p-2">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-slate-500 text-xs">{item.label}</span>
+              <span className="text-slate-400 text-xs">{item.label}</span>
               <span className={`text-sm font-bold ${
                 item.score >= 80 ? 'text-green-400' :
                 item.score >= 60 ? 'text-yellow-400' :
@@ -275,10 +275,10 @@ function ScorecardCard({ scorecard }: { scorecard: SustainabilityScorecard }) {
       )}
 
       {scorecard.notes && (
-        <p className="text-slate-500 text-xs line-clamp-2">{scorecard.notes}</p>
+        <p className="text-slate-400 text-xs line-clamp-2">{scorecard.notes}</p>
       )}
 
-      <div className="mt-3 pt-3 border-t border-slate-700/50 text-xs text-slate-500">
+      <div className="mt-3 pt-3 border-t border-slate-700/50 text-xs text-slate-400">
         Last updated: {new Date(scorecard.lastUpdated).toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
@@ -317,7 +317,7 @@ function SpectrumAlertCard({ alert }: { alert: SpectrumAlert }) {
             </span>
           )}
         </div>
-        <span className="text-slate-500 text-xs">
+        <span className="text-slate-400 text-xs">
           {new Date(alert.reportedAt).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
@@ -339,7 +339,7 @@ function SpectrumAlertCard({ alert }: { alert: SpectrumAlert }) {
       <p className="text-slate-300 text-sm mb-3">{alert.description}</p>
 
       {alert.location && (
-        <div className="text-slate-500 text-xs">
+        <div className="text-slate-400 text-xs">
           Location: <span className="text-slate-400">{alert.location}</span>
         </div>
       )}
@@ -503,42 +503,42 @@ function OperationalAwarenessContent() {
                 <div className="card-elevated p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-slate-500 text-xs uppercase tracking-widest mb-1">Conjunction Threat</div>
+                      <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Conjunction Threat</div>
                       <div className={`text-xl font-bold capitalize ${getStatusColor(overview.overallStatus.conjunctionThreat)}`}>
                         {overview.overallStatus.conjunctionThreat}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-slate-100">{overview.conjunctions.total}</div>
-                      <div className="text-slate-500 text-xs">Active Events</div>
+                      <div className="text-slate-400 text-xs">Active Events</div>
                     </div>
                   </div>
                 </div>
                 <div className="card-elevated p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-slate-500 text-xs uppercase tracking-widest mb-1">Spectrum Health</div>
+                      <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Spectrum Health</div>
                       <div className={`text-xl font-bold capitalize ${getStatusColor(overview.overallStatus.spectrumHealth)}`}>
                         {overview.overallStatus.spectrumHealth}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-slate-100">{overview.spectrum.totalAlerts}</div>
-                      <div className="text-slate-500 text-xs">Active Alerts</div>
+                      <div className="text-slate-400 text-xs">Active Alerts</div>
                     </div>
                   </div>
                 </div>
                 <div className="card-elevated p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-slate-500 text-xs uppercase tracking-widest mb-1">Sustainability Trend</div>
+                      <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Sustainability Trend</div>
                       <div className={`text-xl font-bold capitalize ${getStatusColor(overview.overallStatus.sustainabilityTrend)}`}>
                         {overview.overallStatus.sustainabilityTrend}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-slate-100">{overview.sustainability.averageScore}</div>
-                      <div className="text-slate-500 text-xs">Avg. Score</div>
+                      <div className="text-slate-400 text-xs">Avg. Score</div>
                     </div>
                   </div>
                 </div>
@@ -587,7 +587,7 @@ function OperationalAwarenessContent() {
                     return (
                       <div key={level} className={`card p-4 text-center ${info.bgColor} border ${info.borderColor}`}>
                         <div className={`text-2xl font-bold ${info.color}`}>{count}</div>
-                        <div className="text-slate-500 text-xs uppercase">{info.label}</div>
+                        <div className="text-slate-400 text-xs uppercase">{info.label}</div>
                       </div>
                     );
                   })}
@@ -597,7 +597,7 @@ function OperationalAwarenessContent() {
                     return (
                       <div key={sev} className={`card p-4 text-center ${info.bgColor}`}>
                         <div className={`text-2xl font-bold ${info.color}`}>{count}</div>
-                        <div className="text-slate-500 text-xs uppercase">{sev} Spectrum</div>
+                        <div className="text-slate-400 text-xs uppercase">{sev} Spectrum</div>
                       </div>
                     );
                   })}
@@ -640,13 +640,13 @@ function OperationalAwarenessContent() {
                         <div key={scorecard.id} className="card p-4 flex items-center justify-between">
                           <div>
                             <h3 className="font-medium text-slate-200">{scorecard.operatorName}</h3>
-                            <p className="text-slate-500 text-sm">{scorecard.totalSatellites.toLocaleString()} satellites</p>
+                            <p className="text-slate-400 text-sm">{scorecard.totalSatellites.toLocaleString()} satellites</p>
                           </div>
                           <div className="text-center">
                             <div className={`text-2xl font-bold ${GRADE_INFO[scorecard.grade].color}`}>
                               {scorecard.grade}
                             </div>
-                            <div className="text-slate-500 text-xs">{scorecard.overallScore}/100</div>
+                            <div className="text-slate-400 text-xs">{scorecard.overallScore}/100</div>
                           </div>
                         </div>
                       ))}
@@ -768,7 +768,7 @@ function OperationalAwarenessContent() {
                   <div className="card p-12 text-center">
                     <span className="text-5xl block mb-3">&#10003;</span>
                     <h3 className="text-xl font-semibold text-green-400 mb-2">No Events Found</h3>
-                    <p className="text-slate-500">
+                    <p className="text-slate-400">
                       {alertLevelFilter
                         ? `No ${ALERT_LEVEL_INFO[alertLevelFilter].label.toLowerCase()} alert conjunction events.`
                         : 'No active conjunction events.'}
@@ -844,7 +844,7 @@ function OperationalAwarenessContent() {
                 {filteredScorecards.length === 0 ? (
                   <div className="card p-12 text-center">
                     <h3 className="text-xl font-semibold text-slate-300 mb-2">No Scorecards Found</h3>
-                    <p className="text-slate-500">
+                    <p className="text-slate-400">
                       {gradeFilter
                         ? `No operators with grade ${gradeFilter}.`
                         : 'No sustainability scorecards available.'}
@@ -942,7 +942,7 @@ function OperationalAwarenessContent() {
                   <div className="card p-12 text-center bg-green-900/20 border border-green-500/30">
                     <span className="text-5xl block mb-3">&#10003;</span>
                     <h3 className="text-xl font-semibold text-green-400 mb-2">No Alerts Found</h3>
-                    <p className="text-slate-500">
+                    <p className="text-slate-400">
                       {severityFilter
                         ? `No ${severityFilter} severity spectrum alerts.`
                         : 'No active spectrum alerts.'}
@@ -991,7 +991,7 @@ function OperationalAwarenessContent() {
                              band.level.charAt(0).toUpperCase() + band.level.slice(1)} Congestion
                           </span>
                         </div>
-                        <div className="text-slate-500 text-sm mb-2">{band.range}</div>
+                        <div className="text-slate-400 text-sm mb-2">{band.range}</div>
                         <div className="flex flex-wrap gap-1">
                           {band.services.map((service) => (
                             <span key={service} className="text-xs bg-slate-700 text-slate-400 px-2 py-0.5 rounded">

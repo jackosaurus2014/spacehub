@@ -213,14 +213,14 @@ export default function OrbitalServicesPage() {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <Link href="/" className="text-slate-500 hover:text-slate-400 text-sm mb-2 inline-block">
+              <Link href="/" className="text-slate-400 hover:text-slate-400 text-sm mb-2 inline-block">
                 &larr; Back to Dashboard
               </Link>
               <h1 className="text-3xl font-bold text-white flex items-center gap-3">
                 <span className="text-4xl">🌐</span>
                 Orbital Services Marketplace
               </h1>
-              <p className="text-slate-500 mt-2">
+              <p className="text-slate-400 mt-2">
                 Discover and compare satellite-based services: imaging, compute, power, and more
               </p>
             </div>
@@ -253,21 +253,21 @@ export default function OrbitalServicesPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
               <div className="text-3xl font-bold text-white">{stats.totalServices}</div>
-              <div className="text-slate-500 text-sm">Total Services</div>
+              <div className="text-slate-400 text-sm">Total Services</div>
             </div>
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
               <div className="text-3xl font-bold text-white">{stats.uniqueProviders}</div>
-              <div className="text-slate-500 text-sm">Providers</div>
+              <div className="text-slate-400 text-sm">Providers</div>
             </div>
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
               <div className="text-3xl font-bold text-green-400">
                 ${(stats.totalContractValue / 1000).toFixed(1)}B
               </div>
-              <div className="text-slate-500 text-sm">Known Contract Value</div>
+              <div className="text-slate-400 text-sm">Known Contract Value</div>
             </div>
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
               <div className="text-3xl font-bold text-white">{stats.totalContracts}</div>
-              <div className="text-slate-500 text-sm">Active Contracts</div>
+              <div className="text-slate-400 text-sm">Active Contracts</div>
             </div>
           </div>
         </div>
@@ -289,7 +289,7 @@ export default function OrbitalServicesPage() {
                 className={`px-4 py-3 text-sm font-medium rounded-t-lg transition-colors ${
                   activeTab === tab.id
                     ? 'bg-slate-800/50 text-white border-t border-l border-r border-slate-700/50'
-                    : 'text-slate-500 hover:text-white hover:bg-slate-700/30'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-700/30'
                 }`}
               >
                 <span className="mr-2">{tab.icon}</span>
@@ -381,7 +381,7 @@ export default function OrbitalServicesPage() {
                                       <h4 className="text-lg font-semibold text-white">
                                         {service.serviceName}
                                       </h4>
-                                      <p className="text-slate-500 text-sm">{service.providerName}</p>
+                                      <p className="text-slate-400 text-sm">{service.providerName}</p>
                                     </div>
                                     <span className={`${availInfo.color} text-white text-xs px-2 py-1 rounded-full`}>
                                       {availInfo.label}
@@ -391,13 +391,13 @@ export default function OrbitalServicesPage() {
 
                                 {/* Body */}
                                 <div className="p-4">
-                                  <p className="text-slate-500 text-sm mb-4 line-clamp-2">
+                                  <p className="text-slate-400 text-sm mb-4 line-clamp-2">
                                     {service.description}
                                   </p>
 
                                   {/* Specs */}
                                   {(service.orbitType || service.coverage) && (
-                                    <div className="flex items-center gap-4 text-xs text-slate-500 mb-3">
+                                    <div className="flex items-center gap-4 text-xs text-slate-400 mb-3">
                                       {service.orbitType && (
                                         <span>Orbit: {service.orbitType}</span>
                                       )}
@@ -413,7 +413,7 @@ export default function OrbitalServicesPage() {
                                       {formatPrice(service)}
                                     </div>
                                     {service.pricingNotes && (
-                                      <p className="text-slate-500 text-xs mt-1">
+                                      <p className="text-slate-400 text-xs mt-1">
                                         {service.pricingNotes}
                                       </p>
                                     )}
@@ -425,7 +425,7 @@ export default function OrbitalServicesPage() {
                                       href={service.providerWebsite}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="mt-3 text-nebula-400 hover:text-nebula-300 text-sm inline-flex items-center gap-1"
+                                      className="mt-3 text-nebula-300 hover:text-nebula-200 text-sm inline-flex items-center gap-1"
                                     >
                                       Visit Provider
                                       <span>&rarr;</span>
@@ -442,7 +442,7 @@ export default function OrbitalServicesPage() {
                 </div>
 
                 {services.length === 0 && (
-                  <div className="text-center py-12 text-slate-500">
+                  <div className="text-center py-12 text-slate-400">
                     No services found matching your filters.
                   </div>
                 )}
@@ -487,13 +487,13 @@ export default function OrbitalServicesPage() {
                           <tr key={contract.id} className="hover:bg-slate-700/30">
                             <td className="px-4 py-3">
                               <div className="text-white font-medium">{contract.title}</div>
-                              <div className="text-slate-500 text-xs mt-1 line-clamp-1">
+                              <div className="text-slate-400 text-xs mt-1 line-clamp-1">
                                 {contract.description}
                               </div>
                             </td>
                             <td className="px-4 py-3">
                               <span className="text-slate-300">{contract.customerName}</span>
-                              <div className="text-slate-500 text-xs capitalize">
+                              <div className="text-slate-400 text-xs capitalize">
                                 {contract.customerType}
                               </div>
                             </td>
@@ -504,7 +504,7 @@ export default function OrbitalServicesPage() {
                               </span>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="text-slate-500 text-sm capitalize">
+                              <span className="text-slate-400 text-sm capitalize">
                                 {contract.serviceCategory.replace('_', ' ')}
                               </span>
                             </td>
@@ -527,7 +527,7 @@ export default function OrbitalServicesPage() {
                 </div>
 
                 {contracts.length === 0 && (
-                  <div className="text-center py-12 text-slate-500">
+                  <div className="text-center py-12 text-slate-400">
                     Loading contracts...
                   </div>
                 )}
@@ -539,7 +539,7 @@ export default function OrbitalServicesPage() {
               <div className="space-y-8">
                 <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
                   <h2 className="text-xl font-semibold text-white mb-4">Pricing Benchmarks by Category</h2>
-                  <p className="text-slate-500 mb-6">
+                  <p className="text-slate-400 mb-6">
                     Market rates based on published pricing, industry reports, and known contracts.
                   </p>
 
@@ -551,19 +551,19 @@ export default function OrbitalServicesPage() {
                       </h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Optical (30cm)</span>
+                          <span className="text-slate-400">Optical (30cm)</span>
                           <span className="text-green-400">$25-29/km²</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Optical (70cm-1m)</span>
+                          <span className="text-slate-400">Optical (70cm-1m)</span>
                           <span className="text-green-400">$6-12/km²</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">SAR Imagery</span>
+                          <span className="text-slate-400">SAR Imagery</span>
                           <span className="text-green-400">$10-25/km²</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Archive Imagery</span>
+                          <span className="text-slate-400">Archive Imagery</span>
                           <span className="text-green-400">$3.80-14/km²</span>
                         </div>
                       </div>
@@ -576,15 +576,15 @@ export default function OrbitalServicesPage() {
                       </h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-slate-500">GPU Compute</span>
+                          <span className="text-slate-400">GPU Compute</span>
                           <span className="text-green-400">$3-6/GPU-hour</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Edge Compute</span>
+                          <span className="text-slate-400">Edge Compute</span>
                           <span className="text-green-400">$0.50-2/hour</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Energy Advantage</span>
+                          <span className="text-slate-400">Energy Advantage</span>
                           <span className="text-blue-400">~10x vs ground</span>
                         </div>
                       </div>
@@ -597,15 +597,15 @@ export default function OrbitalServicesPage() {
                       </h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Annual Hosting</span>
+                          <span className="text-slate-400">Annual Hosting</span>
                           <span className="text-green-400">$500K-$15M/year</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Per kg Rate</span>
+                          <span className="text-slate-400">Per kg Rate</span>
                           <span className="text-green-400">$25K-75K/kg/year</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Rideshare to LEO</span>
+                          <span className="text-slate-400">Rideshare to LEO</span>
                           <span className="text-green-400">$5,500/kg</span>
                         </div>
                       </div>
@@ -618,15 +618,15 @@ export default function OrbitalServicesPage() {
                       </h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Ground Station</span>
+                          <span className="text-slate-400">Ground Station</span>
                           <span className="text-green-400">$3-15/minute</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Data Relay</span>
+                          <span className="text-slate-400">Data Relay</span>
                           <span className="text-green-400">$10K-100K/month</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">IoT/M2M</span>
+                          <span className="text-slate-400">IoT/M2M</span>
                           <span className="text-green-400">$10-500/device/mo</span>
                         </div>
                       </div>
@@ -639,15 +639,15 @@ export default function OrbitalServicesPage() {
                       </h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Target LCOE</span>
+                          <span className="text-slate-400">Target LCOE</span>
                           <span className="text-green-400">$25-50/MWh</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Demo Phase</span>
+                          <span className="text-slate-400">Demo Phase</span>
                           <span className="text-yellow-400">2026-2027</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Commercial</span>
+                          <span className="text-slate-400">Commercial</span>
                           <span className="text-blue-400">2028+</span>
                         </div>
                       </div>
@@ -660,15 +660,15 @@ export default function OrbitalServicesPage() {
                       </h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Weather Data</span>
+                          <span className="text-slate-400">Weather Data</span>
                           <span className="text-green-400">$5K-50K/month</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">RF Monitoring</span>
+                          <span className="text-slate-400">RF Monitoring</span>
                           <span className="text-green-400">$10K-100K/month</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">AIS Tracking</span>
+                          <span className="text-slate-400">AIS Tracking</span>
                           <span className="text-green-400">$1K-25K/month</span>
                         </div>
                       </div>
@@ -683,17 +683,17 @@ export default function OrbitalServicesPage() {
                     <div className="text-center p-4">
                       <div className="text-3xl mb-2">🚀</div>
                       <div className="text-xl font-bold text-white">$5,500/kg</div>
-                      <div className="text-slate-500 text-sm">Rideshare to LEO</div>
+                      <div className="text-slate-400 text-sm">Rideshare to LEO</div>
                     </div>
                     <div className="text-center p-4">
                       <div className="text-3xl mb-2">⛽</div>
                       <div className="text-xl font-bold text-white">$1M-$10M</div>
-                      <div className="text-slate-500 text-sm">Annual Ops (per satellite)</div>
+                      <div className="text-slate-400 text-sm">Annual Ops (per satellite)</div>
                     </div>
                     <div className="text-center p-4">
                       <div className="text-3xl mb-2">📉</div>
                       <div className="text-xl font-bold text-white">30-60%</div>
-                      <div className="text-slate-500 text-sm">Typical Gross Margin</div>
+                      <div className="text-slate-400 text-sm">Typical Gross Margin</div>
                     </div>
                   </div>
                 </div>
@@ -705,7 +705,7 @@ export default function OrbitalServicesPage() {
               <div className="max-w-2xl mx-auto">
                 <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
                   <h2 className="text-xl font-semibold text-white mb-2">Request Orbital Services</h2>
-                  <p className="text-slate-500 mb-6">
+                  <p className="text-slate-400 mb-6">
                     Tell us about your requirements and we&apos;ll help match you with the right providers.
                   </p>
 
@@ -717,7 +717,7 @@ export default function OrbitalServicesPage() {
                         </svg>
                       </div>
                       <h3 className="text-lg font-semibold text-white mb-2">Request Submitted!</h3>
-                      <p className="text-slate-500 mb-6">
+                      <p className="text-slate-400 mb-6">
                         We&apos;ll review your requirements and get back to you soon.
                       </p>
                       <button
@@ -849,7 +849,7 @@ export default function OrbitalServicesPage() {
           >
             <span className="text-2xl">📊</span>
             <h4 className="text-white font-medium mt-2">Market Intel</h4>
-            <p className="text-slate-500 text-sm">Space company data</p>
+            <p className="text-slate-400 text-sm">Space company data</p>
           </Link>
           <Link
             href="/spectrum-tracker"
@@ -857,7 +857,7 @@ export default function OrbitalServicesPage() {
           >
             <span className="text-2xl">📡</span>
             <h4 className="text-white font-medium mt-2">Spectrum Tracker</h4>
-            <p className="text-slate-500 text-sm">Frequency allocations</p>
+            <p className="text-slate-400 text-sm">Frequency allocations</p>
           </Link>
           <Link
             href="/space-insurance"
@@ -865,7 +865,7 @@ export default function OrbitalServicesPage() {
           >
             <span className="text-2xl">🛡️</span>
             <h4 className="text-white font-medium mt-2">Space Insurance</h4>
-            <p className="text-slate-500 text-sm">Coverage & risk</p>
+            <p className="text-slate-400 text-sm">Coverage & risk</p>
           </Link>
           <Link
             href="/resource-exchange"
@@ -873,7 +873,7 @@ export default function OrbitalServicesPage() {
           >
             <span className="text-2xl">💰</span>
             <h4 className="text-white font-medium mt-2">Resource Exchange</h4>
-            <p className="text-slate-500 text-sm">Space commodities</p>
+            <p className="text-slate-400 text-sm">Space commodities</p>
           </Link>
         </div>
       </div>

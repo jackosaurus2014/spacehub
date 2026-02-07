@@ -143,7 +143,7 @@ function getStatusColor(status: string): string {
     case 'active':
       return 'bg-green-500/20 text-green-400 border border-green-500/30';
     case 'expired':
-      return 'bg-star-500/20 text-slate-500 border border-star-500/30';
+      return 'bg-star-500/20 text-slate-400 border border-star-500/30';
     case 'claimed':
       return 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
     case 'settled':
@@ -189,7 +189,7 @@ function MarketYearCard({
       <div className="flex items-start justify-between mb-4">
         <div>
           <h4 className="text-xl font-display font-bold text-slate-900">{year.year}</h4>
-          <span className="text-slate-500 text-xs">Fiscal Year</span>
+          <span className="text-slate-400 text-xs">Fiscal Year</span>
         </div>
         <div className="text-right">
           <span
@@ -197,31 +197,31 @@ function MarketYearCard({
           >
             {year.lossRatio.toFixed(1)}%
           </span>
-          <span className="text-slate-500 text-xs block">Loss Ratio</span>
+          <span className="text-slate-400 text-xs block">Loss Ratio</span>
         </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
         <div>
-          <span className="text-slate-500 text-xs block">Total Premiums</span>
+          <span className="text-slate-400 text-xs block">Total Premiums</span>
           <span className="text-nebula-300 font-bold text-sm">
             {formatCurrency(year.totalPremiums)}
           </span>
         </div>
         <div>
-          <span className="text-slate-500 text-xs block">Market Capacity</span>
+          <span className="text-slate-400 text-xs block">Market Capacity</span>
           <span className="text-slate-900 font-bold text-sm">
             ${year.marketCapacity.toFixed(1)}B
           </span>
         </div>
         <div>
-          <span className="text-slate-500 text-xs block">Active Policies</span>
+          <span className="text-slate-400 text-xs block">Active Policies</span>
           <span className="text-slate-900 font-bold text-sm">
             {year.numberOfPolicies}
           </span>
         </div>
         <div>
-          <span className="text-slate-500 text-xs block">Avg Rate</span>
+          <span className="text-slate-400 text-xs block">Avg Rate</span>
           <span className="text-slate-900 font-bold text-sm">
             {year.avgPremiumRate.toFixed(1)}%
           </span>
@@ -231,7 +231,7 @@ function MarketYearCard({
       {/* Premium vs Claims bars */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 w-16">Premiums</span>
+          <span className="text-xs text-slate-400 w-16">Premiums</span>
           <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-nebula-500 to-nebula-400 rounded-full transition-all"
@@ -243,7 +243,7 @@ function MarketYearCard({
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 w-16">Claims</span>
+          <span className="text-xs text-slate-400 w-16">Claims</span>
           <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all"
@@ -259,22 +259,22 @@ function MarketYearCard({
       {/* Premium breakdown */}
       <div className="flex flex-wrap gap-3 mt-4 pt-3 border-t border-slate-200 text-xs">
         {year.launchPremiums !== null && (
-          <span className="text-slate-500">
-            Launch: <span className="text-slate-600 font-medium">{formatCurrency(year.launchPremiums)}</span>
+          <span className="text-slate-400">
+            Launch: <span className="text-slate-400 font-medium">{formatCurrency(year.launchPremiums)}</span>
           </span>
         )}
         {year.inOrbitPremiums !== null && (
-          <span className="text-slate-500">
-            In-Orbit: <span className="text-slate-600 font-medium">{formatCurrency(year.inOrbitPremiums)}</span>
+          <span className="text-slate-400">
+            In-Orbit: <span className="text-slate-400 font-medium">{formatCurrency(year.inOrbitPremiums)}</span>
           </span>
         )}
         {year.liabilityPremiums !== null && (
-          <span className="text-slate-500">
-            Liability: <span className="text-slate-600 font-medium">{formatCurrency(year.liabilityPremiums)}</span>
+          <span className="text-slate-400">
+            Liability: <span className="text-slate-400 font-medium">{formatCurrency(year.liabilityPremiums)}</span>
           </span>
         )}
         {year.largestClaim !== null && (
-          <span className="text-slate-500">
+          <span className="text-slate-400">
             Largest Claim: <span className="text-red-400 font-medium">{formatCurrency(year.largestClaim)}</span>
           </span>
         )}
@@ -304,7 +304,7 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
             <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600">
               {missionInfo?.label || policy.missionType}
             </span>
-            <span className="text-slate-500">{policy.insurer}</span>
+            <span className="text-slate-400">{policy.insurer}</span>
             <span
               className={`text-xs px-2 py-0.5 rounded ${getStatusColor(policy.status)}`}
             >
@@ -316,37 +316,37 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
           <div className="text-slate-900 font-bold text-sm">
             {formatCurrency(policy.insuredValue)}
           </div>
-          <div className="text-slate-500 text-xs">Insured Value</div>
+          <div className="text-slate-400 text-xs">Insured Value</div>
         </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
         <div>
-          <span className="text-slate-500 block">Premium</span>
+          <span className="text-slate-400 block">Premium</span>
           <span className="text-nebula-300 font-bold">
             {formatCurrency(policy.premiumAmount)}
           </span>
         </div>
         <div>
-          <span className="text-slate-500 block">Rate</span>
+          <span className="text-slate-400 block">Rate</span>
           <span className="text-slate-900 font-medium font-mono">
             {policy.premiumRate.toFixed(2)}%
           </span>
         </div>
         <div>
-          <span className="text-slate-500 block">Coverage</span>
+          <span className="text-slate-400 block">Coverage</span>
           <span className="text-slate-900 font-medium capitalize">
             {policy.coverageType}
           </span>
         </div>
         <div>
-          <span className="text-slate-500 block">Year</span>
+          <span className="text-slate-400 block">Year</span>
           <span className="text-slate-900 font-medium">{policy.yearWritten}</span>
         </div>
       </div>
 
       {/* Additional details + cross-module links */}
-      <div className="flex flex-wrap gap-4 mt-3 pt-3 border-t border-slate-200 text-xs text-slate-500">
+      <div className="flex flex-wrap gap-4 mt-3 pt-3 border-t border-slate-200 text-xs text-slate-400">
         {policy.operator && (
           <span>
             Operator:{' '}
@@ -358,7 +358,7 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
                 {policy.operator}
               </Link>
             ) : (
-              <span className="text-slate-600 font-medium">{policy.operator}</span>
+              <span className="text-slate-400 font-medium">{policy.operator}</span>
             )}
           </span>
         )}
@@ -376,12 +376,12 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
         )}
         {policy.deductible !== null && (
           <span>
-            Deductible: <span className="text-slate-600 font-medium">{formatCurrency(policy.deductible)}</span>
+            Deductible: <span className="text-slate-400 font-medium">{formatCurrency(policy.deductible)}</span>
           </span>
         )}
         {policy.maxPayout !== null && (
           <span>
-            Max Payout: <span className="text-slate-600 font-medium">{formatCurrency(policy.maxPayout)}</span>
+            Max Payout: <span className="text-slate-400 font-medium">{formatCurrency(policy.maxPayout)}</span>
           </span>
         )}
       </div>
@@ -397,13 +397,13 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
               </span>
             )}
             {policy.claimAmount !== null && (
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-slate-400">
                 (of {formatCurrency(policy.claimAmount)} claimed)
               </span>
             )}
           </div>
           {policy.claimReason && (
-            <p className="text-slate-500 text-xs leading-relaxed">{policy.claimReason}</p>
+            <p className="text-slate-400 text-xs leading-relaxed">{policy.claimReason}</p>
           )}
         </div>
       )}
@@ -548,7 +548,7 @@ function InsuranceContent() {
             <h2 className="text-2xl font-semibold text-slate-900 mb-2">
               No Insurance Data Available
             </h2>
-            <p className="text-slate-500 mb-6 max-w-lg mx-auto">
+            <p className="text-slate-400 mb-6 max-w-lg mx-auto">
               Load space insurance market data including historical premiums, active
               policies, and premium rate benchmarks.
             </p>
@@ -575,7 +575,7 @@ function InsuranceContent() {
                 <div className="text-2xl font-bold font-display text-nebula-300">
                   {stats ? formatCurrency(stats.totalPremiums) : '--'}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Total Market Size
                 </div>
               </div>
@@ -587,7 +587,7 @@ function InsuranceContent() {
                 >
                   {stats ? `${stats.avgLossRatio.toFixed(1)}%` : '--'}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Avg Loss Ratio
                 </div>
               </div>
@@ -595,7 +595,7 @@ function InsuranceContent() {
                 <div className="text-2xl font-bold font-display text-green-400">
                   {stats?.activePolicies ?? '--'}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Active Policies
                 </div>
               </div>
@@ -607,7 +607,7 @@ function InsuranceContent() {
                       )
                     : '--'}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Total Coverage
                 </div>
               </div>
@@ -658,7 +658,7 @@ function InsuranceContent() {
                           <h3 className="text-lg font-semibold text-slate-900">
                             {latestYear.year} Market Summary
                           </h3>
-                          <p className="text-slate-500 text-sm">
+                          <p className="text-slate-400 text-sm">
                             Latest fiscal year performance snapshot
                           </p>
                         </div>
@@ -672,19 +672,19 @@ function InsuranceContent() {
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                       <div>
-                        <span className="text-slate-500 text-xs block mb-1">Total Premiums</span>
+                        <span className="text-slate-400 text-xs block mb-1">Total Premiums</span>
                         <span className="text-nebula-300 font-bold text-lg">
                           {formatCurrency(latestYear.totalPremiums)}
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-500 text-xs block mb-1">Total Claims</span>
+                        <span className="text-slate-400 text-xs block mb-1">Total Claims</span>
                         <span className="text-red-400 font-bold text-lg">
                           {formatCurrency(latestYear.totalClaims)}
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-500 text-xs block mb-1">Loss Ratio</span>
+                        <span className="text-slate-400 text-xs block mb-1">Loss Ratio</span>
                         <span
                           className={`font-bold text-lg ${getLossRatioColor(latestYear.lossRatio)}`}
                         >
@@ -692,19 +692,19 @@ function InsuranceContent() {
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-500 text-xs block mb-1">Capacity</span>
+                        <span className="text-slate-400 text-xs block mb-1">Capacity</span>
                         <span className="text-slate-900 font-bold text-lg">
                           ${latestYear.marketCapacity.toFixed(1)}B
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-500 text-xs block mb-1">Policies</span>
+                        <span className="text-slate-400 text-xs block mb-1">Policies</span>
                         <span className="text-slate-900 font-bold text-lg">
                           {latestYear.numberOfPolicies}
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-500 text-xs block mb-1">Avg Rate</span>
+                        <span className="text-slate-400 text-xs block mb-1">Avg Rate</span>
                         <span className="text-slate-900 font-bold text-lg">
                           {latestYear.avgPremiumRate.toFixed(1)}%
                         </span>
@@ -736,16 +736,16 @@ function InsuranceContent() {
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <Link href="/debris-monitor" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                      <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">🛰️ Debris Monitor</div>
-                      <p className="text-xs text-slate-500 mt-1">Orbital debris increases collision risk and claims</p>
+                      <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">🛰️ Debris Monitor</div>
+                      <p className="text-xs text-slate-400 mt-1">Orbital debris increases collision risk and claims</p>
                     </Link>
                     <Link href="/solar-flares" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                      <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">☀️ Solar Activity</div>
-                      <p className="text-xs text-slate-500 mt-1">Solar storms affect satellite operations</p>
+                      <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">☀️ Solar Activity</div>
+                      <p className="text-xs text-slate-400 mt-1">Solar storms affect satellite operations</p>
                     </Link>
                     <Link href="/compliance?tab=regulations" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                      <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-300">📋 Compliance</div>
-                      <p className="text-xs text-slate-500 mt-1">Liability regulations and requirements</p>
+                      <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">📋 Compliance</div>
+                      <p className="text-xs text-slate-400 mt-1">Liability regulations and requirements</p>
                     </Link>
                   </div>
                 </div>
@@ -759,7 +759,7 @@ function InsuranceContent() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                       <div>
                         <h4 className="text-slate-900 font-medium mb-2">Premium Growth</h4>
-                        <p className="text-slate-500">
+                        <p className="text-slate-400">
                           Total premiums grew from {formatCurrency(marketHistory[0].totalPremiums)} in{' '}
                           {marketHistory[0].year} to{' '}
                           {formatCurrency(marketHistory[marketHistory.length - 1].totalPremiums)} in{' '}
@@ -778,7 +778,7 @@ function InsuranceContent() {
                       </div>
                       <div>
                         <h4 className="text-slate-900 font-medium mb-2">Market Capacity</h4>
-                        <p className="text-slate-500">
+                        <p className="text-slate-400">
                           Industry capacity expanded from ${marketHistory[0].marketCapacity.toFixed(1)}B
                           to ${marketHistory[marketHistory.length - 1].marketCapacity.toFixed(1)}B, reflecting
                           growing confidence from underwriters and reinsurers.
@@ -786,7 +786,7 @@ function InsuranceContent() {
                       </div>
                       <div>
                         <h4 className="text-slate-900 font-medium mb-2">Loss Experience</h4>
-                        <p className="text-slate-500">
+                        <p className="text-slate-400">
                           The{' '}
                           {marketHistory.find((y) => y.lossRatio > 100)
                             ? `${marketHistory.find((y) => y.lossRatio > 100)!.year} loss ratio of ${marketHistory.find((y) => y.lossRatio > 100)!.lossRatio.toFixed(1)}% was driven by exceptional claims, but the market has since stabilized.`
@@ -805,13 +805,13 @@ function InsuranceContent() {
                 {/* Filter Bar */}
                 <div className="card p-4 mb-6">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-slate-500 text-sm mr-2">Filter by type:</span>
+                    <span className="text-slate-400 text-sm mr-2">Filter by type:</span>
                     <button
                       onClick={() => handleTypeFilterChange('')}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         policyTypeFilter === ''
                           ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                          : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
+                          : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       All ({policies.length})
@@ -828,7 +828,7 @@ function InsuranceContent() {
                           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
                             policyTypeFilter === type
                               ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                              : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
+                              : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
                           }`}
                         >
                           <span>{info?.icon}</span>
@@ -851,19 +851,19 @@ function InsuranceContent() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   <div className="card p-3 text-center">
                     <div className="text-lg font-bold text-slate-900">{filteredPolicies.length}</div>
-                    <div className="text-slate-500 text-xs">Policies Shown</div>
+                    <div className="text-slate-400 text-xs">Policies Shown</div>
                   </div>
                   <div className="card p-3 text-center">
                     <div className="text-lg font-bold text-nebula-300">
                       {formatCurrency(totalCoverage)}
                     </div>
-                    <div className="text-slate-500 text-xs">Total Coverage</div>
+                    <div className="text-slate-400 text-xs">Total Coverage</div>
                   </div>
                   <div className="card p-3 text-center">
                     <div className="text-lg font-bold text-green-400">
                       {formatCurrency(totalPremiumAmount)}
                     </div>
-                    <div className="text-slate-500 text-xs">Total Premiums</div>
+                    <div className="text-slate-400 text-xs">Total Premiums</div>
                   </div>
                   <div className="card p-3 text-center">
                     <div className="text-lg font-bold text-slate-900">
@@ -875,7 +875,7 @@ function InsuranceContent() {
                         : '0.00'}
                       %
                     </div>
-                    <div className="text-slate-500 text-xs">Avg Premium Rate</div>
+                    <div className="text-slate-400 text-xs">Avg Premium Rate</div>
                   </div>
                 </div>
 
@@ -883,7 +883,7 @@ function InsuranceContent() {
                 {filteredPolicies.length === 0 ? (
                   <div className="text-center py-16">
                     <h3 className="text-xl font-semibold text-slate-900 mb-2">No Policies Found</h3>
-                    <p className="text-slate-500">
+                    <p className="text-slate-400">
                       {policyTypeFilter
                         ? `No ${getMissionTypeInfo(policyTypeFilter)?.label || policyTypeFilter} policies in the database.`
                         : 'No policies available.'}
@@ -910,7 +910,7 @@ function InsuranceContent() {
                       <h3 className="text-lg font-semibold text-slate-900">
                         Premium Rate Benchmarks
                       </h3>
-                      <p className="text-slate-500 text-sm">
+                      <p className="text-slate-400 text-sm">
                         Industry-standard premium rates by mission type, based on historical
                         underwriting data and risk modeling
                       </p>
@@ -962,7 +962,7 @@ function InsuranceContent() {
                               <h4 className="text-slate-900 font-semibold">
                                 {benchmark.label} Insurance
                               </h4>
-                              <p className="text-slate-500 text-xs mt-0.5 max-w-lg">
+                              <p className="text-slate-400 text-xs mt-0.5 max-w-lg">
                                 {benchmark.description}
                               </p>
                             </div>
@@ -976,19 +976,19 @@ function InsuranceContent() {
 
                         <div className="grid grid-cols-3 gap-4 mb-4">
                           <div>
-                            <span className="text-slate-500 text-xs block">Base Rate</span>
+                            <span className="text-slate-400 text-xs block">Base Rate</span>
                             <span className="text-slate-900 font-bold text-lg font-mono">
                               {benchmark.baseRate.toFixed(1)}%
                             </span>
                           </div>
                           <div>
-                            <span className="text-slate-500 text-xs block">Risk Multiplier</span>
+                            <span className="text-slate-400 text-xs block">Risk Multiplier</span>
                             <span className="text-slate-900 font-bold text-lg font-mono">
                               {benchmark.riskMultiplier.toFixed(1)}x
                             </span>
                           </div>
                           <div>
-                            <span className="text-slate-500 text-xs block">Effective Rate</span>
+                            <span className="text-slate-400 text-xs block">Effective Rate</span>
                             <span className="text-nebula-300 font-bold text-lg font-mono">
                               {benchmark.effectiveRate.toFixed(2)}%
                             </span>
@@ -1003,13 +1003,13 @@ function InsuranceContent() {
                               style={{ width: `${Math.min(barWidth, 100)}%` }}
                             />
                           </div>
-                          <span className="text-xs text-slate-500 w-16 text-right font-mono">
+                          <span className="text-xs text-slate-400 w-16 text-right font-mono">
                             {benchmark.effectiveRate.toFixed(2)}%
                           </span>
                         </div>
 
                         {/* Example calculation */}
-                        <div className="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-500">
+                        <div className="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-400">
                           <span>
                             Example: $100M insured value ={' '}
                             <span className="text-nebula-300 font-bold">
@@ -1037,7 +1037,7 @@ function InsuranceContent() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="text-slate-500 text-xs border-b border-space-600">
+                        <tr className="text-slate-400 text-xs border-b border-space-600">
                           <th className="text-left py-2 pr-4">Mission Type</th>
                           <th className="text-right py-2 pr-4">Base Rate</th>
                           <th className="text-right py-2 pr-4">Multiplier</th>
@@ -1056,19 +1056,19 @@ function InsuranceContent() {
                               <span className="mr-2">{b.icon}</span>
                               {b.label}
                             </td>
-                            <td className="py-2.5 pr-4 text-right text-slate-600 font-mono">
+                            <td className="py-2.5 pr-4 text-right text-slate-400 font-mono">
                               {b.baseRate.toFixed(1)}%
                             </td>
-                            <td className="py-2.5 pr-4 text-right text-slate-600 font-mono">
+                            <td className="py-2.5 pr-4 text-right text-slate-400 font-mono">
                               {b.riskMultiplier.toFixed(1)}x
                             </td>
                             <td className="py-2.5 pr-4 text-right text-nebula-300 font-mono font-bold">
                               {b.effectiveRate.toFixed(2)}%
                             </td>
-                            <td className="py-2.5 pr-4 text-right text-slate-600 font-mono">
+                            <td className="py-2.5 pr-4 text-right text-slate-400 font-mono">
                               {formatCurrency(100 * (b.effectiveRate / 100))}
                             </td>
-                            <td className="py-2.5 text-right text-slate-600 font-mono">
+                            <td className="py-2.5 text-right text-slate-400 font-mono">
                               {formatCurrency(500 * (b.effectiveRate / 100))}
                             </td>
                           </tr>
@@ -1083,7 +1083,7 @@ function InsuranceContent() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-slate-900 font-semibold mb-1">Need Insurance Expertise?</h3>
-                      <p className="text-slate-500 text-sm">
+                      <p className="text-slate-400 text-sm">
                         Find space insurance underwriters, brokers, and risk assessment professionals.
                       </p>
                     </div>
@@ -1104,7 +1104,7 @@ function InsuranceContent() {
                   <h3 className="text-lg font-semibold text-slate-900 mb-3">
                     Methodology & Disclaimer
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-500">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
                     <div>
                       <h4 className="text-slate-900 font-medium mb-2">Rate Derivation</h4>
                       <ul className="space-y-1">

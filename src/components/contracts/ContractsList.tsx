@@ -259,7 +259,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
                   setStatusFilter('');
                   setCategoryFilter('');
                 }}
-                className="text-sm text-nebula-400 hover:text-nebula-300 py-2 transition-colors"
+                className="text-sm text-nebula-300 hover:text-nebula-200 py-2 transition-colors"
               >
                 Clear Filters
               </button>
@@ -319,23 +319,23 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
                 <div className="flex flex-wrap items-center gap-4 text-sm">
                   {contract.value && (
                     <div className="flex items-center gap-1">
-                      <span className="text-slate-500">Value:</span>
+                      <span className="text-slate-400">Value:</span>
                       <span className="text-green-400 font-semibold">{contract.value}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-1">
-                    <span className="text-slate-500">Posted:</span>
+                    <span className="text-slate-400">Posted:</span>
                     <span className="text-slate-300">{formatDate(contract.postedDate)}</span>
                   </div>
                   {contract.dueDate && (
                     <div className="flex items-center gap-1">
-                      <span className="text-slate-500">Due:</span>
+                      <span className="text-slate-400">Due:</span>
                       <span className="text-yellow-400">{formatDate(contract.dueDate)}</span>
                     </div>
                   )}
                   {contract.awardee && (
                     <div className="flex items-center gap-1">
-                      <span className="text-slate-500">Awardee:</span>
+                      <span className="text-slate-400">Awardee:</span>
                       <span className="text-purple-400">{contract.awardee}</span>
                     </div>
                   )}

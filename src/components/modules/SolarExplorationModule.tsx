@@ -16,7 +16,7 @@ function SceneLoading() {
     <div className="h-[300px] flex items-center justify-center bg-slate-50 rounded-lg">
       <div className="text-center">
         <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" style={{ borderWidth: '3px' }} />
-        <p className="text-slate-500 text-sm">Loading 3D visualization...</p>
+        <p className="text-slate-400 text-sm">Loading 3D visualization...</p>
       </div>
     </div>
   );
@@ -82,7 +82,7 @@ export default function SolarExplorationModule() {
         </div>
         <div className="card p-8 text-center">
           <span className="text-4xl block mb-4">🛸</span>
-          <p className="text-slate-500">{error || 'No exploration data available'}</p>
+          <p className="text-slate-400">{error || 'No exploration data available'}</p>
         </div>
       </div>
     );
@@ -148,15 +148,15 @@ export default function SolarExplorationModule() {
           <div className="card p-4 space-y-4">
             <div>
               <h3 className="text-xl font-semibold text-slate-800 mb-1">{selectedBody.name}</h3>
-              <p className="text-slate-500 text-sm capitalize">{selectedBody.type}</p>
+              <p className="text-slate-400 text-sm capitalize">{selectedBody.type}</p>
             </div>
 
             {selectedBody.description && (
-              <p className="text-slate-500 text-sm">{selectedBody.description}</p>
+              <p className="text-slate-400 text-sm">{selectedBody.description}</p>
             )}
 
             <div className="border-t border-slate-200 pt-4">
-              <h4 className="text-slate-600 text-sm font-medium mb-3">Landing Statistics</h4>
+              <h4 className="text-slate-400 text-sm font-medium mb-3">Landing Statistics</h4>
               <span className="sr-only">
                 {`Landing statistics for ${selectedBody.name}: ${Object.entries(LANDER_STATUS_INFO)
                   .filter(([status]) => (landerStats[status] || 0) > 0)
@@ -170,7 +170,7 @@ export default function SolarExplorationModule() {
                   return (
                     <div key={status} className="flex items-center gap-2">
                       <div className={`w-3 h-3 rounded-full ${info.bgColor}`} />
-                      <span className="text-slate-500 text-sm">
+                      <span className="text-slate-400 text-sm">
                         {info.label}: {count}
                       </span>
                     </div>
@@ -182,7 +182,7 @@ export default function SolarExplorationModule() {
             {/* Recent Landers */}
             {selectedBody.landers && selectedBody.landers.length > 0 && (
               <div className="border-t border-slate-200 pt-4">
-                <h4 className="text-slate-600 text-sm font-medium mb-3">Recent Missions</h4>
+                <h4 className="text-slate-400 text-sm font-medium mb-3">Recent Missions</h4>
                 <div className="space-y-2">
                   {selectedBody.landers.slice(0, 3).map((lander) => {
                     const statusInfo = LANDER_STATUS_INFO[lander.status];
@@ -190,9 +190,9 @@ export default function SolarExplorationModule() {
                       <div key={lander.id} className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className={`w-2 h-2 rounded-full ${statusInfo.bgColor}`} />
-                          <span className="text-slate-600 text-sm">{lander.name}</span>
+                          <span className="text-slate-400 text-sm">{lander.name}</span>
                         </div>
-                        <span className="text-slate-500 text-xs">
+                        <span className="text-slate-400 text-xs">
                           {lander.agency || lander.country}
                         </span>
                       </div>

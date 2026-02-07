@@ -153,7 +153,7 @@ export default function QuickAccessSidebar() {
                         className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded transition-all duration-200 ${
                           isPinned
                             ? 'text-cyan-400 hover:text-cyan-300'
-                            : 'text-slate-500 hover:text-slate-300 opacity-0 group-hover:opacity-100'
+                            : 'text-slate-400 hover:text-slate-300 opacity-0 group-hover:opacity-100'
                         }`}
                         aria-label={isPinned ? 'Unpin module' : 'Pin module'}
                         style={{ right: module.isPremium ? '48px' : '8px' }}

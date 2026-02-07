@@ -293,42 +293,42 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
           <div className={`p-2 rounded-lg text-center text-xs font-medium transition-colors ${
             telemetry.maxQ
               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-slate-800/50 text-slate-500 border border-slate-700/30'
+              : 'bg-slate-800/50 text-slate-400 border border-slate-700/30'
           }`}>
             Max-Q
           </div>
           <div className={`p-2 rounded-lg text-center text-xs font-medium transition-colors ${
             telemetry.mecoComplete
               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-slate-800/50 text-slate-500 border border-slate-700/30'
+              : 'bg-slate-800/50 text-slate-400 border border-slate-700/30'
           }`}>
             MECO
           </div>
           <div className={`p-2 rounded-lg text-center text-xs font-medium transition-colors ${
             telemetry.stageSeparation
               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-slate-800/50 text-slate-500 border border-slate-700/30'
+              : 'bg-slate-800/50 text-slate-400 border border-slate-700/30'
           }`}>
             Stage Sep
           </div>
           <div className={`p-2 rounded-lg text-center text-xs font-medium transition-colors ${
             telemetry.fairingSeparation
               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-slate-800/50 text-slate-500 border border-slate-700/30'
+              : 'bg-slate-800/50 text-slate-400 border border-slate-700/30'
           }`}>
             Fairing Sep
           </div>
           <div className={`p-2 rounded-lg text-center text-xs font-medium transition-colors ${
             telemetry.secondEngineCutoff
               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-slate-800/50 text-slate-500 border border-slate-700/30'
+              : 'bg-slate-800/50 text-slate-400 border border-slate-700/30'
           }`}>
             SECO
           </div>
           <div className={`p-2 rounded-lg text-center text-xs font-medium transition-colors ${
             telemetry.orbitInsertion
               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-slate-800/50 text-slate-500 border border-slate-700/30'
+              : 'bg-slate-800/50 text-slate-400 border border-slate-700/30'
           }`}>
             Orbit
           </div>
@@ -338,7 +338,7 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
       {/* Data disclaimer */}
       {!isLive && (
         <div className="px-4 pb-4">
-          <div className="text-slate-500 text-xs text-center bg-slate-800/30 rounded-lg p-2">
+          <div className="text-slate-400 text-xs text-center bg-slate-800/30 rounded-lg p-2">
             Telemetry will display when stream goes live
           </div>
         </div>

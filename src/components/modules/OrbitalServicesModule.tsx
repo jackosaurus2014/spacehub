@@ -153,7 +153,7 @@ export default function OrbitalServicesModule() {
         </div>
         <div className="card p-8 text-center">
           <span className="text-4xl block mb-4">⚠️</span>
-          <p className="text-slate-500">{error || 'No data available'}</p>
+          <p className="text-slate-400">{error || 'No data available'}</p>
         </div>
       </div>
     );
@@ -181,25 +181,25 @@ export default function OrbitalServicesModule() {
           <div className="text-3xl font-bold text-slate-800">
             {data.stats.totalServices}
           </div>
-          <div className="text-slate-500 text-sm">Services Listed</div>
+          <div className="text-slate-400 text-sm">Services Listed</div>
         </div>
         <div className="card p-4 text-center">
           <div className="text-3xl font-bold text-nebula-300">
             {Object.keys(data.stats.byCategory).length}
           </div>
-          <div className="text-slate-500 text-sm">Categories</div>
+          <div className="text-slate-400 text-sm">Categories</div>
         </div>
         <div className="card p-4 text-center">
           <div className="text-3xl font-bold text-green-400">
             {data.stats.totalContracts}
           </div>
-          <div className="text-slate-500 text-sm">Known Contracts</div>
+          <div className="text-slate-400 text-sm">Known Contracts</div>
         </div>
         <div className="card p-4 text-center">
           <div className="text-3xl font-bold text-yellow-400">
             ${(data.stats.totalContractValue / 1000).toFixed(1)}B
           </div>
-          <div className="text-slate-500 text-sm">Contract Value</div>
+          <div className="text-slate-400 text-sm">Contract Value</div>
         </div>
       </div>
 
@@ -223,7 +223,7 @@ export default function OrbitalServicesModule() {
                     <div key={service.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
                       <div className="min-w-0">
                         <div className="text-slate-800 text-sm truncate">{service.serviceName}</div>
-                        <div className="text-slate-500 text-xs">{service.providerName}</div>
+                        <div className="text-slate-400 text-xs">{service.providerName}</div>
                       </div>
                       <div className="flex items-center gap-2 ml-2">
                         <span className="text-green-400 text-sm font-medium whitespace-nowrap">
@@ -235,7 +235,7 @@ export default function OrbitalServicesModule() {
                   {typeServices.length > 2 && (
                     <Link
                       href={`/orbital-services?category=${typeInfo.category}`}
-                      className="text-nebula-400 text-xs hover:text-nebula-300"
+                      className="text-nebula-300 text-xs hover:text-nebula-200"
                     >
                       +{typeServices.length - 2} more services →
                     </Link>
@@ -279,7 +279,7 @@ export default function OrbitalServicesModule() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-slate-500 text-xs uppercase border-b border-slate-200">
+                <tr className="text-slate-400 text-xs uppercase border-b border-slate-200">
                   <th className="text-left py-2 px-2">Contract</th>
                   <th className="text-left py-2 px-2">Customer</th>
                   <th className="text-left py-2 px-2">Provider</th>
@@ -290,8 +290,8 @@ export default function OrbitalServicesModule() {
                 {data.contracts.slice(0, 5).map((contract) => (
                   <tr key={contract.id} className="border-b border-slate-200 hover:bg-slate-100">
                     <td className="py-2 px-2 text-slate-800">{contract.title}</td>
-                    <td className="py-2 px-2 text-slate-500">{contract.customerName}</td>
-                    <td className="py-2 px-2 text-slate-500">{contract.providerName}</td>
+                    <td className="py-2 px-2 text-slate-400">{contract.customerName}</td>
+                    <td className="py-2 px-2 text-slate-400">{contract.providerName}</td>
                     <td className="py-2 px-2 text-right text-green-400 font-medium">
                       {contract.contractValue
                         ? `$${contract.contractValue >= 1000

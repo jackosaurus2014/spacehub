@@ -30,7 +30,7 @@ export default function CategoriesModule() {
               {categoryIcons[category.slug]}
             </span>
             <div>
-              <h3 className="font-semibold text-white text-sm group-hover:text-nebula-300 transition-colors">
+              <h3 className="font-semibold text-white text-sm group-hover:text-nebula-200 transition-colors">
                 {category.name}
               </h3>
               <p className="text-star-300 text-xs mt-1 hidden lg:block">{category.description}</p>

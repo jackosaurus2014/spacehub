@@ -94,7 +94,7 @@ export default function DataInitializer() {
         </div>
         <p className="text-white text-lg font-medium mb-2">Initializing SpaceNexus</p>
         <p className="text-star-300 text-sm">{message || 'Loading space industry data...'}</p>
-        <p className="text-star-400 text-xs mt-4">This only happens once</p>
+        <p className="text-star-300 text-xs mt-4">This only happens once</p>
       </div>
     </div>
   );

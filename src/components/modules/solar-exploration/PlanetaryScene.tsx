@@ -68,7 +68,7 @@ export default function PlanetaryScene({ body, height = '400px' }: PlanetaryScen
       )}
 
       {/* Controls hint */}
-      <div className="absolute bottom-2 left-2 text-star-400 text-xs bg-space-900/80 px-2 py-1 rounded">
+      <div className="absolute bottom-2 left-2 text-star-300 text-xs bg-space-900/80 px-2 py-1 rounded">
         Drag to rotate • Scroll to zoom
       </div>
 

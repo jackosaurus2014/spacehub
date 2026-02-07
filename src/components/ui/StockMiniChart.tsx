@@ -16,7 +16,7 @@ export default function StockMiniChart({
   if (!data || data.length < 2) {
     return (
       <div
-        className="bg-space-700/50 rounded flex items-center justify-center text-star-400 text-xs"
+        className="bg-space-700/50 rounded flex items-center justify-center text-star-300 text-xs"
         style={{ width, height }}
       >
         No data

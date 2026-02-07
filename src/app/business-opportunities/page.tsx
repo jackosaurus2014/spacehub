@@ -64,14 +64,14 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             {opportunity.title}
           </h3>
 
-          <p className="text-slate-500 text-sm mb-3">
+          <p className="text-slate-400 text-sm mb-3">
             {opportunity.description}
           </p>
 
           <div className="flex flex-wrap items-center gap-3 text-sm mb-3">
             {opportunity.estimatedValue && (
               <div className="flex items-center gap-1">
-                <span className="text-slate-500">Value:</span>
+                <span className="text-slate-400">Value:</span>
                 <span className="text-green-400 font-semibold">
                   {opportunity.estimatedValue}
                 </span>
@@ -79,7 +79,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             )}
             {timeframeInfo && (
               <div className="flex items-center gap-1">
-                <span className="text-slate-500">Timeframe:</span>
+                <span className="text-slate-400">Timeframe:</span>
                 <span className={`${timeframeInfo.color} text-slate-900 px-2 py-0.5 rounded text-xs`}>
                   {timeframeInfo.label}
                 </span>
@@ -87,7 +87,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             )}
             {difficultyInfo && (
               <div className="flex items-center gap-1">
-                <span className="text-slate-500">Difficulty:</span>
+                <span className="text-slate-400">Difficulty:</span>
                 <span className={`${difficultyInfo.color} text-slate-900 px-2 py-0.5 rounded text-xs`}>
                   {difficultyInfo.label}
                 </span>
@@ -95,7 +95,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             )}
             {opportunity.aiConfidence && (
               <div className="flex items-center gap-1">
-                <span className="text-slate-500">Confidence:</span>
+                <span className="text-slate-400">Confidence:</span>
                 <span className="text-nebula-300">
                   {Math.round(opportunity.aiConfidence * 100)}%
                 </span>
@@ -106,7 +106,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
           {/* Target Audience */}
           {opportunity.targetAudience && opportunity.targetAudience.length > 0 && (
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-slate-500 text-sm">For:</span>
+              <span className="text-slate-400 text-sm">For:</span>
               <div className="flex gap-1">
                 {(opportunity.targetAudience as TargetAudience[]).map((audience) => {
                   const info = TARGET_AUDIENCE_INFO[audience];
@@ -127,7 +127,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
           <div className="flex flex-wrap gap-2 mb-3">
             <Link
               href="/market-intel"
-              className="text-xs text-nebula-400 hover:text-nebula-300 bg-nebula-500/10 px-2 py-1 rounded transition-colors"
+              className="text-xs text-nebula-300 hover:text-nebula-200 bg-nebula-500/10 px-2 py-1 rounded transition-colors"
             >
               View related companies →
             </Link>
@@ -146,7 +146,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             <div>
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="text-nebula-400 hover:text-nebula-300 text-sm flex items-center gap-1"
+                className="text-nebula-300 hover:text-nebula-200 text-sm flex items-center gap-1"
               >
                 {expanded ? '▼ Hide Analysis' : '▶ Show Full Analysis'}
               </button>
@@ -155,7 +155,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
                   {opportunity.fullAnalysis && (
                     <div className="mb-3">
                       <h4 className="text-slate-900 font-medium mb-2">Full Analysis</h4>
-                      <p className="text-slate-500 text-sm whitespace-pre-wrap">
+                      <p className="text-slate-400 text-sm whitespace-pre-wrap">
                         {opportunity.fullAnalysis}
                       </p>
                     </div>
@@ -163,7 +163,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
                   {opportunity.aiReasoning && (
                     <div>
                       <h4 className="text-slate-900 font-medium mb-2">🤖 AI Reasoning</h4>
-                      <p className="text-slate-500 text-sm">{opportunity.aiReasoning}</p>
+                      <p className="text-slate-400 text-sm">{opportunity.aiReasoning}</p>
                     </div>
                   )}
                   {opportunity.relatedTrends && opportunity.relatedTrends.length > 0 && (
@@ -392,14 +392,14 @@ function BusinessOpportunitiesContent() {
                     AI Analysis Complete
                   </span>
                 </div>
-                <p className="text-slate-500 text-sm">
+                <p className="text-slate-400 text-sm">
                   Found {analysisResult.opportunitiesFound} new opportunities.
                 </p>
                 {analysisResult.insights.length > 0 && (
-                  <ul className="mt-2 text-sm text-slate-500">
+                  <ul className="mt-2 text-sm text-slate-400">
                     {analysisResult.insights.slice(0, 3).map((insight, i) => (
                       <li key={i} className="flex items-center gap-2">
-                        <span className="text-nebula-400">•</span>
+                        <span className="text-nebula-300">•</span>
                         {insight}
                       </li>
                     ))}
@@ -423,27 +423,27 @@ function BusinessOpportunitiesContent() {
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
               <div className="card-elevated p-6 text-center">
                 <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.total}</div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Total Opportunities</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Opportunities</div>
               </div>
               <div className="card-elevated p-6 text-center">
                 <div className="text-4xl font-bold font-display tracking-tight text-yellow-400">{stats.featured}</div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Featured</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Featured</div>
               </div>
               <div className="card-elevated p-6 text-center">
                 <div className="text-4xl font-bold font-display tracking-tight text-green-400">{stats.recentCount}</div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Added This Week</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Added This Week</div>
               </div>
               <div className="card-elevated p-6 text-center">
                 <div className="text-4xl font-bold font-display tracking-tight text-blue-400">
                   {stats.byType?.government_contract || 0}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">Gov Contracts</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Gov Contracts</div>
               </div>
               <div className="card-elevated p-6 text-center">
                 <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
                   {stats.byType?.ai_insight || 0}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">AI Insights</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">AI Insights</div>
               </div>
             </div>
 
@@ -451,7 +451,7 @@ function BusinessOpportunitiesContent() {
             <div className="card p-4 mb-6">
               <div className="flex flex-wrap items-center gap-4">
                 <div>
-                  <label className="block text-slate-500 text-sm mb-1">Type</label>
+                  <label className="block text-slate-400 text-sm mb-1">Type</label>
                   <select
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value as OpportunityType | '')}
@@ -467,7 +467,7 @@ function BusinessOpportunitiesContent() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-500 text-sm mb-1">Category</label>
+                  <label className="block text-slate-400 text-sm mb-1">Category</label>
                   <select
                     value={selectedCategory}
                     onChange={(e) =>
@@ -485,7 +485,7 @@ function BusinessOpportunitiesContent() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-500 text-sm mb-1">For</label>
+                  <label className="block text-slate-400 text-sm mb-1">For</label>
                   <select
                     value={selectedAudience}
                     onChange={(e) =>
@@ -509,7 +509,7 @@ function BusinessOpportunitiesContent() {
                         setSelectedCategory('');
                         setSelectedAudience('');
                       }}
-                      className="text-sm text-nebula-400 hover:text-nebula-300 py-2"
+                      className="text-sm text-nebula-300 hover:text-nebula-200 py-2"
                     >
                       Clear Filters
                     </button>
@@ -547,7 +547,7 @@ function BusinessOpportunitiesContent() {
             <h2 className="text-2xl font-semibold text-slate-900 mb-2">
               No Opportunities Yet
             </h2>
-            <p className="text-slate-500 mb-6">
+            <p className="text-slate-400 mb-6">
               Initialize the database with curated space industry opportunities.
             </p>
             <button
@@ -569,7 +569,7 @@ function BusinessOpportunitiesContent() {
           <div className="card p-12 text-center">
             <span className="text-6xl block mb-4">🔍</span>
             <h2 className="text-2xl font-semibold text-slate-900 mb-2">No Results</h2>
-            <p className="text-slate-500">
+            <p className="text-slate-400">
               No opportunities match your filters. Try adjusting your criteria.
             </p>
           </div>
@@ -588,7 +588,7 @@ function BusinessOpportunitiesContent() {
                 <h3 className="text-lg font-semibold text-slate-900 mb-2">
                   About AI-Powered Opportunities
                 </h3>
-                <p className="text-slate-500 text-sm max-w-3xl mx-auto">
+                <p className="text-slate-400 text-sm max-w-3xl mx-auto">
                   Our AI system analyzes news sources, government solicitations, company reports,
                   and market trends to identify business opportunities in the space industry.
                   The &quot;AI Deep Dive&quot; feature uses advanced analysis to discover emerging

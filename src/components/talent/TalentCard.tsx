@@ -41,7 +41,7 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
               )}
             </div>
             <p className="text-slate-400 text-xs truncate">{talent.title}</p>
-            <p className="text-slate-500 text-xs">{talent.organization}</p>
+            <p className="text-slate-400 text-xs">{talent.organization}</p>
           </div>
           <span className={`text-xs px-2 py-0.5 rounded ${availabilityInfo.bgColor}/20 ${availabilityInfo.color}`}>
             {availabilityInfo.label}
@@ -78,7 +78,7 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
             )}
           </div>
           <p className="text-slate-300 text-sm">{talent.title}</p>
-          <p className="text-slate-500 text-sm">{talent.organization}</p>
+          <p className="text-slate-400 text-sm">{talent.organization}</p>
         </div>
         <div className="text-right">
           <span className={`inline-block text-xs px-2 py-1 rounded ${availabilityInfo.bgColor}/20 ${availabilityInfo.color} mb-1`}>

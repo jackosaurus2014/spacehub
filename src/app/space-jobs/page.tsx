@@ -199,7 +199,7 @@ export default function SpaceTalentPage() {
                     placeholder="Search by name, title, organization, or expertise..."
                     value={talentSearch}
                     onChange={(e) => setTalentSearch(e.target.value)}
-                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white placeholder-slate-400 text-sm focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <select

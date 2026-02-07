@@ -84,13 +84,13 @@ export default function ServiceListingDialog({ isOpen, onClose }: ServiceListing
         <div className="flex items-center justify-between p-6 border-b border-space-700">
           <div>
             <h2 className="text-xl font-semibold text-white">List Your Service</h2>
-            <p className="text-star-400 text-sm mt-1">
+            <p className="text-star-300 text-sm mt-1">
               Get your orbital service listed in our marketplace
             </p>
           </div>
           <button
             onClick={handleClose}
-            className="text-star-400 hover:text-white transition-colors p-2"
+            className="text-star-300 hover:text-white transition-colors p-2"
             aria-label="Close dialog"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,7 +169,7 @@ export default function ServiceListingDialog({ isOpen, onClose }: ServiceListing
                   className="input"
                   placeholder="contact@example.com"
                 />
-                <p className="text-star-400 text-xs mt-1">
+                <p className="text-star-300 text-xs mt-1">
                   This email will be shared with potential customers
                 </p>
               </div>
@@ -236,7 +236,7 @@ export default function ServiceListingDialog({ isOpen, onClose }: ServiceListing
                   className="input resize-none"
                   placeholder="e.g., $10-15/km² for standard imagery, volume discounts available for orders over 1000 km²..."
                 />
-                <p className="text-star-400 text-xs mt-1">
+                <p className="text-star-300 text-xs mt-1">
                   Include pricing model, rates, minimums, and any discount tiers
                 </p>
               </div>

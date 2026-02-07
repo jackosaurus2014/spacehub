@@ -81,7 +81,7 @@ export default function NewsFeedModule() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 hover:border-nebula-500/50 rounded-full text-sm transition-all"
             >
               <span className="text-base">{categoryIcons[category.slug] || '📁'}</span>
-              <span className="text-slate-600 group-hover:text-slate-800">{category.name}</span>
+              <span className="text-slate-400 group-hover:text-slate-800">{category.name}</span>
             </Link>
           ))}
         </div>
@@ -121,7 +121,7 @@ export default function NewsFeedModule() {
         <div className="card p-8 text-center">
           <span className="text-5xl block mb-4">📭</span>
           <h3 className="text-xl font-semibold text-slate-800 mb-2">No News Available</h3>
-          <p className="text-slate-500">Check back soon for the latest space industry updates.</p>
+          <p className="text-slate-400">Check back soon for the latest space industry updates.</p>
         </div>
       )}
     </div>

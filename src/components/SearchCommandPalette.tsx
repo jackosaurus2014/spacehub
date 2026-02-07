@@ -669,12 +669,12 @@ export default function SearchCommandPalette() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search modules, pages, content..."
-            className="flex-1 py-4 bg-transparent text-slate-100 placeholder-slate-500 text-lg focus:outline-none"
+            className="flex-1 py-4 bg-transparent text-slate-100 placeholder-slate-400 text-lg focus:outline-none"
           />
           {isSearching && (
             <div className="w-4 h-4 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin mr-3" />
           )}
-          <div className="flex items-center gap-1 text-slate-500 text-sm">
+          <div className="flex items-center gap-1 text-slate-400 text-sm">
             <kbd className="px-2 py-1 rounded bg-slate-700/50 border border-slate-600/50 text-xs font-mono">
               {shortcutKey}
             </kbd>
@@ -751,7 +751,7 @@ export default function SearchCommandPalette() {
                         </p>
                       </div>
                       {isSelected && (
-                        <div className="flex-shrink-0 flex items-center gap-1 text-slate-500">
+                        <div className="flex-shrink-0 flex items-center gap-1 text-slate-400">
                           <kbd className="px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600/50 text-[10px] font-mono">
                             Enter
                           </kbd>
@@ -766,7 +766,7 @@ export default function SearchCommandPalette() {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-cyan-400/20 text-xs text-slate-500">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-cyan-400/20 text-xs text-slate-400">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600/50 font-mono">

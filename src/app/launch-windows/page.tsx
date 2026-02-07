@@ -136,22 +136,22 @@ function CountdownTimer({ targetDate }: { targetDate: Date | string }) {
     <div className="flex items-center gap-3">
       <div className="text-center">
         <div className="text-2xl font-bold font-display text-cyan-400">{timeLeft.days}</div>
-        <div className="text-[10px] text-slate-500 uppercase tracking-widest">Days</div>
+        <div className="text-[10px] text-slate-400 uppercase tracking-widest">Days</div>
       </div>
-      <span className="text-slate-600">:</span>
+      <span className="text-slate-400">:</span>
       <div className="text-center">
         <div className="text-2xl font-bold font-display text-cyan-400">{String(timeLeft.hours).padStart(2, '0')}</div>
-        <div className="text-[10px] text-slate-500 uppercase tracking-widest">Hrs</div>
+        <div className="text-[10px] text-slate-400 uppercase tracking-widest">Hrs</div>
       </div>
-      <span className="text-slate-600">:</span>
+      <span className="text-slate-400">:</span>
       <div className="text-center">
         <div className="text-2xl font-bold font-display text-cyan-400">{String(timeLeft.minutes).padStart(2, '0')}</div>
-        <div className="text-[10px] text-slate-500 uppercase tracking-widest">Min</div>
+        <div className="text-[10px] text-slate-400 uppercase tracking-widest">Min</div>
       </div>
-      <span className="text-slate-600">:</span>
+      <span className="text-slate-400">:</span>
       <div className="text-center">
         <div className="text-2xl font-bold font-display text-cyan-400">{String(timeLeft.seconds).padStart(2, '0')}</div>
-        <div className="text-[10px] text-slate-500 uppercase tracking-widest">Sec</div>
+        <div className="text-[10px] text-slate-400 uppercase tracking-widest">Sec</div>
       </div>
     </div>
   );
@@ -181,30 +181,30 @@ function DestinationCard({ destination }: { destination: CelestialDestination })
         </div>
         <div className="text-right">
           <div className={`text-xl font-bold ${successColor}`}>{successRate.toFixed(0)}%</div>
-          <div className="text-[10px] text-slate-500 uppercase tracking-widest">Success</div>
+          <div className="text-[10px] text-slate-400 uppercase tracking-widest">Success</div>
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="bg-slate-900/50 rounded-lg p-3">
-          <span className="text-slate-500 text-xs block mb-1">Distance</span>
+          <span className="text-slate-400 text-xs block mb-1">Distance</span>
           <span className="text-white text-sm font-medium">{formatDistance(destination.distanceFromEarth)}</span>
         </div>
         <div className="bg-slate-900/50 rounded-lg p-3">
-          <span className="text-slate-500 text-xs block mb-1">Delta-V to Orbit</span>
+          <span className="text-slate-400 text-xs block mb-1">Delta-V to Orbit</span>
           <span className="text-white text-sm font-medium">
             {destination.deltaVToOrbit ? `${destination.deltaVToOrbit} km/s` : '--'}
           </span>
         </div>
         <div className="bg-slate-900/50 rounded-lg p-3">
-          <span className="text-slate-500 text-xs block mb-1">Synodic Period</span>
+          <span className="text-slate-400 text-xs block mb-1">Synodic Period</span>
           <span className="text-white text-sm font-medium">
             {destination.synodicPeriod ? `${destination.synodicPeriod.toFixed(0)} days` : 'Continuous'}
           </span>
         </div>
         <div className="bg-slate-900/50 rounded-lg p-3">
-          <span className="text-slate-500 text-xs block mb-1">Total Missions</span>
+          <span className="text-slate-400 text-xs block mb-1">Total Missions</span>
           <span className="text-white text-sm font-medium">{destination.totalMissions}</span>
         </div>
       </div>
@@ -212,7 +212,7 @@ function DestinationCard({ destination }: { destination: CelestialDestination })
       {/* Mission Success Bar */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-slate-500 text-xs">Mission Success Rate</span>
+          <span className="text-slate-400 text-xs">Mission Success Rate</span>
           <span className="text-slate-400 text-xs">
             {destination.successfulMissions}/{destination.totalMissions}
           </span>
@@ -234,7 +234,7 @@ function DestinationCard({ destination }: { destination: CelestialDestination })
         <div className="flex items-center gap-4 pt-3 border-t border-slate-700/50 text-sm">
           {destination.deltaVToOrbit && (
             <div className="flex-1">
-              <span className="text-slate-500 text-xs">To Orbit</span>
+              <span className="text-slate-400 text-xs">To Orbit</span>
               <div className="text-cyan-400 font-semibold">{destination.deltaVToOrbit} km/s</div>
             </div>
           )}
@@ -242,7 +242,7 @@ function DestinationCard({ destination }: { destination: CelestialDestination })
             <>
               <div className="w-px h-8 bg-slate-700/50" />
               <div className="flex-1">
-                <span className="text-slate-500 text-xs">To Land</span>
+                <span className="text-slate-400 text-xs">To Land</span>
                 <div className="text-cyan-400 font-semibold">{destination.deltaVToLand} km/s</div>
               </div>
             </>
@@ -286,7 +286,7 @@ function WindowCard({ window: launchWindow }: { window: LaunchWindow }) {
             <h4 className="text-white font-semibold">{launchWindow.destination}</h4>
             <div className="flex items-center gap-2 text-sm">
               <span className="text-slate-400">{missionInfo.label}</span>
-              <span className="text-slate-600">|</span>
+              <span className="text-slate-400">|</span>
               <span className={`${transferInfo.color}`}>{transferInfo.label}</span>
             </div>
           </div>
@@ -297,13 +297,13 @@ function WindowCard({ window: launchWindow }: { window: LaunchWindow }) {
               WINDOW OPEN
             </span>
           ) : isPast ? (
-            <span className="text-xs font-medium px-2.5 py-1 rounded bg-slate-700/50 text-slate-500">
+            <span className="text-xs font-medium px-2.5 py-1 rounded bg-slate-700/50 text-slate-400">
               Closed
             </span>
           ) : (
             <div>
               <div className="text-cyan-400 font-bold text-lg">T-{daysToOpen}d</div>
-              <div className="text-[10px] text-slate-500 uppercase tracking-widest">Until Open</div>
+              <div className="text-[10px] text-slate-400 uppercase tracking-widest">Until Open</div>
             </div>
           )}
         </div>
@@ -312,7 +312,7 @@ function WindowCard({ window: launchWindow }: { window: LaunchWindow }) {
       {/* Window Dates */}
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="bg-slate-900/50 rounded-lg p-3 text-center">
-          <span className="text-slate-500 text-xs block mb-1">Window Opens</span>
+          <span className="text-slate-400 text-xs block mb-1">Window Opens</span>
           <span className="text-white text-sm font-medium">{formatDateShort(launchWindow.windowOpen)}</span>
         </div>
         <div className="bg-slate-900/50 rounded-lg p-3 text-center border border-cyan-500/20">
@@ -320,7 +320,7 @@ function WindowCard({ window: launchWindow }: { window: LaunchWindow }) {
           <span className="text-cyan-400 text-sm font-medium">{formatDateShort(launchWindow.optimalDate)}</span>
         </div>
         <div className="bg-slate-900/50 rounded-lg p-3 text-center">
-          <span className="text-slate-500 text-xs block mb-1">Window Closes</span>
+          <span className="text-slate-400 text-xs block mb-1">Window Closes</span>
           <span className="text-white text-sm font-medium">{formatDateShort(launchWindow.windowClose)}</span>
         </div>
       </div>
@@ -328,19 +328,19 @@ function WindowCard({ window: launchWindow }: { window: LaunchWindow }) {
       {/* Mission Parameters */}
       <div className="flex flex-wrap items-center gap-4 mb-4 text-sm">
         <div>
-          <span className="text-slate-500 text-xs block">Travel Time</span>
+          <span className="text-slate-400 text-xs block">Travel Time</span>
           <span className="text-white font-medium">{formatTravelTime(launchWindow.travelTime)}</span>
         </div>
         <div className="w-px h-8 bg-slate-700/50" />
         <div>
-          <span className="text-slate-500 text-xs block">Delta-V</span>
+          <span className="text-slate-400 text-xs block">Delta-V</span>
           <span className="text-white font-medium">{launchWindow.deltaV} km/s</span>
         </div>
         {launchWindow.c3Energy !== null && (
           <>
             <div className="w-px h-8 bg-slate-700/50" />
             <div>
-              <span className="text-slate-500 text-xs block">C3 Energy</span>
+              <span className="text-slate-400 text-xs block">C3 Energy</span>
               <span className="text-white font-medium">{launchWindow.c3Energy.toFixed(1)} km²/s²</span>
             </div>
           </>
@@ -349,7 +349,7 @@ function WindowCard({ window: launchWindow }: { window: LaunchWindow }) {
           <>
             <div className="w-px h-8 bg-slate-700/50" />
             <div>
-              <span className="text-slate-500 text-xs block">Arrival V</span>
+              <span className="text-slate-400 text-xs block">Arrival V</span>
               <span className="text-white font-medium">{launchWindow.arrivalVelocity.toFixed(1)} km/s</span>
             </div>
           </>
@@ -358,7 +358,7 @@ function WindowCard({ window: launchWindow }: { window: LaunchWindow }) {
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-3 border-t border-slate-700/50">
-        <span className="text-slate-500 text-xs">
+        <span className="text-slate-400 text-xs">
           Frequency: <span className="text-slate-300">{launchWindow.frequency}</span>
         </span>
         <span className={`text-xs font-medium px-2 py-0.5 rounded ${transferInfo.bgColor} ${transferInfo.color}`}>
@@ -559,7 +559,7 @@ function LaunchWindowsContent() {
             <div className="text-4xl font-bold font-display tracking-tight text-white">
               {data.stats.totalDestinations}
             </div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
               Destinations
             </div>
           </div>
@@ -567,7 +567,7 @@ function LaunchWindowsContent() {
             <div className="text-4xl font-bold font-display tracking-tight text-cyan-400">
               {data.stats.upcomingWindows}
             </div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
               Upcoming Windows
             </div>
           </div>
@@ -577,7 +577,7 @@ function LaunchWindowsContent() {
                 <div className="text-2xl font-bold font-display tracking-tight text-green-400">
                   {nextWindow.destination}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Next Window
                 </div>
                 <div className="text-xs text-slate-400 mt-1">
@@ -586,10 +586,10 @@ function LaunchWindowsContent() {
               </>
             ) : (
               <>
-                <div className="text-2xl font-bold font-display tracking-tight text-slate-600">
+                <div className="text-2xl font-bold font-display tracking-tight text-slate-400">
                   --
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Next Window
                 </div>
               </>
@@ -601,7 +601,7 @@ function LaunchWindowsContent() {
                 <div className="text-2xl font-bold font-display tracking-tight text-purple-400">
                   {data.stats.mostAccessible.name}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Most Accessible
                 </div>
                 <div className="text-xs text-slate-400 mt-1">
@@ -610,10 +610,10 @@ function LaunchWindowsContent() {
               </>
             ) : (
               <>
-                <div className="text-2xl font-bold font-display tracking-tight text-slate-600">
+                <div className="text-2xl font-bold font-display tracking-tight text-slate-400">
                   --
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Most Accessible
                 </div>
               </>
@@ -659,7 +659,7 @@ function LaunchWindowsContent() {
                   className={`text-xs px-1.5 py-0.5 rounded-full ${
                     activeTab === tab.id
                       ? 'bg-white/20 text-slate-900'
-                      : 'bg-slate-700/50 text-slate-500'
+                      : 'bg-slate-700/50 text-slate-400'
                   }`}
                 >
                   {tab.count}
@@ -703,7 +703,7 @@ function LaunchWindowsContent() {
                   );
                 })}
 
-                <span className="text-xs text-slate-500 ml-auto">
+                <span className="text-xs text-slate-400 ml-auto">
                   {filteredWindows.length} {filteredWindows.length === 1 ? 'window' : 'windows'} found
                 </span>
               </div>
@@ -825,7 +825,7 @@ function LaunchWindowsContent() {
               </ul>
             </div>
           </div>
-          <p className="text-slate-500 text-xs mt-4">
+          <p className="text-slate-400 text-xs mt-4">
             Launch windows are calculated based on orbital mechanics and represent optimal transfer opportunities.
             Actual mission planning requires detailed trajectory analysis and spacecraft-specific parameters.
           </p>

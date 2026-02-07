@@ -50,7 +50,7 @@ function OpportunityCard({ opportunity }: { opportunity: BusinessOpportunity }) 
           )}
         </div>
         {opportunity.aiConfidence && (
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-slate-400">
             {Math.round(opportunity.aiConfidence * 100)}% confidence
           </span>
         )}
@@ -60,7 +60,7 @@ function OpportunityCard({ opportunity }: { opportunity: BusinessOpportunity }) 
         {opportunity.title}
       </h3>
 
-      <p className="text-slate-500 text-xs mb-3 line-clamp-2">
+      <p className="text-slate-400 text-xs mb-3 line-clamp-2">
         {opportunity.description}
       </p>
 
@@ -183,7 +183,7 @@ export default function BusinessOpportunitiesModule() {
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">💼</span>
         <h3 className="text-xl font-semibold text-slate-800 mb-2">Business Opportunities</h3>
-        <p className="text-slate-500 mb-4">
+        <p className="text-slate-400 mb-4">
           Discover AI-powered business opportunities in the space industry.
         </p>
         <button
@@ -213,7 +213,7 @@ export default function BusinessOpportunitiesModule() {
             <h2 className="text-2xl font-display font-bold text-slate-800">
               Business Opportunities
             </h2>
-            <p className="text-slate-500 text-sm">
+            <p className="text-slate-400 text-sm">
               AI-powered insights for entrepreneurs & investors
             </p>
           </div>
@@ -251,21 +251,21 @@ export default function BusinessOpportunitiesModule() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-slate-800">{stats.total}</div>
-            <div className="text-slate-500 text-xs">Opportunities</div>
+            <div className="text-slate-400 text-xs">Opportunities</div>
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-yellow-400">{stats.featured}</div>
-            <div className="text-slate-500 text-xs">Featured</div>
+            <div className="text-slate-400 text-xs">Featured</div>
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-green-400">{stats.recentCount}</div>
-            <div className="text-slate-500 text-xs">This Week</div>
+            <div className="text-slate-400 text-xs">This Week</div>
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-nebula-300">
               {stats.byType?.ai_insight || 0}
             </div>
-            <div className="text-slate-500 text-xs">AI Insights</div>
+            <div className="text-slate-400 text-xs">AI Insights</div>
           </div>
         </div>
       )}
@@ -298,7 +298,7 @@ export default function BusinessOpportunitiesModule() {
 
           {showMoonshots ? (
             <div className="space-y-4">
-              <p className="text-slate-500 text-sm italic mb-4">
+              <p className="text-slate-400 text-sm italic mb-4">
                 Unconventional, high-risk opportunities that others might overlook. For educational purposes only.
               </p>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -317,27 +317,27 @@ export default function BusinessOpportunitiesModule() {
                     </div>
 
                     <h4 className="text-slate-800 font-semibold mb-2">{moonshot.title}</h4>
-                    <p className="text-slate-500 text-sm mb-4">{moonshot.description}</p>
+                    <p className="text-slate-400 text-sm mb-4">{moonshot.description}</p>
 
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Time Horizon:</span>
-                        <span className="text-slate-600">{moonshot.timeHorizon}</span>
+                        <span className="text-slate-400">Time Horizon:</span>
+                        <span className="text-slate-400">{moonshot.timeHorizon}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Capital Required:</span>
-                        <span className="text-slate-600">{moonshot.requiredCapital}</span>
+                        <span className="text-slate-400">Capital Required:</span>
+                        <span className="text-slate-400">{moonshot.requiredCapital}</span>
                       </div>
                     </div>
 
                     <div className="mt-4 pt-3 border-t border-slate-200">
                       <div className="mb-2">
                         <span className="text-orange-400 text-xs font-medium">Why Most Would Dismiss:</span>
-                        <p className="text-slate-500 text-xs mt-1">{moonshot.whyUnlikely}</p>
+                        <p className="text-slate-400 text-xs mt-1">{moonshot.whyUnlikely}</p>
                       </div>
                       <div>
                         <span className="text-green-400 text-xs font-medium">Key Insight:</span>
-                        <p className="text-slate-500 text-xs mt-1">{moonshot.keyInsight}</p>
+                        <p className="text-slate-400 text-xs mt-1">{moonshot.keyInsight}</p>
                       </div>
                     </div>
                   </div>
@@ -357,7 +357,7 @@ export default function BusinessOpportunitiesModule() {
                   <span className="text-3xl">🎯</span>
                   <div>
                     <p className="text-slate-800 font-medium">{moonshots.length} Moonshot Ideas Available</p>
-                    <p className="text-slate-500 text-sm">
+                    <p className="text-slate-400 text-sm">
                       Unconventional opportunities with extreme risk and reward potential
                     </p>
                   </div>

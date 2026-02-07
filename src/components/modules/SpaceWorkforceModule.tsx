@@ -60,7 +60,7 @@ function JobPostingCard({ job }: { job: SpaceJobPosting }) {
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1 min-w-0">
           <h4 className="font-semibold text-slate-800 text-sm truncate">{job.title}</h4>
-          <p className="text-slate-500 text-xs">{job.company}</p>
+          <p className="text-slate-400 text-xs">{job.company}</p>
         </div>
         {job.remoteOk && (
           <span className="text-xs bg-nebula-500/20 text-nebula-300 px-2 py-0.5 rounded ml-2 whitespace-nowrap">
@@ -70,13 +70,13 @@ function JobPostingCard({ job }: { job: SpaceJobPosting }) {
       </div>
 
       <div className="flex items-center gap-2 mb-2 text-xs">
-        <span className="text-slate-500">{job.location}</span>
+        <span className="text-slate-400">{job.location}</span>
         <span className="text-slate-300">|</span>
         <span className={`px-1.5 py-0.5 rounded ${categoryInfo?.color || 'text-slate-500 bg-slate-200'}`}>
           {categoryInfo?.label || job.category}
         </span>
         <span className="text-slate-300">|</span>
-        <span className="text-slate-500">{seniorityLabel}</span>
+        <span className="text-slate-400">{seniorityLabel}</span>
       </div>
 
       <div className="flex items-center justify-between">
@@ -116,19 +116,19 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
 
       <div className="grid grid-cols-2 gap-3 text-xs">
         <div>
-          <span className="text-slate-500">Openings</span>
+          <span className="text-slate-400">Openings</span>
           <div className="text-slate-800 font-medium text-sm">{trend.totalOpenings.toLocaleString()}</div>
         </div>
         <div>
-          <span className="text-slate-500">Avg Salary</span>
+          <span className="text-slate-400">Avg Salary</span>
           <div className="text-slate-800 font-medium text-sm">{formatSalary(trend.avgSalary ?? 0)}</div>
         </div>
         <div>
-          <span className="text-slate-500">Hires</span>
+          <span className="text-slate-400">Hires</span>
           <div className="text-slate-800 font-medium text-sm">{(trend.totalHires ?? 0).toLocaleString()}</div>
         </div>
         <div>
-          <span className="text-slate-500">Median Salary</span>
+          <span className="text-slate-400">Median Salary</span>
           <div className="text-slate-800 font-medium text-sm">{formatSalary(trend.medianSalary ?? 0)}</div>
         </div>
       </div>
@@ -136,19 +136,19 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
       <div className="mt-3 grid grid-cols-4 gap-1">
         <div className="text-center">
           <div className="text-xs text-blue-400 font-medium">{trend.engineeringOpenings}</div>
-          <div className="text-[10px] text-slate-500">Eng</div>
+          <div className="text-[10px] text-slate-400">Eng</div>
         </div>
         <div className="text-center">
           <div className="text-xs text-green-400 font-medium">{trend.operationsOpenings}</div>
-          <div className="text-[10px] text-slate-500">Ops</div>
+          <div className="text-[10px] text-slate-400">Ops</div>
         </div>
         <div className="text-center">
           <div className="text-xs text-yellow-400 font-medium">{trend.businessOpenings}</div>
-          <div className="text-[10px] text-slate-500">Biz</div>
+          <div className="text-[10px] text-slate-400">Biz</div>
         </div>
         <div className="text-center">
           <div className="text-xs text-purple-400 font-medium">{trend.researchOpenings}</div>
-          <div className="text-[10px] text-slate-500">R&D</div>
+          <div className="text-[10px] text-slate-400">R&D</div>
         </div>
       </div>
     </div>
@@ -168,7 +168,7 @@ function SalaryBenchmarkBar({ benchmark }: { benchmark: SalaryBenchmark }) {
         <span className={`text-xs font-medium px-2 py-0.5 rounded ${categoryInfo?.color || 'text-slate-500 bg-slate-200'}`}>
           {categoryInfo?.label || benchmark.category}
         </span>
-        <span className="text-xs text-slate-500">{benchmark.count} roles</span>
+        <span className="text-xs text-slate-400">{benchmark.count} roles</span>
       </div>
 
       <div className="relative h-3 bg-slate-200 rounded-full overflow-hidden mb-1">
@@ -182,7 +182,7 @@ function SalaryBenchmarkBar({ benchmark }: { benchmark: SalaryBenchmark }) {
         />
       </div>
 
-      <div className="flex justify-between text-[10px] text-slate-500">
+      <div className="flex justify-between text-[10px] text-slate-400">
         <span>{formatSalary(benchmark.avgMin)}</span>
         <span className="text-nebula-300 font-medium">Median: {formatSalary(benchmark.avgMedian)}</span>
         <span>{formatSalary(benchmark.avgMax)}</span>
@@ -245,7 +245,7 @@ export default function SpaceWorkforceModule() {
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">{'\uD83D\uDC54'}</span>
         <h3 className="text-xl font-semibold text-slate-800 mb-2">Space Workforce & Talent Analytics</h3>
-        <p className="text-slate-500 mb-4">
+        <p className="text-slate-400 mb-4">
           Track job postings, salary benchmarks, and workforce trends across the space industry.
         </p>
         <button
@@ -275,7 +275,7 @@ export default function SpaceWorkforceModule() {
             <h2 className="text-2xl font-display font-bold text-slate-800">
               Space Workforce & Talent Analytics
             </h2>
-            <p className="text-slate-500 text-sm">Jobs, salaries & workforce trends</p>
+            <p className="text-slate-400 text-sm">Jobs, salaries & workforce trends</p>
           </div>
         </div>
         <Link
@@ -292,19 +292,19 @@ export default function SpaceWorkforceModule() {
           <div className="text-2xl font-bold text-slate-800">
             {stats.totalOpenings.toLocaleString()}
           </div>
-          <div className="text-slate-500 text-xs">Total Openings</div>
+          <div className="text-slate-400 text-xs">Total Openings</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-green-400">
             {(stats.avgSalary ?? 0).toFixed(0)}
           </div>
-          <div className="text-slate-500 text-xs">Avg Salary ($K)</div>
+          <div className="text-slate-400 text-xs">Avg Salary ($K)</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-nebula-300">
             {CATEGORY_LABELS[stats.topCategory as JobCategory]?.label || stats.topCategory}
           </div>
-          <div className="text-slate-500 text-xs">Top Category</div>
+          <div className="text-slate-400 text-xs">Top Category</div>
         </div>
         <div className="card p-3 text-center">
           <div
@@ -314,7 +314,7 @@ export default function SpaceWorkforceModule() {
           >
             {(stats.growthRate ?? 0) >= 0 ? '+' : ''}{(stats.growthRate ?? 0).toFixed(1)}
           </div>
-          <div className="text-slate-500 text-xs">YoY Growth (%)</div>
+          <div className="text-slate-400 text-xs">YoY Growth (%)</div>
         </div>
       </div>
 
@@ -347,7 +347,7 @@ export default function SpaceWorkforceModule() {
             <JobPostingCard key={job.id} job={job} />
           ))}
           {jobs.length === 0 && (
-            <p className="text-slate-500 text-sm text-center py-4">No job postings available.</p>
+            <p className="text-slate-400 text-sm text-center py-4">No job postings available.</p>
           )}
         </div>
       )}
@@ -358,7 +358,7 @@ export default function SpaceWorkforceModule() {
             <TrendCard key={trend.id} trend={trend} />
           ))}
           {trends.length === 0 && (
-            <p className="text-slate-500 text-sm text-center py-4 col-span-2">No trend data available.</p>
+            <p className="text-slate-400 text-sm text-center py-4 col-span-2">No trend data available.</p>
           )}
         </div>
       )}
@@ -369,7 +369,7 @@ export default function SpaceWorkforceModule() {
             <SalaryBenchmarkBar key={benchmark.category} benchmark={benchmark} />
           ))}
           {salaryBenchmarks.length === 0 && (
-            <p className="text-slate-500 text-sm text-center py-4">No salary benchmarks available.</p>
+            <p className="text-slate-400 text-sm text-center py-4">No salary benchmarks available.</p>
           )}
         </div>
       )}

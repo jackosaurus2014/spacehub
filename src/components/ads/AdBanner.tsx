@@ -77,10 +77,10 @@ export default function AdBanner({ slot, format = 'responsive', className = '' }
 
           {/* Content */}
           <div className="relative z-10 text-center px-4">
-            <p className="text-slate-500 text-xs font-medium tracking-widest uppercase">
+            <p className="text-slate-400 text-xs font-medium tracking-widest uppercase">
               Advertisement
             </p>
-            <p className="text-slate-600 text-[10px] mt-1">
+            <p className="text-slate-400 text-[10px] mt-1">
               Ad space available
             </p>
           </div>

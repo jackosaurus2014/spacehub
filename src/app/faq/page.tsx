@@ -255,7 +255,7 @@ export default function FAQPage() {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-300"
               >
                 <svg
                   className="w-5 h-5"
@@ -303,7 +303,7 @@ export default function FAQPage() {
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 mb-3">Still Have Questions?</h2>
-            <p className="text-slate-500 mb-6">
+            <p className="text-slate-400 mb-6">
               Can&apos;t find what you&apos;re looking for? Our support team is here to help.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

@@ -182,7 +182,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <h2 className="text-2xl font-bold text-slate-900 mb-3">Message Sent!</h2>
-              <p className="text-slate-500 mb-6">
+              <p className="text-slate-400 mb-6">
                 Thank you for reaching out. We&apos;ll get back to you as soon as possible.
               </p>
               <button
@@ -202,7 +202,7 @@ export default function ContactPage() {
                 )}
 
                 <div>
-                  <label htmlFor="name" className="block text-slate-600 text-sm mb-2">
+                  <label htmlFor="name" className="block text-slate-400 text-sm mb-2">
                     Name <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -223,7 +223,7 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-slate-600 text-sm mb-2">
+                  <label htmlFor="email" className="block text-slate-400 text-sm mb-2">
                     Email <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -245,7 +245,7 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-slate-600 text-sm mb-2">
+                  <label htmlFor="subject" className="block text-slate-400 text-sm mb-2">
                     Subject <span className="text-red-400">*</span>
                   </label>
                   <select
@@ -270,7 +270,7 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-slate-600 text-sm mb-2">
+                  <label htmlFor="message" className="block text-slate-400 text-sm mb-2">
                     Message <span className="text-red-400">*</span>
                   </label>
                   <textarea
@@ -326,7 +326,7 @@ export default function ContactPage() {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-slate-600 text-sm font-medium">Email</p>
+                      <p className="text-slate-400 text-sm font-medium">Email</p>
                       <a
                         href="mailto:support@spacenexus.com"
                         className="text-cyan-400 hover:text-cyan-300 transition-colors"
@@ -352,7 +352,7 @@ export default function ContactPage() {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-slate-600 text-sm font-medium">Help Center</p>
+                      <p className="text-slate-400 text-sm font-medium">Help Center</p>
                       <Link
                         href="/faq"
                         className="text-cyan-400 hover:text-cyan-300 transition-colors"

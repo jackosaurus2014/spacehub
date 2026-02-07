@@ -129,11 +129,11 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
             </h3>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <div className="text-slate-500 text-xs uppercase tracking-wider mb-1">Posted</div>
+                <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Posted</div>
                 <div className="text-slate-200 font-medium">{formatDate(contract.postedDate)}</div>
               </div>
               <div className="text-center">
-                <div className="text-slate-500 text-xs uppercase tracking-wider mb-1">Due Date</div>
+                <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Due Date</div>
                 <div className={`font-medium ${daysUntilDue !== null && daysUntilDue <= 14 ? 'text-yellow-400' : 'text-slate-200'}`}>
                   {formatDate(contract.dueDate)}
                   {daysUntilDue !== null && daysUntilDue > 0 && (
@@ -144,7 +144,7 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-slate-500 text-xs uppercase tracking-wider mb-1">Award Date</div>
+                <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Award Date</div>
                 <div className="text-slate-200 font-medium">{formatDate(contract.awardDate)}</div>
               </div>
             </div>
@@ -152,7 +152,7 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
             {/* Progress Bar for Open Contracts */}
             {contract.status === 'open' && contract.dueDate && contract.postedDate && (
               <div className="mt-4">
-                <div className="flex justify-between text-xs text-slate-500 mb-1">
+                <div className="flex justify-between text-xs text-slate-400 mb-1">
                   <span>Posted</span>
                   <span>Due</span>
                 </div>
@@ -180,19 +180,19 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
           <div className="grid grid-cols-2 gap-4 mb-6">
             {contract.solicitationNumber && (
               <div className="bg-slate-800/30 rounded-lg p-3">
-                <div className="text-slate-500 text-xs uppercase tracking-wider mb-1">Solicitation #</div>
+                <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Solicitation #</div>
                 <div className="text-slate-200 font-mono text-sm">{contract.solicitationNumber}</div>
               </div>
             )}
             {contract.naicsCode && (
               <div className="bg-slate-800/30 rounded-lg p-3">
-                <div className="text-slate-500 text-xs uppercase tracking-wider mb-1">NAICS Code</div>
+                <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">NAICS Code</div>
                 <div className="text-slate-200 font-mono text-sm">{contract.naicsCode}</div>
               </div>
             )}
             {contract.awardee && (
               <div className="bg-slate-800/30 rounded-lg p-3 col-span-2">
-                <div className="text-slate-500 text-xs uppercase tracking-wider mb-1">Awardee</div>
+                <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Awardee</div>
                 <div className="text-purple-400 font-medium">{contract.awardee}</div>
               </div>
             )}

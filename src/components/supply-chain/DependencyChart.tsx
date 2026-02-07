@@ -144,7 +144,7 @@ export default function DependencyChart({
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h3 className="font-semibold text-white">Supply Chain Dependencies</h3>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500">Group by:</span>
+            <span className="text-xs text-slate-400">Group by:</span>
             <div className="flex rounded-lg overflow-hidden border border-space-600">
               {[
                 { value: 'tier', label: 'Tier' },
@@ -201,7 +201,7 @@ export default function DependencyChart({
               <span className={`text-sm font-semibold ${getGroupColor(groupKey)}`}>
                 {getGroupLabel(groupKey)}
               </span>
-              <span className="text-xs text-slate-500">({groupCompanies.length})</span>
+              <span className="text-xs text-slate-400">({groupCompanies.length})</span>
               {viewMode === 'country' && (
                 <span className="text-lg">
                   {SUPPLY_CHAIN_COUNTRIES[groupKey]?.flag || '🏳️'}
@@ -328,7 +328,7 @@ export default function DependencyChart({
                         </div>
                       ))}
                       {supplierRels.length === 0 && (
-                        <p className="text-xs text-slate-500">No tracked suppliers</p>
+                        <p className="text-xs text-slate-400">No tracked suppliers</p>
                       )}
                     </div>
                   </div>
@@ -353,7 +353,7 @@ export default function DependencyChart({
                         </div>
                       ))}
                       {customerRels.length === 0 && (
-                        <p className="text-xs text-slate-500">No tracked customers</p>
+                        <p className="text-xs text-slate-400">No tracked customers</p>
                       )}
                     </div>
                   </div>

@@ -194,7 +194,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
                 )}
 
                 <p className="text-slate-400 text-sm mb-2">Stream Not Available</p>
-                <p className="text-slate-500 text-xs">Check back closer to launch time</p>
+                <p className="text-slate-400 text-xs">Check back closer to launch time</p>
               </div>
             </div>
           )}
@@ -222,7 +222,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
                   {typeInfo.icon} {typeInfo.label}
                 </span>
                 {mission.country && (
-                  <span className="text-slate-500 text-xs">{mission.country}</span>
+                  <span className="text-slate-400 text-xs">{mission.country}</span>
                 )}
               </div>
               <h3 className="text-white font-bold text-lg line-clamp-2">{mission.name}</h3>
@@ -257,19 +257,19 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
             {mission.rocket && (
               <div className="bg-slate-800/50 rounded-lg p-2 border border-slate-700/30">
-                <div className="text-slate-500 text-xs mb-1">Vehicle</div>
+                <div className="text-slate-400 text-xs mb-1">Vehicle</div>
                 <div className="text-white text-sm font-medium truncate">{mission.rocket}</div>
               </div>
             )}
             {mission.location && (
               <div className="bg-slate-800/50 rounded-lg p-2 border border-slate-700/30">
-                <div className="text-slate-500 text-xs mb-1">Location</div>
+                <div className="text-slate-400 text-xs mb-1">Location</div>
                 <div className="text-white text-sm font-medium truncate">{mission.location}</div>
               </div>
             )}
             {mission.launchDate && (
               <div className="bg-slate-800/50 rounded-lg p-2 border border-slate-700/30">
-                <div className="text-slate-500 text-xs mb-1">Launch Time</div>
+                <div className="text-slate-400 text-xs mb-1">Launch Time</div>
                 <div className="text-white text-sm font-medium">
                   {new Date(mission.launchDate).toLocaleTimeString('en-US', {
                     hour: '2-digit',
@@ -281,7 +281,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
             )}
             {phaseInfo && (
               <div className="bg-slate-800/50 rounded-lg p-2 border border-slate-700/30">
-                <div className="text-slate-500 text-xs mb-1">Phase</div>
+                <div className="text-slate-400 text-xs mb-1">Phase</div>
                 <div className={`text-sm font-medium flex items-center gap-1 ${phaseInfo.color}`}>
                   <span>{phaseInfo.icon}</span>
                   <span>{phaseInfo.label}</span>
@@ -295,7 +295,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
             <div className="mt-3 pt-3 border-t border-slate-700/50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-500 text-xs uppercase tracking-wider">Mission Phase:</span>
+                  <span className="text-slate-400 text-xs uppercase tracking-wider">Mission Phase:</span>
                   <span className={`font-semibold flex items-center gap-1 ${phaseInfo.color}`}>
                     <span>{phaseInfo.icon}</span>
                     <span>{phaseInfo.label}</span>

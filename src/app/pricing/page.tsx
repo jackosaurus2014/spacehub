@@ -54,7 +54,7 @@ function PricingCard({
             ${price === 0 ? '0' : price}
           </span>
           {price > 0 && (
-            <span className="text-slate-500">{period}</span>
+            <span className="text-slate-400">{period}</span>
           )}
         </div>
         {savings > 0 && (
@@ -66,7 +66,7 @@ function PricingCard({
         {plan.features.map((feature, index) => (
           <li key={index} className="flex items-start gap-2">
             <span className="text-green-400 mt-0.5">✓</span>
-            <span className="text-slate-600 text-sm">{feature}</span>
+            <span className="text-slate-400 text-sm">{feature}</span>
           </li>
         ))}
       </ul>
@@ -119,7 +119,7 @@ export default function PricingPage() {
 
         {/* Billing Toggle */}
         <div className="flex items-center justify-center gap-4 mb-12">
-          <span className={`text-sm ${!isYearly ? 'text-slate-900' : 'text-slate-500'}`}>
+          <span className={`text-sm ${!isYearly ? 'text-slate-900' : 'text-slate-400'}`}>
             Monthly
           </span>
           <button
@@ -134,7 +134,7 @@ export default function PricingPage() {
               }`}
             />
           </button>
-          <span className={`text-sm ${isYearly ? 'text-slate-900' : 'text-slate-500'}`}>
+          <span className={`text-sm ${isYearly ? 'text-slate-900' : 'text-slate-400'}`}>
             Yearly
             <span className="ml-1 text-green-400 text-xs">Save up to 17%</span>
           </span>
@@ -162,7 +162,7 @@ export default function PricingPage() {
               <h3 className="font-semibold text-slate-900 mb-2">
                 Can I cancel anytime?
               </h3>
-              <p className="text-slate-500 text-sm">
+              <p className="text-slate-400 text-sm">
                 Yes! You can cancel your subscription at any time. You&apos;ll continue
                 to have access until the end of your billing period.
               </p>
@@ -171,7 +171,7 @@ export default function PricingPage() {
               <h3 className="font-semibold text-slate-900 mb-2">
                 What payment methods do you accept?
               </h3>
-              <p className="text-slate-500 text-sm">
+              <p className="text-slate-400 text-sm">
                 We accept all major credit cards, PayPal, and Apple Pay through
                 our secure payment processor, Stripe.
               </p>
@@ -180,7 +180,7 @@ export default function PricingPage() {
               <h3 className="font-semibold text-slate-900 mb-2">
                 Is there a free trial?
               </h3>
-              <p className="text-slate-500 text-sm">
+              <p className="text-slate-400 text-sm">
                 Our Explorer plan is free forever with access to core features.
                 Upgrade anytime to unlock premium features.
               </p>
@@ -189,7 +189,7 @@ export default function PricingPage() {
               <h3 className="font-semibold text-slate-900 mb-2">
                 Do you offer team discounts?
               </h3>
-              <p className="text-slate-500 text-sm">
+              <p className="text-slate-400 text-sm">
                 Yes! Contact us for Enterprise pricing with team collaboration
                 features and volume discounts.
               </p>
@@ -199,12 +199,12 @@ export default function PricingPage() {
 
         {/* CTA */}
         <div className="mt-16 text-center">
-          <p className="text-slate-500 mb-4">
+          <p className="text-slate-400 mb-4">
             Have questions? We&apos;re here to help.
           </p>
           <Link
             href="mailto:support@spacenexus.com"
-            className="text-nebula-400 hover:text-nebula-300 transition-colors"
+            className="text-nebula-300 hover:text-nebula-200 transition-colors"
           >
             Contact Support →
           </Link>

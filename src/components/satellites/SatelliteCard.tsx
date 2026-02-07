@@ -89,7 +89,7 @@ export default function SatelliteCard({ satellite, compact = false }: SatelliteC
             <span className="text-xl flex-shrink-0">{purposeIcon}</span>
             <div className="min-w-0">
               <h4 className="font-semibold text-slate-900 text-sm truncate">{satellite.name}</h4>
-              <div className="flex items-center gap-2 text-xs text-slate-500">
+              <div className="flex items-center gap-2 text-xs text-slate-400">
                 <span>{satellite.operator}</span>
                 <span className="text-slate-300">|</span>
                 <span className={orbitInfo.color}>{satellite.orbitType}</span>
@@ -100,7 +100,7 @@ export default function SatelliteCard({ satellite, compact = false }: SatelliteC
             {statusStyle.label}
           </span>
         </div>
-        <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
+        <div className="flex items-center gap-4 mt-3 text-xs text-slate-400">
           <span>Alt: <span className="text-slate-700 font-medium">{formatAltitude(satellite.altitude)}</span></span>
           <span>Vel: <span className="text-slate-700 font-medium">{formatVelocity(satellite.velocity)}</span></span>
         </div>
@@ -119,7 +119,7 @@ export default function SatelliteCard({ satellite, compact = false }: SatelliteC
           <div>
             <h3 className="font-semibold text-slate-900">{satellite.name}</h3>
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-slate-500">{satellite.operator}</span>
+              <span className="text-slate-400">{satellite.operator}</span>
               <span className="text-slate-300">|</span>
               <span className={`text-xs ${orbitInfo.color}`}>{orbitInfo.label}</span>
             </div>
@@ -132,7 +132,7 @@ export default function SatelliteCard({ satellite, compact = false }: SatelliteC
 
       {/* Description */}
       {satellite.description && (
-        <p className="text-slate-500 text-sm mb-4 leading-relaxed line-clamp-2">
+        <p className="text-slate-400 text-sm mb-4 leading-relaxed line-clamp-2">
           {satellite.description}
         </p>
       )}
@@ -141,45 +141,45 @@ export default function SatelliteCard({ satellite, compact = false }: SatelliteC
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
         <div className="bg-slate-50 rounded-lg p-3 text-center">
           <div className="text-slate-900 font-bold">{formatAltitude(satellite.altitude)}</div>
-          <div className="text-slate-500 text-xs">Altitude</div>
+          <div className="text-slate-400 text-xs">Altitude</div>
         </div>
         <div className="bg-slate-50 rounded-lg p-3 text-center">
           <div className="text-slate-900 font-bold">{formatVelocity(satellite.velocity)}</div>
-          <div className="text-slate-500 text-xs">Velocity</div>
+          <div className="text-slate-400 text-xs">Velocity</div>
         </div>
         <div className="bg-slate-50 rounded-lg p-3 text-center">
           <div className="text-slate-900 font-bold">{satellite.noradId}</div>
-          <div className="text-slate-500 text-xs">NORAD ID</div>
+          <div className="text-slate-400 text-xs">NORAD ID</div>
         </div>
         <div className="bg-slate-50 rounded-lg p-3 text-center">
           <div className="text-slate-900 font-bold">{satellite.purpose}</div>
-          <div className="text-slate-500 text-xs">Purpose</div>
+          <div className="text-slate-400 text-xs">Purpose</div>
         </div>
       </div>
 
       {/* Additional Details */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-500 mb-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-400 mb-4">
         {satellite.mass && (
           <div>
             <span className="text-slate-400">Mass: </span>
-            <span className="text-slate-600">{satellite.mass.toLocaleString()} kg</span>
+            <span className="text-slate-400">{satellite.mass.toLocaleString()} kg</span>
           </div>
         )}
         {satellite.period && (
           <div>
             <span className="text-slate-400">Period: </span>
-            <span className="text-slate-600">{satellite.period.toFixed(1)} min</span>
+            <span className="text-slate-400">{satellite.period.toFixed(1)} min</span>
           </div>
         )}
         {satellite.inclination !== null && (
           <div>
             <span className="text-slate-400">Incl: </span>
-            <span className="text-slate-600">{satellite.inclination.toFixed(1)}</span>
+            <span className="text-slate-400">{satellite.inclination.toFixed(1)}</span>
           </div>
         )}
         <div>
           <span className="text-slate-400">Launched: </span>
-          <span className="text-slate-600">
+          <span className="text-slate-400">
             {new Date(satellite.launchDate).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'short',

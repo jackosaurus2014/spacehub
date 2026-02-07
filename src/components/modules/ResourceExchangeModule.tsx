@@ -60,23 +60,23 @@ function ResourceCard({
 
       <div className="grid grid-cols-2 gap-3 mt-3">
         <div className="bg-slate-50 rounded p-2">
-          <div className="text-xs text-slate-500 mb-1">Earth Price</div>
+          <div className="text-xs text-slate-400 mb-1">Earth Price</div>
           <div className="text-green-400 font-semibold text-sm">
             {formatPrice(earthPriceKg)}/kg
           </div>
-          <div className="text-slate-500 text-xs">{formatPrice(earthPriceLb)}/lb</div>
+          <div className="text-slate-400 text-xs">{formatPrice(earthPriceLb)}/lb</div>
         </div>
         <div className="bg-slate-50 rounded p-2">
-          <div className="text-xs text-slate-500 mb-1">Space Price (LEO)</div>
+          <div className="text-xs text-slate-400 mb-1">Space Price (LEO)</div>
           <div className="text-rocket-400 font-semibold text-sm">
             {formatPrice(spacePriceKg)}/kg
           </div>
-          <div className="text-slate-500 text-xs">{formatPrice(spacePriceLb)}/lb</div>
+          <div className="text-slate-400 text-xs">{formatPrice(spacePriceLb)}/lb</div>
         </div>
       </div>
 
       <div className="flex items-center justify-between mt-3 text-xs">
-        <span className="text-slate-500">{categoryInfo?.label}</span>
+        <span className="text-slate-400">{categoryInfo?.label}</span>
         <span className="text-nebula-300">
           {launchMultiplier >= 1000
             ? `${(launchMultiplier / 1000).toFixed(1)}K×`
@@ -163,7 +163,7 @@ export default function ResourceExchangeModule() {
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">💰</span>
         <h3 className="text-xl font-semibold text-slate-800 mb-2">Resource Exchange</h3>
-        <p className="text-slate-500 mb-4">
+        <p className="text-slate-400 mb-4">
           Track space commodity prices and calculate launch costs.
         </p>
         <button
@@ -191,7 +191,7 @@ export default function ResourceExchangeModule() {
           <span className="text-3xl">💰</span>
           <div>
             <h2 className="text-2xl font-display font-bold text-slate-800">Resource Exchange</h2>
-            <p className="text-slate-500 text-sm">Earth vs space commodity pricing</p>
+            <p className="text-slate-400 text-sm">Earth vs space commodity pricing</p>
           </div>
         </div>
         <Link href="/resource-exchange" className="btn-secondary text-sm py-1.5 px-4">
@@ -203,7 +203,7 @@ export default function ResourceExchangeModule() {
       <div className="card p-4 mb-6">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-slate-500 text-sm">Launch Provider:</span>
+            <span className="text-slate-400 text-sm">Launch Provider:</span>
             <select
               value={selectedProvider}
               onChange={(e) => handleProviderChange(e.target.value)}
@@ -217,11 +217,11 @@ export default function ResourceExchangeModule() {
             </select>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-slate-500 text-sm">Cost to LEO:</span>
+            <span className="text-slate-400 text-sm">Cost to LEO:</span>
             <span className="text-rocket-400 font-semibold">
               ${launchCost.toLocaleString()}/kg
             </span>
-            <span className="text-slate-500 text-xs">
+            <span className="text-slate-400 text-xs">
               (${(launchCost / KG_TO_LB).toFixed(0)}/lb)
             </span>
           </div>

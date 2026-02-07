@@ -74,13 +74,13 @@ export default function CompanyRequestDialog({ isOpen, onClose }: CompanyRequest
         <div className="flex items-center justify-between p-6 border-b border-space-700">
           <div>
             <h2 className="text-xl font-semibold text-white">Request Company Addition</h2>
-            <p className="text-star-400 text-sm mt-1">
+            <p className="text-star-300 text-sm mt-1">
               Help us expand our database
             </p>
           </div>
           <button
             onClick={handleClose}
-            className="text-star-400 hover:text-white transition-colors p-2"
+            className="text-star-300 hover:text-white transition-colors p-2"
             aria-label="Close dialog"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +145,7 @@ export default function CompanyRequestDialog({ isOpen, onClose }: CompanyRequest
                   className="input resize-none"
                   placeholder="Describe what the company does in the space industry (e.g., develops reusable launch vehicles, builds satellite components, etc.)"
                 />
-                <p className="text-star-400 text-xs mt-1">
+                <p className="text-star-300 text-xs mt-1">
                   Please include relevant details about their space industry focus
                 </p>
               </div>
@@ -166,7 +166,7 @@ export default function CompanyRequestDialog({ isOpen, onClose }: CompanyRequest
 
               <div>
                 <label htmlFor="email" className="block text-star-200 text-sm font-medium mb-2">
-                  Your Email <span className="text-star-400 text-xs font-normal">(optional)</span>
+                  Your Email <span className="text-star-300 text-xs font-normal">(optional)</span>
                 </label>
                 <input
                   type="email"
@@ -176,7 +176,7 @@ export default function CompanyRequestDialog({ isOpen, onClose }: CompanyRequest
                   className="input"
                   placeholder="your@email.com"
                 />
-                <p className="text-star-400 text-xs mt-1">
+                <p className="text-star-300 text-xs mt-1">
                   We&apos;ll notify you when the company is added
                 </p>
               </div>

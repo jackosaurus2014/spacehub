@@ -131,11 +131,11 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
     <div className="card p-5 hover:border-nebula-500/50 transition-all group">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-slate-900 text-base group-hover:text-nebula-300 transition-colors">
+          <h3 className="font-semibold text-slate-900 text-base group-hover:text-nebula-200 transition-colors">
             {job.title}
           </h3>
           <div className="flex items-center gap-2 mt-0.5">
-            <p className="text-slate-500 text-sm">{job.company}</p>
+            <p className="text-slate-400 text-sm">{job.company}</p>
             <Link
               href={`/market-intel?search=${encodeURIComponent(job.company)}`}
               onClick={(e) => e.stopPropagation()}
@@ -160,17 +160,17 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
-        <span className="text-slate-500">{job.location}</span>
+        <span className="text-slate-400">{job.location}</span>
         <span className="text-slate-300">|</span>
         <span className={`px-2 py-0.5 rounded ${cat?.bg || 'bg-slate-100'} ${cat?.text || 'text-slate-500'}`}>
           {catLabel?.icon} {catLabel?.label || job.category}
         </span>
         <span className="text-slate-300">|</span>
-        <span className="text-slate-500">{senLabel}</span>
+        <span className="text-slate-400">{senLabel}</span>
         {job.degreeRequired && (
           <>
             <span className="text-slate-300">|</span>
-            <span className="text-slate-500 capitalize">{job.degreeRequired}</span>
+            <span className="text-slate-400 capitalize">{job.degreeRequired}</span>
           </>
         )}
       </div>
@@ -181,12 +181,12 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
             {formatSalary(job.salaryMin ?? 0)} - {formatSalary(job.salaryMax ?? 0)}
           </span>
           {job.yearsExperience !== null && job.yearsExperience !== undefined && (
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-slate-400">
               {job.yearsExperience === 0 ? 'No exp required' : `${job.yearsExperience}+ years`}
             </span>
           )}
         </div>
-        <span className="text-xs text-slate-500">{daysAgo(job.postedDate)}</span>
+        <span className="text-xs text-slate-400">{daysAgo(job.postedDate)}</span>
       </div>
     </div>
   );
@@ -247,42 +247,42 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
 
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
-          <span className="text-slate-500 text-xs block mb-1">Total Openings</span>
+          <span className="text-slate-400 text-xs block mb-1">Total Openings</span>
           <div className="text-slate-900 font-bold text-lg">{trend.totalOpenings.toLocaleString()}</div>
         </div>
         <div>
-          <span className="text-slate-500 text-xs block mb-1">Total Hires</span>
+          <span className="text-slate-400 text-xs block mb-1">Total Hires</span>
           <div className="text-slate-900 font-bold text-lg">{(trend.totalHires ?? 0).toLocaleString()}</div>
         </div>
         <div>
-          <span className="text-slate-500 text-xs block mb-1">Avg Salary</span>
+          <span className="text-slate-400 text-xs block mb-1">Avg Salary</span>
           <div className="text-green-400 font-bold text-lg">{formatSalary(trend.avgSalary ?? 0)}</div>
         </div>
         <div>
-          <span className="text-slate-500 text-xs block mb-1">Median Salary</span>
+          <span className="text-slate-400 text-xs block mb-1">Median Salary</span>
           <div className="text-nebula-300 font-bold text-lg">{formatSalary(trend.medianSalary ?? 0)}</div>
         </div>
       </div>
 
       {/* Category breakdown */}
       <div className="border-t border-slate-200 pt-3 mb-3">
-        <span className="text-slate-500 text-xs block mb-2">Openings by Category</span>
+        <span className="text-slate-400 text-xs block mb-2">Openings by Category</span>
         <div className="grid grid-cols-4 gap-2">
           <div className="text-center">
             <div className="text-sm text-blue-400 font-bold">{trend.engineeringOpenings.toLocaleString()}</div>
-            <div className="text-[10px] text-slate-500">Eng</div>
+            <div className="text-[10px] text-slate-400">Eng</div>
           </div>
           <div className="text-center">
             <div className="text-sm text-green-400 font-bold">{trend.operationsOpenings.toLocaleString()}</div>
-            <div className="text-[10px] text-slate-500">Ops</div>
+            <div className="text-[10px] text-slate-400">Ops</div>
           </div>
           <div className="text-center">
             <div className="text-sm text-yellow-400 font-bold">{trend.businessOpenings.toLocaleString()}</div>
-            <div className="text-[10px] text-slate-500">Biz</div>
+            <div className="text-[10px] text-slate-400">Biz</div>
           </div>
           <div className="text-center">
             <div className="text-sm text-purple-400 font-bold">{trend.researchOpenings.toLocaleString()}</div>
-            <div className="text-[10px] text-slate-500">R&D</div>
+            <div className="text-[10px] text-slate-400">R&D</div>
           </div>
         </div>
       </div>
@@ -290,7 +290,7 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
       {/* Top Skills */}
       {topSkills.length > 0 && (
         <div className="border-t border-slate-200 pt-3 mb-3">
-          <span className="text-slate-500 text-xs block mb-2">Top Skills</span>
+          <span className="text-slate-400 text-xs block mb-2">Top Skills</span>
           <div className="flex flex-wrap gap-1.5">
             {topSkills.map((skill) => (
               <span key={skill} className="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-500">
@@ -304,7 +304,7 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
       {/* Top Companies */}
       {topCompanies.length > 0 && (
         <div className="border-t border-slate-200 pt-3">
-          <span className="text-slate-500 text-xs block mb-2">Top Hiring</span>
+          <span className="text-slate-400 text-xs block mb-2">Top Hiring</span>
           <div className="flex flex-wrap gap-1.5">
             {topCompanies.map((company) => (
               <span key={company} className="text-[10px] px-2 py-0.5 rounded bg-nebula-500/10 text-nebula-300">
@@ -347,7 +347,7 @@ function BenchmarkBar({
     <div className="card p-4">
       <div className="flex items-center justify-between mb-2">
         <span className={`text-sm font-medium ${color}`}>{label}</span>
-        <span className="text-xs text-slate-500">{count} roles</span>
+        <span className="text-xs text-slate-400">{count} roles</span>
       </div>
 
       <div className="relative h-4 bg-slate-50 rounded-full overflow-hidden mb-2">
@@ -361,7 +361,7 @@ function BenchmarkBar({
         />
       </div>
 
-      <div className="flex justify-between text-xs text-slate-500">
+      <div className="flex justify-between text-xs text-slate-400">
         <span>{formatSalary(avgMin)}</span>
         <span className="text-nebula-300 font-medium">Median: {formatSalary(avgMedian)}</span>
         <span>{formatSalary(avgMax)}</span>
@@ -546,7 +546,7 @@ function WorkforceContent() {
             <div className="text-2xl font-bold font-display text-slate-900">
               {stats.totalOpenings.toLocaleString()}
             </div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
               Total Openings
             </div>
           </div>
@@ -554,7 +554,7 @@ function WorkforceContent() {
             <div className="text-2xl font-bold font-display text-green-400">
               {formatSalary(stats.avgSalary)}
             </div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
               Avg Salary
             </div>
           </div>
@@ -562,7 +562,7 @@ function WorkforceContent() {
             <div className="text-2xl font-bold font-display text-nebula-300">
               {JOB_CATEGORIES.find((c) => c.value === stats.topCategory)?.label || stats.topCategory}
             </div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
               Top Category
             </div>
           </div>
@@ -570,7 +570,7 @@ function WorkforceContent() {
             <div className="text-2xl font-bold font-display text-blue-400 truncate">
               {stats.topCompany}
             </div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
               Top Employer
             </div>
           </div>
@@ -578,7 +578,7 @@ function WorkforceContent() {
             <div className="text-2xl font-bold font-display text-purple-400">
               {stats.totalCompanies}
             </div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
               Companies
             </div>
           </div>
@@ -591,7 +591,7 @@ function WorkforceContent() {
               {(stats.growthRate ?? 0) >= 0 ? '+' : ''}
               {(stats.growthRate ?? 0).toFixed(1)}%
             </div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
               YoY Growth
             </div>
           </div>
@@ -695,14 +695,14 @@ function WorkforceContent() {
               {hasFilters && (
                 <button
                   onClick={clearFilters}
-                  className="px-3 py-2 rounded-lg text-sm text-slate-500 hover:text-slate-900 transition-colors"
+                  className="px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-slate-900 transition-colors"
                 >
                   Clear Filters
                 </button>
               )}
 
               <div className="flex items-center gap-2 ml-auto">
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-slate-400">
                   {totalJobs} {totalJobs === 1 ? 'job' : 'jobs'} found
                 </span>
                 <ExportButton
@@ -723,7 +723,7 @@ function WorkforceContent() {
           ) : jobs.length === 0 ? (
             <div className="text-center py-20">
               <h3 className="text-xl font-semibold text-slate-900 mb-2">No jobs found</h3>
-              <p className="text-slate-500 mb-4">
+              <p className="text-slate-400 mb-4">
                 {hasFilters
                   ? 'Try adjusting your filters or search terms.'
                   : 'Job postings will appear here once data is loaded.'}
@@ -775,7 +775,7 @@ function WorkforceContent() {
           ) : trends.length === 0 ? (
             <div className="text-center py-20">
               <h3 className="text-xl font-semibold text-slate-900 mb-2">No trend data available</h3>
-              <p className="text-slate-500">Workforce trends will appear once data is loaded.</p>
+              <p className="text-slate-400">Workforce trends will appear once data is loaded.</p>
             </div>
           ) : (
             <>
@@ -792,13 +792,13 @@ function WorkforceContent() {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
-                    <span className="text-slate-500 text-xs block mb-1">Latest Quarter</span>
+                    <span className="text-slate-400 text-xs block mb-1">Latest Quarter</span>
                     <span className="text-slate-900 font-bold">
                       Q{trends[trends.length - 1].quarter} {trends[trends.length - 1].year}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 text-xs block mb-1">Openings Growth</span>
+                    <span className="text-slate-400 text-xs block mb-1">Openings Growth</span>
                     <span className="text-green-400 font-bold">
                       {trends.length >= 2
                         ? `${(((trends[trends.length - 1].totalOpenings - trends[0].totalOpenings) / trends[0].totalOpenings) * 100).toFixed(1)}%`
@@ -806,7 +806,7 @@ function WorkforceContent() {
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 text-xs block mb-1">Salary Growth</span>
+                    <span className="text-slate-400 text-xs block mb-1">Salary Growth</span>
                     <span className="text-green-400 font-bold">
                       {trends.length >= 2
                         ? `${((((trends[trends.length - 1].avgSalary ?? 0) - (trends[0].avgSalary ?? 0)) / (trends[0].avgSalary || 1)) * 100).toFixed(1)}%`
@@ -814,7 +814,7 @@ function WorkforceContent() {
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 text-xs block mb-1">Total Hires (Latest)</span>
+                    <span className="text-slate-400 text-xs block mb-1">Total Hires (Latest)</span>
                     <span className="text-slate-900 font-bold">
                       {(trends[trends.length - 1].totalHires ?? 0).toLocaleString()}
                     </span>
@@ -842,7 +842,7 @@ function WorkforceContent() {
           ) : benchmarksByCategory.length === 0 && benchmarksBySeniority.length === 0 ? (
             <div className="text-center py-20">
               <h3 className="text-xl font-semibold text-slate-900 mb-2">No salary data available</h3>
-              <p className="text-slate-500">Salary benchmarks will appear once data is loaded.</p>
+              <p className="text-slate-400">Salary benchmarks will appear once data is loaded.</p>
             </div>
           ) : (
             <>
@@ -853,7 +853,7 @@ function WorkforceContent() {
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     salaryView === 'category'
                       ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                      : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-200'
+                      : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-200'
                   }`}
                 >
                   By Category
@@ -863,7 +863,7 @@ function WorkforceContent() {
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     salaryView === 'seniority'
                       ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                      : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-200'
+                      : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-200'
                   }`}
                 >
                   By Seniority Level
@@ -880,7 +880,7 @@ function WorkforceContent() {
                       <BenchmarkBar
                         key={cat}
                         label={`${catInfo?.icon || ''} ${catInfo?.label || cat}`}
-                        color={colors?.text || 'text-slate-500'}
+                        color={colors?.text || 'text-slate-400'}
                         avgMin={b.avgMin}
                         avgMax={b.avgMax}
                         avgMedian={b.avgMedian}
@@ -912,7 +912,7 @@ function WorkforceContent() {
 
               {/* Salary legend */}
               <div className="card p-4 mt-6 border-dashed">
-                <div className="flex items-center gap-6 text-xs text-slate-500">
+                <div className="flex items-center gap-6 text-xs text-slate-400">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-2 bg-slate-100 rounded-full" />
                     <span>Salary Range (Min to Max)</span>
@@ -921,7 +921,7 @@ function WorkforceContent() {
                     <div className="w-1 h-4 bg-nebula-400 rounded-full" />
                     <span>Median</span>
                   </div>
-                  <span className="ml-auto text-slate-500/70">
+                  <span className="ml-auto text-slate-400/70">
                     Based on {jobs.length > 0 ? totalJobs : '...'} active job postings
                   </span>
                 </div>

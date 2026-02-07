@@ -47,25 +47,25 @@ function CountdownDisplay({ targetDate }: { targetDate: Date }) {
         <div className="text-2xl font-bold text-slate-800 font-mono">
           {String(countdown.days).padStart(2, '0')}
         </div>
-        <div className="text-xs text-slate-500 uppercase">Days</div>
+        <div className="text-xs text-slate-400 uppercase">Days</div>
       </div>
       <div className="bg-slate-100 rounded-lg px-3 py-2 min-w-[60px]">
         <div className="text-2xl font-bold text-slate-800 font-mono">
           {String(countdown.hours).padStart(2, '0')}
         </div>
-        <div className="text-xs text-slate-500 uppercase">Hours</div>
+        <div className="text-xs text-slate-400 uppercase">Hours</div>
       </div>
       <div className="bg-slate-100 rounded-lg px-3 py-2 min-w-[60px]">
         <div className="text-2xl font-bold text-slate-800 font-mono">
           {String(countdown.minutes).padStart(2, '0')}
         </div>
-        <div className="text-xs text-slate-500 uppercase">Min</div>
+        <div className="text-xs text-slate-400 uppercase">Min</div>
       </div>
       <div className="bg-slate-100 rounded-lg px-3 py-2 min-w-[60px]">
         <div className="text-2xl font-bold text-rocket-400 font-mono animate-pulse">
           {String(countdown.seconds).padStart(2, '0')}
         </div>
-        <div className="text-xs text-slate-500 uppercase">Sec</div>
+        <div className="text-xs text-slate-400 uppercase">Sec</div>
       </div>
     </div>
   );
@@ -125,7 +125,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
         </div>
         <h3 className="text-xl font-bold text-slate-800 mb-2 line-clamp-2">{event.name}</h3>
         {event.agency && (
-          <p className="text-slate-500 text-sm mb-4">{event.agency}</p>
+          <p className="text-slate-400 text-sm mb-4">{event.agency}</p>
         )}
         <div className="mb-4">
           {live ? (
@@ -148,7 +148,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
             <CountdownDisplay targetDate={launchDate} />
           )}
         </div>
-        <div className="flex items-center gap-4 text-sm text-slate-500">
+        <div className="flex items-center gap-4 text-sm text-slate-400">
           {event.location && (
             <span className="flex items-center gap-1">
               <span>📍</span> {event.location}
@@ -183,7 +183,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
             )}
           </div>
           {event.agency && (
-            <p className="text-slate-500 text-xs mt-0.5">{event.agency}</p>
+            <p className="text-slate-400 text-xs mt-0.5">{event.agency}</p>
           )}
           {launchDate && !live && (
             <p className="text-nebula-300 text-xs mt-1">
@@ -273,7 +273,7 @@ export default function MissionControlModule() {
           <h2 className="text-xl font-display font-bold text-slate-800 flex items-center gap-2">
             <span>🎯</span> Mission Control
           </h2>
-          <span className="text-slate-500 text-sm group-hover:text-nebula-300 transition-colors flex items-center gap-1">
+          <span className="text-slate-400 text-sm group-hover:text-nebula-200 transition-colors flex items-center gap-1">
             View All <span>→</span>
           </span>
         </div>
@@ -282,11 +282,11 @@ export default function MissionControlModule() {
           <div>
             <div className="text-center py-4">
               <span className="text-4xl block mb-2">🔭</span>
-              <p className="text-slate-500">No events scheduled in the next 48 hours</p>
+              <p className="text-slate-400">No events scheduled in the next 48 hours</p>
             </div>
             {nextEvent && (
               <div className="mt-4">
-                <p className="text-slate-500 text-xs uppercase tracking-wider mb-2">Next Known Event</p>
+                <p className="text-slate-400 text-xs uppercase tracking-wider mb-2">Next Known Event</p>
                 <EventCard event={nextEvent} isPrimary />
               </div>
             )}
@@ -300,7 +300,7 @@ export default function MissionControlModule() {
 
             {otherEvents.length > 0 && (
               <div className="space-y-2">
-                <p className="text-slate-500 text-xs uppercase tracking-wider">Also Coming Up</p>
+                <p className="text-slate-400 text-xs uppercase tracking-wider">Also Coming Up</p>
                 <div className="space-y-2">
                   {otherEvents.map((event) => (
                     <EventCard key={event.id} event={event} />

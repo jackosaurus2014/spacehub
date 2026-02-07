@@ -92,7 +92,7 @@ export default function NewsletterSignup({
         <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4">
           Newsletter
         </h4>
-        <p className="text-slate-500 text-sm mb-4">
+        <p className="text-slate-400 text-sm mb-4">
           Get daily space industry insights delivered to your inbox.
         </p>
         <form onSubmit={handleSubmit} className="space-y-2">
@@ -116,7 +116,7 @@ export default function NewsletterSignup({
         {message && (
           <p
             className={`mt-3 text-xs ${
-              status === 'success' ? 'text-emerald-600' : status === 'error' ? 'text-red-500' : 'text-slate-500'
+              status === 'success' ? 'text-emerald-600' : status === 'error' ? 'text-red-500' : 'text-slate-400'
             }`}
           >
             {message}
@@ -135,7 +135,7 @@ export default function NewsletterSignup({
         <h2 className="text-3xl md:text-display-md font-display font-bold text-slate-800 mb-4">
           Stay Ahead of the Curve
         </h2>
-        <p className="text-lg text-slate-500 mb-8 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
           Subscribe to our daily digest and get curated space industry news, AI-powered analysis,
           and expert insights delivered to your inbox every morning.
         </p>

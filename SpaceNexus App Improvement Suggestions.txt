@@ -254,7 +254,8 @@ Fixes:
     viewports. Smaller font sizes on mobile, every-other label on
     LineChart to prevent overlap.
 [x] Add zoom/pan capabilities on large datasets
-    NOTE: Basic pan/zoom deferred; see chart touch interaction task.
+    DONE: useChartInteraction hook provides mouse wheel zoom, click-drag pan,
+    pinch-to-zoom on touch. Applied to BarChart and LineChart with reset button.
 [x] Implement export functionality (CSV, PNG)
     DONE: ChartExportButton component with CSV and PNG download buttons.
     src/lib/chart-export.ts helpers for CSV generation and SVG-to-PNG
@@ -264,7 +265,10 @@ Fixes:
     SkeletonPage, SkeletonNewsGrid, SkeletonStatCard, SkeletonContentCard.
     Applied to news, solar-flares, debris-monitor, space-insurance,
     orbital-slots, and dashboard pages.
-[ ] Improve mobile touch interaction on charts
+[x] Improve mobile touch interaction on charts
+    DONE: useChartInteraction hook adds pinch-to-zoom, pan, and double-tap
+    reset. ChartTooltip component with viewport-aware positioning. Touch-
+    friendly tap-to-show tooltips on mobile. Applied to BarChart and LineChart.
 
 ================================================================================
 5. ACCESSIBILITY COMPLIANCE
@@ -313,9 +317,15 @@ Fixes:
 
 5.4 COLOR CONTRAST
 ------------------
-[ ] Verify custom color palette meets WCAG AA standards
-[ ] Test nebula-* and star-* colors for contrast
-[ ] Provide high-contrast mode option
+[x] Verify custom color palette meets WCAG AA standards
+    DONE: Audited text/background combinations across the app. Fixed
+    low-contrast text-slate-500/600 to text-slate-400/300 on dark backgrounds.
+[x] Test nebula-* and star-* colors for contrast
+    DONE: Part of the contrast audit above.
+[x] Provide high-contrast mode option
+    DONE: useHighContrast hook stores preference in localStorage. CSS custom
+    properties override text, border, and background contrast. Toggle button
+    in navigation. Respects prefers-contrast: more media query.
 
 ================================================================================
 6. API & DATA LAYER IMPROVEMENTS
@@ -346,7 +356,10 @@ Consider adding:
     DONE: src/app/api/events/calendar.ics/route.ts generates iCalendar
     format with VEVENT entries for space events. Returns text/calendar
     content type with attachment disposition.
-[ ] POST /api/webhooks/subscribe - Event webhooks
+[x] POST /api/webhooks/subscribe - Event webhooks
+    DONE: WebhookSubscription Prisma model. POST/GET/DELETE endpoints at
+    /api/webhooks/subscribe. HMAC-SHA256 payload signing. Auto-deactivation
+    after 10 failures. webhook-dispatcher.ts for fire-and-forget delivery.
 [x] GET /api/cache/status - Cache health monitoring
     DONE: src/app/api/cache/status/route.ts reports uptime, memory usage,
     Node version, circuit breaker states, and request timestamp.
@@ -383,7 +396,10 @@ Consider:
 
 7.2 MEDIUM PRIORITY
 -------------------
-[ ] Advanced search with filters
+[x] Advanced search with filters
+    DONE: Enhanced /api/search with module, date range, and sort filters.
+    New /search page with filter panel, debounced input, URL params,
+    and results grouped by module.
 [ ] Saved searches
 [ ] Comparison tools (compare launch providers, satellites)
 [ ] Custom dashboard widgets
@@ -442,11 +458,15 @@ Based on research and space industry trends:
 --------------------------
 [x] Expand mobile bottom nav (more than 5 items)
     DONE: See Section 4.2 — "More" menu with categorized module list.
-[ ] Add swipe gestures (back, refresh)
+[x] Add swipe gestures (back, refresh)
+    DONE: useSwipeGesture and usePullToRefresh hooks. SwipeNavigation
+    component detects swipe-right for back navigation. PullToRefresh
+    wrapper component with visual indicator.
 [x] Optimize touch targets (44x44px minimum)
     DONE: Added min-h-[44px] min-w-[44px] to mobile nav items, modal close
     buttons, toast dismiss buttons, and other small interactive elements.
-[ ] Add pull-to-refresh
+[x] Add pull-to-refresh
+    DONE: See swipe gestures above — PullToRefresh component.
 [x] Improve form input types for mobile keyboards
     DONE: Added inputMode="email" to email inputs on login, register,
     and contact forms for optimized mobile keyboard.

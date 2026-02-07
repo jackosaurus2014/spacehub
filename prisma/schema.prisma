@@ -2152,3 +2152,23 @@ model MissionRidesharePricing {
   @@index([provider])
   @@index([orbit])
 }
+
+// ============================================================
+// Webhook Subscriptions
+// ============================================================
+
+model WebhookSubscription {
+  id             String    @id @default(cuid())
+  url            String
+  events         String[]  // e.g., ["launch.upcoming", "news.published", "alert.solar_flare"]
+  secret         String    // HMAC secret for signing payloads
+  isActive       Boolean   @default(true)
+  userId         String?   // optional association with a user
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  lastDeliveryAt DateTime?
+  failureCount   Int       @default(0)
+
+  @@index([isActive])
+  @@index([userId])
+}

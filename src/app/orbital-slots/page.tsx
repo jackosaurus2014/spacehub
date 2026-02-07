@@ -165,7 +165,7 @@ function OrbitTypeCard({ slot }: { slot: OrbitalSlot }) {
           <span className="text-3xl">{orbitInfo?.icon || '\u{1F6F0}\u{FE0F}'}</span>
           <div>
             <h3 className="text-slate-900 font-semibold text-lg">{slot.orbitName}</h3>
-            <span className="text-slate-500 text-sm">{orbitInfo?.altitude || 'N/A'}</span>
+            <span className="text-slate-400 text-sm">{orbitInfo?.altitude || 'N/A'}</span>
           </div>
         </div>
         <div className="flex flex-col items-end gap-1">
@@ -184,13 +184,13 @@ function OrbitTypeCard({ slot }: { slot: OrbitalSlot }) {
 
       {/* Description */}
       {slot.description && (
-        <p className="text-slate-500 text-sm mb-4 leading-relaxed">{slot.description}</p>
+        <p className="text-slate-400 text-sm mb-4 leading-relaxed">{slot.description}</p>
       )}
 
       {/* Utilization Bar */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-slate-500 text-xs font-medium uppercase tracking-widest">Active Utilization</span>
+          <span className="text-slate-400 text-xs font-medium uppercase tracking-widest">Active Utilization</span>
           <span className="text-slate-900 text-sm font-bold">{utilization.toFixed(1)}%</span>
         </div>
         <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
@@ -205,22 +205,22 @@ function OrbitTypeCard({ slot }: { slot: OrbitalSlot }) {
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="bg-slate-100/50 rounded-lg p-3 text-center">
           <div className="text-slate-900 font-bold text-lg">{formatNumber(slot.activeSatellites)}</div>
-          <div className="text-slate-500 text-xs">Active</div>
+          <div className="text-slate-400 text-xs">Active</div>
         </div>
         <div className="bg-slate-100/50 rounded-lg p-3 text-center">
           <div className="text-yellow-400 font-bold text-lg">{formatNumber(slot.inactiveSatellites)}</div>
-          <div className="text-slate-500 text-xs">Inactive</div>
+          <div className="text-slate-400 text-xs">Inactive</div>
         </div>
         <div className="bg-slate-100/50 rounded-lg p-3 text-center">
           <div className="text-red-400 font-bold text-lg">{formatNumber(slot.debrisCount)}</div>
-          <div className="text-slate-500 text-xs">Debris</div>
+          <div className="text-slate-400 text-xs">Debris</div>
         </div>
       </div>
 
       {/* Projections */}
       <div className="flex items-center gap-4 pt-3 border-t border-slate-200 text-sm">
         <div className="flex-1">
-          <span className="text-slate-500 text-xs">1-Year Forecast</span>
+          <span className="text-slate-400 text-xs">1-Year Forecast</span>
           <div className="flex items-center gap-1.5">
             <span className="text-green-400 font-semibold">{formatNumber(slot.projected1Year)}</span>
             <span className="text-green-400/60 text-xs">
@@ -230,7 +230,7 @@ function OrbitTypeCard({ slot }: { slot: OrbitalSlot }) {
         </div>
         <div className="w-px h-8 bg-white/[0.06]" />
         <div className="flex-1">
-          <span className="text-slate-500 text-xs">5-Year Forecast</span>
+          <span className="text-slate-400 text-xs">5-Year Forecast</span>
           <div className="flex items-center gap-1.5">
             <span className="text-blue-400 font-semibold">{formatNumber(slot.projected5Year)}</span>
             <span className="text-blue-400/60 text-xs">
@@ -240,7 +240,7 @@ function OrbitTypeCard({ slot }: { slot: OrbitalSlot }) {
         </div>
         <div className="w-px h-8 bg-white/[0.06]" />
         <div className="flex-1">
-          <span className="text-slate-500 text-xs">Total Objects</span>
+          <span className="text-slate-400 text-xs">Total Objects</span>
           <div className="text-slate-900 font-semibold">{formatNumber(totalObjects)}</div>
         </div>
       </div>
@@ -282,7 +282,7 @@ function OperatorCard({ operator, rank }: { operator: SatelliteOperator; rank: n
               <span className="text-slate-400 text-xs">#{rank}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-slate-500">{operator.country}</span>
+              <span className="text-slate-400">{operator.country}</span>
               {operator.constellationName && (
                 <>
                   <span className="text-slate-400">|</span>
@@ -303,7 +303,7 @@ function OperatorCard({ operator, rank }: { operator: SatelliteOperator; rank: n
       {/* Fleet Size */}
       <div className="bg-slate-100/50 rounded-lg p-4 mb-4">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-slate-500 text-xs font-medium uppercase tracking-widest">Active Fleet</span>
+          <span className="text-slate-400 text-xs font-medium uppercase tracking-widest">Active Fleet</span>
           <span className="text-slate-900 text-2xl font-bold font-display">{formatNumber(operator.totalActive)}</span>
         </div>
 
@@ -315,8 +315,8 @@ function OperatorCard({ operator, rank }: { operator: SatelliteOperator; rank: n
               return (
                 <div key={orbit.type}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-slate-500 text-xs">{orbit.type}</span>
-                    <span className="text-slate-500 text-xs">{formatNumber(orbit.count)} ({pct.toFixed(1)}%)</span>
+                    <span className="text-slate-400 text-xs">{orbit.type}</span>
+                    <span className="text-slate-400 text-xs">{formatNumber(orbit.count)} ({pct.toFixed(1)}%)</span>
                   </div>
                   <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                     <div
@@ -334,7 +334,7 @@ function OperatorCard({ operator, rank }: { operator: SatelliteOperator; rank: n
       {/* Growth Projections */}
       <div className="flex items-center gap-4 pt-3 border-t border-slate-200 text-sm">
         <div className="flex-1">
-          <span className="text-slate-500 text-xs">1-Year Planned</span>
+          <span className="text-slate-400 text-xs">1-Year Planned</span>
           <div className="flex items-center gap-1.5">
             <span className="text-green-400 font-semibold">+{formatNumber(operator.planned1Year)}</span>
             {operator.totalActive > 0 && (
@@ -346,7 +346,7 @@ function OperatorCard({ operator, rank }: { operator: SatelliteOperator; rank: n
         </div>
         <div className="w-px h-8 bg-white/[0.06]" />
         <div className="flex-1">
-          <span className="text-slate-500 text-xs">5-Year Planned</span>
+          <span className="text-slate-400 text-xs">5-Year Planned</span>
           <div className="text-blue-400 font-semibold">+{formatNumber(operator.planned5Year)}</div>
         </div>
       </div>
@@ -402,7 +402,7 @@ function EventCard({ event }: { event: OrbitalEvent }) {
             <div className="flex items-center gap-2 text-sm">
               <span className={`${eventStyle.color} text-xs font-medium`}>{eventStyle.label}</span>
               <span className="text-slate-400">|</span>
-              <span className="text-slate-500 text-xs">{event.orbitType}</span>
+              <span className="text-slate-400 text-xs">{event.orbitType}</span>
             </div>
           </div>
         </div>
@@ -414,7 +414,7 @@ function EventCard({ event }: { event: OrbitalEvent }) {
               day: 'numeric',
             })}
           </div>
-          <div className={`text-xs ${isPast ? 'text-slate-400' : days <= 3 ? 'text-green-400' : 'text-slate-500'}`}>
+          <div className={`text-xs ${isPast ? 'text-slate-400' : days <= 3 ? 'text-green-400' : 'text-slate-400'}`}>
             {isPast ? 'Completed' : days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`}
           </div>
         </div>
@@ -424,17 +424,17 @@ function EventCard({ event }: { event: OrbitalEvent }) {
       <div className="flex flex-wrap items-center gap-3 mb-3">
         {event.operatorName && (
           <div className="bg-slate-100/50 rounded px-3 py-1.5 text-sm">
-            <span className="text-slate-500 text-xs block">Operator</span>
+            <span className="text-slate-400 text-xs block">Operator</span>
             <span className="text-slate-900 font-medium">{event.operatorName}</span>
           </div>
         )}
         <div className="bg-slate-100/50 rounded px-3 py-1.5 text-sm">
-          <span className="text-slate-500 text-xs block">Satellites</span>
+          <span className="text-slate-400 text-xs block">Satellites</span>
           <span className="text-slate-900 font-medium">{event.satelliteCount}</span>
         </div>
         {confidence && (
           <div className="bg-slate-100/50 rounded px-3 py-1.5 text-sm">
-            <span className="text-slate-500 text-xs block">Confidence</span>
+            <span className="text-slate-400 text-xs block">Confidence</span>
             <span className={`font-medium ${confidence.color}`}>{confidence.label}</span>
           </div>
         )}
@@ -442,7 +442,7 @@ function EventCard({ event }: { event: OrbitalEvent }) {
 
       {/* Description */}
       {event.description && (
-        <p className="text-slate-500 text-xs leading-relaxed">{event.description}</p>
+        <p className="text-slate-400 text-xs leading-relaxed">{event.description}</p>
       )}
 
       {/* Cross-module link for conjunction events */}
@@ -578,7 +578,7 @@ function OrbitalSlotsContent() {
             <h2 className="text-2xl font-semibold text-slate-900 mb-2">
               No Orbital Data Available
             </h2>
-            <p className="text-slate-500 mb-6 max-w-lg mx-auto">
+            <p className="text-slate-400 mb-6 max-w-lg mx-auto">
               Load orbital slot data including satellite registries, operator fleets,
               and upcoming orbital events.
             </p>
@@ -605,7 +605,7 @@ function OrbitalSlotsContent() {
                 <div className="text-2xl font-bold font-display text-slate-900">
                   {formatNumber(stats?.totalActive || 0)}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Active Satellites
                 </div>
               </div>
@@ -613,7 +613,7 @@ function OrbitalSlotsContent() {
                 <div className="text-2xl font-bold font-display text-red-400">
                   {formatNumber(stats?.totalDebris || 0)}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Debris Objects
                 </div>
               </div>
@@ -625,22 +625,22 @@ function OrbitalSlotsContent() {
                 }`}>
                   {mostCongestedSlot?.orbitType || 'N/A'}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Most Congested
                 </div>
                 {mostCongestedSlot?.congestionLevel && (
                   <div className={`text-[10px] mt-0.5 ${
-                    CONGESTION_STYLES[mostCongestedSlot.congestionLevel]?.text || 'text-slate-500'
+                    CONGESTION_STYLES[mostCongestedSlot.congestionLevel]?.text || 'text-slate-400'
                   }`}>
                     {CONGESTION_LEVEL_INFO[mostCongestedSlot.congestionLevel]?.label}
                   </div>
                 )}
               </div>
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-nebula-400">
+                <div className="text-2xl font-bold font-display text-nebula-300">
                   {operators.length}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Operators
                 </div>
               </div>
@@ -684,7 +684,7 @@ function OrbitalSlotsContent() {
                   <div className="flex items-center justify-between flex-wrap gap-4">
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900">Orbital Environment Summary</h3>
-                      <p className="text-slate-500 text-sm mt-1">
+                      <p className="text-slate-400 text-sm mt-1">
                         {formatNumber(stats?.totalObjects || 0)} total objects tracked across {slots.length} orbital regimes
                       </p>
                     </div>
@@ -693,14 +693,14 @@ function OrbitalSlotsContent() {
                         <div className="text-2xl font-bold font-display text-green-400">
                           +{formatNumber(stats?.growth1Year || 0)}
                         </div>
-                        <div className="text-slate-500 text-xs">1-Year Growth</div>
+                        <div className="text-slate-400 text-xs">1-Year Growth</div>
                       </div>
                       <div className="w-px h-10 bg-white/[0.06]" />
                       <div className="text-right">
                         <div className="text-2xl font-bold font-display text-blue-400">
                           +{formatNumber(stats?.growth5Year || 0)}
                         </div>
-                        <div className="text-slate-500 text-xs">5-Year Growth</div>
+                        <div className="text-slate-400 text-xs">5-Year Growth</div>
                       </div>
                     </div>
                   </div>
@@ -723,7 +723,7 @@ function OrbitalSlotsContent() {
                       return (
                         <div key={level} className={`rounded-lg p-3 ${style.bg} border ${style.border}`}>
                           <span className={`text-sm font-semibold ${style.text}`}>{info.label}</span>
-                          <p className="text-slate-500 text-xs mt-1">
+                          <p className="text-slate-400 text-xs mt-1">
                             {level === 'low' && 'Minimal traffic, ample slot availability.'}
                             {level === 'moderate' && 'Growing traffic, coordination recommended.'}
                             {level === 'high' && 'Significant congestion, limited slots remaining.'}
@@ -743,13 +743,13 @@ function OrbitalSlotsContent() {
                 {/* Orbit Type Filter */}
                 <div className="card p-4 mb-6">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-slate-500 text-sm mr-2">Filter by orbit:</span>
+                    <span className="text-slate-400 text-sm mr-2">Filter by orbit:</span>
                     <button
                       onClick={() => handleOrbitFilterChange('')}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         orbitFilter === ''
                           ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                          : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
+                          : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       All ({operators.length})
@@ -769,7 +769,7 @@ function OrbitalSlotsContent() {
                           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
                             orbitFilter === orbit
                               ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                              : 'bg-transparent text-slate-500 border border-slate-200 hover:border-slate-300'
+                              : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
                           }`}
                         >
                           <span>{orbitInfo?.icon}</span>
@@ -795,16 +795,16 @@ function OrbitalSlotsContent() {
                       <h3 className="text-lg font-semibold text-slate-900">
                         {orbitFilter ? `${orbitFilter} Operators` : 'All Operators'}
                       </h3>
-                      <p className="text-slate-500 text-sm mt-1">
+                      <p className="text-slate-400 text-sm mt-1">
                         {filteredOperators.length} operator{filteredOperators.length !== 1 ? 's' : ''} with a combined fleet of{' '}
                         {formatNumber(filteredOperators.reduce((sum, op) => sum + op.totalActive, 0))} active satellites
                       </p>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold font-display text-nebula-400">
+                      <div className="text-2xl font-bold font-display text-nebula-300">
                         +{formatNumber(filteredOperators.reduce((sum, op) => sum + op.planned1Year, 0))}
                       </div>
-                      <div className="text-slate-500 text-xs">Planned (1Y)</div>
+                      <div className="text-slate-400 text-xs">Planned (1Y)</div>
                     </div>
                   </div>
                 </div>
@@ -813,7 +813,7 @@ function OrbitalSlotsContent() {
                 {filteredOperators.length === 0 ? (
                   <div className="text-center py-16">
                     <h3 className="text-xl font-semibold text-slate-900 mb-2">No Operators Found</h3>
-                    <p className="text-slate-500">
+                    <p className="text-slate-400">
                       No operators with active satellites in {orbitFilter} orbit.
                     </p>
                   </div>
@@ -839,7 +839,7 @@ function OrbitalSlotsContent() {
                       <div key={type} className={`card p-4 text-center ${style.bg} border border-slate-200`}>
                         <span className="text-2xl block mb-1">{style.icon}</span>
                         <div className={`text-xl font-bold font-display ${style.color}`}>{count}</div>
-                        <div className="text-slate-500 text-xs uppercase tracking-widest">{style.label}</div>
+                        <div className="text-slate-400 text-xs uppercase tracking-widest">{style.label}</div>
                       </div>
                     );
                   })}
@@ -850,7 +850,7 @@ function OrbitalSlotsContent() {
                   <div className="flex items-center justify-between flex-wrap gap-3">
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 mb-1">Upcoming Orbital Events</h3>
-                      <p className="text-slate-500 text-sm">Next 30 days of scheduled and predicted events</p>
+                      <p className="text-slate-400 text-sm">Next 30 days of scheduled and predicted events</p>
                     </div>
                     <ExportButton
                       data={events}
@@ -865,7 +865,7 @@ function OrbitalSlotsContent() {
                 {events.length === 0 ? (
                   <div className="text-center py-16">
                     <h3 className="text-xl font-semibold text-slate-900 mb-2">No Upcoming Events</h3>
-                    <p className="text-slate-500">No orbital events scheduled in the next 30 days.</p>
+                    <p className="text-slate-400">No orbital events scheduled in the next 30 days.</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -878,7 +878,7 @@ function OrbitalSlotsContent() {
                 {/* Data Note */}
                 <div className="card p-5 border-dashed">
                   <h3 className="text-lg font-semibold text-slate-900 mb-3">Event Tracking Sources</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-500">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
                     <div>
                       <h4 className="text-slate-900 font-medium mb-2">Launch Schedules</h4>
                       <ul className="space-y-1">
@@ -898,7 +898,7 @@ function OrbitalSlotsContent() {
                       </ul>
                     </div>
                   </div>
-                  <p className="text-slate-500 text-xs mt-4">
+                  <p className="text-slate-400 text-xs mt-4">
                     Event dates and confidence levels are based on publicly available scheduling data.
                     Tentative and estimated dates may shift as launch windows are confirmed.
                   </p>

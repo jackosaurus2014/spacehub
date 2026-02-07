@@ -174,7 +174,7 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
           <div>
             <h3 className="text-slate-900 font-semibold text-lg">{body.name}</h3>
             {body.designation && (
-              <span className="text-slate-500 text-sm">{body.designation}</span>
+              <span className="text-slate-400 text-sm">{body.designation}</span>
             )}
           </div>
         </div>
@@ -194,7 +194,7 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
 
       {/* Description */}
       {body.description && (
-        <p className="text-slate-500 text-sm mb-4 leading-relaxed line-clamp-2">{body.description}</p>
+        <p className="text-slate-400 text-sm mb-4 leading-relaxed line-clamp-2">{body.description}</p>
       )}
 
       {/* Key Stats Grid */}
@@ -246,7 +246,7 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
       )}
 
       {/* Orbital Info */}
-      <div className="flex flex-wrap gap-3 text-xs text-slate-500 border-t border-slate-100 pt-3">
+      <div className="flex flex-wrap gap-3 text-xs text-slate-400 border-t border-slate-100 pt-3">
         {body.orbitalFamily && (
           <span className="flex items-center gap-1">
             <span className="text-slate-400">Family:</span> {body.orbitalFamily}
@@ -268,7 +268,7 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
       {missionHistory.length > 0 && (
         <div className="mt-3 pt-3 border-t border-slate-100">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Missions</div>
-          <div className="text-slate-600 text-xs">{missionHistory.join(', ')}</div>
+          <div className="text-slate-400 text-xs">{missionHistory.join(', ')}</div>
         </div>
       )}
     </div>
@@ -302,7 +302,7 @@ function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
         <div>
           <h4 className="text-slate-900 font-semibold">{commodity.name}</h4>
           {commodity.symbol && (
-            <span className="text-slate-500 text-sm">{commodity.symbol}</span>
+            <span className="text-slate-400 text-sm">{commodity.symbol}</span>
           )}
         </div>
         <span className={`text-xs font-medium px-2 py-0.5 rounded ${categoryInfo.color} bg-slate-100`}>
@@ -332,7 +332,7 @@ function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
       </div>
 
       {commodity.annualProduction && (
-        <div className="text-slate-500 text-xs mb-2">
+        <div className="text-slate-400 text-xs mb-2">
           Annual Production: {formatNumber(commodity.annualProduction)} tonnes
         </div>
       )}
@@ -362,7 +362,7 @@ function StatsCard({ label, value, subValue, icon }: { label: string; value: str
         <div>
           <div className="text-slate-400 text-xs uppercase tracking-widest">{label}</div>
           <div className="text-slate-900 font-bold text-xl">{value}</div>
-          {subValue && <div className="text-slate-500 text-xs">{subValue}</div>}
+          {subValue && <div className="text-slate-400 text-xs">{subValue}</div>}
         </div>
       </div>
     </div>
@@ -592,7 +592,7 @@ function SpaceMiningContent() {
               className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                 activeTab === tab.id
                   ? 'border-nebula-500 text-nebula-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                  : 'border-transparent text-slate-400 hover:text-slate-700 hover:border-slate-300'
               }`}
             >
               <span className="mr-1.5">{tab.icon}</span>
@@ -662,7 +662,7 @@ function SpaceMiningContent() {
           </div>
 
           {filteredBodies.length === 0 ? (
-            <div className="text-center py-12 text-slate-500">
+            <div className="text-center py-12 text-slate-400">
               <p className="text-4xl mb-4">🪨</p>
               <p>No mining bodies found matching your filters.</p>
               <p className="text-sm mt-2">Try adjusting your filter criteria.</p>
@@ -687,7 +687,7 @@ function SpaceMiningContent() {
                 <span className={`font-bold ${info.color}`}>{type}</span>
                 <div>
                   <div className="text-slate-700 text-xs font-medium">{info.label.split('(')[1]?.replace(')', '') || info.label}</div>
-                  <div className="text-slate-500 text-xs">{info.description}</div>
+                  <div className="text-slate-400 text-xs">{info.description}</div>
                 </div>
               </div>
             ))}

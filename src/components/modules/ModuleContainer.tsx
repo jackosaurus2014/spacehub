@@ -14,7 +14,7 @@ function ModuleLoadingFallback() {
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-4">
       <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
-      <p className="text-slate-500 text-sm">Loading module...</p>
+      <p className="text-slate-400 text-sm">Loading module...</p>
     </div>
   );
 }
@@ -212,7 +212,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-4">
         <div className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
-        <p className="text-slate-500 text-sm">Loading modules...</p>
+        <p className="text-slate-400 text-sm">Loading modules...</p>
       </div>
     );
   }
@@ -222,7 +222,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
       <div className="card p-12 text-center">
         <span className="text-6xl block mb-6">🛸</span>
         <h3 className="text-2xl font-semibold text-slate-800 mb-3">No Modules Available</h3>
-        <p className="text-slate-500 max-w-md mx-auto">
+        <p className="text-slate-400 max-w-md mx-auto">
           Please check back later for available modules.
         </p>
       </div>

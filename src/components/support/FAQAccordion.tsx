@@ -54,7 +54,7 @@ function AccordionItem({ item, isOpen, onToggle, searchQuery }: AccordionItemPro
           }`}
         >
           <svg
-            className="w-4 h-4 text-slate-500"
+            className="w-4 h-4 text-slate-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -73,7 +73,7 @@ function AccordionItem({ item, isOpen, onToggle, searchQuery }: AccordionItemPro
           isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="px-5 pb-4 text-slate-500 leading-relaxed">
+        <div className="px-5 pb-4 text-slate-400 leading-relaxed">
           {searchQuery ? highlightText(item.answer, searchQuery) : item.answer}
         </div>
       </div>
@@ -158,7 +158,7 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
           </svg>
         </div>
         <h3 className="text-lg font-semibold text-slate-900 mb-2">No results found</h3>
-        <p className="text-slate-500">
+        <p className="text-slate-400">
           Try adjusting your search or browse a different category.
         </p>
       </div>
@@ -197,7 +197,7 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
 
       {/* Expand/Collapse Controls */}
       <div className="flex items-center justify-between">
-        <p className="text-slate-500 text-sm">
+        <p className="text-slate-400 text-sm">
           {filteredItems.length} question{filteredItems.length !== 1 ? 's' : ''} found
         </p>
         <div className="flex items-center gap-2">

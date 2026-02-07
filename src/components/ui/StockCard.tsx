@@ -96,7 +96,7 @@ export default function StockCard({
     return (
       <div className="card p-4 border-red-500/30">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-star-400">{exchange}:{ticker}</span>
+          <span className="text-xs text-star-300">{exchange}:{ticker}</span>
           <span className="text-xs text-red-400">Unable to load</span>
         </div>
         <div className="text-sm text-white font-medium truncate">{companyName}</div>
@@ -167,7 +167,7 @@ export default function StockCard({
       </div>
 
       {/* Market Cap */}
-      <div className="mt-2 text-xs text-star-400">
+      <div className="mt-2 text-xs text-star-300">
         Market Cap: {formatMarketCap(data.marketCap)}
       </div>
     </div>
@@ -202,11 +202,11 @@ export function StockPriceCell({
   }, [ticker]);
 
   if (loading) {
-    return <span className="text-star-400">Loading...</span>;
+    return <span className="text-star-300">Loading...</span>;
   }
 
   if (!data) {
-    return <span className="text-star-400">—</span>;
+    return <span className="text-star-300">—</span>;
   }
 
   const isPositive = data.changePercent >= 0;
@@ -261,7 +261,7 @@ export function StockPerformanceRow({ ticker }: { ticker: string }) {
   }
 
   if (!data) {
-    return <span className="text-star-400">Stock data unavailable</span>;
+    return <span className="text-star-300">Stock data unavailable</span>;
   }
 
   const chartData = data.chartData.daily.map((d) => d.close);

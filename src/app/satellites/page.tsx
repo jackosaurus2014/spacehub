@@ -66,15 +66,15 @@ function ISSHighlight({ iss }: { iss: Satellite }) {
         <div className="flex items-center gap-6">
           <div className="text-center">
             <div className="text-2xl font-bold text-white">{iss.altitude.toLocaleString()} km</div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest">Altitude</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest">Altitude</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-nebula-300">{iss.velocity.toFixed(2)} km/s</div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest">Velocity</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest">Velocity</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-amber-400">{iss.period?.toFixed(0) || '~93'} min</div>
-            <div className="text-slate-500 text-xs uppercase tracking-widest">Orbital Period</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest">Orbital Period</div>
           </div>
         </div>
       </div>
@@ -213,7 +213,7 @@ function SatelliteTrackerContent() {
                 <div className="text-2xl font-bold font-display text-slate-900">
                   {stats?.total.toLocaleString() || 0}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Total Tracked
                 </div>
               </div>
@@ -221,7 +221,7 @@ function SatelliteTrackerContent() {
                 <div className="text-2xl font-bold font-display text-green-500">
                   {stats?.byStatus.active.toLocaleString() || 0}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Active
                 </div>
               </div>
@@ -229,7 +229,7 @@ function SatelliteTrackerContent() {
                 <div className="text-2xl font-bold font-display text-blue-500">
                   {stats?.byOrbitType.LEO.toLocaleString() || 0}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   LEO
                 </div>
               </div>
@@ -237,7 +237,7 @@ function SatelliteTrackerContent() {
                 <div className="text-2xl font-bold font-display text-purple-500">
                   {stats?.byOrbitType.MEO.toLocaleString() || 0}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   MEO
                 </div>
               </div>
@@ -245,15 +245,15 @@ function SatelliteTrackerContent() {
                 <div className="text-2xl font-bold font-display text-amber-500">
                   {stats?.byOrbitType.GEO.toLocaleString() || 0}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   GEO
                 </div>
               </div>
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-nebula-500">
+                <div className="text-2xl font-bold font-display text-nebula-300">
                   {stats?.topOperators.length || 0}
                 </div>
-                <div className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Operators
                 </div>
               </div>
@@ -312,10 +312,10 @@ function SatelliteTrackerContent() {
                             <div className="flex items-center justify-between mb-1">
                               <div className="flex items-center gap-2">
                                 <span>{orbit.icon}</span>
-                                <span className="text-slate-600 text-sm">{orbit.label}</span>
+                                <span className="text-slate-400 text-sm">{orbit.label}</span>
                                 <span className="text-slate-400 text-xs">({orbit.description})</span>
                               </div>
-                              <span className="text-slate-500 text-sm font-medium">
+                              <span className="text-slate-400 text-sm font-medium">
                                 {count} ({pct.toFixed(1)}%)
                               </span>
                             </div>
@@ -354,8 +354,8 @@ function SatelliteTrackerContent() {
                           return (
                             <div key={purpose}>
                               <div className="flex items-center justify-between mb-1">
-                                <span className="text-slate-600 text-sm">{purpose}</span>
-                                <span className="text-slate-500 text-sm font-medium">
+                                <span className="text-slate-400 text-sm">{purpose}</span>
+                                <span className="text-slate-400 text-sm font-medium">
                                   {count} ({pct.toFixed(1)}%)
                                 </span>
                               </div>
@@ -380,7 +380,7 @@ function SatelliteTrackerContent() {
                     </h3>
                     <button
                       onClick={() => handleTabChange('satellites')}
-                      className="text-nebula-500 hover:text-nebula-400 text-sm transition-colors"
+                      className="text-nebula-300 hover:text-nebula-200 text-sm transition-colors"
                     >
                       View All &rarr;
                     </button>
@@ -395,7 +395,7 @@ function SatelliteTrackerContent() {
                 {/* Data Sources */}
                 <div className="card p-5 border-dashed">
                   <h3 className="text-lg font-semibold text-slate-900 mb-3">Data Sources</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-500">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
                     <div>
                       <h4 className="text-slate-900 font-medium mb-2">Tracking Data</h4>
                       <ul className="space-y-1">
@@ -438,7 +438,7 @@ function SatelliteTrackerContent() {
 
                     {/* Orbit Filter */}
                     <div className="flex items-center gap-2">
-                      <span className="text-slate-500 text-sm">Orbit:</span>
+                      <span className="text-slate-400 text-sm">Orbit:</span>
                       <select
                         value={orbitFilter}
                         onChange={(e) => handleOrbitFilterChange(e.target.value as OrbitType | '')}
@@ -455,7 +455,7 @@ function SatelliteTrackerContent() {
 
                     {/* Status Filter */}
                     <div className="flex items-center gap-2">
-                      <span className="text-slate-500 text-sm">Status:</span>
+                      <span className="text-slate-400 text-sm">Status:</span>
                       <select
                         value={statusFilter}
                         onChange={(e) => handleStatusFilterChange(e.target.value as SatelliteStatus | '')}
@@ -473,7 +473,7 @@ function SatelliteTrackerContent() {
                 </div>
 
                 {/* Results Count */}
-                <div className="mb-4 text-slate-500 text-sm">
+                <div className="mb-4 text-slate-400 text-sm">
                   Showing {satellites.length} of {data?.total || 0} satellites
                   {(orbitFilter || statusFilter || searchQuery) && (
                     <button
@@ -483,7 +483,7 @@ function SatelliteTrackerContent() {
                         setSearchQuery('');
                         updateUrl({ orbit: '', status: '', search: '' });
                       }}
-                      className="ml-2 text-nebula-500 hover:text-nebula-400"
+                      className="ml-2 text-nebula-300 hover:text-nebula-200"
                     >
                       Clear filters
                     </button>
@@ -495,7 +495,7 @@ function SatelliteTrackerContent() {
                   <div className="text-center py-16">
                     <span className="text-5xl block mb-3">🔍</span>
                     <h3 className="text-xl font-semibold text-slate-900 mb-2">No Satellites Found</h3>
-                    <p className="text-slate-500">
+                    <p className="text-slate-400">
                       Try adjusting your search or filters.
                     </p>
                   </div>
@@ -528,7 +528,7 @@ function SatelliteTrackerContent() {
                               <span className="text-slate-400 text-sm font-mono">#{idx + 1}</span>
                               <span className="text-slate-900 font-medium">{operator.name}</span>
                             </div>
-                            <span className="text-slate-500 text-sm font-medium">
+                            <span className="text-slate-400 text-sm font-medium">
                               {operator.count} satellites ({pct.toFixed(1)}%)
                             </span>
                           </div>
@@ -551,7 +551,7 @@ function SatelliteTrackerContent() {
                       <h3 className="text-lg font-semibold text-slate-900 mb-1">
                         Want more operator details?
                       </h3>
-                      <p className="text-slate-500 text-sm">
+                      <p className="text-slate-400 text-sm">
                         Check out the Orbital Slots page for detailed operator fleet compositions, growth projections, and orbital distribution.
                       </p>
                     </div>

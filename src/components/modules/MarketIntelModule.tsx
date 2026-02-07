@@ -236,7 +236,7 @@ export default function MarketIntelModule() {
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">📊</span>
         <h3 className="text-xl font-semibold text-slate-800 mb-2">Market Intel</h3>
-        <p className="text-slate-500 mb-4">
+        <p className="text-slate-400 mb-4">
           Track space industry companies, stock prices, and funding rounds.
         </p>
         <button
@@ -285,7 +285,7 @@ export default function MarketIntelModule() {
           <span className="text-3xl">📊</span>
           <div>
             <h2 className="text-2xl font-display font-bold text-slate-800">Market Intel</h2>
-            <p className="text-slate-500 text-sm">Space industry companies & investments</p>
+            <p className="text-slate-400 text-sm">Space industry companies & investments</p>
           </div>
         </div>
         <Link href="/market-intel" className="btn-secondary text-sm py-1.5 px-4">
@@ -307,15 +307,15 @@ export default function MarketIntelModule() {
           </span>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-slate-800">{stats.total}</div>
-            <div className="text-slate-500 text-xs">Companies</div>
+            <div className="text-slate-400 text-xs">Companies</div>
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-green-400">{stats.publicCount}</div>
-            <div className="text-slate-500 text-xs">Public</div>
+            <div className="text-slate-400 text-xs">Public</div>
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-yellow-400">{stats.privateCount}</div>
-            <div className="text-slate-500 text-xs">Private</div>
+            <div className="text-slate-400 text-xs">Private</div>
           </div>
           <div className="card p-3 text-center">
             <div className="text-2xl font-bold text-nebula-300">
@@ -327,7 +327,7 @@ export default function MarketIntelModule() {
                   }`
                 : 'N/A'}
             </div>
-            <div className="text-slate-500 text-xs">Total Market Cap</div>
+            <div className="text-slate-400 text-xs">Total Market Cap</div>
           </div>
         </div>
       )}
@@ -380,7 +380,7 @@ export default function MarketIntelModule() {
           <h3 className="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
             <span className="text-green-400">📈</span>
             Publicly Traded Companies
-            <span className="text-slate-500 font-normal text-sm">({publicCompanies.length})</span>
+            <span className="text-slate-400 font-normal text-sm">({publicCompanies.length})</span>
           </h3>
           <div className="card overflow-hidden">
             {/* Table Header */}
@@ -435,7 +435,7 @@ export default function MarketIntelModule() {
                       )}
                     </div>
 
-                    <div className="col-span-3 text-right text-sm text-slate-500">
+                    <div className="col-span-3 text-right text-sm text-slate-400">
                       {company.marketCap ? (
                         company.marketCap >= 1
                           ? `$${company.marketCap.toFixed(1)}B`
@@ -456,7 +456,7 @@ export default function MarketIntelModule() {
           <h3 className="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
             <span className="text-yellow-400">🔒</span>
             Private Companies
-            <span className="text-slate-500 font-normal text-sm">({companies.filter(c => !c.isPublic).length})</span>
+            <span className="text-slate-400 font-normal text-sm">({companies.filter(c => !c.isPublic).length})</span>
           </h3>
           <div className="card overflow-hidden">
             {/* Table Header */}
@@ -479,7 +479,7 @@ export default function MarketIntelModule() {
                       <span className="text-lg flex-shrink-0">{countryInfo?.flag || '🌐'}</span>
                       <div className="min-w-0">
                         <div className="font-medium text-slate-800 text-sm truncate">{company.name}</div>
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-slate-400">
                           {(company.focusAreas as string[]).slice(0, 1).map((area) => {
                             const focusInfo = FOCUS_AREAS.find((f) => f.value === area);
                             return focusInfo ? `${focusInfo.icon} ${focusInfo.label}` : area;
@@ -498,14 +498,14 @@ export default function MarketIntelModule() {
                                   : `${company.lastFundingAmount}M`}`
                               : '—'}
                           </span>
-                          <div className="text-xs text-slate-500">{company.lastFundingRound}</div>
+                          <div className="text-xs text-slate-400">{company.lastFundingRound}</div>
                         </div>
                       ) : (
                         <span className="text-slate-400 text-sm">—</span>
                       )}
                     </div>
 
-                    <div className="col-span-2 text-right text-sm text-slate-500">
+                    <div className="col-span-2 text-right text-sm text-slate-400">
                       {company.valuation ? (
                         company.valuation >= 1
                           ? `$${company.valuation.toFixed(1)}B`

@@ -19,6 +19,7 @@ import ToastContainer from '@/components/ui/Toast';
 import NavigationProgress from '@/components/ui/NavigationProgress';
 import KeyboardShortcutsModal from '@/components/ui/KeyboardShortcutsModal';
 import PageTracker from '@/components/PageTracker';
+import SwipeNavigation from '@/components/SwipeNavigation';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -174,6 +175,7 @@ export default function RootLayout({
               <ToastContainer />
               <PageTracker />
               <KeyboardShortcutsModal />
+              <SwipeNavigation />
             </div>
           </SubscriptionProvider>
         </AuthProvider>

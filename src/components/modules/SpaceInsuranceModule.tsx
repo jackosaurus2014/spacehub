@@ -117,7 +117,7 @@ export default function SpaceInsuranceModule() {
       case 'active':
         return 'bg-green-500/20 text-green-400 border border-green-500/30';
       case 'expired':
-        return 'bg-star-500/20 text-star-400 border border-star-500/30';
+        return 'bg-star-500/20 text-star-300 border border-star-500/30';
       case 'claimed':
         return 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
       case 'settled':
@@ -146,7 +146,7 @@ export default function SpaceInsuranceModule() {
         <h3 className="text-xl font-semibold text-slate-800 mb-2">
           Space Insurance & Risk Calculator
         </h3>
-        <p className="text-slate-500 mb-4">
+        <p className="text-slate-400 mb-4">
           Explore space insurance policies, market trends, and calculate mission premiums.
         </p>
         <button
@@ -177,7 +177,7 @@ export default function SpaceInsuranceModule() {
             <h2 className="text-2xl font-display font-bold text-slate-800">
               Space Insurance & Risk Calculator
             </h2>
-            <p className="text-slate-500 text-sm">
+            <p className="text-slate-400 text-sm">
               Policies, market data & premium estimation
             </p>
           </div>
@@ -193,25 +193,25 @@ export default function SpaceInsuranceModule() {
           <div className="text-2xl font-bold text-nebula-300">
             {formatCurrency(stats.totalPremiums)}
           </div>
-          <div className="text-slate-500 text-xs">Total Premiums</div>
+          <div className="text-slate-400 text-xs">Total Premiums</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-yellow-400">
             {stats.avgLossRatio.toFixed(1)}%
           </div>
-          <div className="text-slate-500 text-xs">Avg Loss Ratio</div>
+          <div className="text-slate-400 text-xs">Avg Loss Ratio</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-green-400">
             {stats.activePolicies}
           </div>
-          <div className="text-slate-500 text-xs">Active Policies</div>
+          <div className="text-slate-400 text-xs">Active Policies</div>
         </div>
         <div className="card p-3 text-center">
           <div className="text-2xl font-bold text-red-400">
             {formatCurrency(stats.largestClaim)}
           </div>
-          <div className="text-slate-500 text-xs">Largest Claim</div>
+          <div className="text-slate-400 text-xs">Largest Claim</div>
         </div>
       </div>
 
@@ -243,7 +243,7 @@ export default function SpaceInsuranceModule() {
                       {year.year}
                     </span>
                     <div className="flex items-center gap-4 text-xs">
-                      <span className="text-slate-500">
+                      <span className="text-slate-400">
                         Policies: {year.numberOfPolicies}
                       </span>
                       <span
@@ -262,7 +262,7 @@ export default function SpaceInsuranceModule() {
 
                   {/* Premium bar */}
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs text-slate-500 w-16">Premiums</span>
+                    <span className="text-xs text-slate-400 w-16">Premiums</span>
                     <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-nebula-500 to-nebula-400 rounded-full"
@@ -276,7 +276,7 @@ export default function SpaceInsuranceModule() {
 
                   {/* Claims bar */}
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500 w-16">Claims</span>
+                    <span className="text-xs text-slate-400 w-16">Claims</span>
                     <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full"
@@ -301,7 +301,7 @@ export default function SpaceInsuranceModule() {
             </h3>
             <div className="space-y-3">
               <div>
-                <label className="text-slate-500 text-xs block mb-1">
+                <label className="text-slate-400 text-xs block mb-1">
                   Insured Value ($M)
                 </label>
                 <input
@@ -314,7 +314,7 @@ export default function SpaceInsuranceModule() {
                 />
               </div>
               <div>
-                <label className="text-slate-500 text-xs block mb-1">
+                <label className="text-slate-400 text-xs block mb-1">
                   Mission Type
                 </label>
                 <select
@@ -349,19 +349,19 @@ export default function SpaceInsuranceModule() {
               {premiumEstimate && (
                 <div className="mt-3 p-3 bg-slate-50 rounded-lg space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Est. Rate:</span>
+                    <span className="text-slate-400">Est. Rate:</span>
                     <span className="text-slate-800 font-medium">
                       {premiumEstimate.premiumRate.toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Est. Premium:</span>
+                    <span className="text-slate-400">Est. Premium:</span>
                     <span className="text-nebula-300 font-bold">
                       {formatCurrency(premiumEstimate.premiumAmount)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Risk Category:</span>
+                    <span className="text-slate-400">Risk Category:</span>
                     <span
                       className={`font-medium ${
                         premiumEstimate.riskCategory === 'High Risk'
@@ -391,7 +391,7 @@ export default function SpaceInsuranceModule() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-slate-500 text-xs border-b border-slate-200">
+              <tr className="text-slate-400 text-xs border-b border-slate-200">
                 <th className="text-left py-2 pr-4">Insurer</th>
                 <th className="text-left py-2 pr-4">Mission</th>
                 <th className="text-left py-2 pr-4">Type</th>
@@ -411,7 +411,7 @@ export default function SpaceInsuranceModule() {
                     <td className="py-2 pr-4 text-slate-800 font-medium">
                       {policy.insurer}
                     </td>
-                    <td className="py-2 pr-4 text-slate-600">
+                    <td className="py-2 pr-4 text-slate-400">
                       {policy.missionName || 'N/A'}
                     </td>
                     <td className="py-2 pr-4">
@@ -422,7 +422,7 @@ export default function SpaceInsuranceModule() {
                     <td className="py-2 pr-4 text-right text-nebula-300 font-mono">
                       {policy.premiumRate.toFixed(2)}%
                     </td>
-                    <td className="py-2 pr-4 text-right text-slate-600 font-mono">
+                    <td className="py-2 pr-4 text-right text-slate-400 font-mono">
                       {formatCurrency(policy.insuredValue)}
                     </td>
                     <td className="py-2">

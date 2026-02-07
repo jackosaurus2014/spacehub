@@ -52,13 +52,13 @@ function BlogPostCard({ post }: { post: BlogPost }) {
               </span>
             )}
           </div>
-          <h3 className="font-semibold text-slate-800 text-sm line-clamp-2 group-hover:text-nebula-300 transition-colors">
+          <h3 className="font-semibold text-slate-800 text-sm line-clamp-2 group-hover:text-nebula-200 transition-colors">
             {post.title}
           </h3>
           {post.excerpt && (
-            <p className="text-slate-500 text-xs mt-1 line-clamp-2">{post.excerpt}</p>
+            <p className="text-slate-400 text-xs mt-1 line-clamp-2">{post.excerpt}</p>
           )}
-          <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
+          <div className="flex items-center gap-2 mt-2 text-xs text-slate-400">
             <span>{post.source.name}</span>
             <span>•</span>
             <span>{formatDate(post.publishedAt)}</span>
@@ -113,19 +113,19 @@ export default function BlogsArticlesModule() {
           <h2 className="text-xl font-display font-bold text-slate-800 flex items-center gap-2">
             <span>✍️</span> Blogs & Articles
           </h2>
-          <span className="text-slate-500 text-sm group-hover:text-nebula-300 transition-colors flex items-center gap-1">
+          <span className="text-slate-400 text-sm group-hover:text-nebula-200 transition-colors flex items-center gap-1">
             View All <span>→</span>
           </span>
         </div>
 
-        <p className="text-slate-500 text-sm mb-4">
+        <p className="text-slate-400 text-sm mb-4">
           Expert insights from consultants, lawyers, and industry professionals
         </p>
 
         {posts.length === 0 ? (
           <div className="text-center py-8">
             <span className="text-5xl block mb-3">📚</span>
-            <p className="text-slate-500">No articles yet</p>
+            <p className="text-slate-400">No articles yet</p>
             <p className="text-slate-400 text-sm mt-1">Click to explore and fetch articles</p>
           </div>
         ) : (
@@ -138,7 +138,7 @@ export default function BlogsArticlesModule() {
 
             {/* Author Type Quick Filters */}
             <div className="mt-4 pt-4 border-t border-slate-200">
-              <p className="text-slate-500 text-xs mb-2">Browse by author type:</p>
+              <p className="text-slate-400 text-xs mb-2">Browse by author type:</p>
               <div className="flex flex-wrap gap-2">
                 {AUTHOR_TYPES.slice(0, 4).map((type) => (
                   <span

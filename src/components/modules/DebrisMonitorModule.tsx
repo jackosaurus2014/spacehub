@@ -117,7 +117,7 @@ export default function DebrisMonitorModule() {
         </div>
         <div className="card p-8 text-center">
           <span className="text-4xl block mb-4">&#128752;</span>
-          <p className="text-slate-500 mb-4">No debris tracking data available yet.</p>
+          <p className="text-slate-400 mb-4">No debris tracking data available yet.</p>
           <button
             onClick={handleInitialize}
             disabled={initializing}
@@ -141,7 +141,7 @@ export default function DebrisMonitorModule() {
         </div>
         <div className="card p-8 text-center">
           <span className="text-4xl block mb-4">&#9888;&#65039;</span>
-          <p className="text-slate-500">{error || 'No data available'}</p>
+          <p className="text-slate-400">{error || 'No data available'}</p>
         </div>
       </div>
     );
@@ -193,13 +193,13 @@ export default function DebrisMonitorModule() {
           <div className="text-3xl font-bold text-slate-800">
             {totalTracked.toLocaleString()}
           </div>
-          <div className="text-slate-500 text-sm">Total Tracked Objects</div>
+          <div className="text-slate-400 text-sm">Total Tracked Objects</div>
         </div>
         <div className="card p-4 text-center">
           <div className={`text-3xl font-bold ${getKesslerColor(overview?.kesslerRiskIndex || 0)}`}>
             {(overview?.kesslerRiskIndex || 0).toFixed(1)}
           </div>
-          <div className="text-slate-500 text-sm">Kessler Risk Index</div>
+          <div className="text-slate-400 text-sm">Kessler Risk Index</div>
           <div className={`text-xs mt-1 ${getKesslerColor(overview?.kesslerRiskIndex || 0)}`}>
             {getKesslerLabel(overview?.kesslerRiskIndex || 0)}
           </div>
@@ -208,13 +208,13 @@ export default function DebrisMonitorModule() {
           <div className="text-3xl font-bold text-slate-800">
             {(overview?.conjunctionsPerDay || 0).toFixed(1)}
           </div>
-          <div className="text-slate-500 text-sm">Conjunctions/Day</div>
+          <div className="text-slate-400 text-sm">Conjunctions/Day</div>
         </div>
         <div className="card p-4 text-center">
           <div className={`text-3xl font-bold ${criticalEvents > 0 ? 'text-red-400' : 'text-green-400'}`}>
             {criticalEvents}
           </div>
-          <div className="text-slate-500 text-sm">Critical Events</div>
+          <div className="text-slate-400 text-sm">Critical Events</div>
         </div>
       </div>
 
@@ -228,8 +228,8 @@ export default function DebrisMonitorModule() {
           <div className="space-y-3">
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-slate-600 text-sm">LEO (Low Earth Orbit)</span>
-                <span className="text-slate-500 text-sm">{(overview?.leoCount || 0).toLocaleString()} ({leoPercent.toFixed(1)}%)</span>
+                <span className="text-slate-400 text-sm">LEO (Low Earth Orbit)</span>
+                <span className="text-slate-400 text-sm">{(overview?.leoCount || 0).toLocaleString()} ({leoPercent.toFixed(1)}%)</span>
               </div>
               <div className="h-3 bg-slate-200 rounded-full overflow-hidden">
                 <div
@@ -240,8 +240,8 @@ export default function DebrisMonitorModule() {
             </div>
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-slate-600 text-sm">MEO (Medium Earth Orbit)</span>
-                <span className="text-slate-500 text-sm">{(overview?.meoCount || 0).toLocaleString()} ({meoPercent.toFixed(1)}%)</span>
+                <span className="text-slate-400 text-sm">MEO (Medium Earth Orbit)</span>
+                <span className="text-slate-400 text-sm">{(overview?.meoCount || 0).toLocaleString()} ({meoPercent.toFixed(1)}%)</span>
               </div>
               <div className="h-3 bg-slate-200 rounded-full overflow-hidden">
                 <div
@@ -252,8 +252,8 @@ export default function DebrisMonitorModule() {
             </div>
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-slate-600 text-sm">GEO (Geostationary Orbit)</span>
-                <span className="text-slate-500 text-sm">{(overview?.geoCount || 0).toLocaleString()} ({geoPercent.toFixed(1)}%)</span>
+                <span className="text-slate-400 text-sm">GEO (Geostationary Orbit)</span>
+                <span className="text-slate-400 text-sm">{(overview?.geoCount || 0).toLocaleString()} ({geoPercent.toFixed(1)}%)</span>
               </div>
               <div className="h-3 bg-slate-200 rounded-full overflow-hidden">
                 <div
@@ -281,8 +281,8 @@ export default function DebrisMonitorModule() {
               return (
                 <div key={item.label}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-slate-600 text-sm">{item.label}</span>
-                    <span className="text-slate-500 text-sm">{item.count.toLocaleString()} ({pct.toFixed(1)}%)</span>
+                    <span className="text-slate-400 text-sm">{item.label}</span>
+                    <span className="text-slate-400 text-sm">{item.count.toLocaleString()} ({pct.toFixed(1)}%)</span>
                   </div>
                   <div className="h-3 bg-slate-200 rounded-full overflow-hidden">
                     <div
@@ -322,7 +322,7 @@ export default function DebrisMonitorModule() {
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded ${riskStyle.bg} ${riskStyle.text} border ${riskStyle.border}`}>
                           {riskStyle.label}
                         </span>
-                        <span className="text-slate-500 text-xs">
+                        <span className="text-slate-400 text-xs">
                           {new Date(event.eventTime).toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric',
@@ -333,24 +333,24 @@ export default function DebrisMonitorModule() {
                       </div>
                       <div className="flex items-center gap-2 text-sm mt-2">
                         <div className="bg-slate-100 rounded px-2 py-1">
-                          <span className="text-slate-500 text-xs">Primary: </span>
+                          <span className="text-slate-400 text-xs">Primary: </span>
                           <span className="text-slate-800">{event.primaryObject}</span>
                           <span className="text-slate-400 text-xs ml-1">({event.primaryType})</span>
                         </div>
                         <span className="text-slate-400">vs</span>
                         <div className="bg-slate-100 rounded px-2 py-1">
-                          <span className="text-slate-500 text-xs">Secondary: </span>
+                          <span className="text-slate-400 text-xs">Secondary: </span>
                           <span className="text-slate-800">{event.secondaryObject}</span>
                           <span className="text-slate-400 text-xs ml-1">({event.secondaryType})</span>
                         </div>
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <div className="text-slate-600 text-sm">
+                      <div className="text-slate-400 text-sm">
                         Miss: <span className="text-slate-800 font-medium">{event.missDistance.toFixed(1)} m</span>
                       </div>
-                      <div className="text-slate-600 text-sm">
-                        Prob: <span className={`font-medium ${event.probability > 0.001 ? 'text-red-400' : event.probability > 0.0001 ? 'text-yellow-400' : 'text-slate-600'}`}>
+                      <div className="text-slate-400 text-sm">
+                        Prob: <span className={`font-medium ${event.probability > 0.001 ? 'text-red-400' : event.probability > 0.0001 ? 'text-yellow-400' : 'text-slate-400'}`}>
                           {event.probability < 0.0001
                             ? event.probability.toExponential(2)
                             : (event.probability * 100).toFixed(4) + '%'}
@@ -359,13 +359,13 @@ export default function DebrisMonitorModule() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4 mt-3 pt-3 border-t border-slate-200 text-xs">
-                    <span className="text-slate-500">
-                      Alt: <span className="text-slate-600">{event.altitude.toFixed(0)} km</span>
+                    <span className="text-slate-400">
+                      Alt: <span className="text-slate-400">{event.altitude.toFixed(0)} km</span>
                     </span>
-                    <span className="text-slate-500">
-                      Orbit: <span className="text-slate-600">{event.orbitType}</span>
+                    <span className="text-slate-400">
+                      Orbit: <span className="text-slate-400">{event.orbitType}</span>
                     </span>
-                    <span className="text-slate-500">
+                    <span className="text-slate-400">
                       Maneuver: {event.maneuverRequired ? (
                         event.maneuverExecuted ? (
                           <span className="text-green-400">Executed</span>
@@ -373,11 +373,11 @@ export default function DebrisMonitorModule() {
                           <span className="text-red-400 animate-pulse">Required</span>
                         )
                       ) : (
-                        <span className="text-slate-500">Not Required</span>
+                        <span className="text-slate-400">Not Required</span>
                       )}
                     </span>
                     {event.description && (
-                      <span className="text-slate-500 truncate flex-1">{event.description}</span>
+                      <span className="text-slate-400 truncate flex-1">{event.description}</span>
                     )}
                   </div>
                 </div>
@@ -394,7 +394,7 @@ export default function DebrisMonitorModule() {
             <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
               <span>&#9989;</span> 25-Year Deorbit Compliance
             </h3>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-slate-400 text-sm mt-1">
               {compliant.toLocaleString()} compliant / {complianceTotal.toLocaleString()} total objects
             </p>
           </div>
@@ -406,7 +406,7 @@ export default function DebrisMonitorModule() {
             }`}>
               {complianceRate.toFixed(1)}%
             </div>
-            <div className="text-slate-500 text-sm">Compliance Rate</div>
+            <div className="text-slate-400 text-sm">Compliance Rate</div>
           </div>
         </div>
         <div className="mt-3 h-3 bg-slate-200 rounded-full overflow-hidden">

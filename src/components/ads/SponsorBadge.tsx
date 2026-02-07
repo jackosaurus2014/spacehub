@@ -26,7 +26,7 @@ export default function SponsorBadge({
                   hover:bg-slate-700/50 hover:border-slate-600/50
                   transition-all duration-200 group ${className}`}
     >
-      <span className="text-slate-500 text-xs font-medium">Powered by</span>
+      <span className="text-slate-400 text-xs font-medium">Powered by</span>
 
       {sponsorLogo ? (
         <div className="relative w-4 h-4 overflow-hidden rounded">
@@ -45,7 +45,7 @@ export default function SponsorBadge({
 
       {/* External link indicator */}
       <svg
-        className="w-3 h-3 text-slate-500 group-hover:text-cyan-400 transition-colors"
+        className="w-3 h-3 text-slate-400 group-hover:text-cyan-400 transition-colors"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
