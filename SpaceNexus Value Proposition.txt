@@ -1,0 +1,129 @@
+SPACENEXUS: THE SPACE INDUSTRY'S FIRST COMPREHENSIVE INTELLIGENCE PLATFORM
+================================================================================
+
+The space economy is projected to exceed $1 trillion by 2040. The professionals
+building it -- entrepreneurs, executives, engineers, lawyers, investors, and
+government officials -- are making critical decisions every day based on
+fragmented, outdated, or prohibitively expensive information. SpaceNexus changes
+that.
+
+WHAT SPACENEXUS OFFERS THAT NOBODY ELSE DOES
+---------------------------------------------
+
+SpaceNexus is the first and only platform that brings together real-time space
+industry data, interactive tools, regulatory intelligence, and market analytics
+in a single, affordable, self-service application. Today, professionals are
+forced to piece together insights from dozens of disconnected sources:
+
+  - NEWS OUTLETS (SpaceNews, Via Satellite, Payload Space) publish articles and
+    commentary but offer no structured data, no interactive tools, and no way to
+    analyze trends or compare options. You read their stories; you can't act on
+    their data because there is none.
+
+  - PREMIUM CONSULTING FIRMS (Euroconsult, Quilty Space, Northern Sky Research)
+    produce excellent analysis -- at $3,000 to $10,000+ per report, published
+    annually. By the time you read it, the data is already months old. These
+    reports are inaccessible to startups, small businesses, and most individual
+    professionals.
+
+  - GOVERNMENT TOOLS (LeoLabs, ExoAnalytic, Slingshot Aerospace) focus narrowly
+    on space domain awareness for military and government clients. They don't
+    serve the broader business community.
+
+  - ENGINEERING SOFTWARE (AGI/STK, GMAT) is built for orbital mechanics and
+    mission design -- powerful, but irrelevant for business strategy, legal
+    compliance, or market intelligence.
+
+SpaceNexus fills the gap between all four. It is a DATA PLATFORM, not a news
+site. It is REAL-TIME, not annual. It is INTERACTIVE, not static. And it is
+AFFORDABLE, not enterprise-only.
+
+WHO SPACENEXUS SERVES AND HOW
+------------------------------
+
+FOR ENTREPRENEURS & STARTUP FOUNDERS:
+  Track venture capital flows into space companies. Monitor competitors' patent
+  filings and regulatory applications. Compare launch vehicles for your mission.
+  Identify supply chain partners. Understand market sizing through the Space
+  Economy Dashboard. Stop building spreadsheets from scratch -- SpaceNexus has
+  the data you need to pitch investors and plan your business.
+
+FOR CEOs & EXECUTIVES:
+  Get a single-screen view of the space economy with real-time market data,
+  competitive intelligence, and strategic metrics. Monitor policy changes that
+  affect your business. Track government contract awards, regulatory filings,
+  and bid protests. Make decisions based on current data, not last year's
+  consulting report.
+
+FOR PROJECT MANAGERS & MISSION PLANNERS:
+  Compare launch vehicles side by side. Calculate mission costs with our
+  interactive estimator. Track launch windows and orbital parameters. Monitor
+  satellite constellations and ground station coverage. Plan missions to the
+  Moon or Mars with dedicated planning tools. Export data in the formats your
+  team needs.
+
+FOR SUPPLY CHAIN PROFESSIONALS:
+  Map the space supply chain from raw materials to final integration. Identify
+  qualified suppliers and service providers. Track space mining opportunities
+  and resource exchange markets. Monitor manufacturing capacity and imagery
+  marketplace pricing.
+
+FOR LAWYERS & COMPLIANCE OFFICERS:
+  Track space treaties, national space laws, and the Artemis Accords across
+  40+ signatory nations. Monitor FCC, FAA, ITU, and SEC filings in one place.
+  Follow bid protests and procurement claims at the GAO and Court of Federal
+  Claims. Navigate export controls (ITAR/EAR) with our compliance wizard. Get
+  alerts when regulations change that affect your clients.
+
+FOR SPACE ENTHUSIASTS & RESEARCHERS:
+  Explore asteroid watch data, solar system exploration missions, and cislunar
+  economy developments. Track space stations, debris, and space weather in real
+  time. Dive into space defense and national security trends. All the data that
+  was previously locked behind paywalls or scattered across government websites,
+  unified and visualized.
+
+WHAT MAKES SPACENEXUS UNIQUE
+-----------------------------
+
+  10 INTEGRATED MODULES covering every dimension of the space industry -- from
+  mission planning and market intelligence to regulatory compliance and solar
+  system exploration. No other platform offers this breadth.
+
+  REAL-TIME DATA updated continuously from government APIs, public databases,
+  and curated sources -- not annual reports published months after the data was
+  collected.
+
+  INTERACTIVE TOOLS including satellite trackers, launch vehicle comparators,
+  mission cost calculators, compliance wizards, and patent search -- not just
+  articles to read, but tools to use.
+
+  UNIFIED REGULATORY INTELLIGENCE aggregating FCC satellite filings, FAA launch
+  licenses, ITU spectrum coordination, SEC financial disclosures, Federal
+  Register entries, space law, and now bid protest decisions -- all in one
+  searchable interface.
+
+  ACCESSIBLE PRICING designed for individual professionals, small companies, and
+  startups -- not just Fortune 500 enterprises with six-figure consulting
+  budgets.
+
+THE BOTTOM LINE
+----------------
+
+Before SpaceNexus, a space industry professional who wanted comprehensive
+intelligence had to subscribe to multiple news outlets, purchase expensive
+consulting reports, manually check half a dozen government databases, and
+build their own spreadsheets to compare options. The total cost in money and
+time was enormous, and the result was still fragmented and stale.
+
+SpaceNexus puts it all in one place: live data, interactive tools, regulatory
+tracking, market intelligence, mission planning, and industry analysis. It is
+the platform the space industry has needed but never had.
+
+Whether you are launching a satellite, planning a lunar mission, filing a
+spectrum application, evaluating a space startup for investment, or advising a
+client on ITAR compliance, SpaceNexus gives you the intelligence you need to
+move faster and decide smarter.
+
+================================================================================
+Learn more at spacenexus.io
+================================================================================

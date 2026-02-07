@@ -1051,18 +1051,762 @@ function FilingsFederalRegisterTab() {
 }
 
 // ############################################################################
+// BID PROTESTS & CLAIMS - Types, Status Configs, and Data
+// ############################################################################
+
+type ProtestOutcome = 'denied' | 'sustained' | 'dismissed' | 'withdrawn' | 'corrective_action' | 'settled';
+type ProtestForum = 'gao' | 'cofc' | 'dc_circuit' | 'district_court';
+type ProtestProgram = 'launch' | 'satellite' | 'crewed' | 'science' | 'defense' | 'iss';
+
+interface BidProtest {
+  id: string;
+  title: string;
+  shortTitle: string;
+  caseNumber: string;
+  forum: ProtestForum;
+  outcome: ProtestOutcome;
+  program: ProtestProgram;
+  protester: string;
+  awardee: string;
+  agency: string;
+  contractValue: string;
+  yearFiled: number;
+  yearDecided: number;
+  decisionDate: string;
+  judge?: string;
+  description: string;
+  significance: string;
+  keyFindings: string[];
+}
+
+const PROTEST_OUTCOME_STYLES: Record<ProtestOutcome, { bg: string; text: string; label: string }> = {
+  denied: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Denied' },
+  sustained: { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Sustained' },
+  dismissed: { bg: 'bg-slate-500/20', text: 'text-slate-400', label: 'Dismissed' },
+  withdrawn: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', label: 'Withdrawn' },
+  corrective_action: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Corrective Action' },
+  settled: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'Settled' },
+};
+
+const PROTEST_FORUM_STYLES: Record<ProtestForum, { bg: string; text: string; label: string }> = {
+  gao: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'GAO' },
+  cofc: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'COFC' },
+  dc_circuit: { bg: 'bg-orange-500/20', text: 'text-orange-400', label: 'D.C. Circuit' },
+  district_court: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', label: 'District Court' },
+};
+
+const PROTEST_PROGRAM_LABELS: Record<ProtestProgram, string> = {
+  launch: 'Launch Services',
+  satellite: 'Satellite Systems',
+  crewed: 'Crewed Spaceflight',
+  science: 'Science Missions',
+  defense: 'National Security Space',
+  iss: 'ISS Operations',
+};
+
+const BID_PROTESTS: BidProtest[] = [
+  {
+    id: 'bo-hls-cofc-2021',
+    title: 'Blue Origin Federation, LLC v. United States',
+    shortTitle: 'Blue Origin HLS Lawsuit',
+    caseNumber: 'No. 21-1695C',
+    forum: 'cofc',
+    outcome: 'denied',
+    program: 'crewed',
+    protester: 'Blue Origin',
+    awardee: 'SpaceX',
+    agency: 'NASA',
+    contractValue: '$2.9B',
+    yearFiled: 2021,
+    yearDecided: 2021,
+    decisionDate: 'November 4, 2021',
+    judge: 'Judge Richard A. Hertling',
+    description: 'Blue Origin challenged NASA\'s award of the sole Human Landing System (HLS) Option A contract to SpaceX for $2.9 billion to develop the Starship lunar lander for the Artemis program. Blue Origin argued NASA should have selected two providers and that the evaluation was flawed.',
+    significance: 'Landmark case establishing that NASA had broad discretion to adjust award strategy based on available funding. Set precedent that agencies can make fewer awards than initially anticipated when budget is insufficient.',
+    keyFindings: [
+      'NASA conducted a "thorough, reasoned evaluation of the proposals"',
+      'Blue Origin did not have "a substantial chance of award"',
+      'NASA lawfully decided to make one award instead of two given budget constraints',
+      'The protest caused a 4-month delay to the Artemis program',
+    ],
+  },
+  {
+    id: 'bo-dynetics-hls-gao-2021',
+    title: 'Blue Origin Federation, LLC; Dynetics, Inc.\u2014Loss of the Leidos Company',
+    shortTitle: 'Blue Origin & Dynetics HLS GAO Protest',
+    caseNumber: 'B-419783; B-419783.2',
+    forum: 'gao',
+    outcome: 'denied',
+    program: 'crewed',
+    protester: 'Blue Origin / Dynetics',
+    awardee: 'SpaceX',
+    agency: 'NASA',
+    contractValue: '$2.9B',
+    yearFiled: 2021,
+    yearDecided: 2021,
+    decisionDate: 'July 30, 2021',
+    description: 'Both Blue Origin and Dynetics protested NASA\'s sole-source HLS Option A award to SpaceX. They argued NASA was required to make two awards as originally planned, and that the evaluation criteria were not properly applied.',
+    significance: 'GAO affirmed broad agency discretion in source selection under Space Act Agreements. Confirmed that when solicitations reserve the right to make fewer awards, agencies can do so without violating procurement law.',
+    keyFindings: [
+      'NASA did not violate procurement law by making only one award',
+      'The announcement provided that number of awards was subject to available funding',
+      'No requirement for NASA to engage in discussions or amend the announcement',
+      'Dynetics received lowest technical rating of "Marginal"',
+    ],
+  },
+  {
+    id: 'bo-nssl-gao-2019',
+    title: 'Blue Origin Federation, LLC\u2014NSSL Phase 2 Launch Service Procurement',
+    shortTitle: 'Blue Origin NSSL Phase 2 Protest',
+    caseNumber: 'B-417839',
+    forum: 'gao',
+    outcome: 'sustained',
+    program: 'defense',
+    protester: 'Blue Origin',
+    awardee: 'N/A (Pre-Award)',
+    agency: 'USAF',
+    contractValue: '$3.5B',
+    yearFiled: 2019,
+    yearDecided: 2019,
+    decisionDate: 'November 18, 2019',
+    description: 'Blue Origin protested the terms of the Air Force\'s National Security Space Launch (NSSL) Phase 2 solicitation, arguing it contained unclear selection criteria and unnecessarily restricted competition by limiting awards to two providers for a five-year exclusive period.',
+    significance: 'One of the few sustained protests in the national security space launch domain. Forced the Air Force to clarify evaluation criteria, though the competition structure was ultimately upheld. ULA and SpaceX were selected in August 2020.',
+    keyFindings: [
+      'GAO sustained the complaint regarding unclear selection criteria',
+      'Selection criteria did not "provide a reasonable, common basis" for competition',
+      'GAO rejected the complaint about restricting competition to two providers',
+      'Air Force required to clarify RFP before proceeding with evaluation',
+    ],
+  },
+  {
+    id: 'snc-cctcap-gao-2014',
+    title: 'Sierra Nevada Corporation\u2014Commercial Crew Transportation Capability',
+    shortTitle: 'Sierra Nevada Dream Chaser CCtCap',
+    caseNumber: 'B-411343',
+    forum: 'gao',
+    outcome: 'denied',
+    program: 'crewed',
+    protester: 'Sierra Nevada Corporation',
+    awardee: 'Boeing / SpaceX',
+    agency: 'NASA',
+    contractValue: '$6.8B',
+    yearFiled: 2014,
+    yearDecided: 2015,
+    decisionDate: 'January 5, 2015',
+    description: 'Sierra Nevada protested NASA\'s CCtCap awards of $4.2B to Boeing (CST-100 Starliner) and $2.6B to SpaceX (Crew Dragon), arguing that its Dream Chaser proposal was the second-lowest priced and that NASA improperly prioritized technical factors over price despite the solicitation weighting.',
+    significance: 'Confirmed NASA\'s discretion in best-value tradeoff decisions for Commercial Crew. Despite SNC\'s lower price, NASA reasonably concluded Boeing and SpaceX offered superior technical and management approaches.',
+    keyFindings: [
+      'NASA made proper best-value tradeoff decision',
+      'Technical evaluation factors reasonably outweighed price advantage',
+      'Dream Chaser was second-lowest priced proposal',
+      'Federal judge also ruled contract awards valid in October 2014',
+    ],
+  },
+  {
+    id: 'spacex-lucy-gao-2019',
+    title: 'Space Exploration Technologies Corp.\u2014Lucy Mission Launch Services',
+    shortTitle: 'SpaceX Lucy Mission Protest',
+    caseNumber: 'B-417317',
+    forum: 'gao',
+    outcome: 'withdrawn',
+    program: 'science',
+    protester: 'SpaceX',
+    awardee: 'United Launch Alliance',
+    agency: 'NASA',
+    contractValue: '$148.3M',
+    yearFiled: 2019,
+    yearDecided: 2019,
+    decisionDate: 'March 2019',
+    description: 'SpaceX protested NASA\'s award of the Lucy asteroid mission launch contract to ULA for $148.3 million. This was the first time SpaceX had ever challenged a NASA award decision. The key issue was schedule certainty for the narrow launch window to the Trojan asteroids.',
+    significance: 'First-ever bid protest filed by SpaceX against a NASA launch services award. Highlighted the tension between price competitiveness and schedule certainty for planetary science missions with narrow launch windows.',
+    keyFindings: [
+      'First protest ever filed by SpaceX against a NASA award',
+      'Schedule certainty was a key evaluation factor for the narrow launch window',
+      'SpaceX voluntarily withdrew the protest without public explanation',
+      'Lucy successfully launched on a ULA Atlas V in October 2021',
+    ],
+  },
+  {
+    id: 'airbus-raytheon-sda-t0-gao-2020',
+    title: 'Airbus Defence and Space; Raytheon\u2014SDA Tranche 0 Tracking Layer',
+    shortTitle: 'Airbus & Raytheon SDA Tranche 0',
+    caseNumber: 'B-419263; B-419264',
+    forum: 'gao',
+    outcome: 'corrective_action',
+    program: 'defense',
+    protester: 'Airbus / Raytheon',
+    awardee: 'L3Harris / SpaceX',
+    agency: 'SDA/DoD',
+    contractValue: '$342M',
+    yearFiled: 2020,
+    yearDecided: 2020,
+    decisionDate: '2020',
+    description: 'Airbus Defence and Space and Raytheon filed separate protests after the Space Development Agency awarded contracts to L3Harris and SpaceX to build eight missile-tracking satellites for the Tranche 0 Tracking Layer. Protesters alleged evaluation errors in the source selection.',
+    significance: 'First major protest of an SDA procurement, signaling that the new agency\'s rapid acquisition approach would face traditional procurement oversight challenges. SDA agreed to reevaluate proposals as corrective action.',
+    keyFindings: [
+      'SDA agreed to reevaluate proposals rather than litigate',
+      'Corrective action taken voluntarily by agency',
+      'Highlighted tension between SDA\'s rapid acquisition model and traditional FAR requirements',
+      'Original awardees (L3Harris and SpaceX) retained their contracts after reevaluation',
+    ],
+  },
+  {
+    id: 'maxar-sda-t1-gao-2021',
+    title: 'Maxar Technologies\u2014SDA Transport Layer Tranche 1',
+    shortTitle: 'Maxar SDA Transport Layer Protest',
+    caseNumber: 'B-420234',
+    forum: 'gao',
+    outcome: 'dismissed',
+    program: 'defense',
+    protester: 'Maxar Technologies',
+    awardee: 'N/A (Pre-Award)',
+    agency: 'SDA/DoD',
+    contractValue: 'Est. $1.8B',
+    yearFiled: 2021,
+    yearDecided: 2021,
+    decisionDate: 'October 2021',
+    description: 'Maxar Technologies protested the SDA\'s solicitation for 126 Transport Layer Tranche 1 communication satellites, alleging the terms unfairly favored certain companies and limited competition. SDA canceled the solicitation and reissued it as an Other Transaction Authority (OTA) procurement.',
+    significance: 'Led to a fundamental shift in SDA procurement strategy from traditional FAR-based contracting to OTA. Demonstrated how protests can reshape entire acquisition approaches in the space domain.',
+    keyFindings: [
+      'Maxar alleged solicitation terms limited competition',
+      'SDA voluntarily canceled and reissued solicitation under OTA',
+      'GAO dismissed protest as moot after corrective action',
+      'Shift to OTA mechanism bypassed future GAO protest jurisdiction',
+    ],
+  },
+  {
+    id: 'l3harris-geoxo-gao-2023',
+    title: 'L3Harris Technologies, Inc.\u2014GeoXO Ocean Color Instrument',
+    shortTitle: 'L3Harris GeoXO Weather Satellite',
+    caseNumber: 'B-422006; B-422006.2',
+    forum: 'gao',
+    outcome: 'denied',
+    program: 'satellite',
+    protester: 'L3Harris Technologies',
+    awardee: 'Ball Aerospace',
+    agency: 'NASA',
+    contractValue: '$486.9M',
+    yearFiled: 2023,
+    yearDecided: 2023,
+    decisionDate: 'December 2023',
+    description: 'L3Harris protested NASA\'s award of a $486.9 million contract to Ball Aerospace for the GeoXO Ocean Color Instrument, a next-generation weather satellite instrument. L3Harris alleged NASA conducted a flawed best-value tradeoff, failed to perform proper cost realism analysis, and did not address an organizational conflict of interest related to BAE Systems\' acquisition of Ball Aerospace.',
+    significance: 'Affirmed that agencies can reasonably favor lower cost when the cost advantage is "very significant" even with a slight technical disadvantage. L3Harris subsequently filed in COFC and lost again in April 2024.',
+    keyFindings: [
+      'NASA\'s cost realism adjustment yielded $553.9M probable cost for Ball vs. $764.9M for L3Harris',
+      '"Very significant cost advantage" outweighed "slight" technical advantage',
+      'Organizational conflict of interest claim rejected',
+      'L3Harris subsequently challenged in COFC and was dismissed in April 2024',
+    ],
+  },
+  {
+    id: 'l3harris-geoxo-cofc-2024',
+    title: 'L3Harris Technologies, Inc. v. United States\u2014GeoXO',
+    shortTitle: 'L3Harris GeoXO COFC Challenge',
+    caseNumber: 'No. 24-64C',
+    forum: 'cofc',
+    outcome: 'dismissed',
+    program: 'satellite',
+    protester: 'L3Harris Technologies',
+    awardee: 'Ball Aerospace',
+    agency: 'NASA',
+    contractValue: '$544M',
+    yearFiled: 2024,
+    yearDecided: 2024,
+    decisionDate: 'April 2024',
+    description: 'After losing at the GAO, L3Harris escalated its challenge of NASA\'s GeoXO weather satellite instrument contract to the Court of Federal Claims, arguing NASA\'s evaluation was arbitrary and the cost realism analysis was flawed.',
+    significance: 'Demonstrated that courts will generally defer to agency evaluation conclusions when the record shows a reasonable basis. Reinforced that losing at GAO makes COFC success unlikely absent new evidence.',
+    keyFindings: [
+      'Court dismissed L3Harris\'s challenge',
+      'Deferred to NASA\'s evaluation methodology',
+      'Affirmed GAO\'s earlier findings on cost realism',
+      'Ball Aerospace contract proceeded as originally awarded',
+    ],
+  },
+  {
+    id: 'spacex-lsa-cofc-2019',
+    title: 'Space Exploration Technologies Corp. v. United States\u2014Launch Service Agreements',
+    shortTitle: 'SpaceX Launch Service Agreement Protest',
+    caseNumber: 'No. 19-742C',
+    forum: 'cofc',
+    outcome: 'dismissed',
+    program: 'defense',
+    protester: 'SpaceX',
+    awardee: 'ULA / Northrop Grumman / Blue Origin',
+    agency: 'USAF',
+    contractValue: '$2.3B (LSA Phase)',
+    yearFiled: 2019,
+    yearDecided: 2019,
+    decisionDate: 'September 2019',
+    description: 'SpaceX challenged the Air Force\'s award of three Launch Service Agreements (LSAs) under Other Transaction Authority (OTA) to ULA, Northrop Grumman, and Blue Origin, arguing it was improperly excluded. The COFC found it lacked jurisdiction over OTA procurement protests.',
+    significance: 'Key jurisdictional ruling establishing that the Court of Federal Claims lacked subject matter jurisdiction over OTA awards. The case was transferred to the Central District of California. Highlighted the legal gray area around OTA protest rights.',
+    keyFindings: [
+      'COFC dismissed for lack of subject matter jurisdiction over OTA',
+      'OTA awards not considered "procurement" under the Tucker Act',
+      'Case transferred to U.S. District Court for C.D. California',
+      'Raised fundamental questions about protest rights in OTA space acquisitions',
+    ],
+  },
+  {
+    id: 'planetspace-crs-gao-2009',
+    title: 'PlanetSpace, Inc.\u2014Commercial Resupply Services',
+    shortTitle: 'PlanetSpace CRS Protest',
+    caseNumber: 'B-401016; B-401016.2',
+    forum: 'gao',
+    outcome: 'denied',
+    program: 'iss',
+    protester: 'PlanetSpace',
+    awardee: 'SpaceX / Orbital Sciences',
+    agency: 'NASA',
+    contractValue: '$3.5B',
+    yearFiled: 2009,
+    yearDecided: 2009,
+    decisionDate: 'April 22, 2009',
+    description: 'PlanetSpace protested NASA\'s award of Commercial Resupply Services (CRS) contracts to SpaceX ($1.6B) and Orbital Sciences Corporation ($1.9B) for cargo delivery to the International Space Station, alleging NASA\'s evaluation was flawed.',
+    significance: 'Early test of NASA\'s commercial space procurement approach. GAO\'s denial cleared the path for the successful CRS program that has delivered cargo to the ISS for over a decade.',
+    keyFindings: [
+      'GAO denied the protest, finding NASA\'s evaluation was reasonable',
+      'NASA properly evaluated technical capability and past performance',
+      'Cleared the way for SpaceX Dragon and Orbital Cygnus cargo missions',
+      'First protest in what became NASA\'s successful commercial cargo program',
+    ],
+  },
+  {
+    id: 'viasat-sda-t2tl-cofc-2024',
+    title: 'Viasat, Inc. v. United States\u2014SDA Tranche 2 Transport Layer Gamma',
+    shortTitle: 'Viasat SDA Procurement Integrity Case',
+    caseNumber: 'No. 24-1487C',
+    forum: 'cofc',
+    outcome: 'corrective_action',
+    program: 'defense',
+    protester: 'Viasat',
+    awardee: 'Tyvak / York Space Systems',
+    agency: 'SDA/DoD',
+    contractValue: '$424M',
+    yearFiled: 2024,
+    yearDecided: 2025,
+    decisionDate: 'February 2025',
+    description: 'Viasat filed suit after the SDA awarded contracts to Tyvak and York Space Systems for 10 satellites each for the T2TL Gamma program. Investigation revealed an SDA employee violated the Procurement Integrity Act by disclosing Tyvak\'s bid pricing and instructing them to partner with a specific contractor.',
+    significance: 'Major procurement integrity case resulting in the SDA director being placed on administrative leave. Led to cancellation of Tyvak\'s contract and a full re-competition. Highlighted ethical risks in rapid acquisition environments.',
+    keyFindings: [
+      'SDA employee violated Procurement Integrity Act by disclosing bid information',
+      'Employee instructed Tyvak on pricing and teaming arrangements',
+      'SDA Director placed on administrative leave pending investigation',
+      'Tyvak contract canceled; York Space Systems contract maintained',
+      'SDA will issue new solicitation for 10 Gamma T2TL satellites',
+    ],
+  },
+];
+
+function ProtestsOverviewTab() {
+  const [search, setSearch] = useState('');
+  const [forumFilter, setForumFilter] = useState('');
+  const [outcomeFilter, setOutcomeFilter] = useState('');
+  const [programFilter, setProgramFilter] = useState('');
+  const [agencyFilter, setAgencyFilter] = useState('');
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const filtered = useMemo(() => {
+    return BID_PROTESTS
+      .filter((p) => {
+        if (forumFilter && p.forum !== forumFilter) return false;
+        if (outcomeFilter && p.outcome !== outcomeFilter) return false;
+        if (programFilter && p.program !== programFilter) return false;
+        if (agencyFilter && p.agency !== agencyFilter) return false;
+        if (search) {
+          const s = search.toLowerCase();
+          return p.title.toLowerCase().includes(s) || p.shortTitle.toLowerCase().includes(s) || p.caseNumber.toLowerCase().includes(s) || p.protester.toLowerCase().includes(s) || p.awardee.toLowerCase().includes(s) || p.description.toLowerCase().includes(s);
+        }
+        return true;
+      })
+      .sort((a, b) => b.yearDecided - a.yearDecided || b.yearFiled - a.yearFiled);
+  }, [search, forumFilter, outcomeFilter, programFilter, agencyFilter]);
+
+  const uniqueForums = Array.from(new Set(BID_PROTESTS.map((p) => p.forum)));
+  const uniqueOutcomes = Array.from(new Set(BID_PROTESTS.map((p) => p.outcome)));
+  const uniquePrograms = Array.from(new Set(BID_PROTESTS.map((p) => p.program)));
+  const uniqueAgencies = Array.from(new Set(BID_PROTESTS.map((p) => p.agency)));
+
+  const deniedCount = BID_PROTESTS.filter((p) => p.outcome === 'denied').length;
+  const sustainedCount = BID_PROTESTS.filter((p) => p.outcome === 'sustained').length;
+  const correctiveCount = BID_PROTESTS.filter((p) => p.outcome === 'corrective_action').length;
+  const gaoCount = BID_PROTESTS.filter((p) => p.forum === 'gao').length;
+  const cofcCount = BID_PROTESTS.filter((p) => p.forum === 'cofc').length;
+
+  return (
+    <div>
+      <div className="card p-5 mb-6 border border-amber-500/20 bg-amber-500/5">
+        <h3 className="text-white font-semibold mb-2">Space Industry Bid Protests & Claims Database</h3>
+        <p className="text-star-300 text-sm leading-relaxed">Tracking major bid protests and procurement challenges in the U.S. space industry. Includes GAO protests, Court of Federal Claims (COFC) litigation, and appellate decisions affecting NASA, DoD, and other agency space procurements.</p>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-white">{BID_PROTESTS.length}</div><div className="text-star-300 text-xs uppercase tracking-widest">Total Protests</div></div>
+        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-red-400">{deniedCount}</div><div className="text-star-300 text-xs uppercase tracking-widest">Denied</div></div>
+        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-green-400">{sustainedCount}</div><div className="text-star-300 text-xs uppercase tracking-widest">Sustained</div></div>
+        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-blue-400">{correctiveCount}</div><div className="text-star-300 text-xs uppercase tracking-widest">Corrective Action</div></div>
+        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-purple-400">{gaoCount} / {cofcCount}</div><div className="text-star-300 text-xs uppercase tracking-widest">GAO / COFC</div></div>
+      </div>
+
+      <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
+        <input type="text" placeholder="Search case, protester, awardee..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2 text-sm placeholder:text-star-300/50 focus:outline-none focus:border-nebula-500/50" />
+        <select value={forumFilter} onChange={(e) => setForumFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Forums</option>{uniqueForums.map((f) => (<option key={f} value={f}>{PROTEST_FORUM_STYLES[f].label}</option>))}</select>
+        <select value={outcomeFilter} onChange={(e) => setOutcomeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Outcomes</option>{uniqueOutcomes.map((o) => (<option key={o} value={o}>{PROTEST_OUTCOME_STYLES[o].label}</option>))}</select>
+        <select value={programFilter} onChange={(e) => setProgramFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Programs</option>{uniquePrograms.map((p) => (<option key={p} value={p}>{PROTEST_PROGRAM_LABELS[p]}</option>))}</select>
+        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
+        <span className="text-xs text-star-300 ml-auto">{filtered.length} cases</span>
+      </div></div>
+
+      <div className="space-y-4">{filtered.map((protest) => {
+        const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome];
+        const forumStyle = PROTEST_FORUM_STYLES[protest.forum];
+        const isExpanded = expandedId === protest.id;
+        return (
+          <div key={protest.id} className="card p-5 hover:border-nebula-500/50 transition-all">
+            <div className="flex items-start justify-between mb-3 gap-3">
+              <div className="flex-1 min-w-0">
+                <h4 className="font-semibold text-white text-base">{protest.shortTitle}</h4>
+                <span className="text-star-300 text-xs font-mono">{protest.caseNumber}</span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className={`text-xs font-medium px-2 py-1 rounded ${forumStyle.bg} ${forumStyle.text}`}>{forumStyle.label}</span>
+                <span className={`text-xs font-medium px-2 py-1 rounded ${outcomeStyle.bg} ${outcomeStyle.text}`}>{outcomeStyle.label}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+              <div><span className="text-star-300 text-xs block">Protester</span><span className="text-white text-sm font-medium">{protest.protester}</span></div>
+              <div><span className="text-star-300 text-xs block">Awardee</span><span className="text-nebula-300 text-sm">{protest.awardee}</span></div>
+              <div><span className="text-star-300 text-xs block">Agency</span><span className="text-white text-sm">{protest.agency}</span></div>
+              <div><span className="text-star-300 text-xs block">Contract Value</span><span className="text-white text-sm font-bold">{protest.contractValue}</span></div>
+            </div>
+            <p className="text-star-300 text-sm leading-relaxed mb-3">{protest.description}</p>
+            <button onClick={() => setExpandedId(isExpanded ? null : protest.id)} className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors mb-2">{isExpanded ? 'Show Less' : 'View Key Findings & Significance'}</button>
+            {isExpanded && (
+              <div className="mt-3 pt-3 border-t border-white/10 space-y-3">
+                <div><h5 className="text-xs font-semibold text-star-300 mb-2 uppercase tracking-wider">Key Findings</h5><ul className="space-y-1.5">{protest.keyFindings.map((finding, i) => (<li key={i} className="flex items-start gap-2 text-xs text-star-300"><svg className="w-3 h-3 text-cyan-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{finding}</li>))}</ul></div>
+                <div><h5 className="text-xs font-semibold text-star-300 mb-1 uppercase tracking-wider">Significance</h5><p className="text-xs text-star-300">{protest.significance}</p></div>
+                <div className="text-xs text-star-300">
+                  <span className="font-medium text-white">{protest.title}</span>
+                  <span className="mx-2 text-white/20">|</span>
+                  <span>Program: <span className="text-nebula-300">{PROTEST_PROGRAM_LABELS[protest.program]}</span></span>
+                  {protest.judge && (<><span className="mx-2 text-white/20">|</span><span>{protest.judge}</span></>)}
+                </div>
+              </div>
+            )}
+            <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10 mt-3">
+              <span>Filed: <span className="text-white font-medium">{protest.yearFiled}</span></span>
+              <span className="text-white/20">|</span>
+              <span>Decided: <span className="text-white font-medium">{protest.decisionDate}</span></span>
+              <span className="text-white/20">|</span>
+              <span className="text-nebula-300">{PROTEST_PROGRAM_LABELS[protest.program]}</span>
+            </div>
+          </div>
+        );
+      })}</div>
+
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No protests match your search</h3><button onClick={() => { setSearch(''); setForumFilter(''); setOutcomeFilter(''); setProgramFilter(''); setAgencyFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+    </div>
+  );
+}
+
+function ProtestsTimelineTab() {
+  const years = useMemo(() => {
+    const allYears = Array.from(new Set(BID_PROTESTS.map((p) => p.yearDecided))).sort((a, b) => b - a);
+    return allYears;
+  }, []);
+
+  const protestsByYear = useMemo(() => {
+    const grouped: Record<number, BidProtest[]> = {};
+    for (const protest of BID_PROTESTS) {
+      if (!grouped[protest.yearDecided]) grouped[protest.yearDecided] = [];
+      grouped[protest.yearDecided].push(protest);
+    }
+    return grouped;
+  }, []);
+
+  const outcomeColors: Record<ProtestOutcome, string> = {
+    denied: 'bg-red-400',
+    sustained: 'bg-green-400',
+    dismissed: 'bg-slate-400',
+    withdrawn: 'bg-yellow-400',
+    corrective_action: 'bg-blue-400',
+    settled: 'bg-purple-400',
+  };
+
+  return (
+    <div>
+      <div className="card p-5 mb-6 border border-cyan-500/20 bg-cyan-500/5">
+        <h3 className="text-white font-semibold mb-2">Protest Timeline</h3>
+        <p className="text-star-300 text-sm leading-relaxed">Chronological view of space industry bid protests grouped by decision year, with color-coded outcome indicators.</p>
+      </div>
+
+      <div className="flex flex-wrap gap-4 mb-6">
+        {Object.entries(PROTEST_OUTCOME_STYLES).map(([key, style]) => (
+          <div key={key} className="flex items-center gap-2">
+            <div className={`w-3 h-3 rounded-full ${outcomeColors[key as ProtestOutcome]}`} />
+            <span className="text-xs text-star-300">{style.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="relative">
+        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-white/10" />
+        {years.map((year) => (
+          <div key={year} className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-full bg-nebula-500 flex items-center justify-center text-white text-xs font-bold relative z-10">{protestsByYear[year].length}</div>
+              <h3 className="text-xl font-bold font-display text-white">{year}</h3>
+              <div className="h-px flex-1 bg-white/10" />
+            </div>
+            <div className="ml-12 space-y-3">
+              {protestsByYear[year].sort((a, b) => {
+                const monthA = new Date(a.decisionDate).getTime();
+                const monthB = new Date(b.decisionDate).getTime();
+                return (isNaN(monthB) ? 0 : monthB) - (isNaN(monthA) ? 0 : monthA);
+              }).map((protest) => {
+                const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome];
+                const forumStyle = PROTEST_FORUM_STYLES[protest.forum];
+                return (
+                  <div key={protest.id} className="card p-4 hover:border-nebula-500/50 transition-all relative">
+                    <div className={`absolute left-[-28px] top-4 w-3 h-3 rounded-full ${outcomeColors[protest.outcome]} border-2 border-slate-900`} />
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-white text-sm">{protest.shortTitle}</h4>
+                        <p className="text-star-300 text-xs mt-1">{protest.protester} vs. {protest.awardee}</p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded ${forumStyle.bg} ${forumStyle.text}`}>{forumStyle.label}</span>
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded ${outcomeStyle.bg} ${outcomeStyle.text}`}>{outcomeStyle.label}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 mt-2 text-xs text-star-300">
+                      <span>{protest.caseNumber}</span>
+                      <span className="text-white/20">|</span>
+                      <span>{protest.agency}</span>
+                      <span className="text-white/20">|</span>
+                      <span className="text-white font-medium">{protest.contractValue}</span>
+                      <span className="text-white/20">|</span>
+                      <span>{protest.decisionDate}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProtestsAnalysisTab() {
+  const totalProtests = BID_PROTESTS.length;
+  const gaoCases = BID_PROTESTS.filter((p) => p.forum === 'gao');
+  const cofcCases = BID_PROTESTS.filter((p) => p.forum === 'cofc');
+
+  const gaoSuccessRate = gaoCases.length > 0
+    ? Math.round((gaoCases.filter((p) => p.outcome === 'sustained' || p.outcome === 'corrective_action').length / gaoCases.length) * 100)
+    : 0;
+  const cofcSuccessRate = cofcCases.length > 0
+    ? Math.round((cofcCases.filter((p) => p.outcome === 'sustained' || p.outcome === 'corrective_action').length / cofcCases.length) * 100)
+    : 0;
+
+  const byProgram = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const p of BID_PROTESTS) {
+      counts[p.program] = (counts[p.program] || 0) + 1;
+    }
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  }, []);
+
+  const byAgency = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const p of BID_PROTESTS) {
+      counts[p.agency] = (counts[p.agency] || 0) + 1;
+    }
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  }, []);
+
+  const byOutcome = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const p of BID_PROTESTS) {
+      counts[p.outcome] = (counts[p.outcome] || 0) + 1;
+    }
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  }, []);
+
+  const yearRange = useMemo(() => {
+    const years = Array.from(new Set(BID_PROTESTS.map((p) => p.yearDecided))).sort();
+    return years;
+  }, []);
+
+  const volumeByYear = useMemo(() => {
+    const counts: Record<number, number> = {};
+    for (const year of yearRange) counts[year] = 0;
+    for (const p of BID_PROTESTS) counts[p.yearDecided] = (counts[p.yearDecided] || 0) + 1;
+    return counts;
+  }, [yearRange]);
+
+  const maxVolume = Math.max(...Object.values(volumeByYear));
+
+  return (
+    <div>
+      <div className="card p-5 mb-6 border border-purple-500/20 bg-purple-500/5">
+        <h3 className="text-white font-semibold mb-2">Analysis & Trends</h3>
+        <p className="text-star-300 text-sm leading-relaxed">Statistical analysis of space industry bid protests, including success rates by forum, protest volume trends, and common grounds for challenge.</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="card-elevated p-5">
+          <h4 className="text-sm font-semibold text-star-300 uppercase tracking-wider mb-4">GAO Success Rate</h4>
+          <div className="text-center mb-3">
+            <div className="text-4xl font-bold font-display text-blue-400">{gaoSuccessRate}%</div>
+            <p className="text-xs text-star-300 mt-1">Sustained or Corrective Action</p>
+          </div>
+          <div className="text-xs text-star-300 text-center">{gaoCases.length} cases filed at GAO</div>
+          <div className="h-2 bg-white/5 rounded-full mt-3 overflow-hidden"><div className="h-full bg-blue-400 rounded-full" style={{ width: `${gaoSuccessRate}%` }} /></div>
+        </div>
+
+        <div className="card-elevated p-5">
+          <h4 className="text-sm font-semibold text-star-300 uppercase tracking-wider mb-4">COFC Success Rate</h4>
+          <div className="text-center mb-3">
+            <div className="text-4xl font-bold font-display text-purple-400">{cofcSuccessRate}%</div>
+            <p className="text-xs text-star-300 mt-1">Sustained or Corrective Action</p>
+          </div>
+          <div className="text-xs text-star-300 text-center">{cofcCases.length} cases filed at COFC</div>
+          <div className="h-2 bg-white/5 rounded-full mt-3 overflow-hidden"><div className="h-full bg-purple-400 rounded-full" style={{ width: `${cofcSuccessRate}%` }} /></div>
+        </div>
+
+        <div className="card-elevated p-5">
+          <h4 className="text-sm font-semibold text-star-300 uppercase tracking-wider mb-4">Overall Protest Effectiveness</h4>
+          <div className="text-center mb-3">
+            <div className="text-4xl font-bold font-display text-white">
+              {Math.round((BID_PROTESTS.filter((p) => p.outcome === 'sustained' || p.outcome === 'corrective_action').length / totalProtests) * 100)}%
+            </div>
+            <p className="text-xs text-star-300 mt-1">Result in Protester-Favorable Outcome</p>
+          </div>
+          <div className="text-xs text-star-300 text-center">{totalProtests} total protests tracked</div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="card-elevated p-5">
+          <h4 className="text-sm font-semibold text-star-300 uppercase tracking-wider mb-4">Protest Volume by Year</h4>
+          <div className="space-y-2">
+            {yearRange.map((year) => (
+              <div key={year} className="flex items-center gap-3">
+                <span className="text-xs text-star-300 w-10 text-right font-mono">{year}</span>
+                <div className="flex-1 h-6 bg-white/5 rounded overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-nebula-500 to-cyan-400 rounded flex items-center justify-end pr-2" style={{ width: `${(volumeByYear[year] / maxVolume) * 100}%` }}>
+                    <span className="text-xs text-white font-bold">{volumeByYear[year]}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card-elevated p-5">
+          <h4 className="text-sm font-semibold text-star-300 uppercase tracking-wider mb-4">Outcomes Breakdown</h4>
+          <div className="space-y-3">
+            {byOutcome.map(([outcome, count]) => {
+              const style = PROTEST_OUTCOME_STYLES[outcome as ProtestOutcome];
+              const pct = Math.round((count / totalProtests) * 100);
+              return (
+                <div key={outcome}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={`text-sm font-medium ${style.text}`}>{style.label}</span>
+                    <span className="text-xs text-star-300">{count} ({pct}%)</span>
+                  </div>
+                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full ${style.bg.replace('/20', '/60')}`} style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="card-elevated p-5">
+          <h4 className="text-sm font-semibold text-star-300 uppercase tracking-wider mb-4">By Program Area</h4>
+          <div className="space-y-2">
+            {byProgram.map(([program, count]) => (
+              <div key={program} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                <span className="text-sm text-white">{PROTEST_PROGRAM_LABELS[program as ProtestProgram]}</span>
+                <span className="text-sm font-bold text-nebula-300">{count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card-elevated p-5">
+          <h4 className="text-sm font-semibold text-star-300 uppercase tracking-wider mb-4">By Agency</h4>
+          <div className="space-y-2">
+            {byAgency.map(([agency, count]) => (
+              <div key={agency} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                <span className="text-sm text-white">{agency}</span>
+                <span className="text-sm font-bold text-nebula-300">{count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="card-elevated p-5">
+        <h4 className="text-sm font-semibold text-star-300 uppercase tracking-wider mb-4">All Cases Summary</h4>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-white/10">
+                <th className="text-left py-2 px-3 text-star-300 text-xs uppercase tracking-wider font-medium">Case</th>
+                <th className="text-left py-2 px-3 text-star-300 text-xs uppercase tracking-wider font-medium">Forum</th>
+                <th className="text-left py-2 px-3 text-star-300 text-xs uppercase tracking-wider font-medium">Outcome</th>
+                <th className="text-left py-2 px-3 text-star-300 text-xs uppercase tracking-wider font-medium">Protester</th>
+                <th className="text-left py-2 px-3 text-star-300 text-xs uppercase tracking-wider font-medium">Agency</th>
+                <th className="text-left py-2 px-3 text-star-300 text-xs uppercase tracking-wider font-medium">Value</th>
+                <th className="text-left py-2 px-3 text-star-300 text-xs uppercase tracking-wider font-medium">Year</th>
+              </tr>
+            </thead>
+            <tbody>
+              {BID_PROTESTS.sort((a, b) => b.yearDecided - a.yearDecided).map((protest) => {
+                const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome];
+                const forumStyle = PROTEST_FORUM_STYLES[protest.forum];
+                return (
+                  <tr key={protest.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <td className="py-2.5 px-3"><span className="text-white font-medium">{protest.shortTitle}</span><br /><span className="text-star-300 text-xs font-mono">{protest.caseNumber}</span></td>
+                    <td className="py-2.5 px-3"><span className={`text-xs font-medium px-2 py-0.5 rounded ${forumStyle.bg} ${forumStyle.text}`}>{forumStyle.label}</span></td>
+                    <td className="py-2.5 px-3"><span className={`text-xs font-medium px-2 py-0.5 rounded ${outcomeStyle.bg} ${outcomeStyle.text}`}>{outcomeStyle.label}</span></td>
+                    <td className="py-2.5 px-3 text-star-300">{protest.protester}</td>
+                    <td className="py-2.5 px-3 text-star-300">{protest.agency}</td>
+                    <td className="py-2.5 px-3 text-white font-medium">{protest.contractValue}</td>
+                    <td className="py-2.5 px-3 text-star-300">{protest.yearDecided}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ############################################################################
 // MAIN PAGE - Two-Level Tab System
 // ############################################################################
 
-type TopSection = 'compliance' | 'space-law' | 'filings';
+type TopSection = 'compliance' | 'space-law' | 'filings' | 'protests';
 
 function getTopSectionFromTab(tab: string): TopSection {
   const complianceTabs = ['policy', 'wizard', 'cases', 'export', 'experts'];
   const spaceLawTabs = ['treaties', 'national', 'artemis', 'proceedings', 'bodies'];
   const filingsTabs = ['fcc', 'faa', 'itu', 'sec', 'federal-register'];
+  const protestTabs = ['protests-overview', 'protests-timeline', 'protests-analysis'];
   if (complianceTabs.includes(tab)) return 'compliance';
   if (spaceLawTabs.includes(tab)) return 'space-law';
   if (filingsTabs.includes(tab)) return 'filings';
+  if (protestTabs.includes(tab)) return 'protests';
   return 'compliance';
 }
 
@@ -1070,6 +1814,7 @@ function getDefaultSubTab(section: TopSection): string {
   if (section === 'compliance') return 'policy';
   if (section === 'space-law') return 'treaties';
   if (section === 'filings') return 'fcc';
+  if (section === 'protests') return 'protests-overview';
   return 'policy';
 }
 
@@ -1104,6 +1849,7 @@ function RegulatoryHubContent() {
     { id: 'compliance', label: 'Compliance', icon: '\uD83D\uDCCB' },
     { id: 'space-law', label: 'Space Law', icon: '\u2696\uFE0F' },
     { id: 'filings', label: 'Regulatory Filings', icon: '\uD83D\uDCC4' },
+    { id: 'protests', label: 'Bid Protests & Claims', icon: '\uD83C\uDFDB\uFE0F' },
   ];
 
   const complianceSubTabs = [
@@ -1120,6 +1866,12 @@ function RegulatoryHubContent() {
     { id: 'artemis', label: 'Artemis Accords' },
     { id: 'proceedings', label: 'Legal Proceedings' },
     { id: 'bodies', label: 'Regulatory Bodies' },
+  ];
+
+  const protestsSubTabs = [
+    { id: 'protests-overview', label: 'All Decisions' },
+    { id: 'protests-timeline', label: 'Timeline' },
+    { id: 'protests-analysis', label: 'Analysis & Trends' },
   ];
 
   return (
@@ -1225,6 +1977,24 @@ function RegulatoryHubContent() {
         </div>
       )}
 
+      {activeSection === 'protests' && (
+        <div className="flex flex-wrap gap-2 mb-6">
+          {protestsSubTabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveSubTab(tab.id)}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                activeSubTab === tab.id
+                  ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
+                  : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Tab Content */}
       {activeSubTab === 'policy' && <PolicyTrackerTab />}
       {activeSubTab === 'wizard' && <ComplianceWizardTab />}
@@ -1241,6 +2011,9 @@ function RegulatoryHubContent() {
       {activeSubTab === 'itu' && <FilingsITUTab />}
       {activeSubTab === 'sec' && <FilingsSECTab />}
       {activeSubTab === 'federal-register' && <FilingsFederalRegisterTab />}
+      {activeSubTab === 'protests-overview' && <ProtestsOverviewTab />}
+      {activeSubTab === 'protests-timeline' && <ProtestsTimelineTab />}
+      {activeSubTab === 'protests-analysis' && <ProtestsAnalysisTab />}
     </>
   );
 }
@@ -1251,7 +2024,7 @@ export default function RegulatoryHubPage() {
       <div className="container mx-auto px-4">
         <PageHeader
           title="Regulatory Hub"
-          subtitle="Comprehensive regulatory tracking, compliance guidance, space law, case law, filings, and expert analysis for the space industry"
+          subtitle="Comprehensive regulatory tracking, compliance guidance, space law, bid protests, case law, filings, and expert analysis for the space industry"
           breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Regulatory Hub' }]}
         >
           <Link href="/" className="btn-secondary text-sm py-2 px-4">
