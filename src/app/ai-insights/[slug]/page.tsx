@@ -113,8 +113,8 @@ export default function AIInsightDetailPage() {
         return;
       }
       if (!res.ok) throw new Error('Failed to fetch insight');
-      const data: Insight = await res.json();
-      setInsight(data);
+      const data = await res.json();
+      setInsight(data.insight);
     } catch (error) {
       console.error('Failed to fetch insight:', error);
       setNotFound(true);
@@ -182,7 +182,7 @@ export default function AIInsightDetailPage() {
   }
 
   const colors = CATEGORY_COLORS[insight.category] || CATEGORY_COLORS.technology;
-  const paragraphs = insight.content.split('\n\n').filter((p) => p.trim().length > 0);
+  const contentBlocks = insight.content.split('\n\n').filter((p) => p.trim().length > 0);
   const sources = parseSources(insight.sources);
 
   return (
@@ -262,11 +262,37 @@ export default function AIInsightDetailPage() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="space-y-4 mb-12"
             >
-              {paragraphs.map((paragraph, index) => (
-                <p key={index} className="text-slate-300 leading-relaxed text-base">
-                  {paragraph}
-                </p>
-              ))}
+              {contentBlocks.map((block, index) => {
+                const trimmed = block.trim();
+                // Render markdown headers
+                if (trimmed.startsWith('## ')) {
+                  return (
+                    <h2 key={index} className="text-xl font-bold text-slate-100 mt-6 mb-2">
+                      {trimmed.replace(/^## /, '')}
+                    </h2>
+                  );
+                }
+                if (trimmed.startsWith('### ')) {
+                  return (
+                    <h3 key={index} className="text-lg font-semibold text-slate-200 mt-4 mb-1">
+                      {trimmed.replace(/^### /, '')}
+                    </h3>
+                  );
+                }
+                // Render bold text within paragraphs
+                const parts = trimmed.split(/\*\*(.*?)\*\*/g);
+                return (
+                  <p key={index} className="text-slate-300 leading-relaxed text-base">
+                    {parts.map((part, i) =>
+                      i % 2 === 1 ? (
+                        <strong key={i} className="text-slate-100 font-semibold">{part}</strong>
+                      ) : (
+                        part
+                      )
+                    )}
+                  </p>
+                );
+              })}
             </motion.div>
 
             {/* Sources Section */}
