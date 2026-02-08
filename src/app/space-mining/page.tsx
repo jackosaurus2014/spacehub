@@ -70,12 +70,16 @@ const TRAJECTORY_STYLES: Record<TrajectoryStatus, { label: string; color: string
   not_feasible: { label: 'Not Feasible', color: 'text-red-400', bg: 'bg-red-900/20' },
 };
 
+const DEFAULT_TRAJECTORY_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
+
 const CONFIDENCE_STYLES: Record<ValueConfidence, { label: string; color: string }> = {
   high: { label: 'High Confidence', color: 'text-green-400' },
   medium: { label: 'Medium Confidence', color: 'text-yellow-400' },
   low: { label: 'Low Confidence', color: 'text-orange-400' },
   speculative: { label: 'Speculative', color: 'text-red-400' },
 };
+
+const DEFAULT_CONFIDENCE_STYLE = { label: 'Unknown', color: 'text-slate-400' };
 
 const SPECTRAL_TYPE_INFO: Record<string, { label: string; description: string; color: string }> = {
   C: { label: 'C-type (Carbonaceous)', description: 'Water-rich, organic compounds', color: 'text-blue-400' },
@@ -89,6 +93,8 @@ const SPECTRAL_TYPE_INFO: Record<string, { label: string; description: string; c
   B: { label: 'B-type', description: 'Blue, volatile-rich', color: 'text-blue-300' },
   Q: { label: 'Q-type', description: 'Ordinary chondrite', color: 'text-orange-400' },
 };
+
+const DEFAULT_SPECTRAL_TYPE = { label: 'Unknown', description: 'Unknown spectral type', color: 'text-slate-400' };
 
 const BODY_EXPORT_COLUMNS = [
   { key: 'name', label: 'Name' },
@@ -146,7 +152,7 @@ function getBodyIcon(bodyType: MiningBodyType): string {
 
 function getSpectralColor(spectralType: SpectralType | null | undefined): string {
   if (!spectralType) return 'text-slate-400';
-  return SPECTRAL_TYPE_INFO[spectralType]?.color || 'text-slate-400';
+  return (SPECTRAL_TYPE_INFO[spectralType] || DEFAULT_SPECTRAL_TYPE).color;
 }
 
 function getDeltaVColor(deltaV: number | null | undefined): string {
@@ -191,8 +197,8 @@ function parseMissionHistory(missionHistory: string | string[] | null): string[]
 // ────────────────────────────────────────
 
 function MiningBodyCard({ body }: { body: MiningBody }) {
-  const trajectory = body.trajectoryStatus ? TRAJECTORY_STYLES[body.trajectoryStatus] : null;
-  const confidence = body.valueConfidence ? CONFIDENCE_STYLES[body.valueConfidence] : null;
+  const trajectory = body.trajectoryStatus ? (TRAJECTORY_STYLES[body.trajectoryStatus] || DEFAULT_TRAJECTORY_STYLE) : null;
+  const confidence = body.valueConfidence ? (CONFIDENCE_STYLES[body.valueConfidence] || DEFAULT_CONFIDENCE_STYLE) : null;
   const composition = parseComposition(body.composition as Record<string, number> | string | null);
   const missionHistory = parseMissionHistory(body.missionHistory as string[] | string | null);
   const topResources = Object.entries(composition)

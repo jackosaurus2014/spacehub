@@ -84,6 +84,7 @@ function getStatusStyle(status: ActiveMission['status']): { label: string; color
     case 'dormant': return { label: 'Dormant', color: 'text-yellow-400', bg: 'bg-yellow-900/30 border-yellow-500/30' };
     case 'ended': return { label: 'Ended', color: 'text-red-400', bg: 'bg-red-900/30 border-red-500/30' };
     case 'planned': return { label: 'Planning', color: 'text-blue-400', bg: 'bg-blue-900/30 border-blue-500/30' };
+    default: return { label: status || 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/30 border-slate-500/30' };
   }
 }
 
@@ -93,6 +94,7 @@ function getMissionTypeIcon(type: ActiveMission['type']): string {
     case 'orbiter': return '🛰️';
     case 'helicopter': return '🚁';
     case 'lander': return '📍';
+    default: return '🔭';
   }
 }
 
@@ -101,6 +103,7 @@ function getReadinessStyle(readiness: CommercialOpportunity['readiness']): { lab
     case 'near-term': return { label: 'Near-Term (2025-2030)', color: 'text-green-400', bg: 'bg-green-900/20' };
     case 'mid-term': return { label: 'Mid-Term (2030-2040)', color: 'text-yellow-400', bg: 'bg-yellow-900/20' };
     case 'long-term': return { label: 'Long-Term (2040+)', color: 'text-orange-400', bg: 'bg-orange-900/20' };
+    default: return { label: readiness || 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
   }
 }
 

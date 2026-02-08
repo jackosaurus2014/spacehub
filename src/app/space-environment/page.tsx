@@ -137,12 +137,16 @@ const RISK_COLORS: Record<ConjunctionRisk, { bg: string; text: string; border: s
   low: { bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500', label: 'Low' },
 };
 
+const DEFAULT_RISK_COLOR = { bg: 'bg-slate-900/30', text: 'text-slate-400', border: 'border-slate-500', label: 'Unknown' };
+
 const OBJECT_TYPE_COLORS: Record<string, string> = {
   payload: 'text-green-400',
   rocket_body: 'text-orange-400',
   debris: 'text-red-400',
   unknown: 'text-gray-400',
 };
+
+const DEFAULT_OBJECT_TYPE_COLOR = 'text-slate-400';
 
 const KNOWN_OPERATORS = [
   'Starlink', 'OneWeb', 'Iridium', 'SES', 'Intelsat', 'Eutelsat',
@@ -329,7 +333,7 @@ function getStatusColor(status: string): string {
 // ════════════════════════════════════════
 
 function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
-  const riskStyle = RISK_COLORS[event.riskLevel as ConjunctionRisk] || RISK_COLORS.low;
+  const riskStyle = RISK_COLORS[event.riskLevel as ConjunctionRisk] || DEFAULT_RISK_COLOR;
   const eventDate = new Date(event.eventTime);
   const isPast = eventDate < new Date();
 
@@ -448,7 +452,7 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
 
 function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
   const typeInfo = DEBRIS_OBJECT_TYPES.find((t) => t.value === obj.objectType);
-  const typeColor = OBJECT_TYPE_COLORS[obj.objectType] || 'text-slate-400';
+  const typeColor = OBJECT_TYPE_COLORS[obj.objectType] || DEFAULT_OBJECT_TYPE_COLOR;
   const isActivePayload = obj.objectType === 'payload' && obj.isActive;
 
   return (
@@ -1737,7 +1741,7 @@ function DebrisTrackingTab() {
               </button>
               {(['critical', 'high', 'moderate', 'low'] as ConjunctionRisk[]).map((level) => {
                 const count = conjunctions.filter((c) => c.riskLevel === level).length;
-                const info = RISK_COLORS[level];
+                const info = RISK_COLORS[level] || DEFAULT_RISK_COLOR;
                 return (
                   <button
                     key={level}

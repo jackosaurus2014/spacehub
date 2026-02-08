@@ -125,6 +125,8 @@ const STATUS_STYLES: Record<StationStatus, { label: string; color: string; bg: s
   planned: { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/30', border: 'border-blue-500/40' },
 };
 
+const DEFAULT_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/30', border: 'border-slate-500/40' };
+
 const ROTATION_STATUS_STYLES: Record<string, { label: string; color: string; bg: string; dot: string }> = {
   completed: { label: 'Completed', color: 'text-gray-400', bg: 'bg-gray-900/20', dot: 'bg-gray-500' },
   current: { label: 'On Station', color: 'text-green-400', bg: 'bg-green-900/20', dot: 'bg-green-500 animate-pulse' },
@@ -132,11 +134,15 @@ const ROTATION_STATUS_STYLES: Record<string, { label: string; color: string; bg:
   planned: { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/20', dot: 'bg-blue-500' },
 };
 
+const DEFAULT_ROTATION_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20', dot: 'bg-slate-500' };
+
 const SEVERITY_STYLES: Record<string, { color: string; bg: string }> = {
   high: { color: 'text-red-400', bg: 'bg-red-900/20' },
   medium: { color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
   low: { color: 'text-green-400', bg: 'bg-green-900/20' },
 };
+
+const DEFAULT_SEVERITY_STYLE = { color: 'text-slate-400', bg: 'bg-slate-900/20' };
 
 // ────────────────────────────────────────
 // Sub-components
@@ -165,7 +171,7 @@ function HeroStats() {
 
 function ActiveStationCard({ station }: { station: SpaceStation }) {
   const [showModules, setShowModules] = useState(false);
-  const statusStyle = STATUS_STYLES[station.status];
+  const statusStyle = STATUS_STYLES[station.status] || DEFAULT_STATUS_STYLE;
 
   return (
     <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
@@ -304,7 +310,7 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
 
 function CommercialStationCard({ station }: { station: CommercialStation }) {
   const [expanded, setExpanded] = useState(false);
-  const statusStyle = STATUS_STYLES[station.status];
+  const statusStyle = STATUS_STYLES[station.status] || DEFAULT_STATUS_STYLE;
 
   return (
     <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
@@ -668,7 +674,7 @@ function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]
         <h3 className="text-white font-bold text-lg mb-4">Crew Rotation Schedule</h3>
         <div className="space-y-3">
           {crewRotations.map((rotation) => {
-            const style = ROTATION_STATUS_STYLES[rotation.status];
+            const style = ROTATION_STATUS_STYLES[rotation.status] || DEFAULT_ROTATION_STATUS_STYLE;
             return (
               <div key={rotation.mission} className={`rounded-lg ${style.bg} border border-slate-700/30 p-4`}>
                 <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
@@ -821,7 +827,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
         </p>
         <div className="space-y-3">
           {transitionRisks.map((risk) => {
-            const sevStyle = SEVERITY_STYLES[risk.severity];
+            const sevStyle = SEVERITY_STYLES[risk.severity] || DEFAULT_SEVERITY_STYLE;
             return (
               <div key={risk.category} className="rounded-lg bg-slate-900/40 border border-slate-700/30 p-4">
                 <div className="flex items-center gap-3 mb-2">

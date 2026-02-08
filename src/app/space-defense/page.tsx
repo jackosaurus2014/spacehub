@@ -90,6 +90,8 @@ const PROGRAM_STATUS_STYLES: Record<DefenseProgram['status'], { label: string; c
   concept: { label: 'Concept', color: 'text-purple-400', bg: 'bg-purple-900/20' },
 };
 
+const DEFAULT_PROGRAM_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
+
 const CATEGORY_STYLES: Record<DefenseProgram['category'], { label: string; color: string }> = {
   communications: { label: 'Communications', color: 'text-blue-300' },
   missile_warning: { label: 'Missile Warning', color: 'text-red-300' },
@@ -101,6 +103,8 @@ const CATEGORY_STYLES: Record<DefenseProgram['category'], { label: string; color
   classified: { label: 'Classified', color: 'text-slate-300' },
 };
 
+const DEFAULT_CATEGORY_STYLE = { label: 'Unknown', color: 'text-slate-400' };
+
 const EVENT_TYPE_STYLES: Record<CounterspaceEvent['type'], { label: string; color: string; bg: string }> = {
   kinetic_asat: { label: 'Kinetic ASAT', color: 'text-red-400', bg: 'bg-red-900/20' },
   co_orbital: { label: 'Co-Orbital / RPO', color: 'text-orange-400', bg: 'bg-orange-900/20' },
@@ -109,6 +113,8 @@ const EVENT_TYPE_STYLES: Record<CounterspaceEvent['type'], { label: string; colo
   directed_energy: { label: 'Directed Energy', color: 'text-cyan-400', bg: 'bg-cyan-900/20' },
   rpo: { label: 'RPO', color: 'text-orange-400', bg: 'bg-orange-900/20' },
 };
+
+const DEFAULT_EVENT_TYPE_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
 
 // ────────────────────────────────────────
 // Tab Configuration
@@ -243,8 +249,8 @@ function SpaceForceCard({ force }: { force: SpaceForce }) {
 
 function ProgramCard({ program }: { program: DefenseProgram }) {
   const [expanded, setExpanded] = useState(false);
-  const statusStyle = PROGRAM_STATUS_STYLES[program.status];
-  const catStyle = CATEGORY_STYLES[program.category];
+  const statusStyle = PROGRAM_STATUS_STYLES[program.status] || DEFAULT_PROGRAM_STATUS_STYLE;
+  const catStyle = CATEGORY_STYLES[program.category] || DEFAULT_CATEGORY_STYLE;
 
   return (
     <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
@@ -350,7 +356,7 @@ function ContractCard({ contract }: { contract: ContractAward }) {
 }
 
 function ThreatEventCard({ event }: { event: CounterspaceEvent }) {
-  const typeStyle = EVENT_TYPE_STYLES[event.type];
+  const typeStyle = EVENT_TYPE_STYLES[event.type] || DEFAULT_EVENT_TYPE_STYLE;
 
   return (
     <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
@@ -832,7 +838,7 @@ export default function SpaceDefensePage() {
                   </button>
                   {programCategories.map((cat) => {
                     const count = defensePrograms.filter((p) => p.category === cat).length;
-                    const style = CATEGORY_STYLES[cat];
+                    const style = CATEGORY_STYLES[cat] || DEFAULT_CATEGORY_STYLE;
                     return (
                       <button
                         key={cat}
@@ -971,7 +977,7 @@ export default function SpaceDefensePage() {
                   </button>
                   {eventTypes.map((type) => {
                     const count = counterspaceEvents.filter((e) => e.type === type).length;
-                    const style = EVENT_TYPE_STYLES[type];
+                    const style = EVENT_TYPE_STYLES[type] || DEFAULT_EVENT_TYPE_STYLE;
                     return (
                       <button
                         key={type}

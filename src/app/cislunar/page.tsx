@@ -137,6 +137,8 @@ const ARTEMIS_STATUS_STYLES: Record<ArtemisMission['status'], { label: string; c
   'planned': { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-500/30' },
 };
 
+const DEFAULT_ARTEMIS_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20', border: 'border-slate-500/30' };
+
 const CLPS_STATUS_STYLES: Record<CLPSMission['status'], { label: string; color: string; bg: string }> = {
   'success': { label: 'Success', color: 'text-green-400', bg: 'bg-green-900/20' },
   'partial-success': { label: 'Partial Success', color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
@@ -146,12 +148,16 @@ const CLPS_STATUS_STYLES: Record<CLPSMission['status'], { label: string; color: 
   'planned': { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/20' },
 };
 
+const DEFAULT_CLPS_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
+
 const ISRU_STATUS_STYLES: Record<ISRUProgram['status'], { label: string; color: string; bg: string }> = {
   'active': { label: 'Active', color: 'text-green-400', bg: 'bg-green-900/20' },
   'completed': { label: 'Completed', color: 'text-blue-400', bg: 'bg-blue-900/20' },
   'cancelled': { label: 'Cancelled', color: 'text-red-400', bg: 'bg-red-900/20' },
   'planned': { label: 'Planned', color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
 };
+
+const DEFAULT_ISRU_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
 
 const INFRA_STATUS_STYLES: Record<InfrastructureElement['status'], { label: string; color: string; bg: string }> = {
   'operational': { label: 'Operational', color: 'text-green-400', bg: 'bg-green-900/20' },
@@ -160,6 +166,8 @@ const INFRA_STATUS_STYLES: Record<InfrastructureElement['status'], { label: stri
   'design': { label: 'Design Phase', color: 'text-orange-400', bg: 'bg-orange-900/20' },
   'concept': { label: 'Concept', color: 'text-purple-400', bg: 'bg-purple-900/20' },
 };
+
+const DEFAULT_INFRA_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
 
 const ISRU_CATEGORY_STYLES: Record<ISRUProgram['category'], { label: string; icon: string }> = {
   'water-ice': { label: 'Water Ice', icon: '🧊' },
@@ -170,6 +178,8 @@ const ISRU_CATEGORY_STYLES: Record<ISRUProgram['category'], { label: string; ico
   'prospecting': { label: 'Resource Prospecting', icon: '🔍' },
 };
 
+const DEFAULT_ISRU_CATEGORY_STYLE = { label: 'Unknown', icon: '?' };
+
 const INFRA_CATEGORY_STYLES: Record<InfrastructureElement['category'], { label: string; icon: string }> = {
   'gateway': { label: 'Lunar Gateway', icon: '🛰️' },
   'communications': { label: 'Communications', icon: '📡' },
@@ -177,6 +187,8 @@ const INFRA_CATEGORY_STYLES: Record<InfrastructureElement['category'], { label: 
   'surface': { label: 'Surface Systems', icon: '🏗️' },
   'transport': { label: 'Transportation', icon: '🚀' },
 };
+
+const DEFAULT_INFRA_CATEGORY_STYLE = { label: 'Unknown', icon: '?' };
 
 const GATEWAY_MODULE_STATUS_STYLES: Record<GatewayModule['status'], { label: string; color: string; bg: string }> = {
   integration: { label: 'Integration Testing', color: 'text-green-400', bg: 'bg-green-900/30' },
@@ -187,11 +199,15 @@ const GATEWAY_MODULE_STATUS_STYLES: Record<GatewayModule['status'], { label: str
   study: { label: 'Under Study', color: 'text-purple-400', bg: 'bg-purple-900/30' },
 };
 
+const DEFAULT_GATEWAY_MODULE_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/30' };
+
 const GATEWAY_MISSION_STATUS_STYLES: Record<GatewayArtemisMission['status'], { label: string; color: string; bg: string; border: string }> = {
   completed: { label: 'Completed', color: 'text-green-400', bg: 'bg-green-900/20', border: 'border-green-500/30' },
   upcoming: { label: 'Upcoming', color: 'text-yellow-400', bg: 'bg-yellow-900/20', border: 'border-yellow-500/30' },
   planned: { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-500/30' },
 };
+
+const DEFAULT_GATEWAY_MISSION_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20', border: 'border-slate-500/30' };
 
 // ────────────────────────────────────────
 // TRL Bar Component
@@ -385,7 +401,7 @@ function ArtemisTab() {
           <div className="absolute left-[18px] top-6 bottom-6 w-px bg-gradient-to-b from-green-500 via-yellow-500 to-blue-500 opacity-30" />
           <div className="space-y-6">
             {ARTEMIS_MISSIONS.map((mission) => {
-              const style = ARTEMIS_STATUS_STYLES[mission.status];
+              const style = ARTEMIS_STATUS_STYLES[mission.status] || DEFAULT_ARTEMIS_STATUS_STYLE;
               const isExpanded = expandedId === mission.id;
               return (
                 <div key={mission.id} className="relative pl-12">
@@ -498,7 +514,7 @@ function CommercialLunarTab() {
         >
           <option value="all">All Statuses</option>
           {statuses.map((s) => (
-            <option key={s} value={s}>{CLPS_STATUS_STYLES[s].label}</option>
+            <option key={s} value={s}>{(CLPS_STATUS_STYLES[s] || DEFAULT_CLPS_STATUS_STYLE).label}</option>
           ))}
         </select>
         <select
@@ -534,7 +550,7 @@ function CommercialLunarTab() {
       {/* Mission Cards */}
       <div className="space-y-4">
         {filtered.map((mission) => {
-          const style = CLPS_STATUS_STYLES[mission.status];
+          const style = CLPS_STATUS_STYLES[mission.status] || DEFAULT_CLPS_STATUS_STYLE;
           const isExpanded = expandedId === mission.id;
           return (
             <div
@@ -680,7 +696,7 @@ function ISRUTab() {
         >
           <option value="all">All Categories</option>
           {categories.map((c) => (
-            <option key={c} value={c}>{ISRU_CATEGORY_STYLES[c].icon} {ISRU_CATEGORY_STYLES[c].label}</option>
+            <option key={c} value={c}>{(ISRU_CATEGORY_STYLES[c] || DEFAULT_ISRU_CATEGORY_STYLE).icon} {(ISRU_CATEGORY_STYLES[c] || DEFAULT_ISRU_CATEGORY_STYLE).label}</option>
           ))}
         </select>
         <span className="text-star-400 text-sm self-center ml-2">
@@ -691,8 +707,8 @@ function ISRUTab() {
       {/* ISRU Program Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {filtered.map((program) => {
-          const catStyle = ISRU_CATEGORY_STYLES[program.category];
-          const statusStyle = ISRU_STATUS_STYLES[program.status];
+          const catStyle = ISRU_CATEGORY_STYLES[program.category] || DEFAULT_ISRU_CATEGORY_STYLE;
+          const statusStyle = ISRU_STATUS_STYLES[program.status] || DEFAULT_ISRU_STATUS_STYLE;
           return (
             <div
               key={program.id}
@@ -771,7 +787,7 @@ function InfrastructureTab() {
         >
           <option value="all">All Categories</option>
           {categories.map((c) => (
-            <option key={c} value={c}>{INFRA_CATEGORY_STYLES[c].icon} {INFRA_CATEGORY_STYLES[c].label}</option>
+            <option key={c} value={c}>{(INFRA_CATEGORY_STYLES[c] || DEFAULT_INFRA_CATEGORY_STYLE).icon} {(INFRA_CATEGORY_STYLES[c] || DEFAULT_INFRA_CATEGORY_STYLE).label}</option>
           ))}
         </select>
         <span className="text-star-400 text-sm self-center ml-2">
@@ -782,8 +798,8 @@ function InfrastructureTab() {
       {/* Infrastructure Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {filtered.map((item) => {
-          const catStyle = INFRA_CATEGORY_STYLES[item.category];
-          const statusStyle = INFRA_STATUS_STYLES[item.status];
+          const catStyle = INFRA_CATEGORY_STYLES[item.category] || DEFAULT_INFRA_CATEGORY_STYLE;
+          const statusStyle = INFRA_STATUS_STYLES[item.status] || DEFAULT_INFRA_STATUS_STYLE;
           return (
             <div
               key={item.id}
@@ -956,7 +972,7 @@ function InvestmentTab() {
 
 function GatewayModuleCard({ module }: { module: GatewayModule }) {
   const [expanded, setExpanded] = useState(false);
-  const statusStyle = GATEWAY_MODULE_STATUS_STYLES[module.status];
+  const statusStyle = GATEWAY_MODULE_STATUS_STYLES[module.status] || DEFAULT_GATEWAY_MODULE_STATUS_STYLE;
 
   return (
     <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
@@ -1302,7 +1318,7 @@ function GatewayTab() {
             <h3 className="text-white font-semibold text-sm mb-3">Assembly Sequence</h3>
             <div className="flex flex-wrap items-center gap-2">
               {GATEWAY_MODULES.map((module, index) => {
-                const style = GATEWAY_MODULE_STATUS_STYLES[module.status];
+                const style = GATEWAY_MODULE_STATUS_STYLES[module.status] || DEFAULT_GATEWAY_MODULE_STATUS_STYLE;
                 return (
                   <div key={module.id} className="flex items-center gap-2">
                     <div className={`px-3 py-1.5 rounded-lg border ${style.bg} border-slate-700/50`}>
@@ -1340,7 +1356,7 @@ function GatewayTab() {
 
             <div className="space-y-6">
               {GATEWAY_ARTEMIS_MISSIONS.map((mission) => {
-                const style = GATEWAY_MISSION_STATUS_STYLES[mission.status];
+                const style = GATEWAY_MISSION_STATUS_STYLES[mission.status] || DEFAULT_GATEWAY_MISSION_STATUS_STYLE;
                 return (
                   <div key={mission.name} className="relative pl-12">
                     {/* Timeline dot */}

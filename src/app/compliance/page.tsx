@@ -112,6 +112,8 @@ const TREATY_STATUS_CONFIG: Record<TreatyStatus, { label: string; bg: string; te
   not_in_force: { label: 'Not Widely Ratified', bg: 'bg-yellow-500/20', text: 'text-yellow-400', border: 'border-yellow-500/30' },
 };
 
+const DEFAULT_TREATY_STATUS = { label: 'Unknown', bg: 'bg-slate-500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
+
 const NATIONAL_STATUS_CONFIG: Record<NationalLawStatus, { label: string; bg: string; text: string; border: string }> = {
   enacted: { label: 'Enacted', bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/30' },
   amended: { label: 'Amended', bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/30' },
@@ -119,11 +121,15 @@ const NATIONAL_STATUS_CONFIG: Record<NationalLawStatus, { label: string; bg: str
   under_review: { label: 'Under Review', bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/30' },
 };
 
+const DEFAULT_NATIONAL_STATUS = { label: 'Unknown', bg: 'bg-slate-500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
+
 const ARTEMIS_STATUS_CONFIG: Record<ArtemisStatus, { label: string; bg: string; text: string; border: string }> = {
   signatory: { label: 'Signatory', bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/30' },
   implementing: { label: 'Implementing', bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/30' },
   observer: { label: 'Observer', bg: 'bg-yellow-500/20', text: 'text-yellow-400', border: 'border-yellow-500/30' },
 };
+
+const DEFAULT_ARTEMIS_STATUS = { label: 'Unknown', bg: 'bg-slate-500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
 
 const PROCEEDING_STATUS_CONFIG: Record<ProceedingStatus, { label: string; bg: string; text: string; border: string }> = {
   active: { label: 'Active', bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/30' },
@@ -132,12 +138,16 @@ const PROCEEDING_STATUS_CONFIG: Record<ProceedingStatus, { label: string; bg: st
   advisory: { label: 'Advisory', bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30' },
 };
 
+const DEFAULT_PROCEEDING_STATUS = { label: 'Unknown', bg: 'bg-slate-500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
+
 const BODY_TYPE_CONFIG: Record<BodyType, { label: string; bg: string; text: string; border: string }> = {
   un: { label: 'UN Body', bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30' },
   national: { label: 'National', bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/30' },
   regional: { label: 'Regional', bg: 'bg-purple-500/20', text: 'text-purple-400', border: 'border-purple-500/30' },
   industry: { label: 'Industry', bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30' },
 };
+
+const DEFAULT_BODY_TYPE = { label: 'Unknown', bg: 'bg-slate-500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
 
 let TREATIES: Treaty[] = [];
 let NATIONAL_LAWS: NationalLaw[] = [];
@@ -171,11 +181,15 @@ const FILING_STATUS_STYLES: Record<FilingStatus, { label: string; bg: string; te
   comment: { label: 'Open for Comment', bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
 };
 
+const DEFAULT_FILING_STATUS_STYLE = { label: 'Unknown', bg: 'bg-slate-500/20', text: 'text-slate-400' };
+
 const FILING_IMPACT_STYLES: Record<string, { bg: string; text: string }> = {
   high: { bg: 'bg-red-500/20', text: 'text-red-400' },
   medium: { bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
   low: { bg: 'bg-green-500/20', text: 'text-green-400' },
 };
+
+const DEFAULT_FILING_IMPACT_STYLE = { bg: 'bg-slate-500/20', text: 'text-slate-400' };
 
 const FILING_ORBIT_STYLES: Record<string, { bg: string; text: string }> = {
   NGSO: { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
@@ -183,6 +197,8 @@ const FILING_ORBIT_STYLES: Record<string, { bg: string; text: string }> = {
   HEO: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
   MEO: { bg: 'bg-blue-500/20', text: 'text-blue-400' },
 };
+
+const DEFAULT_FILING_ORBIT_STYLE = { bg: 'bg-slate-500/20', text: 'text-slate-400' };
 
 let FCC_FILINGS: FCCFiling[] = [];
 let FAA_LICENSES: FAALicense[] = [];
@@ -504,7 +520,7 @@ function ExpertCommentaryTab() {
 
 function TreatyCard({ treaty }: { treaty: Treaty }) {
   const [expanded, setExpanded] = useState(false);
-  const statusConfig = TREATY_STATUS_CONFIG[treaty.status];
+  const statusConfig = TREATY_STATUS_CONFIG[treaty.status] || DEFAULT_TREATY_STATUS;
   return (
     <div className="card p-5 hover:border-nebula-500/30 transition-all">
       <div className="flex items-start justify-between mb-3">
@@ -545,7 +561,7 @@ function SpaceLawTreatiesTab() {
 
 function NationalLawCard({ law }: { law: NationalLaw }) {
   const [expanded, setExpanded] = useState(false);
-  const statusConfig = NATIONAL_STATUS_CONFIG[law.status];
+  const statusConfig = NATIONAL_STATUS_CONFIG[law.status] || DEFAULT_NATIONAL_STATUS;
   return (
     <div className="card p-5 hover:border-nebula-500/30 transition-all">
       <div className="flex items-start justify-between mb-2">
@@ -609,14 +625,14 @@ function SpaceLawArtemisTab() {
         {(regionFilter || searchQuery) && (<button onClick={() => { setRegionFilter(''); setSearchQuery(''); }} className="text-sm text-nebula-300 hover:text-nebula-200 py-2">Clear Filters</button>)}
       </div></div>
       <div className="flex items-center justify-between mb-4"><span className="text-sm text-slate-400">Showing {filteredSignatories.length} of {ARTEMIS_SIGNATORIES.length} signatories</span></div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{filteredSignatories.map((signatory) => { const status = ARTEMIS_STATUS_CONFIG[signatory.implementationStatus]; return (<div key={signatory.id} className="card p-4 hover:border-cyan-500/30 transition-all"><div className="flex items-start justify-between mb-2"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-sm font-bold text-slate-600">{signatory.countryCode}</div><div><h4 className="font-semibold text-slate-900 text-sm">{signatory.country}</h4><span className="text-slate-400 text-xs">{signatory.spaceAgency}</span></div></div><span className={`text-xs px-2 py-0.5 rounded border ${status.bg} ${status.text} ${status.border}`}>{status.label}</span></div><div className="flex items-center gap-3 text-xs text-slate-400 mb-2"><span>Signed: {new Date(signatory.dateSigned).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span><span>{signatory.region}</span></div><p className="text-xs text-slate-500 line-clamp-2">{signatory.notes}</p></div>); })}</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{filteredSignatories.map((signatory) => { const status = ARTEMIS_STATUS_CONFIG[signatory.implementationStatus] || DEFAULT_ARTEMIS_STATUS; return (<div key={signatory.id} className="card p-4 hover:border-cyan-500/30 transition-all"><div className="flex items-start justify-between mb-2"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-sm font-bold text-slate-600">{signatory.countryCode}</div><div><h4 className="font-semibold text-slate-900 text-sm">{signatory.country}</h4><span className="text-slate-400 text-xs">{signatory.spaceAgency}</span></div></div><span className={`text-xs px-2 py-0.5 rounded border ${status.bg} ${status.text} ${status.border}`}>{status.label}</span></div><div className="flex items-center gap-3 text-xs text-slate-400 mb-2"><span>Signed: {new Date(signatory.dateSigned).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span><span>{signatory.region}</span></div><p className="text-xs text-slate-500 line-clamp-2">{signatory.notes}</p></div>); })}</div>
     </div>
   );
 }
 
 function ProceedingCard({ proceeding }: { proceeding: LegalProceeding }) {
   const [expanded, setExpanded] = useState(false);
-  const statusConfig = PROCEEDING_STATUS_CONFIG[proceeding.status];
+  const statusConfig = PROCEEDING_STATUS_CONFIG[proceeding.status] || DEFAULT_PROCEEDING_STATUS;
   return (
     <div className="card p-5 hover:border-nebula-500/30 transition-all">
       <div className="flex items-start justify-between mb-2"><div className="flex items-center gap-2"><span className="text-xs text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded font-medium">{proceeding.type}</span><span className="text-xs text-slate-400">{proceeding.year}</span></div><span className={`text-xs font-bold px-2.5 py-1 rounded border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>{statusConfig.label}</span></div>
@@ -654,7 +670,7 @@ function SpaceLawProceedingsTab() {
 
 function BodyCard({ body }: { body: RegulatoryBody }) {
   const [expanded, setExpanded] = useState(false);
-  const typeConfig = BODY_TYPE_CONFIG[body.type];
+  const typeConfig = BODY_TYPE_CONFIG[body.type] || DEFAULT_BODY_TYPE;
   return (
     <div className="card p-5 hover:border-nebula-500/30 transition-all">
       <div className="flex items-start justify-between mb-3"><div><div className="flex items-center gap-2 mb-1"><h4 className="font-semibold text-slate-900">{body.abbreviation}</h4><span className={`text-xs px-2 py-0.5 rounded border ${typeConfig.bg} ${typeConfig.text} ${typeConfig.border}`}>{typeConfig.label}</span></div><p className="text-slate-400 text-sm">{body.name}</p></div></div>
@@ -703,10 +719,10 @@ function FilingsFCCTab() {
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
         <input type="text" placeholder="Search applicant, file number, band..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2 text-sm placeholder:text-star-300/50 focus:outline-none focus:border-nebula-500/50" />
         <select value={orbitFilter} onChange={(e) => setOrbitFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Orbits</option>{uniqueOrbits.map((o) => (<option key={o} value={o}>{o}</option>))}</select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Statuses</option>{uniqueStatuses.map((s) => (<option key={s} value={s}>{FILING_STATUS_STYLES[s].label}</option>))}</select>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Statuses</option>{uniqueStatuses.map((s) => (<option key={s} value={s}>{(FILING_STATUS_STYLES[s] || DEFAULT_FILING_STATUS_STYLE).label}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const statusStyle = FILING_STATUS_STYLES[filing.status]; const orbitStyle = FILING_ORBIT_STYLES[filing.orbitType]; return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const statusStyle = FILING_STATUS_STYLES[filing.status] || DEFAULT_FILING_STATUS_STYLE; const orbitStyle = FILING_ORBIT_STYLES[filing.orbitType] || DEFAULT_FILING_ORBIT_STYLE; return (
         <div key={filing.id} className="card p-5 hover:border-nebula-500/50 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{filing.applicant}</h4><span className="text-star-300 text-xs font-mono">{filing.fileNumber}</span></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${orbitStyle.bg} ${orbitStyle.text}`}>{filing.orbitType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
           <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Band</span><span className="text-nebula-300 text-sm font-mono">{filing.band}</span></div>{filing.satelliteCount && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satelliteCount.toLocaleString()}</span></div>)}</div>
@@ -733,10 +749,10 @@ function FilingsFAATab() {
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
         <input type="text" placeholder="Search licensee, vehicle, launch site..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2 text-sm placeholder:text-star-300/50 focus:outline-none focus:border-nebula-500/50" />
         <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Statuses</option>{uniqueStatuses.map((s) => (<option key={s} value={s}>{FILING_STATUS_STYLES[s].label}</option>))}</select>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Statuses</option>{uniqueStatuses.map((s) => (<option key={s} value={s}>{(FILING_STATUS_STYLES[s] || DEFAULT_FILING_STATUS_STYLE).label}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} licenses</span>
       </div></div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((license) => { const statusStyle = FILING_STATUS_STYLES[license.status]; return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((license) => { const statusStyle = FILING_STATUS_STYLES[license.status] || DEFAULT_FILING_STATUS_STYLE; return (
         <div key={license.id} className="card p-5 hover:border-nebula-500/50 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{license.licensee}</h4><span className="text-star-300 text-xs font-mono">{license.licenseNumber}</span></div><div className="flex items-center gap-2 shrink-0"><span className="text-xs font-medium px-2 py-1 rounded bg-blue-500/20 text-blue-400">{license.licenseType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3"><div><span className="text-star-300 text-xs block">Vehicle</span><span className="text-white text-sm font-medium">{license.vehicle}</span></div><div><span className="text-star-300 text-xs block">Launch Site</span><span className="text-nebula-300 text-sm">{license.launchSite}</span></div>{license.missionsAuthorized > 0 && (<div><span className="text-star-300 text-xs block">Missions</span><span className="text-white text-sm font-bold">{license.missionsAuthorized}</span></div>)}</div>
@@ -767,7 +783,7 @@ function FilingsITUTab() {
         <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Filing Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const statusStyle = FILING_STATUS_STYLES[filing.status]; const orbitStyle = FILING_ORBIT_STYLES[filing.orbitType]; return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const statusStyle = FILING_STATUS_STYLES[filing.status] || DEFAULT_FILING_STATUS_STYLE; const orbitStyle = FILING_ORBIT_STYLES[filing.orbitType] || DEFAULT_FILING_ORBIT_STYLE; return (
         <div key={filing.id} className="card p-5 hover:border-nebula-500/50 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base font-mono">{filing.networkName}</h4><span className="text-star-300 text-sm">{filing.administration}</span></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${orbitStyle.bg} ${orbitStyle.text}`}>{filing.orbitType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
           <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Filing Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Service Band</span><span className="text-nebula-300 text-sm font-mono">{filing.serviceBand}</span></div>{filing.satellites && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satellites.toLocaleString()}</span></div>)}</div>
@@ -832,7 +848,7 @@ function FilingsFederalRegisterTab() {
         <select value={impactFilter} onChange={(e) => setImpactFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Impact Levels</option><option value="high">High Impact</option><option value="medium">Medium Impact</option><option value="low">Low Impact</option></select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} entries</span>
       </div></div>
-      <div className="space-y-4">{filtered.map((entry) => { const typeColor = docTypeColors[entry.documentType] || { bg: 'bg-slate-500/20', text: 'text-slate-400' }; const impactStyle = FILING_IMPACT_STYLES[entry.impact]; return (
+      <div className="space-y-4">{filtered.map((entry) => { const typeColor = docTypeColors[entry.documentType] || { bg: 'bg-slate-500/20', text: 'text-slate-400' }; const impactStyle = FILING_IMPACT_STYLES[entry.impact] || DEFAULT_FILING_IMPACT_STYLE; return (
         <div key={entry.id} className="card p-5 hover:border-nebula-500/50 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-nebula-300 shrink-0">{entry.agency}</div><div><h4 className="font-semibold text-white text-base">{entry.title}</h4><span className="text-star-300 text-xs font-mono">FR {entry.federalRegisterNumber}</span></div></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{entry.documentType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${impactStyle.bg} ${impactStyle.text}`}>{entry.impact.charAt(0).toUpperCase() + entry.impact.slice(1)} Impact</span></div></div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{entry.summary}</p>
