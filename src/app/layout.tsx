@@ -20,6 +20,7 @@ import NavigationProgress from '@/components/ui/NavigationProgress';
 import KeyboardShortcutsModal from '@/components/ui/KeyboardShortcutsModal';
 import PageTracker from '@/components/PageTracker';
 import SwipeNavigation from '@/components/SwipeNavigation';
+import ModuleNavBar from '@/components/ModuleNavBar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -164,6 +165,7 @@ export default function RootLayout({
               <Navigation />
               <QuickAccessSidebar />
               <main id="main-content" className="flex-1 lg:pl-16 pb-16 lg:pb-0" tabIndex={-1}>
+                <ModuleNavBar />
                 {children}
               </main>
               <Footer />
