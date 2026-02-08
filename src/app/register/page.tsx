@@ -111,7 +111,39 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-[calc(100vh-200px)] flex items-center justify-center py-12 px-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        {/* Value Proposition Panel */}
+        <div className="text-center lg:text-left">
+          <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            Why SpaceNexus?
+          </h2>
+          <p className="text-slate-300 mb-8 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            Join thousands of space industry professionals accessing real-time intelligence.
+          </p>
+          <ul className="space-y-4 text-left">
+            <li className="flex items-start gap-3">
+              <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-slate-200 text-sm">10+ integrated modules covering every dimension of the space industry</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-slate-200 text-sm">Real-time data from 40+ government and industry sources</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-slate-200 text-sm">Interactive tools: satellite trackers, mission calculators, compliance wizards</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-slate-200 text-sm">Unified regulatory intelligence: FCC, FAA, ITU, SEC filings in one place</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-slate-200 text-sm">Free tier with generous access &mdash; no credit card required</span>
+            </li>
+          </ul>
+        </div>
+
         <div className="card p-8 glow-border">
           <div className="text-center mb-8">
             <Image

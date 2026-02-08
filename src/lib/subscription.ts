@@ -66,11 +66,6 @@ export function canAccessModule(tier: SubscriptionTier, moduleId: string): boole
   const premiumModules: Record<string, SubscriptionTier> = {
     'resource-exchange': 'pro',
     'business-opportunities': 'enterprise',
-    'solar-flare-tracker': 'pro',
-    'orbital-slots': 'pro',
-    'space-workforce': 'pro',
-    'launch-windows': 'pro',
-    'debris-monitor': 'pro',
     'spectrum-tracker': 'enterprise',
     'space-insurance': 'enterprise',
     'compliance': 'enterprise',
@@ -88,11 +83,6 @@ export function getRequiredTierForModule(moduleId: string): SubscriptionTier | n
   const premiumModules: Record<string, SubscriptionTier> = {
     'resource-exchange': 'pro',
     'business-opportunities': 'enterprise',
-    'solar-flare-tracker': 'pro',
-    'orbital-slots': 'pro',
-    'space-workforce': 'pro',
-    'launch-windows': 'pro',
-    'debris-monitor': 'pro',
     'spectrum-tracker': 'enterprise',
     'space-insurance': 'enterprise',
     'compliance': 'enterprise',

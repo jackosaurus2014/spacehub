@@ -10,6 +10,8 @@ const config: Config = {
     extend: {
       colors: {
         space: {
+          1000: '#030712',
+          975: '#050a15',
           950: '#050510',
           900: '#0a0a1a',
           850: '#0d0d22',

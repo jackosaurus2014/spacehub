@@ -198,8 +198,20 @@ export default function PricingPage() {
       <div className="container mx-auto px-4">
         <PageHeader
           title="Choose Your Plan"
-          subtitle="Get unlimited access to space industry intelligence, real-time stock tracking, and AI-powered business opportunities."
+          subtitle="The first and only platform that brings together real-time space industry data, interactive tools, regulatory intelligence, and market analytics. Built for entrepreneurs, executives, mission planners, lawyers, and enthusiasts."
         />
+
+        {/* Audience strip */}
+        <div className="flex flex-wrap justify-center gap-3 mb-10">
+          {['Entrepreneurs', 'Executives', 'Mission Planners', 'Lawyers', 'Investors', 'Enthusiasts'].map((audience) => (
+            <span
+              key={audience}
+              className="px-3 py-1 rounded-full text-xs font-medium border border-cyan-400/30 text-cyan-300 bg-cyan-400/5"
+            >
+              {audience}
+            </span>
+          ))}
+        </div>
 
         {/* Billing Toggle */}
         <div className="flex items-center justify-center gap-4 mb-12">

@@ -248,15 +248,15 @@ export default function Navigation() {
       className={`sticky top-0 z-50 transition-all duration-300 backdrop-blur-xl`}
       style={{
         background: scrolled
-          ? 'linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 25%, rgba(51, 65, 85, 0.9) 50%, rgba(30, 41, 59, 0.92) 75%, rgba(15, 23, 42, 0.95) 100%)'
-          : 'linear-gradient(145deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.8) 25%, rgba(51, 65, 85, 0.75) 50%, rgba(30, 41, 59, 0.8) 75%, rgba(15, 23, 42, 0.85) 100%)',
+          ? 'linear-gradient(145deg, rgba(3, 7, 18, 0.97) 0%, rgba(15, 23, 42, 0.95) 25%, rgba(15, 23, 42, 0.93) 50%, rgba(15, 23, 42, 0.95) 75%, rgba(3, 7, 18, 0.97) 100%)'
+          : 'linear-gradient(145deg, rgba(3, 7, 18, 0.9) 0%, rgba(15, 23, 42, 0.87) 25%, rgba(15, 23, 42, 0.85) 50%, rgba(15, 23, 42, 0.87) 75%, rgba(3, 7, 18, 0.9) 100%)',
         boxShadow: scrolled
-          ? '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 10px 20px -5px rgba(0, 0, 0, 0.4), inset 0 -1px 0 rgba(6, 182, 212, 0.2)'
-          : 'inset 0 -1px 0 rgba(6, 182, 212, 0.15)'
+          ? '0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 10px 20px -5px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(6, 182, 212, 0.15)'
+          : 'inset 0 -1px 0 rgba(6, 182, 212, 0.1)'
       }}
     >
       {/* Bottom gradient border */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent" />
 
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-[72px]">

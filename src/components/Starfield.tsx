@@ -18,8 +18,8 @@ export default function Starfield() {
   useEffect(() => {
     const generateStars = () => {
       const newStars: Star[] = [];
-      // 40 tiny stars (1px)
-      for (let i = 0; i < 40; i++) {
+      // 55 tiny stars (1px)
+      for (let i = 0; i < 55; i++) {
         newStars.push({
           id: i,
           left: `${Math.random() * 100}%`,
@@ -30,8 +30,8 @@ export default function Starfield() {
           glow: false,
         });
       }
-      // 15 medium stars (2px)
-      for (let i = 40; i < 55; i++) {
+      // 18 medium stars (2px)
+      for (let i = 55; i < 73; i++) {
         newStars.push({
           id: i,
           left: `${Math.random() * 100}%`,
@@ -42,8 +42,8 @@ export default function Starfield() {
           glow: false,
         });
       }
-      // 5 bright stars (3px with glow)
-      for (let i = 55; i < 60; i++) {
+      // 7 bright stars (3px with glow)
+      for (let i = 73; i < 80; i++) {
         newStars.push({
           id: i,
           left: `${Math.random() * 100}%`,
@@ -85,7 +85,7 @@ export default function Starfield() {
           height: '500px',
           top: '20%',
           left: '10%',
-          background: 'radial-gradient(circle, rgba(76, 29, 149, 0.04) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(76, 29, 149, 0.06) 0%, transparent 70%)',
           filter: 'blur(60px)',
         }}
       />
@@ -96,7 +96,7 @@ export default function Starfield() {
           height: '400px',
           top: '60%',
           right: '15%',
-          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.03) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.06) 0%, transparent 70%)',
           filter: 'blur(60px)',
         }}
       />
@@ -107,7 +107,7 @@ export default function Starfield() {
           height: '350px',
           bottom: '10%',
           left: '40%',
-          background: 'radial-gradient(circle, rgba(139, 92, 246, 0.03) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(139, 92, 246, 0.06) 0%, transparent 70%)',
           filter: 'blur(60px)',
         }}
       />

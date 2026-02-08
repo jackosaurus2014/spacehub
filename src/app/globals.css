@@ -5,9 +5,9 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 30, 41, 59;
-  --background-start-rgb: 248, 250, 252;
-  --background-end-rgb: 241, 245, 249;
+  --foreground-rgb: 226, 232, 240;
+  --background-start-rgb: 5, 10, 21;
+  --background-end-rgb: 3, 7, 18;
 
   /* High-contrast CSS custom properties — default (normal) values */
   --hc-text-primary: #f1f5f9;     /* slate-100 */
@@ -116,12 +116,12 @@ html {
 
 ::selection {
   background: rgba(139, 92, 246, 0.3);
-  color: #1e293b;
+  color: #f1f5f9;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-start-rgb));
+  background: #050a15;
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
   position: relative;
@@ -141,7 +141,7 @@ body::before {
   background-repeat: no-repeat;
   background-attachment: fixed;
   z-index: -2;
-  opacity: 0.65;
+  opacity: 0.25;
 }
 
 /* Light Overlay for readability */
@@ -154,8 +154,8 @@ body::after {
   height: 100%;
   background: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.35),
-    rgba(248, 250, 252, 0.45)
+    rgba(5, 10, 21, 0.6),
+    rgba(3, 7, 18, 0.75)
   );
   z-index: -1;
   pointer-events: none;
@@ -215,17 +215,18 @@ body::after {
 
 /* Button Styles */
 .btn-primary {
-  @apply bg-gradient-to-r from-nebula-600 to-nebula-500 text-white font-semibold
-         py-3 px-8 rounded-xl transition-all duration-300
-         hover:from-nebula-500 hover:to-nebula-400 hover:shadow-lg hover:shadow-nebula-500/30
+  @apply bg-gradient-to-r from-nebula-500 to-nebula-400 text-white font-semibold
+         py-3 px-8 rounded-full transition-all duration-300
+         hover:from-nebula-400 hover:to-nebula-300 hover:shadow-lg hover:shadow-nebula-500/40
          hover:-translate-y-0.5
          active:scale-95 tracking-wide uppercase text-sm;
 }
 
 .btn-secondary {
-  @apply border border-slate-300 text-slate-700 font-semibold
-         py-3 px-8 rounded-xl transition-all duration-300
-         hover:bg-slate-100 hover:border-slate-400
+  @apply border border-cyan-400/40 text-cyan-100 font-semibold
+         py-3 px-8 rounded-full transition-all duration-300
+         backdrop-blur-sm bg-white/5
+         hover:bg-cyan-400/10 hover:border-cyan-400/60
          hover:-translate-y-0.5
          active:scale-95 tracking-wide uppercase text-sm;
 }
@@ -457,7 +458,7 @@ body::after {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #0f172a;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -491,6 +492,21 @@ body::after {
 
 .section-spacer-sm {
   @apply py-8 md:py-12;
+}
+
+/* Glass Panel */
+.glass-panel {
+  @apply backdrop-blur-xl border border-white/10 rounded-2xl;
+  background: rgba(15, 23, 42, 0.6);
+  box-shadow:
+    0 4px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Gradient Section Divider */
+.gradient-line {
+  @apply h-px w-full;
+  background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.3), transparent);
 }
 
 /* Animation Delays */
