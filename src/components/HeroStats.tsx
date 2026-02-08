@@ -107,7 +107,7 @@ export default function HeroStats() {
 
         // If no upcoming IPO, show top performing stock
         if (!foundIPO) {
-          const stockRes = await fetch('/api/stocks?tickers=RKLB,LUNR,ASTS,PL,RDW,SPCE,BKSY,MNTS,ASTR,LLAP,SATL,IRDM,GSAT,VSAT');
+          const stockRes = await fetch('/api/stocks?tickers=RKLB,LUNR,ASTS,PL,RDW,SPCE,BKSY,MNTS,SATL,IRDM,GSAT,VSAT');
           const stockData = await stockRes.json();
           if (stockData.stocks?.length > 0) {
             // Filter for stocks with valid numeric changePercent values
