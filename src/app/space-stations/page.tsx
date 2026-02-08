@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -101,6 +101,16 @@ interface TransitionRisk {
   risk: string;
   mitigation: string;
   severity: 'high' | 'medium' | 'low';
+}
+
+interface ISSPosition {
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  velocity: number;
+  visibility: string;
+  timestamp: number;
+  footprint: number;
 }
 
 // ────────────────────────────────────────
@@ -885,6 +895,8 @@ export default function SpaceStationTrackerPage() {
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
   // Data state
+  const [issPosition, setIssPosition] = useState<ISSPosition | null>(null);
+  const [issPositionLoading, setIssPositionLoading] = useState(false);
   const [activeStations, setActiveStations] = useState<SpaceStation[]>([]);
   const [commercialStations, setCommercialStations] = useState<CommercialStation[]>([]);
   const [currentCrew, setCurrentCrew] = useState<CrewMember[]>([]);
@@ -895,13 +907,14 @@ export default function SpaceStationTrackerPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [stationsRes, commercialRes, crewRes, rotationsRes, milestonesRes, risksRes] = await Promise.all([
+        const [stationsRes, commercialRes, crewRes, rotationsRes, milestonesRes, risksRes, issRes] = await Promise.all([
           fetch('/api/content/space-stations?section=active-stations'),
           fetch('/api/content/space-stations?section=commercial-stations'),
           fetch('/api/content/space-stations?section=crew'),
           fetch('/api/content/space-stations?section=crew-rotations'),
           fetch('/api/content/space-stations?section=cld-milestones'),
           fetch('/api/content/space-stations?section=transition-risks'),
+          fetch('/api/content/space-stations?section=iss-position'),
         ]);
 
         const stationsData = await stationsRes.json();
@@ -910,6 +923,7 @@ export default function SpaceStationTrackerPage() {
         const rotationsData = await rotationsRes.json();
         const milestonesData = await milestonesRes.json();
         const risksData = await risksRes.json();
+        const issData = await issRes.json();
 
         setActiveStations(stationsData.data || []);
         setCommercialStations(commercialData.data || []);
@@ -917,6 +931,8 @@ export default function SpaceStationTrackerPage() {
         setCrewRotations(rotationsData.data || []);
         setCldMilestones(milestonesData.data || []);
         setTransitionRisks(risksData.data || []);
+        if (issData.data?.[0]) setIssPosition(issData.data[0]);
+        else if (issData.data && !Array.isArray(issData.data)) setIssPosition(issData.data);
         setRefreshedAt(stationsData.meta?.lastRefreshed || null);
       } catch (error) {
         console.error('Failed to load space stations data:', error);
@@ -925,6 +941,20 @@ export default function SpaceStationTrackerPage() {
       }
     }
     loadData();
+  }, []);
+
+  const refreshIssPosition = useCallback(async () => {
+    setIssPositionLoading(true);
+    try {
+      const res = await fetch('/api/content/space-stations?section=iss-position');
+      const data = await res.json();
+      if (data.data?.[0]) setIssPosition(data.data[0]);
+      else if (data.data && !Array.isArray(data.data)) setIssPosition(data.data);
+    } catch (error) {
+      console.error('Failed to refresh ISS position:', error);
+    } finally {
+      setIssPositionLoading(false);
+    }
   }, []);
 
   if (loading) {
@@ -961,6 +991,56 @@ export default function SpaceStationTrackerPage() {
         />
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
+
+        {/* ISS Live Position */}
+        {issPosition && (
+          <div className="card p-5 border-2 border-cyan-500/40 bg-gradient-to-r from-cyan-900/20 to-slate-800/50 backdrop-blur mb-6 mt-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-white font-bold text-lg flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                ISS Live Position
+              </h3>
+              <button
+                onClick={refreshIssPosition}
+                disabled={issPositionLoading}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 transition-colors border border-cyan-500/30 disabled:opacity-50"
+              >
+                <svg
+                  className={`w-3.5 h-3.5 ${issPositionLoading ? 'animate-spin' : ''}`}
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
+                </svg>
+                {issPositionLoading ? 'Updating...' : 'Refresh'}
+              </button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
+                <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Latitude</div>
+                <div className="text-white font-bold text-lg">{issPosition.latitude.toFixed(4)}&deg;</div>
+              </div>
+              <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
+                <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Longitude</div>
+                <div className="text-white font-bold text-lg">{issPosition.longitude.toFixed(4)}&deg;</div>
+              </div>
+              <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
+                <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Altitude</div>
+                <div className="text-cyan-400 font-bold text-lg">{issPosition.altitude.toFixed(1)} km</div>
+              </div>
+              <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
+                <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Velocity</div>
+                <div className="text-cyan-400 font-bold text-lg">{issPosition.velocity.toFixed(0)} km/h</div>
+              </div>
+              <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
+                <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Visibility</div>
+                <div className="text-white font-bold text-lg capitalize">{issPosition.visibility || '--'}</div>
+              </div>
+            </div>
+            <div className="text-star-500 text-xs mt-3 text-right">
+              Last updated: {issPosition.timestamp ? new Date(issPosition.timestamp * 1000).toLocaleString() : '--'}
+            </div>
+          </div>
+        )}
 
         {/* Hero Stats */}
         <ScrollReveal>

@@ -41,6 +41,22 @@ interface SpaceMiningData {
   total: number;
 }
 
+interface MiningTarget {
+  full_name: string;
+  spec_B: string | null;
+  spec_T: string | null;
+  profit: number | null;
+  price: number | null;
+  closeness: number | null;
+  accessibility: number | null;
+  score: number | null;
+  moid: number | null;
+  a: number | null;
+  e: number | null;
+  i: number | null;
+  diameter: number | null;
+}
+
 type TabId = 'overview' | 'asteroids' | 'moons' | 'planets' | 'commodities';
 
 // ────────────────────────────────────────
@@ -104,6 +120,23 @@ const COMMODITY_EXPORT_COLUMNS = [
 function formatNumber(n: number | null | undefined): string {
   if (n === null || n === undefined) return '0';
   return n.toLocaleString();
+}
+
+function formatProfit(value: number | null | undefined): string {
+  if (value == null) return '—';
+  const abs = Math.abs(value);
+  if (abs >= 1e12) return `$${(value / 1e12).toFixed(1)}T`;
+  if (abs >= 1e9) return `$${(value / 1e9).toFixed(1)}B`;
+  if (abs >= 1e6) return `$${(value / 1e6).toFixed(1)}M`;
+  if (abs >= 1e3) return `$${(value / 1e3).toFixed(1)}K`;
+  return `$${value.toFixed(0)}`;
+}
+
+function formatPricePerKgShort(value: number | null | undefined): string {
+  if (value == null) return '—';
+  if (value >= 1e6) return `$${(value / 1e6).toFixed(1)}M/kg`;
+  if (value >= 1e3) return `$${(value / 1e3).toFixed(1)}K/kg`;
+  return `$${value.toFixed(2)}/kg`;
 }
 
 function getBodyIcon(bodyType: MiningBodyType): string {
@@ -458,6 +491,10 @@ function SpaceMiningContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Mining targets from DynamicContent system
+  const [miningTargets, setMiningTargets] = useState<MiningTarget[]>([]);
+  const [miningTargetsLoading, setMiningTargetsLoading] = useState(true);
+
   // Filters
   const [bodyType, setBodyType] = useState<MiningBodyType | ''>('');
   const [spectralType, setSpectralType] = useState<SpectralType | ''>('');
@@ -533,6 +570,31 @@ function SpaceMiningContent() {
       }
     }
     fetchCommodities();
+  }, []);
+
+  // Fetch mining targets from DynamicContent system
+  useEffect(() => {
+    async function fetchMiningTargets() {
+      try {
+        const res = await fetch('/api/content/space-mining?section=mining-targets');
+        if (!res.ok) throw new Error('Failed to fetch mining targets');
+        const json = await res.json();
+        const targets: MiningTarget[] = json.data || [];
+        // Sort by score descending, then by profit descending
+        targets.sort((a, b) => {
+          const scoreA = a.score ?? 0;
+          const scoreB = b.score ?? 0;
+          if (scoreB !== scoreA) return scoreB - scoreA;
+          return (b.profit ?? 0) - (a.profit ?? 0);
+        });
+        setMiningTargets(targets);
+      } catch (err) {
+        console.error('Failed to fetch mining targets:', err);
+      } finally {
+        setMiningTargetsLoading(false);
+      }
+    }
+    fetchMiningTargets();
   }, []);
 
   // Filter bodies by tab
@@ -699,6 +761,130 @@ function SpaceMiningContent() {
           </div>
         </div>
       )}
+
+      {/* Top Mining Targets (DynamicContent) */}
+      <ScrollReveal>
+        <div className="card p-6 border border-slate-200 bg-gradient-to-br from-amber-50/50 to-slate-50">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+              <span className="text-2xl">💎</span> Top Mining Targets
+              <span className="text-xs font-normal text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full ml-2">Trillion-Dollar Opportunities</span>
+            </h3>
+            {miningTargets.length > 0 && (
+              <ExportButton
+                data={miningTargets}
+                columns={[
+                  { key: 'full_name', label: 'Asteroid' },
+                  { key: 'spec_B', label: 'Spectral (SMASS)' },
+                  { key: 'spec_T', label: 'Spectral (Tholen)' },
+                  { key: 'profit', label: 'Est. Profit ($)' },
+                  { key: 'price', label: 'Price ($/kg)' },
+                  { key: 'score', label: 'Mining Score' },
+                  { key: 'accessibility', label: 'Accessibility' },
+                  { key: 'diameter', label: 'Diameter (km)' },
+                  { key: 'moid', label: 'MOID (AU)' },
+                ]}
+                filename="top-mining-targets"
+              />
+            )}
+          </div>
+
+          {miningTargetsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <LoadingSpinner />
+            </div>
+          ) : miningTargets.length === 0 ? (
+            <p className="text-slate-400 text-center py-8">No mining target data available yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b-2 border-amber-200">
+                    <th className="text-left py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">#</th>
+                    <th className="text-left py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">Asteroid</th>
+                    <th className="text-left py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">Spectral</th>
+                    <th className="text-right py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">Est. Profit</th>
+                    <th className="text-right py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">Price/kg</th>
+                    <th className="text-right py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">Diameter</th>
+                    <th className="text-right py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">Accessibility</th>
+                    <th className="text-right py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">MOID (AU)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {miningTargets.map((target, idx) => {
+                    const isTop3 = idx < 3;
+                    return (
+                      <tr
+                        key={target.full_name}
+                        className={`border-b border-slate-100 hover:bg-amber-50/50 transition-colors ${
+                          isTop3 ? 'bg-amber-50/30' : ''
+                        }`}
+                      >
+                        <td className="py-2.5 px-3">
+                          {isTop3 ? (
+                            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-400 text-white text-xs font-bold">
+                              {idx + 1}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 text-xs">{idx + 1}</span>
+                          )}
+                        </td>
+                        <td className="py-2.5 px-3">
+                          <span className={`font-semibold ${isTop3 ? 'text-slate-900' : 'text-slate-700'}`}>
+                            {target.full_name}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-3">
+                          <div className="flex gap-1">
+                            {target.spec_T && (
+                              <span className="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">{target.spec_T}</span>
+                            )}
+                            {target.spec_B && (
+                              <span className="px-1.5 py-0.5 bg-nebula-500/10 text-nebula-600 rounded text-xs">{target.spec_B}</span>
+                            )}
+                            {!target.spec_T && !target.spec_B && (
+                              <span className="text-slate-400 text-xs">—</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-2.5 px-3 text-right">
+                          <span className={`font-bold ${
+                            (target.profit ?? 0) >= 1e12 ? 'text-green-600' :
+                            (target.profit ?? 0) >= 1e9 ? 'text-emerald-600' :
+                            'text-slate-700'
+                          }`}>
+                            {formatProfit(target.profit)}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-3 text-right text-slate-600">
+                          {formatPricePerKgShort(target.price)}
+                        </td>
+                        <td className="py-2.5 px-3 text-right text-slate-600">
+                          {target.diameter != null ? `${target.diameter.toFixed(target.diameter < 1 ? 3 : 1)} km` : '—'}
+                        </td>
+                        <td className="py-2.5 px-3 text-right">
+                          {target.accessibility != null ? (
+                            <span className={`font-medium ${
+                              target.accessibility >= 1.5 ? 'text-green-600' :
+                              target.accessibility >= 1.0 ? 'text-yellow-600' :
+                              'text-orange-600'
+                            }`}>
+                              {target.accessibility.toFixed(2)}
+                            </span>
+                          ) : '—'}
+                        </td>
+                        <td className="py-2.5 px-3 text-right text-slate-600">
+                          {target.moid != null ? target.moid.toFixed(4) : '—'}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </ScrollReveal>
 
       {/* Cross-links */}
       <ScrollReveal>

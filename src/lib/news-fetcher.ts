@@ -180,6 +180,46 @@ const RSS_FEEDS: RSSFeedSource[] = [
   { name: 'Space Explored', url: 'https://spaceexplored.com/feed/', defaultCategory: 'companies' },
   { name: 'The Space Review', url: 'https://www.thespacereview.com/rss.xml', defaultCategory: 'policy' },
   { name: 'CSIS Aerospace', url: 'https://aerospace.csis.org/feed/', defaultCategory: 'defense' },
+
+  // Agency feeds
+  { name: 'ESA Human Spaceflight', url: 'https://www.esa.int/rssfeed/HSF', defaultCategory: 'missions' },
+  { name: 'ESA Science & Exploration', url: 'https://www.esa.int/rssfeed/Science_Exploration', defaultCategory: 'missions' },
+  { name: 'ESA Space Safety', url: 'https://www.esa.int/rssfeed/Space_Safety', defaultCategory: 'debris' },
+  { name: 'ESA Applications', url: 'https://www.esa.int/rssfeed/Applications', defaultCategory: 'satellites' },
+  { name: 'UK Space Agency', url: 'https://space.blog.gov.uk/feed/', defaultCategory: 'policy' },
+
+  // Defense feeds
+  { name: 'Space Systems Command', url: 'https://www.ssc.spaceforce.mil/RSS', defaultCategory: 'defense' },
+  { name: 'Defense One', url: 'https://www.defenseone.com/rss/all/', defaultCategory: 'defense' },
+  { name: 'DefenseScoop', url: 'https://defensescoop.com/feed/', defaultCategory: 'defense' },
+
+  // Science/Academic feeds
+  { name: 'Sky & Telescope', url: 'https://skyandtelescope.org/astronomy-news/feed/', defaultCategory: 'missions' },
+  { name: 'ScienceAlert Space', url: 'https://feeds.feedburner.com/sciencealert-latestnews', defaultCategory: 'missions' },
+  { name: 'Phys.org Space', url: 'https://phys.org/rss-feed/space-news/', defaultCategory: 'missions' },
+  { name: 'ScienceDaily Space', url: 'https://www.sciencedaily.com/rss/space_time.xml', defaultCategory: 'missions' },
+  { name: 'NASA Earth Observatory', url: 'https://earthobservatory.nasa.gov/feeds/earth-observatory.rss', defaultCategory: 'satellites' },
+
+  // Business/Economy feeds
+  { name: 'TechCrunch Space', url: 'https://techcrunch.com/category/space/feed/', defaultCategory: 'earnings' },
+  { name: 'GeekWire Space', url: 'https://www.geekwire.com/space/feed/', defaultCategory: 'companies' },
+  { name: 'New Space Economy', url: 'https://newspaceeconomy.ca/feed/', defaultCategory: 'companies' },
+  { name: 'Space Intel Report', url: 'https://www.spaceintelreport.com/feed/', defaultCategory: 'companies' },
+
+  // General space news
+  { name: 'Spaceflight Now', url: 'https://spaceflightnow.com/feed/', defaultCategory: 'launches' },
+  { name: 'SpaceDaily', url: 'https://www.spacedaily.com/spacedaily.xml', defaultCategory: 'missions' },
+  { name: 'Teslarati SpaceX', url: 'https://www.teslarati.com/category/spacex/feed/', defaultCategory: 'launches' },
+  { name: 'Smithsonian Air & Space', url: 'https://www.smithsonianmag.com/rss/air-space-magazine/', defaultCategory: 'missions' },
+
+  // Mission-specific
+  { name: 'NASA Artemis Blog', url: 'https://blogs.nasa.gov/artemis/feed/', defaultCategory: 'missions' },
+  { name: 'NASA JWST Blog', url: 'https://blogs.nasa.gov/webb/feed/', defaultCategory: 'missions' },
+  { name: 'NASA Space Station Blog', url: 'https://blogs.nasa.gov/spacestation/feed/', defaultCategory: 'missions' },
+
+  // Regional
+  { name: 'Space in Africa', url: 'https://spaceinafrica.com/feed/', defaultCategory: 'companies' },
+  { name: 'Moon Monday', url: 'https://blog.jatan.space/feed', defaultCategory: 'missions' },
 ];
 
 const rssParser = new RSSParser({

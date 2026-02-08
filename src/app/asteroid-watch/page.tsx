@@ -91,6 +91,30 @@ interface DiscoveryMilestone {
   notable: string;
 }
 
+interface ImpactRiskObject {
+  des: string;
+  fullname: string;
+  ip: string;
+  ps_cum: string;
+  ps_max: string;
+  v_inf: string;
+  last_obs: string;
+  n_imp: string;
+  range: string;
+  ts_max: string;
+  diameter: string;
+}
+
+interface FireballEvent {
+  date: string;
+  energy: string;
+  impact_e: string;
+  lat: string;
+  lon: string;
+  alt: string;
+  vel: string;
+}
+
 // ────────────────────────────────────────
 // Data is fetched from /api/content/asteroid-watch
 // ────────────────────────────────────────
@@ -231,13 +255,15 @@ function AsteroidWatchContent() {
   const [MINING_COMPANIES, setMiningCompanies] = useState<MiningCompany[]>([]);
   const [SURVEY_TELESCOPES, setSurveyTelescopes] = useState<SurveyTelescope[]>([]);
   const [DISCOVERY_MILESTONES, setDiscoveryMilestones] = useState<DiscoveryMilestone[]>([]);
+  const [IMPACT_RISK_OBJECTS, setImpactRiskObjects] = useState<ImpactRiskObject[]>([]);
+  const [FIREBALL_EVENTS, setFireballEvents] = useState<FireballEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [r1, r2, r3, r4, r5, r6, r7, r8, r9] = await Promise.all([
+        const [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11] = await Promise.all([
           fetch('/api/content/asteroid-watch?section=close-approaches'),
           fetch('/api/content/asteroid-watch?section=neo-stats'),
           fetch('/api/content/asteroid-watch?section=size-categories'),
@@ -247,9 +273,11 @@ function AsteroidWatchContent() {
           fetch('/api/content/asteroid-watch?section=mining-companies'),
           fetch('/api/content/asteroid-watch?section=survey-telescopes'),
           fetch('/api/content/asteroid-watch?section=discovery-milestones'),
+          fetch('/api/content/asteroid-watch?section=impact-risk'),
+          fetch('/api/content/asteroid-watch?section=fireballs'),
         ]);
-        const [d1, d2, d3, d4, d5, d6, d7, d8, d9] = await Promise.all([
-          r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json(), r7.json(), r8.json(), r9.json(),
+        const [d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11] = await Promise.all([
+          r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json(), r7.json(), r8.json(), r9.json(), r10.json(), r11.json(),
         ]);
         setCloseApproaches(d1.data || []);
         if (d2.data?.[0]) setNeoStats(d2.data[0]);
@@ -260,6 +288,8 @@ function AsteroidWatchContent() {
         setMiningCompanies(d7.data || []);
         setSurveyTelescopes(d8.data || []);
         setDiscoveryMilestones(d9.data || []);
+        setImpactRiskObjects(d10.data || []);
+        setFireballEvents(d11.data || []);
         setRefreshedAt(d1.meta?.lastRefreshed || null);
       } catch (error) {
         console.error('Failed to load asteroid watch data:', error);
@@ -411,6 +441,125 @@ function AsteroidWatchContent() {
                 </div>
               </div>
             </div>
+
+            {/* Impact Risk Assessment */}
+            {IMPACT_RISK_OBJECTS.length > 0 && (
+              <div className="card p-6 mt-6">
+                <h3 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
+                  <span className="text-red-400">&#9888;</span> Impact Risk Assessment
+                </h3>
+                <p className="text-slate-400 text-sm mb-4">
+                  Objects with non-zero impact probability tracked by NASA/JPL Sentry system. Most risks are extremely small and decrease with additional observations.
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-slate-400 border-b border-slate-700">
+                        <th className="pb-3 pr-4">Object</th>
+                        <th className="pb-3 pr-4">Diameter</th>
+                        <th className="pb-3 pr-4 text-right">Impact Prob.</th>
+                        <th className="pb-3 pr-4 text-right">Torino Max</th>
+                        <th className="pb-3 pr-4 text-right">Palermo Cum.</th>
+                        <th className="pb-3 pr-4">Potential Impacts</th>
+                        <th className="pb-3">Last Observed</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {IMPACT_RISK_OBJECTS.map((obj) => {
+                        const torinoVal = parseInt(obj.ts_max) || 0;
+                        const torinoStyle = getTorinoColor(torinoVal);
+                        return (
+                          <tr key={obj.des} className="border-b border-slate-800">
+                            <td className="py-2.5 pr-4">
+                              <div className="text-white font-medium">{obj.fullname || obj.des}</div>
+                              <div className="text-slate-500 text-xs">{obj.range}</div>
+                            </td>
+                            <td className="py-2.5 pr-4 text-slate-300">{obj.diameter || '--'}</td>
+                            <td className="py-2.5 pr-4 text-right">
+                              <span className={`font-medium ${parseFloat(obj.ip) > 0.01 ? 'text-red-400' : parseFloat(obj.ip) > 0.001 ? 'text-yellow-400' : 'text-slate-300'}`}>
+                                {obj.ip}
+                              </span>
+                            </td>
+                            <td className="py-2.5 pr-4 text-right">
+                              <span className={`text-xs font-medium px-2 py-0.5 rounded ${torinoStyle.bg} ${torinoStyle.text} border ${torinoStyle.border}`}>
+                                {obj.ts_max}
+                              </span>
+                            </td>
+                            <td className="py-2.5 pr-4 text-right">
+                              <span className={`font-medium ${parseFloat(obj.ps_cum) > -2 ? 'text-yellow-400' : 'text-slate-500'}`}>
+                                {obj.ps_cum}
+                              </span>
+                            </td>
+                            <td className="py-2.5 pr-4 text-slate-400">{obj.n_imp}</td>
+                            <td className="py-2.5 text-slate-400 text-xs">{obj.last_obs}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-slate-500 text-xs mt-4 italic">
+                  Data from NASA/JPL Sentry impact monitoring system. Impact probabilities are cumulative over all potential impact dates.
+                </p>
+              </div>
+            )}
+
+            {/* Recent Fireball Events */}
+            {FIREBALL_EVENTS.length > 0 && (
+              <div className="card p-6 mt-6">
+                <h3 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
+                  <span className="text-orange-400">&#9728;</span> Recent Fireball Events
+                </h3>
+                <p className="text-slate-400 text-sm mb-4">
+                  Bright meteors (fireballs) detected by U.S. Government sensors entering Earth&apos;s atmosphere.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {FIREBALL_EVENTS.map((fb, idx) => (
+                    <div key={idx} className="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-orange-500/30 transition-all">
+                      <div className="text-white font-medium text-sm mb-2">{fb.date}</div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        {fb.lat && fb.lon && (
+                          <div>
+                            <span className="text-slate-500 block">Location</span>
+                            <span className="text-slate-300">{fb.lat}, {fb.lon}</span>
+                          </div>
+                        )}
+                        {fb.vel && (
+                          <div>
+                            <span className="text-slate-500 block">Velocity</span>
+                            <span className="text-slate-300">{fb.vel} km/s</span>
+                          </div>
+                        )}
+                        {fb.alt && (
+                          <div>
+                            <span className="text-slate-500 block">Altitude</span>
+                            <span className="text-slate-300">{fb.alt} km</span>
+                          </div>
+                        )}
+                        {fb.energy && (
+                          <div>
+                            <span className="text-slate-500 block">Radiated Energy</span>
+                            <span className="text-orange-400 font-medium">{fb.energy} J</span>
+                          </div>
+                        )}
+                        {fb.impact_e && (
+                          <div>
+                            <span className="text-slate-500 block">Impact Energy</span>
+                            <span className="text-red-400 font-medium">{fb.impact_e} kt</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {FIREBALL_EVENTS.length === 0 && (
+                  <p className="text-slate-400 text-sm text-center py-8">No recent fireball events available.</p>
+                )}
+                <p className="text-slate-500 text-xs mt-4 italic">
+                  Data from NASA/JPL Center for NEO Studies (CNEOS) fireball database. Energy in joules (radiated) and kilotons TNT equivalent (impact).
+                </p>
+              </div>
+            )}
 
             {/* Data source note */}
             <ScrollReveal><div className="card p-4 border-dashed text-sm text-slate-500">

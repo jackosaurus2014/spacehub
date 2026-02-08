@@ -11,7 +11,7 @@ import DataFreshness from '@/components/ui/DataFreshness';
 // Types
 // ────────────────────────────────────────
 
-type TabId = 'active' | 'upcoming' | 'windows' | 'facts' | 'commercial';
+type TabId = 'active' | 'upcoming' | 'windows' | 'facts' | 'commercial' | 'rover-photos';
 
 interface ActiveMission {
   name: string;
@@ -58,6 +58,16 @@ interface CommercialOpportunity {
   description: string;
   icon: string;
   readiness: 'near-term' | 'mid-term' | 'long-term';
+}
+
+interface RoverPhoto {
+  id: string;
+  sol: number;
+  earth_date: string;
+  camera_name: string;
+  camera_full_name: string;
+  img_src: string;
+  rover_name: string;
 }
 
 // ────────────────────────────────────────
@@ -446,6 +456,7 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'windows', label: 'Launch Windows', icon: '🪟' },
   { id: 'facts', label: 'Mars Facts & Costs', icon: '🔴' },
   { id: 'commercial', label: 'Commercial', icon: '🏢' },
+  { id: 'rover-photos', label: 'Rover Photos', icon: '📷' },
 ];
 
 // ────────────────────────────────────────
@@ -464,13 +475,14 @@ export default function MarsPlannerPage() {
   const [MARS_FACTS, setMarsFacts] = useState<any>({});
   const [COST_ESTIMATES, setCostEstimates] = useState<CostEstimate[]>([]);
   const [COMMERCIAL_OPPORTUNITIES, setCommercialOpportunities] = useState<CommercialOpportunity[]>([]);
+  const [ROVER_PHOTOS, setRoverPhotos] = useState<RoverPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [r1, r2, r3, r4, r5, r6, r7] = await Promise.all([
+        const [r1, r2, r3, r4, r5, r6, r7, r8] = await Promise.all([
           fetch('/api/content/mars-planner?section=active-missions'),
           fetch('/api/content/mars-planner?section=upcoming-missions'),
           fetch('/api/content/mars-planner?section=launch-windows'),
@@ -478,9 +490,10 @@ export default function MarsPlannerPage() {
           fetch('/api/content/mars-planner?section=mars-facts'),
           fetch('/api/content/mars-planner?section=cost-estimates'),
           fetch('/api/content/mars-planner?section=commercial-opportunities'),
+          fetch('/api/content/mars-planner?section=rover-photos'),
         ]);
-        const [d1, d2, d3, d4, d5, d6, d7] = await Promise.all([
-          r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json(), r7.json(),
+        const [d1, d2, d3, d4, d5, d6, d7, d8] = await Promise.all([
+          r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json(), r7.json(), r8.json(),
         ]);
         setActiveMissions(d1.data || []);
         setUpcomingMissions(d2.data || []);
@@ -489,6 +502,7 @@ export default function MarsPlannerPage() {
         if (d5.data?.[0]) setMarsFacts(d5.data[0]);
         setCostEstimates(d6.data || []);
         setCommercialOpportunities(d7.data || []);
+        setRoverPhotos(d8.data || []);
         setRefreshedAt(d1.meta?.lastRefreshed || null);
       } catch (error) {
         console.error('Failed to load mars planner data:', error);
@@ -617,6 +631,52 @@ export default function MarsPlannerPage() {
         {activeTab === 'facts' && <MarsFactsSection marsFacts={MARS_FACTS} costEstimates={COST_ESTIMATES} />}
 
         {activeTab === 'commercial' && <CommercialSection commercialOpportunities={COMMERCIAL_OPPORTUNITIES} />}
+
+        {activeTab === 'rover-photos' && (
+          <div className="space-y-6">
+            <div className="card p-6 border border-slate-700/50 bg-gradient-to-br from-red-900/10 to-slate-900/60">
+              <h3 className="text-white font-semibold text-lg mb-2 flex items-center gap-2">
+                <span>📷</span> Mars Rover Photos
+              </h3>
+              <p className="text-slate-400 text-sm mb-6">
+                Recent images captured by NASA Mars rovers, showcasing the Martian surface from multiple camera systems.
+              </p>
+              {ROVER_PHOTOS.length === 0 ? (
+                <div className="text-center py-12">
+                  <span className="text-4xl mb-4 block">📷</span>
+                  <p className="text-slate-400 text-sm">No rover photos available yet.</p>
+                </div>
+              ) : (
+                <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {ROVER_PHOTOS.map((photo) => (
+                    <StaggerItem key={photo.id}>
+                      <div className="card p-3 border border-slate-700/50 hover:border-red-500/30 transition-all bg-gradient-to-br from-slate-800/60 to-slate-900/60">
+                        <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-slate-800">
+                          <img
+                            src={photo.img_src}
+                            alt={`Mars photo from ${photo.rover_name} - ${photo.camera_full_name}`}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <div className="text-white font-medium text-sm truncate" title={photo.camera_full_name}>
+                            {photo.camera_full_name}
+                          </div>
+                          <div className="text-slate-400 text-xs">{photo.rover_name}</div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-slate-500">{photo.earth_date}</span>
+                            <span className="text-red-400 font-mono">Sol {photo.sol}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Cross-links */}
         <ScrollReveal><div className="card p-5 border border-slate-700/50 bg-gradient-to-br from-slate-800/60 to-slate-900/60 mt-8">

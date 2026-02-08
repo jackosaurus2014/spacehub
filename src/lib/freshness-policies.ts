@@ -131,6 +131,62 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     keywords: ['solar flare', 'geomagnetic storm', 'Kp index', 'solar wind', 'CME', 'space weather', 'radiation belt'],
   },
 
+  // Exoplanets (weekly refresh - data changes slowly)
+  'exoplanets': {
+    ttlHours: 168, // 7 days
+    refreshPriority: 'low',
+    refreshSource: 'api',
+    keywords: ['exoplanet', 'TESS', 'Kepler', 'habitable zone', 'transit', 'radial velocity'],
+  },
+
+  // Earth imagery (daily - new EPIC images daily)
+  'earth-imagery': {
+    ttlHours: 24,
+    refreshPriority: 'moderate',
+    refreshSource: 'api',
+    keywords: ['DSCOVR', 'EPIC', 'Earth image', 'blue marble'],
+  },
+
+  // Deep Space Network (real-time - 15min refresh)
+  'dsn': {
+    ttlHours: 1,
+    refreshPriority: 'critical',
+    refreshSource: 'api',
+    keywords: ['DSN', 'deep space network', 'Goldstone', 'Madrid', 'Canberra', 'antenna'],
+  },
+
+  // Fireballs/bolides (daily)
+  'fireballs': {
+    ttlHours: 24,
+    refreshPriority: 'moderate',
+    refreshSource: 'api',
+    keywords: ['fireball', 'bolide', 'meteor', 'impact', 'atmospheric entry'],
+  },
+
+  // SBIR grants (weekly)
+  'sbir-grants': {
+    ttlHours: 168,
+    refreshPriority: 'low',
+    refreshSource: 'api',
+    keywords: ['SBIR', 'STTR', 'innovation grant', 'small business', 'NASA award'],
+  },
+
+  // Solar imagery (30min - real-time solar monitoring)
+  'solar-imagery': {
+    ttlHours: 1,
+    refreshPriority: 'critical',
+    refreshSource: 'api',
+    keywords: ['SDO', 'solar image', 'sun', 'helioviewer', 'AIA', 'HMI'],
+  },
+
+  // Aurora forecast (30min)
+  'aurora': {
+    ttlHours: 1,
+    refreshPriority: 'critical',
+    refreshSource: 'api',
+    keywords: ['aurora', 'northern lights', 'OVATION', 'geomagnetic'],
+  },
+
   // LOW: Rarely changes
   'ground-stations': {
     ttlHours: 1440, // 60 days

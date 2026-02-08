@@ -68,6 +68,20 @@ interface Investor {
   notable: string;
 }
 
+interface SBIRAward {
+  award_title: string;
+  agency: string;
+  branch: string;
+  company: string;
+  award_amount: number;
+  award_year: number;
+  abstract: string;
+  sbir_type: string;
+  solicitation_number: string;
+  ri_city: string;
+  ri_state: string;
+}
+
 // ────────────────────────────────────────
 // Static Config (not data - UI mappings)
 // ────────────────────────────────────────
@@ -351,6 +365,7 @@ export default function StartupTrackerPage() {
   const [startups, setStartups] = useState<Startup[]>([]);
   const [fundingByYear, setFundingByYear] = useState<FundingByYear[]>([]);
   const [topInvestors, setTopInvestors] = useState<Investor[]>([]);
+  const [sbirAwards, setSbirAwards] = useState<SBIRAward[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
@@ -362,27 +377,31 @@ export default function StartupTrackerPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [startupsRes, fundingRes, investorsRes] = await Promise.all([
+        const [startupsRes, fundingRes, investorsRes, sbirRes] = await Promise.all([
           fetch('/api/content/startups?section=startups'),
           fetch('/api/content/startups?section=funding-by-year'),
           fetch('/api/content/startups?section=top-investors'),
+          fetch('/api/content/startups?section=sbir-awards'),
         ]);
 
-        const [startupsJson, fundingJson, investorsJson] = await Promise.all([
+        const [startupsJson, fundingJson, investorsJson, sbirJson] = await Promise.all([
           startupsRes.json(),
           fundingRes.json(),
           investorsRes.json(),
+          sbirRes.json(),
         ]);
 
         if (startupsJson.data) setStartups(startupsJson.data);
         if (fundingJson.data) setFundingByYear(fundingJson.data);
         if (investorsJson.data) setTopInvestors(investorsJson.data);
+        if (sbirJson.data) setSbirAwards(sbirJson.data);
 
         // Use the most recent lastRefreshed from any section
         const timestamps = [
           startupsJson.meta?.lastRefreshed,
           fundingJson.meta?.lastRefreshed,
           investorsJson.meta?.lastRefreshed,
+          sbirJson.meta?.lastRefreshed,
         ].filter(Boolean);
         if (timestamps.length > 0) {
           setRefreshedAt(timestamps.sort().reverse()[0]);
@@ -586,6 +605,63 @@ export default function StartupTrackerPage() {
 
         {/* Top Investors */}
         <TopInvestorsSection topInvestors={topInvestors} />
+
+        {/* SBIR Space Innovation Grants */}
+        {sbirAwards.length > 0 && (
+          <div className="card p-6 mb-8">
+            <h3 className="text-lg font-semibold text-slate-900 mb-1 flex items-center gap-2">
+              <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              </svg>
+              SBIR Space Innovation Grants
+            </h3>
+            <p className="text-slate-400 text-sm mb-6">
+              Small Business Innovation Research (SBIR) awards funding space technology development across federal agencies.
+            </p>
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {sbirAwards.map((award, idx) => (
+                <StaggerItem key={idx}>
+                  <div className="bg-slate-50/50 border border-slate-200/50 rounded-lg p-5 hover:border-blue-500/30 transition-colors h-full flex flex-col">
+                    <h4 className="font-semibold text-slate-900 text-sm mb-2 line-clamp-2" title={award.award_title}>
+                      {award.award_title}
+                    </h4>
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <span className="text-xs px-2 py-0.5 rounded font-medium bg-blue-500/20 text-blue-400">
+                        {award.sbir_type}
+                      </span>
+                      <span className="text-xs text-slate-400">{award.agency}{award.branch ? ` / ${award.branch}` : ''}</span>
+                    </div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-slate-900">{award.company}</span>
+                      <span className="text-sm font-bold text-green-400">
+                        {typeof award.award_amount === 'number'
+                          ? `$${award.award_amount.toLocaleString()}`
+                          : award.award_amount || '--'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-slate-400 mb-3">
+                      <span>{award.award_year}</span>
+                      {(award.ri_city || award.ri_state) && (
+                        <span>{[award.ri_city, award.ri_state].filter(Boolean).join(', ')}</span>
+                      )}
+                    </div>
+                    {award.abstract && (
+                      <p className="text-xs text-slate-500 leading-relaxed line-clamp-3 mt-auto" title={award.abstract}>
+                        {award.abstract}
+                      </p>
+                    )}
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+            {sbirAwards.length === 0 && (
+              <p className="text-slate-400 text-sm text-center py-8">No SBIR award data available yet.</p>
+            )}
+            <p className="text-slate-500 text-xs mt-4 italic">
+              Data sourced from SBIR.gov. Awards shown are space-related grants from participating federal agencies.
+            </p>
+          </div>
+        )}
 
         {/* Ecosystem Summary Table */}
         {startups.length > 0 && (

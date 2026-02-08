@@ -69,6 +69,51 @@ interface SolarFlareData {
 }
 
 // ════════════════════════════════════════
+// Dynamic Content Interfaces
+// ════════════════════════════════════════
+
+interface EarthEvent {
+  id: string;
+  title: string;
+  description: string;
+  categories: { id: number; title: string }[];
+  sources: { id: string; url: string }[];
+  geometry: { date: string; type: string; coordinates: number[] }[];
+  closed: string | null;
+}
+
+interface SolarImagery {
+  id: string;
+  name: string;
+  description: string;
+  image_url: string;
+  timestamp: string;
+  instrument: string;
+  measurement: string;
+}
+
+const EARTH_EVENT_CATEGORY_COLORS: Record<string, string> = {
+  wildfires: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+  'severe storms': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  volcanoes: 'bg-red-500/20 text-red-400 border-red-500/30',
+  floods: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+  earthquakes: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  drought: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+  'sea and lake ice': 'bg-sky-500/20 text-sky-400 border-sky-500/30',
+  landslides: 'bg-stone-500/20 text-stone-400 border-stone-500/30',
+  'snow': 'bg-slate-400/20 text-slate-300 border-slate-400/30',
+  'temperature extremes': 'bg-rose-500/20 text-rose-400 border-rose-500/30',
+};
+
+function getEventCategoryColor(categoryTitle: string): string {
+  const lower = categoryTitle.toLowerCase();
+  for (const [key, value] of Object.entries(EARTH_EVENT_CATEGORY_COLORS)) {
+    if (lower.includes(key)) return value;
+  }
+  return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+}
+
+// ════════════════════════════════════════
 // Debris Monitor Types & Constants
 // ════════════════════════════════════════
 
@@ -700,6 +745,11 @@ function SpaceWeatherTab() {
   const [loading, setLoading] = useState(true);
   const [selectedSubTab, setSelectedSubTab] = useState<'overview' | 'forecast' | 'history'>('overview');
 
+  // Dynamic content state
+  const [earthEvents, setEarthEvents] = useState<EarthEvent[]>([]);
+  const [solarImagery, setSolarImagery] = useState<SolarImagery[]>([]);
+  const [contentLoading, setContentLoading] = useState(true);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -715,6 +765,33 @@ function SpaceWeatherTab() {
     };
 
     fetchData();
+  }, []);
+
+  // Fetch dynamic content sections
+  useEffect(() => {
+    const fetchContent = async () => {
+      setContentLoading(true);
+      try {
+        const [eventsRes, imageryRes] = await Promise.all([
+          fetch('/api/content/space-environment?section=earth-events'),
+          fetch('/api/content/space-environment?section=solar-imagery'),
+        ]);
+
+        const [eventsData, imageryData] = await Promise.all([
+          eventsRes.json(),
+          imageryRes.json(),
+        ]);
+
+        if (eventsData.data) setEarthEvents(eventsData.data);
+        if (imageryData.data) setSolarImagery(imageryData.data);
+      } catch (error) {
+        console.error('Failed to fetch dynamic content:', error);
+      } finally {
+        setContentLoading(false);
+      }
+    };
+
+    fetchContent();
   }, []);
 
   if (loading) {
@@ -1126,6 +1203,132 @@ function SpaceWeatherTab() {
             </table>
           </div>
         </div>
+      )}
+
+      {/* ════════════════════════════════════════ */}
+      {/* Dynamic Content Sections */}
+      {/* ════════════════════════════════════════ */}
+
+      {contentLoading ? (
+        <div className="flex justify-center py-8">
+          <div className="w-8 h-8 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+        </div>
+      ) : (
+        <>
+          {/* Earth Natural Events - NASA EONET */}
+          {earthEvents.length > 0 && (
+            <div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <span>🌋</span> Earth Natural Events
+                <span className="ml-2 text-slate-400 text-sm font-normal">NASA EONET</span>
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {earthEvents.map((event) => {
+                  const categoryTitle = event.categories?.[0]?.title || 'Unknown';
+                  const categoryColor = getEventCategoryColor(categoryTitle);
+                  const latestGeo = event.geometry?.[event.geometry.length - 1];
+                  const isOpen = !event.closed;
+
+                  return (
+                    <div key={event.id} className="card p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-slate-900 font-semibold text-sm line-clamp-2">{event.title}</h4>
+                        </div>
+                        <span className={`ml-2 flex-shrink-0 w-2.5 h-2.5 rounded-full mt-1 ${isOpen ? 'bg-green-500 animate-pulse' : 'bg-slate-400'}`} />
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <span className={`text-xs px-2 py-0.5 rounded border ${categoryColor}`}>
+                          {categoryTitle}
+                        </span>
+                        <span className={`text-xs px-2 py-0.5 rounded ${isOpen ? 'bg-green-500/20 text-green-400' : 'bg-slate-500/20 text-slate-400'}`}>
+                          {isOpen ? 'Active' : 'Closed'}
+                        </span>
+                      </div>
+                      {latestGeo && (
+                        <div className="text-xs text-slate-400 space-y-1">
+                          <div>
+                            {new Date(latestGeo.date).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </div>
+                          {latestGeo.coordinates && latestGeo.coordinates.length >= 2 && (
+                            <div>
+                              {latestGeo.coordinates[1].toFixed(2)}&deg;N, {latestGeo.coordinates[0].toFixed(2)}&deg;E
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {event.sources && event.sources.length > 0 && (
+                        <div className="mt-2 pt-2 border-t border-slate-200">
+                          <a
+                            href={event.sources[0].url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-nebula-300 hover:text-nebula-200 transition-colors"
+                          >
+                            Source: {event.sources[0].id} &rarr;
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Solar Imagery - Helioviewer */}
+          {solarImagery.length > 0 && (
+            <div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <span>☀️</span> Solar Imagery
+                <span className="ml-2 text-slate-400 text-sm font-normal">SDO / SOHO</span>
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {solarImagery.map((img) => (
+                  <div key={img.id} className="card overflow-hidden">
+                    <div className="relative h-48 bg-slate-900">
+                      <img
+                        src={img.image_url}
+                        alt={img.name || 'Solar image'}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="p-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">
+                          {img.instrument}
+                        </span>
+                        <span className="text-xs text-slate-400">{img.measurement}</span>
+                      </div>
+                      {img.name && (
+                        <h4 className="text-slate-900 text-sm font-medium line-clamp-1">{img.name}</h4>
+                      )}
+                      <div className="text-xs text-slate-400 mt-1">
+                        {new Date(img.timestamp).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </div>
+                      {img.description && (
+                        <p className="text-slate-400 text-xs mt-2 line-clamp-2">{img.description}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Flare Classification Legend */}

@@ -44,6 +44,22 @@ interface Stats {
   landersByStatus: { status: string; count: number }[];
 }
 
+interface Exoplanet {
+  pl_name: string;
+  hostname: string;
+  disc_year: number;
+  disc_facility: string;
+  disc_method: string;
+  pl_orbper: number | null;
+  pl_rade: number | null;
+  pl_bmasse: number | null;
+  pl_eqt: number | null;
+  sy_dist: number | null;
+  pl_orbsmax: number | null;
+  st_spectype: string | null;
+  habitable_zone: boolean;
+}
+
 function SolarExplorationContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -59,6 +75,25 @@ function SolarExplorationContent() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string | null>(initialStatus);
   const [typeFilter, setTypeFilter] = useState<string | null>(initialType);
+  const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
+  const [exoplanetsLoading, setExoplanetsLoading] = useState(true);
+
+  // Fetch exoplanet data from DynamicContent system
+  useEffect(() => {
+    async function fetchExoplanets() {
+      try {
+        const res = await fetch('/api/content/solar-exploration?section=exoplanets');
+        if (!res.ok) throw new Error('Failed to fetch exoplanets');
+        const json = await res.json();
+        setExoplanets(json.data || []);
+      } catch (err) {
+        console.error('Failed to fetch exoplanets:', err);
+      } finally {
+        setExoplanetsLoading(false);
+      }
+    }
+    fetchExoplanets();
+  }, []);
 
   // Sync filters to URL
   useEffect(() => {
@@ -287,6 +322,111 @@ function SolarExplorationContent() {
             </div>
           </div>
         )}
+
+        {/* Confirmed Exoplanets */}
+        <ScrollReveal>
+          <div className="card p-6 mt-8">
+            <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <span>🪐</span> Confirmed Exoplanets
+            </h3>
+
+            {exoplanetsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div
+                  className="w-8 h-8 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin"
+                  style={{ borderWidth: '3px' }}
+                />
+              </div>
+            ) : exoplanets.length === 0 ? (
+              <p className="text-slate-400 text-center py-8">No exoplanet data available yet.</p>
+            ) : (
+              <>
+                {/* Summary Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                  <div className="card-elevated p-4 text-center">
+                    <div className="text-3xl font-bold font-display tracking-tight text-slate-900">
+                      {exoplanets.length.toLocaleString()}
+                    </div>
+                    <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Exoplanets</div>
+                  </div>
+                  <div className="card-elevated p-4 text-center">
+                    <div className="text-3xl font-bold font-display tracking-tight text-green-500">
+                      {exoplanets.filter((p) => p.habitable_zone).length}
+                    </div>
+                    <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Habitable Zone</div>
+                  </div>
+                  <div className="card-elevated p-4 text-center col-span-2 md:col-span-1">
+                    <div className="text-lg font-bold font-display tracking-tight text-slate-900">
+                      {(() => {
+                        const methods = exoplanets.reduce<Record<string, number>>((acc, p) => {
+                          if (p.disc_method) acc[p.disc_method] = (acc[p.disc_method] || 0) + 1;
+                          return acc;
+                        }, {});
+                        const top = Object.entries(methods).sort((a, b) => b[1] - a[1])[0];
+                        return top ? top[0] : 'N/A';
+                      })()}
+                    </div>
+                    <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Top Discovery Method</div>
+                  </div>
+                </div>
+
+                {/* Exoplanets Table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Planet</th>
+                        <th className="text-left py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Host Star</th>
+                        <th className="text-left py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Year</th>
+                        <th className="text-left py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Method</th>
+                        <th className="text-right py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Radius (R&#8853;)</th>
+                        <th className="text-right py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Mass (M&#8853;)</th>
+                        <th className="text-right py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Temp (K)</th>
+                        <th className="text-right py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Dist (pc)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {exoplanets.map((planet) => (
+                        <tr
+                          key={planet.pl_name}
+                          className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${
+                            planet.habitable_zone ? 'bg-green-50/50' : ''
+                          }`}
+                        >
+                          <td className="py-2 px-3 font-medium text-slate-900">
+                            <span className="flex items-center gap-2">
+                              {planet.pl_name}
+                              {planet.habitable_zone && (
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-700">
+                                  HZ
+                                </span>
+                              )}
+                            </span>
+                          </td>
+                          <td className="py-2 px-3 text-slate-600">{planet.hostname}</td>
+                          <td className="py-2 px-3 text-slate-600">{planet.disc_year}</td>
+                          <td className="py-2 px-3 text-slate-600">{planet.disc_method}</td>
+                          <td className="py-2 px-3 text-right text-slate-600">
+                            {planet.pl_rade != null ? planet.pl_rade.toFixed(2) : '—'}
+                          </td>
+                          <td className="py-2 px-3 text-right text-slate-600">
+                            {planet.pl_bmasse != null ? planet.pl_bmasse.toFixed(2) : '—'}
+                          </td>
+                          <td className="py-2 px-3 text-right text-slate-600">
+                            {planet.pl_eqt != null ? planet.pl_eqt.toLocaleString() : '—'}
+                          </td>
+                          <td className="py-2 px-3 text-right text-slate-600">
+                            {planet.sy_dist != null ? planet.sy_dist.toFixed(1) : '—'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </div>
+        </ScrollReveal>
 
         {/* Related Modules */}
         <ScrollReveal><div className="card p-6 mt-6">

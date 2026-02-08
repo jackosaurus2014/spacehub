@@ -151,7 +151,7 @@ export async function POST(request: Request) {
   if (authError) return authError;
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type'); // 'news', 'daily', 'external-apis', 'space-weather', 'ai-research', 'live-streams', or null (both news+daily)
+  const type = searchParams.get('type'); // 'news', 'daily', 'external-apis', 'space-weather', 'ai-research', 'live-streams', 'realtime', or null (both news+daily)
 
   const results: Record<string, unknown> = {};
 
@@ -199,6 +199,18 @@ export async function POST(request: Request) {
         take: 20,
       });
       results.liveStreams = `Found ${upcomingLaunches.length} upcoming launches`;
+    }
+
+    if (type === 'realtime') {
+      // Import and call real-time fetchers
+      const { fetchAndStoreIssPosition, fetchAndStoreDsnStatus } = await import('@/lib/module-api-fetchers');
+      const issUpdated = await fetchAndStoreIssPosition();
+      const dsnUpdated = await fetchAndStoreDsnStatus();
+      results.realtime = {
+        issPosition: issUpdated,
+        dsnStatus: dsnUpdated,
+        totalUpdated: issUpdated + dsnUpdated,
+      };
     }
 
     logger.info(`Data refresh completed (type=${type || 'all'})`, results);

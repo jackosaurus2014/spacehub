@@ -16,6 +16,18 @@ import {
   fetchFinnhub,
   fetchSamGov,
   fetchFccEcfs,
+  fetchNasaEpic,
+  fetchNasaEonet,
+  fetchNasaMarsPhotos,
+  fetchNasaExoplanets,
+  fetchJplSentry,
+  fetchJplFireball,
+  fetchAsterank,
+  fetchNasaImages,
+  fetchHelioviewer,
+  fetchNasaDsn,
+  fetchWhereTheIss,
+  fetchSbirGov,
 } from './external-apis';
 import { upsertContent, bulkUpsertContent, logRefresh } from './dynamic-content';
 import { logger } from './logger';
@@ -940,9 +952,441 @@ export async function fetchAndStoreEnhancedSpaceWeather(): Promise<number> {
     logger.warn('Failed to fetch solar flux data', { error: error instanceof Error ? error.message : String(error) });
   }
 
+  // 6. Solar Wind Plasma (real-time from DSCOVR)
+  try {
+    const plasmaData = await fetchNoaaSwpcProducts('solar-wind/plasma-2-hour.json') as Array<
+      [string, string, string, string] // [time_tag, density, speed, temperature] — first row is headers
+    > | null;
+
+    if (plasmaData && Array.isArray(plasmaData) && plasmaData.length > 1) {
+      // Skip header row (index 0), parse recent readings
+      const readings = plasmaData.slice(1).map((row) => ({
+        time: row[0],
+        density: row[1] ? parseFloat(row[1]) : null,
+        speed: row[2] ? parseFloat(row[2]) : null,
+        temperature: row[3] ? parseFloat(row[3]) : null,
+      })).filter((r) => r.density !== null || r.speed !== null);
+
+      const latest = readings[readings.length - 1];
+      const validSpeeds = readings.filter((r) => r.speed !== null).map((r) => r.speed as number);
+      const validDensities = readings.filter((r) => r.density !== null).map((r) => r.density as number);
+
+      await upsertContent(
+        'space-environment:solar-wind-plasma',
+        'space-environment',
+        'solar-wind',
+        {
+          latest: latest || null,
+          summary: {
+            avgSpeed: validSpeeds.length > 0 ? Math.round(validSpeeds.reduce((a, b) => a + b, 0) / validSpeeds.length) : null,
+            maxSpeed: validSpeeds.length > 0 ? Math.round(Math.max(...validSpeeds)) : null,
+            avgDensity: validDensities.length > 0 ? parseFloat((validDensities.reduce((a, b) => a + b, 0) / validDensities.length).toFixed(2)) : null,
+            readingCount: readings.length,
+          },
+          recentReadings: readings.slice(-30), // Last 30 data points
+          fetchedAt: new Date().toISOString(),
+        },
+        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/products/solar-wind/plasma-2-hour.json' }
+      );
+      updated++;
+    }
+  } catch (error) {
+    logger.warn('Failed to fetch solar wind plasma data', { error: error instanceof Error ? error.message : String(error) });
+  }
+
+  // 7. Solar Wind Magnetometer (IMF from DSCOVR)
+  try {
+    const magData = await fetchNoaaSwpcProducts('solar-wind/mag-2-hour.json') as Array<
+      [string, string, string, string, string, string, string] // [time_tag, bx_gsm, by_gsm, bz_gsm, lon_gsm, lat_gsm, bt] — first row is headers
+    > | null;
+
+    if (magData && Array.isArray(magData) && magData.length > 1) {
+      // Skip header row
+      const readings = magData.slice(1).map((row) => ({
+        time: row[0],
+        bxGsm: row[1] ? parseFloat(row[1]) : null,
+        byGsm: row[2] ? parseFloat(row[2]) : null,
+        bzGsm: row[3] ? parseFloat(row[3]) : null,
+        lonGsm: row[4] ? parseFloat(row[4]) : null,
+        latGsm: row[5] ? parseFloat(row[5]) : null,
+        bt: row[6] ? parseFloat(row[6]) : null,
+      })).filter((r) => r.bt !== null || r.bzGsm !== null);
+
+      const latest = readings[readings.length - 1];
+      const validBz = readings.filter((r) => r.bzGsm !== null).map((r) => r.bzGsm as number);
+      const validBt = readings.filter((r) => r.bt !== null).map((r) => r.bt as number);
+
+      await upsertContent(
+        'space-environment:solar-wind-mag',
+        'space-environment',
+        'solar-wind',
+        {
+          latest: latest || null,
+          summary: {
+            avgBz: validBz.length > 0 ? parseFloat((validBz.reduce((a, b) => a + b, 0) / validBz.length).toFixed(2)) : null,
+            minBz: validBz.length > 0 ? parseFloat(Math.min(...validBz).toFixed(2)) : null,
+            avgBt: validBt.length > 0 ? parseFloat((validBt.reduce((a, b) => a + b, 0) / validBt.length).toFixed(2)) : null,
+            maxBt: validBt.length > 0 ? parseFloat(Math.max(...validBt).toFixed(2)) : null,
+            // Southward Bz is geoeffective (negative values drive geomagnetic storms)
+            geoeffectiveConditions: validBz.length > 0 && Math.min(...validBz) < -10 ? 'Active' : validBz.length > 0 && Math.min(...validBz) < -5 ? 'Moderate' : 'Quiet',
+            readingCount: readings.length,
+          },
+          recentReadings: readings.slice(-30),
+          fetchedAt: new Date().toISOString(),
+        },
+        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/products/solar-wind/mag-2-hour.json' }
+      );
+      updated++;
+    }
+  } catch (error) {
+    logger.warn('Failed to fetch solar wind magnetometer data', { error: error instanceof Error ? error.message : String(error) });
+  }
+
+  // 8. GOES X-Ray Flux (solar flare indicator)
+  try {
+    const xrayData = await fetchNoaaSwpcJson('goes/primary/xrays-1-day.json') as Array<{
+      time_tag: string;
+      satellite: number;
+      current_class: string;
+      current_ratio: number;
+      flux: number;
+      observed_flux: number;
+      electron_correction: number;
+      electron_contaminaton: boolean;
+      energy: string;
+    }> | null;
+
+    if (xrayData && Array.isArray(xrayData) && xrayData.length > 0) {
+      // Filter to the short-wavelength channel (0.1-0.8 nm) which is used for flare classification
+      const shortWave = xrayData.filter((d) => d.energy === '0.1-0.8nm');
+      const recent = shortWave.length > 0 ? shortWave.slice(-60) : xrayData.slice(-60); // Last ~60 readings
+      const latest = recent[recent.length - 1];
+
+      // Determine current flare level from flux
+      const peakFlux = Math.max(...recent.map((d) => d.flux));
+      const flareClass = peakFlux >= 1e-4 ? 'X' : peakFlux >= 1e-5 ? 'M' : peakFlux >= 1e-6 ? 'C' : peakFlux >= 1e-7 ? 'B' : 'A';
+
+      await upsertContent(
+        'space-environment:goes-xray',
+        'space-environment',
+        'xray-flux',
+        {
+          latest: {
+            time: latest.time_tag,
+            flux: latest.flux,
+            currentClass: latest.current_class || null,
+            satellite: latest.satellite,
+            energy: latest.energy,
+          },
+          summary: {
+            peakFlux,
+            peakFlareClass: flareClass,
+            currentClass: latest.current_class || flareClass,
+            readingCount: recent.length,
+          },
+          recentReadings: recent.map((d) => ({
+            time: d.time_tag,
+            flux: d.flux,
+            currentClass: d.current_class || null,
+          })),
+          fetchedAt: new Date().toISOString(),
+        },
+        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/json/goes/primary/xrays-1-day.json' }
+      );
+      updated++;
+    }
+  } catch (error) {
+    logger.warn('Failed to fetch GOES X-ray flux data', { error: error instanceof Error ? error.message : String(error) });
+  }
+
+  // 9. GOES Proton Flux (radiation)
+  try {
+    const protonData = await fetchNoaaSwpcJson('goes/primary/differential-protons-1-day.json') as Array<{
+      time_tag: string;
+      satellite: number;
+      flux: number;
+      energy: string;
+      yaw_flip: boolean;
+      channel: string;
+    }> | null;
+
+    if (protonData && Array.isArray(protonData) && protonData.length > 0) {
+      // Group by energy channel and get latest + stats for each
+      const channelMap: Record<string, Array<{ time: string; flux: number }>> = {};
+      for (const d of protonData) {
+        const ch = d.channel || d.energy || 'unknown';
+        if (!channelMap[ch]) channelMap[ch] = [];
+        channelMap[ch].push({ time: d.time_tag, flux: d.flux });
+      }
+
+      const channelSummaries = Object.entries(channelMap).slice(0, 10).map(([channel, readings]) => {
+        const fluxValues = readings.map((r) => r.flux).filter((f) => f > 0);
+        return {
+          channel,
+          latestFlux: readings[readings.length - 1]?.flux ?? null,
+          latestTime: readings[readings.length - 1]?.time ?? null,
+          maxFlux: fluxValues.length > 0 ? Math.max(...fluxValues) : null,
+          avgFlux: fluxValues.length > 0 ? parseFloat((fluxValues.reduce((a, b) => a + b, 0) / fluxValues.length).toExponential(2)) : null,
+          readingCount: readings.length,
+        };
+      });
+
+      await upsertContent(
+        'space-environment:goes-protons',
+        'space-environment',
+        'particle-radiation',
+        {
+          channelSummaries,
+          totalReadings: protonData.length,
+          satellite: protonData[0]?.satellite ?? null,
+          fetchedAt: new Date().toISOString(),
+        },
+        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/json/goes/primary/differential-protons-1-day.json' }
+      );
+      updated++;
+    }
+  } catch (error) {
+    logger.warn('Failed to fetch GOES proton flux data', { error: error instanceof Error ? error.message : String(error) });
+  }
+
+  // 10. OVATION Aurora Model
+  try {
+    const auroraData = await fetchNoaaSwpcJson('ovation_aurora_latest.json') as {
+      Observation_Time?: string;
+      Forecast_Time?: string;
+      Data_Format?: string;
+      coordinates?: Array<[number, number, number]>; // [lon, lat, probability]
+    } | null;
+
+    if (auroraData && auroraData.coordinates && Array.isArray(auroraData.coordinates)) {
+      // This payload is ~900KB raw, so store summary stats + top locations
+      const coords = auroraData.coordinates;
+      const nonZero = coords.filter((c) => c[2] > 0);
+      const sorted = [...nonZero].sort((a, b) => b[2] - a[2]);
+      const top20 = sorted.slice(0, 20).map((c) => ({
+        longitude: c[0],
+        latitude: c[1],
+        probability: c[2],
+      }));
+
+      // Compute hemisphere stats
+      const northernCoords = nonZero.filter((c) => c[1] >= 0);
+      const southernCoords = nonZero.filter((c) => c[1] < 0);
+
+      await upsertContent(
+        'space-environment:aurora-forecast',
+        'space-environment',
+        'aurora',
+        {
+          observationTime: auroraData.Observation_Time || null,
+          forecastTime: auroraData.Forecast_Time || null,
+          summary: {
+            totalGridPoints: coords.length,
+            activePoints: nonZero.length,
+            peakProbability: top20[0]?.probability ?? 0,
+            northernActivePoints: northernCoords.length,
+            southernActivePoints: southernCoords.length,
+            avgNorthernProbability: northernCoords.length > 0
+              ? parseFloat((northernCoords.reduce((s, c) => s + c[2], 0) / northernCoords.length).toFixed(1))
+              : 0,
+            avgSouthernProbability: southernCoords.length > 0
+              ? parseFloat((southernCoords.reduce((s, c) => s + c[2], 0) / southernCoords.length).toFixed(1))
+              : 0,
+          },
+          topLocations: top20,
+          fetchedAt: new Date().toISOString(),
+        },
+        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/json/ovation_aurora_latest.json' }
+      );
+      updated++;
+    }
+  } catch (error) {
+    logger.warn('Failed to fetch OVATION aurora data', { error: error instanceof Error ? error.message : String(error) });
+  }
+
+  // 11. ENLIL Solar Wind Model
+  try {
+    const enlilData = await fetchNoaaSwpcJson('enlil_time_series.json') as Array<{
+      time_tag?: string;
+      speed?: number;
+      density?: number;
+      temperature?: number;
+      bx?: number;
+      by?: number;
+      bz?: number;
+      bt?: number;
+      [key: string]: unknown;
+    }> | null;
+
+    if (enlilData && Array.isArray(enlilData) && enlilData.length > 0) {
+      // ENLIL model data can be large — store recent + forecast summary
+      const now = new Date();
+      const recent = enlilData.slice(-48); // Last ~48 time steps
+
+      // Separate past (observed/validated) vs future (predicted)
+      const past = recent.filter((d) => d.time_tag && new Date(d.time_tag) <= now);
+      const future = recent.filter((d) => d.time_tag && new Date(d.time_tag) > now);
+
+      await upsertContent(
+        'space-environment:enlil-model',
+        'space-environment',
+        'models',
+        {
+          modelRunTime: enlilData[0]?.time_tag || null,
+          dataPoints: enlilData.length,
+          recentTimeSeries: recent.map((d) => ({
+            time: d.time_tag,
+            speed: d.speed ?? null,
+            density: d.density ?? null,
+            bt: d.bt ?? null,
+            bz: d.bz ?? null,
+          })),
+          summary: {
+            pastDataPoints: past.length,
+            forecastDataPoints: future.length,
+            latestSpeed: recent[recent.length - 1]?.speed ?? null,
+            latestDensity: recent[recent.length - 1]?.density ?? null,
+            peakForecastSpeed: future.length > 0
+              ? Math.max(...future.filter((d) => d.speed != null).map((d) => d.speed as number))
+              : null,
+          },
+          fetchedAt: new Date().toISOString(),
+        },
+        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/json/enlil_time_series.json' }
+      );
+      updated++;
+    }
+  } catch (error) {
+    logger.warn('Failed to fetch ENLIL model data', { error: error instanceof Error ? error.message : String(error) });
+  }
+
+  // 12. Sunspot Report
+  try {
+    const sunspotData = await fetchNoaaSwpcJson('sunspot_report.json') as Array<{
+      timeTag?: string;
+      time_tag?: string;
+      Rone?: number;
+      Region?: number;
+      region?: number;
+      Lat?: number;
+      latitude?: number;
+      Lo?: number;
+      longitude?: number;
+      Location?: string;
+      location?: string;
+      Area?: number;
+      area?: number;
+      Z?: string;
+      spot_class?: string;
+      LL?: number;
+      NN?: number;
+      num_spots?: number;
+      Magtype?: string;
+      mag_class?: string;
+      [key: string]: unknown;
+    }> | null;
+
+    if (sunspotData && Array.isArray(sunspotData) && sunspotData.length > 0) {
+      const groups = sunspotData.map((s) => ({
+        region: s.Region ?? s.region ?? s.Rone ?? null,
+        timeTag: s.timeTag ?? s.time_tag ?? null,
+        latitude: s.Lat ?? s.latitude ?? null,
+        longitude: s.Lo ?? s.longitude ?? null,
+        location: s.Location ?? s.location ?? null,
+        area: s.Area ?? s.area ?? null,
+        spotClass: s.Z ?? s.spot_class ?? null,
+        numSpots: s.NN ?? s.num_spots ?? null,
+        magClass: s.Magtype ?? s.mag_class ?? null,
+      }));
+
+      const totalSpots = groups.reduce((sum, g) => sum + (g.numSpots || 0), 0);
+
+      await upsertContent(
+        'space-environment:sunspot-report',
+        'space-environment',
+        'sunspots',
+        {
+          groups,
+          totalGroups: groups.length,
+          totalSunspots: totalSpots,
+          latestTimeTag: groups[groups.length - 1]?.timeTag || null,
+          fetchedAt: new Date().toISOString(),
+        },
+        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/json/sunspot_report.json' }
+      );
+      updated++;
+    }
+  } catch (error) {
+    logger.warn('Failed to fetch sunspot report data', { error: error instanceof Error ? error.message : String(error) });
+  }
+
+  // 13. Solar Probabilities (flare and proton event forecasts)
+  try {
+    const probData = await fetchNoaaSwpcJson('solar_probabilities.json') as Array<{
+      date_tag?: string;
+      time_tag?: string;
+      c_class_1_day?: number;
+      m_class_1_day?: number;
+      x_class_1_day?: number;
+      proton_1_day?: number;
+      c_class_2_day?: number;
+      m_class_2_day?: number;
+      x_class_2_day?: number;
+      proton_2_day?: number;
+      c_class_3_day?: number;
+      m_class_3_day?: number;
+      x_class_3_day?: number;
+      proton_3_day?: number;
+      [key: string]: unknown;
+    }> | null;
+
+    if (probData && Array.isArray(probData) && probData.length > 0) {
+      const latest = probData[probData.length - 1];
+
+      await upsertContent(
+        'space-environment:solar-probabilities',
+        'space-environment',
+        'forecasts',
+        {
+          forecastDate: latest.date_tag ?? latest.time_tag ?? null,
+          day1: {
+            cClass: latest.c_class_1_day ?? null,
+            mClass: latest.m_class_1_day ?? null,
+            xClass: latest.x_class_1_day ?? null,
+            protonEvent: latest.proton_1_day ?? null,
+          },
+          day2: {
+            cClass: latest.c_class_2_day ?? null,
+            mClass: latest.m_class_2_day ?? null,
+            xClass: latest.x_class_2_day ?? null,
+            protonEvent: latest.proton_2_day ?? null,
+          },
+          day3: {
+            cClass: latest.c_class_3_day ?? null,
+            mClass: latest.m_class_3_day ?? null,
+            xClass: latest.x_class_3_day ?? null,
+            protonEvent: latest.proton_3_day ?? null,
+          },
+          allForecasts: probData.map((d) => ({
+            date: d.date_tag ?? d.time_tag ?? null,
+            cClass1d: d.c_class_1_day ?? null,
+            mClass1d: d.m_class_1_day ?? null,
+            xClass1d: d.x_class_1_day ?? null,
+            proton1d: d.proton_1_day ?? null,
+          })),
+          fetchedAt: new Date().toISOString(),
+        },
+        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/json/solar_probabilities.json' }
+      );
+      updated++;
+    }
+  } catch (error) {
+    logger.warn('Failed to fetch solar probabilities data', { error: error instanceof Error ? error.message : String(error) });
+  }
+
   await logRefresh('space-environment', 'api-fetch', updated > 0 ? 'success' : 'failed', {
     itemsUpdated: updated,
-    apiCallsMade: 5,
+    apiCallsMade: 13,
     duration: Date.now() - start,
   });
 
@@ -1547,6 +1991,1212 @@ export async function fetchAndStoreDonkiEnhanced(): Promise<number> {
   return updated;
 }
 
+// ─── NASA EPIC (Earth Polychromatic Imaging Camera) ─────────────────────
+
+interface EpicImage {
+  identifier: string;
+  caption: string;
+  image: string;
+  date: string;
+  centroid_coordinates: { lat: number; lon: number };
+  dscovr_j2000_position: { x: number; y: number; z: number };
+  lunar_j2000_position: { x: number; y: number; z: number };
+  sun_j2000_position: { x: number; y: number; z: number };
+  attitude_quaternions: { q0: number; q1: number; q2: number; q3: number };
+}
+
+export async function fetchAndStoreEpicEarth(): Promise<number> {
+  const start = Date.now();
+  try {
+    const data = await fetchNasaEpic('natural') as EpicImage[] | null;
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      logger.warn('NASA EPIC returned empty data');
+      return 0;
+    }
+
+    // Store the most recent images (up to 10)
+    const recentImages = data.slice(0, 10).map((img) => {
+      // EPIC image URL format: https://epic.gsfc.nasa.gov/archive/natural/{year}/{month}/{day}/png/{image}.png
+      const dateObj = new Date(img.date);
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const imageUrl = `https://epic.gsfc.nasa.gov/archive/natural/${year}/${month}/${day}/png/${img.image}.png`;
+      const thumbnailUrl = `https://epic.gsfc.nasa.gov/archive/natural/${year}/${month}/${day}/thumbs/${img.image}.jpg`;
+
+      return {
+        identifier: img.identifier,
+        caption: img.caption,
+        date: img.date,
+        imageUrl,
+        thumbnailUrl,
+        centroidCoordinates: img.centroid_coordinates,
+        dscovrPosition: img.dscovr_j2000_position,
+      };
+    });
+
+    await upsertContent(
+      'mission-control:epic-earth',
+      'mission-control',
+      'epic-earth',
+      {
+        images: recentImages,
+        totalAvailable: data.length,
+        latestDate: recentImages[0]?.date || null,
+        fetchedAt: new Date().toISOString(),
+      },
+      { sourceType: 'api', sourceUrl: 'https://epic.gsfc.nasa.gov/api/natural' }
+    );
+
+    await logRefresh('mission-control', 'api-fetch', 'success', {
+      itemsUpdated: 1,
+      itemsChecked: data.length,
+      apiCallsMade: 1,
+      duration: Date.now() - start,
+    });
+
+    logger.info(`EPIC Earth data updated: ${recentImages.length} images from ${data.length} available`);
+    return 1;
+  } catch (error) {
+    await logRefresh('mission-control', 'api-fetch', 'failed', {
+      errorMessage: error instanceof Error ? error.message : String(error),
+      duration: Date.now() - start,
+    });
+    logger.error('Failed to fetch EPIC Earth data', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
+// ─── NASA EONET (Earth Observatory Natural Event Tracker) ───────────────
+
+interface EonetEvent {
+  id: string;
+  title: string;
+  description: string | null;
+  link: string;
+  closed: string | null;
+  categories: Array<{ id: string; title: string }>;
+  sources: Array<{ id: string; url: string }>;
+  geometry: Array<{
+    magnitudeValue: number | null;
+    magnitudeUnit: string | null;
+    date: string;
+    type: string;
+    coordinates: number[];
+  }>;
+}
+
+interface EonetResponse {
+  title: string;
+  description: string;
+  link: string;
+  events: EonetEvent[];
+}
+
+export async function fetchAndStoreEarthEvents(): Promise<number> {
+  const start = Date.now();
+  try {
+    const data = await fetchNasaEonet({
+      status: 'open',
+      limit: '50',
+    }) as EonetResponse | null;
+
+    if (!data || !data.events || data.events.length === 0) {
+      logger.warn('NASA EONET returned empty events data');
+      return 0;
+    }
+
+    // Categorize events
+    const categorized: Record<string, Array<{
+      id: string;
+      title: string;
+      category: string;
+      date: string;
+      coordinates: number[] | null;
+      magnitude: number | null;
+      magnitudeUnit: string | null;
+      sourceUrl: string | null;
+      isClosed: boolean;
+    }>> = {};
+
+    for (const event of data.events) {
+      const category = event.categories[0]?.title || 'Other';
+      if (!categorized[category]) categorized[category] = [];
+
+      const latestGeometry = event.geometry[event.geometry.length - 1];
+
+      categorized[category].push({
+        id: event.id,
+        title: event.title,
+        category,
+        date: latestGeometry?.date || '',
+        coordinates: latestGeometry?.coordinates || null,
+        magnitude: latestGeometry?.magnitudeValue || null,
+        magnitudeUnit: latestGeometry?.magnitudeUnit || null,
+        sourceUrl: event.sources[0]?.url || null,
+        isClosed: event.closed !== null,
+      });
+    }
+
+    await upsertContent(
+      'space-environment:earth-events',
+      'space-environment',
+      'earth-events',
+      {
+        events: data.events.slice(0, 30).map((e) => {
+          const latestGeom = e.geometry[e.geometry.length - 1];
+          return {
+            id: e.id,
+            title: e.title,
+            category: e.categories[0]?.title || 'Other',
+            date: latestGeom?.date || '',
+            coordinates: latestGeom?.coordinates || null,
+            magnitude: latestGeom?.magnitudeValue || null,
+            magnitudeUnit: latestGeom?.magnitudeUnit || null,
+            sourceUrl: e.sources[0]?.url || null,
+            isClosed: e.closed !== null,
+          };
+        }),
+        categorySummary: Object.entries(categorized).map(([cat, events]) => ({
+          category: cat,
+          count: events.length,
+        })),
+        totalActiveEvents: data.events.filter((e) => e.closed === null).length,
+        totalEvents: data.events.length,
+        fetchedAt: new Date().toISOString(),
+      },
+      { sourceType: 'api', sourceUrl: 'https://eonet.gsfc.nasa.gov/api/v3/events' }
+    );
+
+    await logRefresh('space-environment', 'api-fetch', 'success', {
+      itemsUpdated: 1,
+      itemsChecked: data.events.length,
+      apiCallsMade: 1,
+      duration: Date.now() - start,
+    });
+
+    logger.info(`EONET Earth events updated: ${data.events.length} events across ${Object.keys(categorized).length} categories`);
+    return 1;
+  } catch (error) {
+    await logRefresh('space-environment', 'api-fetch', 'failed', {
+      errorMessage: error instanceof Error ? error.message : String(error),
+      duration: Date.now() - start,
+    });
+    logger.error('Failed to fetch EONET Earth events', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
+// ─── NASA Mars Rover Photos (Perseverance) ──────────────────────────────
+
+interface MarsRoverPhoto {
+  id: number;
+  sol: number;
+  camera: {
+    id: number;
+    name: string;
+    rover_id: number;
+    full_name: string;
+  };
+  img_src: string;
+  earth_date: string;
+  rover: {
+    id: number;
+    name: string;
+    landing_date: string;
+    launch_date: string;
+    status: string;
+    max_sol: number;
+    max_date: string;
+    total_photos: number;
+  };
+}
+
+interface MarsRoverResponse {
+  latest_photos: MarsRoverPhoto[];
+}
+
+export async function fetchAndStoreMarsRoverPhotos(): Promise<number> {
+  const start = Date.now();
+  try {
+    const data = await fetchNasaMarsPhotos('perseverance') as MarsRoverResponse | null;
+
+    if (!data || !data.latest_photos || data.latest_photos.length === 0) {
+      logger.warn('NASA Mars Rover Photos returned empty data');
+      return 0;
+    }
+
+    // Group photos by camera
+    const byCamera: Record<string, MarsRoverPhoto[]> = {};
+    for (const photo of data.latest_photos) {
+      const cam = photo.camera.name;
+      if (!byCamera[cam]) byCamera[cam] = [];
+      byCamera[cam].push(photo);
+    }
+
+    const photos = data.latest_photos.slice(0, 20).map((p) => ({
+      id: p.id,
+      sol: p.sol,
+      earthDate: p.earth_date,
+      camera: p.camera.name,
+      cameraFullName: p.camera.full_name,
+      imageUrl: p.img_src,
+    }));
+
+    const roverInfo = data.latest_photos[0]?.rover;
+
+    await upsertContent(
+      'mars-planner:rover-photos',
+      'mars-planner',
+      'rover-photos',
+      {
+        photos,
+        roverInfo: roverInfo ? {
+          name: roverInfo.name,
+          status: roverInfo.status,
+          landingDate: roverInfo.landing_date,
+          launchDate: roverInfo.launch_date,
+          maxSol: roverInfo.max_sol,
+          maxDate: roverInfo.max_date,
+          totalPhotos: roverInfo.total_photos,
+        } : null,
+        cameraSummary: Object.entries(byCamera).map(([cam, imgs]) => ({
+          camera: cam,
+          photoCount: imgs.length,
+        })),
+        latestEarthDate: data.latest_photos[0]?.earth_date || null,
+        totalAvailable: data.latest_photos.length,
+        fetchedAt: new Date().toISOString(),
+      },
+      { sourceType: 'api', sourceUrl: 'https://api.nasa.gov/mars-photos/api/v1' }
+    );
+
+    await logRefresh('mars-planner', 'api-fetch', 'success', {
+      itemsUpdated: 1,
+      itemsChecked: data.latest_photos.length,
+      apiCallsMade: 1,
+      duration: Date.now() - start,
+    });
+
+    logger.info(`Mars rover photos updated: ${photos.length} photos, latest sol ${photos[0]?.sol}`);
+    return 1;
+  } catch (error) {
+    await logRefresh('mars-planner', 'api-fetch', 'failed', {
+      errorMessage: error instanceof Error ? error.message : String(error),
+      duration: Date.now() - start,
+    });
+    logger.error('Failed to fetch Mars rover photos', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
+// ─── NASA Exoplanet Archive ─────────────────────────────────────────────
+
+interface ExoplanetRecord {
+  pl_name: string;
+  hostname: string;
+  discoverymethod: string;
+  disc_year: number;
+  pl_orbper: number | null;
+  pl_rade: number | null;
+  pl_bmasse: number | null;
+  pl_eqt: number | null;
+  sy_dist: number | null;
+}
+
+export async function fetchAndStoreExoplanets(): Promise<number> {
+  const start = Date.now();
+  try {
+    const data = await fetchNasaExoplanets() as ExoplanetRecord[] | null;
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      logger.warn('NASA Exoplanet Archive returned empty data');
+      return 0;
+    }
+
+    // Get the most recent 100 exoplanets and compute stats
+    const recent = data.slice(0, 100).map((p) => ({
+      name: p.pl_name,
+      hostStar: p.hostname,
+      discoveryMethod: p.discoverymethod,
+      discoveryYear: p.disc_year,
+      orbitalPeriodDays: p.pl_orbper,
+      radiusEarthRadii: p.pl_rade,
+      massEarthMasses: p.pl_bmasse,
+      equilibriumTempK: p.pl_eqt,
+      distanceParsecs: p.sy_dist,
+    }));
+
+    // Compute discovery method breakdown
+    const methodCounts: Record<string, number> = {};
+    for (const planet of data) {
+      const method = planet.discoverymethod || 'Unknown';
+      methodCounts[method] = (methodCounts[method] || 0) + 1;
+    }
+
+    // Discovery year distribution (last 10 years)
+    const currentYear = new Date().getFullYear();
+    const yearCounts: Record<number, number> = {};
+    for (const planet of data) {
+      if (planet.disc_year >= currentYear - 10) {
+        yearCounts[planet.disc_year] = (yearCounts[planet.disc_year] || 0) + 1;
+      }
+    }
+
+    // Potentially habitable candidates (rough filter: 200K < T_eq < 320K, 0.5 < R < 1.5 Earth)
+    const habitableCandidates = data.filter(
+      (p) => p.pl_eqt !== null && p.pl_eqt > 200 && p.pl_eqt < 320 &&
+             p.pl_rade !== null && p.pl_rade > 0.5 && p.pl_rade < 1.5
+    ).slice(0, 20).map((p) => ({
+      name: p.pl_name,
+      hostStar: p.hostname,
+      equilibriumTempK: p.pl_eqt,
+      radiusEarthRadii: p.pl_rade,
+      distanceParsecs: p.sy_dist,
+    }));
+
+    await upsertContent(
+      'solar-exploration:exoplanets',
+      'solar-exploration',
+      'exoplanets',
+      {
+        recentDiscoveries: recent,
+        totalConfirmed: data.length,
+        discoveryMethodBreakdown: Object.entries(methodCounts)
+          .sort(([, a], [, b]) => b - a)
+          .map(([method, count]) => ({ method, count })),
+        yearlyDiscoveries: Object.entries(yearCounts)
+          .sort(([a], [b]) => Number(b) - Number(a))
+          .map(([year, count]) => ({ year: Number(year), count })),
+        habitableCandidates,
+        habitableCandidateCount: habitableCandidates.length,
+        fetchedAt: new Date().toISOString(),
+      },
+      { sourceType: 'api', sourceUrl: 'https://exoplanetarchive.ipac.caltech.edu' }
+    );
+
+    await logRefresh('solar-exploration', 'api-fetch', 'success', {
+      itemsUpdated: 1,
+      itemsChecked: data.length,
+      apiCallsMade: 1,
+      duration: Date.now() - start,
+    });
+
+    logger.info(`Exoplanet data updated: ${data.length} confirmed planets, ${habitableCandidates.length} habitable candidates`);
+    return 1;
+  } catch (error) {
+    await logRefresh('solar-exploration', 'api-fetch', 'failed', {
+      errorMessage: error instanceof Error ? error.message : String(error),
+      duration: Date.now() - start,
+    });
+    logger.error('Failed to fetch exoplanet data', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
+// ─── JPL Sentry (Impact Risk) ───────────────────────────────────────────
+
+interface SentryApiResponse {
+  signature: { version: string; source: string };
+  count: string;
+  data: Array<{
+    des: string;
+    fullname: string;
+    last_obs: string;
+    last_obs_jd: string;
+    n_imp: number;
+    ip: string; // impact probability
+    ps_cum: string; // Palermo scale cumulative
+    ps_max: string; // Palermo scale maximum
+    ts_max: string; // Torino scale maximum
+    v_inf: string; // velocity at infinity
+    range: string; // date range of possible impacts
+    diameter?: string;
+    h?: string; // absolute magnitude
+  }>;
+}
+
+export async function fetchAndStoreSentryImpactRisk(): Promise<number> {
+  const start = Date.now();
+  try {
+    const data = await fetchJplSentry() as SentryApiResponse | null;
+
+    if (!data || !data.data || data.data.length === 0) {
+      logger.warn('JPL Sentry returned empty data');
+      return 0;
+    }
+
+    // Sort by Palermo scale (highest risk first)
+    const sorted = [...data.data].sort(
+      (a, b) => parseFloat(b.ps_cum) - parseFloat(a.ps_cum)
+    );
+
+    const impactRisks = sorted.slice(0, 30).map((obj) => ({
+      designation: obj.des,
+      fullName: obj.fullname,
+      lastObserved: obj.last_obs,
+      numberOfImpacts: obj.n_imp,
+      impactProbability: obj.ip,
+      palermoCumulative: parseFloat(obj.ps_cum),
+      palermoMaximum: parseFloat(obj.ps_max),
+      torinoScale: parseInt(obj.ts_max, 10),
+      velocityInfKmS: parseFloat(obj.v_inf),
+      impactDateRange: obj.range,
+      diameter: obj.diameter || null,
+      absoluteMagnitude: obj.h ? parseFloat(obj.h) : null,
+    }));
+
+    // Count by Torino scale
+    const torinoDistribution: Record<number, number> = {};
+    for (const obj of data.data) {
+      const ts = parseInt(obj.ts_max, 10);
+      torinoDistribution[ts] = (torinoDistribution[ts] || 0) + 1;
+    }
+
+    await upsertContent(
+      'asteroid-watch:impact-risk',
+      'asteroid-watch',
+      'impact-risk',
+      {
+        highestRiskObjects: impactRisks,
+        totalTracked: parseInt(data.count, 10),
+        torinoDistribution: Object.entries(torinoDistribution)
+          .map(([scale, count]) => ({ torinoScale: Number(scale), count })),
+        highestPalermoScale: impactRisks[0]?.palermoCumulative || null,
+        source: 'JPL Sentry System',
+        fetchedAt: new Date().toISOString(),
+      },
+      { sourceType: 'api', sourceUrl: 'https://ssd-api.jpl.nasa.gov/sentry.api' }
+    );
+
+    await logRefresh('asteroid-watch', 'api-fetch', 'success', {
+      itemsUpdated: 1,
+      itemsChecked: parseInt(data.count, 10),
+      apiCallsMade: 1,
+      duration: Date.now() - start,
+    });
+
+    logger.info(`Sentry impact risk data updated: ${data.count} objects tracked`);
+    return 1;
+  } catch (error) {
+    await logRefresh('asteroid-watch', 'api-fetch', 'failed', {
+      errorMessage: error instanceof Error ? error.message : String(error),
+      duration: Date.now() - start,
+    });
+    logger.error('Failed to fetch Sentry impact risk data', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
+// ─── JPL Fireball (Bolide Events) ──────────────────────────────────────
+
+interface FireballApiResponse {
+  signature: { version: string; source: string };
+  count: string;
+  fields: string[];
+  data: Array<Array<string | null>>;
+}
+
+export async function fetchAndStoreFireballs(): Promise<number> {
+  const start = Date.now();
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const data = await fetchJplFireball({
+      'date-min': formatDateForApi(thirtyDaysAgo),
+      'req-alt': 'true',
+    }) as FireballApiResponse | null;
+
+    if (!data || !data.data || data.data.length === 0) {
+      logger.warn('JPL Fireball returned empty data');
+      return 0;
+    }
+
+    // Map field names to indices
+    const fieldIndex: Record<string, number> = {};
+    data.fields.forEach((f, i) => { fieldIndex[f] = i; });
+
+    const fireballs = data.data.map((row) => ({
+      date: row[fieldIndex['date']] || null,
+      latitude: row[fieldIndex['lat']] ? parseFloat(row[fieldIndex['lat']] as string) : null,
+      latitudeDir: row[fieldIndex['lat-dir']] || null,
+      longitude: row[fieldIndex['lon']] ? parseFloat(row[fieldIndex['lon']] as string) : null,
+      longitudeDir: row[fieldIndex['lon-dir']] || null,
+      altitude: row[fieldIndex['alt']] ? parseFloat(row[fieldIndex['alt']] as string) : null,
+      velocityKmS: row[fieldIndex['vel']] ? parseFloat(row[fieldIndex['vel']] as string) : null,
+      totalRadiatedEnergyJ: row[fieldIndex['energy']] ? parseFloat(row[fieldIndex['energy']] as string) : null,
+      impactEnergyKt: row[fieldIndex['impact-e']] ? parseFloat(row[fieldIndex['impact-e']] as string) : null,
+    }));
+
+    // Sort by energy (biggest events first)
+    const sortedByEnergy = [...fireballs]
+      .filter((f) => f.impactEnergyKt !== null)
+      .sort((a, b) => (b.impactEnergyKt || 0) - (a.impactEnergyKt || 0));
+
+    await upsertContent(
+      'asteroid-watch:fireballs',
+      'asteroid-watch',
+      'fireballs',
+      {
+        recentFireballs: fireballs,
+        totalCount: parseInt(data.count, 10),
+        largestEvents: sortedByEnergy.slice(0, 5),
+        dateRange: {
+          start: formatDateForApi(thirtyDaysAgo),
+          end: formatDateForApi(new Date()),
+        },
+        source: 'JPL Fireball and Bolide Data',
+        fetchedAt: new Date().toISOString(),
+      },
+      { sourceType: 'api', sourceUrl: 'https://ssd-api.jpl.nasa.gov/fireball.api' }
+    );
+
+    await logRefresh('asteroid-watch', 'api-fetch', 'success', {
+      itemsUpdated: 1,
+      itemsChecked: parseInt(data.count, 10),
+      apiCallsMade: 1,
+      duration: Date.now() - start,
+    });
+
+    logger.info(`Fireball data updated: ${data.count} events in last 30 days`);
+    return 1;
+  } catch (error) {
+    await logRefresh('asteroid-watch', 'api-fetch', 'failed', {
+      errorMessage: error instanceof Error ? error.message : String(error),
+      duration: Date.now() - start,
+    });
+    logger.error('Failed to fetch fireball data', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
+// ─── Asterank (Asteroid Mining Economics) ───────────────────────────────
+
+interface AsterankRecord {
+  full_name?: string;
+  name?: string;
+  spec_B?: string;
+  spec_T?: string;
+  e?: number; // eccentricity
+  i?: number; // inclination
+  a?: number; // semi-major axis
+  q?: number; // perihelion
+  ad?: number; // aphelion
+  per?: number; // orbital period
+  price?: number; // estimated value ($)
+  profit?: number; // estimated profit ($)
+  closeness?: number;
+  score?: number;
+  class?: string;
+  dv?: number; // delta-v
+}
+
+export async function fetchAndStoreMiningTargets(): Promise<number> {
+  const start = Date.now();
+  try {
+    // Low eccentricity + low inclination = easier to reach
+    const queryJson = JSON.stringify({ e: { $lt: 0.1 }, i: { $lt: 10 } });
+    const data = await fetchAsterank(queryJson, 50) as AsterankRecord[] | null;
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      logger.warn('Asterank returned empty data');
+      return 0;
+    }
+
+    const targets = data
+      .filter((a) => a.price || a.profit)
+      .map((a) => ({
+        name: a.full_name || a.name || 'Unknown',
+        spectralTypeB: a.spec_B || null,
+        spectralTypeT: a.spec_T || null,
+        eccentricity: a.e || null,
+        inclination: a.i || null,
+        semiMajorAxis: a.a || null,
+        orbitalPeriodYears: a.per ? a.per / 365.25 : null,
+        estimatedValueUsd: a.price || null,
+        estimatedProfitUsd: a.profit || null,
+        closeness: a.closeness || null,
+        miningScore: a.score || null,
+        orbitClass: a.class || null,
+        deltaV: a.dv || null,
+      }))
+      .sort((a, b) => (b.estimatedProfitUsd || 0) - (a.estimatedProfitUsd || 0));
+
+    // Aggregate top candidates by estimated value
+    const totalEstimatedValue = targets.reduce(
+      (sum, t) => sum + (t.estimatedValueUsd || 0), 0
+    );
+
+    await upsertContent(
+      'space-mining:mining-targets',
+      'space-mining',
+      'mining-targets',
+      {
+        targets: targets.slice(0, 30),
+        totalAnalyzed: data.length,
+        topByProfit: targets.slice(0, 5),
+        totalEstimatedValueUsd: totalEstimatedValue,
+        filterCriteria: {
+          maxEccentricity: 0.1,
+          maxInclination: 10,
+        },
+        source: 'Asterank',
+        fetchedAt: new Date().toISOString(),
+      },
+      { sourceType: 'api', sourceUrl: 'https://www.asterank.com/api/asterank' }
+    );
+
+    await logRefresh('space-mining', 'api-fetch', 'success', {
+      itemsUpdated: 1,
+      itemsChecked: data.length,
+      apiCallsMade: 1,
+      duration: Date.now() - start,
+    });
+
+    logger.info(`Asterank mining targets updated: ${targets.length} viable targets from ${data.length} analyzed`);
+    return 1;
+  } catch (error) {
+    await logRefresh('space-mining', 'api-fetch', 'failed', {
+      errorMessage: error instanceof Error ? error.message : String(error),
+      duration: Date.now() - start,
+    });
+    logger.error('Failed to fetch Asterank mining targets', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
+// ─── NASA Image and Video Library ───────────────────────────────────────
+
+interface NasaImageItem {
+  data: Array<{
+    title: string;
+    description?: string;
+    date_created: string;
+    nasa_id: string;
+    center?: string;
+    keywords?: string[];
+    media_type: string;
+  }>;
+  links?: Array<{
+    href: string;
+    rel: string;
+    render?: string;
+  }>;
+}
+
+interface NasaImagesResponse {
+  collection: {
+    items: NasaImageItem[];
+    metadata: { total_hits: number };
+  };
+}
+
+export async function fetchAndStoreNasaImages(): Promise<number> {
+  const start = Date.now();
+  try {
+    const currentYear = new Date().getFullYear();
+    const data = await fetchNasaImages({
+      q: 'space',
+      media_type: 'image',
+      year_start: String(currentYear),
+    }) as NasaImagesResponse | null;
+
+    if (!data || !data.collection || !data.collection.items || data.collection.items.length === 0) {
+      logger.warn('NASA Images API returned empty data');
+      return 0;
+    }
+
+    const images = data.collection.items.slice(0, 20).map((item) => {
+      const meta = item.data[0];
+      const thumbnail = item.links?.find((l) => l.rel === 'preview')?.href || null;
+
+      return {
+        nasaId: meta?.nasa_id || '',
+        title: meta?.title || '',
+        description: meta?.description?.slice(0, 300) || null,
+        dateCreated: meta?.date_created || '',
+        center: meta?.center || null,
+        keywords: meta?.keywords?.slice(0, 5) || [],
+        thumbnailUrl: thumbnail,
+      };
+    });
+
+    await upsertContent(
+      'mission-control:nasa-images',
+      'mission-control',
+      'nasa-images',
+      {
+        images,
+        totalHits: data.collection.metadata.total_hits,
+        year: currentYear,
+        fetchedAt: new Date().toISOString(),
+      },
+      { sourceType: 'api', sourceUrl: 'https://images-api.nasa.gov' }
+    );
+
+    await logRefresh('mission-control', 'api-fetch', 'success', {
+      itemsUpdated: 1,
+      itemsChecked: data.collection.metadata.total_hits,
+      apiCallsMade: 1,
+      duration: Date.now() - start,
+    });
+
+    logger.info(`NASA Images updated: ${images.length} images from ${data.collection.metadata.total_hits} total`);
+    return 1;
+  } catch (error) {
+    await logRefresh('mission-control', 'api-fetch', 'failed', {
+      errorMessage: error instanceof Error ? error.message : String(error),
+      duration: Date.now() - start,
+    });
+    logger.error('Failed to fetch NASA Images', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
+// ─── Helioviewer (Solar Images) ─────────────────────────────────────────
+
+interface HelioviewerResponse {
+  id: number;
+  date: string;
+  name: string;
+  scale: number;
+  width: number;
+  height: number;
+  refPixelX: number;
+  refPixelY: number;
+  sunCenterOffsetParams: unknown;
+  layeringOrder: number;
+}
+
+export async function fetchAndStoreSolarImagery(): Promise<number> {
+  const start = Date.now();
+  try {
+    const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+
+    // Fetch from multiple SDO sources for different wavelengths
+    const sourceIds = [
+      { id: '14', name: 'SDO AIA 304', description: 'Chromosphere (He II 304A)' },
+      { id: '10', name: 'SDO AIA 171', description: 'Quiet Corona (Fe IX 171A)' },
+      { id: '11', name: 'SDO AIA 193', description: 'Corona/Flare (Fe XII 193A)' },
+      { id: '8',  name: 'SDO AIA 094', description: 'Flaring Corona (Fe XVIII 94A)' },
+    ];
+
+    const solarImages: Array<{
+      sourceId: string;
+      sourceName: string;
+      description: string;
+      imageId: number | null;
+      date: string | null;
+      thumbnailUrl: string;
+    }> = [];
+
+    for (const source of sourceIds) {
+      try {
+        const data = await fetchHelioviewer({
+          date: now,
+          sourceId: source.id,
+        }) as HelioviewerResponse | null;
+
+        if (data && data.id) {
+          solarImages.push({
+            sourceId: source.id,
+            sourceName: source.name,
+            description: source.description,
+            imageId: data.id,
+            date: data.date,
+            thumbnailUrl: `https://api.helioviewer.org/v2/getJP2Image/?id=${data.id}`,
+          });
+        }
+
+        // Small delay between requests
+        await new Promise((r) => setTimeout(r, 500));
+      } catch {
+        logger.warn(`Failed to fetch Helioviewer source ${source.name}`);
+      }
+    }
+
+    if (solarImages.length === 0) {
+      logger.warn('Helioviewer returned no imagery');
+      return 0;
+    }
+
+    await upsertContent(
+      'space-environment:solar-imagery',
+      'space-environment',
+      'solar-imagery',
+      {
+        solarImages,
+        sourcesAvailable: solarImages.length,
+        latestImageDate: solarImages[0]?.date || null,
+        source: 'Helioviewer / SDO',
+        fetchedAt: new Date().toISOString(),
+      },
+      { sourceType: 'api', sourceUrl: 'https://api.helioviewer.org/v2' }
+    );
+
+    await logRefresh('space-environment', 'api-fetch', 'success', {
+      itemsUpdated: 1,
+      apiCallsMade: sourceIds.length,
+      duration: Date.now() - start,
+    });
+
+    logger.info(`Solar imagery updated: ${solarImages.length} sources`);
+    return 1;
+  } catch (error) {
+    await logRefresh('space-environment', 'api-fetch', 'failed', {
+      errorMessage: error instanceof Error ? error.message : String(error),
+      duration: Date.now() - start,
+    });
+    logger.error('Failed to fetch solar imagery', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
+// ─── NASA DSN Now (Deep Space Network) ──────────────────────────────────
+
+/**
+ * Parses the DSN XML into structured data.
+ * The DSN XML has a simple structure with <dish> and <target> elements.
+ * We use basic string parsing since we cannot use an XML parser in all environments.
+ */
+function parseDsnXml(xml: string): Array<{
+  antenna: string;
+  site: string;
+  targets: Array<{ name: string; upSignal: boolean; downSignal: boolean }>;
+}> {
+  const dishes: Array<{
+    antenna: string;
+    site: string;
+    targets: Array<{ name: string; upSignal: boolean; downSignal: boolean }>;
+  }> = [];
+
+  // Extract dish elements — format: <dish name="DSS-XX" ...>
+  const dishRegex = /<dish\s+[^>]*name="([^"]*)"[^>]*azimuthAngle="([^"]*)"[^>]*>/g;
+  let dishMatch;
+  const dishPositions: Array<{ name: string; start: number }> = [];
+
+  while ((dishMatch = dishRegex.exec(xml)) !== null) {
+    dishPositions.push({ name: dishMatch[1], start: dishMatch.index });
+  }
+
+  for (let i = 0; i < dishPositions.length; i++) {
+    const dishName = dishPositions[i].name;
+    const startPos = dishPositions[i].start;
+    const endPos = i + 1 < dishPositions.length ? dishPositions[i + 1].start : xml.length;
+    const dishSection = xml.slice(startPos, endPos);
+
+    // Determine site from antenna name (DSS-1x=Goldstone, DSS-3x=Canberra, DSS-5x/6x=Madrid)
+    const antennaNum = parseInt(dishName.replace('DSS', '').replace('-', ''), 10);
+    let site = 'Unknown';
+    if (antennaNum >= 10 && antennaNum < 30) site = 'Goldstone, CA';
+    else if (antennaNum >= 30 && antennaNum < 50) site = 'Canberra, Australia';
+    else if (antennaNum >= 50 && antennaNum < 70) site = 'Madrid, Spain';
+
+    // Extract target names
+    const targetRegex = /<target\s+[^>]*name="([^"]*)"[^>]*downlegRange="([^"]*)"[^>]*>/g;
+    let targetMatch;
+    const targets: Array<{ name: string; upSignal: boolean; downSignal: boolean }> = [];
+
+    while ((targetMatch = targetRegex.exec(dishSection)) !== null) {
+      const targetName = targetMatch[1];
+      if (targetName && targetName !== 'none' && targetName !== '') {
+        // Check for up/down signals in the dish section
+        const hasUpSignal = dishSection.includes('<upSignal');
+        const hasDownSignal = dishSection.includes('<downSignal');
+        targets.push({
+          name: targetName,
+          upSignal: hasUpSignal,
+          downSignal: hasDownSignal,
+        });
+      }
+    }
+
+    if (targets.length > 0) {
+      dishes.push({
+        antenna: dishName,
+        site,
+        targets,
+      });
+    }
+  }
+
+  return dishes;
+}
+
+export async function fetchAndStoreDsnStatus(): Promise<number> {
+  const start = Date.now();
+  try {
+    const xmlData = await fetchNasaDsn();
+
+    if (!xmlData || typeof xmlData !== 'string' || xmlData.length === 0) {
+      logger.warn('NASA DSN returned empty data');
+      return 0;
+    }
+
+    const dishes = parseDsnXml(xmlData);
+
+    if (dishes.length === 0) {
+      logger.warn('DSN XML parsed but no active dishes found');
+      return 0;
+    }
+
+    // Group by site
+    const bySite: Record<string, typeof dishes> = {};
+    for (const dish of dishes) {
+      if (!bySite[dish.site]) bySite[dish.site] = [];
+      bySite[dish.site].push(dish);
+    }
+
+    // Get unique spacecraft being tracked
+    const allTargets = new Set<string>();
+    for (const dish of dishes) {
+      for (const target of dish.targets) {
+        allTargets.add(target.name);
+      }
+    }
+
+    await upsertContent(
+      'mission-control:dsn-status',
+      'mission-control',
+      'dsn-status',
+      {
+        activeDishes: dishes,
+        siteStatus: Object.entries(bySite).map(([site, siteDishes]) => ({
+          site,
+          activeDishCount: siteDishes.length,
+          antennas: siteDishes.map((d) => d.antenna),
+        })),
+        spacecraftBeingTracked: Array.from(allTargets),
+        totalActiveDishes: dishes.length,
+        totalSpacecraft: allTargets.size,
+        fetchedAt: new Date().toISOString(),
+        source: 'NASA DSN Now',
+      },
+      { sourceType: 'api', sourceUrl: 'https://eyes.jpl.nasa.gov/dsn/data/dsn.xml' }
+    );
+
+    await logRefresh('mission-control', 'api-fetch', 'success', {
+      itemsUpdated: 1,
+      apiCallsMade: 1,
+      duration: Date.now() - start,
+    });
+
+    logger.info(`DSN status updated: ${dishes.length} active dishes tracking ${allTargets.size} spacecraft`);
+    return 1;
+  } catch (error) {
+    await logRefresh('mission-control', 'api-fetch', 'failed', {
+      errorMessage: error instanceof Error ? error.message : String(error),
+      duration: Date.now() - start,
+    });
+    logger.error('Failed to fetch DSN status', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
+// ─── Where The ISS At (Real-Time ISS Position) ─────────────────────────
+
+interface IssPositionResponse {
+  name: string;
+  id: number;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  velocity: number;
+  visibility: string;
+  footprint: number;
+  timestamp: number;
+  daynum: number;
+  solar_lat: number;
+  solar_lon: number;
+  units: string;
+}
+
+export async function fetchAndStoreIssPosition(): Promise<number> {
+  const start = Date.now();
+  try {
+    const data = await fetchWhereTheIss('25544') as IssPositionResponse | null;
+
+    if (!data || !data.latitude) {
+      logger.warn('Where The ISS At returned empty data');
+      return 0;
+    }
+
+    await upsertContent(
+      'space-stations:iss-position',
+      'space-stations',
+      'iss-position',
+      {
+        name: data.name,
+        satelliteId: data.id,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        altitude: data.altitude,
+        velocity: data.velocity,
+        visibility: data.visibility,
+        footprint: data.footprint,
+        timestamp: data.timestamp,
+        solarLat: data.solar_lat,
+        solarLon: data.solar_lon,
+        units: data.units,
+        fetchedAt: new Date().toISOString(),
+      },
+      { sourceType: 'api', sourceUrl: 'https://api.wheretheiss.at/v1/satellites/25544' }
+    );
+
+    await logRefresh('space-stations', 'api-fetch', 'success', {
+      itemsUpdated: 1,
+      apiCallsMade: 1,
+      duration: Date.now() - start,
+    });
+
+    logger.info(`ISS position updated: lat=${data.latitude.toFixed(2)}, lon=${data.longitude.toFixed(2)}, alt=${data.altitude.toFixed(1)}km`);
+    return 1;
+  } catch (error) {
+    await logRefresh('space-stations', 'api-fetch', 'failed', {
+      errorMessage: error instanceof Error ? error.message : String(error),
+      duration: Date.now() - start,
+    });
+    logger.error('Failed to fetch ISS position', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
+// ─── SBIR.gov (Space Innovation Grants) ─────────────────────────────────
+
+interface SbirAward {
+  company: string;
+  award_title: string;
+  agency: string;
+  branch?: string;
+  contract?: string;
+  award_amount?: number;
+  award_year?: number;
+  phase?: string;
+  program?: string;
+  solicitation_id?: string;
+  topic_code?: string;
+  abstract?: string;
+  ri_name?: string;
+  ri_state?: string;
+}
+
+export async function fetchAndStoreSbirAwards(): Promise<number> {
+  const start = Date.now();
+  try {
+    const data = await fetchSbirGov({
+      keyword: 'space satellite launch',
+      agency: 'NASA',
+      rows: '25',
+    }) as SbirAward[] | null;
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      logger.warn('SBIR.gov returned empty awards data');
+      return 0;
+    }
+
+    const awards = data.map((a) => ({
+      company: a.company || 'Unknown',
+      title: a.award_title || 'Untitled',
+      agency: a.agency || 'NASA',
+      branch: a.branch || null,
+      contract: a.contract || null,
+      amount: a.award_amount || null,
+      year: a.award_year || null,
+      phase: a.phase || null,
+      program: a.program || null,
+      solicitationId: a.solicitation_id || null,
+      topicCode: a.topic_code || null,
+      abstract: a.abstract?.slice(0, 300) || null,
+      state: a.ri_state || null,
+    }));
+
+    // Aggregate by company
+    const companyCounts: Record<string, { count: number; totalAmount: number }> = {};
+    for (const award of awards) {
+      const key = award.company;
+      if (!companyCounts[key]) companyCounts[key] = { count: 0, totalAmount: 0 };
+      companyCounts[key].count++;
+      companyCounts[key].totalAmount += award.amount || 0;
+    }
+
+    const topCompanies = Object.entries(companyCounts)
+      .sort(([, a], [, b]) => b.totalAmount - a.totalAmount)
+      .slice(0, 10)
+      .map(([company, stats]) => ({
+        company,
+        awardCount: stats.count,
+        totalFunding: stats.totalAmount,
+      }));
+
+    // Phase distribution
+    const phaseCounts: Record<string, number> = {};
+    for (const award of awards) {
+      const phase = award.phase || 'Unknown';
+      phaseCounts[phase] = (phaseCounts[phase] || 0) + 1;
+    }
+
+    await upsertContent(
+      'startups:sbir-awards',
+      'startups',
+      'sbir-awards',
+      {
+        awards,
+        totalReturned: awards.length,
+        topCompanies,
+        phaseDistribution: Object.entries(phaseCounts)
+          .map(([phase, count]) => ({ phase, count })),
+        totalFunding: awards.reduce((sum, a) => sum + (a.amount || 0), 0),
+        source: 'SBIR.gov',
+        fetchedAt: new Date().toISOString(),
+      },
+      { sourceType: 'api', sourceUrl: 'https://www.sbir.gov/api/awards.json' }
+    );
+
+    await logRefresh('startups', 'api-fetch', 'success', {
+      itemsUpdated: 1,
+      itemsChecked: awards.length,
+      apiCallsMade: 1,
+      duration: Date.now() - start,
+    });
+
+    logger.info(`SBIR awards updated: ${awards.length} space-related awards`);
+    return 1;
+  } catch (error) {
+    await logRefresh('startups', 'api-fetch', 'failed', {
+      errorMessage: error instanceof Error ? error.message : String(error),
+      duration: Date.now() - start,
+    });
+    logger.error('Failed to fetch SBIR awards', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return 0;
+  }
+}
+
 // ─── ORCHESTRATOR: Run all external API fetchers ────────────────────────
 
 export async function refreshAllExternalAPIs(): Promise<{
@@ -1556,14 +3206,14 @@ export async function refreshAllExternalAPIs(): Promise<{
   const results: Record<string, number> = {};
 
   // Run fetchers sequentially to respect rate limits
-  // --- Existing fetchers ---
+  // --- Core fetchers ---
   results['iss-crew'] = await fetchAndStoreISSCrew();
   results['neo-objects'] = await fetchAndStoreNeoObjects();
   results['satellite-counts'] = await fetchAndStoreSatelliteCounts();
   results['defense-spending'] = await fetchAndStoreDefenseSpending();
   results['patents'] = await fetchAndStorePatents();
 
-  // --- New fetchers ---
+  // --- v0.7.0 fetchers ---
   results['apod'] = await fetchAndStoreApod();
   results['nasa-tech-projects'] = await fetchAndStoreTechProjects();
   results['jpl-close-approaches'] = await fetchAndStoreJplCloseApproaches();
@@ -1574,9 +3224,47 @@ export async function refreshAllExternalAPIs(): Promise<{
   results['fcc-filings'] = await fetchAndStoreFccFilings();
   results['federal-register'] = await fetchAndStoreFederalRegDocs();
 
+  // --- v0.8.0 fetchers (12 new APIs) ---
+  results['epic-earth'] = await fetchAndStoreEpicEarth();
+  results['earth-events'] = await fetchAndStoreEarthEvents();
+  results['mars-rover-photos'] = await fetchAndStoreMarsRoverPhotos();
+  results['exoplanets'] = await fetchAndStoreExoplanets();
+  results['sentry-impact-risk'] = await fetchAndStoreSentryImpactRisk();
+  results['fireballs'] = await fetchAndStoreFireballs();
+  results['mining-targets'] = await fetchAndStoreMiningTargets();
+  results['nasa-images'] = await fetchAndStoreNasaImages();
+  results['solar-imagery'] = await fetchAndStoreSolarImagery();
+  results['dsn-status'] = await fetchAndStoreDsnStatus();
+  results['iss-position'] = await fetchAndStoreIssPosition();
+  results['sbir-awards'] = await fetchAndStoreSbirAwards();
+
   const totalUpdated = Object.values(results).reduce((sum, n) => sum + n, 0);
 
   logger.info('External API refresh complete', { totalUpdated, results });
+
+  return { totalUpdated, results };
+}
+
+/**
+ * Refresh only high-frequency APIs (those needing updates every 15-30 minutes).
+ * Call this more often than refreshAllExternalAPIs() for near-real-time data.
+ */
+export async function refreshHighFrequencyAPIs(): Promise<{
+  totalUpdated: number;
+  results: Record<string, number>;
+}> {
+  const results: Record<string, number> = {};
+
+  // Every ~15 minutes: DSN status, ISS position
+  results['dsn-status'] = await fetchAndStoreDsnStatus();
+  results['iss-position'] = await fetchAndStoreIssPosition();
+
+  // Every ~30 minutes: solar imagery
+  results['solar-imagery'] = await fetchAndStoreSolarImagery();
+
+  const totalUpdated = Object.values(results).reduce((sum, n) => sum + n, 0);
+
+  logger.info('High-frequency API refresh complete', { totalUpdated, results });
 
   return { totalUpdated, results };
 }

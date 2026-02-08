@@ -78,6 +78,12 @@ export function startCronJobs() {
     triggerEndpoint('/api/refresh?type=live-streams', 'live-stream-check');
   });
 
+  // Real-time data refresh — every 15 minutes
+  // Fetches ISS position, DSN status, and other fast-changing data
+  cron.schedule('*/15 * * * *', () => {
+    triggerEndpoint('/api/refresh?type=realtime', 'realtime-refresh');
+  });
+
   logger.info('Cron scheduler started', {
     jobs: [
       'news-fetch: every 5 minutes',
@@ -88,6 +94,7 @@ export function startCronJobs() {
       'ai-data-research: 2:00 AM UTC',
       'staleness-cleanup: 3:00 AM UTC',
       'live-stream-check: every 30 minutes',
+      'realtime-refresh: every 15 minutes',
     ],
   });
 }

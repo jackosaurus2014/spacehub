@@ -287,6 +287,108 @@ const BLOG_SOURCES = [
     authorType: 'journalist',
     description: 'Space industry and aerospace news coverage',
   },
+
+  // --- Space Company Blogs ---
+  {
+    name: 'SpaceX Updates',
+    slug: 'spacex-updates',
+    url: 'https://www.spacex.com',
+    feedUrl: 'https://www.spacex.com/news.xml',
+    type: 'blog',
+    authorType: 'engineer',
+    description: 'Official SpaceX mission updates',
+  },
+  {
+    name: 'Lockheed Martin Space',
+    slug: 'lockheed-martin',
+    url: 'https://news.lockheedmartin.com',
+    feedUrl: 'https://news.lockheedmartin.com/rss',
+    type: 'blog',
+    authorType: 'engineer',
+    description: 'Orion, satellite systems, defense space programs',
+  },
+
+  // --- Academic/Research ---
+  {
+    name: 'arXiv Astrophysics',
+    slug: 'arxiv-astrophysics',
+    url: 'https://arxiv.org/list/astro-ph/recent',
+    feedUrl: 'https://rss.arxiv.org/rss/astro-ph',
+    type: 'blog',
+    authorType: 'engineer',
+    description: 'Daily astrophysics research preprints',
+  },
+
+  // --- Science/Astrobiology ---
+  {
+    name: 'Many Worlds',
+    slug: 'many-worlds',
+    url: 'https://manyworlds.space',
+    feedUrl: 'https://manyworlds.space/feed/',
+    type: 'blog',
+    authorType: 'consultant',
+    description: 'Exoplanet and astrobiology news',
+  },
+  {
+    name: 'Astrobiology Web',
+    slug: 'astrobiology-web',
+    url: 'https://astrobiology.com',
+    feedUrl: 'https://astrobiology.com/feed',
+    type: 'blog',
+    authorType: 'consultant',
+    description: 'Astrobiology research and missions',
+  },
+
+  // --- Space Journalism ---
+  {
+    name: 'Leonard David Inside Outer Space',
+    slug: 'leonard-david',
+    url: 'https://www.leonarddavid.com',
+    feedUrl: 'https://www.leonarddavid.com/feed/',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Veteran space journalist covering NASA and policy',
+  },
+  {
+    name: 'Cosmic Log',
+    slug: 'cosmic-log',
+    url: 'https://cosmiclog.com',
+    feedUrl: 'https://cosmiclog.com/feed/',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Alan Boyle veteran space and science reporting',
+  },
+
+  // --- Policy/Think Tanks ---
+  {
+    name: 'National Space Society',
+    slug: 'national-space-society',
+    url: 'https://space.nss.org',
+    feedUrl: 'https://space.nss.org/blog/feed/',
+    type: 'blog',
+    authorType: 'consultant',
+    description: 'Space settlement, policy, and education',
+  },
+  {
+    name: 'Space Foundation',
+    slug: 'space-foundation',
+    url: 'https://www.spacefoundation.org',
+    feedUrl: 'https://www.spacefoundation.org/feed/',
+    type: 'blog',
+    authorType: 'consultant',
+    description: 'Space advocacy and Space Symposium updates',
+  },
+
+  // --- Life Sciences ---
+  {
+    name: 'ISS National Lab',
+    slug: 'iss-national-lab',
+    url: 'https://issnationallab.org',
+    feedUrl: 'https://issnationallab.org/feed/',
+    type: 'blog',
+    authorType: 'engineer',
+    description: 'Microgravity experiments and research results',
+  },
 ];
 
 const TOPIC_KEYWORDS: Record<string, string[]> = {

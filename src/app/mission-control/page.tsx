@@ -26,6 +26,40 @@ interface GroupedEvents {
   };
 }
 
+// ════════════════════════════════════════
+// Dynamic Content Interfaces
+// ════════════════════════════════════════
+
+interface EpicEarthImage {
+  identifier: string;
+  caption: string;
+  date: string;
+  image_url: string;
+  centroid_coordinates: { lat: number; lon: number };
+}
+
+interface NasaImage {
+  nasa_id: string;
+  title: string;
+  description: string;
+  date_created: string;
+  media_type: string;
+  thumbnail_url: string;
+  keywords: string[];
+}
+
+interface DsnAntenna {
+  dish_name: string;
+  azimuth: number;
+  elevation: number;
+  wind_speed: number;
+  is_active: boolean;
+  target: string;
+  signal_type: string;
+  data_rate: string;
+  frequency: string;
+}
+
 // Countdown timer component for imminent launches
 function CountdownCard({ event }: { event: SpaceEvent }) {
   const [countdown, setCountdown] = useState<string>('');
@@ -697,6 +731,12 @@ function MissionControlContent() {
   );
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
 
+  // Dynamic content state
+  const [epicEarthImages, setEpicEarthImages] = useState<EpicEarthImage[]>([]);
+  const [nasaImages, setNasaImages] = useState<NasaImage[]>([]);
+  const [dsnAntennas, setDsnAntennas] = useState<DsnAntenna[]>([]);
+  const [contentLoading, setContentLoading] = useState(true);
+
   // Sync filters to URL
   useEffect(() => {
     const params = new URLSearchParams();
@@ -744,6 +784,36 @@ function MissionControlContent() {
     }, 2 * 60 * 1000);
     return () => clearInterval(interval);
   }, [fetchEvents]);
+
+  // Fetch dynamic content sections
+  useEffect(() => {
+    const fetchContent = async () => {
+      setContentLoading(true);
+      try {
+        const [epicRes, nasaRes, dsnRes] = await Promise.all([
+          fetch('/api/content/mission-control?section=epic-earth'),
+          fetch('/api/content/mission-control?section=nasa-images'),
+          fetch('/api/content/mission-control?section=dsn-status'),
+        ]);
+
+        const [epicData, nasaData, dsnData] = await Promise.all([
+          epicRes.json(),
+          nasaRes.json(),
+          dsnRes.json(),
+        ]);
+
+        if (epicData.data) setEpicEarthImages(epicData.data);
+        if (nasaData.data) setNasaImages(nasaData.data);
+        if (dsnData.data) setDsnAntennas(dsnData.data);
+      } catch (error) {
+        console.error('Failed to fetch dynamic content:', error);
+      } finally {
+        setContentLoading(false);
+      }
+    };
+
+    fetchContent();
+  }, []);
 
   const handleRefresh = useCallback(async () => {
     await fetchEvents();
@@ -939,6 +1009,146 @@ function MissionControlContent() {
               </div>
             ))}
           </div>
+        )}
+
+        {/* ════════════════════════════════════════ */}
+        {/* Dynamic Content Sections */}
+        {/* ════════════════════════════════════════ */}
+
+        {contentLoading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+          </div>
+        ) : (
+          <>
+            {/* Earth from Space - EPIC Earth Images */}
+            {epicEarthImages.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+                  <span className="text-2xl">🌍</span>
+                  Earth from Space
+                  <span className="ml-2 text-slate-400 text-sm font-normal">NASA EPIC</span>
+                </h2>
+                <div className="overflow-x-auto pb-4">
+                  <div className="flex gap-4 min-w-max">
+                    {epicEarthImages.map((img) => (
+                      <div key={img.identifier} className="card overflow-hidden w-72 flex-shrink-0">
+                        <div className="relative h-48 bg-slate-100">
+                          <img
+                            src={img.image_url}
+                            alt={img.caption || 'Earth from EPIC camera'}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="p-3">
+                          <div className="text-xs text-slate-400 mb-1">
+                            {new Date(img.date).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </div>
+                          {img.caption && (
+                            <p className="text-slate-900 text-sm line-clamp-2">{img.caption}</p>
+                          )}
+                          {img.centroid_coordinates && (
+                            <p className="text-slate-400 text-xs mt-1">
+                              {img.centroid_coordinates.lat.toFixed(1)}&deg;, {img.centroid_coordinates.lon.toFixed(1)}&deg;
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* NASA Image Gallery */}
+            {nasaImages.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+                  <span className="text-2xl">📸</span>
+                  NASA Image Gallery
+                  <span className="ml-2 text-slate-400 text-sm font-normal">Image & Video Library</span>
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {nasaImages.map((img) => (
+                    <div key={img.nasa_id} className="card overflow-hidden">
+                      <div className="relative h-40 bg-slate-100">
+                        <img
+                          src={img.thumbnail_url}
+                          alt={img.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        {img.media_type && img.media_type !== 'image' && (
+                          <div className="absolute top-2 right-2 bg-slate-900/70 text-white text-xs px-2 py-0.5 rounded capitalize">
+                            {img.media_type}
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <h3 className="text-slate-900 text-sm font-semibold line-clamp-2">{img.title}</h3>
+                        <div className="text-xs text-slate-400 mt-1">
+                          {new Date(img.date_created).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </div>
+                        {img.description && (
+                          <p className="text-slate-400 text-xs mt-2 line-clamp-3">{img.description}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Deep Space Network Status */}
+            {dsnAntennas.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+                  <span className="text-2xl">📡</span>
+                  Deep Space Network Status
+                  <span className="ml-2 text-slate-400 text-sm font-normal">Antenna Activity</span>
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {dsnAntennas.map((antenna) => (
+                    <div key={antenna.dish_name} className="card p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-slate-900 font-bold text-lg">{antenna.dish_name}</h3>
+                        <span className={`w-3 h-3 rounded-full ${antenna.is_active ? 'bg-green-500 animate-pulse' : 'bg-slate-300'}`} />
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Target</span>
+                          <span className="text-slate-900 font-medium">{antenna.target || 'Idle'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Signal</span>
+                          <span className="text-slate-900 font-medium">{antenna.signal_type || '-'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Data Rate</span>
+                          <span className="text-slate-900 font-medium">{antenna.data_rate || '-'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Frequency</span>
+                          <span className="text-slate-900 font-medium">{antenna.frequency || '-'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         {/* Related Intelligence */}

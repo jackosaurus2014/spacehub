@@ -92,6 +92,56 @@ export const EXTERNAL_APIS = {
     baseUrl: 'https://efiling.fcc.gov/solr/ecfs/select',
     rateLimit: { requests: 50, period: 3600 }, // Conservative — be polite
   },
+  // ─── NEW APIs (v0.8.0) ─────────────────────────────────────────────────
+  NASA_EPIC: {
+    baseUrl: 'https://epic.gsfc.nasa.gov/api',
+    rateLimit: { requests: 30, period: 3600 }, // No official limit; be polite
+  },
+  NASA_EONET: {
+    baseUrl: 'https://eonet.gsfc.nasa.gov/api/v3',
+    rateLimit: { requests: 60, period: 3600 },
+  },
+  NASA_MARS_PHOTOS: {
+    baseUrl: 'https://api.nasa.gov/mars-photos/api/v1',
+    apiKey: process.env.NASA_API_KEY || 'DEMO_KEY',
+    rateLimit: { requests: 1000, period: 3600 },
+  },
+  NASA_EXOPLANET: {
+    baseUrl: 'https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI',
+    rateLimit: { requests: 30, period: 3600 }, // Be polite — academic resource
+  },
+  JPL_SENTRY: {
+    baseUrl: 'https://ssd-api.jpl.nasa.gov/sentry.api',
+    rateLimit: { requests: 20, period: 60 },
+  },
+  JPL_FIREBALL: {
+    baseUrl: 'https://ssd-api.jpl.nasa.gov/fireball.api',
+    rateLimit: { requests: 20, period: 60 },
+  },
+  ASTERANK: {
+    baseUrl: 'https://www.asterank.com/api/asterank',
+    rateLimit: { requests: 30, period: 3600 },
+  },
+  NASA_IMAGES: {
+    baseUrl: 'https://images-api.nasa.gov',
+    rateLimit: { requests: 100, period: 3600 },
+  },
+  HELIOVIEWER: {
+    baseUrl: 'https://api.helioviewer.org/v2',
+    rateLimit: { requests: 60, period: 3600 },
+  },
+  NASA_DSN: {
+    baseUrl: 'https://eyes.jpl.nasa.gov/dsn/data',
+    rateLimit: { requests: 30, period: 3600 },
+  },
+  WHERE_THE_ISS: {
+    baseUrl: 'https://api.wheretheiss.at/v1',
+    rateLimit: { requests: 60, period: 3600 },
+  },
+  SBIR_GOV: {
+    baseUrl: 'https://www.sbir.gov/api',
+    rateLimit: { requests: 30, period: 3600 },
+  },
 };
 
 // Circuit breakers for each external API
@@ -152,6 +202,55 @@ const samGovBreaker = createCircuitBreaker('sam-gov', {
   resetTimeout: 300_000, // 5 min — limited daily quota
 });
 const fccEcfsBreaker = createCircuitBreaker('fcc-ecfs', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+// --- New circuit breakers (v0.8.0) ---
+const nasaEpicBreaker = createCircuitBreaker('nasa-epic', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const nasaEonetBreaker = createCircuitBreaker('nasa-eonet', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const nasaMarsPhotosBreaker = createCircuitBreaker('nasa-mars-photos', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const nasaExoplanetBreaker = createCircuitBreaker('nasa-exoplanet', {
+  failureThreshold: 3,
+  resetTimeout: 300_000, // 5 min — academic resource, be polite
+});
+const jplSentryBreaker = createCircuitBreaker('jpl-sentry', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const jplFireballBreaker = createCircuitBreaker('jpl-fireball', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const asterankBreaker = createCircuitBreaker('asterank', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const nasaImagesBreaker = createCircuitBreaker('nasa-images', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const helioviewerBreaker = createCircuitBreaker('helioviewer', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const nasaDsnBreaker = createCircuitBreaker('nasa-dsn', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const whereTheIssBreaker = createCircuitBreaker('where-the-iss', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const sbirGovBreaker = createCircuitBreaker('sbir-gov', {
   failureThreshold: 3,
   resetTimeout: 120_000,
 });
@@ -421,6 +520,162 @@ export async function fetchFccEcfs(
       ...params,
     });
     const url = `${EXTERNAL_APIS.FCC_ECFS.baseUrl}?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// ─── NEW FETCH HELPERS (v0.8.0) ──────────────────────────────────────────
+
+// NASA EPIC (Earth Polychromatic Imaging Camera) API helpers
+export async function fetchNasaEpic(
+  collection: 'natural' | 'enhanced' = 'natural'
+): Promise<unknown> {
+  return nasaEpicBreaker.execute(async () => {
+    const url = `${EXTERNAL_APIS.NASA_EPIC.baseUrl}/${collection}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// NASA EONET (Earth Observatory Natural Event Tracker) API helpers
+export async function fetchNasaEonet(
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  return nasaEonetBreaker.execute(async () => {
+    const searchParams = new URLSearchParams(params);
+    const url = `${EXTERNAL_APIS.NASA_EONET.baseUrl}/events?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// NASA Mars Rover Photos API helpers
+export async function fetchNasaMarsPhotos(
+  rover: string = 'perseverance',
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  return nasaMarsPhotosBreaker.execute(async () => {
+    const searchParams = new URLSearchParams({
+      api_key: EXTERNAL_APIS.NASA_MARS_PHOTOS.apiKey,
+      ...params,
+    });
+    const url = `${EXTERNAL_APIS.NASA_MARS_PHOTOS.baseUrl}/rovers/${rover}/latest_photos?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// NASA Exoplanet Archive API helpers
+export async function fetchNasaExoplanets(
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  return nasaExoplanetBreaker.execute(async () => {
+    const defaultParams: Record<string, string> = {
+      table: 'ps',
+      select: 'pl_name,hostname,discoverymethod,disc_year,pl_orbper,pl_rade,pl_bmasse,pl_eqt,sy_dist',
+      where: 'default_flag=1',
+      order: 'disc_year desc',
+      format: 'json',
+      ...params,
+    };
+    const searchParams = new URLSearchParams(defaultParams);
+    const url = `${EXTERNAL_APIS.NASA_EXOPLANET.baseUrl}?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// JPL Sentry (Impact Risk) API helpers
+export async function fetchJplSentry(
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  return jplSentryBreaker.execute(async () => {
+    const searchParams = new URLSearchParams(params);
+    const qs = searchParams.toString();
+    const url = qs ? `${EXTERNAL_APIS.JPL_SENTRY.baseUrl}?${qs}` : EXTERNAL_APIS.JPL_SENTRY.baseUrl;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// JPL Fireball (Bolide Events) API helpers
+export async function fetchJplFireball(
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  return jplFireballBreaker.execute(async () => {
+    const searchParams = new URLSearchParams(params);
+    const url = `${EXTERNAL_APIS.JPL_FIREBALL.baseUrl}?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// Asterank (Asteroid Mining Economics) API helpers
+export async function fetchAsterank(
+  query: string,
+  limit: number = 50
+): Promise<unknown> {
+  return asterankBreaker.execute(async () => {
+    const url = `${EXTERNAL_APIS.ASTERANK.baseUrl}?query=${encodeURIComponent(query)}&limit=${limit}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// NASA Image and Video Library API helpers
+export async function fetchNasaImages(
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  return nasaImagesBreaker.execute(async () => {
+    const searchParams = new URLSearchParams(params);
+    const url = `${EXTERNAL_APIS.NASA_IMAGES.baseUrl}/search?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// Helioviewer (Solar Images) API helpers
+export async function fetchHelioviewer(
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  return helioviewerBreaker.execute(async () => {
+    const searchParams = new URLSearchParams(params);
+    const url = `${EXTERNAL_APIS.HELIOVIEWER.baseUrl}/getClosestImage/?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// NASA DSN Now (Deep Space Network) — returns XML, parsed as text
+export async function fetchNasaDsn(): Promise<string | null> {
+  return nasaDsnBreaker.execute(async () => {
+    const url = `${EXTERNAL_APIS.NASA_DSN.baseUrl}/dsn.xml`;
+    const response = await fetchWithRetry(url, {
+      headers: { 'Accept': 'application/xml, text/xml, */*' },
+    });
+    return response.text();
+  }, null);
+}
+
+// Where The ISS At API helpers
+export async function fetchWhereTheIss(
+  satelliteId: string = '25544'
+): Promise<unknown> {
+  return whereTheIssBreaker.execute(async () => {
+    const url = `${EXTERNAL_APIS.WHERE_THE_ISS.baseUrl}/satellites/${satelliteId}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// SBIR.gov (Space Innovation Grants) API helpers
+export async function fetchSbirGov(
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  return sbirGovBreaker.execute(async () => {
+    const searchParams = new URLSearchParams(params);
+    const url = `${EXTERNAL_APIS.SBIR_GOV.baseUrl}/awards.json?${searchParams}`;
     const response = await fetchWithRetry(url);
     return response.json();
   }, null);
