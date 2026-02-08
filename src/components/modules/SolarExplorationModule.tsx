@@ -137,7 +137,7 @@ export default function SolarExplorationModule() {
       {selectedBody && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* 3D Viewer */}
-          <div className="lg:col-span-2 card overflow-hidden">
+          <div className="lg:col-span-2 card overflow-visible">
             <span className="sr-only">
               {`3D visualization of ${selectedBody.name}, a ${selectedBody.type}. ${selectedBody.landers?.length || 0} missions recorded${selectedBody.description ? `. ${selectedBody.description}` : ''}`}
             </span>

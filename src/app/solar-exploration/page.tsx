@@ -189,7 +189,7 @@ function SolarExplorationContent() {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             {/* 3D Viewer */}
             <div className="xl:col-span-2">
-              <div className="card overflow-hidden">
+              <div className="card overflow-visible">
                 <PlanetaryScene body={selectedBody} height="500px" />
               </div>
 
