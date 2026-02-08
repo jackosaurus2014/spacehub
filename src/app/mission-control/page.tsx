@@ -737,6 +737,14 @@ function MissionControlContent() {
     fetchEvents();
   }, [fetchEvents]);
 
+  // Auto-refresh events every 2 minutes to keep mission data current
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchEvents();
+    }, 2 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [fetchEvents]);
+
   const handleRefresh = useCallback(async () => {
     await fetchEvents();
   }, [fetchEvents]);

@@ -47,8 +47,8 @@ function enrichEvent(event: any) {
   if (launchDate) {
     const timeDiff = launchDate.getTime() - now.getTime();
     const isWithin30Min = timeDiff > 0 && timeDiff <= 30 * 60 * 1000;
-    const isPastWithin3Hours = timeDiff < 0 && Math.abs(timeDiff) <= 3 * 60 * 60 * 1000;
-    isLive = (event.webcastLive || isWithin30Min || isPastWithin3Hours) && !!rawStreamUrl;
+    const isPastWithin90Min = timeDiff < 0 && Math.abs(timeDiff) <= 90 * 60 * 1000;
+    isLive = (event.webcastLive || isWithin30Min || isPastWithin90Min) && !!rawStreamUrl;
   }
 
   // Compute mission phase from time proximity
@@ -61,7 +61,7 @@ function enrichEvent(event: any) {
       missionPhase = 'liftoff';
     } else if (timeDiff <= 0 && Math.abs(timeDiff) <= 15 * 60 * 1000) {
       missionPhase = 'ascent';
-    } else if (timeDiff <= 0 && Math.abs(timeDiff) <= 3 * 60 * 60 * 1000) {
+    } else if (timeDiff <= 0 && Math.abs(timeDiff) <= 90 * 60 * 1000) {
       missionPhase = 'nominal_orbit';
     } else if (timeDiff > 30 * 60 * 1000 && timeDiff <= 2 * 60 * 60 * 1000) {
       missionPhase = 'pre_launch';
@@ -187,7 +187,7 @@ export async function GET(req: NextRequest) {
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
     const country = searchParams.get('country');
-    const includeMockLive = searchParams.get('includeMockLive') !== 'false'; // Default true
+    const includeMockLive = searchParams.get('includeMockLive') === 'true'; // Disabled by default
 
     const now = new Date();
 

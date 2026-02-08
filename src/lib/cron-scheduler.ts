@@ -34,8 +34,8 @@ async function triggerEndpoint(path: string, label: string) {
 }
 
 export function startCronJobs() {
-  // News fetch — every 15 minutes
-  cron.schedule('*/15 * * * *', () => {
+  // News + events fetch — every 5 minutes
+  cron.schedule('*/5 * * * *', () => {
     triggerEndpoint('/api/refresh?type=news', 'news-fetch');
   });
 
@@ -51,7 +51,7 @@ export function startCronJobs() {
 
   logger.info('Cron scheduler started', {
     jobs: [
-      'news-fetch: every 15 minutes',
+      'news-fetch: every 5 minutes',
       'daily-refresh: midnight UTC',
       'ai-insights: 1:00 AM UTC',
     ],
