@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import DataFreshness from '@/components/ui/DataFreshness';
 
 // ────────────────────────────────────────
 // Types
@@ -132,6 +133,38 @@ interface FrequencyAllocation {
   typicalUse: string;
   maxDataRate: string;
   color: string;
+}
+
+interface LunarCommsElement {
+  id: string;
+  name: string;
+  agency: string;
+  status: string;
+  statusColor: string;
+  description: string;
+  keyFeatures: string[];
+}
+
+interface LatencyEntry {
+  orbit: string;
+  oneWayLatency: string;
+  roundTrip: string;
+  example: string;
+  color: string;
+}
+
+interface CommsHeroStat {
+  label: string;
+  value: string;
+  color: string;
+}
+
+interface EstrackStation {
+  name: string;
+  location: string;
+  diameter: string;
+  bands: string;
+  role: string;
 }
 
 // ────────────────────────────────────────
@@ -1288,11 +1321,15 @@ function getSuccessRateColor(rate: number): string {
 // Sub-Components
 // ────────────────────────────────────────
 
-function HeroStats() {
-  const totalActive = ACTIVE_SPACEPORTS.length;
-  const totalEmerging = EMERGING_SPACEPORTS.length;
-  const totalLaunches2024 = TRAFFIC_DATA.reduce((sum, t) => sum + t.launches2024, 0);
-  const countries = Array.from(new Set(ACTIVE_SPACEPORTS.map(s => s.country)));
+function HeroStats({ activeSpaceports, emergingSpaceports, trafficData }: {
+  activeSpaceports: Spaceport[];
+  emergingSpaceports: EmergingSpaceport[];
+  trafficData: TrafficRecord[];
+}) {
+  const totalActive = activeSpaceports.length;
+  const totalEmerging = emergingSpaceports.length;
+  const totalLaunches2024 = trafficData.reduce((sum, t) => sum + t.launches2024, 0);
+  const countries = Array.from(new Set(activeSpaceports.map(s => s.country)));
 
   const stats = [
     { label: 'Active Launch Sites', value: totalActive.toString(), color: 'text-cyan-400' },
@@ -1541,8 +1578,8 @@ function EmergingSpaceportCard({ spaceport }: { spaceport: EmergingSpaceport }) 
   );
 }
 
-function SiteComparisonTable() {
-  const allSites = ACTIVE_SPACEPORTS;
+function SiteComparisonTable({ activeSpaceports }: { activeSpaceports: Spaceport[] }) {
+  const allSites = activeSpaceports;
 
   return (
     <div className="card overflow-hidden">
@@ -1613,9 +1650,9 @@ function SiteComparisonTable() {
   );
 }
 
-function TrafficDataTab() {
+function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
   const [sortBy, setSortBy] = useState<'launches2024' | 'trend' | 'successRate'>('launches2024');
-  const sortedData = [...TRAFFIC_DATA].sort((a, b) => {
+  const sortedData = [...trafficData].sort((a, b) => {
     if (sortBy === 'launches2024') return b.launches2024 - a.launches2024;
     if (sortBy === 'successRate') return b.successRate - a.successRate;
     // trend sort: up > stable > down
@@ -1624,18 +1661,18 @@ function TrafficDataTab() {
   });
 
   const totalByYear = {
-    y2020: TRAFFIC_DATA.reduce((s, t) => s + t.launches2020, 0),
-    y2021: TRAFFIC_DATA.reduce((s, t) => s + t.launches2021, 0),
-    y2022: TRAFFIC_DATA.reduce((s, t) => s + t.launches2022, 0),
-    y2023: TRAFFIC_DATA.reduce((s, t) => s + t.launches2023, 0),
-    y2024: TRAFFIC_DATA.reduce((s, t) => s + t.launches2024, 0),
+    y2020: trafficData.reduce((s, t) => s + t.launches2020, 0),
+    y2021: trafficData.reduce((s, t) => s + t.launches2021, 0),
+    y2022: trafficData.reduce((s, t) => s + t.launches2022, 0),
+    y2023: trafficData.reduce((s, t) => s + t.launches2023, 0),
+    y2024: trafficData.reduce((s, t) => s + t.launches2024, 0),
   };
 
-  const maxLaunches = Math.max(...TRAFFIC_DATA.map(t => t.launches2024));
+  const maxLaunches = Math.max(...trafficData.map(t => t.launches2024));
 
   // Country breakdown
   const countryData: Record<string, number> = {};
-  TRAFFIC_DATA.forEach(t => {
+  trafficData.forEach(t => {
     const country = t.country;
     countryData[country] = (countryData[country] || 0) + t.launches2024;
   });
@@ -1791,10 +1828,10 @@ function TrafficDataTab() {
 
         {/* Table Summary */}
         <div className="p-4 bg-white/[0.02] border-t border-white/5 flex flex-wrap items-center gap-6 text-xs text-star-300/60">
-          <span>Tracked sites: <span className="text-white font-bold">{TRAFFIC_DATA.length}</span></span>
+          <span>Tracked sites: <span className="text-white font-bold">{trafficData.length}</span></span>
           <span>Total 2024 launches: <span className="text-cyan-400 font-bold">{totalByYear.y2024}</span></span>
-          <span>Growing sites: <span className="text-green-400 font-bold">{TRAFFIC_DATA.filter(t => t.trend === 'up').length}</span></span>
-          <span>Declining sites: <span className="text-red-400 font-bold">{TRAFFIC_DATA.filter(t => t.trend === 'down').length}</span></span>
+          <span>Growing sites: <span className="text-green-400 font-bold">{trafficData.filter(t => t.trend === 'up').length}</span></span>
+          <span>Declining sites: <span className="text-red-400 font-bold">{trafficData.filter(t => t.trend === 'down').length}</span></span>
         </div>
       </div>
 
@@ -2090,15 +2127,67 @@ function SpaceportDirectoryPage() {
   const [commsSubTab, setCommsSubTab] = useState<CommsSubTab>('dsn');
   const [relayFilter, setRelayFilter] = useState<string>('');
 
-  const countries = Array.from(new Set(ACTIVE_SPACEPORTS.map(s => s.country))).sort();
+  // API-fetched data (falls back to hardcoded consts)
+  const [activeSpaceportsData, setActiveSpaceportsData] = useState<Spaceport[]>(ACTIVE_SPACEPORTS);
+  const [emergingSpaceportsData, setEmergingSpaceportsData] = useState<EmergingSpaceport[]>(EMERGING_SPACEPORTS);
+  const [trafficDataState, setTrafficDataState] = useState<TrafficRecord[]>(TRAFFIC_DATA);
+  const [dsnComplexesData, setDsnComplexesData] = useState<DSNComplex[]>(DSN_COMPLEXES);
+  const [relayNetworksData, setRelayNetworksData] = useState<RelayNetwork[]>(RELAY_NETWORKS);
+  const [opticalSystemsData, setOpticalSystemsData] = useState<OpticalSystem[]>(OPTICAL_SYSTEMS);
+  const [lunarCommsData, setLunarCommsData] = useState<LunarCommsElement[]>(LUNAR_COMMS_ELEMENTS);
+  const [ccsdsProtocolsData, setCcsdsProtocolsData] = useState<CCSDSProtocol[]>(CCSDS_PROTOCOLS);
+  const [frequencyAllocationsData, setFrequencyAllocationsData] = useState<FrequencyAllocation[]>(FREQUENCY_ALLOCATIONS);
+  const [latencyByOrbitData, setLatencyByOrbitData] = useState<LatencyEntry[]>(LATENCY_BY_ORBIT);
+  const [commsHeroStatsData, setCommsHeroStatsData] = useState<CommsHeroStat[]>(COMMS_HERO_STATS);
+  const [estrackStationsData, setEstrackStationsData] = useState<EstrackStation[]>(ESTRACK_STATIONS);
+  const [loading, setLoading] = useState(true);
+  const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const sections = [
+          'active-spaceports', 'emerging-spaceports', 'traffic-data',
+          'dsn-complexes', 'relay-networks', 'optical-systems',
+          'lunar-comms-elements', 'ccsds-protocols', 'frequency-allocations',
+          'latency-by-orbit', 'comms-hero-stats', 'estrack-stations',
+        ];
+        const responses = await Promise.all(
+          sections.map(s => fetch(`/api/content/spaceports?section=${s}`))
+        );
+        const data = await Promise.all(responses.map(r => r.json()));
+
+        if (data[0].data?.length) setActiveSpaceportsData(data[0].data);
+        if (data[1].data?.length) setEmergingSpaceportsData(data[1].data);
+        if (data[2].data?.length) setTrafficDataState(data[2].data);
+        if (data[3].data?.length) setDsnComplexesData(data[3].data);
+        if (data[4].data?.length) setRelayNetworksData(data[4].data);
+        if (data[5].data?.length) setOpticalSystemsData(data[5].data);
+        if (data[6].data?.length) setLunarCommsData(data[6].data);
+        if (data[7].data?.length) setCcsdsProtocolsData(data[7].data);
+        if (data[8].data?.length) setFrequencyAllocationsData(data[8].data);
+        if (data[9].data?.length) setLatencyByOrbitData(data[9].data);
+        if (data[10].data?.length) setCommsHeroStatsData(data[10].data);
+        if (data[11].data?.length) setEstrackStationsData(data[11].data);
+        setRefreshedAt(data[0].meta?.lastRefreshed || null);
+      } catch (error) {
+        console.error('Failed to load spaceport data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  const countries = Array.from(new Set(activeSpaceportsData.map(s => s.country))).sort();
 
   const filteredSpaceports = countryFilter
-    ? ACTIVE_SPACEPORTS.filter(s => s.country === countryFilter)
-    : ACTIVE_SPACEPORTS;
+    ? activeSpaceportsData.filter(s => s.country === countryFilter)
+    : activeSpaceportsData;
 
   const filteredRelays = relayFilter
-    ? RELAY_NETWORKS.filter((n) => n.status === relayFilter)
-    : RELAY_NETWORKS;
+    ? relayNetworksData.filter((n) => n.status === relayFilter)
+    : relayNetworksData;
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'active', label: 'Active Sites' },
@@ -2107,6 +2196,25 @@ function SpaceportDirectoryPage() {
     { id: 'traffic', label: 'Traffic Data' },
     { id: 'communications', label: 'Communications' },
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>)}
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+              {[1,2,3,4].map(i => <div key={i} className="h-64 bg-slate-800 rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -2118,9 +2226,11 @@ function SpaceportDirectoryPage() {
           accentColor="amber"
         />
 
+        <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
+
         {/* Hero Stats */}
         <ScrollReveal>
-          <HeroStats />
+          <HeroStats activeSpaceports={activeSpaceportsData} emergingSpaceports={emergingSpaceportsData} trafficData={trafficDataState} />
         </ScrollReveal>
 
         {/* Industry Overview Banner */}
@@ -2173,10 +2283,10 @@ function SpaceportDirectoryPage() {
                         : 'bg-transparent text-star-300 border border-white/10 hover:border-white/20'
                     }`}
                   >
-                    All ({ACTIVE_SPACEPORTS.length})
+                    All ({activeSpaceportsData.length})
                   </button>
                   {countries.map((country) => {
-                    const count = ACTIVE_SPACEPORTS.filter(s => s.country === country).length;
+                    const count = activeSpaceportsData.filter(s => s.country === country).length;
                     return (
                       <button
                         key={country}
@@ -2226,7 +2336,7 @@ function SpaceportDirectoryPage() {
               </div>
 
               <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                {EMERGING_SPACEPORTS.map((spaceport) => (
+                {emergingSpaceportsData.map((spaceport) => (
                   <StaggerItem key={spaceport.id}>
                     <EmergingSpaceportCard spaceport={spaceport} />
                   </StaggerItem>
@@ -2237,12 +2347,12 @@ function SpaceportDirectoryPage() {
 
           {/* ──────────────── COMPARISON TAB ──────────────── */}
           {activeTab === 'comparison' && (
-            <SiteComparisonTable />
+            <SiteComparisonTable activeSpaceports={activeSpaceportsData} />
           )}
 
           {/* ──────────────── TRAFFIC DATA TAB ──────────────── */}
           {activeTab === 'traffic' && (
-            <TrafficDataTab />
+            <TrafficDataTab trafficData={trafficDataState} />
           )}
 
           {/* ──────────────── COMMUNICATIONS TAB ──────────────── */}
@@ -2250,7 +2360,7 @@ function SpaceportDirectoryPage() {
             <div>
               {/* Comms Hero Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                {COMMS_HERO_STATS.map((stat) => (
+                {commsHeroStatsData.map((stat) => (
                   <div key={stat.label} className="card-elevated p-5 text-center">
                     <div className={`text-3xl font-bold font-display tracking-tight ${stat.color}`}>
                       {stat.value}
@@ -2340,7 +2450,7 @@ function SpaceportDirectoryPage() {
                     </div>
 
                     <div className="space-y-5 mb-6">
-                      {DSN_COMPLEXES.map((complex) => (
+                      {dsnComplexesData.map((complex) => (
                         <DSNComplexCard key={complex.id} complex={complex} />
                       ))}
                     </div>
@@ -2397,7 +2507,7 @@ function SpaceportDirectoryPage() {
                             </tr>
                           </thead>
                           <tbody>
-                            {ESTRACK_STATIONS.map((station, idx) => (
+                            {estrackStationsData.map((station, idx) => (
                               <tr key={station.name} className={`border-b border-space-800 ${idx % 2 === 0 ? 'bg-space-900/50' : ''}`}>
                                 <td className="py-2 px-3 text-white font-medium">{station.name}</td>
                                 <td className="py-2 px-3 text-slate-300">{station.location}</td>
@@ -2588,7 +2698,7 @@ function SpaceportDirectoryPage() {
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
-                      {OPTICAL_SYSTEMS.map((system) => (
+                      {opticalSystemsData.map((system) => (
                         <OpticalSystemCard key={system.id} system={system} />
                       ))}
                     </div>
@@ -2663,7 +2773,7 @@ function SpaceportDirectoryPage() {
                     </div>
 
                     <div className="space-y-5 mb-6">
-                      {LUNAR_COMMS_ELEMENTS.map((element) => (
+                      {lunarCommsData.map((element) => (
                         <div key={element.id} className="card-elevated p-6 border border-space-700">
                           <div className="flex items-start justify-between mb-4">
                             <div>
@@ -2781,7 +2891,7 @@ function SpaceportDirectoryPage() {
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
-                      {CCSDS_PROTOCOLS.map((protocol) => (
+                      {ccsdsProtocolsData.map((protocol) => (
                         <div key={protocol.abbreviation} className="card-elevated p-6 border border-space-700">
                           <div className="flex items-start justify-between mb-3">
                             <div>
@@ -2848,7 +2958,7 @@ function SpaceportDirectoryPage() {
                             </tr>
                           </thead>
                           <tbody>
-                            {FREQUENCY_ALLOCATIONS.map((alloc, idx) => (
+                            {frequencyAllocationsData.map((alloc, idx) => (
                               <tr key={alloc.band} className={`border-b border-space-800 ${idx % 2 === 0 ? 'bg-space-900/50' : ''}`}>
                                 <td className={`py-2 px-3 font-bold ${alloc.color}`}>{alloc.band}</td>
                                 <td className="py-2 px-3 text-white text-xs font-mono">{alloc.range}</td>
@@ -2871,7 +2981,7 @@ function SpaceportDirectoryPage() {
                         require high degrees of autonomy.
                       </p>
                       <div className="space-y-3">
-                        {LATENCY_BY_ORBIT.map((entry) => {
+                        {latencyByOrbitData.map((entry) => {
                           const distances: Record<string, number> = {
                             'LEO (550 km)': 0.0018,
                             'MEO (8,000 km)': 0.027,

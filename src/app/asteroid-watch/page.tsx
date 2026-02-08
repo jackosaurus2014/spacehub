@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import DataFreshness from '@/components/ui/DataFreshness';
 
 // ────────────────────────────────────────
 // Types
@@ -91,229 +92,8 @@ interface DiscoveryMilestone {
 }
 
 // ────────────────────────────────────────
-// Data
+// Data is fetched from /api/content/asteroid-watch
 // ────────────────────────────────────────
-
-const CLOSE_APPROACHES: CloseApproach[] = [
-  { id: 'ca-1', name: '2024 YR4', date: '2032-12-22', distanceLD: 0.8, distanceAU: 0.0021, diameterMin: 40, diameterMax: 90, velocity: 17.2, torino: 3, palermo: -1.2, isPHA: true, orbitClass: 'Apollo' },
-  { id: 'ca-2', name: '99942 Apophis', date: '2029-04-13', distanceLD: 0.1, distanceAU: 0.00026, diameterMin: 340, diameterMax: 340, velocity: 7.4, torino: 0, palermo: -99, isPHA: true, orbitClass: 'Aten' },
-  { id: 'ca-3', name: '2025 BZ2', date: '2026-02-12', distanceLD: 3.2, distanceAU: 0.0082, diameterMin: 8, diameterMax: 18, velocity: 12.8, torino: 0, palermo: -99, isPHA: false, orbitClass: 'Apollo' },
-  { id: 'ca-4', name: '2020 FE', date: '2026-02-15', distanceLD: 7.4, distanceAU: 0.019, diameterMin: 15, diameterMax: 34, velocity: 9.1, torino: 0, palermo: -99, isPHA: false, orbitClass: 'Apollo' },
-  { id: 'ca-5', name: '2024 MK', date: '2026-02-18', distanceLD: 5.1, distanceAU: 0.013, diameterMin: 120, diameterMax: 260, velocity: 21.3, torino: 0, palermo: -99, isPHA: true, orbitClass: 'Apollo' },
-  { id: 'ca-6', name: '2021 QM1', date: '2026-02-21', distanceLD: 11.8, distanceAU: 0.030, diameterMin: 50, diameterMax: 110, velocity: 14.7, torino: 0, palermo: -99, isPHA: false, orbitClass: 'Amor' },
-  { id: 'ca-7', name: '2023 DW', date: '2026-02-24', distanceLD: 4.6, distanceAU: 0.012, diameterMin: 40, diameterMax: 90, velocity: 24.6, torino: 0, palermo: -99, isPHA: false, orbitClass: 'Apollo' },
-  { id: 'ca-8', name: '2019 AQ3', date: '2026-02-27', distanceLD: 15.3, distanceAU: 0.039, diameterMin: 10, diameterMax: 23, velocity: 8.9, torino: 0, palermo: -99, isPHA: false, orbitClass: 'Atira' },
-  { id: 'ca-9', name: '2022 NX1', date: '2026-03-02', distanceLD: 2.1, distanceAU: 0.0054, diameterMin: 5, diameterMax: 12, velocity: 16.5, torino: 0, palermo: -99, isPHA: false, orbitClass: 'Apollo' },
-  { id: 'ca-10', name: '2015 RN35', date: '2026-03-05', distanceLD: 8.7, distanceAU: 0.022, diameterMin: 25, diameterMax: 56, velocity: 11.2, torino: 0, palermo: -99, isPHA: false, orbitClass: 'Apollo' },
-  { id: 'ca-11', name: '2024 JN16', date: '2026-03-08', distanceLD: 6.3, distanceAU: 0.016, diameterMin: 70, diameterMax: 160, velocity: 18.9, torino: 0, palermo: -99, isPHA: true, orbitClass: 'Amor' },
-  { id: 'ca-12', name: '2012 TC4', date: '2026-03-11', distanceLD: 1.7, distanceAU: 0.0044, diameterMin: 10, diameterMax: 23, velocity: 7.6, torino: 0, palermo: -99, isPHA: false, orbitClass: 'Apollo' },
-  { id: 'ca-13', name: '2023 TL4', date: '2026-03-14', distanceLD: 9.4, distanceAU: 0.024, diameterMin: 30, diameterMax: 68, velocity: 13.4, torino: 0, palermo: -99, isPHA: false, orbitClass: 'Apollo' },
-  { id: 'ca-14', name: '2025 AA', date: '2026-03-17', distanceLD: 12.6, distanceAU: 0.032, diameterMin: 200, diameterMax: 450, velocity: 25.1, torino: 0, palermo: -99, isPHA: true, orbitClass: 'Apollo' },
-  { id: 'ca-15', name: '2020 SW', date: '2026-03-20', distanceLD: 0.3, distanceAU: 0.00077, diameterMin: 5, diameterMax: 11, velocity: 7.7, torino: 0, palermo: -99, isPHA: false, orbitClass: 'Apollo' },
-  { id: 'ca-16', name: '2021 PDC', date: '2026-03-22', distanceLD: 4.9, distanceAU: 0.013, diameterMin: 35, diameterMax: 78, velocity: 15.8, torino: 0, palermo: -99, isPHA: false, orbitClass: 'Amor' },
-  { id: 'ca-17', name: '101955 Bennu', date: '2060-09-25', distanceLD: 1.9, distanceAU: 0.005, diameterMin: 490, diameterMax: 490, velocity: 6.2, torino: 0, palermo: -99, isPHA: true, orbitClass: 'Apollo' },
-  { id: 'ca-18', name: '2024 BX1', date: '2026-03-25', distanceLD: 18.2, distanceAU: 0.047, diameterMin: 90, diameterMax: 200, velocity: 19.6, torino: 0, palermo: -99, isPHA: true, orbitClass: 'Apollo' },
-];
-
-const NEO_STATS = {
-  totalNEOs: 35_472,
-  totalPHAs: 2_397,
-  totalNEAs: 35_110,
-  totalNECs: 132,
-  last30DaysDiscoveries: 148,
-  lastYearDiscoveries: 3_128,
-  largestNEA: { name: '1036 Ganymed', diameter: 41 },
-  closestApproach2025: { name: '2024 YR4', distance: '0.002 AU' },
-};
-
-const SIZE_CATEGORIES: SizeCategory[] = [
-  { label: '1 km+', range: '>1 km diameter', known: 856, estimated: 920, completeness: 93, color: 'from-red-500 to-red-400' },
-  { label: '140 m - 1 km', range: '140m to 1km diameter', known: 10_832, estimated: 25_000, completeness: 43, color: 'from-orange-500 to-orange-400' },
-  { label: '40 m - 140 m', range: '40m to 140m diameter', known: 14_200, estimated: 500_000, completeness: 2.8, color: 'from-yellow-500 to-yellow-400' },
-  { label: '10 m - 40 m', range: '10m to 40m diameter', known: 6_800, estimated: 10_000_000, completeness: 0.07, color: 'from-green-500 to-green-400' },
-  { label: '<10 m', range: 'Less than 10m', known: 2_784, estimated: 100_000_000, completeness: 0.003, color: 'from-blue-500 to-blue-400' },
-];
-
-const SPECTRAL_DISTRIBUTION = [
-  { type: 'S-type (Silicaceous)', percentage: 35, count: 12_415, description: 'Stony composition, silicate minerals, moderate albedo', color: 'from-yellow-500 to-yellow-400' },
-  { type: 'C-type (Carbonaceous)', percentage: 20, count: 7_094, description: 'Carbon-rich, dark surfaces, water and organics', color: 'from-blue-500 to-blue-400' },
-  { type: 'X-type (Metallic/Other)', percentage: 10, count: 3_547, description: 'Iron-nickel metals, enstatite, high density', color: 'from-gray-400 to-gray-300' },
-  { type: 'Q-type (Chondrite)', percentage: 8, count: 2_838, description: 'Ordinary chondrite, fresh surfaces', color: 'from-orange-500 to-orange-400' },
-  { type: 'V-type (Vestoid)', percentage: 5, count: 1_774, description: 'Basaltic, related to 4 Vesta', color: 'from-purple-500 to-purple-400' },
-  { type: 'Other/Unknown', percentage: 22, count: 7_804, description: 'D, P, B, E, A types and unclassified', color: 'from-slate-500 to-slate-400' },
-];
-
-const DEFENSE_PROGRAMS: DefenseProgram[] = [
-  {
-    id: 'dart',
-    name: 'DART (Double Asteroid Redirection Test)',
-    agency: 'NASA',
-    status: 'Completed - Success',
-    statusColor: 'text-green-400',
-    description: 'First-ever planetary defense technology demonstration. DART successfully impacted Dimorphos on September 26, 2022, demonstrating kinetic impactor deflection.',
-    keyResults: [
-      'Reduced Dimorphos orbital period by 33 minutes (from 11 hours 55 min to 11 hours 22 min)',
-      'Far exceeded minimum benchmark of 73 seconds change',
-      'Ejected approximately 10,000 tonnes of debris, creating a 10,000 km tail',
-      'Confirmed kinetic impactor is a viable deflection technique for small asteroids',
-      'Impact velocity: 6.1 km/s; spacecraft mass: 570 kg',
-      'Beta (momentum enhancement factor) estimated at 3.6, meaning ejecta contributed significantly',
-    ],
-    timeline: 'Launched Nov 2021, Impact Sep 26 2022',
-  },
-  {
-    id: 'hera',
-    name: 'Hera Mission',
-    agency: 'ESA',
-    status: 'En Route - Arriving 2026',
-    statusColor: 'text-blue-400',
-    description: 'ESA follow-up mission to the Didymos-Dimorphos system to conduct detailed post-impact survey. Launched October 7, 2024 aboard a SpaceX Falcon 9.',
-    keyResults: [
-      'Launched successfully on October 7, 2024',
-      'Performed Mars gravity assist in March 2025',
-      'Carrying two CubeSats: Milani (dust/mineralogy) and Juventas (internal structure radar)',
-      'Will measure Dimorphos mass, crater size, and internal structure',
-      'Expected arrival at Didymos system: late 2026',
-      'Will provide precise measurement of DART momentum transfer efficiency',
-    ],
-    timeline: 'Launched Oct 2024, Mars flyby Mar 2025, Arrival late 2026',
-  },
-  {
-    id: 'neo-surveyor',
-    name: 'NEO Surveyor',
-    agency: 'NASA/JPL',
-    status: 'In Development',
-    statusColor: 'text-yellow-400',
-    description: 'Space-based infrared telescope designed to discover and characterize potentially hazardous NEOs. Will operate at the Sun-Earth L1 Lagrange point.',
-    keyResults: [
-      'Primary mission: find 90% of NEOs 140m+ within 10 years of operations',
-      'Infrared observation enables detection of dark asteroids invisible to optical surveys',
-      'Two infrared channels: 4-5.2 microns and 6-10 microns',
-      'Expected to discover ~100,000 new NEOs during its baseline mission',
-      'Currently in final design and fabrication phase (Phase C)',
-      'Congress mandated goal: catalog 90% of 140m+ NEOs (George E. Brown Jr. Act)',
-    ],
-    timeline: 'Launch planned: June 2028, Operations: 5-year baseline + 7 yr extended',
-  },
-  {
-    id: 'pdco',
-    name: 'Planetary Defense Coordination Office (PDCO)',
-    agency: 'NASA',
-    status: 'Active',
-    statusColor: 'text-green-400',
-    description: 'NASA office responsible for finding, tracking, and characterizing potentially hazardous NEOs, issuing warnings, and coordinating U.S. government response planning.',
-    keyResults: [
-      'Coordinates all NASA-funded NEO detection surveys',
-      'Issues impact warnings and notifications globally',
-      'Manages planetary defense missions (DART, NEO Surveyor)',
-      'Partners with FEMA for impact emergency response planning',
-      'Annual budget approximately $200M for planetary defense activities',
-      'Published National Near-Earth Object Preparedness Strategy and Action Plan',
-    ],
-    timeline: 'Established 2016, ongoing',
-  },
-  {
-    id: 'iawn',
-    name: 'International Asteroid Warning Network (IAWN)',
-    agency: 'UN-endorsed / Multi-national',
-    status: 'Active',
-    statusColor: 'text-green-400',
-    description: 'International group of organizations coordinated by the UN Committee on the Peaceful Uses of Outer Space to detect, track, and physically characterize NEOs.',
-    keyResults: [
-      'Established by UN General Assembly in 2013',
-      '40+ member organizations from 20+ countries',
-      'Coordinates NEO observation campaigns worldwide',
-      'Issues international impact warning notifications',
-      'Conducts annual planetary defense exercises with SMPAG',
-      'Maintains global NEO observation network for rapid response',
-    ],
-    timeline: 'Established 2013, ongoing',
-  },
-  {
-    id: 'smpag',
-    name: 'Space Mission Planning Advisory Group (SMPAG)',
-    agency: 'UN-endorsed / ESA-chaired',
-    status: 'Active',
-    statusColor: 'text-green-400',
-    description: 'International forum for space agencies to plan coordinated response to a potential NEO impact threat, including deflection mission design.',
-    keyResults: [
-      'Chaired by ESA, 18 space agency members',
-      'Develops framework for international deflection mission coordination',
-      'Published reference deflection mission architectures',
-      'Conducts regular NEO threat response exercises',
-      'Evaluates technologies: kinetic impactor, gravity tractor, ion beam deflection',
-      'Coordinates with IAWN for threat assessment and response planning',
-    ],
-    timeline: 'Established 2014, ongoing',
-  },
-  {
-    id: 'osiris-apex',
-    name: 'OSIRIS-APEX (formerly OSIRIS-REx extended)',
-    agency: 'NASA',
-    status: 'En Route to Apophis',
-    statusColor: 'text-blue-400',
-    description: 'Redirected OSIRIS-REx spacecraft now heading to asteroid Apophis. Will arrive shortly after Apophis\'s historic close approach to Earth on April 13, 2029.',
-    keyResults: [
-      'OSIRIS-REx returned 121.6 grams of Bennu samples on Sep 24, 2023',
-      'Bennu samples contain water, carbon, and organic molecules',
-      'Spacecraft renamed OSIRIS-APEX and redirected to Apophis',
-      'Will study physical changes to Apophis caused by Earth tidal forces during 2029 flyby',
-      'Arrival at Apophis: April 2029, entering orbit around the asteroid',
-      'Will attempt to disturb surface material with thruster maneuver for subsurface study',
-    ],
-    timeline: 'Bennu sample return Sep 2023, Apophis rendezvous Apr 2029',
-  },
-];
-
-const MINING_TARGETS: MiningTarget[] = [
-  { id: 'mt-1', name: 'Ryugu', designation: '162173', spectralType: 'Cb', diameterKm: 0.9, deltaV: 4.66, estimatedValue: '$82.76 billion', resources: ['Water', 'Carbon', 'Organic compounds', 'Phosphorus'], accessibility: 'Accessible', accessColor: 'text-green-400', notes: 'Sample returned by Hayabusa2. Extremely carbon-rich.' },
-  { id: 'mt-2', name: 'Bennu', designation: '101955', spectralType: 'B', diameterKm: 0.49, deltaV: 5.09, estimatedValue: '$669 million', resources: ['Water', 'Carbon', 'Organics', 'Magnetite'], accessibility: 'Accessible', accessColor: 'text-green-400', notes: 'OSIRIS-REx returned 121.6g sample. Highly porous rubble pile.' },
-  { id: 'mt-3', name: 'Nereus', designation: '4660', spectralType: 'Xe', diameterKm: 0.33, deltaV: 4.97, estimatedValue: '$4.71 billion', resources: ['Iron', 'Nickel', 'Cobalt', 'Platinum-group metals'], accessibility: 'Accessible', accessColor: 'text-green-400', notes: 'Very low delta-v. Often cited as prime mining candidate.' },
-  { id: 'mt-4', name: '1989 ML', designation: '1989 ML', spectralType: 'X', diameterKm: 0.6, deltaV: 4.87, estimatedValue: '$13.9 billion', resources: ['Iron', 'Nickel', 'Platinum', 'Gold'], accessibility: 'Accessible', accessColor: 'text-green-400', notes: 'One of the most accessible large metallic asteroids.' },
-  { id: 'mt-5', name: 'Anteros', designation: '1943', spectralType: 'S', diameterKm: 2.3, deltaV: 5.44, estimatedValue: '$5.57 trillion', resources: ['Iron', 'Magnesium silicates', 'Nickel', 'Cobalt'], accessibility: 'Challenging', accessColor: 'text-yellow-400', notes: 'Large Amor-class. Higher delta-v but enormous resource content.' },
-  { id: 'mt-6', name: 'Itokawa', designation: '25143', spectralType: 'S', diameterKm: 0.35, deltaV: 5.53, estimatedValue: '$2.1 billion', resources: ['Iron', 'Magnesium', 'Silicon', 'Olivine'], accessibility: 'Challenging', accessColor: 'text-yellow-400', notes: 'Hayabusa sample return confirmed S-type composition.' },
-  { id: 'mt-7', name: 'Didymos', designation: '65803', spectralType: 'S', diameterKm: 0.78, deltaV: 5.14, estimatedValue: '$3.4 billion', resources: ['Silicates', 'Iron', 'Nickel', 'Pyroxene'], accessibility: 'Accessible', accessColor: 'text-green-400', notes: 'DART target. Binary system with moon Dimorphos.' },
-  { id: 'mt-8', name: '16 Psyche', designation: '16', spectralType: 'M', diameterKm: 226, deltaV: 9.4, estimatedValue: '$10 quintillion (theoretical)', resources: ['Iron', 'Nickel', 'Gold', 'Platinum', 'Copper'], accessibility: 'Difficult', accessColor: 'text-orange-400', notes: 'NASA Psyche mission en route. Potentially a stripped planetary core.' },
-  { id: 'mt-9', name: 'Apophis', designation: '99942', spectralType: 'Sq', diameterKm: 0.37, deltaV: 5.47, estimatedValue: '$2.6 billion', resources: ['Silicates', 'Iron', 'Nickel', 'Olivine'], accessibility: 'Accessible', accessColor: 'text-green-400', notes: '2029 close approach within 31,600 km. OSIRIS-APEX will study it.' },
-  { id: 'mt-10', name: 'Ceres', designation: '1', spectralType: 'C', diameterKm: 940, deltaV: 10.1, estimatedValue: '$100+ trillion (water/minerals)', resources: ['Water ice', 'Ammoniated clays', 'Carbonates', 'Salts'], accessibility: 'Difficult', accessColor: 'text-orange-400', notes: 'Dwarf planet. Dawn mission revealed subsurface ocean and organics.' },
-];
-
-const MINING_COMPANIES: MiningCompany[] = [
-  { name: 'AstroForge', status: 'Active', statusColor: 'text-green-400', focus: 'Platinum-group metal extraction from asteroids', funding: '$13M+ (Series A)', description: 'Developing refinery technology for in-space platinum extraction. Launched Odin test mission on SpaceX rideshare in 2023. Planning Vestri prospecting mission to target asteroid.' },
-  { name: 'TransAstra', status: 'Active', statusColor: 'text-green-400', focus: 'Optical mining using concentrated sunlight', funding: '$18M+ (NASA contracts + private)', description: 'Patented "optical mining" technology that uses concentrated solar energy to extract volatiles from asteroids. Also developing space tugs and debris capture systems.' },
-  { name: 'Karman+', status: 'Active', statusColor: 'text-green-400', focus: 'In-space resource utilization infrastructure', funding: '$4.7M (Seed)', description: 'Building orbital infrastructure for processing asteroid materials. Focus on creating a supply chain for space-based manufacturing.' },
-  { name: 'Origin Space', status: 'Active', statusColor: 'text-green-400', focus: 'NEO mining and space resources', funding: 'Undisclosed (Chinese venture)', description: 'Chinese company that launched NEO-1 test spacecraft in 2021 and Yuanwang-1 space telescope for asteroid observation. Planning robotic mining missions.' },
-  { name: 'Planetary Resources', status: 'Defunct (2018)', statusColor: 'text-red-400', focus: 'Asteroid prospecting and water mining', funding: '$50M+ before closure', description: 'Pioneer asteroid mining company. Assets acquired by ConsenSys in 2018. Developed Arkyd satellite series for asteroid prospecting before running out of funding.' },
-  { name: 'Deep Space Industries', status: 'Acquired (2019)', statusColor: 'text-yellow-400', focus: 'Asteroid mining and spacecraft propulsion', funding: 'Acquired by Bradford Space', description: 'Developed Comet water-based thruster technology. Acquired by Bradford Space in 2019. Technology lives on in Bradford\'s spacecraft propulsion products.' },
-];
-
-const SURVEY_TELESCOPES: SurveyTelescope[] = [
-  { name: 'Catalina Sky Survey (CSS)', operator: 'University of Arizona / NASA', location: 'Mt. Lemmon & Mt. Bigelow, Arizona', neoDiscoveries: 14_250, percentContribution: 47.2, status: 'Active', statusColor: 'text-green-400', description: 'Leading NEO discovery survey since 2004. Operates three telescopes including a 1.5m on Mt. Lemmon. Has been the top NEO discoverer for over a decade.' },
-  { name: 'Pan-STARRS (PS1 & PS2)', operator: 'University of Hawaii / NASA', location: 'Haleakala, Maui, Hawaii', neoDiscoveries: 8_930, percentContribution: 29.6, status: 'Active', statusColor: 'text-green-400', description: 'Panoramic Survey Telescope & Rapid Response System. Two 1.8m telescopes surveying the sky. Discovered first known interstellar object Oumuamua in 2017.' },
-  { name: 'ATLAS (Asteroid Terrestrial-impact Last Alert System)', operator: 'University of Hawaii / NASA', location: 'Hawaii, Chile, South Africa, Canary Islands', neoDiscoveries: 3_840, percentContribution: 12.7, status: 'Active', statusColor: 'text-green-400', description: 'Four-telescope network providing whole-sky coverage every 24 hours. Optimized for finding imminent impactors. Detected 2024 BX1 before atmospheric entry.' },
-  { name: 'NEOWISE (Wide-field Infrared Survey Explorer)', operator: 'NASA/JPL', location: 'Low-Earth Orbit', neoDiscoveries: 528, percentContribution: 1.8, status: 'Decommissioned (2024)', statusColor: 'text-red-400', description: 'Space-based infrared survey. Characterized 1,850+ NEOs including sizes and albedos. Deorbited and reentered atmosphere in 2024 after 14 years of service.' },
-  { name: 'Vera C. Rubin Observatory (LSST)', operator: 'NSF / DOE', location: 'Cerro Pachon, Chile', neoDiscoveries: 0, percentContribution: 0, status: 'Commissioning - First Light 2025', statusColor: 'text-blue-400', description: 'Revolutionary 8.4m telescope with 3.2-gigapixel camera. Expected to discover 60-70% of remaining 140m+ NEOs in its first 10 years. Will catalog ~5 million NEOs total over its survey lifetime.' },
-  { name: 'Spacewatch', operator: 'University of Arizona', location: 'Kitt Peak, Arizona', neoDiscoveries: 1_360, percentContribution: 4.5, status: 'Active', statusColor: 'text-green-400', description: 'Pioneer NEO survey operating since 1980. Uses 0.9m and 1.8m telescopes. Discovered many of the first PHAs and helped establish modern survey techniques.' },
-  { name: 'LINEAR (Lincoln Near-Earth Asteroid Research)', operator: 'MIT Lincoln Laboratory / USAF', location: 'White Sands, New Mexico', neoDiscoveries: 2_850, percentContribution: 9.4, status: 'Reduced Operations', statusColor: 'text-yellow-400', description: 'Formerly the top NEO discoverer (1998-2005). Used two 1m telescopes with GEODSS technology. Surpassed by Catalina and Pan-STARRS in discovery rate.' },
-];
-
-const DISCOVERY_MILESTONES: DiscoveryMilestone[] = [
-  { year: 1990, cumulativeNEOs: 134, cumulativePHAs: 20, notable: 'Spaceguard Survey proposed' },
-  { year: 1995, cumulativeNEOs: 380, cumulativePHAs: 65, notable: 'LINEAR begins operations' },
-  { year: 2000, cumulativeNEOs: 1_222, cumulativePHAs: 277, notable: 'LINEAR dominates discovery' },
-  { year: 2005, cumulativeNEOs: 3_742, cumulativePHAs: 784, notable: 'Catalina Sky Survey ramps up' },
-  { year: 2010, cumulativeNEOs: 7_075, cumulativePHAs: 1_190, notable: 'WISE/NEOWISE launches' },
-  { year: 2012, cumulativeNEOs: 9_147, cumulativePHAs: 1_369, notable: 'Pan-STARRS begins NEO surveys' },
-  { year: 2015, cumulativeNEOs: 13_251, cumulativePHAs: 1_644, notable: 'PDCO established at NASA' },
-  { year: 2017, cumulativeNEOs: 17_030, cumulativePHAs: 1_857, notable: 'Oumuamua discovered by Pan-STARRS' },
-  { year: 2018, cumulativeNEOs: 19_470, cumulativePHAs: 1_963, notable: 'ATLAS network expanding' },
-  { year: 2020, cumulativeNEOs: 24_126, cumulativePHAs: 2_110, notable: '2020 CD3 - second known mini-moon' },
-  { year: 2022, cumulativeNEOs: 29_723, cumulativePHAs: 2_268, notable: 'DART impacts Dimorphos' },
-  { year: 2023, cumulativeNEOs: 32_417, cumulativePHAs: 2_325, notable: 'OSIRIS-REx returns Bennu sample' },
-  { year: 2024, cumulativeNEOs: 33_950, cumulativePHAs: 2_365, notable: 'Hera mission launches; NEOWISE decommissioned' },
-  { year: 2025, cumulativeNEOs: 35_100, cumulativePHAs: 2_390, notable: 'Vera Rubin first light; CSS crosses 14,000 discoveries' },
-  { year: 2026, cumulativeNEOs: 35_472, cumulativePHAs: 2_397, notable: 'Rubin Observatory survey operations begin' },
-];
 
 // ────────────────────────────────────────
 // Helper Functions
@@ -441,6 +221,55 @@ function AsteroidWatchContent() {
   const initialTab = (searchParams.get('tab') as TabId) || 'approaches';
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
 
+  // API-fetched data
+  const [CLOSE_APPROACHES, setCloseApproaches] = useState<CloseApproach[]>([]);
+  const [NEO_STATS, setNeoStats] = useState<any>({ totalNEOs: 0, totalPHAs: 0, totalNEAs: 0, totalNECs: 0, last30DaysDiscoveries: 0, lastYearDiscoveries: 0, largestNEA: { name: '', diameter: 0 }, closestApproach2025: { name: '', distance: '' } });
+  const [SIZE_CATEGORIES, setSizeCategories] = useState<SizeCategory[]>([]);
+  const [SPECTRAL_DISTRIBUTION, setSpectralDistribution] = useState<any[]>([]);
+  const [DEFENSE_PROGRAMS, setDefensePrograms] = useState<DefenseProgram[]>([]);
+  const [MINING_TARGETS, setMiningTargets] = useState<MiningTarget[]>([]);
+  const [MINING_COMPANIES, setMiningCompanies] = useState<MiningCompany[]>([]);
+  const [SURVEY_TELESCOPES, setSurveyTelescopes] = useState<SurveyTelescope[]>([]);
+  const [DISCOVERY_MILESTONES, setDiscoveryMilestones] = useState<DiscoveryMilestone[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [r1, r2, r3, r4, r5, r6, r7, r8, r9] = await Promise.all([
+          fetch('/api/content/asteroid-watch?section=close-approaches'),
+          fetch('/api/content/asteroid-watch?section=neo-stats'),
+          fetch('/api/content/asteroid-watch?section=size-categories'),
+          fetch('/api/content/asteroid-watch?section=spectral-distribution'),
+          fetch('/api/content/asteroid-watch?section=defense-programs'),
+          fetch('/api/content/asteroid-watch?section=mining-targets'),
+          fetch('/api/content/asteroid-watch?section=mining-companies'),
+          fetch('/api/content/asteroid-watch?section=survey-telescopes'),
+          fetch('/api/content/asteroid-watch?section=discovery-milestones'),
+        ]);
+        const [d1, d2, d3, d4, d5, d6, d7, d8, d9] = await Promise.all([
+          r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json(), r7.json(), r8.json(), r9.json(),
+        ]);
+        setCloseApproaches(d1.data || []);
+        if (d2.data?.[0]) setNeoStats(d2.data[0]);
+        setSizeCategories(d3.data || []);
+        setSpectralDistribution(d4.data || []);
+        setDefensePrograms(d5.data || []);
+        setMiningTargets(d6.data || []);
+        setMiningCompanies(d7.data || []);
+        setSurveyTelescopes(d8.data || []);
+        setDiscoveryMilestones(d9.data || []);
+        setRefreshedAt(d1.meta?.lastRefreshed || null);
+      } catch (error) {
+        console.error('Failed to load asteroid watch data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
   const handleTabChange = (tab: TabId) => {
     setActiveTab(tab);
     const params = new URLSearchParams(searchParams.toString());
@@ -461,6 +290,22 @@ function AsteroidWatchContent() {
     { id: 'discovery', label: 'Discovery' },
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const sortedApproaches = [...CLOSE_APPROACHES].sort((a, b) => {
     const dateA = new Date(a.date).getTime();
     const dateB = new Date(b.date).getTime();
@@ -480,6 +325,8 @@ function AsteroidWatchContent() {
           icon="☄️"
           accentColor="amber"
         />
+
+        <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
 
         {/* Quick Stats Banner */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">

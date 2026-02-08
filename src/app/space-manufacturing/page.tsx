@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, useContext, createContext, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import DataFreshness from '@/components/ui/DataFreshness';
 
 // ────────────────────────────────────────
 // Types — Manufacturing
@@ -108,10 +109,42 @@ interface MarketTrend {
 }
 
 // ────────────────────────────────────────
-// Data — Manufacturing
+// Data Context
 // ────────────────────────────────────────
 
-const COMPANIES: ManufacturingCompany[] = [
+interface MfgDataContextType {
+  COMPANIES: ManufacturingCompany[];
+  ISS_EXPERIMENT_CATEGORIES: ISSExperimentCategory[];
+  PRODUCT_CATEGORIES: ProductCategory[];
+  MARKET_PROJECTIONS: MarketProjection[];
+  IMG_PROVIDERS: ImageryProvider[];
+  IMG_USE_CASES: UseCase[];
+  IMG_MARKET_TRENDS: MarketTrend[];
+  IMG_HERO_STATS: { label: string; value: string; color: string }[];
+  refreshedAt: string | null;
+}
+
+const MfgDataContext = createContext<MfgDataContextType>({
+  COMPANIES: [],
+  ISS_EXPERIMENT_CATEGORIES: [],
+  PRODUCT_CATEGORIES: [],
+  MARKET_PROJECTIONS: [],
+  IMG_PROVIDERS: [],
+  IMG_USE_CASES: [],
+  IMG_MARKET_TRENDS: [],
+  IMG_HERO_STATS: [],
+  refreshedAt: null,
+});
+
+function useMfgData() {
+  return useContext(MfgDataContext);
+}
+
+// ────────────────────────────────────────
+// Fallback Data — Manufacturing (used when DynamicContent is empty)
+// ────────────────────────────────────────
+
+const FALLBACK_COMPANIES: ManufacturingCompany[] = [
   {
     id: 'varda',
     name: 'Varda Space Industries',
@@ -363,7 +396,7 @@ const COMPANIES: ManufacturingCompany[] = [
   },
 ];
 
-const ISS_EXPERIMENT_CATEGORIES: ISSExperimentCategory[] = [
+const FALLBACK_ISS_EXPERIMENT_CATEGORIES: ISSExperimentCategory[] = [
   {
     name: 'Materials Science',
     icon: '🔬',
@@ -445,7 +478,7 @@ const ISS_EXPERIMENT_CATEGORIES: ISSExperimentCategory[] = [
   },
 ];
 
-const PRODUCT_CATEGORIES: ProductCategory[] = [
+const FALLBACK_PRODUCT_CATEGORIES: ProductCategory[] = [
   {
     id: 'zblan',
     name: 'ZBLAN Fiber Optics',
@@ -520,7 +553,7 @@ const PRODUCT_CATEGORIES: ProductCategory[] = [
   },
 ];
 
-const MARKET_PROJECTIONS: MarketProjection[] = [
+const FALLBACK_MARKET_PROJECTIONS: MarketProjection[] = [
   { year: 2024, low: 1.2, mid: 1.8, high: 2.5 },
   { year: 2026, low: 2.0, mid: 3.5, high: 5.0 },
   { year: 2028, low: 4.0, mid: 7.0, high: 12.0 },
@@ -547,7 +580,7 @@ const MFG_TABS: { id: MfgTabId; label: string; icon: string }[] = [
 // Data — Imagery Marketplace
 // ────────────────────────────────────────
 
-const IMG_PROVIDERS: ImageryProvider[] = [
+const FALLBACK_IMG_PROVIDERS: ImageryProvider[] = [
   {
     id: 'maxar', name: 'Maxar Technologies', headquarters: 'Westminster, CO, USA', sensorType: 'Optical',
     constellationSize: '6 satellites (WorldView Legion + heritage)', resolutionM: '0.30',
@@ -676,7 +709,7 @@ const IMG_PROVIDERS: ImageryProvider[] = [
   },
 ];
 
-const IMG_USE_CASES: UseCase[] = [
+const FALLBACK_IMG_USE_CASES: UseCase[] = [
   { id: 'agriculture', name: 'Agriculture & Precision Farming', icon: '\uD83C\uDF3E', description: 'Crop health monitoring, yield prediction, irrigation management, and soil analysis using multispectral and hyperspectral imagery.', topProviders: ['Planet Labs', 'Pixxel', 'Wyvern', 'EarthDaily Analytics', 'Satellogic'], requirements: ['Daily revisit for crop phenology tracking', 'Red edge and NIR bands for vegetation indices (NDVI, EVI)', 'Hyperspectral for nutrient deficiency detection', '3-10m resolution sufficient for field-level analysis'], keyMetrics: ['3-5m resolution', 'Daily revisit', 'NIR/Red Edge bands', '$-$$ pricing'] },
   { id: 'defense', name: 'Defense & Intelligence', icon: '\uD83D\uDEE1\uFE0F', description: 'Geospatial intelligence, change detection, activity monitoring, and battle damage assessment.', topProviders: ['Maxar Technologies', 'Capella Space', 'BlackSky Technology', 'Airbus Defence & Space', 'ICEYE'], requirements: ['Sub-50cm resolution for feature identification', 'SAR for all-weather / denied area monitoring', 'Rapid tasking with sub-hour collection latency', 'Secure delivery and handling (ITAR/classified)'], keyMetrics: ['<50cm resolution', '<1hr tasking', 'All-weather (SAR)', '$$$ pricing'] },
   { id: 'insurance', name: 'Insurance & Risk Assessment', icon: '\uD83D\uDCCA', description: 'Pre-event risk assessment, post-disaster damage quantification, flood extent mapping, and portfolio exposure analysis.', topProviders: ['ICEYE', 'Maxar Technologies', 'Planet Labs', 'Capella Space', 'SatVu'], requirements: ['SAR for flood and weather-event monitoring through clouds', 'Thermal for building-level risk assessment', 'Historical archive for change-over-time analysis', 'Automated analytics and API integration'], keyMetrics: ['SAR + optical fusion', '4-24hr revisit', 'Archive depth', '$$-$$$ pricing'] },
@@ -687,7 +720,7 @@ const IMG_USE_CASES: UseCase[] = [
   { id: 'disaster', name: 'Disaster Response', icon: '\u26A1', description: 'Rapid damage assessment, flood mapping, earthquake impact, wildfire perimeter tracking, and humanitarian response.', topProviders: ['ICEYE', 'Capella Space', 'Maxar Technologies', 'Planet Labs', 'BlackSky Technology'], requirements: ['Rapid tasking (<1hr from request to collect)', 'SAR for cloud-penetrating disaster imaging', 'Before/after comparison capability', 'Fast delivery and open data licensing for NGOs'], keyMetrics: ['<1hr tasking', 'All-weather SAR', 'Fast delivery', 'Variable pricing'] },
 ];
 
-const IMG_MARKET_TRENDS: MarketTrend[] = [
+const FALLBACK_IMG_MARKET_TRENDS: MarketTrend[] = [
   { title: 'SAR Market Expansion', description: 'Synthetic Aperture Radar has emerged as the fastest-growing segment in commercial Earth observation. All-weather, day-night capability drives adoption for defense, insurance, maritime, and infrastructure monitoring.', color: 'text-cyan-400', borderColor: 'border-cyan-500/30', stats: ['SAR market growing at 15-20% CAGR through 2030', '100+ commercial SAR satellites now in orbit', 'Sub-25cm SAR resolution now commercially available', 'InSAR analytics market exceeding $500M annually'] },
   { title: 'Hyperspectral Emergence', description: 'Commercial hyperspectral satellites are transitioning from experimental to operational. Pixxel, Wyvern, Planet (Tanager), and OroraTech are deploying constellations that capture hundreds of spectral bands.', color: 'text-purple-400', borderColor: 'border-purple-500/30', stats: ['First commercial hyperspectral constellations deployed 2023-2024', 'Methane detection from space now operational (Tanager, MethaneSAT)', 'Precision agriculture driving demand for 10+ spectral bands', 'Hyperspectral market projected to reach $1.8B by 2030'] },
   { title: 'AI-Powered Analytics', description: 'The value chain is shifting from raw imagery to automated intelligence. Providers are increasingly offering AI/ML analytics layers as the primary product, with imagery as the underlying data source.', color: 'text-amber-400', borderColor: 'border-amber-500/30', stats: ['Geospatial AI analytics market exceeding $3B annually', 'Automated object detection accuracy now >95% for major features', 'Foundation models (IBM/NASA Prithvi, Clay) accelerating adoption', 'Analytics revenue growing faster than imagery revenue for most providers'] },
@@ -696,7 +729,7 @@ const IMG_MARKET_TRENDS: MarketTrend[] = [
   { title: 'Constellation Scale & Daily Coverage', description: 'The industry is moving toward daily or sub-daily global coverage as the baseline expectation. Planet demonstrated daily global imaging at 3m. Multiple providers now targeting daily revisit at higher resolutions.', color: 'text-blue-400', borderColor: 'border-blue-500/30', stats: ['Planet images entire Earth landmass daily at 3m resolution', '1,000+ commercial EO satellites now in orbit', 'Average satellite manufacturing cost down 70% since 2015', 'Daily sub-meter global coverage targeted by multiple providers by 2028'] },
 ];
 
-const IMG_HERO_STATS = [
+const FALLBACK_IMG_HERO_STATS = [
   { label: 'Providers Tracked', value: '14', color: 'text-cyan-400' },
   { label: 'Satellites in Orbit', value: '500+', color: 'text-blue-400' },
   { label: 'Best Optical GSD', value: '30cm', color: 'text-green-400' },
@@ -760,6 +793,7 @@ function formatMarketValue(value: number): string {
 // ────────────────────────────────────────
 
 function OverviewTab() {
+  const { COMPANIES, ISS_EXPERIMENT_CATEGORIES, PRODUCT_CATEGORIES, MARKET_PROJECTIONS } = useMfgData();
   const totalExperiments = ISS_EXPERIMENT_CATEGORIES.reduce((sum, cat) => sum + cat.count, 0);
   const operationalCompanies = COMPANIES.filter(c => c.status === 'operational').length;
 
@@ -951,6 +985,7 @@ function OverviewTab() {
 }
 
 function CompaniesTab() {
+  const { COMPANIES } = useMfgData();
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [sortBy, setSortBy] = useState<'name' | 'trl' | 'founded'>('trl');
 
@@ -1094,6 +1129,7 @@ function CompaniesTab() {
 }
 
 function ISSLabTab() {
+  const { ISS_EXPERIMENT_CATEGORIES } = useMfgData();
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const totalExperiments = ISS_EXPERIMENT_CATEGORIES.reduce((sum, cat) => sum + cat.count, 0);
 
@@ -1275,6 +1311,7 @@ function ISSLabTab() {
 }
 
 function ProductsTab() {
+  const { PRODUCT_CATEGORIES } = useMfgData();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 
   return (
@@ -1505,6 +1542,7 @@ function ImgProviderCard({ provider }: { provider: ImageryProvider }) {
 }
 
 function ImgComparisonTable({ sensorFilter }: { sensorFilter: string }) {
+  const { IMG_PROVIDERS } = useMfgData();
   const filtered = sensorFilter ? IMG_PROVIDERS.filter((p) => p.sensorType === sensorFilter) : IMG_PROVIDERS;
   return (
     <div className="card border border-slate-700/50 bg-slate-800/50 backdrop-blur overflow-hidden">
@@ -1573,6 +1611,7 @@ function ImgUseCaseCard({ useCase }: { useCase: UseCase }) {
 }
 
 function ImageryMarketplaceContent() {
+  const { IMG_PROVIDERS, IMG_USE_CASES, IMG_MARKET_TRENDS, IMG_HERO_STATS } = useMfgData();
   const [imgTab, setImgTab] = useState<ImgTabId>('providers');
   const [sensorFilter, setSensorFilter] = useState<string>('');
   const sensorTypes: SensorType[] = Array.from(new Set(IMG_PROVIDERS.map((p) => p.sensorType))) as SensorType[];
@@ -1788,8 +1827,74 @@ function ManufacturingAndImageryContent() {
   const searchParams = useSearchParams();
   const topTab = (searchParams.get('tab') === 'imagery' ? 'imagery' : 'manufacturing') as TopTabId;
   const [mfgTab, setMfgTab] = useState<MfgTabId>('overview');
+  const [loading, setLoading] = useState(true);
+  const [mfgData, setMfgData] = useState<MfgDataContextType>({
+    COMPANIES: FALLBACK_COMPANIES,
+    ISS_EXPERIMENT_CATEGORIES: FALLBACK_ISS_EXPERIMENT_CATEGORIES,
+    PRODUCT_CATEGORIES: FALLBACK_PRODUCT_CATEGORIES,
+    MARKET_PROJECTIONS: FALLBACK_MARKET_PROJECTIONS,
+    IMG_PROVIDERS: FALLBACK_IMG_PROVIDERS,
+    IMG_USE_CASES: FALLBACK_IMG_USE_CASES,
+    IMG_MARKET_TRENDS: FALLBACK_IMG_MARKET_TRENDS,
+    IMG_HERO_STATS: FALLBACK_IMG_HERO_STATS,
+    refreshedAt: null,
+  });
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const sections = [
+          'companies', 'iss-experiments', 'products', 'market-projections',
+          'img-providers', 'img-use-cases', 'img-market-trends', 'img-hero-stats',
+        ];
+        const responses = await Promise.all(
+          sections.map((s) => fetch(`/api/content/space-manufacturing?section=${s}`).then((r) => r.json()))
+        );
+
+        const newData: Partial<MfgDataContextType> = {};
+        if (responses[0]?.data?.length) newData.COMPANIES = responses[0].data;
+        if (responses[1]?.data?.length) newData.ISS_EXPERIMENT_CATEGORIES = responses[1].data;
+        if (responses[2]?.data?.length) newData.PRODUCT_CATEGORIES = responses[2].data;
+        if (responses[3]?.data?.length) newData.MARKET_PROJECTIONS = responses[3].data;
+        if (responses[4]?.data?.length) newData.IMG_PROVIDERS = responses[4].data;
+        if (responses[5]?.data?.length) newData.IMG_USE_CASES = responses[5].data;
+        if (responses[6]?.data?.length) newData.IMG_MARKET_TRENDS = responses[6].data;
+        if (responses[7]?.data?.length) newData.IMG_HERO_STATS = responses[7].data;
+
+        const latestRefresh = responses
+          .map((r) => r.meta?.lastRefreshed)
+          .filter(Boolean)
+          .sort()
+          .pop() || null;
+
+        setMfgData((prev) => ({ ...prev, ...newData, refreshedAt: latestRefresh }));
+      } catch (error) {
+        console.error('Failed to fetch manufacturing data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
+    <MfgDataContext.Provider value={mfgData}>
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
@@ -1798,6 +1903,8 @@ function ManufacturingAndImageryContent() {
           icon="🏭"
           accentColor="emerald"
         />
+
+        <DataFreshness refreshedAt={mfgData.refreshedAt} source="DynamicContent" />
 
         {/* Top-Level Tab Navigation */}
         <div className="border-b border-slate-700/50 mb-8">
@@ -1886,6 +1993,7 @@ function ManufacturingAndImageryContent() {
         </div></ScrollReveal>
       </div>
     </div>
+    </MfgDataContext.Provider>
   );
 }
 

@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import DataFreshness from '@/components/ui/DataFreshness';
 
 // ────────────────────────────────────────
 // Types
@@ -111,907 +112,19 @@ interface InternationalPartner {
 }
 
 // ────────────────────────────────────────
-// Data: Artemis Program
+// Data: Fetched from /api/content/cislunar
 // ────────────────────────────────────────
 
-const ARTEMIS_MISSIONS: ArtemisMission[] = [
-  {
-    id: 'artemis-1',
-    name: 'Artemis I',
-    date: 'Nov 16 - Dec 11, 2022',
-    status: 'completed',
-    vehicle: 'SLS Block 1 / Orion (EFT-1)',
-    crew: 0,
-    objectives: [
-      'Uncrewed test flight of SLS and Orion',
-      'Distant retrograde orbit around the Moon',
-      'Heat shield reentry test at lunar return speeds',
-      'Orion systems validation in deep space',
-    ],
-    description:
-      'Successfully completed a 25.5-day mission traveling 1.4 million miles. Orion performed multiple lunar flybys, entered a distant retrograde orbit (DRO), and set a new distance record for a spacecraft designed to carry humans (268,563 miles from Earth). The heat shield withstood reentry at approximately 24,500 mph (Mach 32) and 5,000 degrees Fahrenheit. All primary mission objectives were met, validating SLS and Orion for crewed flights.',
-  },
-  {
-    id: 'artemis-2',
-    name: 'Artemis II',
-    date: 'NET Sep 2025',
-    status: 'upcoming',
-    vehicle: 'SLS Block 1 / Orion',
-    crew: 4,
-    objectives: [
-      'First crewed Artemis flight (4 astronauts)',
-      'Lunar free-return trajectory flyby',
-      'Test Orion life support systems with crew',
-      'Manual piloting demonstrations',
-    ],
-    internationalContributions: ['CSA: Jeremy Hansen (first non-American on lunar trajectory)'],
-    description:
-      'The first crewed Artemis mission will carry astronauts Reid Wiseman (Commander), Victor Glover (Pilot), Christina Koch (Mission Specialist), and Jeremy Hansen of the Canadian Space Agency (Mission Specialist) on an approximately 10-day free-return trajectory around the Moon. This will be the first crewed mission beyond low Earth orbit since Apollo 17 in 1972. The crew will test Orion\'s environmental control and life support systems (ECLSS) under operational conditions and perform manual piloting maneuvers.',
-  },
-  {
-    id: 'artemis-3',
-    name: 'Artemis III',
-    date: 'NET mid-2026',
-    status: 'upcoming',
-    vehicle: 'SLS Block 1 / Orion',
-    hls: 'SpaceX Starship HLS',
-    crew: 4,
-    objectives: [
-      'First crewed lunar landing since Apollo 17 (1972)',
-      'South polar region surface operations (~6.5 days)',
-      'Up to 2 astronauts on lunar surface via Starship HLS',
-      'Moonwalks for science collection and technology demos',
-    ],
-    internationalContributions: ['ESA: Orion European Service Module (ESM)'],
-    description:
-      'This historic mission will return humans to the lunar surface for the first time in over 50 years. Two astronauts will descend to the south polar region using SpaceX\'s Starship Human Landing System (HLS), while two remain in Orion in lunar orbit. Surface astronauts will conduct multiple EVAs (moonwalks) over approximately a week, collecting samples from permanently shadowed regions that may contain water ice. Starship HLS will require multiple orbital refueling flights before the crew transfer. This is the first mission to target the lunar south pole, a region of high scientific interest due to its potential volatile deposits.',
-  },
-  {
-    id: 'artemis-4',
-    name: 'Artemis IV',
-    date: 'NET 2028',
-    status: 'planned',
-    vehicle: 'SLS Block 1B / Orion',
-    hls: 'SpaceX Starship HLS (enhanced)',
-    crew: 4,
-    objectives: [
-      'First crewed mission to the Lunar Gateway',
-      'Delivery of I-HAB module to Gateway',
-      'Dock Orion with PPE+HALO in NRHO',
-      'Potential surface sortie via Starship HLS',
-    ],
-    internationalContributions: [
-      'ESA: I-HAB module (Thales Alenia Space)',
-      'JAXA: I-HAB ECLSS components',
-      'CSA: Canadarm3 robotic operations',
-    ],
-    description:
-      'Artemis IV marks the debut of the SLS Block 1B configuration with its more powerful Exploration Upper Stage (EUS), providing significantly more payload capacity than Block 1. This mission will be the first crewed visit to the Lunar Gateway, docking Orion with the PPE+HALO modules already in near-rectilinear halo orbit (NRHO). The crew will deliver and activate the I-HAB (International Habitation) module, built by ESA with JAXA life support contributions, expanding the Gateway\'s habitable volume and capabilities.',
-  },
-  {
-    id: 'artemis-5',
-    name: 'Artemis V',
-    date: 'NET 2030',
-    status: 'planned',
-    vehicle: 'SLS Block 1B / Orion',
-    hls: 'Blue Origin Blue Moon Mark 2',
-    crew: 4,
-    objectives: [
-      'Second provider HLS demonstration (Blue Origin)',
-      'Blue Moon Mark 2 crewed lunar landing',
-      'Further Gateway assembly and outfitting',
-      'Extended surface operations',
-    ],
-    internationalContributions: [
-      'ESA: ESPRIT refueling module delivery',
-      'CSA: Canadarm3 autonomous assembly operations',
-    ],
-    description:
-      'Artemis V will feature Blue Origin\'s Blue Moon Mark 2 Human Landing System, providing NASA a second independent crew transportation option to the lunar surface. Blue Origin leads the National Team that includes Lockheed Martin, Draper, Boeing, Astrobotic, and Honeybee Robotics. The mission will continue expanding the Gateway and demonstrate sustained surface operations with an enhanced lander capability. Blue Origin received a $3.4 billion contract for HLS development under the Sustaining Lunar Development (SLD) program.',
-  },
-  {
-    id: 'artemis-6-plus',
-    name: 'Artemis VI+',
-    date: '2031 and beyond',
-    status: 'planned',
-    vehicle: 'SLS Block 1B or Block 2 / Orion',
-    hls: 'Alternating SpaceX / Blue Origin HLS',
-    crew: 4,
-    objectives: [
-      'Sustained lunar presence with annual missions',
-      'Extended surface stays (weeks to months)',
-      'Lunar surface habitat deployment',
-      'ISRU demonstrations at scale',
-      'Mars forward technology testing',
-    ],
-    internationalContributions: [
-      'ESA: Crew & Science Airlock contributions',
-      'JAXA: HTV-X cargo resupply',
-      'Multiple Artemis Accords signatories',
-    ],
-    description:
-      'The sustained phase of Artemis envisions regular missions to the Gateway and lunar surface through the 2030s and beyond. NASA plans to alternate between SpaceX and Blue Origin landing systems, establishing a cadence of approximately one crewed landing per year. Key goals include deploying permanent surface habitats, demonstrating in-situ resource utilization (ISRU) at operational scale, testing technologies critical for eventual Mars missions, and expanding international participation under the Artemis Accords framework. As of early 2025, 43 nations have signed the Artemis Accords.',
-  },
-];
+let ARTEMIS_MISSIONS: ArtemisMission[] = [];
+let CLPS_MISSIONS: CLPSMission[] = [];
+let ISRU_PROGRAMS: ISRUProgram[] = [];
+let INFRASTRUCTURE: InfrastructureElement[] = [];
+let INVESTMENTS: LunarInvestment[] = [];
+let GATEWAY_MODULES: GatewayModule[] = [];
+let GATEWAY_ARTEMIS_MISSIONS: GatewayArtemisMission[] = [];
+let INTERNATIONAL_PARTNERS: InternationalPartner[] = [];
 
-// ────────────────────────────────────────
-// Data: Commercial Lunar (CLPS)
-// ────────────────────────────────────────
 
-const CLPS_MISSIONS: CLPSMission[] = [
-  {
-    id: 'peregrine-1',
-    name: 'Peregrine Mission One',
-    company: 'Astrobotic Technology',
-    lander: 'Peregrine',
-    launchDate: 'Jan 8, 2024',
-    status: 'failure',
-    payloads: [
-      'NASA LETS (Linear Energy Transfer Spectrometer)',
-      'NASA NSS (Neutron Spectrometer System)',
-      'NASA NIRVSS (Near-Infrared Volatile Spectrometer System)',
-      'NASA PITMS (Peregrine Ion Trap Mass Spectrometer)',
-      'NASA LRA (Laser Retroreflector Array)',
-      'CMU Iris rover',
-      'DHL MoonBox',
-      'Celestis/Elysium memorial payloads',
-    ],
-    result:
-      'Propulsion anomaly shortly after launch caused oxidizer leak. The spacecraft lost attitude control and was unable to achieve lunar landing. Peregrine reentered Earth\'s atmosphere on Jan 18, 2024 over the South Pacific. Root cause determined to be a stuck valve in the propulsion system.',
-    contractValue: '$79.5M',
-    description:
-      'The first CLPS delivery attempt. Astrobotic\'s Peregrine lander launched on the inaugural ULA Vulcan Centaur rocket. Despite the mission failure, it provided valuable data for future attempts and validated the Vulcan Centaur launch vehicle.',
-  },
-  {
-    id: 'im-1',
-    name: 'IM-1 (Nova-C Odysseus)',
-    company: 'Intuitive Machines',
-    lander: 'Nova-C "Odysseus"',
-    launchDate: 'Feb 15, 2024',
-    landingSite: 'Malapert A crater (south polar region, 80.13S)',
-    status: 'partial-success',
-    payloads: [
-      'NASA ROLSES (Radio wave Observations at the Lunar Surface of the photoElectron Sheath)',
-      'NASA LN-1 (Lunar Node-1 Navigation Demonstrator)',
-      'NASA LRA (Laser Retroreflector Array)',
-      'NASA NDL (Navigation Doppler Lidar)',
-      'NASA SCALPSS (Stereo Cameras for Lunar Plume-Surface Studies)',
-      'NASA ILO-X (International Lunar Observatory precursor)',
-      'Columbia Sportswear insulation experiment',
-      'Jeff Koons Moon Phases sculpture',
-    ],
-    result:
-      'Landed on Feb 22, 2024 near Malapert A crater, becoming the first US soft landing on the Moon since Apollo 17 in 1972 and the first commercial lunar landing in history. However, Odysseus tipped onto its side during landing due to higher-than-expected lateral velocity, likely caused by a last-minute nav switch to the NASA NDL instrument after the primary laser rangefinders failed to activate. The lander operated for about 7 days in a tilted configuration before losing power as the sun set on its solar panels. Despite the tipping, most instruments returned data.',
-    contractValue: '$118M',
-    description:
-      'Historic mission -- the first commercial lunar landing and first US lunar landing in over 50 years. Launched on SpaceX Falcon 9. The landing site near the south pole was the closest to the lunar south pole any spacecraft had landed.',
-  },
-  {
-    id: 'im-2',
-    name: 'IM-2 (Athena)',
-    company: 'Intuitive Machines',
-    lander: 'Nova-C "Athena"',
-    launchDate: 'Q1 2025',
-    landingSite: 'Shackleton crater ridge (south pole)',
-    status: 'upcoming',
-    payloads: [
-      'NASA PRIME-1 (Polar Resources Ice Mining Experiment)',
-      'TRIDENT drill (1 meter depth)',
-      'Mass Spectrometer observing lunar Operations (MSolo)',
-      'Micro-Nova hopper robot',
-      'Nokia 4G/LTE lunar communications demo',
-      'Lunar Outpost MAPP rover',
-    ],
-    contractValue: '$$130M',
-    description:
-      'IM-2 will target the Shackleton crater connecting ridge at the lunar south pole. The mission\'s centerpiece is NASA\'s PRIME-1 experiment, which includes the TRIDENT drill designed to extract subsurface ice samples from up to 1 meter depth. The MSolo mass spectrometer will analyze volatiles in the excavated material. The mission also carries a Nokia/Bell Labs 4G/LTE network demonstration and the Micro-Nova hopper -- a small deployable that can hop into permanently shadowed regions to directly investigate ice deposits.',
-  },
-  {
-    id: 'blue-ghost-1',
-    name: 'Blue Ghost Mission 1',
-    company: 'Firefly Aerospace',
-    lander: 'Blue Ghost',
-    launchDate: 'Jan 15, 2025',
-    landingSite: 'Mare Crisium',
-    status: 'in-transit',
-    payloads: [
-      'NASA LISTER (Lunar Instrumentation for Subsurface Thermal Exploration with Rapidity)',
-      'NASA LRA (Laser Retroreflector Array)',
-      'NASA LETS (Lunar Environment heliophysics X-ray Imager)',
-      'NASA BFSS (Electrodynamic Dust Shield)',
-      'NASA RAC (Regolith Adherence Characterization)',
-      'NASA SPELLS (Sample Plume Experiment for Lunar Landing Studies)',
-      'NASA NextStep-2 experiments',
-      'Honeybee Robotics LUNARSABER',
-    ],
-    contractValue: '$93.3M',
-    description:
-      'Firefly\'s first CLPS mission, launched on SpaceX Falcon 9. Blue Ghost is a mid-size lander designed to carry up to 150 kg of payload to the lunar surface. The mission targets Mare Crisium (Sea of Crises) on the Moon\'s near side. Blue Ghost will spend approximately 45 days in transit, using a low-energy transfer trajectory. It carries 10 NASA payloads focused on lunar regolith interaction, subsurface thermal properties, and heliophysics.',
-  },
-  {
-    id: 'im-3',
-    name: 'IM-3',
-    company: 'Intuitive Machines',
-    lander: 'Nova-C (enhanced)',
-    launchDate: 'Late 2025',
-    landingSite: 'Reiner Gamma (magnetic swirl)',
-    status: 'planned',
-    payloads: [
-      'NASA Lunar Vertex (magnetometer, electron spectrometer, cameras)',
-      'Additional NASA & commercial payloads TBD',
-    ],
-    contractValue: '$77.5M',
-    description:
-      'IM-3 will deliver the Lunar Vertex payload suite to Reiner Gamma, one of the most prominent lunar swirls -- mysterious bright patterns on the Moon\'s surface associated with localized magnetic fields. The mission includes a small rover equipped with a magnetometer to create detailed magnetic field maps across the swirl formation, providing key data on the origin and evolution of these enigmatic features.',
-  },
-  {
-    id: 'griffin-viper',
-    name: 'Griffin / VIPER',
-    company: 'Astrobotic Technology',
-    lander: 'Griffin',
-    launchDate: 'Cancelled (was NET late 2024)',
-    landingSite: 'Was: Mons Mouton (south pole)',
-    status: 'failure',
-    payloads: [
-      'NASA VIPER rover (cancelled Jul 2024)',
-    ],
-    result:
-      'NASA cancelled the VIPER (Volatiles Investigating Polar Exploration Rover) mission in July 2024 due to cost overruns and schedule delays, despite the rover being nearly complete. The rover had ballooned from its original $433M budget to over $609M. NASA cited the need to protect other CLPS missions in the pipeline. The Griffin lander development also faced challenges. Some VIPER instruments may fly on future commercial missions. The cancellation was widely debated within the space community.',
-    contractValue: '$320M+ (combined, before cancellation)',
-    description:
-      'Originally planned to deliver NASA\'s VIPER rover to the lunar south pole to prospect for water ice in permanently shadowed regions. VIPER was a golf-cart-sized rover with a 1-meter drill and multiple spectrometers designed to create the first resource maps of lunar water ice. The Griffin lander, Astrobotic\'s larger platform after Peregrine, was designed to deliver up to 625 kg of payload.',
-  },
-  {
-    id: 'clps-cs3',
-    name: 'CS-3 (Draper/Firefly)',
-    company: 'Draper / Firefly Aerospace',
-    lander: 'Blue Ghost (Series 2)',
-    launchDate: 'NET 2026',
-    landingSite: 'Schrödinger basin (lunar far side)',
-    status: 'planned',
-    payloads: [
-      'Farside Seismic Suite (FSS)',
-      'Lunar Interior Temperature & Materials Suite (LITMS)',
-    ],
-    contractValue: '$73M',
-    description:
-      'A landmark CLPS mission that will deliver science instruments to the Schrödinger basin on the lunar far side -- the first US landing on the far side of the Moon. Draper leads the mission with Firefly providing the Blue Ghost lander. The mission will require a relay satellite for communications since the far side never faces Earth. Key instruments will study the Moon\'s interior seismology and thermal properties.',
-  },
-  {
-    id: 'blue-ghost-2',
-    name: 'Blue Ghost Mission 2',
-    company: 'Firefly Aerospace',
-    lander: 'Blue Ghost',
-    launchDate: 'NET 2026',
-    landingSite: 'TBD (near side)',
-    status: 'planned',
-    payloads: [
-      'NASA Lunar PlanetVac sample collection',
-      'Additional TBD payloads',
-    ],
-    contractValue: '$110M',
-    description:
-      'Firefly\'s second CLPS award will demonstrate the Blue Ghost lander\'s versatility on a second mission. It includes the Lunar PlanetVac pneumatic sample collection system and additional payloads for regolith science and technology demonstrations.',
-  },
-  {
-    id: 'hakuto-r-m2',
-    name: 'HAKUTO-R Mission 2 (RESILIENCE)',
-    company: 'ispace (Japan)',
-    lander: 'HAKUTO-R Series 1 (RESILIENCE)',
-    launchDate: 'Dec 2024 (launched)',
-    landingSite: 'Mare Frigoris',
-    status: 'in-transit',
-    payloads: [
-      'Tenacious micro rover (ispace)',
-      'ESA deep space radiation monitor',
-      'Multiple commercial payloads',
-    ],
-    result:
-      'HAKUTO-R Mission 1 crashed on the Moon in April 2023 due to an altitude estimation error. Mission 2 (RESILIENCE) launched in December 2024 with software fixes to prevent the same issue. Landing attempt expected in early-mid 2025.',
-    contractValue: 'Commercial (non-NASA CLPS)',
-    description:
-      'ispace\'s second attempt at a commercial lunar landing following the Mission 1 crash in April 2023. Mission 2 carries a small micro-rover called Tenacious that will deploy onto the surface. ispace is a Japanese company aiming to build a cislunar transportation network. Though not a NASA CLPS mission, it represents the growing commercial lunar delivery market.',
-  },
-];
-
-// ────────────────────────────────────────
-// Data: ISRU & Resources
-// ────────────────────────────────────────
-
-const ISRU_PROGRAMS: ISRUProgram[] = [
-  {
-    id: 'prime-1',
-    name: 'PRIME-1 (Polar Resources Ice Mining Experiment)',
-    organization: 'NASA / Honeybee Robotics',
-    category: 'water-ice',
-    trl: 6,
-    status: 'active',
-    description:
-      'The first attempt to drill into the lunar surface and analyze subsurface volatiles in situ. Consists of the TRIDENT rotary percussive drill (capable of 1m depth) and the MSolo mass spectrometer to identify water and other volatiles in excavated material. Flying on the IM-2 mission to Shackleton crater.',
-    keyMilestones: [
-      'Hardware integrated onto IM-2 lander (2024)',
-      'Flight to Shackleton crater ridge (Q1 2025)',
-      'First subsurface ice detection attempt',
-    ],
-    targetDate: 'Q1 2025',
-  },
-  {
-    id: 'viper-legacy',
-    name: 'VIPER Instrument Suite Legacy',
-    organization: 'NASA Ames Research Center',
-    category: 'prospecting',
-    trl: 7,
-    status: 'cancelled',
-    description:
-      'VIPER (Volatiles Investigating Polar Exploration Rover) was cancelled in July 2024 after exceeding its budget ($609M+ vs $433M original). The golf-cart-sized rover had instruments including TRIDENT drill, MSolo, NSS (Neutron Spectrometer System), and NIRVSS (Near-Infrared Volatile Spectrometer System). Despite cancellation, NASA is exploring options to fly VIPER-heritage instruments on future commercial landers. The rover hardware was offered to industry for potential alternative missions.',
-    keyMilestones: [
-      'Rover assembly completed (2024)',
-      'Mission cancelled due to cost overruns (Jul 2024)',
-      'Instruments being considered for future CLPS flights',
-    ],
-  },
-  {
-    id: 'moxie-heritage',
-    name: 'MOXIE Heritage / Lunar Oxygen Extraction',
-    organization: 'NASA JPL / MIT',
-    category: 'oxygen',
-    trl: 5,
-    status: 'active',
-    description:
-      'Building on the success of MOXIE (Mars Oxygen In-Situ Resource Utilization Experiment) on the Perseverance rover, which successfully produced oxygen from CO2 on Mars (2021-2023), NASA is developing concepts for lunar oxygen extraction from regolith. Lunar soil is approximately 43% oxygen by weight, locked in mineral oxides. Multiple extraction methods are under investigation: molten oxide electrolysis, hydrogen reduction of ilmenite, and carbothermal reduction.',
-    keyMilestones: [
-      'MOXIE on Mars exceeded all production targets (2023)',
-      'Lunar oxygen extraction pathways under study',
-      'Ground demonstrations of molten oxide electrolysis',
-    ],
-  },
-  {
-    id: 'isru-pilot',
-    name: 'Lunar Surface ISRU Pilot Plant',
-    organization: 'NASA / Multiple contractors',
-    category: 'propellant',
-    trl: 3,
-    status: 'planned',
-    description:
-      'NASA\'s long-term vision includes deploying an ISRU pilot plant capable of producing water, oxygen, and potentially hydrogen/LOX propellant from lunar resources. This would enable refueling of landers and ascent vehicles at the Moon, dramatically reducing launch mass from Earth. The pilot plant concept integrates ice mining, water purification, electrolysis, and cryogenic storage systems.',
-    keyMilestones: [
-      'System architecture studies (2024-2025)',
-      'Component-level ground testing',
-      'Targeted pilot deployment after 2030',
-    ],
-    targetDate: 'Post-2030',
-  },
-  {
-    id: 'regolith-processing',
-    name: 'Lunar Regolith Construction Materials',
-    organization: 'NASA / ICON / AI SpaceFactory',
-    category: 'regolith',
-    trl: 4,
-    status: 'active',
-    description:
-      'Multiple programs are investigating using lunar regolith (soil) as a construction material. ICON received a $57.2M NASA contract to develop a lunar surface construction system using 3D printing with regolith-based materials (Project Olympus). AI SpaceFactory has demonstrated Mars/lunar habitat prototypes. Sintering, microwave melting, and binder-jet approaches are all under development for roads, landing pads, and habitats.',
-    keyMilestones: [
-      'ICON Project Olympus contract awarded ($57.2M)',
-      'Earth-based regolith simulant printing demonstrations',
-      'Landing pad construction technology maturation',
-    ],
-    targetDate: '2026-2030',
-  },
-  {
-    id: 'lunar-metals',
-    name: 'Lunar Metal Extraction',
-    organization: 'ESA / Universities',
-    category: 'metals',
-    trl: 3,
-    status: 'active',
-    description:
-      'ESA and academic partners are developing methods to extract metals (iron, aluminum, titanium) from lunar regolith using molten salt electrolysis. The FFC Cambridge process, originally developed for terrestrial titanium extraction, has been adapted for lunar applications. Ground-based experiments using lunar regolith simulants have successfully extracted metallic alloys, with oxygen as a valuable byproduct.',
-    keyMilestones: [
-      'Successful metal extraction from regolith simulants',
-      'ESA study contracts for industrial-scale processes',
-      'Technology roadmap for 2030s deployment',
-    ],
-    targetDate: '2030s',
-  },
-  {
-    id: 'water-ice-mapping',
-    name: 'Lunar Water Ice Mapping & Characterization',
-    organization: 'NASA / ISRO / KARI',
-    category: 'water-ice',
-    trl: 5,
-    status: 'active',
-    description:
-      'Multiple missions have confirmed water ice exists in permanently shadowed regions (PSRs) of the lunar south pole. NASA\'s Lunar Reconnaissance Orbiter (LRO), ISRO\'s Chandrayaan-1 (which first detected ice via its Moon Impact Probe), and Chandrayaan-2 continue to map these deposits from orbit. Estimated reserves range from 600 million to several billion metric tons, though concentration and accessibility remain uncertain. Upcoming surface missions (IM-2, future CLPS) will provide crucial ground-truth data.',
-    keyMilestones: [
-      'Chandrayaan-1 confirmed water ice at poles (2009)',
-      'LRO ongoing detailed mapping (2009-present)',
-      'Chandrayaan-3 south pole landing data (Aug 2023)',
-      'Ground-truth from PRIME-1 / IM-2 (2025)',
-    ],
-  },
-];
-
-// ────────────────────────────────────────
-// Data: Infrastructure
-// ────────────────────────────────────────
-
-const INFRASTRUCTURE: InfrastructureElement[] = [
-  {
-    id: 'gateway-ppe-halo',
-    name: 'Lunar Gateway (PPE + HALO)',
-    category: 'gateway',
-    developer: 'Maxar (PPE) / Northrop Grumman (HALO)',
-    status: 'under-construction',
-    description:
-      'The first two modules of the Lunar Gateway: the Power and Propulsion Element (PPE, ~5,000 kg, 60 kW solar electric propulsion with Hall-effect thrusters) and the Habitation and Logistics Outpost (HALO, ~8,600 kg, crew capacity of 4 for up to 30 days). They will launch co-manifested on a SpaceX Falcon Heavy to a near-rectilinear halo orbit (NRHO) around the Moon. Integration and testing at Kennedy Space Center are underway.',
-    timeline: 'Launch NET late 2025',
-    cost: '~$1.3B combined (PPE $375M + HALO $935M)',
-    partners: ['NASA', 'SpaceX (launch)', 'ESA (comms support)'],
-  },
-  {
-    id: 'gateway-ihab',
-    name: 'I-HAB (International Habitation Module)',
-    category: 'gateway',
-    developer: 'Thales Alenia Space (ESA)',
-    status: 'under-construction',
-    description:
-      'ESA\'s primary contribution to the Gateway. I-HAB expands the habitable volume and provides enhanced life support, additional docking ports, and crew quarters. JAXA provides ECLSS (Environmental Control and Life Support System) components. Delivery planned on Artemis IV.',
-    timeline: 'Delivery on Artemis IV (NET 2028)',
-    cost: 'ESA contribution (~EUR 600M)',
-    partners: ['ESA', 'JAXA', 'NASA'],
-  },
-  {
-    id: 'gateway-esprit',
-    name: 'ESPRIT (European Refueling & Telecom Module)',
-    category: 'gateway',
-    developer: 'Thales Alenia Space',
-    status: 'design',
-    description:
-      'The European System Providing Refueling, Infrastructure and Telecommunications. ESPRIT provides propellant storage and transfer capabilities, enhanced deep-space communications relay, and a science airlock for instrument deployment and EVA access.',
-    timeline: 'NET 2029',
-    cost: 'ESA contribution',
-    partners: ['ESA'],
-  },
-  {
-    id: 'lunanet',
-    name: 'LunaNet Communications Architecture',
-    category: 'communications',
-    developer: 'NASA / ESA / JAXA',
-    status: 'development',
-    description:
-      'An interoperable lunar communications and navigation framework analogous to the Internet. LunaNet defines standards for networking protocols, navigation services (similar to GPS), and detection/information services for the cislunar environment. It will support surface-to-orbit, orbit-to-Earth, and surface-to-surface communications for all Artemis missions and commercial activities. Relay satellites in lunar orbit and at Earth-Moon Lagrange points will provide coverage, including for the far side.',
-    timeline: 'Phased deployment 2025-2030',
-    partners: ['NASA', 'ESA (Moonlight)', 'JAXA'],
-  },
-  {
-    id: 'moonlight',
-    name: 'ESA Moonlight Initiative',
-    category: 'communications',
-    developer: 'ESA / SSTL / Telespazio',
-    status: 'development',
-    description:
-      'ESA\'s commercial lunar communications and navigation service. Moonlight aims to create a constellation of satellites around the Moon providing telecommunications relay and precise navigation services, available to all lunar missions. The Lunar Pathfinder satellite is the first element, planned to provide S-band and UHF relay services.',
-    timeline: 'Lunar Pathfinder NET 2026; Full constellation 2028+',
-    cost: '~EUR 340M (initial phase)',
-    partners: ['ESA', 'SSTL', 'Telespazio'],
-  },
-  {
-    id: 'starship-hls',
-    name: 'SpaceX Starship HLS',
-    category: 'transport',
-    developer: 'SpaceX',
-    status: 'development',
-    description:
-      'Starship Human Landing System for Artemis III and subsequent missions. A modified Starship vehicle optimized for lunar landing with a high-mounted crew cabin, elevator system for surface access, and enhanced solar arrays. Requires multiple orbital refueling flights using Starship tanker variants before each lunar mission. SpaceX is conducting orbital test flights of the full Starship system from Boca Chica, TX with progressive capability demonstrations.',
-    timeline: 'Uncrewed demo landing before Artemis III; crewed Artemis III NET mid-2026',
-    cost: '$2.89B initial + $1.15B option (NASA HLS contract)',
-    partners: ['NASA', 'SpaceX'],
-  },
-  {
-    id: 'blue-moon',
-    name: 'Blue Origin Blue Moon Mark 2',
-    category: 'transport',
-    developer: 'Blue Origin (National Team)',
-    status: 'development',
-    description:
-      'Blue Origin\'s Human Landing System for Artemis V and beyond. Blue Moon Mark 2 is a single-stage design using BE-7 LOX/LH2 engine. The National Team includes Lockheed Martin (crew module, cislunar flight ops), Draper (guidance and navigation), Boeing (descent stage), Astrobotic (cargo variant), and Honeybee Robotics (surface sampling). Unlike Starship HLS, Blue Moon does not require orbital refueling.',
-    timeline: 'Crewed landing on Artemis V (NET 2030)',
-    cost: '$3.4B (NASA SLD contract)',
-    partners: ['Blue Origin', 'Lockheed Martin', 'Draper', 'Boeing', 'Astrobotic'],
-  },
-  {
-    id: 'surface-power',
-    name: 'Fission Surface Power System',
-    category: 'power',
-    developer: 'NASA / DOE / Lockheed Martin / IX (Intuitive Machines/X-energy)',
-    status: 'development',
-    description:
-      'A compact nuclear fission reactor designed to provide 40 kW of continuous electrical power on the lunar surface, enough to support a crewed habitat and ISRU operations. Nuclear power is critical for lunar south pole operations where solar power is intermittent. NASA and DOE have selected industry teams to develop preliminary designs. Lockheed Martin and Intuitive Machines/X-energy joint venture (IX) received contracts for fission surface power systems.',
-    timeline: 'Technology demonstration target: late 2020s to early 2030s',
-    cost: '$150M+ (combined NASA/DOE investment)',
-    partners: ['NASA', 'DOE', 'Lockheed Martin', 'IX (Intuitive Machines/X-energy)'],
-  },
-  {
-    id: 'surface-hab',
-    name: 'Lunar Surface Habitat',
-    category: 'surface',
-    developer: 'NASA / Multiple contractors',
-    status: 'concept',
-    description:
-      'NASA is studying pressurized habitat concepts for extended crew stays on the lunar surface (weeks to months). Concepts range from rigid modules delivered by Starship HLS or Blue Moon cargo variants to inflatable habitats (like those from Sierra Space). Key requirements include radiation protection, dust mitigation, thermal management, and integration with ISRU systems for life support consumables. 3D-printed regolith shielding (ICON\'s Project Olympus) is under development for additional protection.',
-    timeline: 'Design studies ongoing; deployment post-2030',
-    partners: ['NASA', 'ICON', 'Sierra Space', 'Lockheed Martin'],
-  },
-  {
-    id: 'lpr',
-    name: 'Lunar Terrain Vehicle (LTV)',
-    category: 'surface',
-    developer: 'Lunar Dawn (Intuitive Machines + AVL + Northrop Grumman + Michelin)',
-    status: 'development',
-    description:
-      'NASA selected three teams to develop the next-generation Lunar Terrain Vehicle for Artemis astronauts. The Lunar Dawn team (led by Intuitive Machines) was awarded the primary contract. The LTV will be an unpressurized rover for crew mobility during EVAs, capable of both crewed and autonomous remote operation. Unlike Apollo rovers which were left on the surface, the LTV is designed for reuse across multiple Artemis missions. Venturi Astrolab and Astrolab also received study contracts.',
-    timeline: 'Delivery before Artemis V surface mission',
-    cost: '$4.6B (maximum potential, task order based)',
-    partners: ['Intuitive Machines', 'AVL', 'Northrop Grumman', 'Michelin'],
-  },
-];
-
-// ────────────────────────────────────────
-// Data: Investment
-// ────────────────────────────────────────
-
-const INVESTMENTS: LunarInvestment[] = [
-  {
-    id: 'nasa-artemis-total',
-    program: 'Artemis Program (Total)',
-    organization: 'NASA',
-    type: 'government',
-    amount: '$93B+',
-    amountNum: 93000,
-    period: 'FY2012-FY2025',
-    category: 'Program Total',
-    description:
-      'NASA Inspector General estimated total Artemis costs including SLS, Orion, Ground Systems, HLS, spacesuits, and Gateway from inception through 2025. Per-launch SLS cost estimated at $4.1B for initial flights.',
-  },
-  {
-    id: 'sls-dev',
-    program: 'Space Launch System (SLS)',
-    organization: 'NASA / Boeing',
-    type: 'government',
-    amount: '$23.8B',
-    amountNum: 23800,
-    period: 'FY2011-FY2024 (development)',
-    category: 'Launch Vehicle',
-    description:
-      'SLS development costs through first flight (Artemis I). Boeing is the prime contractor for the core stage. Aerojet Rocketdyne (now L3Harris) builds the RS-25 engines (upgraded Space Shuttle main engines). Northrop Grumman provides the solid rocket boosters.',
-  },
-  {
-    id: 'orion-dev',
-    program: 'Orion Multi-Purpose Crew Vehicle',
-    organization: 'NASA / Lockheed Martin',
-    type: 'government',
-    amount: '$20.4B',
-    amountNum: 20400,
-    period: 'FY2006-FY2024 (development)',
-    category: 'Crew Vehicle',
-    description:
-      'Orion spacecraft development by Lockheed Martin (crew module) and Airbus Defence and Space (European Service Module, for ESA). Orion is the only crew-rated deep space vehicle currently operational.',
-  },
-  {
-    id: 'hls-spacex',
-    program: 'HLS Option A - SpaceX Starship',
-    organization: 'NASA / SpaceX',
-    type: 'government',
-    amount: '$4.04B',
-    amountNum: 4040,
-    period: '$2.89B initial (2021) + $1.15B option (2022)',
-    category: 'Human Landing System',
-    description:
-      'SpaceX HLS contract for Artemis III and IV lunar landings using modified Starship. Includes uncrewed demonstration landing and two crewed missions. SpaceX is also investing significant private capital in overall Starship development.',
-  },
-  {
-    id: 'hls-blue',
-    program: 'HLS Sustaining Lunar Development - Blue Origin',
-    organization: 'NASA / Blue Origin',
-    type: 'government',
-    amount: '$3.4B',
-    amountNum: 3400,
-    period: 'Awarded May 2023',
-    category: 'Human Landing System',
-    description:
-      'Blue Origin National Team contract for the Blue Moon Mark 2 Human Landing System for Artemis V and beyond. Team includes Lockheed Martin, Draper, Boeing, Astrobotic, and Honeybee Robotics.',
-  },
-  {
-    id: 'gateway-contracts',
-    program: 'Lunar Gateway (All Modules)',
-    organization: 'NASA + ESA + JAXA + CSA',
-    type: 'government',
-    amount: '~$7.8B',
-    amountNum: 7800,
-    period: '2018-2030s',
-    category: 'Orbital Infrastructure',
-    description:
-      'Combined estimated value of all Gateway elements including PPE ($375M, Maxar), HALO ($935M, Northrop Grumman), I-HAB (ESA ~EUR 600M), ESPRIT (ESA), Canadarm3 (CSA ~$2.2B CAD), Dragon XL logistics (SpaceX), and operations.',
-  },
-  {
-    id: 'clps-total',
-    program: 'CLPS Task Orders (Cumulative)',
-    organization: 'NASA',
-    type: 'government',
-    amount: '$2.6B+',
-    amountNum: 2600,
-    period: '2019-2028 (allocated)',
-    category: 'Commercial Lunar Delivery',
-    description:
-      'Total value of CLPS task orders awarded through early 2025. NASA has certified 14 companies as eligible CLPS vendors. Active task order recipients include Intuitive Machines, Astrobotic, Firefly Aerospace, and Draper. CLPS allows NASA to buy payload delivery as a service rather than building its own landers.',
-  },
-  {
-    id: 'xeva-suits',
-    program: 'xEVA Spacesuits (Axiom Space)',
-    organization: 'NASA / Axiom Space',
-    type: 'government',
-    amount: '$228.5M',
-    amountNum: 228,
-    period: 'Awarded 2022 (task order based)',
-    category: 'Crew Systems',
-    description:
-      'Axiom Space was awarded the contract to develop next-generation spacesuits (AxEMU - Axiom Extravehicular Mobility Unit) for Artemis III moonwalks. The suit must support 8+ hour EVAs in the south polar environment, with improved mobility, sizing range, and dust protection compared to Apollo-era suits.',
-  },
-  {
-    id: 'ltv-contract',
-    program: 'Lunar Terrain Vehicle (LTV)',
-    organization: 'NASA / Intuitive Machines (Lunar Dawn)',
-    type: 'government',
-    amount: '$4.6B',
-    amountNum: 4600,
-    period: 'Max potential (task order), awarded 2024',
-    category: 'Surface Mobility',
-    description:
-      'Maximum potential value of the LTV services contract. Intuitive Machines\' Lunar Dawn team will provide an unpressurized rover for crew transport during EVAs, with autonomous remote-driving capability between missions. The contract is structured as task orders over the Artemis campaign.',
-  },
-  {
-    id: 'im-commercial',
-    program: 'Intuitive Machines (Public)',
-    organization: 'Intuitive Machines',
-    type: 'commercial',
-    amount: '$LUNR on NASDAQ',
-    amountNum: 800,
-    period: 'IPO Feb 2023; Market cap ~$800M-1.5B (varies)',
-    category: 'Publicly Traded Lunar Company',
-    description:
-      'Intuitive Machines went public via SPAC in February 2023 (NASDAQ: LUNR). The company has NASA CLPS contracts (IM-1, IM-2, IM-3), the LTV contract (via Lunar Dawn), and a growing commercial customer base. They are developing orbital services, data transmission, and navigation capabilities alongside their lunar lander fleet.',
-  },
-  {
-    id: 'astrobotic-funding',
-    program: 'Astrobotic Technology',
-    organization: 'Astrobotic',
-    type: 'commercial',
-    amount: '$600M+',
-    amountNum: 600,
-    period: 'Cumulative funding + NASA contracts',
-    category: 'Commercial Lunar Services',
-    description:
-      'Pittsburgh-based Astrobotic has received significant NASA funding via CLPS (Peregrine, Griffin) plus the LunaGrid power service studies. Despite the Peregrine Mission One failure, the company continues development of the Griffin lander and CubeRover small rover platform. Astrobotic is a key member of Blue Origin\'s HLS National Team.',
-  },
-  {
-    id: 'ispace-funding',
-    program: 'ispace Inc.',
-    organization: 'ispace (Japan)',
-    type: 'commercial',
-    amount: '$210M+',
-    amountNum: 210,
-    period: 'Cumulative through Series D+',
-    category: 'Commercial Lunar Transport',
-    description:
-      'Japanese lunar transportation company ispace (listed on Tokyo Stock Exchange) is developing a lunar lander series and micro-rover for commercial payload delivery. Following the Mission 1 crash (Apr 2023), Mission 2 launched Dec 2024. The company has partnerships with JAXA and commercial customers, and US subsidiary ispace technologies U.S. is a CLPS-certified vendor.',
-  },
-  {
-    id: 'esa-terrae-novae',
-    program: 'ESA Terrae Novae / Exploration Envelope',
-    organization: 'European Space Agency',
-    type: 'international',
-    amount: '~EUR 2.7B',
-    amountNum: 2900,
-    period: 'ESA Ministerial 2022 allocation (3 years)',
-    category: 'European Exploration',
-    description:
-      'ESA\'s exploration program includes Gateway contributions (I-HAB, ESPRIT), Orion European Service Module production, Moonlight communications, PROSPECT lunar drill package, and participation in Artemis surface missions. ESA astronauts will fly on Artemis missions under bilateral agreements.',
-  },
-  {
-    id: 'jaxa-lunar',
-    program: 'JAXA Lunar Programs',
-    organization: 'JAXA (Japan)',
-    type: 'international',
-    amount: '~$1.5B',
-    amountNum: 1500,
-    period: '2020s allocation',
-    category: 'Japanese Lunar Program',
-    description:
-      'Japan\'s lunar efforts include SLIM (Smart Lander for Investigating Moon -- successfully landed Jan 2024, first Japanese lunar landing), Gateway I-HAB ECLSS contributions, HTV-X cargo vehicle for Gateway resupply, and the LUPEX (Lunar Polar Exploration) rover mission with ISRO. JAXA astronaut will fly on future Artemis mission.',
-  },
-  {
-    id: 'isro-chandrayaan',
-    program: 'ISRO Chandrayaan Program',
-    organization: 'ISRO (India)',
-    type: 'international',
-    amount: '~$300M',
-    amountNum: 300,
-    period: 'Chandrayaan-1 through Chandrayaan-4',
-    category: 'Indian Lunar Program',
-    description:
-      'India\'s Chandrayaan program achieved major milestones: Chandrayaan-1 discovered water ice at the poles (2008), Chandrayaan-3 achieved India\'s first successful lunar landing near the south pole (August 2023, making India the 4th country to soft-land on the Moon). Chandrayaan-4 is planned as a sample return mission. ISRO is also partnering with JAXA on the LUPEX lunar polar exploration mission and signed the Artemis Accords in 2023.',
-  },
-  {
-    id: 'kari-lunar',
-    program: 'KARI Lunar Exploration',
-    organization: 'KARI (South Korea)',
-    type: 'international',
-    amount: '~$180M',
-    amountNum: 180,
-    period: '2016-2030',
-    category: 'Korean Lunar Program',
-    description:
-      'South Korea\'s Korea Aerospace Research Institute successfully orbited the Danuri (KPLO) lunar orbiter in December 2022, making Korea the 7th country to orbit the Moon. Danuri carries a NASA ShadowCam instrument mapping permanently shadowed regions. Korea is planning a lunar lander mission for the late 2020s and signed the Artemis Accords in 2021.',
-  },
-];
-
-// ────────────────────────────────────────
-// Data: Gateway Modules
-// ────────────────────────────────────────
-
-const GATEWAY_MODULES: GatewayModule[] = [
-  {
-    id: 'ppe',
-    name: 'Power & Propulsion Element',
-    abbreviation: 'PPE',
-    builder: 'Maxar Technologies (now MDA Space)',
-    mass: '~5,000 kg',
-    power: '60 kW solar electric propulsion',
-    propulsion: 'Hall-effect thrusters (SEP)',
-    launchDate: 'NET 2025 (co-manifested with HALO)',
-    launchVehicle: 'Falcon Heavy',
-    status: 'integration',
-    cost: '~$375M (NASA contract)',
-    partners: ['NASA'],
-    description: 'The PPE provides power, high-rate communications, attitude control, and orbital maneuvering capability for the Gateway. Its 60 kW solar electric propulsion system uses advanced Hall-effect thrusters to maintain the station\'s unique near-rectilinear halo orbit around the Moon. The PPE serves as the backbone of Gateway\'s power and communications infrastructure.',
-  },
-  {
-    id: 'halo',
-    name: 'Habitation and Logistics Outpost',
-    abbreviation: 'HALO',
-    builder: 'Northrop Grumman',
-    mass: '~8,600 kg',
-    basedOn: 'Cygnus spacecraft heritage',
-    crewCapacity: '4 (for up to 30 days initially)',
-    launchDate: 'NET 2025 (co-manifested with PPE)',
-    launchVehicle: 'Falcon Heavy',
-    status: 'construction',
-    cost: '~$935M (NASA contract)',
-    partners: ['NASA'],
-    description: 'HALO is the initial crew module for the Gateway, derived from Northrop Grumman\'s proven Cygnus spacecraft design. It provides living quarters for up to four crew members during short-duration stays, along with docking ports for visiting vehicles including the Orion spacecraft and logistics resupply vehicles. HALO includes command and control capabilities and basic life support systems.',
-  },
-  {
-    id: 'ihab',
-    name: 'International Habitation Module',
-    abbreviation: 'I-HAB',
-    builder: 'Thales Alenia Space (ESA contribution)',
-    function: 'Additional living quarters, life support',
-    launchDate: 'NET 2028',
-    status: 'manufacturing',
-    partners: ['ESA', 'JAXA'],
-    description: 'I-HAB significantly expands the Gateway\'s habitable volume and life support capabilities. Built by Thales Alenia Space as a European contribution to the program, it incorporates JAXA-provided environmental control and life support system (ECLSS) components. I-HAB will enable longer crew stays and provide additional workspace for science operations.',
-  },
-  {
-    id: 'esprit',
-    name: 'European System Providing Refueling, Infrastructure & Telecommunications',
-    abbreviation: 'ESPRIT',
-    builder: 'Thales Alenia Space',
-    function: 'Refueling, communications relay, science airlock, EVA capabilities',
-    launchDate: 'NET 2029',
-    status: 'design',
-    partners: ['ESA'],
-    description: 'ESPRIT provides critical refueling infrastructure, enhanced communications relay capabilities, and a science airlock for deploying instruments and conducting extravehicular activities. As a European contribution, it extends the Gateway\'s operational flexibility and enables propellant resupply for the station\'s orbit maintenance.',
-  },
-  {
-    id: 'canadarm3',
-    name: 'Canadarm3 Robotic System',
-    abbreviation: 'Canadarm3',
-    builder: 'MDA Space (CSA contribution)',
-    function: 'External robotics, maintenance, science payloads',
-    features: 'AI-enabled autonomous operations, small dexterous arm',
-    launchDate: 'With I-HAB or later',
-    status: 'development',
-    partners: ['CSA'],
-    description: 'Canadarm3 represents the next generation of Canadian robotic technology for space. Unlike its predecessors on the Space Shuttle and ISS, Canadarm3 features AI-enabled autonomous operations, allowing it to perform maintenance, capture visiting vehicles, and manipulate science payloads without real-time crew intervention. It includes both a large arm for major operations and a small dexterous arm for precision tasks.',
-  },
-  {
-    id: 'airlock',
-    name: 'Crew & Science Airlock',
-    abbreviation: 'Airlock',
-    builder: 'TBD (under study)',
-    function: 'EVA access, science instrument deployment',
-    launchDate: 'TBD (~2030)',
-    status: 'study',
-    partners: ['NASA'],
-    description: 'The dedicated Crew and Science Airlock will provide a full-capability EVA (extravehicular activity) access point, enabling astronauts to perform spacewalks for external maintenance, science instrument deployment, and future assembly operations. This module is currently under study with contractor selection pending.',
-  },
-];
-
-const GATEWAY_ARTEMIS_MISSIONS: GatewayArtemisMission[] = [
-  {
-    name: 'Artemis I',
-    date: 'Dec 2022',
-    status: 'completed',
-    description: 'Uncrewed Orion test flight around Moon',
-    details: 'Successfully demonstrated the Space Launch System (SLS) rocket and Orion spacecraft on a 25.5-day mission that traveled 1.4 million miles, including multiple lunar flybys and a distant retrograde orbit. The mission set a new distance record for a spacecraft designed to carry humans.',
-  },
-  {
-    name: 'Artemis II',
-    date: 'NET Sep 2025',
-    status: 'upcoming',
-    description: 'First crewed Orion flight, lunar flyby (4 crew)',
-    details: 'The first crewed mission of the Artemis program will send four astronauts on a free-return trajectory around the Moon. Crew members Reid Wiseman, Victor Glover, Christina Koch, and Jeremy Hansen (CSA) will test Orion\'s life support systems and manual piloting capabilities during an approximately 10-day mission.',
-  },
-  {
-    name: 'Artemis III',
-    date: 'NET 2026',
-    status: 'upcoming',
-    description: 'First crewed lunar landing since Apollo (SpaceX Starship HLS)',
-    details: 'This historic mission will return humans to the lunar surface for the first time since Apollo 17 in 1972. Using SpaceX\'s Starship Human Landing System (HLS) as the descent vehicle, two astronauts will spend approximately a week on the lunar surface near the south pole, conducting science and exploration activities.',
-  },
-  {
-    name: 'Artemis IV',
-    date: 'NET 2028',
-    status: 'planned',
-    description: 'First crewed mission to Gateway (PPE+HALO), I-HAB delivery',
-    details: 'The first mission to utilize the Lunar Gateway. Crew will dock Orion with the PPE+HALO modules already in lunar orbit and deliver the I-HAB module, significantly expanding the station\'s capabilities. This mission marks the beginning of sustained operations at the Gateway.',
-  },
-  {
-    name: 'Artemis V',
-    date: 'NET 2030',
-    status: 'planned',
-    description: 'Blue Origin Blue Moon lander, further Gateway assembly',
-    details: 'Featuring Blue Origin\'s Blue Moon Human Landing System as the second provider for crewed lunar landings. This mission will continue Gateway assembly and enable surface operations with an expanded lander capability.',
-  },
-  {
-    name: 'Artemis VI+',
-    date: '2030s',
-    status: 'planned',
-    description: 'Full Gateway operations, surface missions',
-    details: 'The Artemis program envisions a sustained human presence at the Moon through the 2030s and beyond. Regular missions to the Gateway will enable extended surface stays, resource prospecting, technology demonstrations for Mars, and international partnership activities.',
-  },
-];
-
-const INTERNATIONAL_PARTNERS: InternationalPartner[] = [
-  {
-    agency: 'NASA',
-    country: 'United States',
-    flag: 'US',
-    contributions: ['PPE module', 'HALO module', 'Orion spacecraft', 'SLS launch vehicle', 'Program management'],
-    keyHardware: 'PPE, HALO, Orion, SLS, Crew & Science Airlock',
-  },
-  {
-    agency: 'ESA',
-    country: 'Europe',
-    flag: 'EU',
-    contributions: ['I-HAB module', 'ESPRIT module', 'Orion European Service Module', 'Science instruments'],
-    keyHardware: 'I-HAB, ESPRIT, European Service Module (ESM)',
-  },
-  {
-    agency: 'JAXA',
-    country: 'Japan',
-    flag: 'JP',
-    contributions: ['Life support components for I-HAB', 'HTV-X resupply capability', 'Battery technology', 'Science payloads'],
-    keyHardware: 'ECLSS components, batteries, cargo resupply',
-  },
-  {
-    agency: 'CSA',
-    country: 'Canada',
-    flag: 'CA',
-    contributions: ['Canadarm3 robotic system', 'AI autonomy software', 'Crew member (Artemis II)', 'Gateway external robotics'],
-    keyHardware: 'Canadarm3 (large arm + dexterous manipulator)',
-  },
-];
 
 // ────────────────────────────────────────
 // Status Styles
@@ -2375,6 +1488,69 @@ function CislunarEcosystemContent() {
   const validTabs = TABS.map((t) => t.id);
   const initialTab = tabParam && validTabs.includes(tabParam) ? tabParam : 'artemis';
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
+  const [loading, setLoading] = useState(true);
+  const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const sections = [
+          'artemis-missions',
+          'clps-missions',
+          'isru-programs',
+          'infrastructure',
+          'investments',
+          'gateway-modules',
+          'gateway-artemis-missions',
+          'international-partners',
+        ];
+
+        const results = await Promise.all(
+          sections.map((section) =>
+            fetch(`/api/content/cislunar?section=${section}`)
+              .then((res) => res.json())
+              .catch(() => ({ data: [], meta: {} }))
+          )
+        );
+
+        ARTEMIS_MISSIONS = results[0]?.data || [];
+        CLPS_MISSIONS = results[1]?.data || [];
+        ISRU_PROGRAMS = results[2]?.data || [];
+        INFRASTRUCTURE = results[3]?.data || [];
+        INVESTMENTS = results[4]?.data || [];
+        GATEWAY_MODULES = results[5]?.data || [];
+        GATEWAY_ARTEMIS_MISSIONS = results[6]?.data || [];
+        INTERNATIONAL_PARTNERS = results[7]?.data || [];
+
+        const firstMeta = results.find((r) => r?.meta?.lastRefreshed)?.meta;
+        if (firstMeta?.lastRefreshed) {
+          setRefreshedAt(firstMeta.lastRefreshed);
+        }
+      } catch (error) {
+        console.error('Failed to fetch cislunar data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -2385,6 +1561,7 @@ function CislunarEcosystemContent() {
           icon="🌙"
           accentColor="cyan"
         />
+        <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
 
         {/* Hero Stats */}
         <HeroStats />

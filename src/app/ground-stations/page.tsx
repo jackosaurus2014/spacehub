@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import DataFreshness from '@/components/ui/DataFreshness';
 
 // ────────────────────────────────────────
 // Types
@@ -39,417 +40,18 @@ interface FrequencyBand {
   commonUsers: string[];
 }
 
-// ────────────────────────────────────────
-// Data
-// ────────────────────────────────────────
+interface HeroStat {
+  label: string;
+  value: string;
+  color: string;
+}
 
-const GROUND_STATION_NETWORKS: GroundStationNetwork[] = [
-  {
-    id: 'aws',
-    name: 'AWS Ground Station',
-    stations: '12 locations',
-    bands: ['S-band', 'UHF', 'X-band'],
-    coverage: 'Global',
-    model: 'GaaS',
-    pricingModel: 'Pay-per-minute',
-    targetCustomers: 'Cloud-native satellite operators, startups',
-    description: 'Amazon Web Services\' Ground Station as a Service integrates directly with AWS cloud infrastructure. Data flows from antenna to S3 buckets with minimal latency, enabling real-time processing with EC2, Lambda, and SageMaker.',
-    website: 'aws.amazon.com/ground-station',
-    highlights: [
-      'Direct integration with AWS cloud services',
-      'No upfront infrastructure investment',
-      'Auto-scaling for burst contacts',
-      'Pre-integrated with Amazon S3 and EC2',
-    ],
-    latencyInfo: '<500ms antenna-to-cloud',
-    uptimeGuarantee: '99.9% SLA',
-  },
-  {
-    id: 'ksat',
-    name: 'KSAT (Kongsberg Satellite Services)',
-    stations: '25+ antennas',
-    bands: ['S-band', 'X-band', 'Ka-band', 'UHF'],
-    coverage: 'Arctic to Antarctic (pole-to-pole)',
-    model: 'Owned',
-    pricingModel: 'Contract-based / per-pass',
-    targetCustomers: 'LEO/MEO/GEO operators, government agencies',
-    description: 'KSAT operates one of the world\'s largest commercial ground station networks with unique polar coverage from Svalbard (78N) and TrollSat (Antarctica). Critical for polar-orbiting Earth observation satellites needing every-orbit data downlink.',
-    website: 'ksat.no',
-    highlights: [
-      'Unique Svalbard polar station (78N latitude)',
-      'Antarctic TrollSat station for full polar coverage',
-      'Heritage with ESA, NASA, and NOAA missions',
-      'Near real-time data delivery pipeline',
-    ],
-    latencyInfo: 'Near real-time delivery',
-    uptimeGuarantee: '99.5%+ availability',
-  },
-  {
-    id: 'ssc',
-    name: 'SSC (Swedish Space Corporation)',
-    stations: '40+ antennas',
-    bands: ['S-band', 'X-band', 'Ka-band'],
-    coverage: 'Global (6 continents)',
-    model: 'Owned',
-    pricingModel: 'Contract-based / subscription',
-    targetCustomers: 'All orbit types, institutional & commercial',
-    description: 'SSC operates a universal ground network spanning six continents with stations in Sweden, Australia, Chile, Canada, and more. Their Esrange Space Center in northern Sweden is a premier polar access point.',
-    website: 'sscspace.com',
-    highlights: [
-      '40+ antennas across 6 continents',
-      'Esrange Space Center in Arctic Sweden',
-      'Multi-mission support capability',
-      'End-to-end mission services',
-    ],
-    latencyInfo: 'Mission-dependent',
-    uptimeGuarantee: '99.5%+ per station',
-  },
-  {
-    id: 'leaf',
-    name: 'Leaf Space',
-    stations: '10+ stations',
-    bands: ['S-band', 'UHF', 'X-band'],
-    coverage: 'Europe-focused, expanding globally',
-    model: 'GaaS',
-    pricingModel: 'Pay-per-pass / subscription',
-    targetCustomers: 'LEO SmallSat operators, NewSpace startups',
-    description: 'Leaf Space provides a turnkey Ground Segment as a Service designed specifically for the SmallSat and NewSpace market. Their Leaf Line platform offers automated scheduling, contact management, and data delivery.',
-    website: 'leaf.space',
-    highlights: [
-      'Purpose-built for SmallSat operators',
-      'Automated scheduling and contact management',
-      'Leaf Line cloud platform for data delivery',
-      'Rapid onboarding (weeks, not months)',
-    ],
-    latencyInfo: 'Cloud delivery post-contact',
-    uptimeGuarantee: '99%+ SLA',
-  },
-  {
-    id: 'atlas',
-    name: 'Atlas Space Operations',
-    stations: '30+ antennas',
-    bands: ['S-band', 'X-band', 'UHF'],
-    coverage: 'Global',
-    model: 'GaaS',
-    pricingModel: 'Software-defined / flexible',
-    targetCustomers: 'Government, commercial, academic',
-    description: 'Atlas Space Operations provides software-defined ground station services through their Freedom platform. The network combines owned and partner antennas with AI-driven scheduling optimization.',
-    website: 'atlasground.com',
-    highlights: [
-      'Freedom software-defined platform',
-      'AI-driven contact scheduling optimization',
-      'FedRAMP-authorized for US government',
-      'Combined owned + partner antenna network',
-    ],
-    latencyInfo: 'Software-optimized routing',
-    uptimeGuarantee: '99.9% platform SLA',
-  },
-  {
-    id: 'viasat',
-    name: 'Viasat RTE (Real-Time Earth)',
-    stations: '8+ locations',
-    bands: ['Ka-band'],
-    coverage: 'Americas, Europe',
-    model: 'Owned',
-    pricingModel: 'Subscription / per-contact',
-    targetCustomers: 'GEO/MEO operators, high-throughput missions',
-    description: 'Viasat\'s Real-Time Earth network specializes in Ka-band communications for high-throughput satellite missions. Optimized for large data volumes from Earth observation and broadband relay satellites.',
-    website: 'viasat.com',
-    highlights: [
-      'Ka-band specialist with high data rates',
-      'Optimized for Earth observation downlinks',
-      'High-throughput data pipeline',
-      'Secure data handling capabilities',
-    ],
-    latencyInfo: 'Real-time Ka-band delivery',
-    uptimeGuarantee: '99.5%+ availability',
-  },
-  {
-    id: 'azure',
-    name: 'Microsoft Azure Orbital',
-    stations: '5+ partner sites',
-    bands: ['S-band', 'X-band', 'Ka-band'],
-    coverage: 'Global (via partnerships)',
-    model: 'Cloud-integrated',
-    pricingModel: 'Pay-per-use / Azure billing',
-    targetCustomers: 'Azure ecosystem, cloud-first operators',
-    description: 'Azure Orbital Ground Station is Microsoft\'s cloud-integrated satellite communication service. It connects satellite operators directly to Azure for data processing, analytics, and storage with seamless integration into the Azure ecosystem.',
-    website: 'azure.microsoft.com/services/orbital',
-    highlights: [
-      'Native Azure cloud integration',
-      'Unified billing through Azure portal',
-      'Partner antenna network (KSAT, Viasat, ATLAS)',
-      'Direct integration with Azure AI/ML services',
-    ],
-    latencyInfo: '<1s to Azure cloud',
-    uptimeGuarantee: '99.9% Azure SLA',
-  },
-  {
-    id: 'dlr',
-    name: 'ATLAS (DLR German Aerospace)',
-    stations: '6 stations',
-    bands: ['S-band', 'X-band', 'Ka-band'],
-    coverage: 'Europe, South America',
-    model: 'Government',
-    pricingModel: 'Institutional / cooperative',
-    targetCustomers: 'ESA missions, European institutional',
-    description: 'The DLR German Space Operations Center operates ground stations supporting European Space Agency missions and German national space programs. Stations include Weilheim (Germany), O\'Higgins (Antarctica), and partner sites.',
-    website: 'dlr.de',
-    highlights: [
-      'Heritage ESA mission support',
-      'Antarctic O\'Higgins station',
-      'Deep space communication capability',
-      'Institutional cooperative pricing',
-    ],
-    latencyInfo: 'Mission-specific protocols',
-    uptimeGuarantee: 'Institutional grade',
-  },
-  {
-    id: 'infostellar',
-    name: 'Infostellar StellarStation',
-    stations: '20+ partner antennas',
-    bands: ['S-band', 'X-band'],
-    coverage: 'Global (marketplace model)',
-    model: 'GaaS',
-    pricingModel: 'Marketplace / per-pass bidding',
-    targetCustomers: 'SmallSat operators, antenna owners',
-    description: 'Infostellar operates StellarStation, a marketplace platform connecting satellite operators with ground station owners worldwide. The platform enables dynamic scheduling and pricing through a shared antenna economy.',
-    website: 'infostellar.net',
-    highlights: [
-      'Two-sided marketplace for antenna sharing',
-      'Dynamic pricing and scheduling',
-      'Monetize idle antenna capacity',
-      'API-driven automation',
-    ],
-    latencyInfo: 'Varies by partner station',
-    uptimeGuarantee: 'Partner-dependent',
-  },
-  {
-    id: 'rbc',
-    name: 'RBC Signals',
-    stations: '40+ antennas',
-    bands: ['S-band', 'X-band', 'UHF'],
-    coverage: 'Global (aggregator network)',
-    model: 'Aggregator',
-    pricingModel: 'Marketplace / contract',
-    targetCustomers: 'LEO constellations, commercial operators',
-    description: 'RBC Signals aggregates ground station capacity from a global network of antenna partners, providing satellite operators with flexible, on-demand communications. Their platform optimizes across multiple ground stations for maximum coverage.',
-    website: 'rbcsignals.com',
-    highlights: [
-      'Largest aggregated ground station network',
-      'Global coverage through partner aggregation',
-      'Flexible capacity scaling',
-      'Multi-provider redundancy',
-    ],
-    latencyInfo: 'Network-optimized routing',
-    uptimeGuarantee: '99%+ network SLA',
-  },
-];
-
-const FREQUENCY_BANDS: FrequencyBand[] = [
-  {
-    name: 'UHF',
-    range: '300 MHz - 3 GHz',
-    color: 'text-green-400',
-    borderColor: 'border-green-500/30',
-    useCases: [
-      'IoT and M2M satellite communications',
-      'Store-and-forward messaging',
-      'AIS ship tracking',
-      'ADS-B aircraft tracking',
-    ],
-    advantages: [
-      'Lower power requirements',
-      'Better signal penetration through atmosphere',
-      'Simpler antenna designs',
-      'Cost-effective for low data rates',
-    ],
-    limitations: [
-      'Limited bandwidth (low data rates)',
-      'Shared spectrum congestion',
-      'Susceptible to terrestrial interference',
-    ],
-    typicalDataRate: '1 kbps - 1 Mbps',
-    commonUsers: ['Spire Global', 'ORBCOMM', 'Myriota', 'Kineis'],
-  },
-  {
-    name: 'S-band',
-    range: '2 - 4 GHz',
-    color: 'text-cyan-400',
-    borderColor: 'border-cyan-500/30',
-    useCases: [
-      'Telemetry, tracking, and command (TT&C)',
-      'Spacecraft housekeeping data',
-      'Weather satellite communications',
-      'Mobile satellite services',
-    ],
-    advantages: [
-      'Reliable in adverse weather',
-      'Well-established ground infrastructure',
-      'Good for omnidirectional links',
-      'Regulatory clarity (ITU allocations)',
-    ],
-    limitations: [
-      'Moderate bandwidth only',
-      'Limited for high-throughput missions',
-      'Potential interference from WiFi/cellular',
-    ],
-    typicalDataRate: '1 - 10 Mbps',
-    commonUsers: ['ISS', 'Most LEO satellites', 'NOAA', 'CubeSats'],
-  },
-  {
-    name: 'X-band',
-    range: '8 - 12 GHz',
-    color: 'text-blue-400',
-    borderColor: 'border-blue-500/30',
-    useCases: [
-      'Earth observation payload data downlink',
-      'Military/government SATCOM',
-      'SAR (Synthetic Aperture Radar) data',
-      'High-resolution imagery downlink',
-    ],
-    advantages: [
-      'High data rates for EO missions',
-      'Dedicated government/military allocations',
-      'Good balance of bandwidth and weather resilience',
-      'Proven technology heritage',
-    ],
-    limitations: [
-      'Moderate rain fade at lower frequencies',
-      'Requires larger ground antennas than Ka',
-      'Licensed spectrum access required',
-    ],
-    typicalDataRate: '10 - 800 Mbps',
-    commonUsers: ['Planet Labs', 'Maxar', 'Airbus Defence', 'Capella Space'],
-  },
-  {
-    name: 'Ku-band',
-    range: '12 - 18 GHz',
-    color: 'text-purple-400',
-    borderColor: 'border-purple-500/30',
-    useCases: [
-      'Direct-to-home (DTH) television',
-      'VSAT enterprise networks',
-      'Maritime and aviation broadband',
-      'Broadband internet access',
-    ],
-    advantages: [
-      'Mature commercial ecosystem',
-      'Wide global coverage availability',
-      'Good bandwidth for consumer applications',
-      'Established VSAT infrastructure',
-    ],
-    limitations: [
-      'Rain fade in tropical regions',
-      'Increasing congestion in GEO arc',
-      'Interference between adjacent satellites',
-    ],
-    typicalDataRate: '10 Mbps - 1 Gbps',
-    commonUsers: ['SES', 'Intelsat', 'Eutelsat', 'Hughes'],
-  },
-  {
-    name: 'Ka-band',
-    range: '26 - 40 GHz',
-    color: 'text-amber-400',
-    borderColor: 'border-amber-500/30',
-    useCases: [
-      'High-throughput satellite (HTS) broadband',
-      'LEO mega-constellation inter-satellite links',
-      'Ultra-high-resolution EO downlinks',
-      'Gateway feeder links',
-    ],
-    advantages: [
-      'Highest available bandwidth',
-      'Compact antenna sizes',
-      'Multi-gigabit data rates possible',
-      'Ideal for next-gen HTS architectures',
-    ],
-    limitations: [
-      'Significant rain fade attenuation',
-      'Requires adaptive coding and modulation',
-      'Higher-cost ground terminals',
-      'Atmospheric absorption in heavy rain',
-    ],
-    typicalDataRate: '100 Mbps - 10+ Gbps',
-    commonUsers: ['Starlink', 'OneWeb', 'Viasat', 'Telesat Lightspeed'],
-  },
-];
-
-const HERO_STATS = [
-  { label: 'Ground Stations Tracked', value: '200+', color: 'text-cyan-400' },
-  { label: 'Networks Catalogued', value: '10', color: 'text-blue-400' },
-  { label: 'Countries With Stations', value: '40+', color: 'text-green-400' },
-  { label: 'Frequency Bands Covered', value: '5', color: 'text-amber-400' },
-];
-
-const DECISION_FACTORS = [
-  {
-    title: 'Orbit Type',
-    icon: '&#x1F6F0;',
-    description: 'Your satellite orbit fundamentally determines ground station requirements.',
-    details: [
-      'LEO (160-2,000 km): Need multiple stations globally for frequent short passes (5-15 min). Polar stations like KSAT Svalbard are essential for polar orbits.',
-      'MEO (2,000-35,786 km): Longer contact windows but fewer passes. Regional coverage may suffice.',
-      'GEO (35,786 km): Fixed position relative to Earth. One to three strategically placed stations can provide 24/7 contact.',
-      'HEO/Molniya: Specialized station placement needed for apogee coverage.',
-    ],
-  },
-  {
-    title: 'Data Volume',
-    icon: '&#x1F4CA;',
-    description: 'Daily data generation drives your band selection and contact scheduling.',
-    details: [
-      'Low (<1 GB/day): S-band or UHF sufficient. Single pass per orbit can work.',
-      'Medium (1-50 GB/day): X-band recommended. Multiple daily contacts with 2-4 stations.',
-      'High (50-500 GB/day): Ka-band required. Dense ground network or optical links.',
-      'Very High (>500 GB/day): Multi-band strategy with Ka-band primary. Consider optical downlinks and edge processing.',
-    ],
-  },
-  {
-    title: 'Latency Requirements',
-    icon: '&#x23F1;',
-    description: 'How quickly you need data from satellite to user determines your architecture.',
-    details: [
-      'Real-time (<1 min): Requires continuous contact via GEO relay or dense LEO ground network. Consider cloud-integrated GaaS (AWS, Azure).',
-      'Near real-time (1-30 min): Dense regional ground network with 4-8 stations.',
-      'Store-and-forward (hours): Fewer stations needed. Optimize for cost over speed.',
-      'Delay-tolerant (daily): Minimal ground infrastructure. 1-2 strategically placed stations.',
-    ],
-  },
-  {
-    title: 'Budget',
-    icon: '&#x1F4B0;',
-    description: 'Your financial model affects build vs. buy decisions and service level.',
-    details: [
-      'Bootstrap (<$500K/year): GaaS providers (Leaf Space, AWS). Pay-per-pass minimizes commitment.',
-      'Growth ($500K-$2M/year): Mixed model. GaaS for global coverage + 1-2 owned stations for primary.',
-      'Established ($2M-$10M/year): Owned primary stations + GaaS for redundancy and expansion.',
-      'Enterprise (>$10M/year): Custom dedicated network. Consider KSAT or SSC enterprise contracts.',
-    ],
-  },
-  {
-    title: 'Security & Compliance',
-    icon: '&#x1F512;',
-    description: 'Government and defense missions require specific certifications and data handling.',
-    details: [
-      'Commercial: Standard encryption and data handling. Most GaaS providers qualify.',
-      'Government (civilian): FedRAMP, ITAR compliance needed. Atlas Space (FedRAMP-authorized).',
-      'Defense/Intelligence: Dedicated infrastructure, SCIF-grade data handling, classified networks.',
-      'International: ITU coordination, landing rights, cross-border data transfer regulations.',
-    ],
-  },
-  {
-    title: 'Redundancy & Reliability',
-    icon: '&#x1F6E1;',
-    description: 'Mission criticality determines your redundancy and failover strategy.',
-    details: [
-      'Best-effort: Single provider, no guaranteed contacts. Fine for technology demos.',
-      'Standard (99%+): Primary provider with backup scheduling. Suitable for most commercial missions.',
-      'High availability (99.9%+): Multi-provider with automatic failover. Required for operational services.',
-      'Mission critical (99.99%+): Dedicated antennas, hot standby, geographic diversity. Government/defense standard.',
-    ],
-  },
-];
+interface DecisionFactor {
+  title: string;
+  icon: string;
+  description: string;
+  details: string[];
+}
 
 // ────────────────────────────────────────
 // Components
@@ -550,7 +152,7 @@ function NetworkCard({ network }: { network: GroundStationNetwork }) {
   );
 }
 
-function ComparisonTable() {
+function ComparisonTable({ networks }: { networks: GroundStationNetwork[] }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -566,7 +168,7 @@ function ComparisonTable() {
           </tr>
         </thead>
         <tbody>
-          {GROUND_STATION_NETWORKS.map((network, idx) => (
+          {networks.map((network, idx) => (
             <tr
               key={network.id}
               className={`border-b border-space-800 hover:bg-space-800/50 transition-colors ${
@@ -688,6 +290,67 @@ function FrequencyBandCard({ band }: { band: FrequencyBand }) {
 export default function GroundStationsPage() {
   const [activeTab, setActiveTab] = useState<TabId>('networks');
   const [modelFilter, setModelFilter] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+  const [GROUND_STATION_NETWORKS, setNetworks] = useState<GroundStationNetwork[]>([]);
+  const [FREQUENCY_BANDS, setFrequencyBands] = useState<FrequencyBand[]>([]);
+  const [HERO_STATS, setHeroStats] = useState<HeroStat[]>([]);
+  const [DECISION_FACTORS, setDecisionFactors] = useState<DecisionFactor[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [networksRes, bandsRes, statsRes, factorsRes] = await Promise.all([
+          fetch('/api/content/ground-stations?section=networks'),
+          fetch('/api/content/ground-stations?section=frequency-bands'),
+          fetch('/api/content/ground-stations?section=hero-stats'),
+          fetch('/api/content/ground-stations?section=decision-factors'),
+        ]);
+
+        const [networksJson, bandsJson, statsJson, factorsJson] = await Promise.all([
+          networksRes.json(),
+          bandsRes.json(),
+          statsRes.json(),
+          factorsRes.json(),
+        ]);
+
+        if (networksJson.data?.length) setNetworks(networksJson.data);
+        if (bandsJson.data?.length) setFrequencyBands(bandsJson.data);
+        if (statsJson.data?.length) setHeroStats(statsJson.data);
+        if (factorsJson.data?.length) setDecisionFactors(factorsJson.data);
+
+        // Use the most recent refreshedAt from all sections
+        const allMeta = [networksJson, bandsJson, statsJson, factorsJson];
+        const latestRefresh = allMeta
+          .map((m) => m.meta?.lastRefreshed)
+          .filter(Boolean)
+          .sort()
+          .pop();
+        if (latestRefresh) setRefreshedAt(latestRefresh);
+      } catch (error) {
+        console.error('Failed to fetch ground station data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const filteredNetworks = modelFilter
     ? GROUND_STATION_NETWORKS.filter((n) => n.model === modelFilter)
@@ -713,6 +376,8 @@ export default function GroundStationsPage() {
             {String.fromCharCode(8592)} Back to Dashboard
           </Link>
         </AnimatedPageHeader>
+
+        <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
 
         {/* Hero Stats */}
         <ScrollReveal>
@@ -855,7 +520,7 @@ export default function GroundStationsPage() {
                     Side-by-side comparison of major commercial and institutional ground station networks
                   </p>
                 </div>
-                <ComparisonTable />
+                <ComparisonTable networks={GROUND_STATION_NETWORKS} />
               </div>
 
               {/* Model Explanation */}

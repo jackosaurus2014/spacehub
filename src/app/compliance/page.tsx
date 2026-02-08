@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import InlineDisclaimer from '@/components/InlineDisclaimer';
+import DataFreshness from '@/components/ui/DataFreshness';
 import PremiumGate from '@/components/PremiumGate';
 import ExportButton from '@/components/ui/ExportButton';
 import {
@@ -138,155 +139,12 @@ const BODY_TYPE_CONFIG: Record<BodyType, { label: string; bg: string; text: stri
   industry: { label: 'Industry', bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30' },
 };
 
-const TREATIES: Treaty[] = [
-  {
-    id: 'ost',
-    name: 'Outer Space Treaty',
-    fullName: 'Treaty on Principles Governing the Activities of States in the Exploration and Use of Outer Space, including the Moon and Other Celestial Bodies',
-    adoptedYear: 1966, entryIntoForceYear: 1967, status: 'in_force', ratifications: 114, signatories: 23, depositary: 'UN Secretary-General',
-    keyProvisions: ['Outer space is free for exploration and use by all states','No national appropriation of outer space or celestial bodies','No weapons of mass destruction in orbit or on celestial bodies','States bear international responsibility for national space activities','Astronauts are envoys of mankind and must be assisted','States liable for damage caused by their space objects'],
-    description: 'The foundational treaty of international space law, often called the "Magna Carta of Space." It establishes the basic framework for international space activities, including the peaceful use of outer space and the prohibition of sovereignty claims.',
-    significance: 'The cornerstone of space law, ratified by all major spacefaring nations. Forms the basis for all subsequent space treaties and national space legislation.',
-  },
-  {
-    id: 'rescue', name: 'Rescue Agreement',
-    fullName: 'Agreement on the Rescue of Astronauts, the Return of Astronauts and the Return of Objects Launched into Outer Space',
-    adoptedYear: 1967, entryIntoForceYear: 1968, status: 'in_force', ratifications: 99, signatories: 23, depositary: 'UN Secretary-General',
-    keyProvisions: ['States shall immediately notify the launching authority of astronauts in distress','States shall take all possible steps to rescue and assist astronauts in distress','Astronauts shall be safely and promptly returned to the launching state','Space objects found beyond the launching state must be returned','Launching authority shall bear costs of recovery and return'],
-    description: 'Elaborates on the rescue provisions of the Outer Space Treaty. Requires states to assist astronauts in distress and return them and their space objects to the launching state.',
-    significance: 'Provides detailed humanitarian obligations regarding astronauts. Has been invoked in practical scenarios involving the return of space debris landing in foreign territories.',
-  },
-  {
-    id: 'liability', name: 'Liability Convention',
-    fullName: 'Convention on International Liability for Damage Caused by Space Objects',
-    adoptedYear: 1971, entryIntoForceYear: 1972, status: 'in_force', ratifications: 98, signatories: 19, depositary: 'UN Secretary-General',
-    keyProvisions: ['Absolute liability for damage caused on the surface of the Earth or to aircraft in flight','Fault-based liability for damage caused in outer space','Joint and several liability when two states jointly launch','Claims presented through diplomatic channels within one year','Claims Commission established if no settlement reached'],
-    description: 'Establishes the international liability framework for damage caused by space objects. A launching state is absolutely liable for damage on Earth and fault-liable for damage in space.',
-    significance: 'The only UN space treaty invoked in a formal claim: Canada v. USSR over Cosmos 954 (1978), which resulted in a $3 million settlement. Increasingly relevant as orbital debris grows.',
-  },
-  {
-    id: 'registration', name: 'Registration Convention',
-    fullName: 'Convention on Registration of Objects Launched into Outer Space',
-    adoptedYear: 1974, entryIntoForceYear: 1976, status: 'in_force', ratifications: 72, signatories: 4, depositary: 'UN Secretary-General',
-    keyProvisions: ['Launching states shall maintain a national registry of space objects','Launching states shall furnish information to the UN Secretary-General','Registration information includes designating name, date, launch parameters, and orbital data','The UN maintains a public Register of Objects Launched into Outer Space','Applies to objects launched into Earth orbit or beyond'],
-    description: 'Requires states to register space objects with both a national registry and the UN. Provides the legal basis for tracking jurisdiction and control over space objects.',
-    significance: 'Essential for space traffic management and determining liability. The UN register now contains over 15,000 entries. Growing importance with mega-constellations.',
-  },
-  {
-    id: 'moon', name: 'Moon Agreement',
-    fullName: 'Agreement Governing the Activities of States on the Moon and Other Celestial Bodies',
-    adoptedYear: 1979, entryIntoForceYear: 1984, status: 'not_in_force', ratifications: 18, signatories: 4, depositary: 'UN Secretary-General',
-    keyProvisions: ['The Moon and its natural resources are the common heritage of mankind','An international regime shall govern exploitation of natural resources','Freedom of scientific investigation on the Moon','Prohibition of military use beyond peaceful purposes','States shall inform the UN of activities on the Moon','Establishment of international stations must not impede free access'],
-    description: 'The most controversial of the five UN space treaties. Declares the Moon and its resources the "common heritage of mankind" and calls for an international regime to govern resource exploitation.',
-    significance: 'Not ratified by any major spacefaring nation (US, Russia, China, India, Japan, ESA members). Its "common heritage" principle is directly challenged by national resource rights legislation and the Artemis Accords.',
-  },
-];
-
-const NATIONAL_LAWS: NationalLaw[] = [
-  { id: 'us-csa-2015', country: 'United States', countryCode: 'US', lawName: 'U.S. Commercial Space Launch Competitiveness Act', year: 2015, status: 'enacted', agency: 'FAA / DOC', keyFeatures: ['Grants US citizens rights to own, possess, and sell space resources','Extends ISS operations authorization','Updates commercial launch license requirements','Clarifies regulatory framework for space resource extraction'], description: 'Landmark legislation granting US citizens the right to own and sell resources obtained from celestial bodies, while asserting this does not constitute sovereignty claims.', scope: 'Commercial launch, space resources, ISS operations' },
-  { id: 'us-space-act-2020', country: 'United States', countryCode: 'US', lawName: 'National Aeronautics and Space Administration Authorization Act of 2020', year: 2020, status: 'enacted', agency: 'NASA / FAA', keyFeatures: ['Authorizes Artemis program and lunar exploration','Supports commercial LEO economy development','Establishes space situational awareness sharing requirements','Directs development of orbital debris mitigation guidelines'], description: 'Provides authorization and direction for NASA programs including Artemis, commercial LEO destinations, and space debris mitigation.', scope: 'Space exploration, commercial space, orbital debris' },
-  { id: 'us-eo-2020', country: 'United States', countryCode: 'US', lawName: 'Executive Order on Encouraging International Support for the Recovery and Use of Space Resources', year: 2020, status: 'enacted', agency: 'White House / DOS', keyFeatures: ['Rejects Moon Agreement as reflecting customary international law','Affirms US right to extract and use space resources','Directs bilateral agreements on space resource rights','Lays groundwork for the Artemis Accords'], description: 'Executive order explicitly rejecting the Moon Agreement and affirming US policy supporting commercial recovery and use of space resources.', scope: 'Space resources policy, international engagement' },
-  { id: 'lux-2017', country: 'Luxembourg', countryCode: 'LU', lawName: 'Law on the Exploration and Use of Space Resources', year: 2017, status: 'enacted', agency: 'Luxembourg Space Agency', keyFeatures: ['First European law granting property rights over space resources','Requires authorization for space resource missions','Company must be incorporated in Luxembourg (no nationality requirement)','Government may acquire equity stakes in space mining ventures'], description: 'Luxembourg became the first European country to enact comprehensive space resource utilization legislation, establishing itself as a hub for space mining companies.', scope: 'Space resource rights, commercial authorization' },
-  { id: 'uae-2020', country: 'United Arab Emirates', countryCode: 'AE', lawName: 'Federal Law No. 12 on the Regulation of the Space Sector', year: 2020, status: 'enacted', agency: 'UAE Space Agency', keyFeatures: ['Comprehensive national space law framework','Permits and licensing for space activities','Space resource utilization provisions','Liability and insurance requirements','Registration of space objects'], description: 'Comprehensive space law covering licensing, supervision, liability, and space resource extraction. One of the most modern national space laws.', scope: 'All space activities, licensing, resources, liability' },
-  { id: 'japan-2016', country: 'Japan', countryCode: 'JP', lawName: 'Space Activities Act', year: 2016, status: 'enacted', agency: 'JAXA / Cabinet Office', keyFeatures: ['Licensing system for launch activities','Satellite control and management framework','Third-party liability provisions','Mandatory insurance requirements for launch operators'], description: 'Establishes a comprehensive legal framework for Japan\'s commercial space activities including launch licensing and satellite operations.', scope: 'Launch activities, satellite operations, liability' },
-  { id: 'japan-resources-2021', country: 'Japan', countryCode: 'JP', lawName: 'Space Resources Act', year: 2021, status: 'enacted', agency: 'Cabinet Office', keyFeatures: ['Grants rights to extract and use space resources','Business plan approval system for resource activities','Consistent with international space law obligations','Third country in the world to pass space resource legislation'], description: 'Japan became the third country (after the US and Luxembourg) to enact legislation recognizing property rights over extracted space resources.', scope: 'Space resource extraction and utilization' },
-  { id: 'uk-2018', country: 'United Kingdom', countryCode: 'GB', lawName: 'Space Industry Act 2018', year: 2018, status: 'enacted', agency: 'UK Space Agency / CAA', keyFeatures: ['Licensing regime for UK launch operations','Spaceflight activities from UK spaceports','Operator liability and insurance requirements','Orbital activities licensing framework','Powers for range control and safety'], description: 'Comprehensive legislation enabling commercial spaceflight activities from UK territory, including vertical and horizontal launch, and associated regulation.', scope: 'Launch operations, spaceports, orbital activities' },
-  { id: 'india-2023', country: 'India', countryCode: 'IN', lawName: 'Indian Space Policy 2023', year: 2023, status: 'enacted', agency: 'ISRO / IN-SPACe / DOS', keyFeatures: ['Opens space sector to private participation','IN-SPACe as single-window authorization body','ISRO transitions to R&D focus','NewSpace India Limited (NSIL) for commercialization','Non-governmental entity participation framework'], description: 'Landmark policy reform opening India\'s space sector to private enterprise, with ISRO refocusing on research and transferring operational activities to commercial entities.', scope: 'Private sector participation, commercial space activities' },
-  { id: 'australia-2018', country: 'Australia', countryCode: 'AU', lawName: 'Space (Launches and Returns) Act 2018', year: 2018, status: 'amended', agency: 'Australian Space Agency', keyFeatures: ['Updated launch permit framework','High-power rocket regulation','Overseas launch certificates for Australian payloads','Third-party liability and insurance provisions'], description: 'Modernized Australian space legislation to support the growing commercial space sector, streamlining the licensing process for launches and returns.', scope: 'Launches, returns, payload operations' },
-  { id: 'france-2008', country: 'France', countryCode: 'FR', lawName: 'French Space Operations Act (Loi relative aux operations spatiales)', year: 2008, status: 'enacted', agency: 'CNES', keyFeatures: ['Authorization required for all space operations by French entities','Technical regulations for design and operations','Operator liability capped at EUR 60 million','Government guarantee above the cap','Registration of space objects launched from French territory'], description: 'One of the most comprehensive national space laws in Europe, covering authorization, technical standards, liability, and registration of French space operations.', scope: 'Launch operations, satellite control, liability, registration' },
-  { id: 'germany-2024', country: 'Germany', countryCode: 'DE', lawName: 'German Space Act (Weltraumgesetz)', year: 2024, status: 'enacted', agency: 'German Aerospace Center (DLR)', keyFeatures: ['Licensing framework for private space activities','Mandatory debris mitigation compliance','Liability and insurance obligations','Registry of German space objects'], description: 'Germany\'s first dedicated national space law, providing a comprehensive framework for licensing and regulating private space activities from German territory.', scope: 'Private space activities, licensing, debris mitigation' },
-  { id: 'eu-ssa-2023', country: 'European Union', countryCode: 'EU', lawName: 'EU Space Law Initiative', year: 2024, status: 'proposed', agency: 'European Commission / EUSPA', keyFeatures: ['Harmonized EU-wide framework for space activities','Common authorization and licensing standards','Space traffic management provisions','Sustainability and debris mitigation requirements','Competitiveness measures for European space industry'], description: 'Proposed EU-wide space law to harmonize the regulatory framework across member states, addressing authorization, safety, sustainability, and competitiveness.', scope: 'EU-wide space regulation and harmonization' },
-  { id: 'nz-2017', country: 'New Zealand', countryCode: 'NZ', lawName: 'Outer Space and High-altitude Activities Act 2017', year: 2017, status: 'enacted', agency: 'New Zealand Space Agency', keyFeatures: ['Licensing for launch and high-altitude vehicles','Payload permits for space objects','Orbital debris mitigation requirements','Facility operator licenses for launch sites'], description: 'Enacted to support Rocket Lab\'s Electron launches from the Mahia Peninsula, establishing New Zealand as a launch jurisdiction.', scope: 'Launch licensing, payload permits, facility operations' },
-];
-
-const ARTEMIS_PRINCIPLES: { title: string; description: string }[] = [
-  { title: 'Peaceful Purposes', description: 'Cooperation under the Accords is exclusively for peaceful purposes in accordance with the Outer Space Treaty.' },
-  { title: 'Transparency', description: 'Signatories commit to transparent description of their policies and plans related to civil space exploration.' },
-  { title: 'Interoperability', description: 'Infrastructure and systems should be interoperable to the greatest extent practicable to enhance safety and sustainability.' },
-  { title: 'Emergency Assistance', description: 'Commitment to render necessary assistance to personnel in outer space who are in distress.' },
-  { title: 'Registration of Space Objects', description: 'Signatories commit to registration of space objects consistent with the Registration Convention.' },
-  { title: 'Release of Scientific Data', description: 'Commitment to the public release of scientific data from civil space exploration activities.' },
-  { title: 'Preserving Heritage', description: 'Commitment to preserve outer space heritage, including historically significant landing sites and artifacts.' },
-  { title: 'Space Resources', description: 'Extraction and utilization of space resources should be consistent with the Outer Space Treaty, not inherently constituting national appropriation.' },
-  { title: 'Deconfliction of Activities', description: 'Signatories commit to providing notification and coordinating activities to avoid harmful interference.' },
-  { title: 'Orbital Debris', description: 'Commitment to plan for the safe disposal of debris and limiting the generation of new orbital debris.' },
-];
-
-const ARTEMIS_SIGNATORIES: ArtemisSignatory[] = [
-  { id: 'us', country: 'United States', countryCode: 'US', dateSigned: '2020-10-13', region: 'North America', spaceAgency: 'NASA', implementationStatus: 'implementing', notes: 'Lead architect and coordinator of the Accords' },
-  { id: 'au', country: 'Australia', countryCode: 'AU', dateSigned: '2020-10-13', region: 'Oceania', spaceAgency: 'ASA', implementationStatus: 'implementing', notes: 'Founding signatory, contributing to lunar rover' },
-  { id: 'ca', country: 'Canada', countryCode: 'CA', dateSigned: '2020-10-13', region: 'North America', spaceAgency: 'CSA', implementationStatus: 'implementing', notes: 'Founding signatory, contributing Canadarm3 to Gateway' },
-  { id: 'it', country: 'Italy', countryCode: 'IT', dateSigned: '2020-10-13', region: 'Europe', spaceAgency: 'ASI', implementationStatus: 'implementing', notes: 'Founding signatory, contributing to HALO module' },
-  { id: 'jp', country: 'Japan', countryCode: 'JP', dateSigned: '2020-10-13', region: 'Asia-Pacific', spaceAgency: 'JAXA', implementationStatus: 'implementing', notes: 'Founding signatory, contributing I-HAB module and HTV-X' },
-  { id: 'lu', country: 'Luxembourg', countryCode: 'LU', dateSigned: '2020-10-13', region: 'Europe', spaceAgency: 'LSA', implementationStatus: 'signatory', notes: 'Founding signatory, space resources pioneer' },
-  { id: 'ae', country: 'United Arab Emirates', countryCode: 'AE', dateSigned: '2020-10-13', region: 'Middle East', spaceAgency: 'UAESA', implementationStatus: 'implementing', notes: 'Founding signatory, developing lunar rover Rashid' },
-  { id: 'gb', country: 'United Kingdom', countryCode: 'GB', dateSigned: '2020-10-13', region: 'Europe', spaceAgency: 'UKSA', implementationStatus: 'implementing', notes: 'Founding signatory, ESA-NASA cooperation' },
-  { id: 'ua', country: 'Ukraine', countryCode: 'UA', dateSigned: '2020-11-12', region: 'Europe', spaceAgency: 'SSAU', implementationStatus: 'signatory', notes: 'Ninth signatory to join' },
-  { id: 'kr', country: 'South Korea', countryCode: 'KR', dateSigned: '2021-05-24', region: 'Asia-Pacific', spaceAgency: 'KARI/KASA', implementationStatus: 'implementing', notes: 'Active lunar exploration program with Danuri orbiter' },
-  { id: 'nz', country: 'New Zealand', countryCode: 'NZ', dateSigned: '2021-05-31', region: 'Oceania', spaceAgency: 'NZSA', implementationStatus: 'signatory', notes: 'Rocket Lab launch jurisdiction' },
-  { id: 'br', country: 'Brazil', countryCode: 'BR', dateSigned: '2021-06-15', region: 'South America', spaceAgency: 'AEB', implementationStatus: 'signatory', notes: 'Largest South American signatory' },
-  { id: 'pl', country: 'Poland', countryCode: 'PL', dateSigned: '2021-10-26', region: 'Europe', spaceAgency: 'POLSA', implementationStatus: 'signatory', notes: 'Active ESA member state' },
-  { id: 'mx', country: 'Mexico', countryCode: 'MX', dateSigned: '2021-12-09', region: 'North America', spaceAgency: 'AEM', implementationStatus: 'signatory', notes: 'Contributing to Earth observation cooperation' },
-  { id: 'il', country: 'Israel', countryCode: 'IL', dateSigned: '2022-01-26', region: 'Middle East', spaceAgency: 'ISA', implementationStatus: 'signatory', notes: 'Active lunar exploration (Beresheet mission heritage)' },
-  { id: 'ro', country: 'Romania', countryCode: 'RO', dateSigned: '2022-03-01', region: 'Europe', spaceAgency: 'ROSA', implementationStatus: 'signatory', notes: 'ESA cooperating state' },
-  { id: 'bh', country: 'Bahrain', countryCode: 'BH', dateSigned: '2022-03-02', region: 'Middle East', spaceAgency: 'NSSA', implementationStatus: 'signatory', notes: 'Developing national space program' },
-  { id: 'sg', country: 'Singapore', countryCode: 'SG', dateSigned: '2022-03-28', region: 'Asia-Pacific', spaceAgency: 'OSTIn', implementationStatus: 'signatory', notes: 'Space technology innovation hub' },
-  { id: 'co', country: 'Colombia', countryCode: 'CO', dateSigned: '2022-05-10', region: 'South America', spaceAgency: 'CCE', implementationStatus: 'signatory', notes: 'Growing space program with EO focus' },
-  { id: 'fr', country: 'France', countryCode: 'FR', dateSigned: '2022-06-07', region: 'Europe', spaceAgency: 'CNES', implementationStatus: 'implementing', notes: 'Major ESA contributor, Ariane launch capability' },
-  { id: 'sa', country: 'Saudi Arabia', countryCode: 'SA', dateSigned: '2022-07-14', region: 'Middle East', spaceAgency: 'SSC', implementationStatus: 'signatory', notes: 'Investing heavily in space capabilities' },
-  { id: 'rw', country: 'Rwanda', countryCode: 'RW', dateSigned: '2022-08-18', region: 'Africa', spaceAgency: 'RSA', implementationStatus: 'signatory', notes: 'First African signatory' },
-  { id: 'ng', country: 'Nigeria', countryCode: 'NG', dateSigned: '2022-12-13', region: 'Africa', spaceAgency: 'NASRDA', implementationStatus: 'signatory', notes: 'Largest African space program budget' },
-  { id: 'es', country: 'Spain', countryCode: 'ES', dateSigned: '2023-03-01', region: 'Europe', spaceAgency: 'INTA/AEE', implementationStatus: 'signatory', notes: 'Major ESA participant' },
-  { id: 'ec', country: 'Ecuador', countryCode: 'EC', dateSigned: '2023-03-21', region: 'South America', spaceAgency: 'EXA', implementationStatus: 'signatory', notes: 'Equatorial launch advantage interest' },
-  { id: 'in', country: 'India', countryCode: 'IN', dateSigned: '2023-06-23', region: 'Asia-Pacific', spaceAgency: 'ISRO', implementationStatus: 'implementing', notes: 'Major spacefaring nation, Chandrayaan program' },
-  { id: 'ar', country: 'Argentina', countryCode: 'AR', dateSigned: '2023-07-27', region: 'South America', spaceAgency: 'CONAE', implementationStatus: 'signatory', notes: 'SAOCOM radar satellite program' },
-  { id: 'cz', country: 'Czech Republic', countryCode: 'CZ', dateSigned: '2023-09-13', region: 'Europe', spaceAgency: 'CzSO', implementationStatus: 'signatory', notes: 'ESA member state, instrument development' },
-  { id: 'de', country: 'Germany', countryCode: 'DE', dateSigned: '2023-09-14', region: 'Europe', spaceAgency: 'DLR', implementationStatus: 'implementing', notes: 'Largest ESA contributor, major space industry' },
-  { id: 'se', country: 'Sweden', countryCode: 'SE', dateSigned: '2023-10-04', region: 'Europe', spaceAgency: 'SNSA', implementationStatus: 'signatory', notes: 'SSC ground station network, Esrange' },
-  { id: 'ch', country: 'Switzerland', countryCode: 'CH', dateSigned: '2023-12-04', region: 'Europe', spaceAgency: 'Swiss Space Office', implementationStatus: 'signatory', notes: 'ClearSpace debris removal mission' },
-  { id: 'ic', country: 'Iceland', countryCode: 'IS', dateSigned: '2023-11-15', region: 'Europe', spaceAgency: 'IRR', implementationStatus: 'signatory', notes: 'Polar observation interests' },
-  { id: 'gr', country: 'Greece', countryCode: 'GR', dateSigned: '2023-11-23', region: 'Europe', spaceAgency: 'HSA', implementationStatus: 'signatory', notes: 'ESA member state' },
-  { id: 'dk', country: 'Denmark', countryCode: 'DK', dateSigned: '2024-01-10', region: 'Europe', spaceAgency: 'DTU Space', implementationStatus: 'signatory', notes: 'Strong instrumentation and geoscience heritage' },
-  { id: 'be', country: 'Belgium', countryCode: 'BE', dateSigned: '2024-01-24', region: 'Europe', spaceAgency: 'BELSPO', implementationStatus: 'signatory', notes: 'ESA headquarters host country' },
-  { id: 'an', country: 'Angola', countryCode: 'AO', dateSigned: '2024-03-05', region: 'Africa', spaceAgency: 'GGPEN', implementationStatus: 'signatory', notes: 'AngoSat program operator' },
-  { id: 'pe', country: 'Peru', countryCode: 'PE', dateSigned: '2024-05-17', region: 'South America', spaceAgency: 'CONIDA', implementationStatus: 'signatory', notes: 'PeruSAT-1 Earth observation' },
-  { id: 'nl', country: 'Netherlands', countryCode: 'NL', dateSigned: '2024-06-20', region: 'Europe', spaceAgency: 'NSO', implementationStatus: 'signatory', notes: 'ESA ESTEC host country, strong industry' },
-  { id: 'sl', country: 'Slovenia', countryCode: 'SI', dateSigned: '2024-09-24', region: 'Europe', spaceAgency: 'ZRSS', implementationStatus: 'signatory', notes: 'Growing space technology sector' },
-  { id: 'lt', country: 'Lithuania', countryCode: 'LT', dateSigned: '2024-09-25', region: 'Europe', spaceAgency: 'LSO', implementationStatus: 'signatory', notes: 'Baltic space sector development' },
-  { id: 'bu', country: 'Bulgaria', countryCode: 'BG', dateSigned: '2024-11-12', region: 'Europe', spaceAgency: 'SRTI-BAS', implementationStatus: 'signatory', notes: 'Space research heritage' },
-  { id: 'uy', country: 'Uruguay', countryCode: 'UY', dateSigned: '2024-09-23', region: 'South America', spaceAgency: 'CEE', implementationStatus: 'signatory', notes: 'First signing from Southern Cone' },
-  { id: 'fi', country: 'Finland', countryCode: 'FI', dateSigned: '2024-11-14', region: 'Europe', spaceAgency: 'BFSA', implementationStatus: 'signatory', notes: 'Arctic monitoring and ICEYE radar constellation' },
-];
-
-const LEGAL_PROCEEDINGS: LegalProceeding[] = [
-  { id: 'cosmos-954', title: 'Cosmos 954 Incident (Canada v. USSR)', type: 'Liability Claim', parties: 'Canada v. Union of Soviet Socialist Republics', status: 'resolved', year: 1978, jurisdiction: 'International (Liability Convention)', description: 'Soviet nuclear-powered satellite Cosmos 954 re-entered over northern Canada, scattering radioactive debris across 124,000 sq km of the Northwest Territories. Canada submitted a claim under the Liability Convention.', significance: 'The only formal claim ever made under the Liability Convention. Resulted in a C$6 million (approx. US$3 million) settlement in 1981 through diplomatic channels.', outcome: 'Settled for approximately $3 million CAD in 1981' },
-  { id: 'bogota-declaration', title: 'Bogota Declaration (Equatorial States)', type: 'Sovereignty Claim', parties: 'Colombia, Brazil, Congo, Ecuador, Indonesia, Kenya, Uganda, Zaire', status: 'resolved', year: 1976, jurisdiction: 'International', description: 'Eight equatorial countries declared sovereignty over the geostationary orbit segments above their territories, arguing the GEO arc is a limited natural resource not covered by the Outer Space Treaty.', significance: 'Challenged the non-appropriation principle of the Outer Space Treaty. Ultimately rejected by the international community, but highlighted tensions over equitable access to orbital resources.', outcome: 'Claims not recognized internationally; countries later moderated positions' },
-  { id: 'itu-orbital-slots', title: 'ITU Orbital Slot Coordination Disputes', type: 'Regulatory Dispute', parties: 'Multiple nations and satellite operators', status: 'active', year: 2020, jurisdiction: 'International Telecommunication Union (ITU)', description: 'Ongoing disputes over geostationary orbital slot allocations, with growing tension between established operators and developing nations seeking equitable access. Mega-constellations add pressure on non-geostationary coordination.', significance: 'ITU Radio Regulations and coordination processes under strain from the explosion of satellite filings. Paper satellite filings blocking genuine entrants is a growing concern.', outcome: 'WRC-23 adopted new rules on milestone-based spectrum use, anti-warehousing' },
-  { id: 'starlink-oneweb-coord', title: 'SpaceX Starlink vs. OneWeb Frequency Coordination', type: 'Spectrum Dispute', parties: 'SpaceX (Starlink) vs. OneWeb (Eutelsat)', status: 'resolved', year: 2021, jurisdiction: 'FCC / ITU', description: 'Dispute over Ku-band and Ka-band spectrum sharing between SpaceX\'s Starlink and OneWeb constellations, including disagreements over interference mitigation and orbital coordination in LEO.', significance: 'Highlighted challenges of coordinating mega-constellations in the same frequency bands. Led to FCC establishing clearer rules for NGSO constellation coordination.', outcome: 'Resolved through bilateral coordination agreement and FCC regulatory framework' },
-  { id: 'china-iss-2021', title: 'China Tiangong / Starlink Near-Miss Incidents', type: 'Close Approach Concern', parties: 'China vs. SpaceX (Starlink)', status: 'active', year: 2021, jurisdiction: 'COPUOS / Diplomatic', description: 'China filed a note verbale with the UN stating that its space station Tiangong had to perform evasive maneuvers in July and October 2021 to avoid potential collisions with Starlink satellites.', significance: 'Raised questions about mega-constellation operators\' responsibilities under the Outer Space Treaty and the need for better space traffic management frameworks.', outcome: 'Ongoing discussions at COPUOS; no formal resolution' },
-  { id: 'asat-debris-2021', title: 'Russian ASAT Test Debris (Cosmos 1408)', type: 'Debris Incident', parties: 'International community vs. Russia', status: 'resolved', year: 2021, jurisdiction: 'UN General Assembly / COPUOS', description: 'Russia conducted a destructive anti-satellite weapons test against its own defunct satellite Cosmos 1408, generating over 1,500 trackable debris fragments threatening the ISS and other spacecraft.', significance: 'Led to US announcing a moratorium on destructive ASAT testing (April 2022) and a UNGA resolution (Dec 2022) with broad support against such tests. Accelerated norms-building.', outcome: 'US ASAT test moratorium; UN resolution A/RES/77/41 adopted December 2022' },
-  { id: 'dish-echostar-debris', title: 'FCC vs. DISH Network (EchoStar-7 Debris Penalty)', type: 'Regulatory Enforcement', parties: 'FCC vs. DISH Network', status: 'resolved', year: 2023, jurisdiction: 'United States (FCC)', description: 'First-ever FCC enforcement action and fine for orbital debris violation. DISH failed to properly deorbit its EchoStar-7 satellite to the required graveyard orbit, leaving it approximately 122 km below the prescribed disposal altitude.', significance: 'Landmark regulatory enforcement -- the first financial penalty by any national authority for failure to comply with orbital debris mitigation rules. Signals growing regulatory teeth for debris compliance.', outcome: '$150,000 fine and compliance plan imposed on DISH Network' },
-  { id: 'ula-amazon-kuiper', title: 'Amazon Kuiper Constellation FCC License Conditions', type: 'Licensing Dispute', parties: 'Amazon (Project Kuiper) vs. SpaceX / FCC', status: 'resolved', year: 2022, jurisdiction: 'United States (FCC)', description: 'SpaceX challenged the FCC\'s approval of Amazon\'s Project Kuiper constellation, raising concerns about interference and orbital debris. Amazon reciprocally challenged Starlink Gen2 modifications.', significance: 'Illustrated growing regulatory complexity of accommodating multiple mega-constellations. FCC imposed deployment milestones and debris mitigation requirements.', outcome: 'FCC approved both constellations with specific conditions and milestones' },
-  { id: 'icj-nuclear-space', title: 'ICJ Advisory Opinion on Nuclear Weapons in Space', type: 'Advisory Proceedings', parties: 'UN General Assembly Request', status: 'advisory', year: 1996, jurisdiction: 'International Court of Justice', description: 'While not specifically about space, the ICJ Advisory Opinion on the Legality of the Threat or Use of Nuclear Weapons addressed principles relevant to the prohibition of nuclear weapons in space under the Outer Space Treaty.', significance: 'Reinforced the legal framework prohibiting weapons of mass destruction in outer space and informed interpretations of Article IV of the Outer Space Treaty.', outcome: 'Advisory opinion issued; threat or use generally contrary to international law' },
-  { id: 'viasat-starlink-2022', title: 'Viasat Challenge to Starlink Gen2 FCC Approval', type: 'Environmental/Regulatory Challenge', parties: 'Viasat Inc. vs. FCC / SpaceX', status: 'active', year: 2022, jurisdiction: 'D.C. Circuit Court of Appeals', description: 'Viasat challenged the FCC\'s approval of SpaceX\'s Starlink Gen2 constellation (up to 29,988 satellites), arguing the FCC failed to conduct proper environmental review under NEPA regarding orbital debris and light pollution impacts.', significance: 'First major court challenge to apply environmental law principles to satellite constellation approvals. Could set precedent for environmental review of large-scale space activities.', outcome: 'Court remanded to FCC for further review; operations allowed to continue pending review' },
-];
-
-const REGULATORY_BODIES: RegulatoryBody[] = [
-  { id: 'unoosa', name: 'United Nations Office for Outer Space Affairs', abbreviation: 'UNOOSA', type: 'un', headquarters: 'Vienna, Austria', established: 1958, members: '193 UN Member States', mandate: 'Promote international cooperation in the peaceful use of outer space and serve as the secretariat for COPUOS.', keyFunctions: ['Secretariat for COPUOS and its subcommittees','Maintains the UN Register of Objects Launched into Outer Space','Administers UN space treaties','Capacity building in space science and technology','Space4SDGs initiative for sustainable development'], website: 'https://www.unoosa.org' },
-  { id: 'copuos', name: 'Committee on the Peaceful Uses of Outer Space', abbreviation: 'COPUOS', type: 'un', headquarters: 'Vienna, Austria', established: 1959, members: '102 Member States', mandate: 'Review international cooperation in peaceful uses of outer space, study space-related activities, and prepare programs for UN cooperation.', keyFunctions: ['Forum for developing international space law','Scientific and Technical Subcommittee (STSC)','Legal Subcommittee (LSC)','Long-term sustainability of outer space activities guidelines','Review of national space legislation'], website: 'https://www.unoosa.org/oosa/en/ourwork/copuos/index.html' },
-  { id: 'itu', name: 'International Telecommunication Union', abbreviation: 'ITU', type: 'un', headquarters: 'Geneva, Switzerland', established: 1865, members: '193 Member States', mandate: 'Coordinate global use of the radio spectrum and satellite orbits, develop technical standards, and promote connectivity.', keyFunctions: ['Radio Regulations governing spectrum and orbital slots','World Radiocommunication Conference (WRC) every 4 years','Coordination of geostationary and non-geostationary satellite networks','Master International Frequency Register (MIFR)','Technical standards for satellite communications'], website: 'https://www.itu.int' },
-  { id: 'faa-ast', name: 'Federal Aviation Administration - Office of Commercial Space Transportation', abbreviation: 'FAA/AST', type: 'national', headquarters: 'Washington, D.C., USA', established: 1984, members: 'United States', mandate: 'License and regulate commercial launch and reentry operations to protect public health, safety, and the environment.', keyFunctions: ['Commercial launch and reentry vehicle licensing','Launch site operator licensing','Safety inspections and mishap investigations','Financial responsibility requirements','Environmental reviews under NEPA'], website: 'https://www.faa.gov/space' },
-  { id: 'fcc', name: 'Federal Communications Commission', abbreviation: 'FCC', type: 'national', headquarters: 'Washington, D.C., USA', established: 1934, members: 'United States', mandate: 'Regulate radio spectrum use including satellite communications, and enforce orbital debris mitigation rules for US-licensed satellites.', keyFunctions: ['Satellite licensing and spectrum authorization','Orbital debris mitigation rules (25-year / 5-year rule)','Earth station licensing','NGSO constellation coordination','Space station authorization and market access'], website: 'https://www.fcc.gov' },
-  { id: 'noaa', name: 'National Oceanic and Atmospheric Administration', abbreviation: 'NOAA', type: 'national', headquarters: 'Washington, D.C., USA', established: 1970, members: 'United States', mandate: 'License and regulate private remote sensing satellite systems operating from the US.', keyFunctions: ['Private remote sensing licensing under Title 51','Satellite imagery data policy','Weather satellite operations','Ocean and atmospheric monitoring','Space weather prediction services'], website: 'https://www.noaa.gov' },
-  { id: 'esa', name: 'European Space Agency', abbreviation: 'ESA', type: 'regional', headquarters: 'Paris, France', established: 1975, members: '22 Member States', mandate: 'Develop Europe\'s space capability and ensure that investment in space continues to deliver benefits to citizens.', keyFunctions: ['Space program development and execution','Technology development and transfer','International space cooperation coordination','Space Safety Programme (debris, asteroids, space weather)','Commercial space industry support'], website: 'https://www.esa.int' },
-  { id: 'euspa', name: 'European Union Agency for the Space Programme', abbreviation: 'EUSPA', type: 'regional', headquarters: 'Prague, Czech Republic', established: 2021, members: 'European Union', mandate: 'Manage Galileo, EGNOS, and Copernicus services and contribute to the EU Space Programme.', keyFunctions: ['Galileo navigation system operations','Copernicus Earth observation management','EU Space Programme market development','Space traffic management support','GOVSATCOM secure communications'], website: 'https://www.euspa.europa.eu' },
-  { id: 'caa-uk', name: 'Civil Aviation Authority (UK Space)', abbreviation: 'CAA', type: 'national', headquarters: 'London, United Kingdom', established: 1972, members: 'United Kingdom', mandate: 'Regulate spaceflight activities in the UK under the Space Industry Act 2018.', keyFunctions: ['Spaceflight operator licensing','Spaceport licensing','Range safety and control','Orbital operator licensing','Coordination with UKSA on policy'], website: 'https://www.caa.co.uk' },
-  { id: 'cnes', name: 'Centre National d\'Etudes Spatiales', abbreviation: 'CNES', type: 'national', headquarters: 'Paris, France', established: 1961, members: 'France', mandate: 'Implement French space policy, license and supervise space operations under the French Space Operations Act.', keyFunctions: ['Space operations authorization and supervision','Technical regulatory standards development','Launch operations from Guiana Space Centre','Debris mitigation compliance enforcement','Space situational awareness services'], website: 'https://cnes.fr' },
-  { id: 'in-space', name: 'Indian National Space Promotion and Authorization Centre', abbreviation: 'IN-SPACe', type: 'national', headquarters: 'Ahmedabad, India', established: 2020, members: 'India', mandate: 'Authorize, regulate, and promote private space activities in India as a single-window clearance agency.', keyFunctions: ['Authorization for private space activities','ISRO facility access coordination','Technology transfer oversight','Policy recommendations to DOS','Promotion of space startups and industry'], website: 'https://www.inspace.gov.in' },
-  { id: 'iadc', name: 'Inter-Agency Space Debris Coordination Committee', abbreviation: 'IADC', type: 'industry', headquarters: 'Rotating Chair', established: 1993, members: '13 Space Agencies (NASA, ESA, JAXA, CNSA, Roscosmos, etc.)', mandate: 'Coordinate efforts between space agencies to address debris issues and develop mitigation guidelines.', keyFunctions: ['Space debris mitigation guidelines development','Conjunction assessment coordination','Debris environment modeling','Re-entry safety analysis','Best practices for satellite design and operations'], website: 'https://www.iadc-home.org' },
-  { id: 'confers', name: 'Consortium for Execution of Rendezvous and Servicing Operations', abbreviation: 'CONFERS', type: 'industry', headquarters: 'USA', established: 2018, members: 'Industry Consortium', mandate: 'Develop industry standards and best practices for on-orbit servicing and rendezvous and proximity operations (RPO).', keyFunctions: ['Guiding principles for commercial RPO and OOS','Industry technical standards development','Government engagement on policy frameworks','Safety of operations guidance','Stakeholder coordination on space sustainability'], website: 'https://www.satelliteconfers.org' },
-  { id: 'ofcom', name: 'Office of Communications', abbreviation: 'Ofcom', type: 'national', headquarters: 'London, United Kingdom', established: 2003, members: 'United Kingdom', mandate: 'Regulate satellite communications and spectrum use in the UK.', keyFunctions: ['Satellite spectrum licensing in the UK','Interference management','ITU coordination for UK satellite networks','Spectrum allocation and management','Broadcasting satellite regulation'], website: 'https://www.ofcom.org.uk' },
-];
+let TREATIES: Treaty[] = [];
+let NATIONAL_LAWS: NationalLaw[] = [];
+let ARTEMIS_PRINCIPLES: { title: string; description: string }[] = [];
+let ARTEMIS_SIGNATORIES: ArtemisSignatory[] = [];
+let LEGAL_PROCEEDINGS: LegalProceeding[] = [];
+let REGULATORY_BODIES: RegulatoryBody[] = [];
 
 // ############################################################################
 // REGULATORY FILINGS - Types, Status Configs, and Data
@@ -326,88 +184,22 @@ const FILING_ORBIT_STYLES: Record<string, { bg: string; text: string }> = {
   MEO: { bg: 'bg-blue-500/20', text: 'text-blue-400' },
 };
 
-const FCC_FILINGS: FCCFiling[] = [
-  { id: 'fcc-1', callSign: 'S3070', fileNumber: 'SAT-MPL-20200526-00062', applicant: 'SpaceX Services, Inc.', filingType: 'Part 25 NGSO Modification', band: 'Ku/Ka-band', orbitType: 'NGSO', status: 'granted', dateFiled: '2020-05-26', dateActedOn: '2021-04-27', satelliteCount: 2814, summary: 'SpaceX Gen2 modification to lower orbital shells from 1,110 km to 540-570 km for up to 2,814 satellites. Approved by FCC with conditions on debris mitigation and interference protection to GSO systems.', docket: 'IBFS File No. SAT-MPL-20200526-00062' },
-  { id: 'fcc-2', callSign: 'S3070', fileNumber: 'SAT-MOD-20230120-00012', applicant: 'SpaceX Services, Inc.', filingType: 'Part 25 Gen2 System', band: 'Ku/Ka/V-band', orbitType: 'NGSO', status: 'granted', dateFiled: '2022-01-18', dateActedOn: '2023-12-01', satelliteCount: 7500, summary: 'SpaceX Second Generation (Gen2) constellation authorization for 7,500 satellites across multiple orbital shells (525-535 km). FCC approved a reduced constellation from the requested 29,988 satellites with conditions on space debris and coordination.', docket: 'IB Docket No. 22-271' },
-  { id: 'fcc-3', fileNumber: 'SAT-LOA-20200721-00073', applicant: 'Kuiper Systems LLC (Amazon)', filingType: 'Part 25 NGSO License', band: 'Ka-band', orbitType: 'NGSO', status: 'granted', dateFiled: '2019-07-04', dateActedOn: '2020-07-30', satelliteCount: 3236, summary: 'Amazon Project Kuiper authorization for 3,236-satellite broadband constellation in three orbital shells (590 km, 610 km, 630 km). FCC imposed milestone requirements: 50% by 2026-07-30, 100% by 2029-07-30.', docket: 'IBFS File No. SAT-LOA-20200721-00073' },
-  { id: 'fcc-4', fileNumber: 'SAT-MOD-20231030-00156', applicant: 'Kuiper Systems LLC (Amazon)', filingType: 'Part 25 Modification', band: 'Ka-band', orbitType: 'NGSO', status: 'pending', dateFiled: '2023-10-30', satelliteCount: 7774, summary: 'Amazon Kuiper modification request to expand constellation to 7,774 satellites and add V-band frequencies. If approved, would more than double the authorized constellation size with additional orbital planes.' },
-  { id: 'fcc-5', callSign: 'S2935', fileNumber: 'SAT-LOI-20160428-00041', applicant: 'OneWeb (Network Access Associates)', filingType: 'Part 25 NGSO License', band: 'Ku/Ka-band', orbitType: 'NGSO', status: 'granted', dateFiled: '2016-04-28', dateActedOn: '2017-06-22', satelliteCount: 720, summary: 'OneWeb authorization for 720-satellite LEO broadband constellation at 1,200 km altitude. Later modified to include 48,000-satellite Phase 2. Post-bankruptcy, Eutelsat OneWeb continues operations with 634 satellites in orbit.' },
-  { id: 'fcc-6', fileNumber: 'SAT-LOA-20221003-00109', applicant: 'AST SpaceMobile, Inc.', filingType: 'Part 25 NGSO License', band: 'V-band (feeder links)', orbitType: 'NGSO', status: 'granted', dateFiled: '2022-10-03', dateActedOn: '2023-09-21', satelliteCount: 243, summary: 'AST SpaceMobile authorization for 243 BlueBird satellites providing direct-to-cellular broadband service. V-band feeder links with terrestrial mobile spectrum used for service links through MNO partnerships.' },
-  { id: 'fcc-7', fileNumber: 'SAT-LOA-20230301-00034', applicant: 'Lynk Global, Inc.', filingType: 'Part 25 NGSO License', band: 'Cellular bands (service), Ku-band (feeder)', orbitType: 'NGSO', status: 'granted', dateFiled: '2023-03-01', dateActedOn: '2023-12-07', satelliteCount: 100, summary: 'Lynk Global authorization for satellite-to-cell-phone service constellation. First company to receive FCC commercial license for direct satellite-to-standard-phone connectivity.' },
-  { id: 'fcc-8', fileNumber: 'SAT-MOD-20240315-00048', applicant: 'Telesat Canada', filingType: 'Part 25 NGSO Market Access', band: 'Ka-band', orbitType: 'NGSO', status: 'granted', dateFiled: '2018-11-02', dateActedOn: '2024-03-15', satelliteCount: 198, summary: 'Telesat Lightspeed constellation US market access for 198 LEO satellites at 1,015-1,325 km. Enterprise-focused broadband constellation targeting government and aviation connectivity markets.' },
-  { id: 'fcc-9', fileNumber: 'SAT-LOA-20231215-00187', applicant: 'Rivada Space Networks GmbH', filingType: 'Part 25 NGSO License', band: 'Ka/V-band', orbitType: 'NGSO', status: 'pending', dateFiled: '2023-12-15', satelliteCount: 600, summary: 'Rivada Space Networks application for 600-satellite LEO constellation providing secure mesh networking with optical inter-satellite links. Targeting government and enterprise markets with low-latency data relay.' },
-  { id: 'fcc-10', fileNumber: 'SAT-LOA-20240201-00019', applicant: 'Astranis Space Technologies', filingType: 'Part 25 GSO Application', band: 'Ka-band', orbitType: 'GSO', status: 'granted', dateFiled: '2024-02-01', dateActedOn: '2024-08-15', satelliteCount: 1, summary: 'Astranis MicroGEO satellite application for dedicated broadband capacity to underserved markets. Ultra-small GEO spacecraft design enables dedicated single-country coverage at lower cost than traditional GSO birds.' },
-  { id: 'fcc-11', fileNumber: 'SAT-RPL-20240615-00089', applicant: 'SES S.A.', filingType: 'Part 25 GSO Replacement', band: 'C/Ku-band', orbitType: 'GSO', status: 'pending', dateFiled: '2024-06-15', satelliteCount: 1, summary: 'SES replacement satellite application for SES-22 at 135 degrees West. Continuing C-band and Ku-band services post C-band transition with upgraded high-throughput payload.' },
-  { id: 'fcc-12', fileNumber: 'SAT-LOA-20240901-00112', applicant: 'Mangata Networks LLC', filingType: 'Part 25 HEO/MEO License', band: 'Ka/Q/V-band', orbitType: 'HEO', status: 'pending', dateFiled: '2024-09-01', satelliteCount: 791, summary: 'Mangata Networks application for hybrid HEO/MEO constellation of 791 satellites. Unique highly elliptical orbit design provides persistent high-latitude coverage for Arctic regions and government users.' },
-];
-
-const FAA_LICENSES: FAALicense[] = [
-  { id: 'faa-1', licenseNumber: 'LRLO 24-118A', licensee: 'Space Exploration Technologies Corp.', licenseType: 'Launch/Reentry', vehicle: 'Falcon 9 / Dragon', launchSite: 'KSC LC-39A, CCSFS SLC-40, VSFB SLC-4E', status: 'active', dateIssued: '2024-01-15', expirationDate: '2029-01-15', missionsAuthorized: 100, summary: 'Operator license for Falcon 9 launch and Dragon spacecraft reentry operations. Covers all SpaceX launch sites including Kennedy Space Center, Cape Canaveral Space Force Station, and Vandenberg Space Force Base.' },
-  { id: 'faa-2', licenseNumber: 'LRLO 23-112', licensee: 'Space Exploration Technologies Corp.', licenseType: 'Launch/Reentry', vehicle: 'Starship / Super Heavy', launchSite: 'Boca Chica, TX (Starbase)', status: 'active', dateIssued: '2023-06-14', expirationDate: '2028-06-14', missionsAuthorized: 10, summary: 'Launch and reentry license for Starship/Super Heavy vehicle from Starbase, Boca Chica. Multiple test flights conducted under this license including IFT-1 through IFT-6. Subject to environmental mitigations per FAA Programmatic Environmental Assessment.' },
-  { id: 'faa-3', licenseNumber: 'LRLO 24-120', licensee: 'Rocket Lab USA, Inc.', licenseType: 'Launch', vehicle: 'Electron', launchSite: 'Wallops Flight Facility LC-2, Mahia LC-1 (NZ)', status: 'active', dateIssued: '2024-03-01', expirationDate: '2029-03-01', missionsAuthorized: 50, summary: 'Operator license for Electron small launch vehicle. Covers US launches from Mid-Atlantic Regional Spaceport at Wallops Island and supports New Zealand launches from Mahia Peninsula Launch Complex 1.' },
-  { id: 'faa-4', licenseNumber: 'LRLO 24-122', licensee: 'Rocket Lab USA, Inc.', licenseType: 'Launch', vehicle: 'Neutron', launchSite: 'Wallops Flight Facility LC-3', status: 'pending', dateIssued: '2024-11-01', expirationDate: '2029-11-01', missionsAuthorized: 25, summary: 'Application for Neutron medium-lift vehicle launch license from new pad at Wallops Flight Facility. Neutron is an 8-ton-to-LEO reusable rocket targeting 2025 first flight for mega-constellation deployment and national security missions.' },
-  { id: 'faa-5', licenseNumber: 'LRLO 23-108', licensee: 'United Launch Alliance, LLC', licenseType: 'Launch', vehicle: 'Vulcan Centaur', launchSite: 'CCSFS SLC-41', status: 'active', dateIssued: '2023-12-20', expirationDate: '2028-12-20', missionsAuthorized: 30, summary: 'Launch license for Vulcan Centaur rocket from Cape Canaveral SLC-41. Inaugural Cert-1 mission launched January 2024 carrying Astrobotic Peregrine lunar lander. Vehicle certified for National Security Space Launch missions.' },
-  { id: 'faa-6', licenseNumber: 'LRLO 24-115', licensee: 'Firefly Aerospace, Inc.', licenseType: 'Launch', vehicle: 'Alpha / MLV', launchSite: 'VSFB SLC-2', status: 'active', dateIssued: '2024-02-10', expirationDate: '2029-02-10', missionsAuthorized: 20, summary: 'Operator license for Firefly Alpha small launch vehicle and future Medium Launch Vehicle (MLV). Alpha has achieved multiple successful orbital missions. MLV under development in partnership with Northrop Grumman.' },
-  { id: 'faa-7', licenseNumber: 'LRLO 24-119', licensee: 'Relativity Space, Inc.', licenseType: 'Launch', vehicle: 'Terran R', launchSite: 'CCSFS LC-16', status: 'pending', dateIssued: '2024-06-01', expirationDate: '2029-06-01', missionsAuthorized: 15, summary: 'Application for Terran R fully reusable, 3D-printed medium-lift launch vehicle. First launch targeted from Cape Canaveral LC-16. Designed to lift 23,500 kg to LEO with full reusability.' },
-  { id: 'faa-8', licenseNumber: 'LRLO 23-105', licensee: 'Blue Origin, LLC', licenseType: 'Launch', vehicle: 'New Glenn', launchSite: 'CCSFS LC-36', status: 'active', dateIssued: '2024-07-01', expirationDate: '2029-07-01', missionsAuthorized: 25, summary: 'Launch license for New Glenn heavy-lift orbital vehicle from Cape Canaveral LC-36. Inaugural flight (NG-1) launched October 2024 carrying ESCAPADE Mars mission prototype. Booster landing attempt on first flight.' },
-  { id: 'faa-9', licenseNumber: 'RSO 24-003', licensee: 'Blue Origin, LLC', licenseType: 'Reentry', vehicle: 'New Shepard', launchSite: 'West Texas Launch Site', status: 'active', dateIssued: '2024-04-01', expirationDate: '2026-04-01', missionsAuthorized: 12, summary: 'Reentry license for New Shepard suborbital vehicle crew capsule recovery. Supports human spaceflight tourism and research payload missions from West Texas Launch Site near Van Horn.' },
-  { id: 'faa-10', licenseNumber: 'LRLO 24-125', licensee: 'Stoke Space Technologies, Inc.', licenseType: 'Launch', vehicle: 'Nova', launchSite: 'CCSFS (TBD)', status: 'pending', dateIssued: '2024-09-15', expirationDate: '2029-09-15', missionsAuthorized: 10, summary: 'Application for Nova fully reusable launch vehicle. Stoke Space is developing a fully reusable rocket with a novel second-stage heat shield design for upper stage return and reuse.' },
-  { id: 'faa-11', licenseNumber: 'LSO 20-014A', licensee: 'Space Florida', licenseType: 'Launch Site', vehicle: 'N/A', launchSite: 'Cape Canaveral Spaceport', status: 'active', dateIssued: '2020-08-15', expirationDate: '2025-08-15', missionsAuthorized: 0, summary: 'Launch site operator license for Cape Canaveral Spaceport facilities managed by Space Florida. Supports commercial launch operations from multiple pads including horizontal launch capabilities.' },
-  { id: 'faa-12', licenseNumber: 'LRLO 24-128', licensee: 'Intuitive Machines, LLC', licenseType: 'Launch/Reentry', vehicle: 'Nova-C Lunar Lander', launchSite: 'KSC (via SpaceX F9)', status: 'active', dateIssued: '2024-01-20', expirationDate: '2026-01-20', missionsAuthorized: 5, summary: 'Reentry authorization for Nova-C lunar lander operations under NASA CLPS program. IM-1 (Odysseus) successfully landed on the Moon in February 2024, becoming the first US commercial lunar landing.' },
-];
-
-const ITU_FILINGS: ITUFiling[] = [
-  { id: 'itu-1', networkName: 'STARLINK', administration: 'United States (FCC)', filingType: 'Art.9 Coordination', serviceBand: 'Ku/Ka/V-band', orbitType: 'NGSO', status: 'active', dateFiled: '2016-11-15', satellites: 11943, summary: 'ITU coordination filings for SpaceX Starlink NGSO constellation across multiple orbital shells. Active coordination with GSO operators under Article 9.12 and NGSO operators under Article 9.12A. EPFD validation ongoing per Article 22.' },
-  { id: 'itu-2', networkName: 'KUIPER', administration: 'United States (FCC)', filingType: 'Art.9 Coordination', serviceBand: 'Ka-band', orbitType: 'NGSO', status: 'active', dateFiled: '2018-12-12', satellites: 3236, summary: 'Amazon Kuiper NGSO system coordination filings for 3,236-satellite Ka-band constellation. Coordination requests with existing GSO and NGSO operators. Due diligence milestones being tracked by ITU BR.' },
-  { id: 'itu-3', networkName: 'ONEWEB', administration: 'United Kingdom (Ofcom)', filingType: 'Art.9 Coordination', serviceBand: 'Ku/Ka-band', orbitType: 'NGSO', status: 'active', dateFiled: '2015-06-01', satellites: 648, summary: 'Eutelsat OneWeb LEO broadband constellation filed through UK administration. Phase 1 (648 satellites at 1,200 km) largely deployed. Coordination with GSO operators in Ku-band ongoing.' },
-  { id: 'itu-4', networkName: 'O3B-2', administration: 'Luxembourg', filingType: 'Art.9 Coordination', serviceBand: 'Ka-band', orbitType: 'MEO', status: 'active', dateFiled: '2017-03-20', satellites: 11, summary: 'SES O3b mPOWER next-generation MEO constellation. 11 high-throughput satellites in 8,062 km orbit. Fully deployed as of 2024, providing terabit-scale connectivity. Coordinated through Luxembourg administration.' },
-  { id: 'itu-5', networkName: 'TELESAT-LEO-V2', administration: 'Canada (ISED)', filingType: 'Art.9 Coordination', serviceBand: 'Ka-band', orbitType: 'NGSO', status: 'active', dateFiled: '2020-08-15', satellites: 198, summary: 'Telesat Lightspeed LEO constellation coordination through Canadian administration (ISED). 198 Ka-band satellites in polar and inclined orbits at 1,015-1,325 km. Enterprise-focused broadband service.' },
-  { id: 'itu-6', networkName: 'CINNAMON-937', administration: 'Rwanda (RURA)', filingType: 'Art.9 Coordination', serviceBand: 'V/E-band', orbitType: 'NGSO', status: 'pending', dateFiled: '2021-09-08', satellites: 327000, summary: 'Controversial filing through Rwanda for massive 327,000-satellite constellation. Widely suspected to be linked to undisclosed commercial entity. ITU BR has requested additional due diligence information. Raised concerns about spectrum warehousing.' },
-  { id: 'itu-7', networkName: 'GW-A59', administration: 'China (MIIT)', filingType: 'Art.9 Coordination', serviceBand: 'Ka/V-band', orbitType: 'NGSO', status: 'active', dateFiled: '2020-09-21', satellites: 12992, summary: 'China SatNet (Guowang) NGSO mega-constellation filing for 12,992 satellites. Filed through Chinese administration as national broadband satellite project. Coordination challenges with existing Starlink and Kuiper filings in overlapping bands.' },
-  { id: 'itu-8', networkName: 'IRIS2-EU', administration: 'France (ANFR) / EU', filingType: 'Art.9 Coordination', serviceBand: 'Ku/Ka-band', orbitType: 'NGSO', status: 'pending', dateFiled: '2024-03-01', satellites: 290, summary: 'European Union IRIS2 sovereign connectivity constellation. Multi-orbit system with 290 satellites filed through ANFR. Consortium led by SES, Eutelsat, Hispasat, and Telespazio. Deployment planned 2028-2030.' },
-  { id: 'itu-9', networkName: 'LIGHTSPEED-DD', administration: 'Canada (ISED)', filingType: 'Due Diligence', serviceBand: 'Ka-band', orbitType: 'NGSO', status: 'active', dateFiled: '2024-06-01', satellites: 198, summary: 'Telesat Lightspeed due diligence filing demonstrating concrete plans for constellation deployment. Manufacturing contract with MDA and launch contracts required by ITU milestones to maintain spectrum priority.' },
-  { id: 'itu-10', networkName: 'ASTRA-3B-KA', administration: 'Luxembourg', filingType: 'AP30B', serviceBand: 'Ka-band', orbitType: 'GSO', status: 'granted', dateFiled: '2023-07-15', satellites: 1, summary: 'SES ASTRA 3B Ka-band plan filing under Appendix 30B for fixed-satellite service in the planned Ka-band allotment plan. Part of SES fleet replacement strategy for European coverage.' },
-];
-
-const SEC_FILINGS: SECFiling[] = [
-  { id: 'sec-1', company: 'Rocket Lab USA, Inc.', ticker: 'RKLB', filingType: '10-K', dateFiled: '2025-02-27', period: 'FY 2024', summary: 'Annual report reflecting record revenue of $436M (up 78% YoY). Electron achieved 50th launch milestone. Neutron development on track for 2025 first flight. Space Systems segment growing with HASTE hypersonic contracts and satellite manufacturing.', keyMetric: '$436M', keyMetricLabel: 'FY24 Revenue', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RKLB&type=10-K' },
-  { id: 'sec-2', company: 'Rocket Lab USA, Inc.', ticker: 'RKLB', filingType: '8-K', dateFiled: '2025-01-15', summary: 'Current report announcing $515M contract from classified US government customer for satellite constellation development and launch services using Neutron vehicle. Largest single contract in company history.', keyMetric: '$515M', keyMetricLabel: 'Contract Value', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=RKLB&type=8-K' },
-  { id: 'sec-3', company: 'Intuitive Machines, Inc.', ticker: 'LUNR', filingType: '10-K', dateFiled: '2025-03-15', period: 'FY 2024', summary: 'Annual report covering historic IM-1 Odysseus lunar landing (Feb 2024) and IM-2 mission preparations. Revenue of $228M driven by NASA CLPS task orders and lunar data services. Backlog exceeds $316M.', keyMetric: '$228M', keyMetricLabel: 'FY24 Revenue', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LUNR&type=10-K' },
-  { id: 'sec-4', company: 'Intuitive Machines, Inc.', ticker: 'LUNR', filingType: '8-K', dateFiled: '2024-12-10', summary: 'Current report announcing IM-2 mission delay to Q1 2025 due to additional testing requirements for Micro-Nova hopper payload. NASA CLPS CP-12 task order awarded for IM-3 south pole mission.', keyMetric: 'IM-2', keyMetricLabel: 'Mission Update', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LUNR&type=8-K' },
-  { id: 'sec-5', company: 'AST SpaceMobile, Inc.', ticker: 'ASTS', filingType: '10-K', dateFiled: '2025-03-01', period: 'FY 2024', summary: 'Annual report highlighting successful launch of 5 BlueBird Block 1 satellites in September 2024. Pre-revenue stage with $1.5B in MNO partnership agreements covering 2.8B mobile subscribers. Commercial service launch targeted mid-2025.', keyMetric: '$1.5B', keyMetricLabel: 'MNO Agreements', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ASTS&type=10-K' },
-  { id: 'sec-6', company: 'AST SpaceMobile, Inc.', ticker: 'ASTS', filingType: '8-K', dateFiled: '2024-09-12', summary: 'Current report confirming successful deployment and unfurling of five BlueBird satellites. Each satellite features 64 square meter phased array antenna. Initial signal testing with AT&T and Vodafone commenced.', keyMetric: '5 Sats', keyMetricLabel: 'Deployed', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=ASTS&type=8-K' },
-  { id: 'sec-7', company: 'Spire Global, Inc.', ticker: 'SPIR', filingType: '10-K', dateFiled: '2025-03-10', period: 'FY 2024', summary: 'Annual report for space-based data analytics company. Revenue of $110M with ARR (annual recurring revenue) of $103M. 100+ satellite constellation providing weather, maritime, and aviation data. Achieved positive adjusted EBITDA in Q4 2024.', keyMetric: '$110M', keyMetricLabel: 'FY24 Revenue', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SPIR&type=10-K' },
-  { id: 'sec-8', company: 'Planet Labs PBC', ticker: 'PL', filingType: '10-K', dateFiled: '2025-03-28', period: 'FY 2025 (Jan 31)', summary: 'Annual report for Earth observation company. Revenue of $244M operating 200+ imaging satellites. Government segment growing with NRO Electro-Optical CLINs contract. Pelican next-gen satellite constellation deployment begun.', keyMetric: '$244M', keyMetricLabel: 'FY25 Revenue', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PL&type=10-K' },
-  { id: 'sec-9', company: 'Virgin Galactic Holdings, Inc.', ticker: 'SPCE', filingType: '10-K', dateFiled: '2025-02-28', period: 'FY 2024', summary: 'Annual report covering pause in commercial flights while Delta-class spaceship fleet is developed. Revenue of $8.4M from limited research flights. Cash reserves of $862M. Delta ships expected to begin flights in 2026.', keyMetric: '$862M', keyMetricLabel: 'Cash Reserves', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=SPCE&type=10-K' },
-  { id: 'sec-10', company: 'Terran Orbital Corporation', ticker: 'LLAP', filingType: '8-K', dateFiled: '2024-08-12', summary: 'Current report announcing completion of acquisition by Lockheed Martin for $450M. Terran Orbital delisted from NYSE. Satellite manufacturing capabilities integrated into Lockheed Martin Space division.', keyMetric: '$450M', keyMetricLabel: 'Acquisition', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=LLAP&type=8-K' },
-  { id: 'sec-11', company: 'Iridium Communications Inc.', ticker: 'IRDM', filingType: '10-K', dateFiled: '2025-02-20', period: 'FY 2024', summary: 'Annual report for global satellite communications company. Revenue of $813M with strong IoT growth (+22% YoY). 66-satellite Iridium NEXT constellation fully operational. Evaluating Iridium NEXT successor architecture for 2030s deployment.', keyMetric: '$813M', keyMetricLabel: 'FY24 Revenue', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=IRDM&type=10-K' },
-  { id: 'sec-12', company: 'Viasat, Inc.', ticker: 'VSAT', filingType: '10-K', dateFiled: '2024-08-15', period: 'FY 2024 (Mar 31)', summary: 'Annual report post-Inmarsat acquisition. Combined revenue of $4.4B. ViaSat-3 Americas satellite operational with 1 Tbps capacity. Integration of Inmarsat fleet and L-band services expanding government and aviation connectivity markets.', keyMetric: '$4.4B', keyMetricLabel: 'FY24 Revenue', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=VSAT&type=10-K' },
-];
-
-const FEDERAL_REGISTER_ENTRIES: FederalRegisterEntry[] = [
-  { id: 'fr-1', agency: 'FCC', title: 'Space Innovation: NGSO Deployment Milestone Rules', documentType: 'Final Rule', federalRegisterNumber: '2024-12456', publishedDate: '2024-09-29', effectiveDate: '2024-11-15', impact: 'high', summary: 'Final rule establishing revised deployment milestones for NGSO satellite constellations. Requires licensees to deploy 50% of authorized satellites within 6 years and 100% within 9 years of authorization or face license reduction or revocation.', docket: 'IB Docket No. 22-271' },
-  { id: 'fr-2', agency: 'FCC', title: 'Mitigation of Orbital Debris in the New Space Age', documentType: 'Final Rule', federalRegisterNumber: '2024-08832', publishedDate: '2024-03-15', effectiveDate: '2024-09-29', impact: 'high', summary: 'Final rule implementing 5-year post-mission disposal rule for LEO satellites, replacing previous 25-year guideline. Requires operators to demonstrate ability to deorbit within 5 years or provide surety bond. Applies to all new applications.', docket: 'IB Docket No. 18-313' },
-  { id: 'fr-3', agency: 'FCC', title: 'Single Network Future: Supplemental Coverage from Space', documentType: 'Proposed Rule', federalRegisterNumber: '2024-15678', publishedDate: '2024-11-20', commentDeadline: '2025-02-20', impact: 'high', summary: 'NPRM proposing framework for direct-to-device satellite services using terrestrial mobile spectrum. Would allow satellite operators to use MNO spectrum with MNO consent. Addresses interference management, international coordination, and emergency services.', docket: 'GN Docket No. 23-65' },
-  { id: 'fr-4', agency: 'FAA', title: 'Streamlining Launch and Reentry Licensing Requirements', documentType: 'Final Rule', federalRegisterNumber: '2024-09901', publishedDate: '2024-05-18', effectiveDate: '2025-03-21', impact: 'high', summary: 'Part 450 final rule completing modernization of commercial space launch and reentry regulations. Replaces prescriptive approach with performance-based standards. Enables operator licenses instead of per-mission licenses. Reduces licensing timeline from 180 to 120 days.', docket: 'FAA-2019-0229' },
-  { id: 'fr-5', agency: 'FAA', title: 'Commercial Space Launch Safety: Updated Populated Area Restrictions', documentType: 'Proposed Rule', federalRegisterNumber: '2024-22109', publishedDate: '2024-12-01', commentDeadline: '2025-03-01', impact: 'medium', summary: 'Proposed amendments to individual risk criteria and expected casualty calculations for launch and reentry operations near populated areas. Responds to increased launch cadence from sites near communities.', docket: 'FAA-2024-1456' },
-  { id: 'fr-6', agency: 'NOAA', title: 'Licensing of Private Remote Sensing Space Systems', documentType: 'Final Rule', federalRegisterNumber: '2024-07234', publishedDate: '2024-04-10', effectiveDate: '2024-07-01', impact: 'medium', summary: 'Revised Part 960 regulations simplifying NOAA remote sensing licensing. Creates tiered licensing approach based on data capabilities. Reduces processing times and eliminates unnecessary conditions for Tier 1 (publicly available quality) systems.', docket: 'NOAA-2023-0105' },
-  { id: 'fr-7', agency: 'BIS', title: 'Space-Related Export Controls: Commerce Control List Updates', documentType: 'Final Rule', federalRegisterNumber: '2024-18876', publishedDate: '2024-10-05', effectiveDate: '2024-12-01', impact: 'medium', summary: 'Updates to ECCN 9x515 series and related space items on the Commerce Control List. Clarifies EAR jurisdiction over commercial satellite components and adds new license exception provisions for allied nation satellite programs.', docket: 'BIS-2024-0012' },
-  { id: 'fr-8', agency: 'FCC', title: '12 GHz Band: Protecting NGSO Satellite Operations', documentType: 'Notice', federalRegisterNumber: '2024-20543', publishedDate: '2024-11-01', commentDeadline: '2025-01-15', impact: 'high', summary: 'Public notice seeking further comment on 12 GHz band sharing between NGSO satellite downlinks and proposed terrestrial 5G services. FCC requests updated interference analyses given Starlink constellation growth since original NPRM.', docket: 'WT Docket No. 20-443' },
-  { id: 'fr-9', agency: 'DoC', title: 'National Spectrum Strategy Implementation Plan', documentType: 'Notice', federalRegisterNumber: '2024-14321', publishedDate: '2024-08-20', commentDeadline: '2024-11-20', impact: 'high', summary: 'Department of Commerce implementation plan for the National Spectrum Strategy. Identifies 2,786 MHz of spectrum for study including bands used for satellite operations. Establishes interagency coordination framework between DoD, FCC, NTIA, and NASA.', docket: 'DOC-2024-0015' },
-  { id: 'fr-10', agency: 'FCC', title: 'Space Bureau: Satellite Licensing Process Improvements', documentType: 'Notice', federalRegisterNumber: '2024-25678', publishedDate: '2024-12-15', commentDeadline: '2025-03-15', impact: 'medium', summary: 'FCC Space Bureau request for comment on streamlining satellite licensing. Proposes consolidated application forms, expedited review for small satellite systems, and digital filing improvements for Part 25 applications.', docket: 'IB Docket No. 24-89' },
-  { id: 'fr-11', agency: 'FAA', title: 'Commercial Human Spaceflight: Extension of Learning Period Moratorium', documentType: 'Notice', federalRegisterNumber: '2024-11234', publishedDate: '2024-06-15', impact: 'medium', summary: 'Notice extending the commercial human spaceflight "learning period" moratorium on FAA safety regulations for spaceflight participants through January 2026. Congress continues to evaluate appropriate regulatory framework.', docket: 'FAA-2024-0891' },
-  { id: 'fr-12', agency: 'OSTP', title: 'United States Space Priorities Framework Update', documentType: 'Presidential Document', federalRegisterNumber: '2024-16789', publishedDate: '2024-09-10', impact: 'high', summary: 'Updated Space Priorities Framework directing agencies to streamline commercial space regulations, enhance space situational awareness sharing, and establish spectrum protection for critical space services. Mandates interagency review completion within 180 days.' },
-];
-
+let FCC_FILINGS: FCCFiling[] = [];
+let FAA_LICENSES: FAALicense[] = [];
+let ITU_FILINGS: ITUFiling[] = [];
+let SEC_FILINGS: SECFiling[] = [];
+let FEDERAL_REGISTER_ENTRIES: FederalRegisterEntry[] = [];
 type FilingsTabId = 'fcc' | 'faa' | 'itu' | 'sec' | 'federal-register';
 
-const FILINGS_TABS: { id: FilingsTabId; label: string; count: number }[] = [
-  { id: 'fcc', label: 'FCC Filings', count: FCC_FILINGS.length },
-  { id: 'faa', label: 'FAA Licenses', count: FAA_LICENSES.length },
-  { id: 'itu', label: 'ITU Filings', count: ITU_FILINGS.length },
-  { id: 'sec', label: 'SEC & Financial', count: SEC_FILINGS.length },
-  { id: 'federal-register', label: 'Federal Register', count: FEDERAL_REGISTER_ENTRIES.length },
-];
+function getFilingsTabs(): { id: FilingsTabId; label: string; count: number }[] {
+  return [
+    { id: 'fcc', label: 'FCC Filings', count: FCC_FILINGS.length },
+    { id: 'faa', label: 'FAA Licenses', count: FAA_LICENSES.length },
+    { id: 'itu', label: 'ITU Filings', count: ITU_FILINGS.length },
+    { id: 'sec', label: 'SEC & Financial', count: SEC_FILINGS.length },
+    { id: 'federal-register', label: 'Federal Register', count: FEDERAL_REGISTER_ENTRIES.length },
+  ];
+}
 
 // ############################################################################
 // COMPLIANCE SECTION COMPONENTS (existing)
@@ -1105,299 +897,7 @@ const PROTEST_PROGRAM_LABELS: Record<ProtestProgram, string> = {
   iss: 'ISS Operations',
 };
 
-const BID_PROTESTS: BidProtest[] = [
-  {
-    id: 'bo-hls-cofc-2021',
-    title: 'Blue Origin Federation, LLC v. United States',
-    shortTitle: 'Blue Origin HLS Lawsuit',
-    caseNumber: 'No. 21-1695C',
-    forum: 'cofc',
-    outcome: 'denied',
-    program: 'crewed',
-    protester: 'Blue Origin',
-    awardee: 'SpaceX',
-    agency: 'NASA',
-    contractValue: '$2.9B',
-    yearFiled: 2021,
-    yearDecided: 2021,
-    decisionDate: 'November 4, 2021',
-    judge: 'Judge Richard A. Hertling',
-    description: 'Blue Origin challenged NASA\'s award of the sole Human Landing System (HLS) Option A contract to SpaceX for $2.9 billion to develop the Starship lunar lander for the Artemis program. Blue Origin argued NASA should have selected two providers and that the evaluation was flawed.',
-    significance: 'Landmark case establishing that NASA had broad discretion to adjust award strategy based on available funding. Set precedent that agencies can make fewer awards than initially anticipated when budget is insufficient.',
-    keyFindings: [
-      'NASA conducted a "thorough, reasoned evaluation of the proposals"',
-      'Blue Origin did not have "a substantial chance of award"',
-      'NASA lawfully decided to make one award instead of two given budget constraints',
-      'The protest caused a 4-month delay to the Artemis program',
-    ],
-  },
-  {
-    id: 'bo-dynetics-hls-gao-2021',
-    title: 'Blue Origin Federation, LLC; Dynetics, Inc.\u2014Loss of the Leidos Company',
-    shortTitle: 'Blue Origin & Dynetics HLS GAO Protest',
-    caseNumber: 'B-419783; B-419783.2',
-    forum: 'gao',
-    outcome: 'denied',
-    program: 'crewed',
-    protester: 'Blue Origin / Dynetics',
-    awardee: 'SpaceX',
-    agency: 'NASA',
-    contractValue: '$2.9B',
-    yearFiled: 2021,
-    yearDecided: 2021,
-    decisionDate: 'July 30, 2021',
-    description: 'Both Blue Origin and Dynetics protested NASA\'s sole-source HLS Option A award to SpaceX. They argued NASA was required to make two awards as originally planned, and that the evaluation criteria were not properly applied.',
-    significance: 'GAO affirmed broad agency discretion in source selection under Space Act Agreements. Confirmed that when solicitations reserve the right to make fewer awards, agencies can do so without violating procurement law.',
-    keyFindings: [
-      'NASA did not violate procurement law by making only one award',
-      'The announcement provided that number of awards was subject to available funding',
-      'No requirement for NASA to engage in discussions or amend the announcement',
-      'Dynetics received lowest technical rating of "Marginal"',
-    ],
-  },
-  {
-    id: 'bo-nssl-gao-2019',
-    title: 'Blue Origin Federation, LLC\u2014NSSL Phase 2 Launch Service Procurement',
-    shortTitle: 'Blue Origin NSSL Phase 2 Protest',
-    caseNumber: 'B-417839',
-    forum: 'gao',
-    outcome: 'sustained',
-    program: 'defense',
-    protester: 'Blue Origin',
-    awardee: 'N/A (Pre-Award)',
-    agency: 'USAF',
-    contractValue: '$3.5B',
-    yearFiled: 2019,
-    yearDecided: 2019,
-    decisionDate: 'November 18, 2019',
-    description: 'Blue Origin protested the terms of the Air Force\'s National Security Space Launch (NSSL) Phase 2 solicitation, arguing it contained unclear selection criteria and unnecessarily restricted competition by limiting awards to two providers for a five-year exclusive period.',
-    significance: 'One of the few sustained protests in the national security space launch domain. Forced the Air Force to clarify evaluation criteria, though the competition structure was ultimately upheld. ULA and SpaceX were selected in August 2020.',
-    keyFindings: [
-      'GAO sustained the complaint regarding unclear selection criteria',
-      'Selection criteria did not "provide a reasonable, common basis" for competition',
-      'GAO rejected the complaint about restricting competition to two providers',
-      'Air Force required to clarify RFP before proceeding with evaluation',
-    ],
-  },
-  {
-    id: 'snc-cctcap-gao-2014',
-    title: 'Sierra Nevada Corporation\u2014Commercial Crew Transportation Capability',
-    shortTitle: 'Sierra Nevada Dream Chaser CCtCap',
-    caseNumber: 'B-411343',
-    forum: 'gao',
-    outcome: 'denied',
-    program: 'crewed',
-    protester: 'Sierra Nevada Corporation',
-    awardee: 'Boeing / SpaceX',
-    agency: 'NASA',
-    contractValue: '$6.8B',
-    yearFiled: 2014,
-    yearDecided: 2015,
-    decisionDate: 'January 5, 2015',
-    description: 'Sierra Nevada protested NASA\'s CCtCap awards of $4.2B to Boeing (CST-100 Starliner) and $2.6B to SpaceX (Crew Dragon), arguing that its Dream Chaser proposal was the second-lowest priced and that NASA improperly prioritized technical factors over price despite the solicitation weighting.',
-    significance: 'Confirmed NASA\'s discretion in best-value tradeoff decisions for Commercial Crew. Despite SNC\'s lower price, NASA reasonably concluded Boeing and SpaceX offered superior technical and management approaches.',
-    keyFindings: [
-      'NASA made proper best-value tradeoff decision',
-      'Technical evaluation factors reasonably outweighed price advantage',
-      'Dream Chaser was second-lowest priced proposal',
-      'Federal judge also ruled contract awards valid in October 2014',
-    ],
-  },
-  {
-    id: 'spacex-lucy-gao-2019',
-    title: 'Space Exploration Technologies Corp.\u2014Lucy Mission Launch Services',
-    shortTitle: 'SpaceX Lucy Mission Protest',
-    caseNumber: 'B-417317',
-    forum: 'gao',
-    outcome: 'withdrawn',
-    program: 'science',
-    protester: 'SpaceX',
-    awardee: 'United Launch Alliance',
-    agency: 'NASA',
-    contractValue: '$148.3M',
-    yearFiled: 2019,
-    yearDecided: 2019,
-    decisionDate: 'March 2019',
-    description: 'SpaceX protested NASA\'s award of the Lucy asteroid mission launch contract to ULA for $148.3 million. This was the first time SpaceX had ever challenged a NASA award decision. The key issue was schedule certainty for the narrow launch window to the Trojan asteroids.',
-    significance: 'First-ever bid protest filed by SpaceX against a NASA launch services award. Highlighted the tension between price competitiveness and schedule certainty for planetary science missions with narrow launch windows.',
-    keyFindings: [
-      'First protest ever filed by SpaceX against a NASA award',
-      'Schedule certainty was a key evaluation factor for the narrow launch window',
-      'SpaceX voluntarily withdrew the protest without public explanation',
-      'Lucy successfully launched on a ULA Atlas V in October 2021',
-    ],
-  },
-  {
-    id: 'airbus-raytheon-sda-t0-gao-2020',
-    title: 'Airbus Defence and Space; Raytheon\u2014SDA Tranche 0 Tracking Layer',
-    shortTitle: 'Airbus & Raytheon SDA Tranche 0',
-    caseNumber: 'B-419263; B-419264',
-    forum: 'gao',
-    outcome: 'corrective_action',
-    program: 'defense',
-    protester: 'Airbus / Raytheon',
-    awardee: 'L3Harris / SpaceX',
-    agency: 'SDA/DoD',
-    contractValue: '$342M',
-    yearFiled: 2020,
-    yearDecided: 2020,
-    decisionDate: '2020',
-    description: 'Airbus Defence and Space and Raytheon filed separate protests after the Space Development Agency awarded contracts to L3Harris and SpaceX to build eight missile-tracking satellites for the Tranche 0 Tracking Layer. Protesters alleged evaluation errors in the source selection.',
-    significance: 'First major protest of an SDA procurement, signaling that the new agency\'s rapid acquisition approach would face traditional procurement oversight challenges. SDA agreed to reevaluate proposals as corrective action.',
-    keyFindings: [
-      'SDA agreed to reevaluate proposals rather than litigate',
-      'Corrective action taken voluntarily by agency',
-      'Highlighted tension between SDA\'s rapid acquisition model and traditional FAR requirements',
-      'Original awardees (L3Harris and SpaceX) retained their contracts after reevaluation',
-    ],
-  },
-  {
-    id: 'maxar-sda-t1-gao-2021',
-    title: 'Maxar Technologies\u2014SDA Transport Layer Tranche 1',
-    shortTitle: 'Maxar SDA Transport Layer Protest',
-    caseNumber: 'B-420234',
-    forum: 'gao',
-    outcome: 'dismissed',
-    program: 'defense',
-    protester: 'Maxar Technologies',
-    awardee: 'N/A (Pre-Award)',
-    agency: 'SDA/DoD',
-    contractValue: 'Est. $1.8B',
-    yearFiled: 2021,
-    yearDecided: 2021,
-    decisionDate: 'October 2021',
-    description: 'Maxar Technologies protested the SDA\'s solicitation for 126 Transport Layer Tranche 1 communication satellites, alleging the terms unfairly favored certain companies and limited competition. SDA canceled the solicitation and reissued it as an Other Transaction Authority (OTA) procurement.',
-    significance: 'Led to a fundamental shift in SDA procurement strategy from traditional FAR-based contracting to OTA. Demonstrated how protests can reshape entire acquisition approaches in the space domain.',
-    keyFindings: [
-      'Maxar alleged solicitation terms limited competition',
-      'SDA voluntarily canceled and reissued solicitation under OTA',
-      'GAO dismissed protest as moot after corrective action',
-      'Shift to OTA mechanism bypassed future GAO protest jurisdiction',
-    ],
-  },
-  {
-    id: 'l3harris-geoxo-gao-2023',
-    title: 'L3Harris Technologies, Inc.\u2014GeoXO Ocean Color Instrument',
-    shortTitle: 'L3Harris GeoXO Weather Satellite',
-    caseNumber: 'B-422006; B-422006.2',
-    forum: 'gao',
-    outcome: 'denied',
-    program: 'satellite',
-    protester: 'L3Harris Technologies',
-    awardee: 'Ball Aerospace',
-    agency: 'NASA',
-    contractValue: '$486.9M',
-    yearFiled: 2023,
-    yearDecided: 2023,
-    decisionDate: 'December 2023',
-    description: 'L3Harris protested NASA\'s award of a $486.9 million contract to Ball Aerospace for the GeoXO Ocean Color Instrument, a next-generation weather satellite instrument. L3Harris alleged NASA conducted a flawed best-value tradeoff, failed to perform proper cost realism analysis, and did not address an organizational conflict of interest related to BAE Systems\' acquisition of Ball Aerospace.',
-    significance: 'Affirmed that agencies can reasonably favor lower cost when the cost advantage is "very significant" even with a slight technical disadvantage. L3Harris subsequently filed in COFC and lost again in April 2024.',
-    keyFindings: [
-      'NASA\'s cost realism adjustment yielded $553.9M probable cost for Ball vs. $764.9M for L3Harris',
-      '"Very significant cost advantage" outweighed "slight" technical advantage',
-      'Organizational conflict of interest claim rejected',
-      'L3Harris subsequently challenged in COFC and was dismissed in April 2024',
-    ],
-  },
-  {
-    id: 'l3harris-geoxo-cofc-2024',
-    title: 'L3Harris Technologies, Inc. v. United States\u2014GeoXO',
-    shortTitle: 'L3Harris GeoXO COFC Challenge',
-    caseNumber: 'No. 24-64C',
-    forum: 'cofc',
-    outcome: 'dismissed',
-    program: 'satellite',
-    protester: 'L3Harris Technologies',
-    awardee: 'Ball Aerospace',
-    agency: 'NASA',
-    contractValue: '$544M',
-    yearFiled: 2024,
-    yearDecided: 2024,
-    decisionDate: 'April 2024',
-    description: 'After losing at the GAO, L3Harris escalated its challenge of NASA\'s GeoXO weather satellite instrument contract to the Court of Federal Claims, arguing NASA\'s evaluation was arbitrary and the cost realism analysis was flawed.',
-    significance: 'Demonstrated that courts will generally defer to agency evaluation conclusions when the record shows a reasonable basis. Reinforced that losing at GAO makes COFC success unlikely absent new evidence.',
-    keyFindings: [
-      'Court dismissed L3Harris\'s challenge',
-      'Deferred to NASA\'s evaluation methodology',
-      'Affirmed GAO\'s earlier findings on cost realism',
-      'Ball Aerospace contract proceeded as originally awarded',
-    ],
-  },
-  {
-    id: 'spacex-lsa-cofc-2019',
-    title: 'Space Exploration Technologies Corp. v. United States\u2014Launch Service Agreements',
-    shortTitle: 'SpaceX Launch Service Agreement Protest',
-    caseNumber: 'No. 19-742C',
-    forum: 'cofc',
-    outcome: 'dismissed',
-    program: 'defense',
-    protester: 'SpaceX',
-    awardee: 'ULA / Northrop Grumman / Blue Origin',
-    agency: 'USAF',
-    contractValue: '$2.3B (LSA Phase)',
-    yearFiled: 2019,
-    yearDecided: 2019,
-    decisionDate: 'September 2019',
-    description: 'SpaceX challenged the Air Force\'s award of three Launch Service Agreements (LSAs) under Other Transaction Authority (OTA) to ULA, Northrop Grumman, and Blue Origin, arguing it was improperly excluded. The COFC found it lacked jurisdiction over OTA procurement protests.',
-    significance: 'Key jurisdictional ruling establishing that the Court of Federal Claims lacked subject matter jurisdiction over OTA awards. The case was transferred to the Central District of California. Highlighted the legal gray area around OTA protest rights.',
-    keyFindings: [
-      'COFC dismissed for lack of subject matter jurisdiction over OTA',
-      'OTA awards not considered "procurement" under the Tucker Act',
-      'Case transferred to U.S. District Court for C.D. California',
-      'Raised fundamental questions about protest rights in OTA space acquisitions',
-    ],
-  },
-  {
-    id: 'planetspace-crs-gao-2009',
-    title: 'PlanetSpace, Inc.\u2014Commercial Resupply Services',
-    shortTitle: 'PlanetSpace CRS Protest',
-    caseNumber: 'B-401016; B-401016.2',
-    forum: 'gao',
-    outcome: 'denied',
-    program: 'iss',
-    protester: 'PlanetSpace',
-    awardee: 'SpaceX / Orbital Sciences',
-    agency: 'NASA',
-    contractValue: '$3.5B',
-    yearFiled: 2009,
-    yearDecided: 2009,
-    decisionDate: 'April 22, 2009',
-    description: 'PlanetSpace protested NASA\'s award of Commercial Resupply Services (CRS) contracts to SpaceX ($1.6B) and Orbital Sciences Corporation ($1.9B) for cargo delivery to the International Space Station, alleging NASA\'s evaluation was flawed.',
-    significance: 'Early test of NASA\'s commercial space procurement approach. GAO\'s denial cleared the path for the successful CRS program that has delivered cargo to the ISS for over a decade.',
-    keyFindings: [
-      'GAO denied the protest, finding NASA\'s evaluation was reasonable',
-      'NASA properly evaluated technical capability and past performance',
-      'Cleared the way for SpaceX Dragon and Orbital Cygnus cargo missions',
-      'First protest in what became NASA\'s successful commercial cargo program',
-    ],
-  },
-  {
-    id: 'viasat-sda-t2tl-cofc-2024',
-    title: 'Viasat, Inc. v. United States\u2014SDA Tranche 2 Transport Layer Gamma',
-    shortTitle: 'Viasat SDA Procurement Integrity Case',
-    caseNumber: 'No. 24-1487C',
-    forum: 'cofc',
-    outcome: 'corrective_action',
-    program: 'defense',
-    protester: 'Viasat',
-    awardee: 'Tyvak / York Space Systems',
-    agency: 'SDA/DoD',
-    contractValue: '$424M',
-    yearFiled: 2024,
-    yearDecided: 2025,
-    decisionDate: 'February 2025',
-    description: 'Viasat filed suit after the SDA awarded contracts to Tyvak and York Space Systems for 10 satellites each for the T2TL Gamma program. Investigation revealed an SDA employee violated the Procurement Integrity Act by disclosing Tyvak\'s bid pricing and instructing them to partner with a specific contractor.',
-    significance: 'Major procurement integrity case resulting in the SDA director being placed on administrative leave. Led to cancellation of Tyvak\'s contract and a full re-competition. Highlighted ethical risks in rapid acquisition environments.',
-    keyFindings: [
-      'SDA employee violated Procurement Integrity Act by disclosing bid information',
-      'Employee instructed Tyvak on pricing and teaming arrangements',
-      'SDA Director placed on administrative leave pending investigation',
-      'Tyvak contract canceled; York Space Systems contract maintained',
-      'SDA will issue new solicitation for 10 Gamma T2TL satellites',
-    ],
-  },
-];
-
+let BID_PROTESTS: BidProtest[] = [];
 function ProtestsOverviewTab() {
   const [search, setSearch] = useState('');
   const [forumFilter, setForumFilter] = useState('');
@@ -1829,8 +1329,64 @@ function RegulatoryHubContent() {
 
   const [activeSection, setActiveSection] = useState<TopSection>(initialSection);
   const [activeSubTab, setActiveSubTab] = useState(initialTab);
+  const [loading, setLoading] = useState(true);
+  const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
   const stats = getRegulatoryHubStats();
+
+  // Fetch data from DynamicContent API
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const sections = [
+          'treaties',
+          'national-laws',
+          'artemis-principles',
+          'artemis-signatories',
+          'legal-proceedings',
+          'regulatory-bodies',
+          'fcc-filings',
+          'faa-licenses',
+          'itu-filings',
+          'sec-filings',
+          'federal-register-entries',
+          'bid-protests',
+        ];
+
+        const results = await Promise.all(
+          sections.map((section) =>
+            fetch(`/api/content/compliance?section=${section}`)
+              .then((res) => res.json())
+              .catch(() => ({ data: [], meta: {} }))
+          )
+        );
+
+        TREATIES = results[0]?.data || [];
+        NATIONAL_LAWS = results[1]?.data || [];
+        ARTEMIS_PRINCIPLES = results[2]?.data || [];
+        ARTEMIS_SIGNATORIES = results[3]?.data || [];
+        LEGAL_PROCEEDINGS = results[4]?.data || [];
+        REGULATORY_BODIES = results[5]?.data || [];
+        FCC_FILINGS = results[6]?.data || [];
+        FAA_LICENSES = results[7]?.data || [];
+        ITU_FILINGS = results[8]?.data || [];
+        SEC_FILINGS = results[9]?.data || [];
+        FEDERAL_REGISTER_ENTRIES = results[10]?.data || [];
+        BID_PROTESTS = results[11]?.data || [];
+
+        const firstMeta = results.find((r) => r?.meta?.lastRefreshed)?.meta;
+        if (firstMeta?.lastRefreshed) {
+          setRefreshedAt(firstMeta.lastRefreshed);
+        }
+      } catch (error) {
+        console.error('Failed to fetch compliance data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   // Sync tab to URL
   useEffect(() => {
@@ -1875,9 +1431,34 @@ function RegulatoryHubContent() {
     { id: 'protests-analysis', label: 'Analysis & Trends' },
   ];
 
+  if (loading) {
+    return (
+      <div className="animate-pulse space-y-4">
+        <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+        <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-8">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>
+          ))}
+        </div>
+        <div className="flex gap-2 mt-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-10 w-32 bg-slate-800 rounded-lg"></div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Stats Overview */}
+      <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.totalPolicies}</div>
@@ -1961,7 +1542,7 @@ function RegulatoryHubContent() {
 
       {activeSection === 'filings' && (
         <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-          {FILINGS_TABS.map((tab) => (
+          {getFilingsTabs().map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveSubTab(tab.id)}

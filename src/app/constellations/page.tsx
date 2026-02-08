@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import DataFreshness from '@/components/ui/DataFreshness';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
@@ -50,195 +51,8 @@ const SERVICE_COLORS: Record<ServiceType, string> = {
 };
 
 // ────────────────────────────────────────
-// Seed Data
+// (Data fetched from /api/content/constellations)
 // ────────────────────────────────────────
-
-const CONSTELLATIONS: Constellation[] = [
-  {
-    id: 'starlink',
-    name: 'Starlink',
-    operator: 'SpaceX',
-    country: 'United States',
-    activeSatellites: 6421,
-    authorizedSatellites: 12000,
-    plannedGeneration: 'Gen1 (Gen2: 29,988 authorized)',
-    altitudeKm: '550',
-    inclinationDeg: '53',
-    frequencyBands: 'Ku/Ka-band',
-    serviceType: 'Broadband',
-    status: 'deploying',
-    latencyEstimate: '20-40 ms',
-    deorbitPlan: '5-year autonomous deorbit via ion propulsion; ~5-year atmospheric decay at 550 km',
-    fccLicense: 'FCC approved Gen1 (12,000) & Gen2 (7,500 initially); modification granted Dec 2022',
-    ituFiling: 'Multiple ITU filings under USSAT-NGSO-10 and related coordination requests',
-    debrisCompliance: 'Compliant - active deorbit capability, 97%+ success on autonomous collision avoidance',
-    description: 'The largest commercial satellite constellation by active spacecraft count. Provides high-speed, low-latency broadband globally, including underserved and remote areas. Direct-to-cell capability being deployed with T-Mobile partnership.',
-    launchProvider: 'SpaceX Falcon 9 / Starship (Gen2)',
-    firstLaunch: 'May 2019',
-    estimatedCompletion: 'Gen1: 2025, Gen2: ongoing',
-  },
-  {
-    id: 'oneweb',
-    name: 'OneWeb',
-    operator: 'Eutelsat OneWeb',
-    country: 'United Kingdom / France',
-    activeSatellites: 634,
-    authorizedSatellites: 648,
-    plannedGeneration: 'Gen1 (Gen2: ~2,000 planned)',
-    altitudeKm: '1,200',
-    inclinationDeg: '87.9',
-    frequencyBands: 'Ku/Ka-band',
-    serviceType: 'Broadband',
-    status: 'operational',
-    latencyEstimate: '30-50 ms',
-    deorbitPlan: '25-year deorbit compliance; satellites equipped with hall-effect thrusters for EOL maneuvers',
-    fccLicense: 'FCC market access granted; operates under UK Ofcom license',
-    ituFiling: 'ITU filings coordinated through UK administration; Ku/Ka spectrum rights secured',
-    debrisCompliance: 'Compliant - meets inter-agency debris mitigation guidelines; 25-year rule adherence confirmed',
-    description: 'Global LEO broadband constellation now fully deployed. Merged with Eutelsat in 2023 to create a multi-orbit operator. Focuses on enterprise, government, maritime, and aviation connectivity.',
-    launchProvider: 'Arianespace Soyuz (initial), SpaceX Falcon 9, ISRO GSLV Mk III',
-    firstLaunch: 'February 2019',
-    estimatedCompletion: 'Gen1: Complete (2023)',
-  },
-  {
-    id: 'kuiper',
-    name: 'Project Kuiper',
-    operator: 'Amazon',
-    country: 'United States',
-    activeSatellites: 2,
-    authorizedSatellites: 3236,
-    plannedGeneration: 'Phase 1 (3,236 satellites)',
-    altitudeKm: '590-630',
-    inclinationDeg: '33-51.9',
-    frequencyBands: 'Ka-band',
-    serviceType: 'Broadband',
-    status: 'pre-launch',
-    latencyEstimate: '20-40 ms (estimated)',
-    deorbitPlan: 'Designed for autonomous deorbit within 355 days of EOL; atmospheric decay < 10 years at operating altitude',
-    fccLicense: 'FCC license granted July 2020; must deploy 50% by July 2026 per FCC milestone requirements',
-    ituFiling: 'ITU Ka-band filings under US administration; coordination ongoing with existing NGSO operators',
-    debrisCompliance: 'Planned compliant - committed to 355-day post-mission disposal (exceeds FCC 25-year rule)',
-    description: 'Amazon\'s planned LEO broadband constellation to compete with Starlink. Two prototype satellites (KuiperSat-1 & KuiperSat-2) launched October 2023. Mass production facility operational in Kirkland, WA. FCC requires 50% deployment by mid-2026.',
-    launchProvider: 'ULA Vulcan Centaur, Arianespace Ariane 6, Blue Origin New Glenn',
-    firstLaunch: 'October 2023 (prototypes)',
-    estimatedCompletion: '2028-2029 (full constellation)',
-  },
-  {
-    id: 'iridium-next',
-    name: 'Iridium NEXT',
-    operator: 'Iridium Communications',
-    country: 'United States',
-    activeSatellites: 66,
-    authorizedSatellites: 75,
-    plannedGeneration: 'Gen2 (66 active + 9 on-orbit spares)',
-    altitudeKm: '780',
-    inclinationDeg: '86.4',
-    frequencyBands: 'L/Ka-band',
-    serviceType: 'Voice/IoT',
-    status: 'operational',
-    latencyEstimate: '30-50 ms (voice), <1 sec (SBD)',
-    deorbitPlan: 'Active deorbit at EOL; original Iridium constellation deorbited successfully (completed 2019)',
-    fccLicense: 'FCC licensed; renewed spectrum rights for L-band operations',
-    ituFiling: 'ITU L-band priority rights; Ka-band feeder link filings coordinated globally',
-    debrisCompliance: 'Exemplary - successfully deorbited entire Gen1 constellation; Gen2 designed with full deorbit capability',
-    description: 'The only satellite constellation providing true pole-to-pole global coverage. NEXT generation replaced original 1990s constellation. Supports voice, data, IoT (via Iridium Certus), and hosts government payloads. Powers Garmin inReach and Apple Emergency SOS.',
-    launchProvider: 'SpaceX Falcon 9',
-    firstLaunch: 'January 2017 (NEXT series)',
-    estimatedCompletion: 'Complete (2019)',
-  },
-  {
-    id: 'o3b-mpower',
-    name: 'O3b mPOWER',
-    operator: 'SES',
-    country: 'Luxembourg',
-    activeSatellites: 11,
-    authorizedSatellites: 11,
-    plannedGeneration: 'mPOWER (11 satellites, expandable)',
-    altitudeKm: '8,000 (MEO)',
-    inclinationDeg: '0 (equatorial)',
-    frequencyBands: 'Ka-band',
-    serviceType: 'Broadband',
-    status: 'operational',
-    latencyEstimate: '100-150 ms',
-    deorbitPlan: 'MEO orbit; satellites equipped with propulsion for graveyard orbit disposal at EOL',
-    fccLicense: 'FCC licensed for Ka-band NGSO operations; US market access granted',
-    ituFiling: 'ITU Ka-band priority filings for MEO equatorial constellation; coordination with GEO operators completed',
-    debrisCompliance: 'Compliant - MEO disposal orbit plan approved; inter-agency guidelines met',
-    description: 'Next-generation MEO constellation from SES, successor to the original O3b fleet. Each satellite delivers multiple terabits of throughput with fully steerable beams. Serves telcos, cruise lines, energy, and government customers with fiber-like connectivity.',
-    launchProvider: 'SpaceX Falcon 9',
-    firstLaunch: 'December 2022',
-    estimatedCompletion: 'Complete (2024)',
-  },
-  {
-    id: 'telesat-lightspeed',
-    name: 'Telesat Lightspeed',
-    operator: 'Telesat',
-    country: 'Canada',
-    activeSatellites: 0,
-    authorizedSatellites: 198,
-    plannedGeneration: 'Lightspeed (198 satellites)',
-    altitudeKm: '1,015-1,325',
-    inclinationDeg: '98.98 / 50.88',
-    frequencyBands: 'Ka-band',
-    serviceType: 'Broadband',
-    status: 'development',
-    latencyEstimate: '30-50 ms (estimated)',
-    deorbitPlan: 'Designed for post-mission disposal within 5 years; electric propulsion for controlled deorbit',
-    fccLicense: 'FCC processing application; Canadian ISED license granted; ITAR considerations for US payloads',
-    ituFiling: 'ITU Ka-band filings coordinated through Canadian administration; global coverage spectrum secured',
-    debrisCompliance: 'Planned compliant - designed to exceed IADC guidelines with active deorbit and collision avoidance',
-    description: 'Telesat\'s planned LEO constellation targeting enterprise, government, maritime, and aero markets. MDA selected as prime manufacturer. Constellation optimized for high-throughput, low-latency service with advanced mesh networking between satellites.',
-    launchProvider: 'TBD (multiple launch agreements being negotiated)',
-    firstLaunch: '2026 (planned)',
-    estimatedCompletion: '2028 (planned)',
-  },
-  {
-    id: 'guowang',
-    name: 'Guowang (GW)',
-    operator: 'China SatNet (China Satellite Network Group)',
-    country: 'China',
-    activeSatellites: 20,
-    authorizedSatellites: 13000,
-    plannedGeneration: 'GW Constellation (~13,000 satellites)',
-    altitudeKm: '508-1,145',
-    inclinationDeg: '30-85 (multiple shells)',
-    frequencyBands: 'TBD (Ka/Ku expected)',
-    serviceType: 'Broadband',
-    status: 'development',
-    latencyEstimate: '20-50 ms (estimated)',
-    deorbitPlan: 'Details not publicly disclosed; expected to follow CNSA debris mitigation standards',
-    fccLicense: 'N/A - Operates under Chinese regulatory framework (MIIT/CNSA)',
-    ituFiling: 'Large-scale ITU filings submitted through Chinese administration; spectrum priority under WRC-23 framework',
-    debrisCompliance: 'Under development - expected to meet Chinese national space debris standards (aligned with IADC)',
-    description: 'China\'s national broadband mega-constellation managed by the state-owned China Satellite Network Group (est. 2021). Aims to provide global broadband coverage as a strategic national infrastructure. Early test satellites launched beginning 2024.',
-    launchProvider: 'Long March series (CZ-5B, CZ-8, commercial rockets)',
-    firstLaunch: '2024 (test satellites)',
-    estimatedCompletion: '2030+ (estimated)',
-  },
-  {
-    id: 'qianfan',
-    name: 'Qianfan (G60 Starlink)',
-    operator: 'Shanghai Spacecom Satellite Technology (SSST)',
-    country: 'China',
-    activeSatellites: 60,
-    authorizedSatellites: 14000,
-    plannedGeneration: 'G60 Constellation (~14,000 planned)',
-    altitudeKm: '1,160',
-    inclinationDeg: '53',
-    frequencyBands: 'TBD (Ku/Ka expected)',
-    serviceType: 'Broadband',
-    status: 'deploying',
-    latencyEstimate: '25-50 ms (estimated)',
-    deorbitPlan: 'Details limited; satellites expected to include propulsion for post-mission disposal',
-    fccLicense: 'N/A - Operates under Chinese regulatory framework',
-    ituFiling: 'ITU filings submitted through Chinese administration; broadband NGSO spectrum claims registered',
-    debrisCompliance: 'Under development - details on specific compliance measures not yet publicly available',
-    description: 'Shanghai-backed commercial mega-constellation project, sometimes called "China\'s Starlink." Backed by the G60 Science and Technology Innovation Valley initiative. Rapid deployment began in 2024 with batch launches of 18 satellites per mission. Aims to provide global broadband internet.',
-    launchProvider: 'Long March 8, Smart Dragon 3, commercial launch vehicles',
-    firstLaunch: 'August 2024',
-    estimatedCompletion: '2030+ (estimated)',
-  },
-];
 
 // ────────────────────────────────────────
 // Helper Functions
@@ -257,12 +71,12 @@ function formatNumber(n: number): string {
 // Sub-Components
 // ────────────────────────────────────────
 
-function HeroStats() {
-  const totalActive = CONSTELLATIONS.reduce((sum, c) => sum + c.activeSatellites, 0);
-  const totalAuthorized = CONSTELLATIONS.reduce((sum, c) => sum + c.authorizedSatellites, 0);
-  const totalConstellations = CONSTELLATIONS.length;
+function HeroStats({ constellations }: { constellations: Constellation[] }) {
+  const totalActive = constellations.reduce((sum, c) => sum + c.activeSatellites, 0);
+  const totalAuthorized = constellations.reduce((sum, c) => sum + c.authorizedSatellites, 0);
+  const totalConstellations = constellations.length;
   // Rough global coverage estimate based on operational + deploying constellations
-  const operationalOrDeploying = CONSTELLATIONS.filter(
+  const operationalOrDeploying = constellations.filter(
     c => c.status === 'operational' || c.status === 'deploying'
   );
   const coverageEstimate = Math.min(
@@ -388,7 +202,7 @@ function ConstellationCard({ constellation }: { constellation: Constellation }) 
   );
 }
 
-function ComparisonTable() {
+function ComparisonTable({ constellations }: { constellations: Constellation[] }) {
   return (
     <div className="card overflow-hidden">
       <div className="p-5 border-b border-white/5">
@@ -412,7 +226,7 @@ function ComparisonTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {CONSTELLATIONS.map((c) => {
+            {constellations.map((c) => {
               const statusStyle = STATUS_CONFIG[c.status];
               const deployPct = getDeploymentPercent(c.activeSatellites, c.authorizedSatellites);
               return (
@@ -454,11 +268,11 @@ function ComparisonTable() {
 
       {/* Table Summary */}
       <div className="p-4 bg-white/[0.02] border-t border-white/5 flex flex-wrap items-center gap-6 text-xs text-star-300/60">
-        <span>Total active: <span className="text-white font-bold">{formatNumber(CONSTELLATIONS.reduce((s, c) => s + c.activeSatellites, 0))}</span></span>
-        <span>Total authorized: <span className="text-white font-bold">{formatNumber(CONSTELLATIONS.reduce((s, c) => s + c.authorizedSatellites, 0))}</span></span>
-        <span>Operational: <span className="text-green-400 font-bold">{CONSTELLATIONS.filter(c => c.status === 'operational').length}</span></span>
-        <span>Deploying: <span className="text-cyan-400 font-bold">{CONSTELLATIONS.filter(c => c.status === 'deploying').length}</span></span>
-        <span>Development/Pre-Launch: <span className="text-amber-400 font-bold">{CONSTELLATIONS.filter(c => c.status === 'development' || c.status === 'pre-launch').length}</span></span>
+        <span>Total active: <span className="text-white font-bold">{formatNumber(constellations.reduce((s, c) => s + c.activeSatellites, 0))}</span></span>
+        <span>Total authorized: <span className="text-white font-bold">{formatNumber(constellations.reduce((s, c) => s + c.authorizedSatellites, 0))}</span></span>
+        <span>Operational: <span className="text-green-400 font-bold">{constellations.filter(c => c.status === 'operational').length}</span></span>
+        <span>Deploying: <span className="text-cyan-400 font-bold">{constellations.filter(c => c.status === 'deploying').length}</span></span>
+        <span>Development/Pre-Launch: <span className="text-amber-400 font-bold">{constellations.filter(c => c.status === 'development' || c.status === 'pre-launch').length}</span></span>
       </div>
     </div>
   );
@@ -559,7 +373,7 @@ function ConstellationDetail({ constellation }: { constellation: Constellation }
   );
 }
 
-function RegulatoryPanel() {
+function RegulatoryPanel({ constellations }: { constellations: Constellation[] }) {
   return (
     <div className="card p-6">
       <h2 className="text-lg font-bold text-white mb-2">Regulatory & Compliance Overview</h2>
@@ -568,7 +382,7 @@ function RegulatoryPanel() {
       </p>
 
       <div className="space-y-4">
-        {CONSTELLATIONS.map((c) => {
+        {constellations.map((c) => {
           const statusStyle = STATUS_CONFIG[c.status];
           const complianceColor = c.debrisCompliance.toLowerCase().startsWith('compliant')
             ? 'text-green-400'
@@ -655,10 +469,50 @@ type TabId = 'overview' | 'comparison' | 'details' | 'regulatory';
 export default function ConstellationTrackerPage() {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [statusFilter, setStatusFilter] = useState<ConstellationStatus | ''>('');
+  const [constellations, setConstellations] = useState<Constellation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch('/api/content/constellations?section=constellations');
+        if (!res.ok) throw new Error('Failed to fetch constellations');
+        const json = await res.json();
+        setConstellations(json.data || []);
+        setRefreshedAt(json.meta?.lastRefreshed || null);
+      } catch (err) {
+        console.error('Error fetching constellation data:', err);
+        setConstellations([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>)}
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const filteredConstellations = statusFilter
-    ? CONSTELLATIONS.filter((c) => c.status === statusFilter)
-    : CONSTELLATIONS;
+    ? constellations.filter((c) => c.status === statusFilter)
+    : constellations;
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'overview', label: 'Overview' },
@@ -676,10 +530,11 @@ export default function ConstellationTrackerPage() {
           icon="✨"
           accentColor="purple"
         />
+        <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
 
         {/* Hero Stats */}
         <ScrollReveal>
-          <HeroStats />
+          <HeroStats constellations={constellations} />
         </ScrollReveal>
 
         {/* Tab Navigation */}
@@ -714,10 +569,10 @@ export default function ConstellationTrackerPage() {
                       : 'bg-transparent text-star-300 border border-white/10 hover:border-white/20'
                   }`}
                 >
-                  All ({CONSTELLATIONS.length})
+                  All ({constellations.length})
                 </button>
                 {(Object.entries(STATUS_CONFIG) as [ConstellationStatus, typeof STATUS_CONFIG[ConstellationStatus]][]).map(([key, config]) => {
-                  const count = CONSTELLATIONS.filter((c) => c.status === key).length;
+                  const count = constellations.filter((c) => c.status === key).length;
                   return (
                     <button
                       key={key}
@@ -749,10 +604,10 @@ export default function ConstellationTrackerPage() {
             <div className="card p-6">
               <h3 className="text-lg font-bold text-white mb-4">Deployment Race -- Satellites by Operator</h3>
               <div className="space-y-3">
-                {[...CONSTELLATIONS]
+                {[...constellations]
                   .sort((a, b) => b.activeSatellites - a.activeSatellites)
                   .map((c) => {
-                    const maxActive = Math.max(...CONSTELLATIONS.map(x => x.activeSatellites));
+                    const maxActive = Math.max(...constellations.map(x => x.activeSatellites));
                     const barWidth = maxActive > 0 ? (c.activeSatellites / maxActive) * 100 : 0;
                     const statusStyle = STATUS_CONFIG[c.status];
                     return (
@@ -784,11 +639,11 @@ export default function ConstellationTrackerPage() {
                 <h3 className="text-lg font-bold text-white mb-4">By Orbital Regime</h3>
                 <div className="space-y-3">
                   {[
-                    { label: 'LEO (< 2,000 km)', constellations: CONSTELLATIONS.filter(c => {
+                    { label: 'LEO (< 2,000 km)', constellations: constellations.filter(c => {
                       const alt = parseInt(c.altitudeKm.replace(/,/g, '').split('-')[0]);
                       return alt < 2000;
                     }), color: 'from-blue-500 to-blue-400' },
-                    { label: 'MEO (2,000 - 35,786 km)', constellations: CONSTELLATIONS.filter(c => {
+                    { label: 'MEO (2,000 - 35,786 km)', constellations: constellations.filter(c => {
                       const alt = parseInt(c.altitudeKm.replace(/,/g, '').split('-')[0]);
                       return alt >= 2000 && alt < 35786;
                     }), color: 'from-purple-500 to-purple-400' },
@@ -814,7 +669,7 @@ export default function ConstellationTrackerPage() {
                 <h3 className="text-lg font-bold text-white mb-4">By Service Type</h3>
                 <div className="space-y-3">
                   {['Broadband', 'Voice/IoT'].map((svc) => {
-                    const matching = CONSTELLATIONS.filter(c => c.serviceType === svc);
+                    const matching = constellations.filter(c => c.serviceType === svc);
                     const totalActive = matching.reduce((s, c) => s + c.activeSatellites, 0);
                     return (
                       <div key={svc}>
@@ -854,14 +709,14 @@ export default function ConstellationTrackerPage() {
         {/* ──────────────── COMPARISON TABLE TAB ──────────────── */}
         {activeTab === 'comparison' && (
           <div className="space-y-6">
-            <ComparisonTable />
+            <ComparisonTable constellations={constellations} />
           </div>
         )}
 
         {/* ──────────────── DETAILED PROFILES TAB ──────────────── */}
         {activeTab === 'details' && (
           <div className="space-y-6">
-            {CONSTELLATIONS.map((constellation) => (
+            {constellations.map((constellation) => (
               <ConstellationDetail key={constellation.id} constellation={constellation} />
             ))}
           </div>
@@ -870,7 +725,7 @@ export default function ConstellationTrackerPage() {
         {/* ──────────────── REGULATORY TAB ──────────────── */}
         {activeTab === 'regulatory' && (
           <div className="space-y-6">
-            <RegulatoryPanel />
+            <RegulatoryPanel constellations={constellations} />
           </div>
         )}
 

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import DataFreshness from '@/components/ui/DataFreshness';
 
 // ────────────────────────────────────────
 // Types
@@ -60,241 +61,8 @@ interface CommercialOpportunity {
 }
 
 // ────────────────────────────────────────
-// Data
+// Data is fetched from /api/content/mars-planner
 // ────────────────────────────────────────
-
-const ACTIVE_MISSIONS: ActiveMission[] = [
-  {
-    name: 'Perseverance Rover',
-    agency: 'NASA',
-    agencyFlag: '🇺🇸',
-    type: 'rover',
-    arrived: 'Feb 2021',
-    location: 'Jezero Crater',
-    status: 'active',
-    highlight: 'Sample collection for Mars Sample Return',
-  },
-  {
-    name: 'Ingenuity Helicopter',
-    agency: 'NASA',
-    agencyFlag: '🇺🇸',
-    type: 'helicopter',
-    arrived: 'Deployed 2021',
-    status: 'ended',
-    statusDetail: 'Mission ended Jan 2024 after 72 flights',
-    highlight: 'First powered flight on another planet',
-  },
-  {
-    name: 'Curiosity Rover',
-    agency: 'NASA',
-    agencyFlag: '🇺🇸',
-    type: 'rover',
-    arrived: 'Aug 2012',
-    location: 'Gale Crater',
-    status: 'active',
-    years: '12+',
-    highlight: 'Discovered organic molecules',
-  },
-  {
-    name: 'Mars Reconnaissance Orbiter',
-    agency: 'NASA',
-    agencyFlag: '🇺🇸',
-    type: 'orbiter',
-    arrived: 'Mar 2006',
-    status: 'active',
-    highlight: 'High-resolution imaging, data relay',
-  },
-  {
-    name: 'MAVEN',
-    agency: 'NASA',
-    agencyFlag: '🇺🇸',
-    type: 'orbiter',
-    arrived: 'Sep 2014',
-    status: 'active',
-    highlight: 'Atmospheric studies',
-  },
-  {
-    name: 'Mars Odyssey',
-    agency: 'NASA',
-    agencyFlag: '🇺🇸',
-    type: 'orbiter',
-    arrived: 'Oct 2001',
-    status: 'active',
-    years: '23+',
-    highlight: 'Longest-serving Mars spacecraft',
-  },
-  {
-    name: 'Tianwen-1 Orbiter',
-    agency: 'CNSA',
-    agencyFlag: '🇨🇳',
-    type: 'orbiter',
-    arrived: 'Feb 2021',
-    status: 'active',
-    highlight: "China's first Mars orbiter",
-  },
-  {
-    name: 'Zhurong Rover',
-    agency: 'CNSA',
-    agencyFlag: '🇨🇳',
-    type: 'rover',
-    arrived: 'May 2021',
-    location: 'Utopia Planitia',
-    status: 'dormant',
-    statusDetail: 'Dormant since May 2022',
-    highlight: "China's first Mars rover",
-  },
-  {
-    name: 'Mars Express',
-    agency: 'ESA',
-    agencyFlag: '🇪🇺',
-    type: 'orbiter',
-    arrived: 'Dec 2003',
-    status: 'active',
-    years: '20+',
-    highlight: 'Water ice discovery, MARSIS radar',
-  },
-  {
-    name: 'ExoMars TGO',
-    agency: 'ESA/Roscosmos',
-    agencyFlag: '🇪🇺',
-    type: 'orbiter',
-    arrived: 'Oct 2016',
-    status: 'active',
-    highlight: 'Trace gas analysis',
-  },
-  {
-    name: 'Hope Probe',
-    agency: 'UAE',
-    agencyFlag: '🇦🇪',
-    type: 'orbiter',
-    arrived: 'Feb 2021',
-    status: 'active',
-    highlight: 'First Arab Mars mission, atmospheric studies',
-  },
-  {
-    name: 'Mars Mangalyaan Successor',
-    agency: 'ISRO',
-    agencyFlag: '🇮🇳',
-    type: 'orbiter',
-    arrived: 'Planned',
-    status: 'planned',
-    highlight: 'Next-generation Mars orbiter',
-  },
-];
-
-const UPCOMING_MISSIONS: UpcomingMission[] = [
-  {
-    name: 'Mars Sample Return',
-    agency: 'NASA/ESA',
-    agencyFlag: '🇺🇸🇪🇺',
-    targetDate: '~2030s',
-    description: 'Return Perseverance samples to Earth',
-    budget: '~$11B (under review)',
-  },
-  {
-    name: 'ExoMars Rosalind Franklin Rover',
-    agency: 'ESA',
-    agencyFlag: '🇪🇺',
-    targetDate: 'NET 2028',
-    description: 'First European Mars rover with 2m drill capability',
-    note: 'Oxia Planum landing site',
-  },
-  {
-    name: 'SpaceX Starship Mars',
-    agency: 'SpaceX',
-    agencyFlag: '🇺🇸',
-    targetDate: '2026 window (uncrewed)',
-    description: 'First commercial Mars vehicle',
-  },
-  {
-    name: 'Tianwen-2',
-    agency: 'CNSA',
-    agencyFlag: '🇨🇳',
-    targetDate: '~2028',
-    description: 'Mars sample return (via asteroid first)',
-  },
-  {
-    name: 'Tianwen-3',
-    agency: 'CNSA',
-    agencyFlag: '🇨🇳',
-    targetDate: '~2030',
-    description: 'Dedicated Mars sample return mission',
-  },
-  {
-    name: 'MMX - Martian Moons eXploration',
-    agency: 'JAXA',
-    agencyFlag: '🇯🇵',
-    targetDate: 'NET 2026',
-    description: 'Phobos sample return mission',
-  },
-  {
-    name: 'TEREX',
-    agency: 'ISRO',
-    agencyFlag: '🇮🇳',
-    targetDate: 'Under study',
-    description: 'Next-generation Mars orbiter',
-  },
-];
-
-const LAUNCH_WINDOWS: LaunchWindow[] = [
-  { period: 'Late 2026', note: 'Hohmann transfer ~7 months' },
-  { period: 'Early 2029', note: 'Next window after 2026' },
-  { period: 'Mid 2031', note: 'Favorable alignment' },
-  { period: 'Late 2033', note: 'Long-range planning target' },
-];
-
-const TRANSFER_TYPES: TransferType[] = [
-  { name: 'Hohmann Transfer', duration: '~7-9 months', description: 'Lowest energy, most fuel-efficient trajectory' },
-  { name: 'Fast Transfer', duration: '4-6 months', description: 'More delta-V required, shorter transit time' },
-  { name: 'Ballistic Capture', duration: '10+ months', description: 'Low energy but slow, leverages gravitational mechanics' },
-];
-
-const MARS_FACTS = {
-  distance_sun: '227.9M km (1.52 AU)',
-  distance_earth: '55M km (closest) to 401M km (farthest)',
-  diameter: '6,779 km (53% of Earth)',
-  gravity: '3.72 m/s\u00B2 (38% of Earth)',
-  day_length: '24h 37m (sol)',
-  year_length: '687 Earth days',
-  atmosphere: '95% CO\u2082, 2.6% N\u2082, 1.9% Ar',
-  surface_temp: '-87\u00B0C to -5\u00B0C (avg -63\u00B0C)',
-  moons: 'Phobos, Deimos',
-};
-
-const COST_ESTIMATES: CostEstimate[] = [
-  { type: 'Mars Orbiter Mission', range: '$300M - $800M', icon: '🛰️' },
-  { type: 'Mars Rover Mission', range: '$2B - $3B', icon: '🤖' },
-  { type: 'Mars Sample Return', range: '$8B - $11B', icon: '📦' },
-  { type: 'Human Mars Mission (est.)', range: '$100B - $500B', icon: '👨‍🚀' },
-  { type: 'SpaceX Starship Mars (per launch)', range: '$100M - $200M', icon: '🚀' },
-];
-
-const COMMERCIAL_OPPORTUNITIES: CommercialOpportunity[] = [
-  {
-    title: 'Mars Communications Relay',
-    description: 'Deploy dedicated relay satellites for continuous Mars-Earth communication coverage, reducing blackout periods and enabling higher bandwidth data transfer.',
-    icon: '📡',
-    readiness: 'near-term',
-  },
-  {
-    title: 'Mars Surface Power Systems',
-    description: 'Nuclear fission reactors and advanced solar arrays for sustained Mars surface operations. Critical enabler for habitats, ISRU plants, and rover recharging.',
-    icon: '⚡',
-    readiness: 'mid-term',
-  },
-  {
-    title: 'In-Situ Resource Utilization (ISRU)',
-    description: 'Extract water from subsurface ice, produce oxygen from CO\u2082 atmosphere, and manufacture propellant (methane/LOX) for return missions and surface mobility.',
-    icon: '⛏️',
-    readiness: 'mid-term',
-  },
-  {
-    title: 'Mars Habitat Development',
-    description: 'Inflatable structures, 3D-printed regolith habitats, and radiation shielding systems for long-duration human presence on Mars.',
-    icon: '🏠',
-    readiness: 'long-term',
-  },
-];
 
 // ────────────────────────────────────────
 // Status Helpers
@@ -330,7 +98,7 @@ function getReadinessStyle(readiness: CommercialOpportunity['readiness']): { lab
 // Hero Stats
 // ────────────────────────────────────────
 
-function HeroStats() {
+function HeroStats({ activeMissions: ACTIVE_MISSIONS, upcomingMissions: UPCOMING_MISSIONS }: { activeMissions: ActiveMission[]; upcomingMissions: UpcomingMission[] }) {
   const activeMissions = ACTIVE_MISSIONS.filter(m => m.status === 'active').length;
   const upcomingCount = UPCOMING_MISSIONS.length;
   const countriesWithPrograms = 6; // USA, China, EU, UAE, India, Japan
@@ -445,7 +213,7 @@ function MissionCard({ mission }: { mission: ActiveMission }) {
 // Upcoming Mission Card
 // ────────────────────────────────────────
 
-function UpcomingMissionCard({ mission, index }: { mission: UpcomingMission; index: number }) {
+function UpcomingMissionCard({ mission, index, totalCount }: { mission: UpcomingMission; index: number; totalCount: number }) {
   return (
     <div className="relative flex gap-4">
       {/* Timeline connector */}
@@ -453,7 +221,7 @@ function UpcomingMissionCard({ mission, index }: { mission: UpcomingMission; ind
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500/30 to-orange-500/30 border border-red-500/50 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
           {index + 1}
         </div>
-        {index < UPCOMING_MISSIONS.length - 1 && (
+        {index < totalCount - 1 && (
           <div className="w-px flex-1 bg-gradient-to-b from-red-500/30 to-transparent mt-2" />
         )}
       </div>
@@ -489,7 +257,7 @@ function UpcomingMissionCard({ mission, index }: { mission: UpcomingMission; ind
 // Launch Windows Section
 // ────────────────────────────────────────
 
-function LaunchWindowsSection() {
+function LaunchWindowsSection({ launchWindows: LAUNCH_WINDOWS, transferTypes: TRANSFER_TYPES }: { launchWindows: LaunchWindow[]; transferTypes: TransferType[] }) {
   return (
     <div className="space-y-6">
       {/* Explanation */}
@@ -548,17 +316,17 @@ function LaunchWindowsSection() {
 // Mars Facts & Numbers
 // ────────────────────────────────────────
 
-function MarsFactsSection() {
+function MarsFactsSection({ marsFacts: MARS_FACTS, costEstimates: COST_ESTIMATES }: { marsFacts: any; costEstimates: CostEstimate[] }) {
   const factEntries: { label: string; value: string; icon: string }[] = [
-    { label: 'Distance from Sun', value: MARS_FACTS.distance_sun, icon: '☀️' },
-    { label: 'Distance from Earth', value: MARS_FACTS.distance_earth, icon: '🌍' },
-    { label: 'Diameter', value: MARS_FACTS.diameter, icon: '📏' },
-    { label: 'Gravity', value: MARS_FACTS.gravity, icon: '⚖️' },
-    { label: 'Day Length', value: MARS_FACTS.day_length, icon: '🕐' },
-    { label: 'Year Length', value: MARS_FACTS.year_length, icon: '📅' },
-    { label: 'Atmosphere', value: MARS_FACTS.atmosphere, icon: '💨' },
-    { label: 'Surface Temperature', value: MARS_FACTS.surface_temp, icon: '🌡️' },
-    { label: 'Moons', value: MARS_FACTS.moons, icon: '🌙' },
+    { label: 'Distance from Sun', value: MARS_FACTS.distance_sun || '', icon: '☀️' },
+    { label: 'Distance from Earth', value: MARS_FACTS.distance_earth || '', icon: '🌍' },
+    { label: 'Diameter', value: MARS_FACTS.diameter || '', icon: '📏' },
+    { label: 'Gravity', value: MARS_FACTS.gravity || '', icon: '⚖️' },
+    { label: 'Day Length', value: MARS_FACTS.day_length || '', icon: '🕐' },
+    { label: 'Year Length', value: MARS_FACTS.year_length || '', icon: '📅' },
+    { label: 'Atmosphere', value: MARS_FACTS.atmosphere || '', icon: '💨' },
+    { label: 'Surface Temperature', value: MARS_FACTS.surface_temp || '', icon: '🌡️' },
+    { label: 'Moons', value: MARS_FACTS.moons || '', icon: '🌙' },
   ];
 
   return (
@@ -609,7 +377,7 @@ function MarsFactsSection() {
 // Commercial Opportunities
 // ────────────────────────────────────────
 
-function CommercialSection() {
+function CommercialSection({ commercialOpportunities: COMMERCIAL_OPPORTUNITIES }: { commercialOpportunities: CommercialOpportunity[] }) {
   return (
     <div className="space-y-6">
       <div className="card p-6 border border-slate-700/50 bg-gradient-to-br from-purple-900/10 to-slate-900/60">
@@ -688,10 +456,69 @@ export default function MarsPlannerPage() {
   const [activeTab, setActiveTab] = useState<TabId>('active');
   const [agencyFilter, setAgencyFilter] = useState<string>('all');
 
+  // API-fetched data
+  const [ACTIVE_MISSIONS, setActiveMissions] = useState<ActiveMission[]>([]);
+  const [UPCOMING_MISSIONS, setUpcomingMissions] = useState<UpcomingMission[]>([]);
+  const [LAUNCH_WINDOWS, setLaunchWindows] = useState<LaunchWindow[]>([]);
+  const [TRANSFER_TYPES, setTransferTypes] = useState<TransferType[]>([]);
+  const [MARS_FACTS, setMarsFacts] = useState<any>({});
+  const [COST_ESTIMATES, setCostEstimates] = useState<CostEstimate[]>([]);
+  const [COMMERCIAL_OPPORTUNITIES, setCommercialOpportunities] = useState<CommercialOpportunity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [r1, r2, r3, r4, r5, r6, r7] = await Promise.all([
+          fetch('/api/content/mars-planner?section=active-missions'),
+          fetch('/api/content/mars-planner?section=upcoming-missions'),
+          fetch('/api/content/mars-planner?section=launch-windows'),
+          fetch('/api/content/mars-planner?section=transfer-types'),
+          fetch('/api/content/mars-planner?section=mars-facts'),
+          fetch('/api/content/mars-planner?section=cost-estimates'),
+          fetch('/api/content/mars-planner?section=commercial-opportunities'),
+        ]);
+        const [d1, d2, d3, d4, d5, d6, d7] = await Promise.all([
+          r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json(), r7.json(),
+        ]);
+        setActiveMissions(d1.data || []);
+        setUpcomingMissions(d2.data || []);
+        setLaunchWindows(d3.data || []);
+        setTransferTypes(d4.data || []);
+        if (d5.data?.[0]) setMarsFacts(d5.data[0]);
+        setCostEstimates(d6.data || []);
+        setCommercialOpportunities(d7.data || []);
+        setRefreshedAt(d1.meta?.lastRefreshed || null);
+      } catch (error) {
+        console.error('Failed to load mars planner data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
   const agencies = Array.from(new Set(ACTIVE_MISSIONS.map(m => m.agency)));
   const filteredMissions = agencyFilter === 'all'
     ? ACTIVE_MISSIONS
     : ACTIVE_MISSIONS.filter(m => m.agency === agencyFilter);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -703,8 +530,10 @@ export default function MarsPlannerPage() {
           accentColor="red"
         />
 
+        <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
+
         {/* Hero Stats */}
-        <HeroStats />
+        <HeroStats activeMissions={ACTIVE_MISSIONS} upcomingMissions={UPCOMING_MISSIONS} />
 
         {/* Tabs */}
         <div className="border-b border-slate-700/50 mb-6">
@@ -778,16 +607,16 @@ export default function MarsPlannerPage() {
               Planned Mars missions from space agencies and commercial entities worldwide. Dates are subject to change based on funding, technical readiness, and launch window availability.
             </p>
             {UPCOMING_MISSIONS.map((mission, i) => (
-              <UpcomingMissionCard key={mission.name} mission={mission} index={i} />
+              <UpcomingMissionCard key={mission.name} mission={mission} index={i} totalCount={UPCOMING_MISSIONS.length} />
             ))}
           </div>
         )}
 
-        {activeTab === 'windows' && <LaunchWindowsSection />}
+        {activeTab === 'windows' && <LaunchWindowsSection launchWindows={LAUNCH_WINDOWS} transferTypes={TRANSFER_TYPES} />}
 
-        {activeTab === 'facts' && <MarsFactsSection />}
+        {activeTab === 'facts' && <MarsFactsSection marsFacts={MARS_FACTS} costEstimates={COST_ESTIMATES} />}
 
-        {activeTab === 'commercial' && <CommercialSection />}
+        {activeTab === 'commercial' && <CommercialSection commercialOpportunities={COMMERCIAL_OPPORTUNITIES} />}
 
         {/* Cross-links */}
         <ScrollReveal><div className="card p-5 border border-slate-700/50 bg-gradient-to-br from-slate-800/60 to-slate-900/60 mt-8">

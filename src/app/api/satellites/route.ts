@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
+import { getModuleContent } from '@/lib/dynamic-content';
 
 // Satellite Types
 export type OrbitType = 'LEO' | 'MEO' | 'GEO' | 'HEO' | 'SSO' | 'Polar';
@@ -27,8 +28,8 @@ export interface Satellite {
   description: string | null;
 }
 
-// Mock satellite data
-const SATELLITES: Satellite[] = [
+// Fallback satellite data (used when DynamicContent has no data)
+const FALLBACK_SATELLITES: Satellite[] = [
   // ISS and Space Stations
   {
     id: 'iss-zarya',
@@ -679,6 +680,17 @@ function computeStats(satellites: Satellite[]) {
 
 export async function GET(request: NextRequest) {
   try {
+    // Try to load satellite data from DynamicContent, fall back to hardcoded data
+    let SATELLITES: Satellite[] = FALLBACK_SATELLITES;
+    try {
+      const dynamicData = await getModuleContent<Satellite>('satellites', 'satellites');
+      if (dynamicData.length > 0) {
+        SATELLITES = dynamicData.map((item) => item.data);
+      }
+    } catch {
+      // DynamicContent unavailable, use fallback data
+    }
+
     const { searchParams } = new URL(request.url);
     const orbitType = searchParams.get('orbitType') as OrbitType | null;
     const operator = searchParams.get('operator');

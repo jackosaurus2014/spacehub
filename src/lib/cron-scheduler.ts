@@ -49,11 +49,37 @@ export function startCronJobs() {
     triggerEndpoint('/api/ai-insights/generate', 'ai-insights');
   });
 
+  // External API data refresh — every 6 hours
+  // Fetches from Open Notify, NASA NeoWs, CelesTrak, USAspending, USPTO
+  cron.schedule('0 */6 * * *', () => {
+    triggerEndpoint('/api/refresh?type=external-apis', 'external-api-refresh');
+  });
+
+  // AI data research — 2:00 AM UTC (verifies/updates module data via Claude)
+  cron.schedule('0 2 * * *', () => {
+    triggerEndpoint('/api/refresh?type=ai-research', 'ai-data-research');
+  });
+
+  // Staleness cleanup — 3:00 AM UTC (expire old content, prune logs)
+  cron.schedule('0 3 * * *', () => {
+    triggerEndpoint('/api/refresh/cleanup', 'staleness-cleanup');
+  });
+
+  // Live stream matching — every 30 minutes
+  // Matches upcoming SpaceEvents to YouTube provider channels
+  cron.schedule('*/30 * * * *', () => {
+    triggerEndpoint('/api/refresh?type=live-streams', 'live-stream-check');
+  });
+
   logger.info('Cron scheduler started', {
     jobs: [
       'news-fetch: every 5 minutes',
       'daily-refresh: midnight UTC',
       'ai-insights: 1:00 AM UTC',
+      'external-api-refresh: every 6 hours',
+      'ai-data-research: 2:00 AM UTC',
+      'staleness-cleanup: 3:00 AM UTC',
+      'live-stream-check: every 30 minutes',
     ],
   });
 }

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import DataFreshness from '@/components/ui/DataFreshness';
 
 // ────────────────────────────────────────
 // Types
@@ -54,288 +55,22 @@ interface Startup {
   website: string;
 }
 
+interface FundingByYear {
+  year: number;
+  amount: number;
+  deals: number;
+}
+
+interface Investor {
+  name: string;
+  focus: string;
+  investments: number;
+  notable: string;
+}
+
 // ────────────────────────────────────────
-// Data
+// Static Config (not data - UI mappings)
 // ────────────────────────────────────────
-
-const STARTUPS: Startup[] = [
-  {
-    id: 'relativity-space',
-    name: 'Relativity Space',
-    founded: 2015,
-    hq: 'Long Beach, CA',
-    category: 'Launch',
-    stage: 'Growth',
-    totalRaised: '$1.34B',
-    totalRaisedNum: 1340,
-    lastRound: { round: 'Series E', amount: '$650M', date: 'Jun 2021' },
-    ticker: null,
-    marketCap: null,
-    keyProduct: 'Terran R (3D-printed rocket)',
-    status: 'Active',
-    description: 'Pioneering 3D-printed rockets with autonomous manufacturing, dramatically reducing part count and production time for orbital launch vehicles.',
-    website: 'https://relativityspace.com',
-  },
-  {
-    id: 'rocket-lab',
-    name: 'Rocket Lab',
-    founded: 2006,
-    hq: 'Long Beach, CA',
-    category: 'Launch',
-    stage: 'Public',
-    totalRaised: 'Public',
-    totalRaisedNum: 0,
-    lastRound: null,
-    ticker: 'RKLB',
-    marketCap: '~$12B',
-    keyProduct: 'Electron & Neutron',
-    status: 'Active',
-    description: 'Leading small-launch provider with the Electron rocket. Developing the medium-lift Neutron vehicle and vertically integrated spacecraft components.',
-    website: 'https://rocketlabusa.com',
-  },
-  {
-    id: 'firefly-aerospace',
-    name: 'Firefly Aerospace',
-    founded: 2014,
-    hq: 'Cedar Park, TX',
-    category: 'Launch',
-    stage: 'Late',
-    totalRaised: '$275M+',
-    totalRaisedNum: 275,
-    lastRound: { round: 'Series Late', amount: '$75M+', date: '2023' },
-    ticker: null,
-    marketCap: null,
-    keyProduct: 'Alpha & MLV',
-    status: 'Active',
-    description: 'Developing the Alpha small launch vehicle and the Medium Launch Vehicle (MLV) in partnership with Northrop Grumman for responsive space access.',
-    website: 'https://fireflyspace.com',
-  },
-  {
-    id: 'spire-global',
-    name: 'Spire Global',
-    founded: 2012,
-    hq: 'Vienna, VA',
-    category: 'Earth Observation',
-    stage: 'Public',
-    totalRaised: 'Public',
-    totalRaisedNum: 0,
-    lastRound: null,
-    ticker: 'SPIR',
-    marketCap: '~$300M',
-    keyProduct: 'Lemur nanosats',
-    status: 'Active',
-    description: 'Operating a constellation of multipurpose nanosatellites providing weather, maritime, and aviation data-as-a-service to global customers.',
-    website: 'https://spire.com',
-  },
-  {
-    id: 'planet-labs',
-    name: 'Planet Labs',
-    founded: 2010,
-    hq: 'San Francisco, CA',
-    category: 'Earth Observation',
-    stage: 'Public',
-    totalRaised: 'Public',
-    totalRaisedNum: 0,
-    lastRound: null,
-    ticker: 'PL',
-    marketCap: '~$1.5B',
-    keyProduct: 'Dove/SkySat',
-    status: 'Active',
-    description: 'Operating the largest constellation of Earth-imaging satellites, providing daily global imagery for agriculture, forestry, government, and intelligence applications.',
-    website: 'https://planet.com',
-  },
-  {
-    id: 'capella-space',
-    name: 'Capella Space',
-    founded: 2016,
-    hq: 'San Francisco, CA',
-    category: 'SAR/EO',
-    stage: 'Series C',
-    totalRaised: '$220M+',
-    totalRaisedNum: 220,
-    lastRound: { round: 'Series C', amount: '$97M', date: '2022' },
-    ticker: null,
-    marketCap: null,
-    keyProduct: 'Whitney SAR sats',
-    status: 'Active',
-    description: 'Building and operating a constellation of SAR (Synthetic Aperture Radar) satellites capable of imaging Earth day or night, through clouds and weather.',
-    website: 'https://capellaspace.com',
-  },
-  {
-    id: 'astroscale',
-    name: 'Astroscale',
-    founded: 2013,
-    hq: 'Tokyo, Japan',
-    category: 'Debris Removal',
-    stage: 'Series G',
-    totalRaised: '$400M+',
-    totalRaisedNum: 400,
-    lastRound: { round: 'Series G', amount: '$109M', date: '2023' },
-    ticker: null,
-    marketCap: null,
-    keyProduct: 'ELSA debris removal',
-    status: 'Active',
-    description: 'Pioneering active debris removal and on-orbit servicing. The ELSA-d mission demonstrated debris capture technology in orbit.',
-    website: 'https://astroscale.com',
-  },
-  {
-    id: 'axiom-space',
-    name: 'Axiom Space',
-    founded: 2016,
-    hq: 'Houston, TX',
-    category: 'Space Station',
-    stage: 'Series C',
-    totalRaised: '$505M+',
-    totalRaisedNum: 505,
-    lastRound: { round: 'Series C', amount: '$350M', date: '2023' },
-    ticker: null,
-    marketCap: null,
-    keyProduct: 'Axiom Station',
-    status: 'Active',
-    description: 'Building the world\'s first commercial space station. Conducting private astronaut missions to the ISS and developing modules for the Axiom Station.',
-    website: 'https://axiomspace.com',
-  },
-  {
-    id: 'vast',
-    name: 'Vast',
-    founded: 2021,
-    hq: 'Long Beach, CA',
-    category: 'Space Station',
-    stage: 'Series A',
-    totalRaised: '$300M+',
-    totalRaisedNum: 300,
-    lastRound: { round: 'Series A', amount: '$300M', date: '2023' },
-    ticker: null,
-    marketCap: null,
-    keyProduct: 'Haven-1',
-    status: 'Active',
-    description: 'Developing Haven-1, a single-module commercial space station with artificial gravity research. Founded by crypto billionaire Jed McCaleb.',
-    website: 'https://vastspace.com',
-  },
-  {
-    id: 'impulse-space',
-    name: 'Impulse Space',
-    founded: 2021,
-    hq: 'Redondo Beach, CA',
-    category: 'In-Space Transport',
-    stage: 'Series B',
-    totalRaised: '$225M+',
-    totalRaisedNum: 225,
-    lastRound: { round: 'Series B', amount: '$150M', date: '2024' },
-    ticker: null,
-    marketCap: null,
-    keyProduct: 'Mira/Helios OTV',
-    status: 'Active',
-    description: 'Building orbital transfer vehicles (OTVs) for last-mile space delivery. Mira handles LEO missions while Helios targets GEO and beyond.',
-    website: 'https://impulsespace.com',
-  },
-  {
-    id: 'stoke-space',
-    name: 'Stoke Space',
-    founded: 2019,
-    hq: 'Kent, WA',
-    category: 'Launch',
-    stage: 'Series B',
-    totalRaised: '$175M+',
-    totalRaisedNum: 175,
-    lastRound: { round: 'Series B', amount: '$100M', date: '2024' },
-    ticker: null,
-    marketCap: null,
-    keyProduct: 'Nova (fully reusable)',
-    status: 'Active',
-    description: 'Developing Nova, a fully reusable launch vehicle with a revolutionary upper stage that lands propulsively. Founded by Blue Origin veterans.',
-    website: 'https://stokespace.com',
-  },
-  {
-    id: 'k2-space',
-    name: 'K2 Space',
-    founded: 2022,
-    hq: 'Torrance, CA',
-    category: 'Satellites',
-    stage: 'Series A',
-    totalRaised: '$100M+',
-    totalRaisedNum: 100,
-    lastRound: { round: 'Series A', amount: '$50M', date: '2024' },
-    ticker: null,
-    marketCap: null,
-    keyProduct: 'Large satellite bus',
-    status: 'Active',
-    description: 'Building large, powerful satellite buses designed to leverage cheap launch capacity. Targeting the growing market for high-power space infrastructure.',
-    website: 'https://k2space.com',
-  },
-  {
-    id: 'true-anomaly',
-    name: 'True Anomaly',
-    founded: 2022,
-    hq: 'Denver, CO',
-    category: 'SSA/Defense',
-    stage: 'Series B',
-    totalRaised: '$200M+',
-    totalRaisedNum: 200,
-    lastRound: { round: 'Series B', amount: '$100M', date: '2024' },
-    ticker: null,
-    marketCap: null,
-    keyProduct: 'Jackal autonomous spacecraft',
-    status: 'Active',
-    description: 'Developing autonomous space vehicles for space domain awareness and national security missions. The Jackal spacecraft provides inspection and proximity operations.',
-    website: 'https://trueanomaly.space',
-  },
-  {
-    id: 'muon-space',
-    name: 'Muon Space',
-    founded: 2021,
-    hq: 'Mountain View, CA',
-    category: 'Earth Observation',
-    stage: 'Series B',
-    totalRaised: '$97M+',
-    totalRaisedNum: 97,
-    lastRound: { round: 'Series B', amount: '$56.7M', date: '2024' },
-    ticker: null,
-    marketCap: null,
-    keyProduct: 'Climate monitoring sats',
-    status: 'Active',
-    description: 'Building a constellation of multimodal Earth observation satellites specifically designed for climate and weather monitoring applications.',
-    website: 'https://muonspace.com',
-  },
-  {
-    id: 'varda-space',
-    name: 'Varda Space Industries',
-    founded: 2020,
-    hq: 'El Segundo, CA',
-    category: 'In-Space Manufacturing',
-    stage: 'Series B',
-    totalRaised: '$150M+',
-    totalRaisedNum: 150,
-    lastRound: { round: 'Series B', amount: '$90M', date: '2023' },
-    ticker: null,
-    marketCap: null,
-    keyProduct: 'In-space pharma manufacturing',
-    status: 'Active',
-    description: 'Manufacturing pharmaceuticals and advanced materials in microgravity. Successfully re-entered their first capsule with manufactured crystals in 2024.',
-    website: 'https://varda.com',
-  },
-];
-
-const FUNDING_BY_YEAR: { year: number; amount: number; deals: number }[] = [
-  { year: 2019, amount: 5.8, deals: 178 },
-  { year: 2020, amount: 7.7, deals: 163 },
-  { year: 2021, amount: 15.4, deals: 272 },
-  { year: 2022, amount: 8.1, deals: 234 },
-  { year: 2023, amount: 6.9, deals: 198 },
-  { year: 2024, amount: 8.4, deals: 210 },
-  { year: 2025, amount: 7.2, deals: 185 },
-];
-
-const TOP_INVESTORS = [
-  { name: 'Space Capital', focus: 'Space-dedicated VC', investments: 85, notable: 'Spire, Capella, Muon' },
-  { name: 'Founders Fund', focus: 'Deep tech VC', investments: 12, notable: 'SpaceX, Relativity, Varda' },
-  { name: 'Seraphim Space', focus: 'Space-dedicated fund', investments: 60, notable: 'Iceye, D-Orbit, LeoLabs' },
-  { name: 'a16z', focus: 'Software/Deep tech VC', investments: 8, notable: 'Relativity, Impulse, K2' },
-  { name: 'Lux Capital', focus: 'Deep tech VC', investments: 15, notable: 'Planet, Hadrian, Impulse' },
-  { name: 'Khosla Ventures', focus: 'Deep tech VC', investments: 10, notable: 'Relativity, Astra, Stoke' },
-  { name: 'DCVC', focus: 'Data-driven VC', investments: 14, notable: 'Capella, Muon, Umbra' },
-  { name: 'Shield Capital', focus: 'Defense tech VC', investments: 9, notable: 'True Anomaly, Slingshot' },
-];
 
 const CATEGORY_INFO: Record<string, { label: string; color: string; icon: string; description: string }> = {
   'Launch': { label: 'Launch Vehicles', color: 'text-orange-400', icon: 'M15 11.25l-3-3m0 0l-3 3m3-3v7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z', description: 'Orbital launch vehicle developers building next-gen rockets' },
@@ -365,11 +100,11 @@ const STAGE_COLORS: Record<StartupStage, string> = {
 // Components
 // ────────────────────────────────────────
 
-function HeroStats() {
-  const totalStartups = STARTUPS.length;
-  const totalFunding = STARTUPS.reduce((sum, s) => sum + s.totalRaisedNum, 0);
-  const categories = new Set(STARTUPS.map(s => s.category)).size;
-  const activeInvestors = TOP_INVESTORS.reduce((sum, i) => sum + i.investments, 0);
+function HeroStats({ startups, topInvestors }: { startups: Startup[]; topInvestors: Investor[] }) {
+  const totalStartups = startups.length;
+  const totalFunding = startups.reduce((sum, s) => sum + s.totalRaisedNum, 0);
+  const categories = new Set(startups.map(s => s.category)).size;
+  const activeInvestors = topInvestors.reduce((sum, i) => sum + i.investments, 0);
 
   return (
     <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -403,8 +138,9 @@ function HeroStats() {
   );
 }
 
-function FundingChart() {
-  const maxAmount = Math.max(...FUNDING_BY_YEAR.map(f => f.amount));
+function FundingChart({ fundingByYear }: { fundingByYear: FundingByYear[] }) {
+  if (fundingByYear.length === 0) return null;
+  const maxAmount = Math.max(...fundingByYear.map(f => f.amount));
 
   return (
     <div className="card p-6 mb-8">
@@ -417,7 +153,7 @@ function FundingChart() {
       <p className="text-slate-400 text-sm mb-6">Global venture investment in space startups (billions USD)</p>
 
       <div className="flex items-end gap-3 h-56">
-        {FUNDING_BY_YEAR.map((item) => {
+        {fundingByYear.map((item) => {
           const heightPct = (item.amount / maxAmount) * 100;
           const isMax = item.amount === maxAmount;
           return (
@@ -454,8 +190,8 @@ function FundingChart() {
   );
 }
 
-function CategoryBreakdown() {
-  const categoryCounts = STARTUPS.reduce((acc, s) => {
+function CategoryBreakdown({ startups }: { startups: Startup[] }) {
+  const categoryCounts = startups.reduce((acc, s) => {
     acc[s.category] = (acc[s.category] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
@@ -573,7 +309,9 @@ function StartupCard({ startup }: { startup: Startup }) {
   );
 }
 
-function TopInvestors() {
+function TopInvestorsSection({ topInvestors }: { topInvestors: Investor[] }) {
+  if (topInvestors.length === 0) return null;
+
   return (
     <div className="card p-6 mb-8">
       <h3 className="text-lg font-semibold text-slate-900 mb-1 flex items-center gap-2">
@@ -585,7 +323,7 @@ function TopInvestors() {
       <p className="text-slate-400 text-sm mb-4">Most active venture capital firms investing in space startups</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-        {TOP_INVESTORS.map((investor) => (
+        {topInvestors.map((investor) => (
           <div
             key={investor.name}
             className="bg-slate-50/50 border border-slate-200/50 rounded-lg p-4 hover:border-yellow-500/30 transition-colors"
@@ -610,23 +348,67 @@ function TopInvestors() {
 // ────────────────────────────────────────
 
 export default function StartupTrackerPage() {
+  const [startups, setStartups] = useState<Startup[]>([]);
+  const [fundingByYear, setFundingByYear] = useState<FundingByYear[]>([]);
+  const [topInvestors, setTopInvestors] = useState<Investor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [stageFilter, setStageFilter] = useState<string>('');
   const [sortBy, setSortBy] = useState<'funding' | 'founded' | 'name'>('funding');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const categories = useMemo(() => {
-    const cats = Array.from(new Set(STARTUPS.map(s => s.category)));
-    return cats.sort();
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [startupsRes, fundingRes, investorsRes] = await Promise.all([
+          fetch('/api/content/startups?section=startups'),
+          fetch('/api/content/startups?section=funding-by-year'),
+          fetch('/api/content/startups?section=top-investors'),
+        ]);
+
+        const [startupsJson, fundingJson, investorsJson] = await Promise.all([
+          startupsRes.json(),
+          fundingRes.json(),
+          investorsRes.json(),
+        ]);
+
+        if (startupsJson.data) setStartups(startupsJson.data);
+        if (fundingJson.data) setFundingByYear(fundingJson.data);
+        if (investorsJson.data) setTopInvestors(investorsJson.data);
+
+        // Use the most recent lastRefreshed from any section
+        const timestamps = [
+          startupsJson.meta?.lastRefreshed,
+          fundingJson.meta?.lastRefreshed,
+          investorsJson.meta?.lastRefreshed,
+        ].filter(Boolean);
+        if (timestamps.length > 0) {
+          setRefreshedAt(timestamps.sort().reverse()[0]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch startup data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
   }, []);
+
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(startups.map(s => s.category)));
+    return cats.sort();
+  }, [startups]);
 
   const stages = useMemo(() => {
-    const stgs = Array.from(new Set(STARTUPS.map(s => s.stage)));
+    const stgs = Array.from(new Set(startups.map(s => s.stage)));
     return stgs.sort();
-  }, []);
+  }, [startups]);
 
   const filteredStartups = useMemo(() => {
-    let result = [...STARTUPS];
+    let result = [...startups];
 
     if (categoryFilter) {
       result = result.filter(s => s.category === categoryFilter);
@@ -657,7 +439,23 @@ export default function StartupTrackerPage() {
     }
 
     return result;
-  }, [categoryFilter, stageFilter, sortBy, searchQuery]);
+  }, [startups, categoryFilter, stageFilter, sortBy, searchQuery]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -668,15 +466,16 @@ export default function StartupTrackerPage() {
           icon="🚀"
           accentColor="purple"
         />
+        <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
 
         {/* Hero Stats */}
-        <HeroStats />
+        <HeroStats startups={startups} topInvestors={topInvestors} />
 
         {/* Funding Trends Chart */}
-        <FundingChart />
+        <FundingChart fundingByYear={fundingByYear} />
 
         {/* Category Breakdown */}
-        <CategoryBreakdown />
+        <CategoryBreakdown startups={startups} />
 
         {/* Filters */}
         <div className="card p-4 mb-6">
@@ -756,7 +555,7 @@ export default function StartupTrackerPage() {
         {/* Results Count */}
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm text-slate-400">
-            Showing {filteredStartups.length} of {STARTUPS.length} startups
+            Showing {filteredStartups.length} of {startups.length} startups
           </span>
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <span className="w-2 h-2 bg-green-500 rounded-full" />
@@ -786,9 +585,10 @@ export default function StartupTrackerPage() {
         )}
 
         {/* Top Investors */}
-        <TopInvestors />
+        <TopInvestorsSection topInvestors={topInvestors} />
 
         {/* Ecosystem Summary Table */}
+        {startups.length > 0 && (
         <div className="card p-6 mb-8">
           <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
             <svg className="w-5 h-5 text-nebula-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -811,7 +611,7 @@ export default function StartupTrackerPage() {
                 </tr>
               </thead>
               <tbody>
-                {STARTUPS.sort((a, b) => b.totalRaisedNum - a.totalRaisedNum || a.name.localeCompare(b.name)).map((s) => {
+                {[...startups].sort((a, b) => b.totalRaisedNum - a.totalRaisedNum || a.name.localeCompare(b.name)).map((s) => {
                   const catInfo = CATEGORY_INFO[s.category];
                   return (
                     <tr key={s.id} className="border-b border-slate-200/50 hover:bg-slate-100/30 transition-colors">
@@ -849,6 +649,7 @@ export default function StartupTrackerPage() {
             </table>
           </div>
         </div>
+        )}
 
         {/* Disclaimer */}
         <ScrollReveal>

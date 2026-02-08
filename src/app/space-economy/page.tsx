@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import DataFreshness from '@/components/ui/DataFreshness';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
@@ -116,352 +117,16 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
 ];
 
 // ────────────────────────────────────────
-// Seed Data — Market Overview
+// (Data fetched from /api/content/space-economy)
 // ────────────────────────────────────────
 
-const MARKET_SIZE_2024 = 570; // Space Foundation Q4 2024 Space Report
-const MARKET_SIZE_2025_EST = 600; // estimated ~5% growth
-const MARKET_GROWTH_RATE = 5.3; // CAGR %
+// (Investment data fetched from API)
 
-const MARKET_SEGMENTS: MarketSegment[] = [
-  {
-    name: 'Satellite Services',
-    revenue: 184,
-    share: 32.3,
-    growth: 3.8,
-    description: 'Direct-to-home TV, satellite radio, broadband, managed services, remote sensing data',
-  },
-  {
-    name: 'Ground Equipment',
-    revenue: 145,
-    share: 25.4,
-    growth: 4.5,
-    description: 'GNSS devices, satellite terminals, network equipment, VSAT systems',
-  },
-  {
-    name: 'Government Space Budgets',
-    revenue: 117,
-    share: 20.5,
-    growth: 8.2,
-    description: 'Civil space agencies, military/intelligence space programs, R&D',
-  },
-  {
-    name: 'Satellite Manufacturing',
-    revenue: 15.8,
-    share: 2.8,
-    growth: 12.1,
-    description: 'Commercial and government satellite production, smallsat manufacturing',
-  },
-  {
-    name: 'Launch Industry',
-    revenue: 8.4,
-    share: 1.5,
-    growth: 15.7,
-    description: 'Commercial launch services, rideshare, dedicated small-launch',
-  },
-  {
-    name: 'Non-Satellite Industry',
-    revenue: 99.8,
-    share: 17.5,
-    growth: 6.8,
-    description: 'Human spaceflight, space stations, deep space exploration, suborbital, in-space services',
-  },
-];
+// (Government budget data fetched from API)
 
-const MARKET_PROJECTIONS: MarketProjection[] = [
-  { year: 2020, size: 447, source: 'Space Foundation' },
-  { year: 2021, size: 469, source: 'Space Foundation' },
-  { year: 2022, size: 503, source: 'Space Foundation' },
-  { year: 2023, size: 546, source: 'Space Foundation' },
-  { year: 2024, size: 570, source: 'Space Foundation' },
-  { year: 2025, size: 600, source: 'Estimate' },
-  { year: 2026, size: 632, source: 'Forecast' },
-  { year: 2027, size: 668, source: 'Forecast' },
-  { year: 2028, size: 710, source: 'Forecast' },
-  { year: 2029, size: 756, source: 'Forecast' },
-  { year: 2030, size: 805, source: 'Morgan Stanley' },
-  { year: 2035, size: 1100, source: 'Morgan Stanley / Goldman Sachs' },
-  { year: 2040, size: 1800, source: 'Morgan Stanley' },
-];
+// (Public markets data fetched from API)
 
-// ────────────────────────────────────────
-// Seed Data — Investment
-// ────────────────────────────────────────
-
-const QUARTERLY_VC: VCDeal[] = [
-  { quarter: 'Q1', year: 2024, totalInvested: 2.1, dealCount: 62, topSector: 'Earth Observation' },
-  { quarter: 'Q2', year: 2024, totalInvested: 1.8, dealCount: 55, topSector: 'Launch' },
-  { quarter: 'Q3', year: 2024, totalInvested: 3.2, dealCount: 71, topSector: 'Communications' },
-  { quarter: 'Q4', year: 2024, totalInvested: 2.4, dealCount: 58, topSector: 'In-Space Services' },
-  { quarter: 'Q1', year: 2025, totalInvested: 2.7, dealCount: 64, topSector: 'National Security' },
-  { quarter: 'Q2', year: 2025, totalInvested: 2.3, dealCount: 59, topSector: 'Earth Observation' },
-];
-
-const ANNUAL_INVESTMENT: AnnualInvestment[] = [
-  { year: 2019, vcInvestment: 5.8, debtFinancing: 3.2, publicOfferings: 0.6, totalPrivate: 9.6 },
-  { year: 2020, vcInvestment: 7.6, debtFinancing: 4.1, publicOfferings: 3.2, totalPrivate: 14.9 },
-  { year: 2021, vcInvestment: 15.4, debtFinancing: 7.8, publicOfferings: 13.3, totalPrivate: 36.5 },
-  { year: 2022, vcInvestment: 8.0, debtFinancing: 5.9, publicOfferings: 1.1, totalPrivate: 15.0 },
-  { year: 2023, vcInvestment: 6.1, debtFinancing: 4.5, publicOfferings: 0.8, totalPrivate: 11.4 },
-  { year: 2024, vcInvestment: 9.5, debtFinancing: 5.2, publicOfferings: 1.4, totalPrivate: 16.1 },
-];
-
-const TOP_INVESTORS: TopInvestor[] = [
-  { name: 'Andreessen Horowitz (a16z)', type: 'VC', notableDeals: ['Relativity Space', 'Hadrian', 'Anduril'], estimatedDeployed: '$2B+' },
-  { name: 'Space Capital', type: 'VC (Space-focused)', notableDeals: ['Ursa Major', 'Umbra', 'Muon Space'], estimatedDeployed: '$300M+' },
-  { name: 'Founders Fund', type: 'VC', notableDeals: ['SpaceX', 'Planet Labs', 'Relativity'], estimatedDeployed: '$1.5B+' },
-  { name: 'In-Q-Tel', type: 'Strategic (IC)', notableDeals: ['BlackSky', 'Capella Space', 'HawkEye 360'], estimatedDeployed: 'Classified' },
-  { name: 'Bessemer Venture Partners', type: 'VC', notableDeals: ['Rocket Lab', 'Spire', 'Astranis'], estimatedDeployed: '$800M+' },
-  { name: 'Tiger Global Management', type: 'Crossover', notableDeals: ['SpaceX', 'Relativity Space'], estimatedDeployed: '$1B+' },
-  { name: 'Google Ventures (GV)', type: 'Corporate VC', notableDeals: ['SpaceX', 'Planet Labs'], estimatedDeployed: '$500M+' },
-  { name: 'Lockheed Martin Ventures', type: 'Corporate VC', notableDeals: ['Terran Orbital', 'Rocket Lab', 'ABL Space'], estimatedDeployed: '$200M+' },
-];
-
-// ────────────────────────────────────────
-// Seed Data — Government Budgets
-// ────────────────────────────────────────
-
-const GOVERNMENT_BUDGETS: GovernmentBudget[] = [
-  {
-    agency: 'NASA',
-    country: 'United States',
-    flag: '🇺🇸',
-    budget2024: 25.4,
-    budget2025: 25.2,
-    change: -0.8,
-    currency: 'USD',
-    focusAreas: ['Artemis / Lunar', 'Mars Sample Return', 'ISS Transition', 'Earth Science', 'Space Technology'],
-    notes: 'FY2025 enacted. Includes Artemis program, commercial crew/cargo, and science missions.',
-  },
-  {
-    agency: 'DoD Space Programs',
-    country: 'United States',
-    flag: '🇺🇸',
-    budget2024: 33.3,
-    budget2025: 33.7,
-    change: 1.2,
-    currency: 'USD',
-    focusAreas: ['Space Force', 'Missile Warning', 'Space Domain Awareness', 'SATCOM', 'PNT Resilience'],
-    notes: 'Includes USSF, MDA space programs, NRO (est.), and classified programs.',
-  },
-  {
-    agency: 'ESA',
-    country: 'Europe',
-    flag: '🇪🇺',
-    budget2024: 7.79,
-    budget2025: 7.94,
-    change: 1.9,
-    currency: 'EUR (converted)',
-    focusAreas: ['Ariane 6', 'Copernicus', 'ExoMars', 'IRIS2', 'Space Safety'],
-    notes: 'Ministerial-level budget for 2023-2027 cycle. Includes member state contributions.',
-  },
-  {
-    agency: 'CNSA',
-    country: 'China',
-    flag: '🇨🇳',
-    budget2024: 14.0,
-    budget2025: 16.0,
-    change: 14.3,
-    currency: 'USD (estimated)',
-    focusAreas: ['Tiangong Station', 'Chang\'e Lunar', 'Tianwen Mars', 'BeiDou', 'Reusable Launch'],
-    notes: 'Estimated. China does not publish official figures. Includes CASC and CASIC activities.',
-  },
-  {
-    agency: 'ISRO',
-    country: 'India',
-    flag: '🇮🇳',
-    budget2024: 1.93,
-    budget2025: 2.15,
-    change: 11.4,
-    currency: 'USD (converted)',
-    focusAreas: ['Gaganyaan (Crewed)', 'Chandrayaan-4', 'SSLV', 'NISAR', 'NavIC Expansion'],
-    notes: 'INR 176B allocated for FY2025-26. Strong increase for Gaganyaan human spaceflight program.',
-  },
-  {
-    agency: 'JAXA',
-    country: 'Japan',
-    flag: '🇯🇵',
-    budget2024: 3.6,
-    budget2025: 4.1,
-    change: 13.9,
-    currency: 'USD (converted)',
-    focusAreas: ['H3 Launch Vehicle', 'Artemis / Gateway', 'MMX Mars Moons', 'SLIM Follow-on', 'QPS-SAR'],
-    notes: 'Budget increase reflects expanded national security space and Artemis contributions.',
-  },
-  {
-    agency: 'KARI / KASA',
-    country: 'South Korea',
-    flag: '🇰🇷',
-    budget2024: 0.72,
-    budget2025: 0.87,
-    change: 20.8,
-    currency: 'USD (converted)',
-    focusAreas: ['KSLV-II Nuri', 'Danuri Follow-on', 'SAR Constellation', 'Lunar Lander'],
-    notes: 'Korea Aerospace Administration (KASA) established 2024. Significant budget increase.',
-  },
-  {
-    agency: 'ASI',
-    country: 'Italy',
-    flag: '🇮🇹',
-    budget2024: 2.3,
-    budget2025: 2.4,
-    change: 4.3,
-    currency: 'USD (converted)',
-    focusAreas: ['Vega-C', 'COSMO-SkyMed', 'Artemis I-HAB', 'Space Rider', 'Galileo'],
-    notes: 'Includes national and ESA contributions. Italy is 3rd largest ESA contributor.',
-  },
-  {
-    agency: 'CNES',
-    country: 'France',
-    flag: '🇫🇷',
-    budget2024: 3.2,
-    budget2025: 3.3,
-    change: 3.1,
-    currency: 'USD (converted)',
-    focusAreas: ['Ariane 6', 'Copernicus', 'IRIS2', 'CSO Defense', 'Telecommunications'],
-    notes: 'Includes national military space. France is ESA\'s largest contributor.',
-  },
-  {
-    agency: 'DLR',
-    country: 'Germany',
-    flag: '🇩🇪',
-    budget2024: 2.7,
-    budget2025: 2.8,
-    change: 3.7,
-    currency: 'USD (converted)',
-    focusAreas: ['Ariane 6', 'Columbus / ISS', 'Copernicus', 'Heinrich Hertz', 'Lunar Exploration'],
-    notes: 'Germany is ESA\'s 2nd largest contributor. Includes national programs.',
-  },
-  {
-    agency: 'CSA',
-    country: 'Canada',
-    flag: '🇨🇦',
-    budget2024: 0.42,
-    budget2025: 0.46,
-    change: 9.5,
-    currency: 'USD (converted)',
-    focusAreas: ['Canadarm3 / Gateway', 'RADARSAT', 'Lunar Rover', 'Astronaut Program'],
-    notes: 'Building Canadarm3 for Lunar Gateway. Budget growth for lunar contributions.',
-  },
-  {
-    agency: 'Roscosmos',
-    country: 'Russia',
-    flag: '🇷🇺',
-    budget2024: 3.9,
-    budget2025: 3.6,
-    change: -7.7,
-    currency: 'USD (estimated)',
-    focusAreas: ['ROSS (New Station)', 'Luna-26/27', 'Angara', 'GLONASS', 'Soyuz/Progress'],
-    notes: 'Estimated from published federal budget. Declining in USD terms due to exchange rate.',
-  },
-];
-
-// ────────────────────────────────────────
-// Seed Data — Public Markets
-// ────────────────────────────────────────
-
-const SPACE_STOCKS: SpaceCompanyStock[] = [
-  { name: 'SpaceX', ticker: 'Private', exchange: 'N/A', marketCap: 350, price: 0, ytdChange: 0, sector: 'Launch / Broadband', revenue2024: 13.6 },
-  { name: 'Lockheed Martin', ticker: 'LMT', exchange: 'NYSE', marketCap: 135, price: 565, ytdChange: 8.2, sector: 'Defense / Space Systems', revenue2024: 71.0 },
-  { name: 'Northrop Grumman', ticker: 'NOC', exchange: 'NYSE', marketCap: 78, price: 525, ytdChange: 12.4, sector: 'Defense / Space Systems', revenue2024: 39.3 },
-  { name: 'RTX (Raytheon)', ticker: 'RTX', exchange: 'NYSE', marketCap: 164, price: 124, ytdChange: 5.1, sector: 'Defense / Satellites', revenue2024: 73.6 },
-  { name: 'Boeing (Space)', ticker: 'BA', exchange: 'NYSE', marketCap: 130, price: 178, ytdChange: -14.2, sector: 'Launch / Space Systems', revenue2024: 66.5 },
-  { name: 'L3Harris Technologies', ticker: 'LHX', exchange: 'NYSE', marketCap: 46, price: 240, ytdChange: 7.8, sector: 'Defense / Payloads', revenue2024: 21.1 },
-  { name: 'Rocket Lab', ticker: 'RKLB', exchange: 'NASDAQ', marketCap: 12.5, price: 26.4, ytdChange: 42.3, sector: 'Launch / Spacecraft', revenue2024: 0.43 },
-  { name: 'Planet Labs', ticker: 'PL', exchange: 'NYSE', marketCap: 1.6, price: 5.5, ytdChange: 18.7, sector: 'Earth Observation', revenue2024: 0.24 },
-  { name: 'BlackSky Technology', ticker: 'BKSY', exchange: 'NYSE', marketCap: 0.56, price: 3.8, ytdChange: 22.1, sector: 'Geospatial Intelligence', revenue2024: 0.11 },
-  { name: 'Spire Global', ticker: 'SPIR', exchange: 'NYSE', marketCap: 0.42, price: 15.2, ytdChange: 31.5, sector: 'Data / Weather', revenue2024: 0.10 },
-  { name: 'Iridium Communications', ticker: 'IRDM', exchange: 'NASDAQ', marketCap: 7.1, price: 57.8, ytdChange: 6.3, sector: 'Satellite Communications', revenue2024: 2.05 },
-  { name: 'Viasat', ticker: 'VSAT', exchange: 'NASDAQ', marketCap: 3.8, price: 14.6, ytdChange: -8.5, sector: 'Satellite Broadband', revenue2024: 4.4 },
-  { name: 'SES', ticker: 'SESG', exchange: 'Euronext', marketCap: 5.2, price: 6.1, ytdChange: 3.9, sector: 'Satellite Communications', revenue2024: 2.0 },
-  { name: 'Eutelsat', ticker: 'ETL', exchange: 'Euronext', marketCap: 3.6, price: 4.2, ytdChange: -5.4, sector: 'Satellite Communications', revenue2024: 1.2 },
-  { name: 'Maxar (now Advent)', ticker: 'Acquired', exchange: 'N/A', marketCap: 0, price: 0, ytdChange: 0, sector: 'Earth Observation / Geo', revenue2024: 1.8 },
-  { name: 'Aerojet Rocketdyne', ticker: 'Acquired', exchange: 'N/A', marketCap: 0, price: 0, ytdChange: 0, sector: 'Propulsion', revenue2024: 2.4 },
-  { name: 'Virgin Galactic', ticker: 'SPCE', exchange: 'NYSE', marketCap: 0.35, price: 4.2, ytdChange: -28.6, sector: 'Space Tourism', revenue2024: 0.012 },
-  { name: 'AST SpaceMobile', ticker: 'ASTS', exchange: 'NASDAQ', marketCap: 7.8, price: 24.5, ytdChange: 85.3, sector: 'Direct-to-Cell', revenue2024: 0.001 },
-  { name: 'Intuitive Machines', ticker: 'LUNR', exchange: 'NASDAQ', marketCap: 3.2, price: 19.8, ytdChange: 67.4, sector: 'Lunar Services', revenue2024: 0.23 },
-  { name: 'Redwire Corporation', ticker: 'RDW', exchange: 'NYSE', marketCap: 1.3, price: 17.5, ytdChange: 48.9, sector: 'In-Space Manufacturing', revenue2024: 0.31 },
-];
-
-const SPACE_ETFS: SpaceETF[] = [
-  {
-    name: 'ARK Space Exploration & Innovation ETF',
-    ticker: 'ARKX',
-    aum: 0.28,
-    expenseRatio: 0.75,
-    ytdReturn: 14.2,
-    topHoldings: ['Rocket Lab', 'Kratos Defense', 'Iridium', 'Trimble', 'L3Harris'],
-  },
-  {
-    name: 'Procure Space ETF',
-    ticker: 'UFO',
-    aum: 0.04,
-    expenseRatio: 0.75,
-    ytdReturn: 8.7,
-    topHoldings: ['SES', 'Eutelsat', 'Iridium', 'Viasat', 'Maxar Technologies'],
-  },
-  {
-    name: 'SPDR S&P Kensho Final Frontiers ETF',
-    ticker: 'ROKT',
-    aum: 0.02,
-    expenseRatio: 0.45,
-    ytdReturn: 11.3,
-    topHoldings: ['L3Harris', 'Northrop Grumman', 'Lockheed Martin', 'Rocket Lab', 'Virgin Galactic'],
-  },
-  {
-    name: 'iShares U.S. Aerospace & Defense ETF',
-    ticker: 'ITA',
-    aum: 6.2,
-    expenseRatio: 0.40,
-    ytdReturn: 9.8,
-    topHoldings: ['RTX', 'Boeing', 'Lockheed Martin', 'Northrop Grumman', 'L3Harris'],
-  },
-];
-
-// ────────────────────────────────────────
-// Seed Data — Workforce & Trends
-// ────────────────────────────────────────
-
-const WORKFORCE_STATS: WorkforceStat[] = [
-  { category: 'Total U.S. Space Workforce', value: '360,000+', detail: 'Direct space industry employment including commercial, civil, and national security', source: 'Space Foundation 2024' },
-  { category: 'Global Space Workforce', value: '1,200,000+', detail: 'Estimated total across all space-faring nations', source: 'OECD Space Economy 2024' },
-  { category: 'U.S. Space Workforce Growth', value: '+4.8%', detail: 'Year-over-year growth (2023 to 2024)', source: 'BLS / Space Foundation' },
-  { category: 'Commercial Space Employment', value: '235,000+', detail: 'Private sector space jobs (non-government)', source: 'Space Foundation 2024' },
-  { category: 'Average Space Engineer Salary (U.S.)', value: '$128,000', detail: 'Aerospace engineers median, top 10% earn $170K+', source: 'BLS OES 2024' },
-  { category: 'Aerospace Engineering Degrees (U.S.)', value: '7,400/year', detail: 'Bachelor\'s degrees awarded annually (growing)', source: 'NCES 2024' },
-  { category: 'STEM Gap in Space', value: '45,000+', detail: 'Estimated unfilled positions in U.S. space industry', source: 'Space Workforce 2030 Report' },
-  { category: 'New Space Companies Founded (2024)', value: '180+', detail: 'Space-focused startups incorporated globally', source: 'Space Capital Q4 2024' },
-];
-
-const LAUNCH_COST_TRENDS: LaunchCostDataPoint[] = [
-  { vehicle: 'Space Shuttle', operator: 'NASA', year: 2011, costPerKgLEO: 54500, payload: 27500, reusable: true },
-  { vehicle: 'Delta IV Heavy', operator: 'ULA', year: 2020, costPerKgLEO: 14300, payload: 28790, reusable: false },
-  { vehicle: 'Atlas V 551', operator: 'ULA', year: 2023, costPerKgLEO: 8800, payload: 18850, reusable: false },
-  { vehicle: 'Ariane 5', operator: 'Arianespace', year: 2023, costPerKgLEO: 9200, payload: 21000, reusable: false },
-  { vehicle: 'Ariane 6 (A64)', operator: 'Arianespace', year: 2025, costPerKgLEO: 7100, payload: 21650, reusable: false },
-  { vehicle: 'H3-24', operator: 'JAXA/MHI', year: 2025, costPerKgLEO: 5500, payload: 6500, reusable: false },
-  { vehicle: 'GSLV Mk III', operator: 'ISRO', year: 2024, costPerKgLEO: 4700, payload: 10000, reusable: false },
-  { vehicle: 'Long March 5', operator: 'CASC', year: 2024, costPerKgLEO: 4300, payload: 25000, reusable: false },
-  { vehicle: 'Falcon 9 (reused)', operator: 'SpaceX', year: 2025, costPerKgLEO: 2720, payload: 22800, reusable: true },
-  { vehicle: 'Falcon Heavy (reused)', operator: 'SpaceX', year: 2025, costPerKgLEO: 1500, payload: 63800, reusable: true },
-  { vehicle: 'Electron', operator: 'Rocket Lab', year: 2025, costPerKgLEO: 26500, payload: 300, reusable: false },
-  { vehicle: 'New Glenn', operator: 'Blue Origin', year: 2025, costPerKgLEO: 3200, payload: 45000, reusable: true },
-  { vehicle: 'Vulcan Centaur', operator: 'ULA', year: 2025, costPerKgLEO: 5700, payload: 27200, reusable: false },
-  { vehicle: 'Starship (projected)', operator: 'SpaceX', year: 2026, costPerKgLEO: 100, payload: 150000, reusable: true },
-];
-
-const SALARY_BENCHMARKS: SalaryBenchmark[] = [
-  { role: 'Aerospace Engineer', minSalary: 85000, maxSalary: 170000, median: 128000, growth: 4.2 },
-  { role: 'Systems Engineer (Space)', minSalary: 95000, maxSalary: 185000, median: 142000, growth: 5.1 },
-  { role: 'Satellite Communications Eng.', minSalary: 90000, maxSalary: 175000, median: 135000, growth: 4.8 },
-  { role: 'GNC Engineer', minSalary: 100000, maxSalary: 195000, median: 148000, growth: 5.5 },
-  { role: 'Space Software Engineer', minSalary: 110000, maxSalary: 220000, median: 165000, growth: 7.2 },
-  { role: 'Propulsion Engineer', minSalary: 92000, maxSalary: 180000, median: 138000, growth: 4.6 },
-  { role: 'RF / Payload Engineer', minSalary: 88000, maxSalary: 172000, median: 132000, growth: 4.3 },
-  { role: 'Mission Analyst', minSalary: 82000, maxSalary: 155000, median: 118000, growth: 3.9 },
-  { role: 'Space Policy Analyst', minSalary: 72000, maxSalary: 140000, median: 105000, growth: 6.1 },
-  { role: 'Launch Operations Tech', minSalary: 65000, maxSalary: 120000, median: 88000, growth: 3.5 },
-];
+// (Workforce & trends data fetched from API)
 
 // ────────────────────────────────────────
 // Helper Functions
@@ -486,7 +151,17 @@ function formatPercent(value: number, showPlus = true): string {
 // Tab 1: Market Overview
 // ────────────────────────────────────────
 
-function MarketOverviewTab() {
+interface MarketOverviewTabProps {
+  marketSegments: MarketSegment[];
+}
+
+function MarketOverviewTab({ marketSegments }: MarketOverviewTabProps) {
+  // Derive headline values from data
+  const totalRevenue = marketSegments.reduce((sum, s) => sum + s.revenue, 0);
+  const avgGrowth = marketSegments.length > 0
+    ? marketSegments.reduce((sum, s) => sum + s.growth, 0) / marketSegments.length
+    : 0;
+
   return (
     <div className="space-y-8">
       {/* Headline Stats */}
@@ -494,7 +169,7 @@ function MarketOverviewTab() {
         <StaggerItem>
           <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-              ${MARKET_SIZE_2024}B
+              {formatBillions(totalRevenue)}
             </div>
             <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">2024 Market Size</div>
             <div className="text-slate-500 text-xs mt-1">Space Foundation</div>
@@ -503,7 +178,7 @@ function MarketOverviewTab() {
         <StaggerItem>
           <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-              ~${MARKET_SIZE_2025_EST}B
+              ~{formatBillions(totalRevenue * 1.053)}
             </div>
             <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">2025 Estimate</div>
             <div className="text-slate-500 text-xs mt-1">Projected</div>
@@ -512,10 +187,10 @@ function MarketOverviewTab() {
         <StaggerItem>
           <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
             <div className="text-3xl md:text-4xl font-bold text-cyan-400">
-              {MARKET_GROWTH_RATE}%
+              {avgGrowth.toFixed(1)}%
             </div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Annual CAGR</div>
-            <div className="text-slate-500 text-xs mt-1">2020-2024</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Avg Segment Growth</div>
+            <div className="text-slate-500 text-xs mt-1">YoY</div>
           </div>
         </StaggerItem>
         <StaggerItem>
@@ -547,7 +222,7 @@ function MarketOverviewTab() {
               </tr>
             </thead>
             <tbody>
-              {MARKET_SEGMENTS.map((segment) => (
+              {marketSegments.map((segment) => (
                 <tr key={segment.name} className="border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors">
                   <td className="py-3 px-4 text-white font-medium">{segment.name}</td>
                   <td className="py-3 px-4 text-right text-cyan-400 font-mono">{formatBillions(segment.revenue)}</td>
@@ -575,55 +250,14 @@ function MarketOverviewTab() {
               <tr className="border-t border-slate-600">
                 <td className="py-3 px-4 text-white font-bold">Total</td>
                 <td className="py-3 px-4 text-right text-cyan-400 font-mono font-bold">
-                  {formatBillions(MARKET_SEGMENTS.reduce((sum, s) => sum + s.revenue, 0))}
+                  {formatBillions(totalRevenue)}
                 </td>
                 <td className="py-3 px-4 text-right text-slate-300 font-bold">100%</td>
-                <td className="py-3 px-4 text-right text-green-400 font-bold">{formatPercent(MARKET_GROWTH_RATE)}</td>
+                <td className="py-3 px-4 text-right text-green-400 font-bold">{formatPercent(avgGrowth)}</td>
                 <td className="hidden lg:table-cell" />
               </tr>
             </tfoot>
           </table>
-        </div>
-      </div>
-
-      {/* Projections */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-lg">📈</span>
-          Market Size Projections (2020-2040)
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {MARKET_PROJECTIONS.map((proj) => (
-            <div
-              key={proj.year}
-              className={`rounded-lg p-3 text-center border ${
-                proj.year <= 2024
-                  ? 'bg-cyan-900/20 border-cyan-500/30'
-                  : proj.year <= 2026
-                  ? 'bg-green-900/20 border-green-500/30'
-                  : 'bg-purple-900/20 border-purple-500/30'
-              }`}
-            >
-              <div className="text-slate-400 text-xs">{proj.year}</div>
-              <div className={`text-xl font-bold ${
-                proj.year <= 2024 ? 'text-cyan-400' : proj.year <= 2026 ? 'text-green-400' : 'text-purple-400'
-              }`}>
-                {formatBillions(proj.size)}
-              </div>
-              <div className="text-slate-500 text-xs">{proj.source}</div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 flex gap-4 text-xs text-slate-500">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" /> Historical
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500" /> Near-term Forecast
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-purple-500" /> Long-range Forecast
-          </div>
         </div>
       </div>
 
@@ -664,30 +298,45 @@ function MarketOverviewTab() {
 // Tab 2: Investment
 // ────────────────────────────────────────
 
-function InvestmentTab() {
+interface InvestmentTabProps {
+  quarterlyVC: VCDeal[];
+  annualInvestment: AnnualInvestment[];
+}
+
+function InvestmentTab({ quarterlyVC, annualInvestment }: InvestmentTabProps) {
+  // Derive headline stats from data
+  const latestYear = annualInvestment.length > 0
+    ? annualInvestment.reduce((max, yr) => yr.year > max.year ? yr : max, annualInvestment[0])
+    : null;
+  const totalDeals = quarterlyVC
+    .filter(q => q.year === (latestYear?.year || 0))
+    .reduce((sum, q) => sum + q.dealCount, 0);
+  const cumulativeTotal = annualInvestment.reduce((sum, yr) => sum + yr.totalPrivate, 0);
+
   return (
     <div className="space-y-8">
       {/* Headline Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl font-bold text-cyan-400">$9.5B</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">2024 VC Investment</div>
+          <div className="text-3xl font-bold text-cyan-400">{latestYear ? formatBillions(latestYear.vcInvestment) : '--'}</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">{latestYear?.year || ''} VC Investment</div>
         </div>
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl font-bold text-green-400">246</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">2024 Deal Count</div>
+          <div className="text-3xl font-bold text-green-400">{totalDeals || '--'}</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">{latestYear?.year || ''} Deal Count</div>
         </div>
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl font-bold text-purple-400">$16.1B</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">2024 Total Private</div>
+          <div className="text-3xl font-bold text-purple-400">{latestYear ? formatBillions(latestYear.totalPrivate) : '--'}</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">{latestYear?.year || ''} Total Private</div>
         </div>
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl font-bold text-amber-400">$77B+</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Cumulative Since 2013</div>
+          <div className="text-3xl font-bold text-amber-400">{formatBillions(cumulativeTotal)}+</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Cumulative Total</div>
         </div>
       </div>
 
       {/* Quarterly VC */}
+      {quarterlyVC.length > 0 && (
       <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-lg">💰</span>
@@ -704,7 +353,7 @@ function InvestmentTab() {
               </tr>
             </thead>
             <tbody>
-              {QUARTERLY_VC.map((q) => (
+              {quarterlyVC.map((q) => (
                 <tr key={`${q.quarter}-${q.year}`} className="border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors">
                   <td className="py-3 px-4 text-white font-medium">{q.quarter} {q.year}</td>
                   <td className="py-3 px-4 text-right text-cyan-400 font-mono">{formatBillions(q.totalInvested)}</td>
@@ -718,8 +367,10 @@ function InvestmentTab() {
           </table>
         </div>
       </div>
+      )}
 
       {/* Annual Investment Trends */}
+      {annualInvestment.length > 0 && (
       <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center text-lg">📈</span>
@@ -737,7 +388,7 @@ function InvestmentTab() {
               </tr>
             </thead>
             <tbody>
-              {ANNUAL_INVESTMENT.map((yr) => (
+              {annualInvestment.map((yr) => (
                 <tr key={yr.year} className="border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors">
                   <td className="py-3 px-4 text-white font-medium">{yr.year}</td>
                   <td className="py-3 px-4 text-right text-cyan-400 font-mono">{formatBillions(yr.vcInvestment)}</td>
@@ -752,9 +403,9 @@ function InvestmentTab() {
         {/* Bar visualization */}
         <div className="mt-6">
           <div className="flex items-end gap-2 h-32">
-            {ANNUAL_INVESTMENT.map((yr) => {
-              const maxTotal = Math.max(...ANNUAL_INVESTMENT.map((y) => y.totalPrivate));
-              const heightPct = (yr.totalPrivate / maxTotal) * 100;
+            {annualInvestment.map((yr) => {
+              const maxTotal = Math.max(...annualInvestment.map((y) => y.totalPrivate));
+              const heightPct = maxTotal > 0 ? (yr.totalPrivate / maxTotal) * 100 : 0;
               return (
                 <div key={yr.year} className="flex-1 flex flex-col items-center gap-1">
                   <div className="text-xs text-slate-400">{formatBillions(yr.totalPrivate)}</div>
@@ -769,34 +420,7 @@ function InvestmentTab() {
           </div>
         </div>
       </div>
-
-      {/* Top Investors */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-lg">🏦</span>
-          Top Space Industry Investors
-        </h3>
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {TOP_INVESTORS.map((investor) => (
-            <StaggerItem key={investor.name}>
-              <div className="bg-slate-900/50 rounded-lg border border-slate-700/30 p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-white font-semibold">{investor.name}</div>
-                  <span className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">{investor.type}</span>
-                </div>
-                <div className="text-cyan-400 text-sm mb-2">Estimated deployed: {investor.estimatedDeployed}</div>
-                <div className="flex flex-wrap gap-1">
-                  {investor.notableDeals.map((deal) => (
-                    <span key={deal} className="text-xs bg-cyan-900/30 text-cyan-300 px-2 py-0.5 rounded">
-                      {deal}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
-      </div>
+      )}
 
       {/* SPAC Activity Note */}
       <div className="bg-slate-800/50 rounded-xl border border-amber-500/30 p-6">
@@ -817,16 +441,20 @@ function InvestmentTab() {
 // Tab 3: Government Budgets
 // ────────────────────────────────────────
 
-function GovernmentBudgetsTab() {
+interface GovernmentBudgetsTabProps {
+  governmentBudgets: GovernmentBudget[];
+}
+
+function GovernmentBudgetsTab({ governmentBudgets }: GovernmentBudgetsTabProps) {
   const [sortBy, setSortBy] = useState<'budget' | 'change'>('budget');
 
-  const sortedBudgets = [...GOVERNMENT_BUDGETS].sort((a, b) => {
+  const sortedBudgets = [...governmentBudgets].sort((a, b) => {
     if (sortBy === 'budget') return b.budget2025 - a.budget2025;
     return b.change - a.change;
   });
 
-  const totalBudget2024 = GOVERNMENT_BUDGETS.reduce((sum, b) => sum + b.budget2024, 0);
-  const totalBudget2025 = GOVERNMENT_BUDGETS.reduce((sum, b) => sum + b.budget2025, 0);
+  const totalBudget2024 = governmentBudgets.reduce((sum, b) => sum + b.budget2024, 0);
+  const totalBudget2025 = governmentBudgets.reduce((sum, b) => sum + b.budget2025, 0);
 
   return (
     <div className="space-y-8">
@@ -843,7 +471,7 @@ function GovernmentBudgetsTab() {
           <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">YoY Growth</div>
         </div>
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl font-bold text-purple-400">{GOVERNMENT_BUDGETS.length}</div>
+          <div className="text-3xl font-bold text-purple-400">{governmentBudgets.length}</div>
           <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Agencies Tracked</div>
         </div>
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
@@ -918,7 +546,7 @@ function GovernmentBudgetsTab() {
                 <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"
-                    style={{ width: `${(budget.budget2025 / Math.max(...GOVERNMENT_BUDGETS.map((b) => b.budget2025))) * 100}%` }}
+                    style={{ width: `${(budget.budget2025 / Math.max(...governmentBudgets.map((b) => b.budget2025))) * 100}%` }}
                   />
                 </div>
               </div>
@@ -953,10 +581,15 @@ function GovernmentBudgetsTab() {
 // Tab 4: Public Markets
 // ────────────────────────────────────────
 
-function PublicMarketsTab() {
+interface PublicMarketsTabProps {
+  stocks: SpaceCompanyStock[];
+  etfs?: SpaceETF[];
+}
+
+function PublicMarketsTab({ stocks, etfs = [] }: PublicMarketsTabProps) {
   const [sectorFilter, setSectorFilter] = useState<string>('');
 
-  const publicStocks = SPACE_STOCKS.filter((s) => s.ticker !== 'Private' && s.ticker !== 'Acquired');
+  const publicStocks = stocks.filter((s) => s.ticker !== 'Private' && s.ticker !== 'Acquired');
   const sectors = Array.from(new Set(publicStocks.map((s) => s.sector))).sort();
 
   const filteredStocks = sectorFilter
@@ -984,7 +617,7 @@ function PublicMarketsTab() {
           <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Avg YTD Change</div>
         </div>
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl font-bold text-purple-400">{SPACE_ETFS.length}</div>
+          <div className="text-3xl font-bold text-purple-400">{etfs.length}</div>
           <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Space ETFs</div>
         </div>
       </div>
@@ -1076,7 +709,7 @@ function PublicMarketsTab() {
           Notable Private Companies
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {SPACE_STOCKS.filter((s) => s.ticker === 'Private').map((company) => (
+          {stocks.filter((s) => s.ticker === 'Private').map((company) => (
             <div key={company.name} className="bg-slate-900/50 rounded-lg border border-slate-700/30 p-4">
               <div className="text-white font-semibold">{company.name}</div>
               <div className="text-purple-400 text-lg font-bold">{formatBillions(company.marketCap)} valuation</div>
@@ -1094,7 +727,7 @@ function PublicMarketsTab() {
           Space-Related ETFs
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {SPACE_ETFS.map((etf) => (
+          {etfs.map((etf) => (
             <div key={etf.ticker} className="bg-slate-900/50 rounded-lg border border-slate-700/30 p-4">
               <div className="flex items-center justify-between mb-2">
                 <div>
@@ -1145,12 +778,18 @@ function PublicMarketsTab() {
 // Tab 5: Workforce & Trends
 // ────────────────────────────────────────
 
-function WorkforceTrendsTab() {
+interface WorkforceTrendsTabProps {
+  workforceStats: WorkforceStat[];
+  launchCostTrends: LaunchCostDataPoint[];
+  salaryBenchmarks?: SalaryBenchmark[];
+}
+
+function WorkforceTrendsTab({ workforceStats, launchCostTrends, salaryBenchmarks = [] }: WorkforceTrendsTabProps) {
   return (
     <div className="space-y-8">
       {/* Workforce Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {WORKFORCE_STATS.slice(0, 4).map((stat) => (
+        {workforceStats.slice(0, 4).map((stat) => (
           <div key={stat.category} className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5">
             <div className="text-2xl font-bold text-cyan-400 mb-1">{stat.value}</div>
             <div className="text-white text-sm font-medium mb-1">{stat.category}</div>
@@ -1160,7 +799,7 @@ function WorkforceTrendsTab() {
         ))}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {WORKFORCE_STATS.slice(4).map((stat) => (
+        {workforceStats.slice(4).map((stat) => (
           <div key={stat.category} className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5">
             <div className="text-2xl font-bold text-green-400 mb-1">{stat.value}</div>
             <div className="text-white text-sm font-medium mb-1">{stat.category}</div>
@@ -1189,7 +828,7 @@ function WorkforceTrendsTab() {
               </tr>
             </thead>
             <tbody>
-              {SALARY_BENCHMARKS.sort((a, b) => b.median - a.median).map((role) => {
+              {[...salaryBenchmarks].sort((a, b) => b.median - a.median).map((role) => {
                 const rangeMin = role.minSalary;
                 const rangeMax = role.maxSalary;
                 const maxPossible = 220000;
@@ -1244,10 +883,10 @@ function WorkforceTrendsTab() {
               </tr>
             </thead>
             <tbody>
-              {LAUNCH_COST_TRENDS
+              {launchCostTrends
                 .sort((a, b) => a.costPerKgLEO - b.costPerKgLEO)
                 .map((launch) => {
-                  const maxCost = Math.max(...LAUNCH_COST_TRENDS.map((l) => l.costPerKgLEO));
+                  const maxCost = Math.max(...launchCostTrends.map((l) => l.costPerKgLEO));
                   const logMax = Math.log10(maxCost);
                   const logVal = Math.log10(launch.costPerKgLEO);
                   const barWidth = (logVal / logMax) * 100;
@@ -1353,6 +992,89 @@ function WorkforceTrendsTab() {
 
 export default function SpaceEconomyPage() {
   const [activeTab, setActiveTab] = useState<TabId>('market');
+  const [loading, setLoading] = useState(true);
+  const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+
+  // Data state for all sections
+  const [marketSegments, setMarketSegments] = useState<MarketSegment[]>([]);
+  const [quarterlyVC, setQuarterlyVC] = useState<VCDeal[]>([]);
+  const [annualInvestment, setAnnualInvestment] = useState<AnnualInvestment[]>([]);
+  const [governmentBudgets, setGovernmentBudgets] = useState<GovernmentBudget[]>([]);
+  const [stocks, setStocks] = useState<SpaceCompanyStock[]>([]);
+  const [workforceStats, setWorkforceStats] = useState<WorkforceStat[]>([]);
+  const [launchCostTrends, setLaunchCostTrends] = useState<LaunchCostDataPoint[]>([]);
+
+  useEffect(() => {
+    async function fetchSection(section: string) {
+      const res = await fetch(`/api/content/space-economy?section=${section}`);
+      if (!res.ok) throw new Error(`Failed to fetch ${section}`);
+      return res.json();
+    }
+
+    async function fetchAllData() {
+      try {
+        const [
+          segmentsRes,
+          vcRes,
+          investmentRes,
+          budgetsRes,
+          stocksRes,
+          workforceRes,
+          launchRes,
+        ] = await Promise.all([
+          fetchSection('market-segments'),
+          fetchSection('quarterly-vc'),
+          fetchSection('annual-investment'),
+          fetchSection('government-budgets'),
+          fetchSection('stocks'),
+          fetchSection('workforce-stats'),
+          fetchSection('launch-cost-trends'),
+        ]);
+
+        setMarketSegments(segmentsRes.data || []);
+        setQuarterlyVC(vcRes.data || []);
+        setAnnualInvestment(investmentRes.data || []);
+        setGovernmentBudgets(budgetsRes.data || []);
+        setStocks(stocksRes.data || []);
+        setWorkforceStats(workforceRes.data || []);
+        setLaunchCostTrends(launchRes.data || []);
+
+        // Use the freshest lastRefreshed from any section
+        const allMetas = [segmentsRes, vcRes, investmentRes, budgetsRes, stocksRes, workforceRes, launchRes];
+        const freshest = allMetas
+          .map(r => r.meta?.lastRefreshed)
+          .filter(Boolean)
+          .sort()
+          .pop();
+        setRefreshedAt(freshest || null);
+      } catch (err) {
+        console.error('Error fetching space economy data:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchAllData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>)}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -1363,6 +1085,7 @@ export default function SpaceEconomyPage() {
           icon="💰"
           accentColor="emerald"
         />
+        <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
 
         {/* Tab Navigation */}
         <div className="border-b border-slate-700/50 mb-8">
@@ -1385,11 +1108,11 @@ export default function SpaceEconomyPage() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'market' && <MarketOverviewTab />}
-        {activeTab === 'investment' && <InvestmentTab />}
-        {activeTab === 'government' && <GovernmentBudgetsTab />}
-        {activeTab === 'public-markets' && <PublicMarketsTab />}
-        {activeTab === 'workforce' && <WorkforceTrendsTab />}
+        {activeTab === 'market' && <MarketOverviewTab marketSegments={marketSegments} />}
+        {activeTab === 'investment' && <InvestmentTab quarterlyVC={quarterlyVC} annualInvestment={annualInvestment} />}
+        {activeTab === 'government' && <GovernmentBudgetsTab governmentBudgets={governmentBudgets} />}
+        {activeTab === 'public-markets' && <PublicMarketsTab stocks={stocks} />}
+        {activeTab === 'workforce' && <WorkforceTrendsTab workforceStats={workforceStats} launchCostTrends={launchCostTrends} />}
 
         {/* Data Sources Footer */}
         <ScrollReveal>

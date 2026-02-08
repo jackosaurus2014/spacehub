@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
       webinars,
       total,
       stats,
+      comingSoon: true,
     });
   } catch (error) {
     logger.error('Failed to fetch webinar data', { error: error instanceof Error ? error.message : String(error) });

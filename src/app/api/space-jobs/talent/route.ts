@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
       talent,
       total,
       stats,
+      directoryComingSoon: true,
     });
   } catch (error) {
     logger.error('Failed to fetch talent data', { error: error instanceof Error ? error.message : String(error) });

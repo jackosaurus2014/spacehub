@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import DataFreshness from '@/components/ui/DataFreshness';
 
 // ────────────────────────────────────────
 // Types
@@ -937,12 +938,57 @@ export default function LaunchVehiclesPage() {
   const [sortBy, setSortBy] = useState<string>('payloadLeo');
   const [compareSelection, setCompareSelection] = useState<string[]>([]);
 
+  // API-fetched data
+  const [vehicles, setVehicles] = useState<LaunchVehicle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await fetch('/api/content/launch-vehicles?section=vehicles');
+        const data = await res.json();
+        if (data.data && data.data.length > 0) {
+          setVehicles(data.data);
+        } else {
+          setVehicles(VEHICLES);
+        }
+        setRefreshedAt(data.meta?.lastRefreshed || null);
+      } catch (error) {
+        console.error('Failed to load launch vehicles data:', error);
+        setVehicles(VEHICLES);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  // Use fetched data or fallback to hardcoded
+  const ACTIVE_VEHICLES = vehicles.length > 0 ? vehicles : VEHICLES;
+
   // Derived data
-  const countries = useMemo(() => Array.from(new Set(VEHICLES.map(v => v.country))).sort(), []);
-  const manufacturers = useMemo(() => Array.from(new Set(VEHICLES.map(v => v.manufacturer))).sort(), []);
+  const countries = useMemo(() => Array.from(new Set(ACTIVE_VEHICLES.map(v => v.country))).sort(), [ACTIVE_VEHICLES]);
+  const manufacturers = useMemo(() => Array.from(new Set(ACTIVE_VEHICLES.map(v => v.manufacturer))).sort(), [ACTIVE_VEHICLES]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const filteredVehicles = useMemo(() => {
-    let result = [...VEHICLES];
+    let result = [...ACTIVE_VEHICLES];
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -988,11 +1034,11 @@ export default function LaunchVehiclesPage() {
     }
 
     return result;
-  }, [searchQuery, statusFilter, countryFilter, sortBy]);
+  }, [searchQuery, statusFilter, countryFilter, sortBy, ACTIVE_VEHICLES]);
 
   const selectedVehicles = useMemo(
-    () => VEHICLES.filter(v => compareSelection.includes(v.id)),
-    [compareSelection]
+    () => ACTIVE_VEHICLES.filter(v => compareSelection.includes(v.id)),
+    [compareSelection, ACTIVE_VEHICLES]
   );
 
   const toggleCompare = (vehicle: LaunchVehicle) => {
@@ -1007,26 +1053,26 @@ export default function LaunchVehiclesPage() {
 
   // Reliability-sorted vehicles
   const reliabilityRanked = useMemo(() => {
-    return [...VEHICLES]
+    return [...ACTIVE_VEHICLES]
       .filter(v => v.totalLaunches > 0)
       .sort((a, b) => {
         if (b.successRate !== a.successRate) return b.successRate - a.successRate;
         return b.totalLaunches - a.totalLaunches;
       });
-  }, []);
+  }, [ACTIVE_VEHICLES]);
 
   // Cost-sorted vehicles
   const costRanked = useMemo(() => {
-    return [...VEHICLES]
+    return [...ACTIVE_VEHICLES]
       .filter(v => v.costPerKgLeo !== null)
       .sort((a, b) => (a.costPerKgLeo ?? Infinity) - (b.costPerKgLeo ?? Infinity));
-  }, []);
+  }, [ACTIVE_VEHICLES]);
 
   // Stats
-  const totalOperational = VEHICLES.filter(v => v.status === 'Operational').length;
-  const totalInDev = VEHICLES.filter(v => v.status === 'In Development').length;
-  const totalLaunchesAll = VEHICLES.reduce((sum, v) => sum + v.totalLaunches, 0);
-  const avgSuccessRate = VEHICLES.filter(v => v.totalLaunches > 0).reduce((sum, v) => sum + v.successRate, 0) / VEHICLES.filter(v => v.totalLaunches > 0).length;
+  const totalOperational = ACTIVE_VEHICLES.filter(v => v.status === 'Operational').length;
+  const totalInDev = ACTIVE_VEHICLES.filter(v => v.status === 'In Development').length;
+  const totalLaunchesAll = ACTIVE_VEHICLES.reduce((sum, v) => sum + v.totalLaunches, 0);
+  const avgSuccessRate = ACTIVE_VEHICLES.filter(v => v.totalLaunches > 0).reduce((sum, v) => sum + v.successRate, 0) / (ACTIVE_VEHICLES.filter(v => v.totalLaunches > 0).length || 1);
 
   const TABS: { id: TabId; label: string }[] = [
     { id: 'database', label: 'Vehicle Database' },
@@ -1045,10 +1091,12 @@ export default function LaunchVehiclesPage() {
           accentColor="red"
         />
 
+        <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
+
         {/* Quick Stats Banner */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="card-elevated p-4 text-center">
-            <div className="text-2xl font-bold font-display text-white">{VEHICLES.length}</div>
+            <div className="text-2xl font-bold font-display text-white">{ACTIVE_VEHICLES.length}</div>
             <div className="text-star-300 text-xs uppercase tracking-widest font-medium">Vehicles Tracked</div>
           </div>
           <div className="card-elevated p-4 text-center">
@@ -1151,7 +1199,7 @@ export default function LaunchVehiclesPage() {
 
             {/* Results Count */}
             <div className="mb-4 text-star-300 text-sm">
-              Showing {filteredVehicles.length} of {VEHICLES.length} launch vehicles
+              Showing {filteredVehicles.length} of {ACTIVE_VEHICLES.length} launch vehicles
               {(searchQuery || statusFilter || countryFilter) && (
                 <button
                   onClick={() => { setSearchQuery(''); setStatusFilter(''); setCountryFilter(''); }}
@@ -1191,7 +1239,7 @@ export default function LaunchVehiclesPage() {
             <div className="card p-5 mb-6">
               <h3 className="text-lg font-semibold text-white mb-3">Select Vehicles to Compare (2-4)</h3>
               <div className="flex flex-wrap gap-2 mb-4">
-                {VEHICLES.map(v => (
+                {ACTIVE_VEHICLES.map(v => (
                   <button
                     key={v.id}
                     onClick={() => toggleCompare(v)}
@@ -1394,13 +1442,13 @@ export default function LaunchVehiclesPage() {
               </div>
               <div className="card p-4 text-center">
                 <div className="text-2xl font-bold font-display text-green-400">
-                  {VEHICLES.reduce((sum, v) => sum + v.successes, 0).toLocaleString()}
+                  {ACTIVE_VEHICLES.reduce((sum, v) => sum + v.successes, 0).toLocaleString()}
                 </div>
                 <div className="text-star-300 text-xs uppercase tracking-widest font-medium">Total Successes</div>
               </div>
               <div className="card p-4 text-center">
                 <div className="text-2xl font-bold font-display text-red-400">
-                  {VEHICLES.reduce((sum, v) => sum + v.failures, 0)}
+                  {ACTIVE_VEHICLES.reduce((sum, v) => sum + v.failures, 0)}
                 </div>
                 <div className="text-star-300 text-xs uppercase tracking-widest font-medium">Total Failures</div>
               </div>
@@ -1538,7 +1586,7 @@ export default function LaunchVehiclesPage() {
               </div>
               <div className="card p-4 text-center">
                 <div className="text-2xl font-bold font-display text-cyan-400">
-                  {VEHICLES.filter(v => v.reusable).length}
+                  {ACTIVE_VEHICLES.filter(v => v.reusable).length}
                 </div>
                 <div className="text-star-300 text-xs uppercase tracking-widest font-medium">Reusable Vehicles</div>
               </div>
@@ -1613,7 +1661,7 @@ export default function LaunchVehiclesPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800">
-                    {[...VEHICLES]
+                    {[...ACTIVE_VEHICLES]
                       .filter(v => v.costMillions !== null)
                       .sort((a, b) => (a.costMillions ?? 0) - (b.costMillions ?? 0))
                       .map(v => (
@@ -1645,7 +1693,7 @@ export default function LaunchVehiclesPage() {
                 <div>
                   <h4 className="text-cyan-400 font-medium text-sm mb-3 uppercase tracking-widest">Reusable Vehicles</h4>
                   <div className="space-y-3">
-                    {VEHICLES.filter(v => v.reusable && v.costPerKgLeo !== null).sort((a, b) => (a.costPerKgLeo ?? 0) - (b.costPerKgLeo ?? 0)).map(v => (
+                    {ACTIVE_VEHICLES.filter(v => v.reusable && v.costPerKgLeo !== null).sort((a, b) => (a.costPerKgLeo ?? 0) - (b.costPerKgLeo ?? 0)).map(v => (
                       <div key={v.id} className="flex items-center justify-between">
                         <div>
                           <span className="text-white text-sm font-medium">{v.name}</span>
@@ -1659,8 +1707,8 @@ export default function LaunchVehiclesPage() {
                         <span className="text-star-300 text-sm">Average $/kg</span>
                         <span className="text-cyan-400 font-bold text-sm">
                           ${Math.round(
-                            VEHICLES.filter(v => v.reusable && v.costPerKgLeo !== null).reduce((sum, v) => sum + (v.costPerKgLeo ?? 0), 0)
-                            / VEHICLES.filter(v => v.reusable && v.costPerKgLeo !== null).length
+                            ACTIVE_VEHICLES.filter(v => v.reusable && v.costPerKgLeo !== null).reduce((sum, v) => sum + (v.costPerKgLeo ?? 0), 0)
+                            / ACTIVE_VEHICLES.filter(v => v.reusable && v.costPerKgLeo !== null).length
                           ).toLocaleString()}/kg
                         </span>
                       </div>
@@ -1670,7 +1718,7 @@ export default function LaunchVehiclesPage() {
                 <div>
                   <h4 className="text-star-300 font-medium text-sm mb-3 uppercase tracking-widest">Expendable Vehicles</h4>
                   <div className="space-y-3">
-                    {VEHICLES.filter(v => !v.reusable && v.costPerKgLeo !== null).sort((a, b) => (a.costPerKgLeo ?? 0) - (b.costPerKgLeo ?? 0)).map(v => (
+                    {ACTIVE_VEHICLES.filter(v => !v.reusable && v.costPerKgLeo !== null).sort((a, b) => (a.costPerKgLeo ?? 0) - (b.costPerKgLeo ?? 0)).map(v => (
                       <div key={v.id} className="flex items-center justify-between">
                         <div>
                           <span className="text-white text-sm font-medium">{v.name}</span>
@@ -1684,8 +1732,8 @@ export default function LaunchVehiclesPage() {
                         <span className="text-star-300 text-sm">Average $/kg</span>
                         <span className="text-white font-bold text-sm">
                           ${Math.round(
-                            VEHICLES.filter(v => !v.reusable && v.costPerKgLeo !== null).reduce((sum, v) => sum + (v.costPerKgLeo ?? 0), 0)
-                            / VEHICLES.filter(v => !v.reusable && v.costPerKgLeo !== null).length
+                            ACTIVE_VEHICLES.filter(v => !v.reusable && v.costPerKgLeo !== null).reduce((sum, v) => sum + (v.costPerKgLeo ?? 0), 0)
+                            / ACTIVE_VEHICLES.filter(v => !v.reusable && v.costPerKgLeo !== null).length
                           ).toLocaleString()}/kg
                         </span>
                       </div>

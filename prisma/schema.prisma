@@ -2216,3 +2216,50 @@ model ServiceProviderSubmission {
   @@index([status])
   @@index([createdAt])
 }
+
+// Generic content storage for module data (replaces hardcoded arrays)
+model DynamicContent {
+  id            String   @id @default(cuid())
+  contentKey    String   @unique  // e.g. "space-stations:iss", "constellations:starlink"
+  module        String             // e.g. "space-stations", "constellations"
+  section       String?            // e.g. "crew", "active", "commercial"
+  data          String   @db.Text  // JSON blob matching page TypeScript interfaces
+  sourceType    String   @default("seed") // "api", "ai-research", "seed", "manual"
+  sourceUrl     String?
+  lastVerified  DateTime @default(now())
+  refreshedAt   DateTime @default(now())
+  expiresAt     DateTime
+  aiConfidence  Float?   // 0-1 confidence from AI verification
+  aiNotes       String?  @db.Text
+  isActive      Boolean  @default(true)
+  version       Int      @default(1)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([module])
+  @@index([module, section])
+  @@index([expiresAt])
+  @@index([isActive])
+}
+
+// Audit log for data refresh operations
+model DataRefreshLog {
+  id            String   @id @default(cuid())
+  module        String
+  refreshType   String   // "api-fetch", "ai-research", "staleness-check", "cleanup"
+  status        String   // "success", "partial", "failed"
+  itemsChecked  Int      @default(0)
+  itemsUpdated  Int      @default(0)
+  itemsExpired  Int      @default(0)
+  itemsCreated  Int      @default(0)
+  tokensUsed    Int?
+  apiCallsMade  Int?
+  duration      Int?     // milliseconds
+  errorMessage  String?  @db.Text
+  details       String?  @db.Text // JSON with detailed results
+  createdAt     DateTime @default(now())
+
+  @@index([module])
+  @@index([refreshType])
+  @@index([createdAt])
+}

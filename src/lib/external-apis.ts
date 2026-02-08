@@ -33,6 +33,23 @@ export const EXTERNAL_APIS = {
     baseUrl: 'https://www.federalregister.gov/api/v1',
     rateLimit: { requests: 100, period: 3600 },
   },
+  OPEN_NOTIFY: {
+    baseUrl: 'http://api.open-notify.org',
+    rateLimit: { requests: 12, period: 60 }, // ~1 per 5 seconds
+  },
+  NASA_NEOWS: {
+    baseUrl: 'https://api.nasa.gov/neo/rest/v1',
+    apiKey: process.env.NASA_API_KEY || 'DEMO_KEY',
+    rateLimit: { requests: 1000, period: 3600 },
+  },
+  USASPENDING: {
+    baseUrl: 'https://api.usaspending.gov/api/v2',
+    rateLimit: { requests: 100, period: 60 },
+  },
+  USPTO_PATENTSVIEW: {
+    baseUrl: 'https://search.patentsview.org/api/v1',
+    rateLimit: { requests: 45, period: 60 },
+  },
 };
 
 // Circuit breakers for each external API

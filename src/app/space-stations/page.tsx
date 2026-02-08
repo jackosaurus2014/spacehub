@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import DataFreshness from '@/components/ui/DataFreshness';
 
 // ────────────────────────────────────────
 // Types
@@ -88,249 +89,6 @@ interface CrewRotation {
   crew: string[];
 }
 
-// ────────────────────────────────────────
-// Data - Active Stations
-// ────────────────────────────────────────
-
-const ACTIVE_STATIONS: SpaceStation[] = [
-  {
-    id: 'iss',
-    name: 'International Space Station (ISS)',
-    operator: 'NASA / Roscosmos / ESA / JAXA / CSA',
-    country: 'International',
-    status: 'operational',
-    orbit: 'Low Earth Orbit (LEO)',
-    altitude: '~408 km',
-    inclination: '51.6 degrees',
-    crewCapacity: 6,
-    currentCrew: 7,
-    mass: '~420,000 kg',
-    pressurizedVolume: '916 m3',
-    power: '~215 kW (solar arrays)',
-    dockingPorts: 8,
-    modules: [
-      { name: 'Zarya (FGB)', type: 'Control Module', launchDate: 'Nov 1998', mass: '19,323 kg', builder: 'Khrunichev' },
-      { name: 'Unity (Node 1)', type: 'Connecting Node', launchDate: 'Dec 1998', mass: '11,612 kg', builder: 'Boeing' },
-      { name: 'Zvezda (SM)', type: 'Service Module', launchDate: 'Jul 2000', mass: '19,051 kg', builder: 'RSC Energia' },
-      { name: 'Destiny', type: 'US Laboratory', launchDate: 'Feb 2001', mass: '14,515 kg', builder: 'Boeing' },
-      { name: 'Quest', type: 'Joint Airlock', launchDate: 'Jul 2001', mass: '6,064 kg', builder: 'Boeing' },
-      { name: 'Harmony (Node 2)', type: 'Connecting Node', launchDate: 'Oct 2007', mass: '14,288 kg', builder: 'Thales Alenia Space' },
-      { name: 'Columbus', type: 'ESA Laboratory', launchDate: 'Feb 2008', mass: '10,300 kg', builder: 'Thales Alenia Space' },
-      { name: 'Kibo (JEM)', type: 'JAXA Laboratory', launchDate: 'Jun 2008', mass: '15,900 kg', builder: 'JAXA / Mitsubishi' },
-      { name: 'Tranquility (Node 3)', type: 'Life Support Node', launchDate: 'Feb 2010', mass: '15,500 kg', builder: 'Thales Alenia Space' },
-      { name: 'Cupola', type: 'Observation Module', launchDate: 'Feb 2010', mass: '1,805 kg', builder: 'Thales Alenia Space' },
-      { name: 'Rassvet (MRM-1)', type: 'Docking/Storage', launchDate: 'May 2010', mass: '5,075 kg', builder: 'RSC Energia' },
-      { name: 'BEAM', type: 'Expandable Module', launchDate: 'Apr 2016', mass: '1,413 kg', builder: 'Bigelow Aerospace' },
-      { name: 'Nauka (MLM)', type: 'Multipurpose Lab', launchDate: 'Jul 2021', mass: '20,350 kg', builder: 'Khrunichev' },
-      { name: 'Prichal', type: 'Docking Node', launchDate: 'Nov 2021', mass: '3,890 kg', builder: 'RSC Energia' },
-    ],
-    visitingVehicles: [
-      { name: 'Crew Dragon', type: 'crew', operator: 'SpaceX', status: 'active' },
-      { name: 'Soyuz MS', type: 'crew', operator: 'Roscosmos', status: 'active' },
-      { name: 'Cargo Dragon', type: 'cargo', operator: 'SpaceX', status: 'active' },
-      { name: 'Cygnus', type: 'cargo', operator: 'Northrop Grumman', status: 'active' },
-      { name: 'Progress MS', type: 'cargo', operator: 'Roscosmos', status: 'active' },
-      { name: 'HTV-X', type: 'cargo', operator: 'JAXA', status: 'active' },
-      { name: 'Starliner', type: 'crew', operator: 'Boeing', status: 'active' },
-    ],
-    launchDate: 'November 20, 1998',
-    continuousOccupation: 'Since November 2, 2000 (Expedition 1)',
-    plannedRetirement: '~2030 (controlled deorbit planned)',
-    researchFacilities: [
-      'US National Laboratory',
-      'Columbus (ESA) laboratory',
-      'Kibo (JAXA) laboratory with exposed facility',
-      'Nauka (Russian) multipurpose laboratory',
-      'Cold Atom Laboratory',
-      'Materials Science Research Rack',
-      'Combustion Integrated Rack',
-      'Fluids Integrated Rack',
-      'Microgravity Science Glovebox',
-    ],
-    description: 'The International Space Station is the largest human-made structure in space, a collaborative effort of 15 nations. It has been continuously inhabited since November 2, 2000, making it the longest continuous human presence in low Earth orbit -- over 25 years. The ISS orbits Earth approximately every 90 minutes at a speed of about 28,000 km/h. Over 270 individuals from 21 countries have visited the station. The ISS serves as a microgravity and space environment research laboratory where scientific research is conducted in astrobiology, astronomy, meteorology, physics, and other fields. It is scheduled for decommissioning around 2030, with NASA planning a controlled deorbit using a dedicated deorbit vehicle.',
-  },
-  {
-    id: 'tiangong',
-    name: 'Tiangong Space Station',
-    operator: 'CMSA (China Manned Space Agency)',
-    country: 'China',
-    status: 'operational',
-    orbit: 'Low Earth Orbit (LEO)',
-    altitude: '~390 km',
-    inclination: '41.5 degrees',
-    crewCapacity: 3,
-    currentCrew: 3,
-    mass: '~100,000 kg (with visiting vehicles)',
-    pressurizedVolume: '~340 m3',
-    power: '~100 kW (solar arrays)',
-    dockingPorts: 5,
-    modules: [
-      { name: 'Tianhe (Core Module)', type: 'Core/Living Module', launchDate: 'Apr 2021', mass: '22,600 kg', builder: 'CAST' },
-      { name: 'Wentian', type: 'Laboratory Module', launchDate: 'Jul 2022', mass: '23,000 kg', builder: 'CAST' },
-      { name: 'Mengtian', type: 'Laboratory Module', launchDate: 'Oct 2022', mass: '23,000 kg', builder: 'CAST' },
-    ],
-    visitingVehicles: [
-      { name: 'Shenzhou', type: 'crew', operator: 'CMSA', status: 'active' },
-      { name: 'Tianzhou', type: 'cargo', operator: 'CMSA', status: 'active' },
-    ],
-    launchDate: 'April 29, 2021 (Tianhe core)',
-    continuousOccupation: 'Since June 2022 (Shenzhou-14)',
-    plannedRetirement: '2035+ (designed for 15+ year lifespan)',
-    researchFacilities: [
-      'Wentian laboratory (life sciences, biotechnology)',
-      'Mengtian laboratory (microgravity physics, fluid science)',
-      'Exposed experiment platform (space science payloads)',
-      'Robotic arm (10m, 25-ton capacity)',
-      'Xuntian space telescope (co-orbital, 2m aperture)',
-      'Cold atom clock experiments',
-      'Containerless processing facilities',
-    ],
-    description: 'China\'s Tiangong (meaning "Heavenly Palace") is the country\'s permanently crewed space station in low Earth orbit. The T-shaped three-module station was assembled between 2021 and 2022, with Tianhe serving as the core living and command module, and Wentian and Mengtian as laboratory modules. The station supports a crew of 3, with 6 during rotation handovers. China plans to expand Tiangong with additional modules over the coming years, potentially increasing its mass to over 180 tonnes. The associated Xuntian Space Telescope, a Hubble-class observatory, orbits near the station and can dock for servicing. China has invited international collaboration, with experiments from multiple countries being conducted aboard.',
-  },
-];
-
-// ────────────────────────────────────────
-// Data - Commercial Stations
-// ────────────────────────────────────────
-
-const COMMERCIAL_STATIONS: CommercialStation[] = [
-  {
-    id: 'axiom',
-    name: 'Axiom Station',
-    developer: 'Axiom Space',
-    partners: ['NASA', 'Thales Alenia Space', 'SpaceX'],
-    status: 'assembly',
-    fundingSource: 'NASA CLD award ($228M) + private funding',
-    estimatedCost: '$2B+',
-    targetLaunch: 'Axiom Hab 1 module: 2026 (attached to ISS), free-flying: ~2028-2030',
-    crewCapacity: 8,
-    pressurizedVolume: 'TBD (multi-module station)',
-    orbit: 'LEO (~400 km)',
-    launchVehicle: 'SpaceX Falcon Heavy / Starship',
-    capabilities: [
-      'Initially attached to ISS Node 2 forward port',
-      'Modules detach to become free-flying station when ISS retires',
-      'Research and manufacturing in microgravity',
-      'Earth observation cupola window',
-      'Commercial astronaut missions (Ax-1 through Ax-4 completed/planned)',
-      'In-space manufacturing and materials science',
-      'Space tourism and sovereign astronaut training',
-    ],
-    nasaCLD: true,
-    description: 'Axiom Space is building the world\'s first commercial space station. The station will initially attach modules to the ISS beginning in 2026, then detach to become an independent free-flying station when the ISS is retired. Axiom has already conducted multiple private astronaut missions (Ax-1, Ax-2, Ax-3, Ax-4) to the ISS using SpaceX Crew Dragon. The company was awarded $228 million by NASA under the Commercial LEO Destinations program. Axiom Station is designed to serve researchers, manufacturers, and sovereign astronauts from countries that don\'t have their own space programs.',
-  },
-  {
-    id: 'vast-haven1',
-    name: 'Haven-1',
-    developer: 'Vast',
-    partners: ['SpaceX', 'Launcher (Vast subsidiary)'],
-    status: 'development',
-    fundingSource: 'Private funding (~$400M+ raised)',
-    targetLaunch: 'NET 2026 (on SpaceX Falcon 9)',
-    crewCapacity: 4,
-    pressurizedVolume: '~100 m3',
-    orbit: 'LEO',
-    launchVehicle: 'SpaceX Falcon 9',
-    capabilities: [
-      'Single-module station (first commercial single-launch station)',
-      'Artificial gravity research (future Haven-2 rotating station)',
-      'Crew transported via SpaceX Crew Dragon',
-      'Up to 30-day crew missions',
-      'Microgravity research platform',
-      'Pathfinder for larger Vast stations',
-    ],
-    nasaCLD: false,
-    description: 'Vast\'s Haven-1 aims to be the world\'s first commercial space station to achieve orbit, launching as a single module aboard a SpaceX Falcon 9 rocket. Founded by cryptocurrency entrepreneur Jed McCaleb, Vast has raised over $400 million in private funding. Haven-1 is designed as a pathfinder for the larger Haven-2 station, which will incorporate artificial gravity via rotation. The first crewed mission will use SpaceX Crew Dragon to transport up to 4 astronauts for stays of up to 30 days. Vast acquired Launcher in 2023, gaining in-house propulsion and vehicle expertise.',
-  },
-  {
-    id: 'orbital-reef',
-    name: 'Orbital Reef',
-    developer: 'Blue Origin / Sierra Space',
-    partners: ['Blue Origin', 'Sierra Space', 'Boeing', 'Redwire Space', 'Genesis Engineering Solutions', 'Arizona State University'],
-    status: 'development',
-    fundingSource: 'NASA CLD award ($130M) + Blue Origin/Sierra Space funding',
-    estimatedCost: '$3B+ estimated',
-    targetLaunch: '2027-2028',
-    crewCapacity: 10,
-    pressurizedVolume: '~830 m3 (with LIFE module)',
-    orbit: 'LEO (~500 km)',
-    launchVehicle: 'Blue Origin New Glenn / ULA Vulcan',
-    capabilities: [
-      'Core module by Blue Origin',
-      'LIFE inflatable habitat by Sierra Space (expandable module)',
-      'Science and research park concept',
-      'In-space manufacturing facilities',
-      'Film and media production studio',
-      'Space tourism accommodations',
-      'Regenerative life support systems',
-      'Dream Chaser cargo vehicle access (Sierra Space)',
-    ],
-    nasaCLD: true,
-    description: 'Orbital Reef is a planned commercial space station being developed as a joint venture between Blue Origin and Sierra Space, with contributions from Boeing, Redwire Space, and others. Designed as a "mixed-use business park in space," it aims to accommodate research, industrial, commercial, and tourism activities. NASA awarded the consortium $130 million under the CLD program. Sierra Space\'s LIFE (Large Integrated Flexible Environment) expandable module would provide significantly more pressurized volume than traditional rigid modules. The station will be serviced by Sierra Space\'s Dream Chaser spaceplane and other commercial vehicles.',
-  },
-  {
-    id: 'starlab',
-    name: 'Starlab',
-    developer: 'Starlab Space (Voyager Space / Airbus)',
-    partners: ['Voyager Space', 'Airbus Defence and Space', 'Mitsubishi Corporation', 'MDA Space'],
-    status: 'development',
-    fundingSource: 'NASA CLD award ($217.5M) + Airbus/Voyager funding',
-    estimatedCost: '$2-3B estimated',
-    targetLaunch: '2028',
-    crewCapacity: 4,
-    pressurizedVolume: '~340 m3',
-    orbit: 'LEO (~400 km)',
-    launchVehicle: 'SpaceX Starship (single launch)',
-    capabilities: [
-      'Single-launch deployment on Starship',
-      'George Washington Carver Science Park',
-      'Regenerative ECLSS (life support)',
-      'Canadarm-heritage robotic arm (MDA)',
-      'Open architecture for international partners',
-      'Continuous crewed operations',
-      'Modular payload accommodation',
-    ],
-    nasaCLD: true,
-    description: 'Starlab is a commercial space station being developed by Starlab Space, a joint venture between Voyager Space and Airbus Defence and Space. It was awarded $217.5 million by NASA under the CLD program. The station is designed for single-launch deployment aboard a SpaceX Starship, which would deliver the entire station to orbit in one mission. Starlab features an integrated design with the "George Washington Carver Science Park" for research, and a robotic arm developed by MDA Space (the Canadian company behind Canadarm). Mitsubishi Corporation joined the partnership to bring Japanese expertise and international partnerships.',
-  },
-];
-
-// ────────────────────────────────────────
-// Data - Current Crews
-// ────────────────────────────────────────
-
-const CURRENT_CREW: CrewMember[] = [
-  // ISS Expedition 72/73
-  { name: 'Sunita Williams', nationality: 'United States', agency: 'NASA', role: 'Commander', station: 'ISS', mission: 'Crew Flight Test / Expedition 72', launchDate: 'Jun 2024', expectedReturn: 'Early 2025' },
-  { name: 'Butch Wilmore', nationality: 'United States', agency: 'NASA', role: 'Flight Engineer', station: 'ISS', mission: 'Crew Flight Test / Expedition 72', launchDate: 'Jun 2024', expectedReturn: 'Early 2025' },
-  { name: 'Don Pettit', nationality: 'United States', agency: 'NASA', role: 'Flight Engineer', station: 'ISS', mission: 'Expedition 72 (Soyuz MS-26)', launchDate: 'Sep 2024', expectedReturn: 'Mar 2025' },
-  { name: 'Aleksandr Gorbunov', nationality: 'Russia', agency: 'Roscosmos', role: 'Flight Engineer', station: 'ISS', mission: 'SpaceX Crew-9', launchDate: 'Sep 2024', expectedReturn: 'Feb 2025' },
-  { name: 'Nick Hague', nationality: 'United States', agency: 'NASA', role: 'Flight Engineer', station: 'ISS', mission: 'SpaceX Crew-9', launchDate: 'Sep 2024', expectedReturn: 'Feb 2025' },
-  { name: 'Alexey Ovchinin', nationality: 'Russia', agency: 'Roscosmos', role: 'Flight Engineer', station: 'ISS', mission: 'Soyuz MS-26', launchDate: 'Sep 2024', expectedReturn: 'Mar 2025' },
-  { name: 'Ivan Vagner', nationality: 'Russia', agency: 'Roscosmos', role: 'Flight Engineer', station: 'ISS', mission: 'Soyuz MS-26', launchDate: 'Sep 2024', expectedReturn: 'Mar 2025' },
-  // Tiangong - Shenzhou-19
-  { name: 'Cai Xuzhe', nationality: 'China', agency: 'CMSA', role: 'Commander', station: 'Tiangong', mission: 'Shenzhou-19', launchDate: 'Oct 2024', expectedReturn: 'Apr 2025' },
-  { name: 'Song Lingdong', nationality: 'China', agency: 'CMSA', role: 'Flight Engineer', station: 'Tiangong', mission: 'Shenzhou-19', launchDate: 'Oct 2024', expectedReturn: 'Apr 2025' },
-  { name: 'Wang Haoze', nationality: 'China', agency: 'CMSA', role: 'Payload Specialist', station: 'Tiangong', mission: 'Shenzhou-19', launchDate: 'Oct 2024', expectedReturn: 'Apr 2025' },
-];
-
-const CREW_ROTATIONS: CrewRotation[] = [
-  { mission: 'SpaceX Crew-9', station: 'ISS', vehicle: 'Crew Dragon', launchDate: 'Sep 2024', status: 'current', crew: ['Nick Hague', 'Aleksandr Gorbunov'] },
-  { mission: 'Soyuz MS-26', station: 'ISS', vehicle: 'Soyuz', launchDate: 'Sep 2024', status: 'current', crew: ['Alexey Ovchinin', 'Ivan Vagner', 'Don Pettit'] },
-  { mission: 'Shenzhou-19', station: 'Tiangong', vehicle: 'Shenzhou', launchDate: 'Oct 2024', status: 'current', crew: ['Cai Xuzhe', 'Song Lingdong', 'Wang Haoze'] },
-  { mission: 'SpaceX Crew-10', station: 'ISS', vehicle: 'Crew Dragon', launchDate: 'Early 2025', status: 'upcoming', crew: ['Anne McClain', 'Nichole Ayers', 'Takuya Onishi', 'Kirill Peskov'] },
-  { mission: 'Soyuz MS-27', station: 'ISS', vehicle: 'Soyuz', launchDate: 'Mar 2025', status: 'upcoming', crew: ['TBD (3 crew)'] },
-  { mission: 'Shenzhou-20', station: 'Tiangong', vehicle: 'Shenzhou', launchDate: 'Apr 2025', status: 'upcoming', crew: ['TBD (3 crew)'] },
-  { mission: 'SpaceX Crew-11', station: 'ISS', vehicle: 'Crew Dragon', launchDate: 'Mid 2025', status: 'planned', crew: ['TBD (4 crew)'] },
-  { mission: 'Soyuz MS-28', station: 'ISS', vehicle: 'Soyuz', launchDate: 'Sep 2025', status: 'planned', crew: ['TBD (3 crew)'] },
-  { mission: 'Shenzhou-21', station: 'Tiangong', vehicle: 'Shenzhou', launchDate: 'Oct 2025', status: 'planned', crew: ['TBD (3 crew)'] },
-  { mission: 'Axiom-4 (Ax-4)', station: 'ISS', vehicle: 'Crew Dragon', launchDate: '2025', status: 'planned', crew: ['Peggy Whitson (Cmdr)', '3 private astronauts'] },
-];
-
-// ────────────────────────────────────────
-// Data - ISS Transition / CLD Program
-// ────────────────────────────────────────
-
 interface CLDMilestone {
   date: string;
   event: string;
@@ -338,33 +96,12 @@ interface CLDMilestone {
   status: 'completed' | 'in-progress' | 'upcoming' | 'planned';
 }
 
-const CLD_MILESTONES: CLDMilestone[] = [
-  { date: 'Dec 2021', event: 'CLD Phase 1 Awards', details: 'NASA awarded $415.6M to three companies: Blue Origin ($130M), Nanoracks/Voyager ($160M), Northrop Grumman ($125.6M)', status: 'completed' },
-  { date: '2022', event: 'Nanoracks/Voyager recompeted as Starlab', details: 'Voyager Space partnered with Airbus, later forming Starlab Space JV. Northrop Grumman exited, Axiom Space entered.', status: 'completed' },
-  { date: 'Jan 2023', event: 'Axiom CLD Award', details: 'Axiom Space received $228M NASA CLD funding for their commercial station concept', status: 'completed' },
-  { date: '2023-2024', event: 'CLD Phase 1 Development', details: 'Continued design maturation, systems definition reviews, and preliminary design reviews for all CLD partners', status: 'completed' },
-  { date: '2025-2026', event: 'CLD Critical Design Reviews', details: 'CLD providers undergo critical design reviews; NASA evaluates readiness for Phase 2 certification', status: 'in-progress' },
-  { date: '2026-2027', event: 'First Commercial Modules Launch', details: 'Axiom Hab 1 module attaches to ISS; Vast Haven-1 targets independent orbit', status: 'upcoming' },
-  { date: '2028', event: 'Starlab & Orbital Reef Launches', details: 'Second wave of commercial stations target initial operational capability', status: 'planned' },
-  { date: '2030', event: 'ISS Decommissioning', details: 'NASA plans controlled deorbit of ISS into remote South Pacific (Point Nemo). SpaceX awarded ~$843M for deorbit vehicle.', status: 'planned' },
-  { date: '2030+', event: 'Full Commercial LEO Operations', details: 'NASA transitions to purchasing services from commercial stations rather than operating its own facility', status: 'planned' },
-];
-
 interface TransitionRisk {
   category: string;
   risk: string;
   mitigation: string;
   severity: 'high' | 'medium' | 'low';
 }
-
-const TRANSITION_RISKS: TransitionRisk[] = [
-  { category: 'Capability Gap', risk: 'Commercial stations may not be operational before ISS retirement in 2030', mitigation: 'NASA extended ISS to 2030; multiple CLD providers reduce single-point failures', severity: 'high' },
-  { category: 'Research Continuity', risk: 'Loss of continuous microgravity research capability during transition', mitigation: 'Overlapping ISS operations with early commercial station deployments (Axiom modules on ISS)', severity: 'high' },
-  { category: 'International Partners', risk: 'Partner nations may lose crew access during gap period', mitigation: 'Commercial stations offer sovereign astronaut programs; ESA/JAXA investing in Starlab', severity: 'medium' },
-  { category: 'Budget', risk: 'ISS costs ~$3-4B/year; commercial services must be more cost-effective', mitigation: 'NASA targets ~$1B/year for commercial LEO services vs. current ISS operating costs', severity: 'medium' },
-  { category: 'Technical Readiness', risk: 'New stations may face development delays (common in aerospace)', mitigation: 'Three independent CLD providers plus Vast self-funded effort provide redundancy', severity: 'high' },
-  { category: 'Deorbit Safety', risk: 'Controlled ISS deorbit is an unprecedented engineering challenge (~420 tonnes)', mitigation: 'SpaceX awarded $843M contract for purpose-built deorbit vehicle; extensive planning underway', severity: 'medium' },
-];
 
 // ────────────────────────────────────────
 // Status Styling
@@ -807,19 +544,19 @@ function ComparisonTable() {
   );
 }
 
-function CrewTracker() {
-  const issCrewCount = CURRENT_CREW.filter((c) => c.station === 'ISS').length;
-  const tiangongCrewCount = CURRENT_CREW.filter((c) => c.station === 'Tiangong').length;
+function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]; crewRotations: CrewRotation[] }) {
+  const issCrewCount = currentCrew.filter((c) => c.station === 'ISS').length;
+  const tiangongCrewCount = currentCrew.filter((c) => c.station === 'Tiangong').length;
 
-  const nationalities = Array.from(new Set(CURRENT_CREW.map((c) => c.nationality)));
-  const agencies = Array.from(new Set(CURRENT_CREW.map((c) => c.agency)));
+  const nationalities = Array.from(new Set(currentCrew.map((c) => c.nationality)));
+  const agencies = Array.from(new Set(currentCrew.map((c) => c.agency)));
 
   return (
     <div className="space-y-6">
       {/* Crew Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
-          <div className="text-white font-bold text-2xl">{CURRENT_CREW.length}</div>
+          <div className="text-white font-bold text-2xl">{currentCrew.length}</div>
           <div className="text-star-400 text-xs uppercase tracking-widest">Humans in Space</div>
         </div>
         <div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
@@ -843,8 +580,8 @@ function CrewTracker() {
           <div>
             <div className="text-star-400 text-xs uppercase tracking-widest mb-3">By Nationality</div>
             {nationalities.map((nat) => {
-              const count = CURRENT_CREW.filter((c) => c.nationality === nat).length;
-              const pct = (count / CURRENT_CREW.length) * 100;
+              const count = currentCrew.filter((c) => c.nationality === nat).length;
+              const pct = (count / currentCrew.length) * 100;
               return (
                 <div key={nat} className="mb-2">
                   <div className="flex justify-between text-sm mb-1">
@@ -864,8 +601,8 @@ function CrewTracker() {
           <div>
             <div className="text-star-400 text-xs uppercase tracking-widest mb-3">By Agency</div>
             {agencies.map((agency) => {
-              const count = CURRENT_CREW.filter((c) => c.agency === agency).length;
-              const pct = (count / CURRENT_CREW.length) * 100;
+              const count = currentCrew.filter((c) => c.agency === agency).length;
+              const pct = (count / currentCrew.length) * 100;
               return (
                 <div key={agency} className="mb-2">
                   <div className="flex justify-between text-sm mb-1">
@@ -887,7 +624,7 @@ function CrewTracker() {
 
       {/* Current Crew Cards by Station */}
       {['ISS', 'Tiangong'].map((stationName) => {
-        const crew = CURRENT_CREW.filter((c) => c.station === stationName);
+        const crew = currentCrew.filter((c) => c.station === stationName);
         return (
           <div key={stationName} className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
             <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
@@ -920,7 +657,7 @@ function CrewTracker() {
       <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
         <h3 className="text-white font-bold text-lg mb-4">Crew Rotation Schedule</h3>
         <div className="space-y-3">
-          {CREW_ROTATIONS.map((rotation) => {
+          {crewRotations.map((rotation) => {
             const style = ROTATION_STATUS_STYLES[rotation.status];
             return (
               <div key={rotation.mission} className={`rounded-lg ${style.bg} border border-slate-700/30 p-4`}>
@@ -956,7 +693,7 @@ function CrewTracker() {
   );
 }
 
-function ISSTransition() {
+function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDMilestone[]; transitionRisks: TransitionRisk[] }) {
   return (
     <div className="space-y-6">
       {/* Overview */}
@@ -1008,7 +745,7 @@ function ISSTransition() {
         <div className="relative">
           <div className="absolute left-[18px] top-6 bottom-6 w-px bg-gradient-to-b from-green-500 via-yellow-500 to-blue-500 opacity-30" />
           <div className="space-y-5">
-            {CLD_MILESTONES.map((milestone) => {
+            {cldMilestones.map((milestone) => {
               const dotColor = milestone.status === 'completed' ? 'bg-green-500 border-green-400' :
                 milestone.status === 'in-progress' ? 'bg-yellow-500 border-yellow-400 animate-pulse' :
                 milestone.status === 'upcoming' ? 'bg-cyan-500 border-cyan-400' :
@@ -1073,7 +810,7 @@ function ISSTransition() {
           Key risks and mitigations for the transition from ISS to commercial stations.
         </p>
         <div className="space-y-3">
-          {TRANSITION_RISKS.map((risk) => {
+          {transitionRisks.map((risk) => {
             const sevStyle = SEVERITY_STYLES[risk.severity];
             return (
               <div key={risk.category} className="rounded-lg bg-slate-900/40 border border-slate-700/30 p-4">
@@ -1144,6 +881,74 @@ const TABS: { id: TabId; label: string }[] = [
 
 export default function SpaceStationTrackerPage() {
   const [activeTab, setActiveTab] = useState<TabId>('active');
+  const [loading, setLoading] = useState(true);
+  const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+
+  // Data state
+  const [activeStations, setActiveStations] = useState<SpaceStation[]>([]);
+  const [commercialStations, setCommercialStations] = useState<CommercialStation[]>([]);
+  const [currentCrew, setCurrentCrew] = useState<CrewMember[]>([]);
+  const [crewRotations, setCrewRotations] = useState<CrewRotation[]>([]);
+  const [cldMilestones, setCldMilestones] = useState<CLDMilestone[]>([]);
+  const [transitionRisks, setTransitionRisks] = useState<TransitionRisk[]>([]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [stationsRes, commercialRes, crewRes, rotationsRes, milestonesRes, risksRes] = await Promise.all([
+          fetch('/api/content/space-stations?section=active-stations'),
+          fetch('/api/content/space-stations?section=commercial-stations'),
+          fetch('/api/content/space-stations?section=crew'),
+          fetch('/api/content/space-stations?section=crew-rotations'),
+          fetch('/api/content/space-stations?section=cld-milestones'),
+          fetch('/api/content/space-stations?section=transition-risks'),
+        ]);
+
+        const stationsData = await stationsRes.json();
+        const commercialData = await commercialRes.json();
+        const crewData = await crewRes.json();
+        const rotationsData = await rotationsRes.json();
+        const milestonesData = await milestonesRes.json();
+        const risksData = await risksRes.json();
+
+        setActiveStations(stationsData.data || []);
+        setCommercialStations(commercialData.data || []);
+        setCurrentCrew(crewData.data || []);
+        setCrewRotations(rotationsData.data || []);
+        setCldMilestones(milestonesData.data || []);
+        setTransitionRisks(risksData.data || []);
+        setRefreshedAt(stationsData.meta?.lastRefreshed || null);
+      } catch (error) {
+        console.error('Failed to load space stations data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -1154,6 +959,8 @@ export default function SpaceStationTrackerPage() {
           icon="🏗️"
           accentColor="cyan"
         />
+
+        <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
 
         {/* Hero Stats */}
         <ScrollReveal>
@@ -1182,7 +989,7 @@ export default function SpaceStationTrackerPage() {
         {/* Tab Content */}
         {activeTab === 'active' && (
           <div className="space-y-8">
-            {ACTIVE_STATIONS.map((station) => (
+            {activeStations.map((station) => (
               <ActiveStationCard key={station.id} station={station} />
             ))}
           </div>
@@ -1200,7 +1007,7 @@ export default function SpaceStationTrackerPage() {
               </p>
             </div>
             <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {COMMERCIAL_STATIONS.map((station) => (
+              {commercialStations.map((station) => (
                 <StaggerItem key={station.id}>
                   <CommercialStationCard station={station} />
                 </StaggerItem>
@@ -1211,9 +1018,9 @@ export default function SpaceStationTrackerPage() {
 
         {activeTab === 'comparison' && <ComparisonTable />}
 
-        {activeTab === 'crew' && <CrewTracker />}
+        {activeTab === 'crew' && <CrewTracker currentCrew={currentCrew} crewRotations={crewRotations} />}
 
-        {activeTab === 'transition' && <ISSTransition />}
+        {activeTab === 'transition' && <ISSTransition cldMilestones={cldMilestones} transitionRisks={transitionRisks} />}
 
         {/* Related Modules */}
         <div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur mt-8">

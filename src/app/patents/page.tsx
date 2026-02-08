@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import DataFreshness from '@/components/ui/DataFreshness';
 
 // ────────────────────────────────────────
 // Types
@@ -660,14 +661,20 @@ function getLitigationBadge(status: string): { label: string; color: string; bg:
 // Dashboard Tab
 // ────────────────────────────────────────
 
-function DashboardTab() {
-  const latestYear = FILINGS_BY_YEAR[FILINGS_BY_YEAR.length - 1];
-  const prevYear = FILINGS_BY_YEAR[FILINGS_BY_YEAR.length - 2];
-  const growthRate = ((latestYear.total - prevYear.total) / prevYear.total * 100).toFixed(1);
-  const totalAllTime = FILINGS_BY_YEAR.reduce((sum, y) => sum + y.total, 0);
-  const maxTotal = Math.max(...FILINGS_BY_YEAR.map(f => f.total));
-  const topHolder = [...PATENT_HOLDERS].sort((a, b) => b.portfolioSize - a.portfolioSize)[0];
-  const totalCategories = TECH_CATEGORIES.length;
+function DashboardTab({ filingsData, holdersData, categoriesData, litigationData, geoData }: {
+  filingsData: FilingsByYear[];
+  holdersData: PatentHolder[];
+  categoriesData: TechCategory[];
+  litigationData: LitigationCase[];
+  geoData: any[];
+}) {
+  const latestYear = filingsData[filingsData.length - 1];
+  const prevYear = filingsData[filingsData.length - 2];
+  const growthRate = prevYear ? ((latestYear.total - prevYear.total) / prevYear.total * 100).toFixed(1) : '0';
+  const totalAllTime = filingsData.reduce((sum, y) => sum + y.total, 0);
+  const maxTotal = Math.max(...filingsData.map(f => f.total));
+  const topHolder = [...holdersData].sort((a, b) => b.portfolioSize - a.portfolioSize)[0];
+  const totalCategories = categoriesData.length;
 
   return (
     <div className="space-y-8">
@@ -682,7 +689,7 @@ function DashboardTab() {
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Annual Growth</div>
         </div>
         <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{PATENT_HOLDERS.length}</div>
+          <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{holdersData.length}</div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Major Holders Tracked</div>
         </div>
         <div className="card-elevated p-6 text-center">
@@ -702,7 +709,7 @@ function DashboardTab() {
         <p className="text-slate-400 text-sm mb-6">Annual patent applications across all space technology domains</p>
 
         <div className="flex items-end gap-2 h-56">
-          {FILINGS_BY_YEAR.map((item) => {
+          {filingsData.map((item) => {
             const heightPct = (item.total / maxTotal) * 100;
             const isLatest = item.year === latestYear.year;
             return (
@@ -747,7 +754,7 @@ function DashboardTab() {
         <p className="text-slate-400 text-sm mb-4">Market share of space technology patent applications</p>
 
         <div className="space-y-3">
-          {GEOGRAPHIC_DISTRIBUTION.map((geo) => (
+          {geoData.map((geo) => (
             <div key={geo.flag} className="flex items-center gap-4">
               <div className="w-32 text-sm text-slate-900 font-medium truncate">{geo.country}</div>
               <div className="flex-1">
@@ -783,7 +790,7 @@ function DashboardTab() {
         <p className="text-slate-400 text-sm mb-4">Patent distribution across space technology domains</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {TECH_CATEGORIES.sort((a, b) => b.totalPatents - a.totalPatents).map((cat) => {
+          {[...categoriesData].sort((a, b) => b.totalPatents - a.totalPatents).map((cat) => {
             const accBadge = getAccelerationBadge(cat.acceleration);
             return (
               <div key={cat.id} className="bg-slate-50/50 border border-slate-200/50 rounded-lg p-4 hover:border-nebula-500/30 transition-colors">
@@ -822,7 +829,7 @@ function DashboardTab() {
               </tr>
             </thead>
             <tbody>
-              {[...PATENT_HOLDERS]
+              {[...holdersData]
                 .sort((a, b) => b.portfolioSize - a.portfolioSize)
                 .slice(0, 10)
                 .map((holder, idx) => (
@@ -863,7 +870,7 @@ function DashboardTab() {
         <p className="text-slate-400 text-sm mb-4">Recent and ongoing space technology patent disputes</p>
 
         <div className="space-y-3">
-          {LITIGATION_CASES.map((lcase) => {
+          {litigationData.map((lcase) => {
             const badge = getLitigationBadge(lcase.status);
             return (
               <div key={lcase.id} className="bg-slate-50/50 border border-slate-200/50 rounded-lg p-4">
@@ -896,17 +903,17 @@ function DashboardTab() {
 // Company Portfolios Tab
 // ────────────────────────────────────────
 
-function PortfoliosTab() {
+function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'portfolio' | 'recent' | 'citations' | 'growth'>('portfolio');
   const [countryFilter, setCountryFilter] = useState('');
 
   const countries = useMemo(() => {
-    return Array.from(new Set(PATENT_HOLDERS.map(h => h.country))).sort();
-  }, []);
+    return Array.from(new Set(holdersData.map(h => h.country))).sort();
+  }, [holdersData]);
 
   const filtered = useMemo(() => {
-    let result = [...PATENT_HOLDERS];
+    let result = [...holdersData];
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -937,7 +944,7 @@ function PortfoliosTab() {
     }
 
     return result;
-  }, [searchQuery, sortBy, countryFilter]);
+  }, [searchQuery, sortBy, countryFilter, holdersData]);
 
   return (
     <div className="space-y-6">
@@ -1001,7 +1008,7 @@ function PortfoliosTab() {
 
       {/* Results */}
       <div className="text-sm text-slate-400 mb-2">
-        Showing {filtered.length} of {PATENT_HOLDERS.length} organizations
+        Showing {filtered.length} of {holdersData.length} organizations
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -1107,11 +1114,11 @@ function CompanyPortfolioCard({ holder }: { holder: PatentHolder }) {
 // Technology Trends Tab
 // ────────────────────────────────────────
 
-function TrendsTab() {
+function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCategory[]; filingsData: FilingsByYear[] }) {
   const [sortBy, setSortBy] = useState<'patents' | 'growth' | 'recent'>('patents');
 
   const sorted = useMemo(() => {
-    const result = [...TECH_CATEGORIES];
+    const result = [...categoriesData];
     switch (sortBy) {
       case 'patents':
         result.sort((a, b) => b.totalPatents - a.totalPatents);
@@ -1124,9 +1131,9 @@ function TrendsTab() {
         break;
     }
     return result;
-  }, [sortBy]);
+  }, [sortBy, categoriesData]);
 
-  const maxPatents = Math.max(...TECH_CATEGORIES.map(c => c.totalPatents));
+  const maxPatents = Math.max(...categoriesData.map(c => c.totalPatents));
 
   return (
     <div className="space-y-8">
@@ -1134,25 +1141,25 @@ function TrendsTab() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-slate-900">
-            {formatNumber(TECH_CATEGORIES.reduce((s, c) => s + c.totalPatents, 0))}
+            {formatNumber(categoriesData.reduce((s, c) => s + c.totalPatents, 0))}
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Categorized</div>
         </div>
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-green-400">
-            {TECH_CATEGORIES.filter(c => c.acceleration === 'high').length}
+            {categoriesData.filter(c => c.acceleration === 'high').length}
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Accelerating Fields</div>
         </div>
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-cyan-400">
-            +{Math.max(...TECH_CATEGORIES.map(c => c.growthRate)).toFixed(1)}%
+            +{Math.max(...categoriesData.map(c => c.growthRate)).toFixed(1)}%
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Fastest Growth</div>
         </div>
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-purple-400">
-            {formatNumber(TECH_CATEGORIES.reduce((s, c) => s + c.recentFilings, 0))}
+            {formatNumber(categoriesData.reduce((s, c) => s + c.recentFilings, 0))}
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Filed Last 2 Years</div>
         </div>
@@ -1268,7 +1275,7 @@ function TrendsTab() {
               </tr>
             </thead>
             <tbody>
-              {FILINGS_BY_YEAR.map((year) => (
+              {filingsData.map((year) => (
                 <tr key={year.year} className="border-b border-slate-200/50 hover:bg-slate-100/30 transition-colors">
                   <td className="py-2.5 px-4 font-medium text-slate-900">{year.year}</td>
                   <td className="py-2.5 px-4 text-right font-medium text-slate-900">{formatNumber(year.total)}</td>
@@ -1291,28 +1298,28 @@ function TrendsTab() {
 // NASA Patents Tab
 // ────────────────────────────────────────
 
-function NASATab() {
+function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
   const categories = useMemo(() => {
-    return Array.from(new Set(NASA_PATENTS.map(p => p.category))).sort();
-  }, []);
+    return Array.from(new Set(nasaData.map(p => p.category))).sort();
+  }, [nasaData]);
 
   const statuses = useMemo(() => {
-    return Array.from(new Set(NASA_PATENTS.map(p => p.status))).sort();
-  }, []);
+    return Array.from(new Set(nasaData.map(p => p.status))).sort();
+  }, [nasaData]);
 
   const filtered = useMemo(() => {
-    let result = [...NASA_PATENTS];
+    let result = [...nasaData];
     if (categoryFilter) result = result.filter(p => p.category === categoryFilter);
     if (statusFilter) result = result.filter(p => p.status === statusFilter);
     return result;
-  }, [categoryFilter, statusFilter]);
+  }, [categoryFilter, statusFilter, nasaData]);
 
-  const licensableCount = NASA_PATENTS.filter(p => p.licensable).length;
-  const availableCount = NASA_PATENTS.filter(p => p.status === 'available').length;
-  const centers = Array.from(new Set(NASA_PATENTS.map(p => p.center)));
+  const licensableCount = nasaData.filter(p => p.licensable).length;
+  const availableCount = nasaData.filter(p => p.status === 'available').length;
+  const centers = Array.from(new Set(nasaData.map(p => p.center)));
 
   return (
     <div className="space-y-8">
@@ -1408,7 +1415,7 @@ function NASATab() {
 
       {/* Patent Cards */}
       <div className="text-sm text-slate-400 mb-2">
-        Showing {filtered.length} of {NASA_PATENTS.length} highlighted patents
+        Showing {filtered.length} of {nasaData.length} highlighted patents
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -1542,6 +1549,62 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
 
 export default function PatentTrackerPage() {
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
+  const [loading, setLoading] = useState(true);
+  const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+
+  // API-fetched data (overrides module-level consts when available)
+  const [filingsData, setFilingsData] = useState<FilingsByYear[]>(FILINGS_BY_YEAR);
+  const [holdersData, setHoldersData] = useState<PatentHolder[]>(PATENT_HOLDERS);
+  const [categoriesData, setCategoriesData] = useState<TechCategory[]>(TECH_CATEGORIES);
+  const [nasaData, setNasaData] = useState<NASAPatent[]>(NASA_PATENTS);
+  const [litigationData, setLitigationData] = useState<LitigationCase[]>(LITIGATION_CASES);
+  const [geoData, setGeoData] = useState<any[]>(GEOGRAPHIC_DISTRIBUTION);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [r1, r2, r3, r4, r5, r6] = await Promise.all([
+          fetch('/api/content/patents?section=filings-by-year'),
+          fetch('/api/content/patents?section=patent-holders'),
+          fetch('/api/content/patents?section=tech-categories'),
+          fetch('/api/content/patents?section=nasa-patents'),
+          fetch('/api/content/patents?section=litigation-cases'),
+          fetch('/api/content/patents?section=geographic-distribution'),
+        ]);
+        const [d1, d2, d3, d4, d5, d6] = await Promise.all([
+          r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json(),
+        ]);
+        if (d1.data?.length) setFilingsData(d1.data);
+        if (d2.data?.length) setHoldersData(d2.data);
+        if (d3.data?.length) setCategoriesData(d3.data);
+        if (d4.data?.length) setNasaData(d4.data);
+        if (d5.data?.length) setLitigationData(d5.data);
+        if (d6.data?.length) setGeoData(d6.data);
+        setRefreshedAt(d1.meta?.lastRefreshed || null);
+      } catch (error) {
+        console.error('Failed to load patent data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -1552,6 +1615,8 @@ export default function PatentTrackerPage() {
           icon="📜"
           accentColor="purple"
         />
+
+        <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
 
         {/* Tabs */}
         <div className="border-b border-slate-500/30 mb-8">
@@ -1576,10 +1641,10 @@ export default function PatentTrackerPage() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'dashboard' && <DashboardTab />}
-        {activeTab === 'portfolios' && <PortfoliosTab />}
-        {activeTab === 'trends' && <TrendsTab />}
-        {activeTab === 'nasa' && <NASATab />}
+        {activeTab === 'dashboard' && <DashboardTab filingsData={filingsData} holdersData={holdersData} categoriesData={categoriesData} litigationData={litigationData} geoData={geoData} />}
+        {activeTab === 'portfolios' && <PortfoliosTab holdersData={holdersData} />}
+        {activeTab === 'trends' && <TrendsTab categoriesData={categoriesData} filingsData={filingsData} />}
+        {activeTab === 'nasa' && <NASATab nasaData={nasaData} />}
 
         {/* Disclaimer */}
         <ScrollReveal>

@@ -17,6 +17,9 @@ import { initializeLaunchWindowsData } from '@/lib/launch-windows-data';
 import { initializeDebrisData } from '@/lib/debris-data';
 import { generateDailyDigest } from '@/lib/newsletter/digest-generator';
 import { sendDailyDigest } from '@/lib/newsletter/email-service';
+import { refreshAllExternalAPIs } from '@/lib/module-api-fetchers';
+import { refreshAllAIResearchedModules } from '@/lib/ai-data-refresher';
+import { getAllModuleFreshness } from '@/lib/dynamic-content';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -151,9 +154,9 @@ export async function POST(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type'); // 'news', 'daily', or null (both)
+  const type = searchParams.get('type'); // 'news', 'daily', 'external-apis', 'ai-research', 'live-streams', or null (both news+daily)
 
-  const results: Record<string, string> = {};
+  const results: Record<string, unknown> = {};
 
   try {
     if (!type || type === 'news') {
@@ -164,6 +167,31 @@ export async function POST(request: Request) {
     if (!type || type === 'daily') {
       const dailyResults = await refreshDaily();
       Object.assign(results, dailyResults);
+    }
+
+    if (type === 'external-apis') {
+      const apiResults = await refreshAllExternalAPIs();
+      results.externalApis = apiResults;
+    }
+
+    if (type === 'ai-research') {
+      const aiResults = await refreshAllAIResearchedModules();
+      results.aiResearch = aiResults;
+    }
+
+    if (type === 'live-streams') {
+      // Fetch upcoming launches from SpaceEvent and create stream entries
+      const upcomingLaunches = await prisma.spaceEvent.findMany({
+        where: {
+          launchDate: {
+            gte: new Date(),
+            lte: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+          },
+        },
+        orderBy: { launchDate: 'asc' },
+        take: 20,
+      });
+      results.liveStreams = `Found ${upcomingLaunches.length} upcoming launches`;
     }
 
     logger.info(`Data refresh completed (type=${type || 'all'})`, results);
@@ -203,6 +231,14 @@ export async function GET() {
     const dailyStale = (dailyAge !== null && dailyAge > DAILY_STALE_THRESHOLD) ||
                        dailyAge === null;
 
+    // Get DynamicContent freshness per module
+    let dynamicContentFreshness = {};
+    try {
+      dynamicContentFreshness = await getAllModuleFreshness();
+    } catch {
+      // DynamicContent table may not be populated yet
+    }
+
     return NextResponse.json({
       lastNewsUpdate: latestNews?.fetchedAt || null,
       lastEventsUpdate: latestEvent?.updatedAt || null,
@@ -212,6 +248,7 @@ export async function GET() {
       dailyAgeMinutes: dailyAge,
       newsStale,
       dailyStale,
+      dynamicContent: dynamicContentFreshness,
     });
   } catch (error) {
     return NextResponse.json({ error: String(error) }, { status: 500 });
