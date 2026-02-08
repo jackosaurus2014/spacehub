@@ -188,7 +188,7 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
   );
 }
 
-// Helper function to check if a mission is live or within 2 hours of launch
+// Helper function to check if a mission is live or within 1 hour of launch
 function isLiveOrImminent(event: SpaceEvent): boolean {
   if (event.isLive) return true;
 
@@ -200,13 +200,13 @@ function isLiveOrImminent(event: SpaceEvent): boolean {
   if (!launchDate) return false;
 
   const timeDiff = launchDate.getTime() - now.getTime();
-  const isWithin2Hours = timeDiff > 0 && timeDiff <= 2 * 60 * 60 * 1000;
-  const isPastLaunchWithin3Hours = timeDiff < 0 && Math.abs(timeDiff) <= 3 * 60 * 60 * 1000;
+  const isWithin1Hour = timeDiff > 0 && timeDiff <= 60 * 60 * 1000;
+  const isPastLaunchWithin90Min = timeDiff < 0 && Math.abs(timeDiff) <= 90 * 60 * 1000;
 
   // Check if within launch window
   const inWindow = windowStart !== null && windowEnd !== null && now >= windowStart && now <= windowEnd;
 
-  return isWithin2Hours || isPastLaunchWithin3Hours || inWindow;
+  return isWithin1Hour || isPastLaunchWithin90Min || inWindow;
 }
 
 // Live Now Section - shows missions that are currently live or about to go live
@@ -340,7 +340,8 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
           {liveMissions.map((mission) => {
             const typeInfo = EVENT_TYPE_INFO[mission.type] || EVENT_TYPE_INFO.launch;
             const isSelected = selectedMission?.id === mission.id;
-            const isActuallyLive = mission.isLive || (mission.launchDate && new Date(mission.launchDate) <= new Date());
+            const msSinceLaunch = mission.launchDate ? Date.now() - new Date(mission.launchDate).getTime() : -1;
+            const isActuallyLive = mission.isLive || (msSinceLaunch >= 0 && msSinceLaunch <= 90 * 60 * 1000);
             const phaseInfo = mission.missionPhase ? MISSION_PHASE_INFO[mission.missionPhase] : null;
 
             return (
