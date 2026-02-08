@@ -16,6 +16,8 @@ export default function NewsletterSignup({
   const [name, setName] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [canResend, setCanResend] = useState(false);
+  const [resendEmail, setResendEmail] = useState('');
   const searchParams = useSearchParams();
 
   // Check for newsletter status in URL (from verification/unsubscribe redirects)
@@ -70,6 +72,10 @@ export default function NewsletterSignup({
       if (response.ok) {
         setStatus('success');
         setMessage(data.message || 'Check your email to confirm your subscription!');
+        if (data.emailSent === false) {
+          setCanResend(true);
+          setResendEmail(email);
+        }
         setEmail('');
         setName('');
       } else {
@@ -132,7 +138,7 @@ export default function NewsletterSignup({
       {/* Decorative glow orb */}
       <div className="absolute -top-20 -right-20 w-64 h-64 bg-nebula-300/20 rounded-full blur-[80px] pointer-events-none" />
       <div className="relative">
-        <h2 className="text-3xl md:text-display-md font-display font-bold text-slate-800 mb-4">
+        <h2 className="text-3xl md:text-display-md font-display font-bold text-slate-100 mb-4">
           Stay Ahead of the Curve
         </h2>
         <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
@@ -141,13 +147,35 @@ export default function NewsletterSignup({
         </p>
 
         {status === 'success' ? (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 max-w-md mx-auto">
-            <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="bg-emerald-900/30 border border-emerald-500/30 rounded-xl p-6 max-w-md mx-auto">
+            <div className="w-12 h-12 bg-emerald-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <p className="text-emerald-700 font-medium">{message}</p>
+            <p className="text-emerald-400 font-medium">{message}</p>
+            {canResend && (
+              <button
+                onClick={async () => {
+                  setCanResend(false);
+                  setMessage('Sending verification email...');
+                  try {
+                    const res = await fetch('/api/newsletter/resend-verification', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email: resendEmail }),
+                    });
+                    const data = await res.json();
+                    setMessage(data.message || 'Verification email sent!');
+                  } catch {
+                    setMessage('Failed to resend. Please try again later.');
+                  }
+                }}
+                className="mt-3 text-sm text-cyan-400 hover:text-cyan-300 underline transition-colors"
+              >
+                Resend verification email
+              </button>
+            )}
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="max-w-lg mx-auto">

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -489,36 +490,44 @@ function MarketOverviewTab() {
   return (
     <div className="space-y-8">
       {/* Headline Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-            ${MARKET_SIZE_2024}B
+      <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StaggerItem>
+          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
+            <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+              ${MARKET_SIZE_2024}B
+            </div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">2024 Market Size</div>
+            <div className="text-slate-500 text-xs mt-1">Space Foundation</div>
           </div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">2024 Market Size</div>
-          <div className="text-slate-500 text-xs mt-1">Space Foundation</div>
-        </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-            ~${MARKET_SIZE_2025_EST}B
+        </StaggerItem>
+        <StaggerItem>
+          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
+            <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+              ~${MARKET_SIZE_2025_EST}B
+            </div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">2025 Estimate</div>
+            <div className="text-slate-500 text-xs mt-1">Projected</div>
           </div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">2025 Estimate</div>
-          <div className="text-slate-500 text-xs mt-1">Projected</div>
-        </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl md:text-4xl font-bold text-cyan-400">
-            {MARKET_GROWTH_RATE}%
+        </StaggerItem>
+        <StaggerItem>
+          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
+            <div className="text-3xl md:text-4xl font-bold text-cyan-400">
+              {MARKET_GROWTH_RATE}%
+            </div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Annual CAGR</div>
+            <div className="text-slate-500 text-xs mt-1">2020-2024</div>
           </div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Annual CAGR</div>
-          <div className="text-slate-500 text-xs mt-1">2020-2024</div>
-        </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-            $1.8T
+        </StaggerItem>
+        <StaggerItem>
+          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
+            <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              $1.8T
+            </div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">2040 Forecast</div>
+            <div className="text-slate-500 text-xs mt-1">Morgan Stanley</div>
           </div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">2040 Forecast</div>
-          <div className="text-slate-500 text-xs mt-1">Morgan Stanley</div>
-        </div>
-      </div>
+        </StaggerItem>
+      </StaggerContainer>
 
       {/* Segment Breakdown */}
       <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
@@ -619,7 +628,8 @@ function MarketOverviewTab() {
       </div>
 
       {/* Key Trends */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <StaggerItem>
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
           <h4 className="text-white font-semibold mb-3">Growth Drivers</h4>
           <ul className="space-y-2 text-sm text-slate-300">
@@ -631,6 +641,8 @@ function MarketOverviewTab() {
             <li className="flex items-start gap-2"><span className="text-green-400 mt-0.5">+</span> Commercial space station development (Axiom, Vast, Orbital Reef)</li>
           </ul>
         </div>
+        </StaggerItem>
+        <StaggerItem>
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
           <h4 className="text-white font-semibold mb-3">Market Risks</h4>
           <ul className="space-y-2 text-sm text-slate-300">
@@ -642,7 +654,8 @@ function MarketOverviewTab() {
             <li className="flex items-start gap-2"><span className="text-red-400 mt-0.5">-</span> Workforce shortage constraining industry growth</li>
           </ul>
         </div>
-      </div>
+        </StaggerItem>
+      </StaggerContainer>
     </div>
   );
 }
@@ -763,24 +776,26 @@ function InvestmentTab() {
           <span className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-lg">🏦</span>
           Top Space Industry Investors
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {TOP_INVESTORS.map((investor) => (
-            <div key={investor.name} className="bg-slate-900/50 rounded-lg border border-slate-700/30 p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-white font-semibold">{investor.name}</div>
-                <span className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">{investor.type}</span>
+            <StaggerItem key={investor.name}>
+              <div className="bg-slate-900/50 rounded-lg border border-slate-700/30 p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-white font-semibold">{investor.name}</div>
+                  <span className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">{investor.type}</span>
+                </div>
+                <div className="text-cyan-400 text-sm mb-2">Estimated deployed: {investor.estimatedDeployed}</div>
+                <div className="flex flex-wrap gap-1">
+                  {investor.notableDeals.map((deal) => (
+                    <span key={deal} className="text-xs bg-cyan-900/30 text-cyan-300 px-2 py-0.5 rounded">
+                      {deal}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <div className="text-cyan-400 text-sm mb-2">Estimated deployed: {investor.estimatedDeployed}</div>
-              <div className="flex flex-wrap gap-1">
-                {investor.notableDeals.map((deal) => (
-                  <span key={deal} className="text-xs bg-cyan-900/30 text-cyan-300 px-2 py-0.5 rounded">
-                    {deal}
-                  </span>
-                ))}
-              </div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </div>
 
       {/* SPAC Activity Note */}
@@ -1342,9 +1357,11 @@ export default function SpaceEconomyPage() {
   return (
     <div className="min-h-screen bg-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <PageHeader
+        <AnimatedPageHeader
           title="Space Economy Dashboard"
           subtitle="Comprehensive intelligence on the global space economy -- market size, investment trends, government budgets, public markets, and workforce data"
+          icon="💰"
+          accentColor="emerald"
         />
 
         {/* Tab Navigation */}
@@ -1375,6 +1392,7 @@ export default function SpaceEconomyPage() {
         {activeTab === 'workforce' && <WorkforceTrendsTab />}
 
         {/* Data Sources Footer */}
+        <ScrollReveal>
         <div className="mt-12 bg-slate-800/30 rounded-xl border border-slate-700/30 p-6">
           <h4 className="text-slate-400 font-semibold text-sm mb-3">Data Sources</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs text-slate-500">
@@ -1393,6 +1411,7 @@ export default function SpaceEconomyPage() {
             Market data is approximate and not intended as investment advice. Last updated: Q2 2025.
           </p>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

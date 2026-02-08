@@ -4,6 +4,8 @@ import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -2377,13 +2379,11 @@ function CislunarEcosystemContent() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <PageHeader
+        <AnimatedPageHeader
           title="Cislunar Ecosystem"
           subtitle="Comprehensive intelligence on the Artemis program, commercial lunar services, in-situ resource utilization, cislunar infrastructure, investment, and the Lunar Gateway across the Earth-Moon economic zone"
-          breadcrumbs={[
-            { label: 'Dashboard', href: '/dashboard' },
-            { label: 'Cislunar Ecosystem' },
-          ]}
+          icon="🌙"
+          accentColor="cyan"
         />
 
         {/* Hero Stats */}
@@ -2418,7 +2418,7 @@ function CislunarEcosystemContent() {
         {activeTab === 'gateway' && <GatewayTab />}
 
         {/* Related Modules */}
-        <div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur mt-8">
+        <ScrollReveal><div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur mt-8">
           <h3 className="text-sm font-semibold text-white mb-3">Related Modules</h3>
           <div className="flex flex-wrap gap-3">
             <Link href="/solar-exploration" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
@@ -2437,7 +2437,7 @@ function CislunarEcosystemContent() {
               Market Intel
             </Link>
           </div>
-        </div>
+        </div></ScrollReveal>
       </div>
     </div>
   );

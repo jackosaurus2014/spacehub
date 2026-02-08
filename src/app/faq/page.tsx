@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQAccordion, { FAQItem } from '@/components/support/FAQAccordion';
 
 const FAQ_CATEGORIES = [
@@ -217,15 +219,16 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen pb-12">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Frequently Asked Questions"
           subtitle="Find answers to common questions about SpaceNexus"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'FAQ' }]}
+          icon="❓"
+          accentColor="purple"
         >
           <Link href="/contact" className="btn-primary text-sm py-2 px-4">
             Contact Support
           </Link>
-        </PageHeader>
+        </AnimatedPageHeader>
 
         {/* Search Bar */}
         <div className="max-w-xl mx-auto mb-10">
@@ -276,16 +279,16 @@ export default function FAQPage() {
         </div>
 
         {/* FAQ Accordion */}
-        <div className="max-w-4xl mx-auto">
+        <ScrollReveal><div className="max-w-4xl mx-auto">
           <FAQAccordion
             items={FAQ_ITEMS}
             categories={FAQ_CATEGORIES}
             searchQuery={searchQuery}
           />
-        </div>
+        </div></ScrollReveal>
 
         {/* Still Have Questions */}
-        <div className="max-w-2xl mx-auto mt-16">
+        <ScrollReveal><div className="max-w-2xl mx-auto mt-16">
           <div className="card p-8 text-center bg-gradient-to-br from-slate-50 to-slate-100">
             <div className="w-16 h-16 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg
@@ -318,7 +321,7 @@ export default function FAQPage() {
               </a>
             </div>
           </div>
-        </div>
+        </div></ScrollReveal>
       </div>
     </div>
   );

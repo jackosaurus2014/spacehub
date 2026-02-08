@@ -12,6 +12,8 @@ import {
   SPACE_AGENCIES,
 } from '@/types';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 
 // Dynamic import for 3D scene (client-side only)
@@ -140,7 +142,7 @@ function SolarExplorationContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader title="Solar System Exploration" subtitle="Interactive 3D visualization of planetary bodies with rover and lander locations" breadcrumbs={[{label: 'Home', href: '/'}, {label: 'Solar Exploration'}]} />
+        <AnimatedPageHeader title="Solar System Exploration" subtitle="Interactive 3D visualization of planetary bodies with rover and lander locations" icon="🌌" accentColor="purple" />
 
         {/* Stats Overview */}
         {stats && (
@@ -287,7 +289,7 @@ function SolarExplorationContent() {
         )}
 
         {/* Related Modules */}
-        <div className="card p-6 mt-6">
+        <ScrollReveal><div className="card p-6 mt-6">
           <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
             <span>🔗</span> Related Modules
           </h3>
@@ -309,7 +311,7 @@ function SolarExplorationContent() {
               <p className="text-xs text-slate-400 mt-1">Coverage for exploration missions</p>
             </Link>
           </div>
-        </div>
+        </div></ScrollReveal>
       </div>
     </div>
   );

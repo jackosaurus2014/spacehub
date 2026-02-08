@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -1147,17 +1148,17 @@ export default function SpaceStationTrackerPage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <PageHeader
+        <AnimatedPageHeader
           title="Space Station Tracker"
           subtitle="Comprehensive tracking of active and planned space stations, crew rotations, and the transition to commercial LEO destinations"
-          breadcrumbs={[
-            { label: 'Dashboard', href: '/dashboard' },
-            { label: 'Space Station Tracker' },
-          ]}
+          icon="🏗️"
+          accentColor="cyan"
         />
 
         {/* Hero Stats */}
-        <HeroStats />
+        <ScrollReveal>
+          <HeroStats />
+        </ScrollReveal>
 
         {/* Tab Navigation */}
         <div className="border-b border-slate-700/50 mb-8">
@@ -1198,11 +1199,13 @@ export default function SpaceStationTrackerPage() {
                 Haven-1 as a pathfinder for larger stations.
               </p>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {COMMERCIAL_STATIONS.map((station) => (
-                <CommercialStationCard key={station.id} station={station} />
+                <StaggerItem key={station.id}>
+                  <CommercialStationCard station={station} />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           </div>
         )}
 

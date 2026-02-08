@@ -20,6 +20,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'News & Categories', href: '/news', description: 'Latest space industry updates' },
   { label: 'Blogs & Articles', href: '/blogs', description: 'Expert industry insights' },
   { label: 'Space Defense', href: '/space-defense', description: 'Military space & national security' },
+  { label: 'AI Insights', href: '/ai-insights', description: 'AI-powered industry analysis' },
   { label: 'Solar Exploration', href: '/solar-exploration', description: '3D planetary visualization' },
   { label: 'Mars Mission Planner', href: '/mars-planner', description: 'Mars missions and launch windows' },
   { label: 'Cislunar Ecosystem', href: '/cislunar', description: 'Gateway, Artemis & lunar economy' },

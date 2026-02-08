@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -694,14 +696,11 @@ export default function MarsPlannerPage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <PageHeader
+        <AnimatedPageHeader
           title="Mars Mission Planner"
           subtitle="Comprehensive intelligence on Mars missions past, present, and future -- launch windows, costs, and commercial opportunities"
-          breadcrumbs={[
-            { label: 'Dashboard', href: '/dashboard' },
-            { label: 'Solar System Expansion', href: '/solar-exploration' },
-            { label: 'Mars Mission Planner' },
-          ]}
+          icon="🔴"
+          accentColor="red"
         />
 
         {/* Hero Stats */}
@@ -758,11 +757,13 @@ export default function MarsPlannerPage() {
             </div>
 
             {/* Mission Cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {filteredMissions.map((mission) => (
-                <MissionCard key={mission.name} mission={mission} />
+                <StaggerItem key={mission.name}>
+                  <MissionCard mission={mission} />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
 
             {/* Mission Count */}
             <div className="text-center text-slate-500 text-sm">
@@ -789,7 +790,7 @@ export default function MarsPlannerPage() {
         {activeTab === 'commercial' && <CommercialSection />}
 
         {/* Cross-links */}
-        <div className="card p-5 border border-slate-700/50 bg-gradient-to-br from-slate-800/60 to-slate-900/60 mt-8">
+        <ScrollReveal><div className="card p-5 border border-slate-700/50 bg-gradient-to-br from-slate-800/60 to-slate-900/60 mt-8">
           <h3 className="text-sm font-semibold text-white mb-3">Related Modules</h3>
           <div className="flex flex-wrap gap-3">
             <Link href="/solar-exploration" className="btn-secondary text-sm">
@@ -808,7 +809,7 @@ export default function MarsPlannerPage() {
               ⚠️ Debris Monitor
             </Link>
           </div>
-        </div>
+        </div></ScrollReveal>
       </div>
     </div>
   );

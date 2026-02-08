@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -1545,10 +1546,11 @@ export default function PatentTrackerPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Patent & IP Tracker"
           subtitle="Monitor space technology patent filings, company portfolios, technology trends, and NASA licensing opportunities"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Intelligence', href: '/market-intel' }, { label: 'Patent & IP Tracker' }]}
+          icon="📜"
+          accentColor="purple"
         />
 
         {/* Tabs */}
@@ -1580,6 +1582,7 @@ export default function PatentTrackerPage() {
         {activeTab === 'nasa' && <NASATab />}
 
         {/* Disclaimer */}
+        <ScrollReveal>
         <div className="card p-6 mt-8 mb-8 border-dashed">
           <div className="text-center">
             <svg className="w-10 h-10 mx-auto mb-3 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1595,6 +1598,7 @@ export default function PatentTrackerPage() {
             </p>
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

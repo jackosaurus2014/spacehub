@@ -28,7 +28,8 @@ import {
   GRADE_INFO,
   SEVERITY_INFO,
 } from '@/lib/operational-awareness-data';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { SkeletonPage } from '@/components/ui/Skeleton';
@@ -1262,6 +1263,7 @@ function DebrisTrackingTab() {
   return (
     <div className="space-y-8">
       {/* Quick Stats Banner */}
+      <ScrollReveal>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <div className="card-elevated p-4 text-center">
           <div className="text-2xl font-bold font-display text-slate-900">
@@ -1318,6 +1320,7 @@ function DebrisTrackingTab() {
           </div>
         </div>
       </div>
+      </ScrollReveal>
 
       {/* Sub-Tab Navigation */}
       <div className="flex gap-2 overflow-x-auto pb-1">
@@ -2312,10 +2315,11 @@ function SpaceEnvironmentContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Space Environment Monitor"
           subtitle="Unified dashboard for space weather, orbital debris tracking, and operational awareness"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Space Environment' }]}
+          icon="☀️"
+          accentColor="red"
         />
 
         {/* Main Tab Navigation */}

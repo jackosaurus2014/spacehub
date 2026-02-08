@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 type SubjectType = 'general' | 'technical' | 'billing' | 'partnership';
 
@@ -153,17 +155,18 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen pb-12">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Contact Us"
           subtitle="Have questions or feedback? We'd love to hear from you."
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Contact' }]}
+          icon="📧"
+          accentColor="cyan"
         >
           <Link href="/faq" className="btn-secondary text-sm py-2 px-4">
             View FAQ
           </Link>
-        </PageHeader>
+        </AnimatedPageHeader>
 
-        <div className="max-w-2xl mx-auto">
+        <ScrollReveal><div className="max-w-2xl mx-auto">
           {status === 'success' ? (
             <div className="card p-8 text-center">
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -365,7 +368,7 @@ export default function ContactPage() {
               </div>
             </div>
           )}
-        </div>
+        </div></ScrollReveal>
       </div>
     </div>
   );

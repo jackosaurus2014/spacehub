@@ -12,6 +12,8 @@ import {
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { SkeletonPage } from '@/components/ui/Skeleton';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 
 // ────────────────────────────────────────
@@ -534,10 +536,11 @@ function InsuranceContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Space Insurance & Risk Assessment"
           subtitle="Comprehensive view of the space insurance market, active policies, and premium rate benchmarks"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Space Insurance' }]}
+          icon="🛡️"
+          accentColor="amber"
         />
 
         {loading ? (
@@ -570,7 +573,7 @@ function InsuranceContent() {
         ) : (
           <>
             {/* ──────────── Quick Stats ──────────── */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <ScrollReveal><div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="card-elevated p-4 text-center">
                 <div className="text-2xl font-bold font-display text-nebula-300">
                   {stats ? formatCurrency(stats.totalPremiums) : '--'}
@@ -611,7 +614,7 @@ function InsuranceContent() {
                   Total Coverage
                 </div>
               </div>
-            </div>
+            </div></ScrollReveal>
 
             {/* ──────────── Tab Navigation ──────────── */}
             <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
@@ -718,15 +721,16 @@ function InsuranceContent() {
                   <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
                     <span>📈</span> Annual Market History
                   </h3>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {[...marketHistory].reverse().map((year) => (
-                      <MarketYearCard
-                        key={year.id}
-                        year={year}
-                        maxPremium={maxPremium}
-                      />
+                      <StaggerItem key={year.id}>
+                        <MarketYearCard
+                          year={year}
+                          maxPremium={maxPremium}
+                        />
+                      </StaggerItem>
                     ))}
-                  </div>
+                  </StaggerContainer>
                 </div>
 
                 {/* Risk Factor Links */}
@@ -890,11 +894,13 @@ function InsuranceContent() {
                     </p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {filteredPolicies.map((policy) => (
-                      <PolicyCard key={policy.id} policy={policy} />
+                      <StaggerItem key={policy.id}>
+                        <PolicyCard policy={policy} />
+                      </StaggerItem>
                     ))}
-                  </div>
+                  </StaggerContainer>
                 )}
               </div>
             )}

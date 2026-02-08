@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import InlineDisclaimer from '@/components/InlineDisclaimer';
 import PremiumGate from '@/components/PremiumGate';
 import ExportButton from '@/components/ui/ExportButton';
@@ -498,7 +499,7 @@ function PolicyTrackerTab() {
           <ExportButton data={filteredPolicies} filename="policy-tracker" columns={[{ key: 'agency', label: 'Agency' },{ key: 'title', label: 'Title' },{ key: 'status', label: 'Status' },{ key: 'impactSeverity', label: 'Impact' },{ key: 'summary', label: 'Summary' },{ key: 'publishedDate', label: 'Published' },{ key: 'sourceUrl', label: 'Source' }]} />
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{filteredPolicies.map((policy) => (<PolicyCard key={policy.id} policy={policy} />))}</div>
+      <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-5">{filteredPolicies.map((policy) => (<StaggerItem key={policy.id}><PolicyCard policy={policy} /></StaggerItem>))}</StaggerContainer>
     </div>
   );
 }
@@ -552,7 +553,7 @@ function ComplianceWizardTab() {
           <option value="">All Agencies</option><option value="FAA">FAA</option><option value="FCC">FCC</option><option value="NOAA">NOAA</option>
         </select>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{filteredLicenses.map((license) => (<LicenseCard key={license.id} license={license} />))}</div>
+      <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-5">{filteredLicenses.map((license) => (<StaggerItem key={license.id}><LicenseCard license={license} /></StaggerItem>))}</StaggerContainer>
       <div className="mt-8">
         <h3 className="text-lg font-semibold text-slate-900 mb-4">International Treaty Obligations</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -624,7 +625,7 @@ function CaseLawArchiveTab() {
         </select>
         <div className="ml-auto"><ExportButton data={filteredCases} filename="space-law-cases" columns={[{ key: 'caseName', label: 'Case Name' },{ key: 'year', label: 'Year' },{ key: 'jurisdiction', label: 'Jurisdiction' },{ key: 'outcome', label: 'Outcome' },{ key: 'damages', label: 'Damages' },{ key: 'summary', label: 'Summary' }]} /></div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{filteredCases.map((lawCase) => (<CaseCard key={lawCase.id} lawCase={lawCase} />))}</div>
+      <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-5">{filteredCases.map((lawCase) => (<StaggerItem key={lawCase.id}><CaseCard lawCase={lawCase} /></StaggerItem>))}</StaggerContainer>
     </div>
   );
 }
@@ -2022,15 +2023,16 @@ export default function RegulatoryHubPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Regulatory Hub"
           subtitle="Comprehensive regulatory tracking, compliance guidance, space law, bid protests, case law, filings, and expert analysis for the space industry"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Regulatory Hub' }]}
+          icon="⚖️"
+          accentColor="amber"
         >
           <Link href="/" className="btn-secondary text-sm py-2 px-4">
             &larr; Back to Dashboard
           </Link>
-        </PageHeader>
+        </AnimatedPageHeader>
 
         <PremiumGate requiredTier="pro">
           <Suspense

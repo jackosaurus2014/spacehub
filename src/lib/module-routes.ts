@@ -16,6 +16,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   'news-feed': '/news',
   'blogs-articles': '/blogs',
   'space-defense': '/space-defense',
+  'ai-insights': '/ai-insights',
 
   // ── Space Market Intelligence children ──
   'market-intel': '/market-intel',

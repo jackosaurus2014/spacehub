@@ -2,7 +2,8 @@
 
 import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -2110,17 +2111,17 @@ function SpaceportDirectoryPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Infrastructure Network"
           subtitle="Global launch sites, deep space networks, relay constellations, laser communications, and the protocols connecting humanity to the cosmos"
-          breadcrumbs={[
-            { label: 'Home', href: '/' },
-            { label: 'Infrastructure Network' },
-          ]}
+          icon="🏭"
+          accentColor="amber"
         />
 
         {/* Hero Stats */}
-        <HeroStats />
+        <ScrollReveal>
+          <HeroStats />
+        </ScrollReveal>
 
         {/* Industry Overview Banner */}
         <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 border border-cyan-500/30 rounded-xl p-5 mb-8">
@@ -2194,11 +2195,13 @@ function SpaceportDirectoryPage() {
               </div>
 
               {/* Spaceport Cards Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {filteredSpaceports.map((spaceport) => (
-                  <SpaceportCard key={spaceport.id} spaceport={spaceport} />
+                  <StaggerItem key={spaceport.id}>
+                    <SpaceportCard spaceport={spaceport} />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
 
               {filteredSpaceports.length === 0 && (
                 <div className="text-center py-12">
@@ -2222,11 +2225,13 @@ function SpaceportDirectoryPage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {EMERGING_SPACEPORTS.map((spaceport) => (
-                  <EmergingSpaceportCard key={spaceport.id} spaceport={spaceport} />
+                  <StaggerItem key={spaceport.id}>
+                    <EmergingSpaceportCard spaceport={spaceport} />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             </div>
           )}
 

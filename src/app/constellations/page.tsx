@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types & Constants
@@ -669,18 +670,17 @@ export default function ConstellationTrackerPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Constellation Tracker"
           subtitle="Track major satellite constellations -- deployments, orbital parameters, coverage, and regulatory compliance"
-          breadcrumbs={[
-            { label: 'Home', href: '/' },
-            { label: 'Space Operations', href: '/satellites' },
-            { label: 'Constellation Tracker' },
-          ]}
+          icon="✨"
+          accentColor="purple"
         />
 
         {/* Hero Stats */}
-        <HeroStats />
+        <ScrollReveal>
+          <HeroStats />
+        </ScrollReveal>
 
         {/* Tab Navigation */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
@@ -736,13 +736,16 @@ export default function ConstellationTrackerPage() {
             </div>
 
             {/* Constellation Cards Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {filteredConstellations.map((constellation) => (
-                <ConstellationCard key={constellation.id} constellation={constellation} />
+                <StaggerItem key={constellation.id}>
+                  <ConstellationCard constellation={constellation} />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
 
             {/* Market Overview */}
+            <ScrollReveal>
             <div className="card p-6">
               <h3 className="text-lg font-bold text-white mb-4">Deployment Race -- Satellites by Operator</h3>
               <div className="space-y-3">
@@ -772,8 +775,10 @@ export default function ConstellationTrackerPage() {
                   })}
               </div>
             </div>
+            </ScrollReveal>
 
             {/* Orbit Distribution */}
+            <ScrollReveal>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="card p-6">
                 <h3 className="text-lg font-bold text-white mb-4">By Orbital Regime</h3>
@@ -832,6 +837,7 @@ export default function ConstellationTrackerPage() {
                 </div>
               </div>
             </div>
+            </ScrollReveal>
 
             {/* Data Sources */}
             <div className="card p-5 border-dashed">

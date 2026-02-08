@@ -5,6 +5,8 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -637,14 +639,15 @@ function MissionCostContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Mission Cost Simulator"
           subtitle="Estimate launch costs, insurance premiums, and regulatory fees for your space mission"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Mission Cost' }]}
+          icon="🧮"
+          accentColor="emerald"
         />
 
         {/* Input Form */}
-        <div className="card p-6 mb-8">
+        <ScrollReveal><div className="card p-6 mb-8">
           <h2 className="text-lg font-semibold text-slate-900 mb-6 flex items-center gap-2">
             <span>🎯</span> Mission Parameters
           </h2>
@@ -786,7 +789,7 @@ function MissionCostContent() {
               )}
             </button>
           </div>
-        </div>
+        </div></ScrollReveal>
 
         {/* Error State */}
         {error && (
@@ -859,16 +862,17 @@ function MissionCostContent() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {data.providers.map((provider) => (
-                    <ProviderCard
-                      key={provider.providerId}
-                      provider={provider}
-                      payloadMass={data.input.payloadMass}
-                      isRecommended={bestValueProvider?.providerId === provider.providerId}
-                    />
+                    <StaggerItem key={provider.providerId}>
+                      <ProviderCard
+                        provider={provider}
+                        payloadMass={data.input.payloadMass}
+                        isRecommended={bestValueProvider?.providerId === provider.providerId}
+                      />
+                    </StaggerItem>
                   ))}
-                </div>
+                </StaggerContainer>
               </div>
             )}
 
@@ -908,7 +912,7 @@ function MissionCostContent() {
         )}
 
         {/* Related Links */}
-        <div className="card p-5 mt-8 border border-nebula-500/20">
+        <ScrollReveal><div className="card p-5 mt-8 border border-nebula-500/20">
           <h3 className="text-lg font-semibold text-slate-900 mb-4">Related Resources</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <Link
@@ -948,7 +952,7 @@ function MissionCostContent() {
               <p className="text-xs text-slate-400 mt-1">Optimal launch timing</p>
             </Link>
           </div>
-        </div>
+        </div></ScrollReveal>
       </div>
     </div>
   );

@@ -21,7 +21,8 @@ import {
 import TalentCard from '@/components/talent/TalentCard';
 import WebinarCard from '@/components/webinars/WebinarCard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 
 // ────────────────────────────────────────
@@ -808,6 +809,7 @@ function SpaceTalentHubContent() {
 
               {/* Stats Cards */}
               {talentStats && (
+                <ScrollReveal>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 text-center">
                     <div className="text-2xl font-bold text-white">{talentStats.totalExperts}</div>
@@ -826,6 +828,7 @@ function SpaceTalentHubContent() {
                     <div className="text-slate-400 text-xs">Avg. Rate/hr</div>
                   </div>
                 </div>
+                </ScrollReveal>
               )}
 
               {/* Filters */}
@@ -883,11 +886,13 @@ function SpaceTalentHubContent() {
                   <LoadingSpinner size="lg" />
                 </div>
               ) : talent.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {talent.map(t => (
-                    <TalentCard key={t.id} talent={t} />
+                    <StaggerItem key={t.id}>
+                      <TalentCard talent={t} />
+                    </StaggerItem>
                   ))}
-                </div>
+                </StaggerContainer>
               ) : (
                 <div className="text-center py-12">
                   <p className="text-slate-400">No experts found matching your criteria.</p>
@@ -1002,11 +1007,13 @@ function SpaceTalentHubContent() {
                   <LoadingSpinner size="lg" />
                 </div>
               ) : webinars.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {webinars.map(w => (
-                    <WebinarCard key={w.id} webinar={w} />
+                    <StaggerItem key={w.id}>
+                      <WebinarCard webinar={w} />
+                    </StaggerItem>
                   ))}
-                </div>
+                </StaggerContainer>
               ) : (
                 <div className="text-center py-12">
                   <p className="text-slate-400">No webinars found matching your criteria.</p>
@@ -1747,10 +1754,11 @@ export default function SpaceTalentHubPage() {
   return (
     <div className="min-h-screen bg-space-900 py-8">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Space Talent Hub"
           subtitle="Expert consultants, webinars, job listings, salary benchmarks, and workforce analytics"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Space Talent Hub' }]}
+          icon="👨‍🚀"
+          accentColor="emerald"
         />
 
         <Suspense

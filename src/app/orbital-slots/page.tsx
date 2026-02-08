@@ -25,7 +25,8 @@ import {
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { SkeletonPage } from '@/components/ui/Skeleton';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import ServiceListingDialog from '@/components/ui/ServiceListingDialog';
 
@@ -767,10 +768,11 @@ function OrbitalManagementContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Orbital Management"
           subtitle="Track orbital congestion, satellite operators, fleet compositions, upcoming events, and satellite-based services across all regimes"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Orbital Management' }]}
+          icon="🌍"
+          accentColor="cyan"
         />
 
         {loading && !isServicesTab ? (
@@ -804,6 +806,7 @@ function OrbitalManagementContent() {
           <>
             {/* ──────────────── Quick Stats Banner ──────────────── */}
             {!isServicesTab && (
+              <ScrollReveal>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div className="card-elevated p-4 text-center">
                   <div className="text-2xl font-bold font-display text-slate-900">
@@ -849,6 +852,7 @@ function OrbitalManagementContent() {
                   </div>
                 </div>
               </div>
+              </ScrollReveal>
             )}
 
             {/* ──────────────── Services Stats Banner ──────────────── */}
@@ -975,11 +979,13 @@ function OrbitalManagementContent() {
                 </div>
 
                 {/* Orbit Type Cards */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {slots.map((slot) => (
-                    <OrbitTypeCard key={slot.id} slot={slot} />
+                    <StaggerItem key={slot.id}>
+                      <OrbitTypeCard slot={slot} />
+                    </StaggerItem>
                   ))}
-                </div>
+                </StaggerContainer>
 
                 {/* Congestion Legend */}
                 <div className="card p-5 border-dashed">
@@ -1086,11 +1092,13 @@ function OrbitalManagementContent() {
                     </p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {filteredOperators.map((operator, idx) => (
-                      <OperatorCard key={operator.id} operator={operator} rank={idx + 1} />
+                      <StaggerItem key={operator.id}>
+                        <OperatorCard operator={operator} rank={idx + 1} />
+                      </StaggerItem>
                     ))}
-                  </div>
+                  </StaggerContainer>
                 )}
               </div>
             )}

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -371,26 +372,34 @@ function HeroStats() {
   const activeInvestors = TOP_INVESTORS.reduce((sum, i) => sum + i.investments, 0);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div className="card-elevated p-6 text-center">
-        <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{totalStartups}</div>
-        <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Startups Tracked</div>
-      </div>
-      <div className="card-elevated p-6 text-center">
-        <div className="text-4xl font-bold font-display tracking-tight text-green-400">
-          ${(totalFunding / 1000).toFixed(1)}B+
+    <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <StaggerItem>
+        <div className="card-elevated p-6 text-center">
+          <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{totalStartups}</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Startups Tracked</div>
         </div>
-        <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Funding</div>
-      </div>
-      <div className="card-elevated p-6 text-center">
-        <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{activeInvestors}+</div>
-        <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Investor Deals</div>
-      </div>
-      <div className="card-elevated p-6 text-center">
-        <div className="text-4xl font-bold font-display tracking-tight text-purple-400">{categories}</div>
-        <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Categories</div>
-      </div>
-    </div>
+      </StaggerItem>
+      <StaggerItem>
+        <div className="card-elevated p-6 text-center">
+          <div className="text-4xl font-bold font-display tracking-tight text-green-400">
+            ${(totalFunding / 1000).toFixed(1)}B+
+          </div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Funding</div>
+        </div>
+      </StaggerItem>
+      <StaggerItem>
+        <div className="card-elevated p-6 text-center">
+          <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{activeInvestors}+</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Investor Deals</div>
+        </div>
+      </StaggerItem>
+      <StaggerItem>
+        <div className="card-elevated p-6 text-center">
+          <div className="text-4xl font-bold font-display tracking-tight text-purple-400">{categories}</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Categories</div>
+        </div>
+      </StaggerItem>
+    </StaggerContainer>
   );
 }
 
@@ -653,10 +662,11 @@ export default function StartupTrackerPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Space Startup Tracker"
           subtitle="Track space startups, funding rounds, investors, and the startup ecosystem"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Business', href: '/business-opportunities' }, { label: 'Startup Tracker' }]}
+          icon="🚀"
+          accentColor="purple"
         />
 
         {/* Hero Stats */}
@@ -766,11 +776,13 @@ export default function StartupTrackerPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             {filteredStartups.map((startup) => (
-              <StartupCard key={startup.id} startup={startup} />
+              <StaggerItem key={startup.id}>
+                <StartupCard startup={startup} />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         )}
 
         {/* Top Investors */}
@@ -839,20 +851,22 @@ export default function StartupTrackerPage() {
         </div>
 
         {/* Disclaimer */}
-        <div className="card p-6 mb-8 border-dashed">
-          <div className="text-center">
-            <svg className="w-10 h-10 mx-auto mb-3 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-            </svg>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">About Startup Tracker</h3>
-            <p className="text-slate-400 text-sm max-w-2xl mx-auto">
-              Funding data and valuations are based on publicly available information and may not reflect
-              the most recent rounds. Market caps for public companies fluctuate daily.
-              This tracker is for informational purposes only and should not be considered investment advice.
-              Data sourced from Crunchbase, PitchBook, Space Capital, and public filings.
-            </p>
+        <ScrollReveal>
+          <div className="card p-6 mb-8 border-dashed">
+            <div className="text-center">
+              <svg className="w-10 h-10 mx-auto mb-3 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+              </svg>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">About Startup Tracker</h3>
+              <p className="text-slate-400 text-sm max-w-2xl mx-auto">
+                Funding data and valuations are based on publicly available information and may not reflect
+                the most recent rounds. Market caps for public companies fluctuate daily.
+                This tracker is for informational purposes only and should not be considered investment advice.
+                Data sourced from Crunchbase, PitchBook, Space Capital, and public filings.
+              </p>
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </div>
   );

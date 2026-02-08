@@ -14,6 +14,8 @@ import {
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 
 const DEFAULT_LAUNCH_COST = 2720;
@@ -282,10 +284,11 @@ function ResourceExchangeContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Resource Exchange"
           subtitle="Compare Earth prices vs space delivery costs for commodities and materials"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Resource Exchange' }]}
+          icon="⚡"
+          accentColor="cyan"
         />
 
         {stats && stats.total > 0 && (
@@ -321,19 +324,20 @@ function ResourceExchangeContent() {
               <h2 className="text-xl font-semibold text-slate-900 mb-4">
                 🚀 Select Launch Provider
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {providers
                   .filter((p) => p.status === 'operational')
                   .slice(0, 8)
                   .map((provider) => (
-                    <LaunchProviderCard
-                      key={provider.slug}
-                      provider={provider}
-                      isSelected={selectedProvider === provider.slug}
-                      onSelect={() => handleProviderChange(provider.slug)}
-                    />
+                    <StaggerItem key={provider.slug}>
+                      <LaunchProviderCard
+                        provider={provider}
+                        isSelected={selectedProvider === provider.slug}
+                        onSelect={() => handleProviderChange(provider.slug)}
+                      />
+                    </StaggerItem>
                   ))}
-              </div>
+              </StaggerContainer>
             </div>
 
             {/* Destination & Filters */}
@@ -477,7 +481,7 @@ function ResourceExchangeContent() {
         )}
 
         {/* Info Note */}
-        <div className="card p-6 mt-8 border-dashed">
+        <ScrollReveal><div className="card p-6 mt-8 border-dashed">
           <div className="text-center">
             <span className="text-4xl block mb-3">💡</span>
             <h3 className="text-lg font-semibold text-slate-900 mb-2">
@@ -491,7 +495,7 @@ function ResourceExchangeContent() {
               offer significant discounts.
             </p>
           </div>
-        </div>
+        </div></ScrollReveal>
       </div>
     </div>
   );

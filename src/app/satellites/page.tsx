@@ -4,7 +4,8 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import SatelliteCard, {
   Satellite,
   OrbitType,
@@ -195,10 +196,11 @@ function SatelliteTrackerContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Satellite Tracker & Visualization"
           subtitle="Track active satellites across all orbital regimes - from ISS to GPS to Starlink"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Satellites' }]}
+          icon="🛰️"
+          accentColor="cyan"
         />
 
         {loading ? (
@@ -208,6 +210,7 @@ function SatelliteTrackerContent() {
         ) : (
           <>
             {/* Quick Stats Banner */}
+            <ScrollReveal>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
               <div className="card-elevated p-4 text-center">
                 <div className="text-2xl font-bold font-display text-slate-900">
@@ -258,6 +261,7 @@ function SatelliteTrackerContent() {
                 </div>
               </div>
             </div>
+            </ScrollReveal>
 
             {/* Tab Navigation */}
             <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
@@ -296,6 +300,7 @@ function SatelliteTrackerContent() {
                 {iss && <ISSHighlight iss={iss} />}
 
                 {/* Distribution Cards */}
+                <ScrollReveal>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* By Orbit Type */}
                   <div className="card p-5">
@@ -371,6 +376,7 @@ function SatelliteTrackerContent() {
                     </div>
                   </div>
                 </div>
+                </ScrollReveal>
 
                 {/* Notable Satellites */}
                 <div>
@@ -385,14 +391,17 @@ function SatelliteTrackerContent() {
                       View All &rarr;
                     </button>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                     {data?.notableSatellites.map((sat) => (
-                      <SatelliteCard key={sat.id} satellite={sat} />
+                      <StaggerItem key={sat.id}>
+                        <SatelliteCard satellite={sat} />
+                      </StaggerItem>
                     ))}
-                  </div>
+                  </StaggerContainer>
                 </div>
 
                 {/* Data Sources */}
+                <ScrollReveal>
                 <div className="card p-5 border-dashed">
                   <h3 className="text-lg font-semibold text-slate-900 mb-3">Data Sources</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
@@ -416,6 +425,7 @@ function SatelliteTrackerContent() {
                     </div>
                   </div>
                 </div>
+                </ScrollReveal>
               </div>
             )}
 
@@ -500,11 +510,13 @@ function SatelliteTrackerContent() {
                     </p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                     {satellites.map((sat) => (
-                      <SatelliteCard key={sat.id} satellite={sat} />
+                      <StaggerItem key={sat.id}>
+                        <SatelliteCard satellite={sat} />
+                      </StaggerItem>
                     ))}
-                  </div>
+                  </StaggerContainer>
                 )}
               </div>
             )}

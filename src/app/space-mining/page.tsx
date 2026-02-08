@@ -18,7 +18,8 @@ import {
   formatMass,
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 
 // ────────────────────────────────────────
@@ -642,11 +643,13 @@ function SpaceMiningContent() {
               filename="space-mining-commodities"
             />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {commodities.map((commodity) => (
-              <CommodityCard key={commodity.id} commodity={commodity} />
+              <StaggerItem key={commodity.id}>
+                <CommodityCard commodity={commodity} />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       ) : (
         <div>
@@ -668,11 +671,13 @@ function SpaceMiningContent() {
               <p className="text-sm mt-2">Try adjusting your filter criteria.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {filteredBodies.map((body) => (
-                <MiningBodyCard key={body.id} body={body} />
+                <StaggerItem key={body.id}>
+                  <MiningBodyCard body={body} />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           )}
         </div>
       )}
@@ -696,6 +701,7 @@ function SpaceMiningContent() {
       )}
 
       {/* Cross-links */}
+      <ScrollReveal>
       <div className="card p-4 border border-slate-200">
         <h3 className="text-sm font-semibold text-slate-900 mb-3">Related Modules</h3>
         <div className="flex flex-wrap gap-3">
@@ -713,6 +719,7 @@ function SpaceMiningContent() {
           </Link>
         </div>
       </div>
+      </ScrollReveal>
     </div>
   );
 }
@@ -725,9 +732,11 @@ export default function SpaceMiningPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <PageHeader
-          title="⛏️ Space Mining Intelligence"
+        <AnimatedPageHeader
+          title="Space Mining Intelligence"
           subtitle="Comprehensive database of asteroids, moons, and planetary bodies with resource valuations, accessibility metrics, and mining feasibility analysis"
+          icon="⛏️"
+          accentColor="amber"
         />
 
         <Suspense fallback={

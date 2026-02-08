@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import TourismCard from '@/components/tourism/TourismCard';
 import ComparisonModal from '@/components/tourism/ComparisonModal';
@@ -289,10 +291,11 @@ function SpaceTourismContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Space Tourism Marketplace"
           subtitle="Compare and explore commercial space travel experiences from leading providers"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Space Tourism' }]}
+          icon="🎫"
+          accentColor="purple"
         />
 
         {loading ? (
@@ -472,21 +475,22 @@ function SpaceTourismContent() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {offerings.map((offering) => (
-                  <TourismCard
-                    key={offering.id}
-                    offering={offering}
-                    isSelected={selectedForCompare.includes(offering.id)}
-                    onToggleCompare={handleToggleCompare}
-                    onLearnMore={setDetailOffering}
-                  />
+                  <StaggerItem key={offering.id}>
+                    <TourismCard
+                      offering={offering}
+                      isSelected={selectedForCompare.includes(offering.id)}
+                      onToggleCompare={handleToggleCompare}
+                      onLearnMore={setDetailOffering}
+                    />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             )}
 
             {/* Experience Type Guide */}
-            <div
+            <ScrollReveal><div
               className="mt-12 backdrop-blur-xl rounded-xl border border-slate-700/50 p-6"
               style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%)' }}
             >
@@ -502,7 +506,7 @@ function SpaceTourismContent() {
                   </div>
                 ))}
               </div>
-            </div>
+            </div></ScrollReveal>
 
             {/* Disclaimer */}
             <div className="mt-8 text-center">

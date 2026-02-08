@@ -5,6 +5,8 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import {
   LaunchWindow,
   CelestialDestination,
@@ -543,15 +545,16 @@ function LaunchWindowsContent() {
   return (
     <div className="min-h-screen bg-slate-900">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Launch Windows"
           subtitle="Optimal launch windows and mission planning for planetary destinations"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Launch Windows' }]}
+          icon="🪟"
+          accentColor="purple"
         >
           <Link href="/" className="bg-slate-700 hover:bg-slate-600 text-white text-sm py-2 px-4 rounded-lg transition-colors">
             Back to Dashboard
           </Link>
-        </PageHeader>
+        </AnimatedPageHeader>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -729,11 +732,13 @@ function LaunchWindowsContent() {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {sortedWindows.map((window) => (
-                  <WindowCard key={window.id} window={window} />
+                  <StaggerItem key={window.id}>
+                    <WindowCard window={window} />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             )}
 
             {/* Transfer Type Legend */}
@@ -765,11 +770,13 @@ function LaunchWindowsContent() {
                 <p className="text-slate-400">No celestial destinations are currently available.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {data.destinations.map((destination) => (
-                  <DestinationCard key={destination.id} destination={destination} />
+                  <StaggerItem key={destination.id}>
+                    <DestinationCard destination={destination} />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             )}
 
             {/* Cross-module Links */}

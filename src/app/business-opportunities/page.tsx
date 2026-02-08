@@ -17,7 +17,8 @@ import {
   TargetAudience,
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import { ContractTicker, ContractsList } from '@/components/contracts';
 
@@ -315,10 +316,11 @@ function BusinessOpportunitiesContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Business Opportunities"
           subtitle="AI-powered discovery of space industry opportunities for entrepreneurs, investors, and students"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Business Opportunities' }]}
+          icon="💼"
+          accentColor="amber"
         >
           <button
             onClick={handleRunAnalysis}
@@ -336,7 +338,7 @@ function BusinessOpportunitiesContent() {
               </>
             )}
           </button>
-        </PageHeader>
+        </AnimatedPageHeader>
 
         {/* Government Contracts Ticker */}
         <div className="mb-8">
@@ -420,32 +422,42 @@ function BusinessOpportunitiesContent() {
         {stats && stats.total > 0 && (
           <>
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-              <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.total}</div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Opportunities</div>
-              </div>
-              <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-yellow-400">{stats.featured}</div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Featured</div>
-              </div>
-              <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-green-400">{stats.recentCount}</div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Added This Week</div>
-              </div>
-              <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-blue-400">
-                  {stats.byType?.government_contract || 0}
+            <StaggerContainer className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+              <StaggerItem>
+                <div className="card-elevated p-6 text-center">
+                  <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.total}</div>
+                  <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Opportunities</div>
                 </div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Gov Contracts</div>
-              </div>
-              <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
-                  {stats.byType?.ai_insight || 0}
+              </StaggerItem>
+              <StaggerItem>
+                <div className="card-elevated p-6 text-center">
+                  <div className="text-4xl font-bold font-display tracking-tight text-yellow-400">{stats.featured}</div>
+                  <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Featured</div>
                 </div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">AI Insights</div>
-              </div>
-            </div>
+              </StaggerItem>
+              <StaggerItem>
+                <div className="card-elevated p-6 text-center">
+                  <div className="text-4xl font-bold font-display tracking-tight text-green-400">{stats.recentCount}</div>
+                  <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Added This Week</div>
+                </div>
+              </StaggerItem>
+              <StaggerItem>
+                <div className="card-elevated p-6 text-center">
+                  <div className="text-4xl font-bold font-display tracking-tight text-blue-400">
+                    {stats.byType?.government_contract || 0}
+                  </div>
+                  <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Gov Contracts</div>
+                </div>
+              </StaggerItem>
+              <StaggerItem>
+                <div className="card-elevated p-6 text-center">
+                  <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
+                    {stats.byType?.ai_insight || 0}
+                  </div>
+                  <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">AI Insights</div>
+                </div>
+              </StaggerItem>
+            </StaggerContainer>
 
             {/* Filters */}
             <div className="card p-4 mb-6">
@@ -582,22 +594,24 @@ function BusinessOpportunitiesContent() {
         )}
 
             {/* Info Note */}
-            <div className="card p-6 mt-8 border-dashed">
-              <div className="text-center">
-                <span className="text-4xl block mb-3">🤖</span>
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                  About AI-Powered Opportunities
-                </h3>
-                <p className="text-slate-400 text-sm max-w-3xl mx-auto">
-                  Our AI system analyzes news sources, government solicitations, company reports,
-                  and market trends to identify business opportunities in the space industry.
-                  The &quot;AI Deep Dive&quot; feature uses advanced analysis to discover emerging
-                  opportunities that may not be immediately obvious. Confidence scores indicate
-                  how strongly the AI believes in the opportunity based on available data.
-                  Always conduct your own due diligence before pursuing any opportunity.
-                </p>
+            <ScrollReveal>
+              <div className="card p-6 mt-8 border-dashed">
+                <div className="text-center">
+                  <span className="text-4xl block mb-3">🤖</span>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                    About AI-Powered Opportunities
+                  </h3>
+                  <p className="text-slate-400 text-sm max-w-3xl mx-auto">
+                    Our AI system analyzes news sources, government solicitations, company reports,
+                    and market trends to identify business opportunities in the space industry.
+                    The &quot;AI Deep Dive&quot; feature uses advanced analysis to discover emerging
+                    opportunities that may not be immediately obvious. Confidence scores indicate
+                    how strongly the AI believes in the opportunity based on available data.
+                    Always conduct your own due diligence before pursuing any opportunity.
+                  </p>
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
           </>
         )}
       </div>

@@ -251,7 +251,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 1,
     isParent: true,
-    subModuleIds: ['news-feed', 'blogs-articles', 'space-defense'],
+    subModuleIds: ['news-feed', 'blogs-articles', 'space-defense', 'ai-insights'],
   },
 
   // 3. Space Market Intelligence (parent, NEW)
@@ -388,6 +388,16 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 12,
     isPremium: true,
+    parentModuleId: 'news-media',
+  },
+  {
+    moduleId: 'ai-insights',
+    name: 'AI Insights',
+    description: 'AI-powered deep analysis of space industry developments',
+    icon: '🧠',
+    section: 'intelligence',
+    defaultEnabled: true,
+    defaultPosition: 13,
     parentModuleId: 'news-media',
   },
 

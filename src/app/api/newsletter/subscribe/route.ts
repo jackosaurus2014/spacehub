@@ -113,11 +113,16 @@ export async function POST(request: Request) {
     if (!emailResult.success) {
       const errVal = emailResult.error as unknown;
       logger.error('Failed to send verification email', { error: errVal instanceof Error ? errVal.message : String(errVal) });
-      // Still return success - subscriber is created, they can request resend
+      return NextResponse.json({
+        success: true,
+        emailSent: false,
+        message: 'You\'re signed up! However, we couldn\'t send the verification email. Please try requesting a new one or check back later.',
+      });
     }
 
     return NextResponse.json({
       success: true,
+      emailSent: true,
       message: 'Verification email sent. Please check your inbox to confirm your subscription.',
     });
   } catch (error) {

@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -702,17 +703,19 @@ export default function GroundStationsPage() {
   return (
     <div className="min-h-screen bg-space-900">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Ground Station Map"
           subtitle="Global ground station networks for satellite communications - locations, capabilities, and service comparison"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Ground Station Map' }]}
+          icon="📡"
+          accentColor="emerald"
         >
           <Link href="/" className="btn-secondary text-sm py-2 px-4">
             {String.fromCharCode(8592)} Back to Dashboard
           </Link>
-        </PageHeader>
+        </AnimatedPageHeader>
 
         {/* Hero Stats */}
+        <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {HERO_STATS.map((stat) => (
             <div key={stat.label} className="card-elevated p-5 text-center">
@@ -725,6 +728,7 @@ export default function GroundStationsPage() {
             </div>
           ))}
         </div>
+        </ScrollReveal>
 
         {/* Industry Overview Banner */}
         <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 border border-cyan-500/30 rounded-xl p-5 mb-8">
@@ -787,11 +791,13 @@ export default function GroundStationsPage() {
               </div>
 
               {/* Network Cards Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {filteredNetworks.map((network) => (
-                  <NetworkCard key={network.id} network={network} />
+                  <StaggerItem key={network.id}>
+                    <NetworkCard network={network} />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
 
               {filteredNetworks.length === 0 && (
                 <div className="text-center py-12">
@@ -962,11 +968,13 @@ export default function GroundStationsPage() {
               </div>
 
               {/* Band Cards */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {FREQUENCY_BANDS.map((band) => (
-                  <FrequencyBandCard key={band.name} band={band} />
+                  <StaggerItem key={band.name}>
+                    <FrequencyBandCard band={band} />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
 
               {/* Band Selection Quick Guide */}
               <div className="mt-6 card-elevated p-6 border border-space-700">
@@ -1019,9 +1027,10 @@ export default function GroundStationsPage() {
               </div>
 
               {/* Decision Factor Cards */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+              <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
                 {DECISION_FACTORS.map((factor, idx) => (
-                  <div key={idx} className="card-elevated p-6 border border-space-700">
+                  <StaggerItem key={idx}>
+                  <div className="card-elevated p-6 border border-space-700">
                     <div className="flex items-center gap-3 mb-3">
                       <span
                         className="text-2xl"
@@ -1041,8 +1050,9 @@ export default function GroundStationsPage() {
                       ))}
                     </div>
                   </div>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
 
               {/* Decision Matrix */}
               <div className="card-elevated p-6 border border-space-700 mb-6">

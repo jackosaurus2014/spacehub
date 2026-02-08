@@ -1230,6 +1230,27 @@ model DailyDigest {
   @@index([status])
 }
 
+// ============================================================
+// AI Insights Module
+// ============================================================
+
+model AIInsight {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  summary     String   @db.Text
+  content     String   @db.Text
+  category    String   // regulatory, market, technology, geopolitical
+  sources     String   @db.Text  // JSON array of source URLs/titles
+  generatedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([generatedAt])
+  @@index([category])
+  @@index([slug])
+}
+
 // Company Addition Request
 model CompanyAddRequest {
   id          String   @id @default(cuid())

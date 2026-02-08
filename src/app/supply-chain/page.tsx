@@ -4,7 +4,8 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import PremiumGate from '@/components/PremiumGate';
 import ExportButton from '@/components/ui/ExportButton';
 import SupplyChainNode from '@/components/supply-chain/SupplyChainNode';
@@ -155,34 +156,46 @@ function SupplyChainContent() {
     <>
       {/* Stats Overview */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
-          <div className="card-elevated p-5 text-center">
-            <div className="text-3xl font-bold font-display tracking-tight text-white">{stats.totalCompanies}</div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">Companies</div>
-          </div>
-          <div className="card-elevated p-5 text-center">
-            <div className="text-3xl font-bold font-display tracking-tight text-blue-400">{stats.primeContractors}</div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">Primes</div>
-          </div>
-          <div className="card-elevated p-5 text-center">
-            <div className="text-3xl font-bold font-display tracking-tight text-cyan-400">
-              {stats.tier1Suppliers + stats.tier2Suppliers}
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+          <StaggerItem>
+            <div className="card-elevated p-5 text-center">
+              <div className="text-3xl font-bold font-display tracking-tight text-white">{stats.totalCompanies}</div>
+              <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">Companies</div>
             </div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">Tier 1-2</div>
-          </div>
-          <div className="card-elevated p-5 text-center">
-            <div className="text-3xl font-bold font-display tracking-tight text-red-400">{stats.highRiskRelationships}</div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">High Risk</div>
-          </div>
-          <div className="card-elevated p-5 text-center">
-            <div className="text-3xl font-bold font-display tracking-tight text-orange-400">{stats.criticalShortages}</div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">Critical Shortages</div>
-          </div>
-          <div className="card-elevated p-5 text-center">
-            <div className="text-3xl font-bold font-display tracking-tight text-green-400">{stats.usCompanies}</div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">US Companies</div>
-          </div>
-        </div>
+          </StaggerItem>
+          <StaggerItem>
+            <div className="card-elevated p-5 text-center">
+              <div className="text-3xl font-bold font-display tracking-tight text-blue-400">{stats.primeContractors}</div>
+              <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">Primes</div>
+            </div>
+          </StaggerItem>
+          <StaggerItem>
+            <div className="card-elevated p-5 text-center">
+              <div className="text-3xl font-bold font-display tracking-tight text-cyan-400">
+                {stats.tier1Suppliers + stats.tier2Suppliers}
+              </div>
+              <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">Tier 1-2</div>
+            </div>
+          </StaggerItem>
+          <StaggerItem>
+            <div className="card-elevated p-5 text-center">
+              <div className="text-3xl font-bold font-display tracking-tight text-red-400">{stats.highRiskRelationships}</div>
+              <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">High Risk</div>
+            </div>
+          </StaggerItem>
+          <StaggerItem>
+            <div className="card-elevated p-5 text-center">
+              <div className="text-3xl font-bold font-display tracking-tight text-orange-400">{stats.criticalShortages}</div>
+              <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">Critical Shortages</div>
+            </div>
+          </StaggerItem>
+          <StaggerItem>
+            <div className="card-elevated p-5 text-center">
+              <div className="text-3xl font-bold font-display tracking-tight text-green-400">{stats.usCompanies}</div>
+              <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">US Companies</div>
+            </div>
+          </StaggerItem>
+        </StaggerContainer>
       )}
 
       {/* Risk Summary Banner */}
@@ -353,15 +366,16 @@ function SupplyChainContent() {
 
           {/* Companies Tab */}
           {activeTab === 'companies' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {companies.map((company) => (
-                <SupplyChainNode
-                  key={company.id}
-                  company={company}
-                  relationships={relationships}
-                  onSelectCompany={setSelectedCompanyId}
-                  allCompanies={companies}
-                />
+                <StaggerItem key={company.id}>
+                  <SupplyChainNode
+                    company={company}
+                    relationships={relationships}
+                    onSelectCompany={setSelectedCompanyId}
+                    allCompanies={companies}
+                  />
+                </StaggerItem>
               ))}
               {companies.length === 0 && (
                 <div className="col-span-full text-center py-12">
@@ -369,7 +383,7 @@ function SupplyChainContent() {
                   <p className="text-slate-400">No companies found matching filters.</p>
                 </div>
               )}
-            </div>
+            </StaggerContainer>
           )}
 
           {/* Shortages Tab */}
@@ -498,15 +512,16 @@ export default function SupplyChainPage() {
   return (
     <div className="min-h-screen bg-space-900">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Global Supply Chain"
           subtitle="Aerospace supply chain tracking with geopolitical risk analysis"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Global Supply Chain' }]}
+          icon="🔗"
+          accentColor="cyan"
         >
           <Link href="/" className="btn-secondary text-sm py-2 px-4">
             ← Back to Dashboard
           </Link>
-        </PageHeader>
+        </AnimatedPageHeader>
 
         <PremiumGate requiredTier="pro">
           <Suspense

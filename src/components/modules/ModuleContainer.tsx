@@ -237,8 +237,8 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                     <span className="hidden sm:inline">Previous</span>
                     <span className="sm:hidden">Prev</span>
                   </span>
-                  <span className="text-[10px] sm:text-xs text-cyan-400/80 truncate max-w-[60px] sm:max-w-[100px]">
-                    {enabledModules[currentIndex > 0 ? currentIndex - 1 : enabledModules.length - 1]?.name}
+                  <span className="text-[11px] sm:text-xs text-cyan-400/80 truncate max-w-[80px] sm:max-w-[140px]">
+                    {enabledModules[currentIndex > 0 ? currentIndex - 1 : enabledModules.length - 1]?.name || 'Module'}
                   </span>
                 </div>
               </button>
@@ -332,8 +332,8 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                     <span className="hidden sm:inline">Next</span>
                     <span className="sm:hidden">Next</span>
                   </span>
-                  <span className="text-[10px] sm:text-xs text-cyan-400/80 truncate max-w-[60px] sm:max-w-[100px]">
-                    {enabledModules[currentIndex < enabledModules.length - 1 ? currentIndex + 1 : 0]?.name}
+                  <span className="text-[11px] sm:text-xs text-cyan-400/80 truncate max-w-[80px] sm:max-w-[140px]">
+                    {enabledModules[currentIndex < enabledModules.length - 1 ? currentIndex + 1 : 0]?.name || 'Module'}
                   </span>
                 </div>
                 <svg className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform duration-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

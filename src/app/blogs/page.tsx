@@ -5,7 +5,8 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { BlogPost, BLOG_TOPICS, AUTHOR_TYPES, BlogTopic, BlogAuthorType } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 
 const topicColors: Record<string, string> = {
@@ -280,34 +281,42 @@ function BlogsContent() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="card-elevated p-6 text-center">
-          <div className="flex items-center justify-center gap-2">
-            <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{total}</div>
+      <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <StaggerItem>
+          <div className="card-elevated p-6 text-center">
+            <div className="flex items-center justify-center gap-2">
+              <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{total}</div>
+            </div>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Articles</div>
+              <ExportButton
+                data={posts}
+                filename="spacehub-blog-posts"
+                columns={BLOG_EXPORT_COLUMNS}
+                label="Export"
+              />
+            </div>
           </div>
-          <div className="flex items-center justify-center gap-2 mt-1">
-            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Articles</div>
-            <ExportButton
-              data={posts}
-              filename="spacehub-blog-posts"
-              columns={BLOG_EXPORT_COLUMNS}
-              label="Export"
-            />
+        </StaggerItem>
+        <StaggerItem>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{BLOG_TOPICS.length}</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Topics</div>
           </div>
-        </div>
-        <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{BLOG_TOPICS.length}</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Topics</div>
-        </div>
-        <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-rocket-400">{AUTHOR_TYPES.length}</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Author Types</div>
-        </div>
-        <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-green-400">23</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Sources</div>
-        </div>
-      </div>
+        </StaggerItem>
+        <StaggerItem>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-rocket-400">{AUTHOR_TYPES.length}</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Author Types</div>
+          </div>
+        </StaggerItem>
+        <StaggerItem>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-green-400">23</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Sources</div>
+          </div>
+        </StaggerItem>
+      </StaggerContainer>
 
       {/* Posts List */}
       {loading && posts.length === 0 ? (
@@ -333,11 +342,13 @@ function BlogsContent() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {posts.map((post) => (
-              <BlogPostCard key={post.id} post={post} />
+              <StaggerItem key={post.id}>
+                <BlogPostCard post={post} />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
 
           {/* Load More */}
           {posts.length < total && (
@@ -362,18 +373,20 @@ function BlogsContent() {
       )}
 
       {/* Info Card */}
-      <div className="card p-6 mt-12 border-dashed">
-        <div className="text-center">
-          <span className="text-4xl block mb-3">💡</span>
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">About This Section</h3>
-          <p className="text-slate-400 text-sm max-w-2xl mx-auto">
-            We aggregate articles and blog posts from 23 space industry sources including law firm
-            blogs (StarLaw, Space Legal Issues, Sheppard Mullin), policy analysis (CSIS, Space Policy Online),
-            technical coverage (NASASpaceflight, Everyday Astronaut, Ars Technica), and industry news
-            (SpaceNews, Payload Space, SpaceWatch.Global). Content is refreshed daily.
-          </p>
+      <ScrollReveal>
+        <div className="card p-6 mt-12 border-dashed">
+          <div className="text-center">
+            <span className="text-4xl block mb-3">💡</span>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">About This Section</h3>
+            <p className="text-slate-400 text-sm max-w-2xl mx-auto">
+              We aggregate articles and blog posts from 23 space industry sources including law firm
+              blogs (StarLaw, Space Legal Issues, Sheppard Mullin), policy analysis (CSIS, Space Policy Online),
+              technical coverage (NASASpaceflight, Everyday Astronaut, Ars Technica), and industry news
+              (SpaceNews, Payload Space, SpaceWatch.Global). Content is refreshed daily.
+            </p>
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
     </>
   );
 }
@@ -396,7 +409,7 @@ export default function BlogsPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader title="Blogs & Articles" subtitle="Expert insights from consultants, lawyers, and space industry professionals" breadcrumbs={[{label: 'Home', href: '/'}, {label: 'Blogs'}]}>
+        <AnimatedPageHeader title="Blogs & Articles" subtitle="Expert insights from consultants, lawyers, and space industry professionals" icon="✍️" accentColor="purple">
           <button
             onClick={handleFetchNewPosts}
             disabled={fetching}
@@ -413,7 +426,7 @@ export default function BlogsPage() {
               </>
             )}
           </button>
-        </PageHeader>
+        </AnimatedPageHeader>
 
         <Suspense
           fallback={

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -786,15 +787,17 @@ function HeroStats() {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       {stats.map((stat) => (
-        <div key={stat.label} className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
-          <div className="text-star-300 text-xs uppercase tracking-widest">{stat.label}</div>
-          <div className="text-white font-bold text-2xl mt-1">{stat.value}</div>
-          <div className="text-star-400 text-xs">{stat.sub}</div>
-        </div>
+        <StaggerItem key={stat.label}>
+          <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+            <div className="text-star-300 text-xs uppercase tracking-widest">{stat.label}</div>
+            <div className="text-white font-bold text-2xl mt-1">{stat.value}</div>
+            <div className="text-star-400 text-xs">{stat.sub}</div>
+          </div>
+        </StaggerItem>
       ))}
-    </div>
+    </StaggerContainer>
   );
 }
 
@@ -1277,13 +1280,11 @@ export default function SpaceDefensePage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <PageHeader
+        <AnimatedPageHeader
           title="Space Defense & National Security"
           subtitle="Open-source intelligence on military space organizations, programs, procurement, counterspace threats, and allied cooperation"
-          breadcrumbs={[
-            { label: 'Dashboard', href: '/dashboard' },
-            { label: 'Space Defense' },
-          ]}
+          icon="🛡️"
+          accentColor="red"
         />
 
         {/* Hero Stats */}
@@ -1339,11 +1340,13 @@ export default function SpaceDefensePage() {
                 of space as a contested operational domain. The following organizations represent the primary
                 military space commands with dedicated organizational structures.
               </p>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {SPACE_FORCES.map((force) => (
-                  <SpaceForceCard key={force.id} force={force} />
+                  <StaggerItem key={force.id}>
+                    <SpaceForceCard force={force} />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             </div>
 
             {/* USSF Organizational Detail */}
@@ -1726,6 +1729,7 @@ export default function SpaceDefensePage() {
         )}
 
         {/* Footer Disclaimer */}
+        <ScrollReveal>
         <div className="card p-6 mt-8 border-dashed border border-slate-700/50">
           <div className="text-center">
             <h3 className="text-lg font-semibold text-white mb-2">About This Module</h3>
@@ -1739,6 +1743,7 @@ export default function SpaceDefensePage() {
             </p>
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -472,10 +474,11 @@ function AsteroidWatchContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Asteroid Watch"
           subtitle="Near-Earth object tracking, planetary defense intelligence, and asteroid mining prospects"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Asteroid Watch' }]}
+          icon="☄️"
+          accentColor="amber"
         />
 
         {/* Quick Stats Banner */}
@@ -563,12 +566,12 @@ function AsteroidWatchContent() {
             </div>
 
             {/* Data source note */}
-            <div className="card p-4 border-dashed text-sm text-slate-500">
+            <ScrollReveal><div className="card p-4 border-dashed text-sm text-slate-500">
               Close approach data sourced from NASA Center for Near-Earth Object Studies (CNEOS) and
               JPL Small-Body Database. Distances in LD (Lunar Distances, 1 LD = 384,400 km) and AU
               (Astronomical Units, 1 AU = 149,597,871 km). Torino Scale ratings reflect current
               impact probability assessments.
-            </div>
+            </div></ScrollReveal>
           </div>
         )}
 
@@ -821,7 +824,7 @@ function AsteroidWatchContent() {
             </div>
 
             {/* Related modules */}
-            <div className="card p-5">
+            <ScrollReveal><div className="card p-5">
               <h3 className="text-lg font-semibold text-white mb-3">Related Modules</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <Link href="/debris-monitor" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
@@ -837,7 +840,7 @@ function AsteroidWatchContent() {
                   <p className="text-xs text-slate-400 mt-1">Asteroid mining intelligence</p>
                 </Link>
               </div>
-            </div>
+            </div></ScrollReveal>
           </div>
         )}
 

@@ -5,6 +5,8 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 
 // ────────────────────────────────────────
@@ -750,19 +752,18 @@ function BlueprintsContent() {
 
   return (
     <>
-      <PageHeader
+      <AnimatedPageHeader
         title="Blueprint Series"
-        description="Technical breakdowns of space hardware - rocket engines, satellite buses, and lunar landers"
-        backLink="/"
-        backLabel="Back to Dashboard"
-        actions={
-          <ExportButton
-            data={blueprints}
-            columns={EXPORT_COLUMNS}
-            filename={`blueprints-${activeTab}`}
-          />
-        }
-      />
+        subtitle="Technical breakdowns of space hardware - rocket engines, satellite buses, and lunar landers"
+        icon="📐"
+        accentColor="cyan"
+      >
+        <ExportButton
+          data={blueprints}
+          columns={EXPORT_COLUMNS}
+          filename={`blueprints-${activeTab}`}
+        />
+      </AnimatedPageHeader>
 
       {stats && <StatsCards stats={stats} />}
 
@@ -849,15 +850,16 @@ function BlueprintsContent() {
 
       {/* Blueprint Grid */}
       {!loading && blueprints.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {blueprints.map(blueprint => (
-            <BlueprintCard
-              key={blueprint.id}
-              blueprint={blueprint}
-              onClick={() => setSelectedBlueprint(blueprint)}
-            />
+            <StaggerItem key={blueprint.id}>
+              <BlueprintCard
+                blueprint={blueprint}
+                onClick={() => setSelectedBlueprint(blueprint)}
+              />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       )}
 
       {/* Detail Modal */}

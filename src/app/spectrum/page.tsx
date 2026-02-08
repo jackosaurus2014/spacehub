@@ -4,7 +4,8 @@ import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import {
   SpectrumAllocation,
@@ -788,10 +789,11 @@ function SpectrumContent() {
     return (
       <div className="min-h-screen">
         <div className="container mx-auto px-4">
-          <PageHeader
+          <AnimatedPageHeader
             title="Spectrum Management"
             subtitle="Satellite frequency allocations, filings, auctions, and spectrum coordination"
-            breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Spectrum Management' }]}
+            icon="📶"
+            accentColor="purple"
           />
           <div className="flex justify-center py-20">
             <LoadingSpinner size="lg" />
@@ -805,10 +807,11 @@ function SpectrumContent() {
     return (
       <div className="min-h-screen">
         <div className="container mx-auto px-4">
-          <PageHeader
+          <AnimatedPageHeader
             title="Spectrum Management"
             subtitle="Satellite frequency allocations, filings, auctions, and spectrum coordination"
-            breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Spectrum Management' }]}
+            icon="📶"
+            accentColor="purple"
           />
           <div className="card p-12 text-center max-w-lg mx-auto">
             <div className="text-5xl mb-4">~</div>
@@ -839,17 +842,19 @@ function SpectrumContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Spectrum Management"
           subtitle="Satellite frequency allocations, filings, auctions, and spectrum coordination"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Spectrum Management' }]}
+          icon="📶"
+          accentColor="purple"
         >
           <Link href="/" className="btn-secondary text-sm py-2 px-4">
             Back to Dashboard
           </Link>
-        </PageHeader>
+        </AnimatedPageHeader>
 
         {/* Quick Stats -- show allocation stats or auction stats based on active section */}
+        <ScrollReveal>
         {!isAuctionTab ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="card-elevated p-6 text-center">
@@ -921,6 +926,7 @@ function SpectrumContent() {
             </div>
           </div>
         )}
+        </ScrollReveal>
 
         {/* Tab Navigation */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
@@ -1391,11 +1397,13 @@ function SpectrumContent() {
             </div>
 
             {/* Auction Cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {filteredAuctions.map((auction) => (
-                <AuctionCard key={auction.id} auction={auction} />
+                <StaggerItem key={auction.id}>
+                  <AuctionCard auction={auction} />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
 
             {filteredAuctions.length === 0 && (
               <div className="text-center py-20">
@@ -2004,10 +2012,11 @@ export default function SpectrumPage() {
       fallback={
         <div className="min-h-screen">
           <div className="container mx-auto px-4">
-            <PageHeader
+            <AnimatedPageHeader
               title="Spectrum Management"
               subtitle="Satellite frequency allocations, filings, auctions, and spectrum coordination"
-              breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Spectrum Management' }]}
+              icon="📶"
+              accentColor="purple"
             />
             <div className="flex justify-center py-20">
               <LoadingSpinner size="lg" />

@@ -6,7 +6,8 @@ import NewsCard from '@/components/NewsCard';
 import NewsFilter from '@/components/NewsFilter';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { SkeletonNewsGrid } from '@/components/ui/Skeleton';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import { NativeAd } from '@/components/ads';
@@ -145,19 +146,23 @@ function NewsContent() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {articles.map((article, index) => (
               <Fragment key={article.id}>
-                <NewsCard article={article} />
+                <StaggerItem>
+                  <NewsCard article={article} />
+                </StaggerItem>
                 {/* Insert native ad after every 5th article */}
                 {(index + 1) % 5 === 0 && index < articles.length - 1 && (
-                  <NativeAd
-                    {...SAMPLE_NATIVE_ADS[(Math.floor(index / 5)) % SAMPLE_NATIVE_ADS.length]}
-                  />
+                  <StaggerItem>
+                    <NativeAd
+                      {...SAMPLE_NATIVE_ADS[(Math.floor(index / 5)) % SAMPLE_NATIVE_ADS.length]}
+                    />
+                  </StaggerItem>
                 )}
               </Fragment>
             ))}
-          </div>
+          </StaggerContainer>
 
           {/* Load More */}
           {articles.length < total && (
@@ -188,7 +193,7 @@ export default function NewsPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader title="Space News" subtitle="Stay up to date with the latest from the space industry" breadcrumbs={[{label: 'Home', href: '/'}, {label: 'News'}]} />
+        <AnimatedPageHeader title="Space News" subtitle="Stay up to date with the latest from the space industry" icon="📰" accentColor="cyan" />
 
         {/* Content wrapped in Suspense for useSearchParams */}
         <Suspense fallback={

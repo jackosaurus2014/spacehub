@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -1036,10 +1038,11 @@ export default function LaunchVehiclesPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Launch Vehicle Comparison"
           subtitle="Comprehensive database of active, in-development, and retired orbital launch vehicles worldwide with real specifications, reliability data, and cost analysis"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Launch Vehicles' }]}
+          icon="🚀"
+          accentColor="red"
         />
 
         {/* Quick Stats Banner */}
@@ -1166,16 +1169,17 @@ export default function LaunchVehiclesPage() {
                 <p className="text-star-300">Try adjusting your search or filters.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {filteredVehicles.map(v => (
-                  <VehicleCard
-                    key={v.id}
-                    vehicle={v}
-                    onSelect={toggleCompare}
-                    isSelected={compareSelection.includes(v.id)}
-                  />
+                  <StaggerItem key={v.id}>
+                    <VehicleCard
+                      vehicle={v}
+                      onSelect={toggleCompare}
+                      isSelected={compareSelection.includes(v.id)}
+                    />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             )}
           </div>
         )}

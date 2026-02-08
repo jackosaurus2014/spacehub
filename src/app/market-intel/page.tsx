@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { SpaceCompany, FOCUS_AREAS, COUNTRY_INFO, CompanyCountry, CompanyFocusArea } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import StockMiniChart from '@/components/ui/StockMiniChart';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import CompanyRequestDialog from '@/components/ui/CompanyRequestDialog';
 
@@ -336,33 +337,41 @@ function MarketIntelContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" breadcrumbs={[{label: 'Home', href: '/'}, {label: 'Market Intel'}]} />
+        <AnimatedPageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" icon="📊" accentColor="emerald" />
 
         {stats && stats.total > 0 && (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.total}</div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Companies</div>
-              </div>
-              <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-green-400">{stats.publicCount}</div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Publicly Traded</div>
-              </div>
-              <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-yellow-400">{stats.privateCount}</div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Private / Pre-IPO</div>
-              </div>
-              <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
-                  ${stats.totalMarketCap >= 1000
-                    ? `${(stats.totalMarketCap / 1000).toFixed(1)}T`
-                    : `${stats.totalMarketCap.toFixed(0)}B`}
+            <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <StaggerItem>
+                <div className="card-elevated p-6 text-center">
+                  <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.total}</div>
+                  <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Companies</div>
                 </div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Combined Market Cap</div>
-              </div>
-            </div>
+              </StaggerItem>
+              <StaggerItem>
+                <div className="card-elevated p-6 text-center">
+                  <div className="text-4xl font-bold font-display tracking-tight text-green-400">{stats.publicCount}</div>
+                  <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Publicly Traded</div>
+                </div>
+              </StaggerItem>
+              <StaggerItem>
+                <div className="card-elevated p-6 text-center">
+                  <div className="text-4xl font-bold font-display tracking-tight text-yellow-400">{stats.privateCount}</div>
+                  <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Private / Pre-IPO</div>
+                </div>
+              </StaggerItem>
+              <StaggerItem>
+                <div className="card-elevated p-6 text-center">
+                  <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
+                    ${stats.totalMarketCap >= 1000
+                      ? `${(stats.totalMarketCap / 1000).toFixed(1)}T`
+                      : `${stats.totalMarketCap.toFixed(0)}B`}
+                  </div>
+                  <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Combined Market Cap</div>
+                </div>
+              </StaggerItem>
+            </StaggerContainer>
 
             {/* Country Distribution */}
             <div className="card p-4 mb-4">
@@ -404,7 +413,7 @@ function MarketIntelContent() {
                   <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                   Live Stock Performance
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {companies
                     .filter((c) => c.isPublic && c.ticker && detailedStockData[c.ticker])
                     .slice(0, 6)
@@ -416,8 +425,8 @@ function MarketIntelContent() {
                       const chartData = stock.chartData.daily.map((d) => d.close);
 
                       return (
+                        <StaggerItem key={company.id}>
                         <div
-                          key={company.id}
                           className="card p-4 hover:border-nebula-500/50 transition-all"
                         >
                           <div className="flex items-center justify-between mb-2">
@@ -488,9 +497,10 @@ function MarketIntelContent() {
                             </div>
                           </div>
                         </div>
+                        </StaggerItem>
                       );
                     })}
-                </div>
+                </StaggerContainer>
               </div>
             )}
 
@@ -810,18 +820,20 @@ function MarketIntelContent() {
         )}
 
         {/* Info Note */}
-        <div className="card p-6 mt-8 border-dashed">
-          <div className="text-center">
-            <span className="text-4xl block mb-3">💡</span>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">About Market Intel</h3>
-            <p className="text-slate-400 text-sm max-w-2xl mx-auto">
-              Market data is provided for informational purposes only and may not reflect real-time prices.
-              For publicly traded companies, market cap and price changes are approximate.
-              Private company valuations are based on last known funding rounds and may vary.
-              Always conduct your own research before making investment decisions.
-            </p>
+        <ScrollReveal>
+          <div className="card p-6 mt-8 border-dashed">
+            <div className="text-center">
+              <span className="text-4xl block mb-3">💡</span>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">About Market Intel</h3>
+              <p className="text-slate-400 text-sm max-w-2xl mx-auto">
+                Market data is provided for informational purposes only and may not reflect real-time prices.
+                For publicly traded companies, market cap and price changes are approximate.
+                Private company valuations are based on last known funding rounds and may vary.
+                Always conduct your own research before making investment decisions.
+              </p>
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
 
       {/* Company Request Dialog */}
