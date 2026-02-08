@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { SpaceEvent, EVENT_TYPE_INFO, SpaceEventType, MissionPhase, MISSION_PHASE_INFO } from '@/types';
 import PageHeader from '@/components/ui/PageHeader';
 import ExportButton from '@/components/ui/ExportButton';
-import MissionStream from '@/components/live/MissionStream';
+import MissionStream, { extractYouTubeId } from '@/components/live/MissionStream';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
@@ -154,9 +154,9 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
                     timeZoneName: 'short',
                   })}
                 </div>
-                {(event.streamUrl || event.videoUrl) && (
+                {event.streamUrl ? (
                   <a
-                    href={event.streamUrl || event.videoUrl || '#'}
+                    href={event.streamUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 px-2 py-1 rounded bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-xs font-medium"
@@ -164,9 +164,21 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
-                    Watch
+                    Watch Live
                   </a>
-                )}
+                ) : event.infoUrl ? (
+                  <a
+                    href={event.infoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 px-2 py-1 rounded bg-slate-700/50 text-slate-300 hover:bg-slate-700 transition-colors text-xs font-medium"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Mission Info
+                  </a>
+                ) : null}
               </div>
             </div>
           </div>
@@ -573,24 +585,36 @@ function EventCard({ event }: { event: SpaceEvent }) {
           )}
 
           <div className="flex flex-wrap gap-2 mt-2">
-            {/* Watch Live/Stream button */}
-            {(event.streamUrl || event.videoUrl) && (
+            {/* Watch Live button (only for verified streams) */}
+            {event.streamUrl ? (
               <a
-                href={event.streamUrl || event.videoUrl || '#'}
+                href={event.streamUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`text-xs font-medium px-2 py-1 rounded transition-colors flex items-center gap-1 ${
-                  event.isLive || isLiveOrImminent
+                  event.isLive
                     ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    : 'bg-orange-500/10 text-orange-500 hover:bg-orange-500/20'
                 }`}
               >
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
                 </svg>
-                {event.isLive ? 'Watch Live' : 'Stream'}
+                Watch Live
               </a>
-            )}
+            ) : event.infoUrl ? (
+              <a
+                href={event.infoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-medium px-2 py-1 rounded transition-colors flex items-center gap-1 bg-slate-100 text-slate-600 hover:bg-slate-200"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Mission Info
+              </a>
+            ) : null}
             {event.type === 'launch' && (
               <Link
                 href="/resource-exchange"
@@ -625,6 +649,36 @@ function EventCard({ event }: { event: SpaceEvent }) {
             )}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function LiveStreamEmbed({ event }: { event: SpaceEvent }) {
+  const videoId = extractYouTubeId(event.streamUrl);
+  if (!videoId) return null;
+
+  return (
+    <div className="mt-2 rounded-xl overflow-hidden border border-red-500/30 bg-slate-900 shadow-lg shadow-red-500/5">
+      <div className="relative aspect-video">
+        <iframe
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1`}
+          title={`${event.name} - Live Stream`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="absolute inset-0 w-full h-full"
+        />
+      </div>
+      <div className="px-3 py-2 flex items-center gap-2 bg-slate-800/50">
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+        </span>
+        <span className="text-red-400 text-xs font-bold">LIVE</span>
+        <span className="text-white text-xs font-medium truncate">{event.name}</span>
+        {event.agency && (
+          <span className="text-slate-400 text-xs ml-auto">{event.agency}</span>
+        )}
       </div>
     </div>
   );
@@ -861,7 +915,12 @@ function MissionControlContent() {
 
                         <div className="space-y-4">
                           {monthEvents.map((event) => (
-                            <EventCard key={event.id} event={event} />
+                            <div key={event.id}>
+                              <EventCard event={event} />
+                              {event.isLive && event.streamUrl && (
+                                <LiveStreamEmbed event={event} />
+                              )}
+                            </div>
                           ))}
                         </div>
                       </div>

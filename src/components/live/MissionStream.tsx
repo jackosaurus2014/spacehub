@@ -17,7 +17,7 @@ function isXUrl(url: string | null | undefined): boolean {
 }
 
 // Extract YouTube video ID from various URL formats
-function extractYouTubeId(url: string | null | undefined): string | null {
+export function extractYouTubeId(url: string | null | undefined): string | null {
   if (!url) return null;
 
   // Match various YouTube URL formats

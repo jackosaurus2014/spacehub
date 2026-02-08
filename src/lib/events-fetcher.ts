@@ -43,6 +43,7 @@ interface LaunchLibraryLaunch {
   };
   image?: string;
   infographic?: string;
+  url?: string; // Info page URL from Launch Library
   webcast_live?: boolean;
   vidURLs?: Array<{ url: string }>;
 }
@@ -148,7 +149,9 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
             rocket: launch.rocket?.configuration?.full_name || launch.rocket?.configuration?.name || null,
             mission: launch.mission?.name || null,
             imageUrl: launch.image || launch.infographic || null,
+            infoUrl: launch.url || null,
             videoUrl: launch.vidURLs?.[0]?.url || null,
+            webcastLive: launch.webcast_live ?? false,
             updatedAt: new Date(),
           },
           create: {
@@ -167,7 +170,9 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
             rocket: launch.rocket?.configuration?.full_name || launch.rocket?.configuration?.name || null,
             mission: launch.mission?.name || null,
             imageUrl: launch.image || launch.infographic || null,
+            infoUrl: launch.url || null,
             videoUrl: launch.vidURLs?.[0]?.url || null,
+            webcastLive: launch.webcast_live ?? false,
           },
         });
         savedCount++;

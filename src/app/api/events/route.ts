@@ -28,6 +28,58 @@ const PROVIDER_X_URLS: Record<string, string> = {
   'ISRO': 'https://x.com/isaborealfly',
 };
 
+// Enrich a DB event with computed live/stream fields
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function enrichEvent(event: any) {
+  const now = new Date();
+  const launchDate = event.launchDate ? new Date(event.launchDate) : null;
+
+  // Resolve stream URL: prefer videoUrl from Launch Library, fall back to provider channel
+  const rawStreamUrl = event.videoUrl
+    || (event.agency && PROVIDER_YOUTUBE_URLS[event.agency])
+    || null;
+
+  // X.com URL from provider map
+  const xUrl = event.agency ? PROVIDER_X_URLS[event.agency] || null : null;
+
+  // Determine if stream should be considered live/verified
+  let isLive = false;
+  if (launchDate) {
+    const timeDiff = launchDate.getTime() - now.getTime();
+    const isWithin30Min = timeDiff > 0 && timeDiff <= 30 * 60 * 1000;
+    const isPastWithin3Hours = timeDiff < 0 && Math.abs(timeDiff) <= 3 * 60 * 60 * 1000;
+    isLive = (event.webcastLive || isWithin30Min || isPastWithin3Hours) && !!rawStreamUrl;
+  }
+
+  // Compute mission phase from time proximity
+  let missionPhase: MissionPhase | null = null;
+  if (launchDate) {
+    const timeDiff = launchDate.getTime() - now.getTime();
+    if (timeDiff <= 30 * 60 * 1000 && timeDiff > 0) {
+      missionPhase = 'countdown';
+    } else if (timeDiff <= 0 && Math.abs(timeDiff) <= 5 * 60 * 1000) {
+      missionPhase = 'liftoff';
+    } else if (timeDiff <= 0 && Math.abs(timeDiff) <= 15 * 60 * 1000) {
+      missionPhase = 'ascent';
+    } else if (timeDiff <= 0 && Math.abs(timeDiff) <= 3 * 60 * 60 * 1000) {
+      missionPhase = 'nominal_orbit';
+    } else if (timeDiff > 30 * 60 * 1000 && timeDiff <= 2 * 60 * 60 * 1000) {
+      missionPhase = 'pre_launch';
+    }
+  }
+
+  // Only expose streamUrl when the stream is verified (live or imminent)
+  const streamUrl = isLive ? rawStreamUrl : null;
+
+  return {
+    ...event,
+    isLive,
+    streamUrl,
+    xUrl,
+    missionPhase,
+  };
+}
+
 // Generate mock live missions based on current time
 function generateMockLiveMissions() {
   const now = new Date();
@@ -155,6 +207,7 @@ export async function GET(req: NextRequest) {
       description: true,
       imageUrl: true,
       videoUrl: true,
+      webcastLive: true,
       infoUrl: true,
       country: true,
       rocket: true,
@@ -236,8 +289,11 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // Enrich DB events with computed live/stream fields
+    const enrichedEvents = events.map(enrichEvent);
+
     // Add mock live missions if requested (for demo purposes)
-    let allEvents = events;
+    let allEvents = enrichedEvents;
     if (includeMockLive) {
       const mockLiveMissions = generateMockLiveMissions();
 
@@ -247,7 +303,7 @@ export async function GET(req: NextRequest) {
         : mockLiveMissions;
 
       // Combine and sort by launch date
-      allEvents = [...filteredMockMissions, ...events].sort((a, b) => {
+      allEvents = [...filteredMockMissions, ...enrichedEvents].sort((a, b) => {
         const aDate = a.launchDate ? new Date(a.launchDate).getTime() : 0;
         const bDate = b.launchDate ? new Date(b.launchDate).getTime() : 0;
         return aDate - bDate;

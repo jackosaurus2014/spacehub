@@ -105,6 +105,7 @@ model SpaceEvent {
   imageUrl      String?
   infoUrl       String?
   videoUrl      String?
+  webcastLive   Boolean  @default(false)
   fetchedAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
