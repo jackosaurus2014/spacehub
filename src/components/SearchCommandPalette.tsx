@@ -609,7 +609,7 @@ export default function SearchCommandPalette() {
   const shortcutKey = platformModifier === 'meta' ? 'Cmd' : 'Ctrl';
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[15vh]">
+    <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[8vh] sm:pt-[15vh]">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"

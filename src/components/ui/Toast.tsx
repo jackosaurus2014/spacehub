@@ -203,7 +203,7 @@ export default function ToastContainer() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-[120] flex flex-col-reverse gap-2 items-end max-sm:right-1/2 max-sm:translate-x-1/2 max-sm:items-center">
+    <div className="fixed bottom-20 lg:bottom-4 right-4 z-[120] flex flex-col-reverse gap-2 items-end max-sm:right-1/2 max-sm:translate-x-1/2 max-sm:items-center">
       {toasts.map((t) => (
         <ToastItem key={t.id} toast={t} onRemove={removeToast} />
       ))}

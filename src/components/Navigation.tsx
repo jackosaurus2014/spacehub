@@ -332,7 +332,7 @@ export default function Navigation() {
             {/* High Contrast Toggle */}
             <button
               onClick={toggleHighContrast}
-              className={`relative p-2 rounded-lg transition-colors group ${
+              className={`relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors group ${
                 isHighContrast
                   ? 'text-cyan-300 bg-slate-700/60'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/40'
@@ -434,12 +434,12 @@ export default function Navigation() {
                 {/* Explore Section */}
                 <div>
                   <h3 className="text-cyan-400 text-xs uppercase tracking-widest font-medium mb-3">Explore</h3>
-                  <div className="space-y-1">
+                  <div className="space-y-0.5">
                     {EXPLORE_ITEMS.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
-                        className="block px-3 py-2.5 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 transition-colors"
+                        className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <span className="text-sm font-medium">{item.label}</span>
@@ -452,12 +452,12 @@ export default function Navigation() {
                 {/* Intelligence Section */}
                 <div>
                   <h3 className="text-cyan-400 text-xs uppercase tracking-widest font-medium mb-3">Intelligence</h3>
-                  <div className="space-y-1">
+                  <div className="space-y-0.5">
                     {INTELLIGENCE_ITEMS.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
-                        className="block px-3 py-2.5 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 transition-colors"
+                        className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <span className="text-sm font-medium">{item.label}</span>
@@ -470,12 +470,12 @@ export default function Navigation() {
                 {/* Business Section */}
                 <div>
                   <h3 className="text-cyan-400 text-xs uppercase tracking-widest font-medium mb-3">Business</h3>
-                  <div className="space-y-1">
+                  <div className="space-y-0.5">
                     {BUSINESS_ITEMS.map((item) => (
                       <Link
                         key={item.label}
                         href={item.href}
-                        className="block px-3 py-2.5 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 transition-colors"
+                        className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <span className="text-sm font-medium">{item.label}</span>
@@ -488,12 +488,12 @@ export default function Navigation() {
                 {/* Tools Section */}
                 <div>
                   <h3 className="text-cyan-400 text-xs uppercase tracking-widest font-medium mb-3">Tools</h3>
-                  <div className="space-y-1">
+                  <div className="space-y-0.5">
                     {TOOLS_ITEMS.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
-                        className="block px-3 py-2.5 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 transition-colors"
+                        className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <div className="flex items-center justify-between">
@@ -527,7 +527,7 @@ export default function Navigation() {
                 <div className="pt-4 border-t border-slate-700/50">
                   <button
                     onClick={toggleHighContrast}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors touch-target ${
                       isHighContrast
                         ? 'text-cyan-300 bg-slate-700/50'
                         : 'text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300'
@@ -550,11 +550,11 @@ export default function Navigation() {
                 </div>
 
                 {/* Auth Section */}
-                <div className="pt-4 border-t border-slate-700/50 space-y-2">
+                <div className="pt-4 border-t border-slate-700/50 space-y-2 pb-4">
                   {!isPro && (
                     <Link
                       href="/pricing"
-                      className="block text-cyan-400 hover:text-cyan-300 font-medium text-center py-2 text-sm"
+                      className="block text-cyan-400 hover:text-cyan-300 active:text-cyan-200 font-medium text-center py-3 text-sm touch-target"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Upgrade to Pro
@@ -566,7 +566,7 @@ export default function Navigation() {
                         signOut();
                         setIsMenuOpen(false);
                       }}
-                      className="w-full text-sm py-2 px-4 rounded-lg border border-cyan-400/30 text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 transition-colors"
+                      className="w-full text-sm py-3 px-4 rounded-lg border border-cyan-400/30 text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
                     >
                       Sign Out
                     </button>
@@ -574,14 +574,14 @@ export default function Navigation() {
                     <>
                       <Link
                         href="/login"
-                        className="block text-sm py-2 px-4 text-center rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 transition-colors"
+                        className="block text-sm py-3 px-4 text-center rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Sign In
                       </Link>
                       <Link
                         href="/register"
-                        className="btn-primary text-sm py-2 px-4 text-center block"
+                        className="btn-primary text-sm py-3 px-4 text-center block"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Register

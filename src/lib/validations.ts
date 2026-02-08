@@ -15,8 +15,12 @@ export const emailSchema = z
 // Password validation
 export const passwordSchema = z
   .string()
-  .min(6, 'Password must be at least 6 characters')
-  .max(128, 'Password is too long');
+  .min(8, 'Password must be at least 8 characters')
+  .max(128, 'Password is too long')
+  .regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+    'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+  );
 
 // Name validation
 export const nameSchema = z

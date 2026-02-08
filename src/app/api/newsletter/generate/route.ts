@@ -6,12 +6,9 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   // Verify CRON_SECRET for protected access
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { requireCronSecret } = await import('@/lib/errors');
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
 
   try {
     logger.info('Starting daily digest generation');
@@ -41,7 +38,7 @@ export async function POST(request: Request) {
   } catch (error) {
     logger.error('Digest generation error', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
-      { success: false, error: String(error) },
+      { success: false, error: 'Digest generation failed' },
       { status: 500 }
     );
   }

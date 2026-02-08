@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/db';
-import { validationError, alreadyExistsError, internalError } from '@/lib/errors';
+import { validationError, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { serverRegisterSchema, validateBody } from '@/lib/validations';
 import { generateVerificationEmail } from '@/lib/newsletter/email-templates';
@@ -19,12 +19,17 @@ export async function POST(req: NextRequest) {
     }
     const { email, password, name } = validation.data;
 
+    // Anti-enumeration: return the same success response shape whether the
+    // email is new or already registered, so attackers can't probe for valid accounts
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
-      return alreadyExistsError('User');
+      // Return a generic success response that looks identical to a new registration
+      return NextResponse.json({
+        message: 'Registration successful. Please check your email to verify your account.',
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -66,9 +71,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({
-      id: user.id,
-      email: user.email,
-      name: user.name,
+      message: 'Registration successful. Please check your email to verify your account.',
     });
   } catch (error) {
     logger.error('Registration error', { error: error instanceof Error ? error.message : String(error) });

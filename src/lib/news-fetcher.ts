@@ -166,6 +166,20 @@ const RSS_FEEDS: RSSFeedSource[] = [
   { name: 'NASA Watch', url: 'https://nasawatch.com/feed/', defaultCategory: 'policy' },
   { name: 'SpaceQ', url: 'https://spaceq.ca/feed/', defaultCategory: 'companies' },
   { name: 'Universe Today', url: 'https://www.universetoday.com/feed/', defaultCategory: 'missions' },
+
+  // Additional news sources — expanded coverage
+  { name: 'SpaceNews', url: 'https://spacenews.com/feed/', defaultCategory: 'companies' },
+  { name: 'NASASpaceFlight', url: 'https://www.nasaspaceflight.com/feed/', defaultCategory: 'launches' },
+  { name: 'Ars Technica Space', url: 'https://arstechnica.com/space/feed/', defaultCategory: 'missions' },
+  { name: 'The Planetary Society', url: 'https://www.planetary.org/feed', defaultCategory: 'missions' },
+  { name: 'SpaceRef', url: 'https://spaceref.com/feed/', defaultCategory: 'missions' },
+  { name: 'Space.com', url: 'https://www.space.com/feeds/all', defaultCategory: 'missions' },
+  { name: 'The Verge Space', url: 'https://www.theverge.com/rss/space/index.xml', defaultCategory: 'missions' },
+  { name: 'Parabolic Arc', url: 'http://www.parabolicarc.com/feed/', defaultCategory: 'companies' },
+  { name: 'European Spaceflight', url: 'https://europeanspaceflight.com/feed/', defaultCategory: 'launches' },
+  { name: 'Space Explored', url: 'https://spaceexplored.com/feed/', defaultCategory: 'companies' },
+  { name: 'The Space Review', url: 'https://www.thespacereview.com/rss.xml', defaultCategory: 'policy' },
+  { name: 'CSIS Aerospace', url: 'https://aerospace.csis.org/feed/', defaultCategory: 'defense' },
 ];
 
 const rssParser = new RSSParser({

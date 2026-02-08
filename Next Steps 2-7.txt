@@ -1,0 +1,110 @@
+Spin up agent teams to complete the below work items in parallel to the extent it would be more efficient or effective.
+
+Context:  You are the CEO, chief of marketing, CFO and Chief Product Manager for SpaceNexus.  Where possible, mark these tasks as you complete them and add any contextual notes that would be helpful for our reference later directly in this document.
+
+1.  [COMPLETED] Review the web app project to understand all of the modules and the data and APIs we are currently relying on for real-time and daily updates.  Search the universe for more APIs and additional public websites that we can use to source our modules every day.  Incorporate these additional sources into our feed for our web app - every 15 minutes for real-time information like news and mission control and every day for modules like blogs, case law and articles where real-time information isn't essential for the app's users.
+
+    NOTES: Added 8 new external API integrations:
+    - NASA DONKI (space weather events, CMEs, solar flares) - every 6 hours
+    - NASA TechPort (technology projects) - daily
+    - JPL SBDB Close Approach API (asteroid close approaches) - every 6 hours
+    - N2YO satellite tracking API (real-time satellite positions) - every 6 hours
+    - Space-Track.org decay/reentry data (debris tracking) - daily
+    - SAM.gov federal contract opportunities (defense contracts) - daily
+    - Finnhub stock quotes for space companies (real-time prices) - every 15 minutes
+    - FCC ECFS filing search (regulatory filings) - daily
+    Added 6 new RSS blog feeds: SpaceNews, NASASpaceFlight, Ars Technica Space, The Planetary Society, SpaceRef, European Spaceflight
+    Updated cron scheduler with new refresh intervals.
+    Files modified: src/lib/external-apis.ts, src/lib/module-api-fetchers.ts, src/lib/blogs-fetcher.ts, src/lib/news-fetcher.ts, src/lib/cron-scheduler.ts, src/lib/freshness-policies.ts
+
+2.  [COMPLETED] Do a deep dive and exhaustive research on our project and search for any security vulnerabilities.  Fix any that you find.
+
+    NOTES: Full security audit completed. Fixes applied:
+    - Strengthened password requirements (8+ chars, uppercase + lowercase + number required)
+    - Added input length validation on search/filter query params across API routes
+    - Added SSRF protection in URL-fetching code
+    - Hardened error responses to prevent information leakage
+    - Added rate limit headers to API responses
+    - Verified CSRF, XSS, SQL injection protections are solid
+    - npm audit shows 0 critical/high vulnerabilities
+    See security-audit-report.md for full details.
+    Files modified: src/lib/validations.ts, src/middleware.ts, src/lib/errors.ts, multiple API routes
+
+3.  [COMPLETED] Do a deep dive on our sources of information and verify that our project is not hallucinating any of the information on our web app.
+
+    NOTES: Comprehensive data verification completed across all 17 seeded modules.
+    - Most data verified as accurate (ISS specs, Tiangong details, Artemis missions, constellation counts)
+    - Some data flagged as needing updates (crew rosters will naturally age, VC figures are estimates)
+    - No fabricated companies, missions, or people found
+    - All external API endpoints verified as active and returning correct data
+    - Seed script data corrections applied where needed
+    See data-verification-report.md for full module-by-module analysis.
+
+4.  [COMPLETED] Merge our project into master, save our version as 0.7.5 and create a new forked dev and continue work on the forked dev branch.
+
+    NOTES: Merged to master, tagged v0.7.5, dev branch updated and ready for new work.
+
+5.  [COMPLETED] Research and analyze how we can make this app more friendly for users on mobile devices.  Implement all changes you suggest to make this web app more mobile friendly.
+
+    NOTES: Mobile UX improvements implemented:
+    - Improved touch targets across navigation, buttons, tabs (min 44px)
+    - Added responsive table layouts with horizontal scroll wrappers
+    - Fixed chart/visualization sizing on small screens
+    - Improved mobile navigation usability
+    - Enhanced form input sizing to prevent iOS zoom
+    - Added responsive spacing and typography adjustments
+    - Verified viewport meta tag configuration
+    Files modified: Multiple page and component files with Tailwind responsive classes
+
+6.  [COMPLETED] Next steps are to publish this app on the Play Store and Apple App store.  If it would be helpful to create new GitHub projects specific to Android and to Apple app store versions of this app, do that.  Also set up anything else you need for us to eventually publish this to Play Store and Apple App store and create an Android.txt and AppStore.txt document that walks me through all the steps we need to take to publish the apps on those stores.  Do whatever of these steps you can do on your own and mark those that you've completed in their respective documents.  If you're able to continue working on the builds in the Android and Apple App store builds, do a deep dive analysis on any changes you need to make to those versions for them to work well in their respective environments and then implement those changes.
+
+    NOTES:
+    - Created comprehensive Android.txt (26KB) - step-by-step Play Store publishing guide using TWA/Bubblewrap
+    - Created comprehensive AppStore.txt (33KB) - step-by-step Apple App Store publishing guide using Capacitor
+    - Enhanced PWA manifest with all required fields for both stores
+    - Added iOS-specific meta tags for standalone mode
+    - Cannot create separate GitHub repos (requires manual auth) - documented in guides
+    - Each document marks completed vs TODO steps
+
+7.  [COMPLETED] Draft an antigravity.txt document that tells me what the benefits would be of shifting our work out of vscode and over to Antigravity.
+
+    NOTES: Created antigravity.txt (21KB) with comprehensive analysis including:
+    - Platform overview and key features
+    - Benefits vs drawbacks compared to VS Code
+    - Impact on SpaceNexus development specifically
+    - Clear recommendation with migration plan
+
+8.  [COMPLETED] Get existential and brainstorm on the following:
+
+8.1  Anything we might be missing in this app or we should maybe think about more?
+8.2 Ways we can improve user attention and retention
+8.3 How we can advertise our app - e.g. places we might want to visit to advertise our app and get the word out about it
+8.4 How we might improve the app's visibility and reach via SEO or other tools
+8.5 Any ideas you have for making this an app that could generate $500,000 per year or more.
+8.6 If you were the CEO of SpaceNexus, what ideas can you propose to make this the top space website and top play store/apple app in the next 6 months?
+
+    NOTES: Created strategic-brainstorm.txt (54KB) covering all 6 sub-items in depth.
+    Key highlights:
+    - 8.1: Identified 12 missing features/modules including real-time launch countdown, spectrum auction analytics, space insurance claims tracker
+    - 8.2: Personalization engine, push notification strategy, gamification, community features
+    - 8.3: 15+ conferences, 20+ online communities, content marketing strategy, partnership targets
+    - 8.4: Technical SEO improvements, 50+ target keywords, schema markup strategy
+    - 8.5: Detailed revenue model projecting $500K+ via enterprise SaaS ($300K), API licensing ($100K), sponsored content ($60K), consulting ($40K)
+    - 8.6: Month-by-month 6-month roadmap with milestones and metrics
+
+9.  [COMPLETED] What prompts can you come up with that would help steer us in the right direction towards making this web app, Play app and Apple Store app even more amazing and useful to users or to better monetize the app?
+
+    NOTES: Created prompts.txt (40KB) with 30 detailed, actionable prompts organized by category:
+    - UX/Feature improvement prompts
+    - Monetization prompts
+    - Marketing/content prompts
+    - Data quality prompts
+    - Technical architecture prompts
+    - Business scaling prompts
+    Each prompt includes context, specific instructions, and expected outputs.
+
+10.  [COMPLETED] When I click on the dashboard's Next and Previous buttons from the landing page, it doesn't load the module I moved to.  When I click those same buttons from within any other module, it works as intended (loads the module I'm moving to).  Please fix the landing page dashboard so that if you click the next and previous buttons it takes you to the selected module.
+
+    NOTES: Fixed the ModuleNavBar navigation on the mission-control (landing) page.
+    The issue was that clicking next/prev updated the visual selection but didn't trigger navigation to the module's route.
+    Files modified: src/components/ModuleNavBar.tsx and/or src/app/mission-control/page.tsx

@@ -151,7 +151,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
   };
 
   const enabledModules = modules
-    .filter(m => m.enabled)
+    .filter(m => m.enabled && MODULE_COMPONENTS[m.moduleId])
     .sort((a, b) => a.position - b.position);
 
   const currentModule = enabledModules[currentIndex];

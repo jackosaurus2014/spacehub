@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { initializeSolarFlareData } from '@/lib/solar-flare-data';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 
-export async function POST() {
+export async function POST(request: Request) {
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
+
   try {
     const results = await initializeSolarFlareData();
     return NextResponse.json({

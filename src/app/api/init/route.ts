@@ -8,10 +8,13 @@ import { initializeResources } from '@/lib/resources-data';
 import { initializeOpportunities } from '@/lib/opportunities-data';
 import { initializeComplianceData } from '@/lib/compliance-data';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST() {
+export async function POST(request: Request) {
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
   const results: Record<string, string> = {};
 
   try {
@@ -87,7 +90,7 @@ export async function POST() {
   } catch (error) {
     logger.error('Initialization error', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
-      { success: false, error: String(error), results },
+      { success: false, error: 'Initialization failed', results },
       { status: 500 }
     );
   }
@@ -113,6 +116,6 @@ export async function GET() {
       counts: { news, events, blogs, companies, resources, opportunities, compliance },
     });
   } catch (error) {
-    return NextResponse.json({ initialized: false, error: String(error) });
+    return NextResponse.json({ initialized: false, error: 'Failed to check initialization status' });
   }
 }

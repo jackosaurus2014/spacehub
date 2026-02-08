@@ -49,10 +49,17 @@ export function startCronJobs() {
     triggerEndpoint('/api/ai-insights/generate', 'ai-insights');
   });
 
-  // External API data refresh — every 6 hours
-  // Fetches from Open Notify, NASA NeoWs, CelesTrak, USAspending, USPTO
-  cron.schedule('0 */6 * * *', () => {
+  // External API data refresh — every 4 hours
+  // Fetches from Open Notify, NASA NeoWs, CelesTrak, USAspending, USPTO,
+  // NASA APOD, TechPort, JPL SBDB, NOAA SWPC, Finnhub, SAM.gov, FCC ECFS, Federal Register
+  cron.schedule('0 */4 * * *', () => {
     triggerEndpoint('/api/refresh?type=external-apis', 'external-api-refresh');
+  });
+
+  // Space weather rapid refresh — every 30 minutes
+  // Fetches critical Kp index, solar flux, alerts from NOAA SWPC JSON
+  cron.schedule('*/30 * * * *', () => {
+    triggerEndpoint('/api/refresh?type=space-weather', 'space-weather-refresh');
   });
 
   // AI data research — 2:00 AM UTC (verifies/updates module data via Claude)
@@ -76,7 +83,8 @@ export function startCronJobs() {
       'news-fetch: every 5 minutes',
       'daily-refresh: midnight UTC',
       'ai-insights: 1:00 AM UTC',
-      'external-api-refresh: every 6 hours',
+      'external-api-refresh: every 4 hours',
+      'space-weather-refresh: every 30 minutes',
       'ai-data-research: 2:00 AM UTC',
       'staleness-cleanup: 3:00 AM UTC',
       'live-stream-check: every 30 minutes',

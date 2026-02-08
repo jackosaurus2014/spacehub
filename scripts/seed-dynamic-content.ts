@@ -98,7 +98,7 @@ async function main() {
         { name: 'Cygnus', type: 'cargo', operator: 'Northrop Grumman', status: 'active' },
         { name: 'Progress MS', type: 'cargo', operator: 'Roscosmos', status: 'active' },
         { name: 'HTV-X', type: 'cargo', operator: 'JAXA', status: 'active' },
-        { name: 'Starliner', type: 'crew', operator: 'Boeing', status: 'active' },
+        { name: 'Starliner', type: 'crew', operator: 'Boeing', status: 'testing' },
       ],
       launchDate: 'November 20, 1998',
       continuousOccupation: 'Since November 2, 2000 (Expedition 1)',
@@ -163,7 +163,7 @@ async function main() {
       developer: 'Axiom Space',
       partners: ['NASA', 'Thales Alenia Space', 'SpaceX'],
       status: 'assembly',
-      fundingSource: 'NASA CLD award ($228M) + private funding',
+      fundingSource: 'NASA NextSTEP-2 ISS module contract ($140M) + private funding',
       estimatedCost: '$2B+',
       targetLaunch: 'Axiom Hab 1 module: 2026 (attached to ISS), free-flying: ~2028-2030',
       crewCapacity: 8,
@@ -179,8 +179,8 @@ async function main() {
         'In-space manufacturing and materials science',
         'Space tourism and sovereign astronaut training',
       ],
-      nasaCLD: true,
-      description: 'Axiom Space is building the world\'s first commercial space station. The station will initially attach modules to the ISS beginning in 2026, then detach to become an independent free-flying station when the ISS is retired. Axiom has already conducted multiple private astronaut missions (Ax-1, Ax-2, Ax-3, Ax-4) to the ISS using SpaceX Crew Dragon. The company was awarded $228 million by NASA under the Commercial LEO Destinations program. Axiom Station is designed to serve researchers, manufacturers, and sovereign astronauts from countries that don\'t have their own space programs.',
+      nasaCLD: false,
+      description: 'Axiom Space is building the world\'s first commercial space station. The station will initially attach modules to the ISS beginning in 2026, then detach to become an independent free-flying station when the ISS is retired. Axiom has already conducted multiple private astronaut missions (Ax-1, Ax-2, Ax-3, Ax-4) to the ISS using SpaceX Crew Dragon. The company was awarded $140 million by NASA under the NextSTEP-2 program for a commercial ISS module. Axiom Station is designed to serve researchers, manufacturers, and sovereign astronauts from countries that don\'t have their own space programs.',
     },
     {
       id: 'vast-haven1',
@@ -613,8 +613,8 @@ async function main() {
       country: 'United States',
       flag: 'US',
       established: 'December 20, 2019',
-      personnel: '~16,000 Guardians + ~11,000 civilians',
-      budget: '$33.3B (FY2025 request)',
+      personnel: '~9,800 Guardians + ~5,300 civilians',
+      budget: '$29.4B (FY2025 request)',
       budgetYear: 'FY2025',
       parentService: 'Department of the Air Force',
       commander: 'Gen. B. Chance Saltzman, Chief of Space Operations',
@@ -628,7 +628,7 @@ async function main() {
         'Space Fence (Kwajalein)',
         'Space Domain Awareness',
       ],
-      description: 'The United States Space Force (USSF) is the space service branch of the U.S. Armed Forces, one of the eight uniformed services, and the world\'s first and currently only independent space force. It was established on December 20, 2019, with the signing of the National Defense Authorization Act for Fiscal Year 2020. The USSF organizes, trains, and equips space forces to protect U.S. and allied interests in space and to provide space capabilities to the joint force. The FY2025 budget request of $33.3 billion represents a significant increase, reflecting growing emphasis on space as a warfighting domain.',
+      description: 'The United States Space Force (USSF) is the space service branch of the U.S. Armed Forces, one of the eight uniformed services, and the world\'s first and currently only independent space force. It was established on December 20, 2019, with the signing of the National Defense Authorization Act for Fiscal Year 2020. The USSF organizes, trains, and equips space forces to protect U.S. and allied interests in space and to provide space capabilities to the joint force. The FY2025 budget request of $29.4 billion reflects growing emphasis on space as a warfighting domain.',
       fieldCommands: [
         'Space Operations Command (SpOC) -- Peterson SFB, CO',
         'Space Systems Command (SSC) -- Los Angeles AFB, CA',
@@ -646,8 +646,8 @@ async function main() {
 
   await upsertContent('cislunar', 'artemis-missions', [
     { id: 'artemis-1', name: 'Artemis I', date: 'Nov 16 - Dec 11, 2022', status: 'completed', vehicle: 'SLS Block 1 / Orion (EFT-1)', crew: 0, objectives: ['Uncrewed test flight of SLS and Orion', 'Distant retrograde orbit around the Moon', 'Heat shield reentry test at lunar return speeds', 'Orion systems validation in deep space'], description: 'Successfully completed a 25.5-day mission traveling 1.4 million miles. Orion performed multiple lunar flybys, entered a distant retrograde orbit (DRO), and set a new distance record for a spacecraft designed to carry humans (268,563 miles from Earth).' },
-    { id: 'artemis-2', name: 'Artemis II', date: 'NET Sep 2025', status: 'upcoming', vehicle: 'SLS Block 1 / Orion', crew: 4, objectives: ['First crewed Artemis flight (4 astronauts)', 'Lunar free-return trajectory flyby', 'Test Orion life support systems with crew', 'Manual piloting demonstrations'], internationalContributions: ['CSA: Jeremy Hansen (first non-American on lunar trajectory)'], description: 'The first crewed Artemis mission will carry astronauts on an approximately 10-day free-return trajectory around the Moon.' },
-    { id: 'artemis-3', name: 'Artemis III', date: 'NET mid-2026', status: 'upcoming', vehicle: 'SLS Block 1 / Orion', hls: 'SpaceX Starship HLS', crew: 4, objectives: ['First crewed lunar landing since Apollo 17 (1972)', 'South polar region surface operations (~6.5 days)', 'Up to 2 astronauts on lunar surface via Starship HLS', 'Moonwalks for science collection and technology demos'], description: 'This historic mission will return humans to the lunar surface for the first time in over 50 years.' },
+    { id: 'artemis-2', name: 'Artemis II', date: 'NET Mar 2026', status: 'upcoming', vehicle: 'SLS Block 1 / Orion', crew: 4, crewNames: ['Reid Wiseman (CDR)', 'Victor Glover (Pilot)', 'Christina Koch (MS)', 'Jeremy Hansen (MS, CSA)'], objectives: ['First crewed Artemis flight (4 astronauts)', 'Lunar free-return trajectory flyby', 'Test Orion life support systems with crew', 'Manual piloting demonstrations'], internationalContributions: ['CSA: Jeremy Hansen (first non-American on lunar trajectory)'], description: 'The first crewed Artemis mission will carry astronauts on an approximately 10-day free-return trajectory around the Moon. Crew includes the first woman (Koch) and first person of color (Glover) to leave low Earth orbit.' },
+    { id: 'artemis-3', name: 'Artemis III', date: 'NET 2028', status: 'planned', vehicle: 'SLS Block 1 / Orion', hls: 'SpaceX Starship HLS', crew: 4, objectives: ['First crewed lunar landing since Apollo 17 (1972)', 'South polar region surface operations (~6.5 days)', 'Up to 2 astronauts on lunar surface via Starship HLS', 'Moonwalks for science collection and technology demos'], description: 'This historic mission will return humans to the lunar surface for the first time in over 50 years. Delayed from original mid-2026 target due to Starship HLS development timeline and Orion heat shield evaluation.' },
     { id: 'artemis-4', name: 'Artemis IV', date: 'NET 2028', status: 'planned', vehicle: 'SLS Block 1B / Orion', hls: 'SpaceX Starship HLS (enhanced)', crew: 4, objectives: ['First crewed mission to the Lunar Gateway', 'Delivery of I-HAB module to Gateway', 'Dock Orion with PPE+HALO in NRHO', 'Potential surface sortie via Starship HLS'], description: 'Artemis IV marks the debut of the SLS Block 1B configuration with its more powerful Exploration Upper Stage (EUS).' },
     { id: 'artemis-5', name: 'Artemis V', date: 'NET 2030', status: 'planned', vehicle: 'SLS Block 1B / Orion', hls: 'Blue Origin Blue Moon Mark 2', crew: 4, objectives: ['Second provider HLS demonstration (Blue Origin)', 'Blue Moon Mark 2 crewed lunar landing', 'Further Gateway assembly and outfitting', 'Extended surface operations'], description: 'Artemis V will feature Blue Origin\'s Blue Moon Mark 2 Human Landing System, providing NASA a second independent crew transportation option.' },
     { id: 'artemis-6-plus', name: 'Artemis VI+', date: '2031 and beyond', status: 'planned', vehicle: 'SLS Block 1B or Block 2 / Orion', hls: 'Alternating SpaceX / Blue Origin HLS', crew: 4, objectives: ['Sustained lunar presence with annual missions', 'Extended surface stays (weeks to months)', 'Lunar surface habitat deployment', 'ISRU demonstrations at scale'], description: 'The sustained phase of Artemis envisions regular missions to the Gateway and lunar surface through the 2030s.' },
@@ -656,8 +656,8 @@ async function main() {
   await upsertContent('cislunar', 'clps-missions', [
     { id: 'peregrine-1', name: 'Peregrine Mission One', company: 'Astrobotic Technology', lander: 'Peregrine', launchDate: 'Jan 8, 2024', status: 'failure', payloads: ['NASA LETS', 'NASA NSS', 'NASA NIRVSS', 'NASA PITMS', 'NASA LRA', 'CMU Iris rover'], result: 'Propulsion anomaly shortly after launch caused oxidizer leak.', contractValue: '$79.5M', description: 'The first CLPS delivery attempt.' },
     { id: 'im-1', name: 'IM-1 (Nova-C Odysseus)', company: 'Intuitive Machines', lander: 'Nova-C "Odysseus"', launchDate: 'Feb 15, 2024', landingSite: 'Malapert A crater (south polar region)', status: 'partial-success', payloads: ['NASA ROLSES', 'NASA LN-1', 'NASA LRA', 'NASA NDL', 'NASA SCALPSS', 'NASA ILO-X'], result: 'First US soft landing on the Moon since Apollo 17 and first commercial lunar landing. Tipped onto its side during landing.', contractValue: '$118M', description: 'Historic mission -- first commercial lunar landing.' },
-    { id: 'im-2', name: 'IM-2 (Athena)', company: 'Intuitive Machines', lander: 'Nova-C "Athena"', launchDate: 'Q1 2025', landingSite: 'Shackleton crater ridge', status: 'upcoming', payloads: ['NASA PRIME-1', 'TRIDENT drill', 'MSolo', 'Micro-Nova hopper', 'Nokia 4G/LTE demo', 'Lunar Outpost MAPP rover'], contractValue: '$130M', description: 'IM-2 will target Shackleton crater with PRIME-1 ice mining experiment.' },
-    { id: 'blue-ghost-1', name: 'Blue Ghost Mission 1', company: 'Firefly Aerospace', lander: 'Blue Ghost', launchDate: 'Jan 15, 2025', landingSite: 'Mare Crisium', status: 'in-transit', payloads: ['NASA LISTER', 'NASA LRA', 'NASA LETS', 'NASA BFSS', 'NASA RAC', 'NASA SPELLS', 'Honeybee Robotics LUNARSABER'], contractValue: '$93.3M', description: 'Firefly\'s first CLPS mission targeting Mare Crisium.' },
+    { id: 'im-2', name: 'IM-2 (Athena)', company: 'Intuitive Machines', lander: 'Nova-C "Athena"', launchDate: 'Feb 26, 2025', landingSite: 'Shackleton crater ridge', status: 'partial-success', payloads: ['NASA PRIME-1', 'TRIDENT drill', 'MSolo', 'Micro-Nova hopper', 'Nokia 4G/LTE demo', 'Lunar Outpost MAPP rover'], contractValue: '$130M', result: 'Launched Feb 26, 2025. Landed near south pole Mar 6, 2025 but tipped sideways due to altimeter failure. Southernmost lunar landing ever achieved. Mission ended Mar 7 due to insufficient power.', description: 'IM-2 targeted Shackleton crater with PRIME-1 ice mining experiment. Achieved southernmost lunar landing in history.' },
+    { id: 'blue-ghost-1', name: 'Blue Ghost Mission 1', company: 'Firefly Aerospace', lander: 'Blue Ghost', launchDate: 'Jan 15, 2025', landingSite: 'Mare Crisium', status: 'success', payloads: ['NASA LISTER', 'NASA LRA', 'NASA LETS', 'NASA BFSS', 'NASA RAC', 'NASA SPELLS', 'Honeybee Robotics LUNARSABER'], contractValue: '$93.3M', result: 'First fully successful commercial soft landing on the Moon (Mar 2, 2025). Operated for 14 days on the lunar surface, the longest commercial lunar surface mission.', description: 'Firefly\'s first CLPS mission. Successfully landed at Mare Crisium and completed a 14-day surface mission.' },
     { id: 'im-3', name: 'IM-3', company: 'Intuitive Machines', lander: 'Nova-C (enhanced)', launchDate: 'Late 2025', landingSite: 'Reiner Gamma', status: 'planned', payloads: ['NASA Lunar Vertex'], contractValue: '$77.5M', description: 'IM-3 will deliver Lunar Vertex to Reiner Gamma swirl.' },
     { id: 'griffin-viper', name: 'Griffin / VIPER', company: 'Astrobotic Technology', lander: 'Griffin', launchDate: 'Cancelled', status: 'failure', payloads: ['NASA VIPER rover (cancelled Jul 2024)'], result: 'NASA cancelled VIPER in July 2024 due to cost overruns ($609M+ vs $433M original).', contractValue: '$320M+', description: 'Originally planned to deliver NASA\'s VIPER rover to the lunar south pole.' },
     { id: 'clps-cs3', name: 'CS-3 (Draper/Firefly)', company: 'Draper / Firefly Aerospace', lander: 'Blue Ghost (Series 2)', launchDate: 'NET 2026', landingSite: 'Schrodinger basin (far side)', status: 'planned', payloads: ['Farside Seismic Suite', 'LITMS'], contractValue: '$73M', description: 'First US landing on the far side of the Moon.' },
@@ -675,7 +675,7 @@ async function main() {
   ]);
 
   await upsertContent('cislunar', 'infrastructure', [
-    { id: 'gateway-ppe-halo', name: 'Lunar Gateway (PPE + HALO)', category: 'gateway', developer: 'Maxar (PPE) / Northrop Grumman (HALO)', status: 'under-construction', description: 'First two Gateway modules. 60 kW solar electric propulsion + crew capacity of 4.', timeline: 'Launch NET late 2025', cost: '~$1.3B combined' },
+    { id: 'gateway-ppe-halo', name: 'Lunar Gateway (PPE + HALO)', category: 'gateway', developer: 'Lanteris Space Systems (PPE) / Northrop Grumman (HALO)', status: 'under-construction', description: 'First two Gateway modules. 60 kW solar electric propulsion + crew capacity of 4.', timeline: 'Launch NET 2027 on Falcon Heavy', cost: '~$1.3B combined' },
     { id: 'lunanet', name: 'LunaNet Communications Architecture', category: 'communications', developer: 'NASA / ESA / JAXA', status: 'development', description: 'Interoperable lunar communications and navigation framework.', timeline: 'Phased deployment 2025-2030' },
     { id: 'moonlight', name: 'ESA Moonlight Initiative', category: 'communications', developer: 'ESA / SSTL / Telespazio', status: 'development', description: 'Commercial lunar communications and navigation service.', timeline: 'Lunar Pathfinder NET 2026', cost: '~EUR 340M' },
     { id: 'starship-hls', name: 'SpaceX Starship HLS', category: 'transport', developer: 'SpaceX', status: 'development', description: 'Starship Human Landing System for Artemis III and subsequent missions.', cost: '$2.89B + $1.15B option' },
@@ -701,8 +701,8 @@ async function main() {
   ]);
 
   await upsertContent('cislunar', 'gateway-modules', [
-    { id: 'ppe', name: 'Power & Propulsion Element', abbreviation: 'PPE', builder: 'Maxar Technologies', mass: '~5,000 kg', power: '60 kW solar electric propulsion', launchDate: 'NET 2025', status: 'integration', cost: '~$375M', partners: ['NASA'], description: 'Provides power, high-rate communications, attitude control, and orbital maneuvering.' },
-    { id: 'halo', name: 'Habitation and Logistics Outpost', abbreviation: 'HALO', builder: 'Northrop Grumman', mass: '~8,600 kg', crewCapacity: '4 (up to 30 days)', launchDate: 'NET 2025', status: 'construction', cost: '~$935M', partners: ['NASA'], description: 'Initial crew module derived from Cygnus spacecraft design.' },
+    { id: 'ppe', name: 'Power & Propulsion Element', abbreviation: 'PPE', builder: 'Lanteris Space Systems (formerly Maxar Technologies)', mass: '~5,000 kg', power: '60 kW solar electric propulsion', launchDate: 'NET 2027', status: 'integration', cost: '~$375M', partners: ['NASA'], description: 'Provides power, high-rate communications, attitude control, and orbital maneuvering.' },
+    { id: 'halo', name: 'Habitation and Logistics Outpost', abbreviation: 'HALO', builder: 'Northrop Grumman', mass: '~8,600 kg', crewCapacity: '4 (up to 30 days)', launchDate: 'NET 2027', status: 'construction', cost: '~$935M', partners: ['NASA'], description: 'Initial crew module derived from Cygnus spacecraft design.' },
     { id: 'ihab', name: 'International Habitation Module', abbreviation: 'I-HAB', builder: 'Thales Alenia Space (ESA)', launchDate: 'Artemis IV (NET 2028)', status: 'manufacturing', cost: 'ESA contribution (~EUR 600M)', partners: ['ESA', 'JAXA', 'NASA'], description: 'ESA contribution providing enhanced life support and crew quarters.' },
     { id: 'esprit', name: 'ESPRIT', abbreviation: 'ESPRIT', builder: 'Thales Alenia Space', launchDate: 'NET 2029', status: 'design', partners: ['ESA'], description: 'European System Providing Refueling, Infrastructure and Telecommunications.' },
     { id: 'canadarm3', name: 'Canadarm3', abbreviation: 'Canadarm3', builder: 'MDA Space', launchDate: 'NET 2028', status: 'development', cost: '~$2.2B CAD', partners: ['CSA'], description: 'AI-powered robotic arm for Gateway assembly and maintenance.' },
@@ -786,7 +786,7 @@ async function main() {
   console.log('☄️ Seeding asteroid-watch...');
 
   await upsertContent('asteroid-watch', 'close-approaches', [
-    { id: 'ca-1', name: '2024 YR4', date: '2032-12-22', distanceLD: 0.8, distanceAU: 0.0021, diameterMin: 40, diameterMax: 90, velocity: 17.2, torino: 3, palermo: -1.2, isPHA: true, orbitClass: 'Apollo' },
+    { id: 'ca-1', name: '2024 YR4', date: '2032-12-22', distanceLD: 0.8, distanceAU: 0.0021, diameterMin: 40, diameterMax: 90, velocity: 17.2, torino: 0, palermo: -99, isPHA: true, orbitClass: 'Apollo', note: 'Was Torino 3 in Jan-Feb 2025 (peaked at 3.1% impact probability); downgraded to 0 on Feb 23, 2025 after additional observations. ~4% chance of lunar impact remains.' },
     { id: 'ca-2', name: '99942 Apophis', date: '2029-04-13', distanceLD: 0.1, distanceAU: 0.00026, diameterMin: 340, diameterMax: 340, velocity: 7.4, torino: 0, palermo: -99, isPHA: true, orbitClass: 'Aten' },
     { id: 'ca-3', name: '2025 BZ2', date: '2026-02-12', distanceLD: 3.2, distanceAU: 0.0082, diameterMin: 8, diameterMax: 18, velocity: 12.8, torino: 0, palermo: -99, isPHA: false, orbitClass: 'Apollo' },
     { id: 'ca-5', name: '2024 MK', date: '2026-02-18', distanceLD: 5.1, distanceAU: 0.013, diameterMin: 120, diameterMax: 260, velocity: 21.3, torino: 0, palermo: -99, isPHA: true, orbitClass: 'Apollo' },
@@ -907,11 +907,8 @@ async function main() {
   ]);
 
   await upsertContent('patents', 'litigation-cases', [
-    { id: 'lit-1', title: 'Blue Origin v. SpaceX (Lunar Lander Patent)', parties: 'Blue Origin v. SpaceX', year: 2022, status: 'dismissed', category: 'Propulsion / Landing' },
-    { id: 'lit-2', title: 'Boeing v. Launch Vehicles Inc.', parties: 'Boeing v. Launch Vehicles Inc.', year: 2021, status: 'settled', category: 'Launch Systems' },
+    { id: 'lit-1', title: 'Blue Origin v. United States (HLS Contract Protest)', parties: 'Blue Origin v. United States / SpaceX (intervenor)', year: 2021, status: 'dismissed', category: 'Government Contract' },
     { id: 'lit-3', title: 'Viasat v. SpaceX (Starlink Interference)', parties: 'Viasat v. FCC / SpaceX', year: 2023, status: 'ongoing', category: 'Satellite Communications' },
-    { id: 'lit-4', title: 'Maxar v. Planet Labs (Imaging Technology)', parties: 'Maxar v. Planet Labs', year: 2023, status: 'settled', category: 'Earth Observation' },
-    { id: 'lit-5', title: 'Iridium v. AST SpaceMobile', parties: 'Iridium v. AST SpaceMobile', year: 2024, status: 'ongoing', category: 'Direct-to-Device' },
   ]);
 
   await upsertContent('patents', 'geographic-distribution', [
@@ -933,12 +930,12 @@ async function main() {
 
   await upsertContent('launch-vehicles', 'vehicles', [
     { id: 'falcon-9', name: 'Falcon 9 Block 5', manufacturer: 'SpaceX', country: 'United States', status: 'Operational', heightM: 70, payloadLeoKg: 22800, payloadGtoKg: 8300, costMillions: 67, costPerKgLeo: 2940, totalLaunches: 382, successes: 380, successRate: 99.5, consecutiveSuccesses: 310, reusable: true, engines: '9x Merlin 1D + 1x Merlin Vacuum', propellant: 'RP-1 / LOX', firstFlight: '2010-06-04', description: 'The workhorse of the global launch industry.' },
-    { id: 'falcon-heavy', name: 'Falcon Heavy', manufacturer: 'SpaceX', country: 'United States', status: 'Operational', heightM: 70, payloadLeoKg: 63800, costMillions: 97, costPerKgLeo: 1520, totalLaunches: 12, successes: 12, successRate: 100, reusable: true, firstFlight: '2018-02-06', description: 'Most powerful operational rocket.' },
+    { id: 'falcon-heavy', name: 'Falcon Heavy', manufacturer: 'SpaceX', country: 'United States', status: 'Operational', heightM: 70, payloadLeoKg: 63800, costMillions: 97, costPerKgLeo: 1520, totalLaunches: 11, successes: 11, successRate: 100, reusable: true, firstFlight: '2018-02-06', description: 'Most powerful operational rocket.' },
     { id: 'starship', name: 'Starship / Super Heavy', manufacturer: 'SpaceX', country: 'United States', status: 'In Development', heightM: 121, payloadLeoKg: 150000, costMillions: 10, costPerKgLeo: 67, totalLaunches: 7, successes: 3, successRate: 42.9, reusable: true, engines: '33x Raptor + 6x Raptor', propellant: 'CH4 / LOX', firstFlight: '2023-04-20', description: 'Largest and most powerful rocket ever flown.' },
     { id: 'electron', name: 'Electron', manufacturer: 'Rocket Lab', country: 'United States', status: 'Operational', heightM: 18, payloadLeoKg: 300, costMillions: 7.5, totalLaunches: 56, successes: 51, successRate: 91.1, firstFlight: '2017-05-25' },
     { id: 'neutron', name: 'Neutron', manufacturer: 'Rocket Lab', country: 'United States', status: 'In Development', heightM: 43, payloadLeoKg: 13000, costMillions: 50, reusable: true, firstFlight: '2025 (target)' },
     { id: 'vulcan-centaur', name: 'Vulcan Centaur', manufacturer: 'ULA', country: 'United States', status: 'Operational', heightM: 61.6, payloadLeoKg: 27200, costMillions: 110, totalLaunches: 3, successes: 3, successRate: 100, engines: '2x BE-4 + 1-2x RL-10C', firstFlight: '2024-01-08' },
-    { id: 'new-glenn', name: 'New Glenn', manufacturer: 'Blue Origin', country: 'United States', status: 'Operational', heightM: 98, payloadLeoKg: 45000, costMillions: 68, totalLaunches: 2, successes: 1, reusable: true, engines: '7x BE-4 + 2x BE-3U', firstFlight: '2025-01-13' },
+    { id: 'new-glenn', name: 'New Glenn', manufacturer: 'Blue Origin', country: 'United States', status: 'Operational', heightM: 98, payloadLeoKg: 45000, costMillions: 68, totalLaunches: 2, successes: 2, reusable: true, engines: '7x BE-4 + 2x BE-3U', firstFlight: '2025-01-16' },
     { id: 'ariane-6', name: 'Ariane 6', manufacturer: 'ArianeGroup', country: 'France / ESA', status: 'Operational', heightM: 56, payloadLeoKg: 21650, costMillions: 77, totalLaunches: 2, successes: 1, firstFlight: '2024-07-09' },
     { id: 'h3', name: 'H3', manufacturer: 'JAXA / MHI', country: 'Japan', status: 'Operational', heightM: 63, payloadLeoKg: 16500, costMillions: 51, totalLaunches: 4, successes: 3, firstFlight: '2023-03-07' },
     { id: 'pslv', name: 'PSLV', manufacturer: 'ISRO', country: 'India', status: 'Operational', heightM: 44, payloadLeoKg: 3800, costMillions: 21, totalLaunches: 62, successes: 59, successRate: 95.2, firstFlight: '1993-09-20' },
@@ -1133,7 +1130,7 @@ async function main() {
     { id: 'virgin-galactic', provider: 'Virgin Galactic', name: 'VSS Unity', experienceType: 'suborbital', price: 450000, priceDisplay: '$450K', duration: '90 minutes', altitude: 80, altitudeDisplay: '80 km', status: 'active', maxPassengers: 6, trainingDuration: '3-4 days', launchSite: 'Spaceport America, New Mexico', vehicleName: 'VSS Unity', firstFlight: '2021' },
     { id: 'spacex-inspiration4', provider: 'SpaceX', name: 'Crew Dragon Orbital', experienceType: 'orbital', price: 55000000, priceDisplay: '$55M', duration: 'Multi-day (3-5 days)', altitude: 575, altitudeDisplay: '575 km', status: 'active', maxPassengers: 4, trainingDuration: '4-6 months', launchSite: 'Kennedy Space Center, Florida', vehicleName: 'Falcon 9 / Crew Dragon', firstFlight: '2021' },
     { id: 'axiom-space-station', provider: 'Axiom Space', name: 'ISS Mission', experienceType: 'station', price: 55000000, priceDisplay: '$55M+', duration: '10 days', altitude: 420, altitudeDisplay: '420 km (ISS orbit)', status: 'active', maxPassengers: 4, trainingDuration: '15+ weeks', launchSite: 'Kennedy Space Center, Florida' },
-    { id: 'spacex-dear-moon', provider: 'SpaceX', name: 'dearMoon Lunar Flyby', experienceType: 'lunar', price: null, priceDisplay: 'TBD', duration: '~6 days', altitude: null, altitudeDisplay: '384,400 km (Moon distance)', status: 'future', maxPassengers: 8, vehicleName: 'Starship' },
+    { id: 'spacex-dear-moon', provider: 'SpaceX', name: 'dearMoon Lunar Flyby', experienceType: 'lunar', price: null, priceDisplay: 'N/A', duration: '~6 days', altitude: null, altitudeDisplay: '384,400 km (Moon distance)', status: 'cancelled', maxPassengers: 8, vehicleName: 'Starship', description: 'Cancelled in June 2024 by mission sponsor Yusaku Maezawa due to ongoing Starship development delays.' },
     { id: 'space-perspective-balloon', provider: 'Space Perspective', name: 'Spaceship Neptune', experienceType: 'balloon', price: 125000, priceDisplay: '$125K', duration: '6 hours', altitude: 30, altitudeDisplay: '30 km', status: 'upcoming', maxPassengers: 8, trainingDuration: 'Pre-flight briefing only', launchSite: 'Space Coast, Florida' },
   ]);
 

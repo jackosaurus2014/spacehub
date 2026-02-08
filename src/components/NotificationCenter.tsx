@@ -147,7 +147,7 @@ export default function NotificationCenter() {
       {/* Bell Icon Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-slate-300 hover:text-cyan-300 transition-colors rounded-lg hover:bg-slate-700/50"
+        className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-cyan-300 transition-colors rounded-lg hover:bg-slate-700/50"
         aria-label="Notifications"
       >
         <BellIcon className="w-5 h-5" />
@@ -163,7 +163,7 @@ export default function NotificationCenter() {
       {/* Dropdown Panel */}
       {isOpen && (
         <div
-          className="absolute top-full right-0 mt-3 w-96 max-h-[480px] backdrop-blur-xl border border-cyan-400/30 rounded-xl overflow-hidden animate-fade-in-down z-50"
+          className="absolute top-full right-0 mt-3 w-[calc(100vw-2rem)] sm:w-96 max-h-[480px] backdrop-blur-xl border border-cyan-400/30 rounded-xl overflow-hidden animate-fade-in-down z-50"
           style={{
             background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)',
             boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.15)',
@@ -175,7 +175,7 @@ export default function NotificationCenter() {
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllAsRead}
-                className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
+                className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors font-medium py-1 px-2 -mr-2 touch-target"
               >
                 Mark all as read
               </button>

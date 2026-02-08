@@ -254,3 +254,60 @@ export function constrainPagination(
 export function constrainOffset(offset: number): number {
   return Math.max(0, offset);
 }
+
+/**
+ * Escape HTML special characters to prevent XSS in email templates.
+ * This should be used whenever user-submitted data is interpolated into HTML.
+ */
+export function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * Timing-safe string comparison to prevent timing attacks.
+ * Always compares the full length regardless of where differences occur.
+ */
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    // Still do a comparison to avoid length-based timing leaks
+    let result = a.length ^ b.length;
+    for (let i = 0; i < a.length; i++) {
+      result |= a.charCodeAt(i) ^ (b.charCodeAt(i % b.length) || 0);
+    }
+    return result === 0;
+  }
+
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
+
+/**
+ * Verify that a request carries a valid CRON_SECRET Bearer token.
+ * Returns null if authorized, or a 401 NextResponse if not.
+ * When CRON_SECRET is not configured, all requests are rejected to
+ * prevent accidental exposure of admin-only endpoints.
+ * Uses timing-safe comparison to prevent timing attacks.
+ */
+export function requireCronSecret(request: Request): NextResponse<ApiErrorResponse> | null {
+  const authHeader = request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+
+  if (!cronSecret) {
+    return createErrorResponse(ErrorCodes.UNAUTHORIZED, 'Unauthorized', 401);
+  }
+
+  const expectedHeader = `Bearer ${cronSecret}`;
+  if (!authHeader || !timingSafeEqual(authHeader, expectedHeader)) {
+    return createErrorResponse(ErrorCodes.UNAUTHORIZED, 'Unauthorized', 401);
+  }
+
+  return null;
+}

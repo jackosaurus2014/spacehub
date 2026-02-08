@@ -24,10 +24,10 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     keywords: ['Starlink', 'OneWeb', 'Kuiper', 'constellation', 'satellite deploy'],
   },
   'space-economy': {
-    ttlHours: 168,
+    ttlHours: 24,
     refreshPriority: 'high',
-    refreshSource: 'ai-research',
-    keywords: ['space economy', 'space market', 'venture capital', 'space investment', 'space IPO', 'space funding'],
+    refreshSource: 'both', // Finnhub stock API + AI research
+    keywords: ['space economy', 'space market', 'venture capital', 'space investment', 'space IPO', 'space funding', 'space stock'],
   },
   'startups': {
     ttlHours: 168,
@@ -48,18 +48,18 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     keywords: ['Artemis', 'lunar', 'moon mission', 'Gateway', 'CLPS', 'cislunar', 'Lunar Pathfinder'],
   },
   'compliance': {
-    ttlHours: 168,
+    ttlHours: 48,
     refreshPriority: 'high',
-    refreshSource: 'ai-research',
-    keywords: ['FCC', 'FAA license', 'space law', 'space regulation', 'ITU', 'Artemis Accords', 'space treaty'],
+    refreshSource: 'both', // FCC ECFS + Federal Register APIs + AI
+    keywords: ['FCC', 'FAA license', 'space law', 'space regulation', 'ITU', 'Artemis Accords', 'space treaty', 'spectrum filing'],
   },
 
   // MODERATE: Changes monthly
   'asteroid-watch': {
-    ttlHours: 168, // 7 days (NASA NeoWs has weekly feed)
-    refreshPriority: 'moderate',
-    refreshSource: 'api', // NASA NeoWs
-    keywords: ['asteroid', 'NEO', 'near-Earth', 'DART', 'planetary defense'],
+    ttlHours: 48, // JPL SBDB + NASA NeoWs updated daily
+    refreshPriority: 'high',
+    refreshSource: 'api', // NASA NeoWs + JPL SBDB
+    keywords: ['asteroid', 'NEO', 'near-Earth', 'DART', 'planetary defense', 'close approach', 'JPL'],
   },
   'patents': {
     ttlHours: 720, // 30 days
@@ -102,6 +102,33 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     refreshPriority: 'moderate',
     refreshSource: 'ai-research',
     keywords: ['space supply chain', 'space components', 'satellite manufacturing', 'launch supply'],
+  },
+
+  // Mission Control (APOD + TechPort)
+  'mission-control': {
+    ttlHours: 24,
+    refreshPriority: 'high',
+    refreshSource: 'api', // NASA APOD + TechPort APIs
+    keywords: ['NASA', 'mission control', 'technology', 'APOD', 'astronomy picture'],
+  },
+
+  // Space Economy (Finnhub stock data)
+  // (extends existing ai-research with API data)
+
+  // Business Opportunities (SAM.gov contracts)
+  'business-opportunities': {
+    ttlHours: 24,
+    refreshPriority: 'high',
+    refreshSource: 'both', // SAM.gov API + AI
+    keywords: ['contract', 'opportunity', 'RFP', 'procurement', 'award', 'SAM.gov', 'aerospace contract'],
+  },
+
+  // Space Environment (Enhanced NOAA + DONKI)
+  'space-environment': {
+    ttlHours: 6,
+    refreshPriority: 'critical',
+    refreshSource: 'api', // NOAA SWPC + NASA DONKI
+    keywords: ['solar flare', 'geomagnetic storm', 'Kp index', 'solar wind', 'CME', 'space weather', 'radiation belt'],
   },
 
   // LOW: Rarely changes

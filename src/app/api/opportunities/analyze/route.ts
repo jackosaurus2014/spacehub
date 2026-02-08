@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server';
 import { runAIAnalysis, getRecentAnalysisRuns } from '@/lib/opportunities-data';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
+  // AI analysis is resource-intensive; restrict to authenticated cron calls
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
+
   try {
     const body = await request.json().catch(() => ({}));
     const focusAreas = body.focusAreas as string[] | undefined;

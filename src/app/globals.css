@@ -441,6 +441,8 @@ body::after {
   background: rgba(30, 41, 59, 0.8);
   border-color: rgba(6, 182, 212, 0.3);
   color: #e2e8f0;
+  /* Prevent iOS zoom on focus — inputs must be >= 16px */
+  font-size: 16px;
 }
 
 .input::placeholder {
@@ -507,6 +509,68 @@ body::after {
 .gradient-line {
   @apply h-px w-full;
   background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.3), transparent);
+}
+
+/* ——— Safe Area Insets for notched / home-indicator devices ——— */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-area-pt {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-area-pl {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+
+.safe-area-pr {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* ——— Mobile touch-target helper ——— */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* ——— Mobile-friendly table cells ——— */
+@media (max-width: 767px) {
+  /* Ensure table cells have adequate padding on mobile */
+  table th,
+  table td {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  /* Ensure table text doesn't shrink too small */
+  table {
+    font-size: 0.8125rem; /* 13px — readable but compact */
+  }
+}
+
+/* ——— Scrollable tab bar for mobile ——— */
+@media (max-width: 767px) {
+  /* Auto-enable horizontal scroll for tab bars that contain many buttons */
+  .flex.gap-2:has(> button:nth-child(4)),
+  .flex.gap-3:has(> button:nth-child(4)) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+
+  .flex.gap-2:has(> button:nth-child(4))::-webkit-scrollbar,
+  .flex.gap-3:has(> button:nth-child(4))::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Ensure buttons inside scrollable tab bars don't wrap */
+  .flex.gap-2:has(> button:nth-child(4)) > button,
+  .flex.gap-3:has(> button:nth-child(4)) > button {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
 }
 
 /* Animation Delays */

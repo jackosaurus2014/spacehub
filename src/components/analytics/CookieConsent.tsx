@@ -59,7 +59,7 @@ export default function CookieConsent() {
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-[60] transition-transform duration-300 ease-out
+      className={`fixed bottom-16 lg:bottom-0 left-0 right-0 z-[60] transition-transform duration-300 ease-out
         ${isAnimating ? 'translate-y-0' : 'translate-y-full'}
         motion-reduce:transition-none`}
       role="dialog"

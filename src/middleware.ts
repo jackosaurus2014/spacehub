@@ -28,6 +28,12 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   if (pathname.startsWith('/api/auth/forgot-password')) {
     return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 req/hour
   }
+  if (pathname.startsWith('/api/auth/reset-password')) {
+    return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 req/hour
+  }
+  if (pathname.startsWith('/api/auth/verify-email')) {
+    return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 req/hour
+  }
   // All other /api/* routes
   return { maxRequests: 100, windowMs: 60 * 1000 }; // 100 req/minute
 }
@@ -96,6 +102,10 @@ function checkRateLimit(
     routeKey = 'newsletter';
   } else if (pathname.startsWith('/api/auth/forgot-password')) {
     routeKey = 'auth-forgot-password';
+  } else if (pathname.startsWith('/api/auth/reset-password')) {
+    routeKey = 'auth-reset-password';
+  } else if (pathname.startsWith('/api/auth/verify-email')) {
+    routeKey = 'auth-verify-email';
   } else {
     routeKey = 'api-general';
   }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 import {
   REGULATORY_AGENCIES,
   FAA_LICENSE_TYPES,
@@ -13,7 +14,10 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-export async function POST() {
+export async function POST(request: Request) {
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
+
   try {
     let agenciesCount = 0;
     let licenseTypesCount = 0;
@@ -261,7 +265,7 @@ export async function POST() {
   } catch (error) {
     logger.error('Error initializing regulatory agencies data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
-      { error: 'Failed to initialize regulatory agencies data', details: String(error) },
+      { error: 'Failed to initialize regulatory agencies data' },
       { status: 500 }
     );
   }
@@ -289,7 +293,7 @@ export async function GET() {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to check initialization status', details: String(error) },
+      { error: 'Failed to check initialization status' },
       { status: 500 }
     );
   }

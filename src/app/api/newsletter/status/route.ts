@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    // Restrict to admin users only - this exposes subscriber counts and digest details
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
     // Get subscriber counts
     const [totalSubscribers, verifiedSubscribers, unsubscribedCount] = await Promise.all([
       prisma.newsletterSubscriber.count(),

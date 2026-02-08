@@ -50,6 +50,48 @@ export const EXTERNAL_APIS = {
     baseUrl: 'https://search.patentsview.org/api/v1',
     rateLimit: { requests: 45, period: 60 },
   },
+  // ─── NEW APIs ────────────────────────────────────────────────────────
+  NASA_APOD: {
+    baseUrl: 'https://api.nasa.gov/planetary',
+    apiKey: process.env.NASA_API_KEY || 'DEMO_KEY',
+    rateLimit: { requests: 1000, period: 3600 },
+  },
+  NASA_TECHPORT: {
+    baseUrl: 'https://api.nasa.gov/techport/api',
+    apiKey: process.env.NASA_API_KEY || 'DEMO_KEY',
+    rateLimit: { requests: 1000, period: 3600 },
+  },
+  JPL_SBDB: {
+    baseUrl: 'https://ssd-api.jpl.nasa.gov',
+    rateLimit: { requests: 20, period: 60 }, // Conservative — no official limit published
+  },
+  NOAA_SWPC_JSON: {
+    baseUrl: 'https://services.swpc.noaa.gov/json',
+    rateLimit: { requests: 60, period: 3600 }, // No credentials needed, be polite
+  },
+  NOAA_SWPC_PRODUCTS: {
+    baseUrl: 'https://services.swpc.noaa.gov/products',
+    rateLimit: { requests: 60, period: 3600 },
+  },
+  N2YO: {
+    baseUrl: 'https://api.n2yo.com/rest/v1/satellite',
+    apiKey: process.env.N2YO_API_KEY || '',
+    rateLimit: { requests: 1000, period: 3600 },
+  },
+  FINNHUB: {
+    baseUrl: 'https://finnhub.io/api/v1',
+    apiKey: process.env.FINNHUB_API_KEY || '',
+    rateLimit: { requests: 60, period: 60 }, // Free tier: 60 calls/min
+  },
+  SAM_GOV: {
+    baseUrl: 'https://api.sam.gov/prod/opportunities/v2',
+    apiKey: process.env.SAM_GOV_API_KEY || '',
+    rateLimit: { requests: 1000, period: 86400 }, // Free tier: 1000/day
+  },
+  FCC_ECFS: {
+    baseUrl: 'https://efiling.fcc.gov/solr/ecfs/select',
+    rateLimit: { requests: 50, period: 3600 }, // Conservative — be polite
+  },
 };
 
 // Circuit breakers for each external API
@@ -78,6 +120,38 @@ const spaceflightNewsBreaker = createCircuitBreaker('spaceflight-news-api', {
   resetTimeout: 120_000,
 });
 const federalRegisterBreaker = createCircuitBreaker('federal-register', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const nasaApodBreaker = createCircuitBreaker('nasa-apod', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const nasaTechportBreaker = createCircuitBreaker('nasa-techport', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const jplSbdbBreaker = createCircuitBreaker('jpl-sbdb', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const noaaSwpcJsonBreaker = createCircuitBreaker('noaa-swpc-json', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const n2yoBreaker = createCircuitBreaker('n2yo', {
+  failureThreshold: 3,
+  resetTimeout: 300_000, // 5 min — protect API key limits
+});
+const finnhubBreaker = createCircuitBreaker('finnhub', {
+  failureThreshold: 3,
+  resetTimeout: 120_000,
+});
+const samGovBreaker = createCircuitBreaker('sam-gov', {
+  failureThreshold: 3,
+  resetTimeout: 300_000, // 5 min — limited daily quota
+});
+const fccEcfsBreaker = createCircuitBreaker('fcc-ecfs', {
   failureThreshold: 3,
   resetTimeout: 120_000,
 });
@@ -215,6 +289,138 @@ export async function fetchFederalRegister(
   return federalRegisterBreaker.execute(async () => {
     const searchParams = new URLSearchParams(params);
     const url = `${EXTERNAL_APIS.FEDERAL_REGISTER.baseUrl}/documents.json?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// NASA APOD API helpers
+export async function fetchNasaApod(
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  return nasaApodBreaker.execute(async () => {
+    const searchParams = new URLSearchParams({
+      api_key: EXTERNAL_APIS.NASA_APOD.apiKey,
+      ...params,
+    });
+    const url = `${EXTERNAL_APIS.NASA_APOD.baseUrl}/apod?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// NASA TechPort API helpers
+export async function fetchNasaTechport(
+  endpoint: string,
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  return nasaTechportBreaker.execute(async () => {
+    const searchParams = new URLSearchParams({
+      api_key: EXTERNAL_APIS.NASA_TECHPORT.apiKey,
+      ...params,
+    });
+    const url = `${EXTERNAL_APIS.NASA_TECHPORT.baseUrl}/${endpoint}?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// JPL SBDB Close Approach Data API helpers
+export async function fetchJplCad(
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  return jplSbdbBreaker.execute(async () => {
+    const searchParams = new URLSearchParams(params);
+    const url = `${EXTERNAL_APIS.JPL_SBDB.baseUrl}/cad.api?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// NOAA SWPC JSON data helpers (planetary K-index, solar regions, etc.)
+export async function fetchNoaaSwpcJson(endpoint: string): Promise<unknown> {
+  return noaaSwpcJsonBreaker.execute(async () => {
+    const url = `${EXTERNAL_APIS.NOAA_SWPC_JSON.baseUrl}/${endpoint}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// NOAA SWPC Products helpers (alerts, forecasts, etc.)
+export async function fetchNoaaSwpcProducts(endpoint: string): Promise<unknown> {
+  return noaaSwpcJsonBreaker.execute(async () => {
+    const url = `${EXTERNAL_APIS.NOAA_SWPC_PRODUCTS.baseUrl}/${endpoint}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// N2YO satellite tracking API helpers (requires API key)
+export async function fetchN2yo(
+  endpoint: string,
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  if (!EXTERNAL_APIS.N2YO.apiKey) {
+    logger.warn('N2YO API key not configured — skipping satellite tracking fetch');
+    return null;
+  }
+  return n2yoBreaker.execute(async () => {
+    const searchParams = new URLSearchParams(params);
+    const url = `${EXTERNAL_APIS.N2YO.baseUrl}/${endpoint}&apiKey=${EXTERNAL_APIS.N2YO.apiKey}&${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// Finnhub stock data API helpers (requires free API key)
+export async function fetchFinnhub(
+  endpoint: string,
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  if (!EXTERNAL_APIS.FINNHUB.apiKey) {
+    logger.warn('Finnhub API key not configured — skipping stock data fetch');
+    return null;
+  }
+  return finnhubBreaker.execute(async () => {
+    const searchParams = new URLSearchParams({
+      token: EXTERNAL_APIS.FINNHUB.apiKey,
+      ...params,
+    });
+    const url = `${EXTERNAL_APIS.FINNHUB.baseUrl}/${endpoint}?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// SAM.gov Government Opportunities API helpers (requires free API key)
+export async function fetchSamGov(
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  if (!EXTERNAL_APIS.SAM_GOV.apiKey) {
+    logger.warn('SAM.gov API key not configured — skipping government opportunities fetch');
+    return null;
+  }
+  return samGovBreaker.execute(async () => {
+    const searchParams = new URLSearchParams({
+      api_key: EXTERNAL_APIS.SAM_GOV.apiKey,
+      ...params,
+    });
+    const url = `${EXTERNAL_APIS.SAM_GOV.baseUrl}/search?${searchParams}`;
+    const response = await fetchWithRetry(url);
+    return response.json();
+  }, null);
+}
+
+// FCC ECFS public search helpers (no key needed, but rate-limit respectfully)
+export async function fetchFccEcfs(
+  params: Record<string, string> = {}
+): Promise<unknown> {
+  return fccEcfsBreaker.execute(async () => {
+    const searchParams = new URLSearchParams({
+      wt: 'json',
+      ...params,
+    });
+    const url = `${EXTERNAL_APIS.FCC_ECFS.baseUrl}?${searchParams}`;
     const response = await fetchWithRetry(url);
     return response.json();
   }, null);

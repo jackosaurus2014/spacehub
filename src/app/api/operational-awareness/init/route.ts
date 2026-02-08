@@ -3,8 +3,12 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { initializeOperationalAwarenessData } from '@/lib/operational-awareness-data';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 
-export async function POST() {
+export async function POST(request: Request) {
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
+
   try {
     const result = await initializeOperationalAwarenessData();
     return NextResponse.json({
@@ -20,8 +24,10 @@ export async function POST() {
   }
 }
 
-export async function GET() {
-  // Also allow GET for easy testing
+export async function GET(request: Request) {
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
+
   try {
     const result = await initializeOperationalAwarenessData();
     return NextResponse.json({

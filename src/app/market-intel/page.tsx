@@ -633,8 +633,8 @@ function MarketIntelContent() {
                   <span className="text-slate-400 font-normal text-sm">({companies.filter(c => c.isPublic).length})</span>
                 </h3>
                 <div className="card overflow-hidden">
-                  <div className="max-h-[500px] overflow-y-auto">
-                    <table className="w-full">
+                  <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
+                    <table className="w-full min-w-[640px]">
                       <thead className="sticky top-0 z-10">
                         <tr className="bg-slate-50 border-b border-slate-200">
                           <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Company</th>
@@ -725,8 +725,8 @@ function MarketIntelContent() {
                   <span className="text-slate-400 font-normal text-sm">({companies.filter(c => !c.isPublic).length})</span>
                 </h3>
                 <div className="card overflow-hidden">
-                  <div className="max-h-[500px] overflow-y-auto">
-                    <table className="w-full">
+                  <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
+                    <table className="w-full min-w-[720px]">
                       <thead className="sticky top-0 z-10">
                         <tr className="bg-slate-50 border-b border-slate-200">
                           <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Company</th>

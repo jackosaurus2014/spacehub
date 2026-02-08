@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import { initializeLaunchWindowsData } from '@/lib/launch-windows-data';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST() {
+export async function POST(request: Request) {
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
+
   try {
     const result = await initializeLaunchWindowsData();
     return NextResponse.json({

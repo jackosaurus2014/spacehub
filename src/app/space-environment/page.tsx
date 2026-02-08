@@ -2323,19 +2323,19 @@ function SpaceEnvironmentContent() {
         />
 
         {/* Main Tab Navigation */}
-        <div className="flex gap-1 mb-8 p-1 bg-slate-800/50 rounded-xl w-fit">
+        <div className="flex gap-1 mb-8 p-1 bg-slate-800/50 rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-thin">
           {MAIN_TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              className={`flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap touch-target ${
                 activeTab === tab.id
                   ? 'bg-nebula-500 text-white shadow-glow-sm'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
               }`}
             >
               <div className="text-sm font-semibold">{tab.label}</div>
-              <div className={`text-xs mt-0.5 ${activeTab === tab.id ? 'text-white/70' : 'text-slate-500'}`}>
+              <div className={`text-xs mt-0.5 hidden sm:block ${activeTab === tab.id ? 'text-white/70' : 'text-slate-500'}`}>
                 {tab.description}
               </div>
             </button>

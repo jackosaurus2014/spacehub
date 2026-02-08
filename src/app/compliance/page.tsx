@@ -1485,12 +1485,12 @@ function RegulatoryHubContent() {
       <InlineDisclaimer />
 
       {/* Top-Level Section Navigation */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-4 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">
         {topSections.map((section) => (
           <button
             key={section.id}
             onClick={() => handleSectionChange(section.id)}
-            className={`flex items-center gap-2 px-5 py-3 rounded-lg font-semibold text-sm transition-all ${
+            className={`flex items-center gap-2 px-4 sm:px-5 py-3 rounded-lg font-semibold text-sm transition-all whitespace-nowrap touch-target ${
               activeSection === section.id
                 ? 'bg-nebula-500 text-white shadow-glow-sm'
                 : 'bg-slate-100 text-slate-500 hover:bg-slate-200 border border-slate-200'
@@ -1504,12 +1504,12 @@ function RegulatoryHubContent() {
 
       {/* Sub-Tab Navigation */}
       {activeSection === 'compliance' && (
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">
           {complianceSubTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveSubTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap touch-target ${
                 activeSubTab === tab.id
                   ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
                   : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'

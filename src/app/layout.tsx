@@ -108,6 +108,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -127,6 +128,12 @@ export default function RootLayout({
         <meta name="application-name" content="SpaceNexus" />
         <meta name="msapplication-TileColor" content="#0f172a" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
+        {/* iOS splash screen / startup images */}
+        <meta name="apple-touch-fullscreen" content="yes" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         {/* Google Analytics 4
             To enable analytics:
             1. Replace GA_MEASUREMENT_ID with your actual Measurement ID (G-XXXXXXXXXX)

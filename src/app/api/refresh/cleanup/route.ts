@@ -6,12 +6,9 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { requireCronSecret } = await import('@/lib/errors');
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
 
   const start = Date.now();
 
@@ -70,7 +67,7 @@ export async function POST(request: Request) {
       error: error instanceof Error ? error.message : String(error),
     });
     return NextResponse.json(
-      { success: false, error: String(error) },
+      { success: false, error: 'Cleanup operation failed' },
       { status: 500 }
     );
   }

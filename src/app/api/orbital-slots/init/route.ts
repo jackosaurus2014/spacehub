@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { initializeOrbitalData } from '@/lib/orbital-slots-data';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 
-export async function POST() {
+export async function POST(request: Request) {
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
+
   try {
     const results = await initializeOrbitalData();
     return NextResponse.json({

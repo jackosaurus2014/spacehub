@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import prisma from '@/lib/db';
 import { Resend } from 'resend';
-import { validationError, conflictError, internalError } from '@/lib/errors';
+import { validationError, conflictError, internalError, escapeHtml } from '@/lib/errors';
 import { companyRequestSchema, validateBody } from '@/lib/validations';
 import { logger } from '@/lib/logger';
+import { authOptions } from '@/lib/auth';
 
 // Lazy initialization to avoid build-time errors
 let resendClient: Resend | null = null;
@@ -66,7 +68,7 @@ export async function POST(request: Request) {
         await resend.emails.send({
           from: FROM_EMAIL,
           to: ADMIN_EMAIL,
-          subject: `[SpaceNexus] New Company Request: ${companyName}`,
+          subject: `[SpaceNexus] New Company Request: ${escapeHtml(companyName)}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0f0f23; padding: 24px; border-radius: 12px;">
               <h1 style="color: #8b5cf6; margin-bottom: 24px;">New Company Addition Request</h1>
@@ -75,25 +77,25 @@ export async function POST(request: Request) {
                 <h2 style="color: #ffffff; margin: 0 0 16px 0; font-size: 18px;">Company Details</h2>
 
                 <p style="color: #a0a0b8; margin: 8px 0;">
-                  <strong style="color: #c0c0d8;">Name:</strong> ${companyName}
+                  <strong style="color: #c0c0d8;">Name:</strong> ${escapeHtml(companyName)}
                 </p>
 
                 <p style="color: #a0a0b8; margin: 8px 0;">
                   <strong style="color: #c0c0d8;">Description:</strong><br/>
-                  ${description}
+                  ${escapeHtml(description)}
                 </p>
 
                 ${website ? `
                 <p style="color: #a0a0b8; margin: 8px 0;">
                   <strong style="color: #c0c0d8;">Website:</strong>
-                  <a href="${website}" style="color: #8b5cf6;">${website}</a>
+                  <a href="${escapeHtml(website)}" style="color: #8b5cf6;">${escapeHtml(website)}</a>
                 </p>
                 ` : ''}
 
                 ${submitterEmail ? `
                 <p style="color: #a0a0b8; margin: 8px 0;">
                   <strong style="color: #c0c0d8;">Submitter Email:</strong>
-                  <a href="mailto:${submitterEmail}" style="color: #8b5cf6;">${submitterEmail}</a>
+                  <a href="mailto:${escapeHtml(submitterEmail)}" style="color: #8b5cf6;">${escapeHtml(submitterEmail)}</a>
                 </p>
                 ` : '<p style="color: #a0a0b8; margin: 8px 0;"><strong style="color: #c0c0d8;">Submitter:</strong> Anonymous</p>'}
               </div>
@@ -135,9 +137,14 @@ Submitted at: ${new Date().toISOString()}
   }
 }
 
-// GET endpoint to retrieve requests (admin only in future)
+// GET endpoint to retrieve requests (admin only)
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const requests = await prisma.companyAddRequest.findMany({
       orderBy: { createdAt: 'desc' },
       take: 100,

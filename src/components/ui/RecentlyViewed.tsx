@@ -41,7 +41,7 @@ export default function RecentlyViewed() {
         aria-haspopup="true"
         aria-label="Recently viewed pages"
         title="Recently viewed"
-        className="p-2 text-slate-400 hover:text-cyan-300 transition-colors rounded-lg hover:bg-slate-700/50"
+        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-cyan-300 transition-colors rounded-lg hover:bg-slate-700/50"
       >
         {/* Clock/history icon */}
         <svg

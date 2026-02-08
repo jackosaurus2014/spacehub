@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import { initializeWorkforceData } from '@/lib/workforce-data';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST() {
+export async function POST(request: Request) {
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
+
   try {
     const result = await initializeWorkforceData();
     return NextResponse.json({
@@ -14,7 +18,7 @@ export async function POST() {
   } catch (error) {
     logger.error('Failed to initialize workforce data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
-      { error: 'Failed to initialize workforce data', details: String(error) },
+      { error: 'Failed to initialize workforce data' },
       { status: 500 }
     );
   }

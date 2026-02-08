@@ -17,7 +17,7 @@ import { initializeLaunchWindowsData } from '@/lib/launch-windows-data';
 import { initializeDebrisData } from '@/lib/debris-data';
 import { generateDailyDigest } from '@/lib/newsletter/digest-generator';
 import { sendDailyDigest } from '@/lib/newsletter/email-service';
-import { refreshAllExternalAPIs } from '@/lib/module-api-fetchers';
+import { refreshAllExternalAPIs, fetchAndStoreEnhancedSpaceWeather, fetchAndStoreDonkiEnhanced } from '@/lib/module-api-fetchers';
 import { refreshAllAIResearchedModules } from '@/lib/ai-data-refresher';
 import { getAllModuleFreshness } from '@/lib/dynamic-content';
 import { logger } from '@/lib/logger';
@@ -146,15 +146,12 @@ async function refreshDaily(): Promise<Record<string, string>> {
 }
 
 export async function POST(request: Request) {
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { requireCronSecret } = await import('@/lib/errors');
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type'); // 'news', 'daily', 'external-apis', 'ai-research', 'live-streams', or null (both news+daily)
+  const type = searchParams.get('type'); // 'news', 'daily', 'external-apis', 'space-weather', 'ai-research', 'live-streams', or null (both news+daily)
 
   const results: Record<string, unknown> = {};
 
@@ -172,6 +169,16 @@ export async function POST(request: Request) {
     if (type === 'external-apis') {
       const apiResults = await refreshAllExternalAPIs();
       results.externalApis = apiResults;
+    }
+
+    if (type === 'space-weather') {
+      const swpcUpdated = await fetchAndStoreEnhancedSpaceWeather();
+      const donkiUpdated = await fetchAndStoreDonkiEnhanced();
+      results.spaceWeather = {
+        swpcDatasets: swpcUpdated,
+        donkiEventTypes: donkiUpdated,
+        totalUpdated: swpcUpdated + donkiUpdated,
+      };
     }
 
     if (type === 'ai-research') {
@@ -206,7 +213,7 @@ export async function POST(request: Request) {
   } catch (error) {
     logger.error('Refresh error', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
-      { success: false, error: String(error), results },
+      { success: false, error: 'Data refresh failed', results },
       { status: 500 }
     );
   }
@@ -251,6 +258,6 @@ export async function GET() {
       dynamicContent: dynamicContentFreshness,
     });
   } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch refresh status' }, { status: 500 });
   }
 }

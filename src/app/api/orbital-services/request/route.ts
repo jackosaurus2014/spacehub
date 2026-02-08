@@ -3,6 +3,8 @@ import prisma from '@/lib/db';
 import { validationError, internalError } from '@/lib/errors';
 import { orbitalServiceRequestSchema, validateBody } from '@/lib/validations';
 import { logger } from '@/lib/logger';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
@@ -42,6 +44,11 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const requests = await prisma.orbitalServiceRequest.findMany({
       orderBy: { createdAt: 'desc' },
       take: 100,

@@ -47,20 +47,29 @@ describe('emailSchema', () => {
 // passwordSchema
 // ---------------------------------------------------------------------------
 describe('passwordSchema', () => {
-  it('accepts a valid password with 6+ characters', () => {
-    const result = passwordSchema.safeParse('secret');
+  it('accepts a valid password with 8+ characters, uppercase, lowercase, and number', () => {
+    const result = passwordSchema.safeParse('Secret1x');
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data).toBe('secret');
+      expect(result.data).toBe('Secret1x');
     }
   });
 
-  it('rejects a password shorter than 6 characters', () => {
-    const result = passwordSchema.safeParse('abc');
+  it('rejects a password shorter than 8 characters', () => {
+    const result = passwordSchema.safeParse('Ab1');
     expect(result.success).toBe(false);
     if (!result.success) {
       const messages = result.error.issues.map((i) => i.message);
-      expect(messages).toContain('Password must be at least 6 characters');
+      expect(messages).toContain('Password must be at least 8 characters');
+    }
+  });
+
+  it('rejects a password without uppercase, lowercase, and number', () => {
+    const result = passwordSchema.safeParse('alllowercase');
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages).toContain('Password must contain at least one uppercase letter, one lowercase letter, and one number');
     }
   });
 
@@ -295,8 +304,8 @@ describe('registerSchema', () => {
   it('accepts matching passwords', () => {
     const result = registerSchema.safeParse({
       email: 'new@example.com',
-      password: 'securepass',
-      confirmPassword: 'securepass',
+      password: 'Securepass1',
+      confirmPassword: 'Securepass1',
     });
     expect(result.success).toBe(true);
   });
@@ -304,8 +313,8 @@ describe('registerSchema', () => {
   it('rejects mismatched passwords', () => {
     const result = registerSchema.safeParse({
       email: 'new@example.com',
-      password: 'securepass',
-      confirmPassword: 'different',
+      password: 'Securepass1',
+      confirmPassword: 'Different1x',
     });
     expect(result.success).toBe(false);
     if (!result.success) {

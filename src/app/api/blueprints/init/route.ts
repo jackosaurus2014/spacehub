@@ -3,8 +3,12 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { initializeBlueprintData } from '@/lib/blueprint-data';
 import { logger } from '@/lib/logger';
+import { requireCronSecret } from '@/lib/errors';
 
-export async function POST() {
+export async function POST(request: Request) {
+  const authError = requireCronSecret(request);
+  if (authError) return authError;
+
   try {
     const result = await initializeBlueprintData();
 

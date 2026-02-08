@@ -1,0 +1,82 @@
+
+Spin up an agent team to complete the below tasks in an efficient and effective manner.  Edit this document to show which tasks have been completed and to add any notes that might be useful as we do more work on this web app.
+
+1.  I was expecting a bigger makeover during the latest reenvisioning of our website.  It still looks fairly bland and doesn't have much animation outside of the landing page.  Reenvision the look and feel of our entire site.  Consider metoro.io, umbrel.com, and createwithplay.com as inspiration.  Come up with some design ideas that we could use to make our website look as impressive, interactive and next-gen as these websites.  The whole website should be very modern, sleek and include animated tools and modules wherever possible. Use vibrant and animated logos where possible.  
+
+2.  The Next and Previous buttons on the dashboard don't appear to be pointing to the modules themselves.  When I click on previous and next it doesn't show any of the module information below.
+
+3.  Fix the text in the newsletter sign up card.  Right now the text is white on a background of white.
+
+4.  Create an AI insights module that utilizes the Claude Opus API.  The AI should review the news, regulatory updates, new case law and other information about the space industry or procurement that has come out in the last 24 hours.  The AI should then pick two topics that are likely to be the most interesting to the consumers of our web app (from among CEOs, entrepeneurs, enthusiasts, regulators, lawyers, supply chain specialists and project managers).  Then the AI should write a 2-5 page story about each of those topics and publish it on the AI Insights module page.  All stories should be stored in a permanent database and all stories from previous days should be accessible to users and visitors to the website in a story archive organized by date.
+
+5.  Make sure all of the modules that are displaying information and data are pulling and displaying up to date, real-time information, data and news.  If any of the modules or pages are relying on AI research, implement an AI API to ensure that users coming to the site are always seeing the most up to date information in each module.  If you need anything from me to enable real-time, autonomous data, add that information here and tell me how to collect it. 
+
+6.  Review the newsletter signup process that you built into this site.  When I signed up for the newsletter it told me it was sending an activation email to my email address but I never received an email.  Make sure the entire flow is there to sign up for a newsletter.  
+
+
+  Resend reminder: For the newsletter verification emails to actually send, you'll need to configure these Railway      
+  environment variables:                                                                                                
+  - RESEND_API_KEY — from resend.com
+  - NEWSLETTER_FROM_EMAIL — e.g., SpaceNexus <newsletter@yourdomain.com> (must match verified domain)  
+
+
+what is the CRON_SECRET variable in my variables list?                                                                                                                         
+● That's the secret token used to protect the AI Insights generation endpoint (POST /api/ai-insights/generate).                                                                                                                                 
+  Since that endpoint triggers Claude API calls (which cost money), it's protected so only authorized callers can use     it. The endpoint checks for:                                                                                          
+                                                                                                                        
+  Authorization: Bearer <CRON_SECRET>
+                                                                                                                        
+  How to use it:
+  - Set CRON_SECRET to any random string (e.g., generate one with openssl rand -hex 32)
+  - Then trigger AI insight generation via a cron job or manual call:
+
+  curl -X POST https://spacesnexus.com/api/ai-insights/generate \
+    -H "Authorization: Bearer YOUR_CRON_SECRET_HERE"
+
+  If you don't have it set yet, you can either:
+  - Add a random value in Railway variables (recommended)
+  - Or leave it unset — in that case, only logged-in admin users can trigger generation via the admin session fallback  
+
+  It's not related to the newsletter issue. The 502 is more likely a missing DATABASE_URL or build error.
+
+❯ How do I tirgger a daily AI insight generation?                                                                                                             
+● You have a few options:                                                                                                  
+  Option 1: Railway Cron Job (Recommended)                                                                                                                                                                                                      
+  Railway supports cron jobs natively. Add a new Cron Service in your Railway project:                                  
+
+  1. In Railway dashboard → your project → + New → Cron Job                                                             
+  2. Set the schedule: 0 8 * * * (runs daily at 8 AM UTC)
+  3. Set the command:
+  curl -X POST https://spacesnexus.com/api/ai-insights/generate -H "Authorization: Bearer $CRON_SECRET"
+  4. Make sure CRON_SECRET is set in your environment variables
+
+  Option 2: Free External Cron Service
+
+  Use a free service like cron-job.org:
+
+  1. Sign up at https://cron-job.org
+  2. Create a new job:
+    - URL: https://spacesnexus.com/api/ai-insights/generate
+    - Method: POST
+    - Schedule: Daily at whatever time you prefer
+    - Headers: Add Authorization: Bearer YOUR_CRON_SECRET
+  3. Save and enable
+
+  Option 3: Manual Trigger
+
+  Run this anytime from your terminal:
+  curl -X POST https://spacesnexus.com/api/ai-insights/generate -H "Authorization: Bearer YOUR_CRON_SECRET"
+
+  Note
+
+  The endpoint needs recent news articles in the database to work. If prisma.newsArticle has no articles from the last  
+  24 hours, it returns a 404 with "No recent news articles found." Make sure your news fetcher is also running on a     
+  schedule (or has been seeded) before triggering AI insights.
+
+❯ what news fetcher is setup for my web app?                                                                                                                         
+● Explore(Find news fetching setup)                                                                                       ⎿  Done (17 tool uses · 58.7k tokens · 40s)  
+
+
+
+
+

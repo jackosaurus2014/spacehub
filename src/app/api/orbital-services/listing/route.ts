@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import prisma from '@/lib/db';
 import { Resend } from 'resend';
-import { validationError, conflictError, internalError } from '@/lib/errors';
+import { validationError, conflictError, internalError, escapeHtml } from '@/lib/errors';
 import { orbitalServiceListingSchema, validateBody } from '@/lib/validations';
 import { logger } from '@/lib/logger';
+import { authOptions } from '@/lib/auth';
 
 // Lazy initialization to avoid build-time errors
 let resendClient: Resend | null = null;
@@ -73,7 +75,7 @@ export async function POST(request: Request) {
         await resend.emails.send({
           from: FROM_EMAIL,
           to: ADMIN_EMAIL,
-          subject: `[SpaceNexus] New Service Listing Request: ${serviceName}`,
+          subject: `[SpaceNexus] New Service Listing Request: ${escapeHtml(serviceName)}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0f0f23; padding: 24px; border-radius: 12px;">
               <h1 style="color: #8b5cf6; margin-bottom: 24px;">New Service Listing Request</h1>
@@ -82,19 +84,19 @@ export async function POST(request: Request) {
                 <h2 style="color: #ffffff; margin: 0 0 16px 0; font-size: 18px;">Company Information</h2>
 
                 <p style="color: #a0a0b8; margin: 8px 0;">
-                  <strong style="color: #c0c0d8;">Company:</strong> ${companyName}
+                  <strong style="color: #c0c0d8;">Company:</strong> ${escapeHtml(companyName)}
                 </p>
 
                 ${companyWebsite ? `
                 <p style="color: #a0a0b8; margin: 8px 0;">
                   <strong style="color: #c0c0d8;">Website:</strong>
-                  <a href="${companyWebsite}" style="color: #8b5cf6;">${companyWebsite}</a>
+                  <a href="${escapeHtml(companyWebsite)}" style="color: #8b5cf6;">${escapeHtml(companyWebsite)}</a>
                 </p>
                 ` : ''}
 
                 <p style="color: #a0a0b8; margin: 8px 0;">
                   <strong style="color: #c0c0d8;">Contact Email:</strong>
-                  <a href="mailto:${contactEmail}" style="color: #8b5cf6;">${contactEmail}</a>
+                  <a href="mailto:${escapeHtml(contactEmail)}" style="color: #8b5cf6;">${escapeHtml(contactEmail)}</a>
                 </p>
               </div>
 
@@ -102,23 +104,23 @@ export async function POST(request: Request) {
                 <h2 style="color: #ffffff; margin: 0 0 16px 0; font-size: 18px;">Service Details</h2>
 
                 <p style="color: #a0a0b8; margin: 8px 0;">
-                  <strong style="color: #c0c0d8;">Service Name:</strong> ${serviceName}
+                  <strong style="color: #c0c0d8;">Service Name:</strong> ${escapeHtml(serviceName)}
                 </p>
 
                 ${category ? `
                 <p style="color: #a0a0b8; margin: 8px 0;">
-                  <strong style="color: #c0c0d8;">Category:</strong> ${category}
+                  <strong style="color: #c0c0d8;">Category:</strong> ${escapeHtml(category)}
                 </p>
                 ` : ''}
 
                 <p style="color: #a0a0b8; margin: 8px 0;">
                   <strong style="color: #c0c0d8;">Description:</strong><br/>
-                  ${serviceDescription}
+                  ${escapeHtml(serviceDescription)}
                 </p>
 
                 <p style="color: #a0a0b8; margin: 8px 0;">
                   <strong style="color: #c0c0d8;">Pricing:</strong><br/>
-                  ${pricingDetails}
+                  ${escapeHtml(pricingDetails)}
                 </p>
               </div>
 
@@ -164,9 +166,14 @@ Submitted at: ${new Date().toISOString()}
   }
 }
 
-// GET endpoint to retrieve listing requests (admin only in future)
+// GET endpoint to retrieve listing requests (admin only)
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const requests = await prisma.orbitalServiceListing.findMany({
       orderBy: { createdAt: 'desc' },
       take: 100,

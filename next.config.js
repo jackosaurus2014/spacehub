@@ -13,7 +13,35 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'spaceflightnewsapi.net',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.spaceflightnewsapi.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'thespacedevs.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.thespacedevs.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.nasa.gov',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.esa.int',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.spacex.com',
       },
     ],
   },
@@ -28,6 +56,7 @@ const nextConfig = {
           { key: 'X-XSS-Protection', value: '1; mode=block' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://api.spaceflightnewsapi.net https://ll.thespacedevs.com https://api.nasa.gov https://services.swpc.noaa.gov https://celestrak.org https://www.google-analytics.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" },
         ],
       },
       {
@@ -81,6 +110,20 @@ const nextConfig = {
           {
             key: 'Cache-Control',
             value: 'no-cache',
+          },
+        ],
+      },
+      // Digital Asset Links for Android TWA and Apple universal links
+      {
+        source: '/.well-known/:path*',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/json',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600',
           },
         ],
       },

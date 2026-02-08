@@ -48,10 +48,12 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
     return true;
   }
 
-  // Fall back to session-based admin check
-  const session = await getServerSession(authOptions);
-  if (session?.user?.isAdmin) {
-    return true;
+  // Fall back to session-based admin check (only if no Bearer token was attempted)
+  if (!authHeader) {
+    const session = await getServerSession(authOptions);
+    if (session?.user?.isAdmin) {
+      return true;
+    }
   }
 
   return false;

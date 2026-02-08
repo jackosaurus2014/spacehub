@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
+import { escapeHtml } from '@/lib/errors';
 
 const submissionSchema = z.object({
   businessName: z.string().min(1, 'Business name is required').max(200),
@@ -52,13 +53,13 @@ export async function POST(request: NextRequest) {
           html: `
             <h2>New Service Provider Submission</h2>
             <table style="border-collapse: collapse; width: 100%;">
-              <tr><td style="padding: 8px; font-weight: bold;">Business Name:</td><td style="padding: 8px;">${data.businessName}</td></tr>
-              ${data.contactName ? `<tr><td style="padding: 8px; font-weight: bold;">Contact Name:</td><td style="padding: 8px;">${data.contactName}</td></tr>` : ''}
-              <tr><td style="padding: 8px; font-weight: bold;">Email:</td><td style="padding: 8px;">${data.email}</td></tr>
-              ${data.phone ? `<tr><td style="padding: 8px; font-weight: bold;">Phone:</td><td style="padding: 8px;">${data.phone}</td></tr>` : ''}
-              ${data.website ? `<tr><td style="padding: 8px; font-weight: bold;">Website:</td><td style="padding: 8px;">${data.website}</td></tr>` : ''}
-              <tr><td style="padding: 8px; font-weight: bold;">Description:</td><td style="padding: 8px;">${data.description}</td></tr>
-              ${data.pricing ? `<tr><td style="padding: 8px; font-weight: bold;">Pricing:</td><td style="padding: 8px;">${data.pricing}</td></tr>` : ''}
+              <tr><td style="padding: 8px; font-weight: bold;">Business Name:</td><td style="padding: 8px;">${escapeHtml(data.businessName)}</td></tr>
+              ${data.contactName ? `<tr><td style="padding: 8px; font-weight: bold;">Contact Name:</td><td style="padding: 8px;">${escapeHtml(data.contactName)}</td></tr>` : ''}
+              <tr><td style="padding: 8px; font-weight: bold;">Email:</td><td style="padding: 8px;">${escapeHtml(data.email)}</td></tr>
+              ${data.phone ? `<tr><td style="padding: 8px; font-weight: bold;">Phone:</td><td style="padding: 8px;">${escapeHtml(data.phone)}</td></tr>` : ''}
+              ${data.website ? `<tr><td style="padding: 8px; font-weight: bold;">Website:</td><td style="padding: 8px;">${escapeHtml(data.website)}</td></tr>` : ''}
+              <tr><td style="padding: 8px; font-weight: bold;">Description:</td><td style="padding: 8px;">${escapeHtml(data.description)}</td></tr>
+              ${data.pricing ? `<tr><td style="padding: 8px; font-weight: bold;">Pricing:</td><td style="padding: 8px;">${escapeHtml(data.pricing)}</td></tr>` : ''}
             </table>
           `,
         });
