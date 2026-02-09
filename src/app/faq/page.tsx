@@ -35,7 +35,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: 'general',
     question: 'Is SpaceNexus free to use?',
     answer:
-      'Yes! SpaceNexus offers a free Enthusiast tier that gives you access to core features including news feeds, basic mission tracking, and public data. Premium tiers (Professional and Enterprise) unlock advanced analytics, AI-powered insights, export capabilities, and priority support.',
+      'Yes! SpaceNexus offers a free Explorer tier that gives you access to core features including news feeds, satellite tracking, mission countdowns, and public data. Premium tiers (Professional and Enterprise) unlock advanced analytics, AI-powered insights, export capabilities, and priority support.',
   },
   {
     id: 'gen-4',
@@ -65,7 +65,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: 'account',
     question: 'How do I create an account?',
     answer:
-      'Click the "Get Started" or "Sign Up" button on our homepage. You can register with your email address and create a password. After registration, you will have access to the free Enthusiast tier immediately.',
+      'Click the "Get Started" or "Sign Up" button on our homepage. You can register with your email address and create a password. After registration, you will have access to the free Explorer tier immediately.',
   },
   {
     id: 'acc-2',

@@ -19,7 +19,7 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
   adFree: boolean;
 }> = {
   free: {
-    maxDailyArticles: 10,
+    maxDailyArticles: 25,
     hasStockTracking: false,
     hasMarketIntel: true,
     hasResourceExchange: false,
@@ -64,12 +64,18 @@ export function canAccessFeature(
 
 // Module tier requirements — single source of truth
 const PREMIUM_MODULES: Record<string, SubscriptionTier> = {
+  // Pro tier — professional analytics & intelligence
   'resource-exchange': 'pro',
+  'supply-chain': 'pro',
+  'startup-tracker': 'pro',
+  'space-economy': 'pro',
+  // Enterprise tier — organizational & compliance tools
   'business-opportunities': 'enterprise',
   'spectrum-tracker': 'enterprise',
   'space-insurance': 'enterprise',
   'compliance': 'enterprise',
   'orbital-services': 'enterprise',
+  'patent-tracker': 'enterprise',
 };
 
 const TIER_ORDER: SubscriptionTier[] = ['free', 'pro', 'enterprise'];

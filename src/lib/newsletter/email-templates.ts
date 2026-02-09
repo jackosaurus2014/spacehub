@@ -698,7 +698,7 @@ export function generateNurtureCaseStudyEmail(userName: string): NurtureEmailRes
         </td></tr>
       </table>
       <p style="margin:16px 0 0;color:#94a3b8;font-size:14px;line-height:1.6;">
-        At <strong style="color:#06b6d4;">$9.99/month</strong> ($120/year), SpaceNexus Pro delivers over <strong style="color:#06b6d4;">$50,000</strong> in annual productivity value.
+        At <strong style="color:#06b6d4;">$19.99/month</strong> ($199/year), SpaceNexus Pro delivers over <strong style="color:#06b6d4;">$50,000</strong> in annual productivity value.
       </p>
       ${getNurtureCta('Read Full Case Study', `${APP_URL}/pricing`)}
     </td></tr>
@@ -713,7 +713,7 @@ Before: Manually checking 6 different sources for orbital data, conjunction aler
 
 After: One unified SpaceNexus dashboard with real-time alerts. Under 5 hours/month to stay fully informed.
 
-At $9.99/month ($120/year), SpaceNexus Pro delivers over $50,000 in annual productivity value.
+At $19.99/month ($199/year), SpaceNexus Pro delivers over $50,000 in annual productivity value.
 
 Read Full Case Study: ${APP_URL}/pricing
 
@@ -723,7 +723,7 @@ ${APP_URL}`;
 
   return {
     subject: 'How one team saved 40+ hours/month with SpaceNexus',
-    subjectB: '$360/year vs $50K+ in value -- the SpaceNexus ROI',
+    subjectB: '$199/year vs $50K+ in value -- the SpaceNexus ROI',
     previewText,
     html,
     text,

@@ -14,7 +14,7 @@ function getTierInfo(moduleId: string) {
   if (tier === 'pro') {
     return { label: 'Pro', color: 'text-violet-700', bgColor: 'bg-gradient-to-r from-violet-100 to-purple-100 border-violet-300', dotColor: 'bg-violet-500' };
   }
-  return { label: 'Enthusiast', color: 'text-emerald-700', bgColor: 'bg-gradient-to-r from-emerald-100 to-teal-100 border-emerald-300', dotColor: 'bg-emerald-500' };
+  return { label: 'Explorer', color: 'text-emerald-700', bgColor: 'bg-gradient-to-r from-emerald-100 to-teal-100 border-emerald-300', dotColor: 'bg-emerald-500' };
 }
 
 export default function ModuleNavBar() {
@@ -228,7 +228,7 @@ export default function ModuleNavBar() {
           <div className="hidden sm:flex items-center gap-4">
             <span className="flex items-center gap-1.5 text-slate-400">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              Enthusiast
+              Explorer
             </span>
             <span className="flex items-center gap-1.5 text-slate-400">
               <span className="w-2 h-2 rounded-full bg-violet-500" />

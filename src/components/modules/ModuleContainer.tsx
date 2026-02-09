@@ -101,7 +101,7 @@ function getTierInfo(moduleId: string): { label: string; color: string; bgColor:
     };
   }
   return {
-    label: 'Enthusiast',
+    label: 'Explorer',
     color: 'text-emerald-700',
     bgColor: 'bg-gradient-to-r from-emerald-100 to-teal-100 border-emerald-300',
     dotColor: 'bg-emerald-500'
@@ -376,7 +376,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1.5 text-slate-400">
                 <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                Enthusiast
+                Explorer
               </span>
               <span className="flex items-center gap-1.5 text-slate-400">
                 <span className="w-2 h-2 rounded-full bg-violet-500"></span>

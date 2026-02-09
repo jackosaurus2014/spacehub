@@ -113,7 +113,7 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-      return NextResponse.json({ success: true, remaining: 10 });
+      return NextResponse.json({ success: true, remaining: 25 });
     }
 
     const body = await request.json();
@@ -237,7 +237,7 @@ export async function POST(request: Request) {
     const isNewDay = user.lastArticleViewReset.toDateString() !== now.toDateString();
     const currentViews = isNewDay ? 0 : user.dailyArticleViews;
 
-    if (currentViews >= 10) {
+    if (currentViews >= 25) {
       return NextResponse.json({
         success: false,
         remaining: 0,
@@ -255,7 +255,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      remaining: 10 - currentViews - 1,
+      remaining: 25 - currentViews - 1,
     });
   } catch (error) {
     logger.error('Failed to process subscription request', { error: error instanceof Error ? error.message : String(error) });
