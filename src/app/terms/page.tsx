@@ -31,7 +31,7 @@ export default function TermsOfServicePage() {
                 the Services.
               </p>
               <p className="text-slate-400 leading-relaxed">
-                These Terms constitute a legally binding agreement between you and SpaceNexus, Inc.
+                These Terms constitute a legally binding agreement between you and SpaceNexus, LLC.
                 (&quot;SpaceNexus,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;). By using our Services, you represent that you are
                 at least 18 years old and have the legal capacity to enter into these Terms.
               </p>
