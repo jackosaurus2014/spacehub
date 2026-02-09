@@ -21,7 +21,7 @@ export async function GET(
     return NextResponse.json({
       module,
       section: section || null,
-      data: content.map((c) => c.data),
+      data: content.flatMap((c) => Array.isArray(c.data) ? c.data : [c.data]),
       items: content,
       meta: {
         count: content.length,

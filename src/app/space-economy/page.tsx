@@ -675,7 +675,7 @@ function PublicMarketsTab({ stocks, etfs = [] }: PublicMarketsTabProps) {
                       {stock.exchange}:{stock.ticker}
                     </td>
                     <td className="py-3 px-4 text-right text-slate-300 font-mono">
-                      ${stock.price.toFixed(2)}
+                      ${(stock.price ?? 0).toFixed(2)}
                     </td>
                     <td className="py-3 px-4 text-right text-slate-300 font-mono">
                       {formatBillions(stock.marketCap)}
@@ -690,7 +690,7 @@ function PublicMarketsTab({ stocks, etfs = [] }: PublicMarketsTabProps) {
                       </span>
                     </td>
                     <td className="py-3 px-4 text-right text-slate-400 font-mono hidden md:table-cell">
-                      {stock.revenue2024 >= 1 ? formatBillions(stock.revenue2024) : `$${(stock.revenue2024 * 1000).toFixed(0)}M`}
+                      {(stock.revenue2024 ?? 0) >= 1 ? formatBillions(stock.revenue2024 ?? 0) : `$${((stock.revenue2024 ?? 0) * 1000).toFixed(0)}M`}
                     </td>
                     <td className="py-3 px-4 hidden lg:table-cell">
                       <span className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">{stock.sector}</span>
