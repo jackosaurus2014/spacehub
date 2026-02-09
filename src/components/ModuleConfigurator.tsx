@@ -371,7 +371,7 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
                         {/* Toggle switch */}
                         <button
                           onClick={() => toggleModule(mod.moduleId)}
-                          className="relative flex-shrink-0"
+                          className="relative flex-shrink-0 overflow-hidden rounded-full"
                           aria-label={`${mod.enabled ? 'Disable' : 'Enable'} ${mod.def.name}`}
                         >
                           <div

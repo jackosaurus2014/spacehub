@@ -258,7 +258,7 @@ export default function DashboardLayoutSelector({
                       className="flex items-center justify-between p-3 rounded-lg border border-space-600/50 bg-space-800/30 cursor-pointer hover:border-space-500 transition-all"
                     >
                       <span className="text-star-200">{section.name}</span>
-                      <div className="relative">
+                      <div className="relative overflow-hidden rounded-full">
                         <input
                           type="checkbox"
                           checked={section.visible}
