@@ -1,0 +1,1878 @@
+================================================================================
+SPACENEXUS CEO STRATEGIC DEEP DIVE
+Exhaustive Research & Execution Gameplan for 6 Critical Issues
+Prepared: February 8, 2026  |  For: CEO Morning Review
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+  EXECUTIVE SUMMARY ..................................................... Line 25
+  ISSUE 1: Company Intelligence Database (CRITICAL GAP) ............... Line 80
+  ISSUE 2: LinkedIn as Highest Priority for B2B ...................... Line 320
+  ISSUE 3: SEO Weakness Identification ............................... Line 430
+  ISSUE 4: Conference Strategy (Space Symposium + SATELLITE) ......... Line 680
+  ISSUE 5: "Bloomberg Terminal of Space" Vision ...................... Line 920
+  ISSUE 6: Payload Space -- The #1 Competitor Threat ................ Line 1150
+  UNIFIED 90-DAY EXECUTION PLAN ..................................... Line 1400
+  BUDGET SUMMARY .................................................... Line 1520
+
+
+================================================================================
+EXECUTIVE SUMMARY
+================================================================================
+
+After exhaustive research across all 6 strategic issues, here are the key
+findings and recommended actions, in order of urgency:
+
+1. COMPANY INTELLIGENCE DATABASE: This is the single highest-priority product
+   gap. Every competitor has company profiles -- we don't. Without this, we
+   cannot sell to enterprises. MVP target: 100 companies in 6 weeks. This is
+   not optional; it is existential.
+
+2. PAYLOAD SPACE IS REAL: They have audience (40K+ newsletter subscribers),
+   brand recognition, revenue ($1.5-2M+ ARR), and are moving into our space
+   with Payload Pro at $999/year. They are the most dangerous competitor
+   because they already own the distribution that we need to build. Our
+   response: differentiate on tools and data depth, not content.
+
+3. LINKEDIN IS THE #1 CHANNEL: A comprehensive 90-day strategy exists in
+   docs/LINKEDIN_B2B_STRATEGY.md (823 lines, fully sourced). Key insight:
+   Thought Leader Ads at $2.29 CPC (vs $13.23 for standard) make the CEO's
+   personal brand the most cost-effective marketing channel available. Start
+   posting this week.
+
+4. SEO IS A 6-12 MONTH PLAY: We have 5 pillar pages and 48 sitemap URLs,
+   but zero backlinks and no Search Console. The space industry SEO landscape
+   is dominated by SpaceNews, NASA, and ESA. Our strategy should be data-
+   driven original content that gets cited by journalists and analysts.
+
+5. CONFERENCES: Space Symposium (April 13-16, 2026) is 9 weeks away. At a
+   minimum, attend without a booth ($1,500-2,000 registration). The ROI
+   comes from networking, not exhibiting. SATELLITE (March 23-26) is even
+   sooner -- 6 weeks out -- and has a Startup Pavilion specifically designed
+   for companies like us.
+
+6. "BLOOMBERG TERMINAL OF SPACE" IS ASPIRATIONAL, NOT LITERAL: Better
+   comparisons are PitchBook (acquired for $225M, now $670M+ revenue at
+   Morningstar) and CB Insights ($145M revenue from blog to enterprise
+   platform). Realistic 5-year target: $10-50M ARR, valued at $70-500M.
+   The space industry TAM for intelligence subscriptions is $50-200M.
+
+THE ONE DECISION THAT MATTERS MOST RIGHT NOW:
+   Build the Company Intelligence Database. Everything else -- LinkedIn
+   content, SEO, conference demos, enterprise sales -- depends on being
+   able to answer "show me everything about SpaceX/Rocket Lab/Planet."
+   This is the foundation. Build it first.
+
+
+================================================================================
+ISSUE 1: COMPANY INTELLIGENCE DATABASE -- THE CRITICAL GAP
+================================================================================
+
+WHY THIS IS #1 PRIORITY
+------------------------
+
+Every single competitor in the space intelligence market has company profiles
+as a core feature:
+
+  - Quilty Space: M&A tracker, company profiles, satellite operator database
+  - BryceTech: Government contractor database, startup ecosystem mapping
+  - Seradata/Slingshot: SpaceTrak operator profiles (60+ years of data)
+  - Novaspace (Euroconsult): Company profiles across their market research
+  - Payload Pro: Curated company analysis and deal flow coverage
+  - Crunchbase/PitchBook: General company data with some space coverage
+
+SpaceNexus has 44 modules, 26 API integrations, and comprehensive market
+data -- but ZERO company profiles. When an enterprise prospect asks "what
+can you tell me about [Rocket Lab / L3Harris / Axiom Space]?" we have
+nothing. This is a deal-breaker for enterprise sales.
+
+The Company Intelligence Database is table stakes. Without it, we are a
+dashboard with no substance. With it, we become a platform worth paying for.
+
+
+DATA MODEL MVP (What Each Company Profile Needs)
+-------------------------------------------------
+
+Based on analysis of PitchBook, Crunchbase, CB Insights, and Quilty's
+models, here is the recommended schema for space company profiles:
+
+BASIC INFORMATION
+  - Company name, legal name, ticker symbol (if public)
+  - Founded date, HQ location, employee count (range)
+  - Company type: Launcher, Satellite Manufacturer, Operator, Ground Segment,
+    Data/Analytics, Services, Component Supplier, Launch Services
+  - Sub-sector tags (multiple): LEO, GEO, MEO, Cislunar, Deep Space, etc.
+  - Status: Active, Acquired, Merged, Defunct, Pre-Revenue, IPO'd
+  - Website, LinkedIn URL, X/Twitter URL
+
+FINANCIAL DATA
+  - Total funding raised (amount, currency, last updated date)
+  - Funding rounds: date, type (Seed/A/B/C/etc.), amount, lead investors
+  - Revenue (if public or reported): annual, quarterly
+  - Valuation (if known): last round, public market cap
+  - M&A activity: acquirer/target, date, amount, status
+
+KEY PEOPLE
+  - CEO, CTO, CFO, COO + title, LinkedIn URL
+  - Board members (names, affiliations)
+  - Key hires and departures (last 12 months)
+
+SPACE-SPECIFIC DATA (This is our unique differentiator)
+  - Orbital assets: satellites in orbit (name, NORAD ID, orbit type, status)
+  - Launch manifest: upcoming launches (date, vehicle, payload, orbit)
+  - Launch history: past launches (date, vehicle, outcome)
+  - Spectrum licenses: FCC/ITU filings (frequency bands, status)
+  - Government contracts: SAM.gov awards (agency, value, date, type)
+  - FAA launch/reentry licenses
+  - ITAR/export control relevance
+  - Patents: count, key patent areas
+
+RELATIONSHIPS
+  - Competitors (manual curation initially)
+  - Partners and suppliers
+  - Customers (if publicly known)
+  - Investors
+
+CONTENT/NEWS
+  - Recent news articles (auto-linked from our RSS feed aggregation)
+  - Recent AI Insights mentioning the company
+  - SpaceNexus module data referencing the company
+
+METADATA
+  - Data freshness: last_verified timestamp per field
+  - Data source attribution per field
+  - Edit history (for future crowdsourcing)
+
+
+100-COMPANY PRIORITY LIST STRATEGY
+-----------------------------------
+
+TIER 1 -- 30 "MUST HAVE" COMPANIES (Profile these first, weeks 1-2)
+
+These are the companies that every space professional will search for.
+If these profiles are incomplete, the database has no credibility.
+
+  Launch Providers:
+  1.  SpaceX (Falcon 9, Falcon Heavy, Starship)
+  2.  Rocket Lab (Electron, Neutron)
+  3.  United Launch Alliance (Vulcan Centaur, Atlas V, Delta IV)
+  4.  Arianespace / ArianeGroup (Ariane 6, Vega-C)
+  5.  Blue Origin (New Glenn, New Shepard)
+  6.  Relativity Space (Terran R)
+  7.  Firefly Aerospace (Alpha, MLV)
+  8.  Astra Space
+  9.  ABL Space Systems
+  10. iSpace (Japan, lunar lander)
+
+  Satellite Operators/Manufacturers:
+  11. Planet Labs (Earth observation)
+  12. Maxar Technologies (now part of Advent)
+  13. Spire Global (maritime/weather)
+  14. Terran Orbital (smallsat manufacturing)
+  15. Sierra Space (Dream Chaser, LIFE habitat)
+  16. Axiom Space (commercial ISS modules)
+  17. Viasat (broadband)
+  18. SES (GEO/MEO operator)
+  19. Telesat (Lightspeed LEO constellation)
+  20. OneWeb / Eutelsat (LEO broadband)
+
+  Defense Primes (Space Divisions):
+  21. Lockheed Martin Space
+  22. Northrop Grumman Space Systems
+  23. L3Harris Technologies (Space & Airborne)
+  24. Boeing Space & Launch
+  25. Raytheon / RTX (space sensors, missile defense)
+
+  Infrastructure & Services:
+  26. SpaceX Starlink (as separate profile)
+  27. Amazon Kuiper
+  28. Slingshot Aerospace (SSA/SDA)
+  29. LeoLabs (space tracking)
+  30. Capella Space (SAR imaging)
+
+TIER 2 -- 40 HIGH-GROWTH AND STRATEGIC COMPANIES (weeks 3-4)
+
+  31. Astroscale (debris removal)
+  32. Impulse Space (orbital transfer)
+  33. Muon Space (Earth observation)
+  34. Vast (commercial space station)
+  35. Voyager Space (commercial station)
+  36. True Anomaly (space domain awareness)
+  37. Apex (satellite buses)
+  38. Umbra (SAR)
+  39. HawkEye 360 (RF geolocation)
+  40. BlackSky Technology
+  41. AST SpaceMobile (direct-to-cell)
+  42. Lynk Global (direct-to-cell)
+  43. Momentus (in-space transportation)
+  44. Redwire (in-space manufacturing)
+  45. Sidus Space (smallsats)
+  46. Intuitive Machines (lunar lander)
+  47. Astrobotic (lunar delivery)
+  48. York Space Systems (satellite mfg)
+  49. Rocket Factory Augsburg (European launcher)
+  50. ICEYE (SAR, Finland)
+  51. D-Orbit (in-space logistics, Italy)
+  52. Kayhan Space (space traffic management)
+  53. Privateer (Apple's Wozniak -- pivoted but notable)
+  54. Albedo (very low orbit imaging)
+  55. Orbit Fab (in-space fuel depots)
+  56. CesiumAstro (active phased arrays)
+  57. Phase Four (electric propulsion)
+  58. Atomos Space (orbital transfer)
+  59. SpiderOak (space cybersecurity)
+  60. Parsons Corporation (space div)
+  61. General Atomics (satellite systems)
+  62. Ball Aerospace
+  63. Aerojet Rocketdyne / L3Harris
+  64. Peraton (space ground systems)
+  65. Leidos (space contracts)
+  66. CACI International (ISR/space)
+  67. Science Applications International Corp (SAIC)
+  68. Booz Allen Hamilton (space advisory)
+  69. Airbus Defence & Space
+  70. Thales Alenia Space
+
+TIER 3 -- 30 EMERGING/NOTEWORTHY STARTUPS (weeks 5-6)
+
+  71. Stoke Space (reusable upper stage)
+  72. Phantom Space (small launcher)
+  73. Varda Space Industries (in-space manufacturing)
+  74. Outpost Technologies (re-entry capsules)
+  75. SpinLaunch (kinetic launch)
+  76. Launcher / Vast (engine → station)
+  77. Exolaunch (rideshare deployer)
+  78. Epsilon3 (space ops software)
+  79. Cognitive Space (AI satellite tasking)
+  80. Pixxel (hyperspectral)
+  81. Skyroot Aerospace (India launcher)
+  82. Agnikul Cosmos (India launcher)
+  83. GalaxEye (India, SAR+optical)
+  84. Gilmour Space (Australia launcher)
+  85. Spaceflight Inc. (rideshare)
+  86. NanoAvionics (Lithuanian smallsats)
+  87. EnduroSat (Bulgarian smallsats)
+  88. AAC Clyde Space (Swedish smallsats)
+  89. Isar Aerospace (German launcher)
+  90. PLD Space (Spanish launcher)
+  91. Turion Space (debris inspection)
+  92. K2 Space (large satellites)
+  93. Inversion Space (orbital delivery)
+  94. Hadrian (precision manufacturing)
+  95. Ursa Major (rocket engines)
+  96. X-Bow Systems (solid motors, NM)
+  97. Phantom Auto / Starfish Space (RPO)
+  98. ThinkOrbital (in-space construction)
+  99. Rogue Space Systems (RPO/servicing)
+  100. Space Perspective (stratospheric tourism)
+
+
+DATA SOURCING STRATEGY
+-----------------------
+
+FREE SOURCES (available immediately):
+
+  1. SEC EDGAR: Public filings for listed companies (SpaceX is private but
+     Spire, Planet, AST, etc. file). 10-K, 10-Q, 8-K, proxy statements.
+     Automate with EDGAR API.
+
+  2. FCC ULS/IBFS: Spectrum license filings, earth station registrations,
+     experimental licenses. SpaceX Starlink, OneWeb, Kuiper all file here.
+     Searchable via FCC API.
+
+  3. FAA Launch Licenses: All US launch operators must have FAA/AST licenses.
+     Publicly available. Updated quarterly.
+
+  4. SAM.gov: Federal contract awards. Search by NAICS codes for space
+     (336414 - Guided Missiles, 336415 - Space Vehicle Propulsion,
+     334511 - Search & Detection, 517410 - Satellite Telecom).
+     SAM.gov has a public API.
+
+  5. CelesTrak/Space-Track: Satellite catalog with NORAD IDs, orbital
+     elements. Cross-reference to companies for "orbital assets" field.
+     We already integrate CelesTrak.
+
+  6. Crunchbase Basic API: Free tier gives basic company data, funding
+     rounds, and team info for many space startups. Rate-limited but usable.
+
+  7. Our Own RSS/News Feed: We aggregate 53 RSS feeds and 39 blog sources.
+     NLP extraction of company mentions from article text can auto-populate
+     the "recent news" section of each company profile.
+
+  8. LinkedIn Company Pages: Manual data collection for employee count
+     ranges, key people. Not automatable without LinkedIn Sales Navigator.
+
+  9. Wikipedia/Wikidata: Surprisingly good for founding dates, HQ locations,
+     and basic company info on established players.
+
+  10. Company Press Releases: GlobeNewsWire, BusinessWire, PR Newswire
+      feeds for funding announcements, contract wins, product launches.
+
+SEMI-AUTOMATED (AI-assisted, weeks 3-6):
+
+  1. AI Entity Extraction: Run Claude over our news article corpus to
+     extract company mentions, funding amounts, contract values, and
+     personnel changes. Map to company profiles automatically.
+
+  2. RSS Feed Company Monitoring: Set up per-company keyword alerts
+     across our 53 RSS sources. Auto-tag articles to company profiles.
+
+  3. Government Contract Monitoring: Daily SAM.gov API pulls for new
+     awards in space NAICS codes. Auto-match to company profiles.
+
+MANUAL (human-curated, ongoing):
+
+  1. Competitive positioning analysis (per company)
+  2. Key personnel changes (verified)
+  3. Strategic analysis and commentary
+  4. Relationship mapping (competitors, partners)
+  5. Data verification and freshness audits
+
+PAID SOURCES (future, when revenue supports it):
+
+  1. PitchBook API ($2,500-$5,000/month): Comprehensive funding data,
+     valuations, investor details. Not justified until $50K+ MRR.
+
+  2. S&P Capital IQ: Deep financial data on public companies. Expensive
+     ($2K+/month per seat). Consider when enterprise customers demand it.
+
+  3. Crunchbase Enterprise: $49/month gets better API access, more data
+     fields. Worth it immediately.
+
+
+MONETIZATION PATH
+-----------------
+
+FREE TIER:
+  - View up to 5 company profiles per day
+  - Basic info only (name, sector, HQ, employee range, total funding)
+  - No export, no API access
+
+PRO TIER ($79/month per brainstorm pricing):
+  - Unlimited company profile views
+  - Full financial data, orbital assets, government contracts
+  - Watchlist: track up to 50 companies with alerts
+  - CSV export of company data
+
+ENTERPRISE TIER ($999/month per brainstorm pricing):
+  - Everything in Pro
+  - API access to company database
+  - Custom company lists and reports
+  - Team sharing and collaboration
+  - Data export in bulk (JSON/CSV)
+  - Priority data requests (add a company not yet profiled)
+
+Revenue Estimate (Year 1):
+  - 200 Pro users viewing company profiles daily = $15,800/month
+  - 25 Enterprise customers with API access = $24,975/month
+  - Company data is THE hook for enterprise sales
+
+
+BUILD TIMELINE (6-WEEK MVP)
+----------------------------
+
+WEEK 1: Database Schema + Seed 10 Companies
+  - Prisma schema: Company, FundingRound, KeyPerson, OrbitalAsset,
+    GovernmentContract, CompanyRelationship models
+  - Admin seed script for 10 Tier-1 companies (manual data entry)
+  - API: GET /api/companies, GET /api/companies/[slug]
+  - Basic company profile page: /companies/[slug]
+
+WEEK 2: Data Ingestion Pipeline
+  - SAM.gov API integration for government contracts
+  - CelesTrak cross-reference for orbital assets
+  - Crunchbase Basic API for funding data
+  - SEC EDGAR integration for public companies
+
+WEEK 3: Seed Remaining Tier 1 (30 companies total)
+  - Complete data entry for 30 Tier 1 companies
+  - AI extraction pipeline for news articles → company mentions
+  - Company search + filter page: /companies
+
+WEEK 4: Company List + Search UI
+  - Filterable company directory page
+  - Search by name, sector, funding stage, location
+  - Sort by funding, employee count, launch count
+  - Mobile-responsive card layout
+
+WEEK 5: Seed Tier 2 (70 companies total)
+  - 40 more company profiles
+  - Watchlist functionality (save companies, get alerts)
+  - Company comparison feature (side-by-side)
+
+WEEK 6: Polish + Launch
+  - Seed Tier 3 (100 companies total)
+  - Data freshness indicators on each field
+  - Source attribution ("Last updated Feb 2026 via SEC filing")
+  - Free tier gating (5 profiles/day without subscription)
+  - API endpoint for enterprise access
+
+WHAT MAKES SPACENEXUS COMPANY PROFILES UNIQUE
+----------------------------------------------
+
+Every company database (Crunchbase, PitchBook, CB Insights) has general
+business data. None of them have:
+
+  1. ORBITAL ASSETS: "SpaceX operates 6,800+ Starlink satellites in LEO,
+     12 GPS III satellites under contract..." -- linked to live tracking
+
+  2. SPECTRUM LICENSES: "OneWeb holds V-band and Ku-band FCC market access
+     grants for..." -- linked to our spectrum management module
+
+  3. LAUNCH MANIFEST: "Rocket Lab has 3 upcoming Electron launches and 1
+     Neutron test flight in Q2 2026..." -- linked to our launch tracker
+
+  4. GOVERNMENT CONTRACT HISTORY: "L3Harris received $1.2B in SDA Tranche 2
+     transport contracts..." -- linked to our procurement module
+
+  5. REGULATORY FILINGS: "Telesat filed FCC modifications for Lightspeed
+     constellation orbital parameters..." -- linked to compliance module
+
+This cross-linking between company profiles and our existing 44 modules
+creates a network effect: every module gets more valuable when connected
+to company profiles, and company profiles get more valuable when connected
+to module data. This is the moat.
+
+
+================================================================================
+ISSUE 2: LINKEDIN AS HIGHEST PRIORITY FOR B2B
+================================================================================
+
+STATUS: COMPREHENSIVE STRATEGY ALREADY COMPLETED
+See: docs/LINKEDIN_B2B_STRATEGY.md (823 lines, fully researched and sourced)
+See: docs/LINKEDIN_CONTENT_CALENDAR.md (30-day posting calendar)
+
+KEY FINDINGS SUMMARY
+--------------------
+
+1. LINKEDIN IS THE SINGLE MOST IMPORTANT B2B CHANNEL
+   - 80% of B2B social media leads come from LinkedIn
+   - Space industry decision-makers (VPs, directors, procurement) live here
+   - No other platform allows this level of B2B targeting precision
+
+2. THE ALGORITHM HAS SHIFTED DRAMATICALLY
+   - Company pages reach only 2-5% of followers organically (60-66% decline)
+   - Personal profiles dominate: CEO/founder-led content is 5.6x more effective
+   - External link posts are deprioritized by 60%
+   - Dwell time (how long people read) is the new king metric
+
+3. THOUGHT LEADER ADS ARE THE SECRET WEAPON
+   - $2.29 median CPC vs $13.23 for standard single image ads
+   - 1.7x higher CTR than standard company page ads
+   - Boost CEO personal posts to targeted audiences at 77% lower cost
+   - This is the #1 reason the CEO must start posting immediately
+
+4. BUDGET RECOMMENDATION: $2,690-$5,203/MONTH
+   - Phase 1 (30 days): $203/month -- organic only, establish baseline
+   - Phase 2 (days 31-60): $2,703/month -- launch paid campaigns
+   - Phase 3 (days 61-90): $4,503/month -- scale what works
+   - Includes: Sales Navigator ($100), Premium ($60), Ads ($2,500-5,000)
+
+5. 90-DAY TARGETS
+   - 150,000-250,000 total impressions
+   - 800-1,500 company page followers
+   - 500-800 targeted CEO connections
+   - 100-200 leads captured
+   - 8-20 paid conversions
+   - 5-15 enterprise demos booked
+
+6. IMMEDIATE ACTION ITEMS (This week):
+   - [ ] Optimize CEO LinkedIn profile (headline, about, featured section)
+   - [ ] Create SpaceNexus company page (or optimize existing)
+   - [ ] Install LinkedIn Insight Tag on spacenexus.io
+   - [ ] Subscribe to Sales Navigator Core ($100/month)
+   - [ ] Follow all Tier 1 thought leaders (Peter Beck, Mo Islam, Chris
+         Quilty, Carissa Christensen, Tory Bruno, etc.)
+   - [ ] Publish first CEO post: "Why I built a space intelligence platform"
+   - [ ] Begin daily commenting routine (15 min/day on industry posts)
+
+For the full strategy including ad targeting, content calendar, InMail
+templates, A/B testing protocol, and competitor analysis, see the
+companion document: docs/LINKEDIN_B2B_STRATEGY.md
+
+
+================================================================================
+ISSUE 3: SEO WEAKNESS IDENTIFICATION & 90-DAY PLAN
+================================================================================
+
+CURRENT STATE AUDIT
+--------------------
+
+What SpaceNexus has:
+  [x] 48 URLs in sitemap.ts (expanded from 18 in this session)
+  [x] robots.txt implemented
+  [x] 5 SEO pillar content pages under /guide/
+      - Space Industry Market Size & Growth Analysis (2,000+ words)
+      - How Satellite Tracking Works (2,000+ words)
+      - ITAR Compliance Guide for Space Companies (2,000+ words)
+      - Space Launch Cost Comparison (2,000+ words)
+      - Commercial Space Economy Overview (2,000+ words)
+  [x] JSON-LD structured data on guide pages
+  [x] Meta descriptions on guide pages and key module pages
+  [x] Next.js metadata exports on guide pages (6 pages only)
+  [x] StructuredData component with Organization + WebSite + SoftwareApplication
+
+What SpaceNexus is missing:
+
+  *** CRITICAL FINDING FROM DEEP SEO AUDIT ***
+
+  57 OF 68 PAGE FILES ARE 'use client' COMPONENTS WITH NO METADATA.
+  In Next.js App Router, client components cannot export static metadata.
+  This means 57 module pages (including /satellites, /market-intel, /news,
+  /mission-cost, /compliance, /business-opportunities) ALL FALL BACK to
+  the generic root layout title: "SpaceNexus - Space Industry Intelligence
+  Platform." Google sees 57 pages with IDENTICAL titles and descriptions.
+  This is the single biggest technical SEO problem and must be fixed first.
+
+  FIX: For each module page, create a server-component wrapper (layout.tsx
+  or parent server component) that exports metadata, then renders the
+  client component as a child. Estimated effort: 2-3 days of dev work.
+
+  ALSO: The StructuredData component has an AggregateRating claiming 4.8/5
+  from 150 reviews. This appears fabricated. Google's guidelines prohibit
+  self-generated review markup. If detected, could trigger a manual
+  penalty. Remove immediately unless backed by verifiable third-party reviews.
+
+  *** END CRITICAL FINDING ***
+
+  [ ] Google Search Console not connected (NO VISIBILITY into search traffic)
+  [ ] Google Analytics not configured (GA_MEASUREMENT_ID still placeholder)
+  [ ] Zero backlinks (brand new domain, zero referring domains)
+  [ ] No Open Graph images for social sharing
+  [ ] Limited internal linking between pages (footer links to only 8 pages)
+  [ ] No blog or regularly published content
+  [ ] No FAQ schema on relevant pages (except guide pages)
+  [ ] No breadcrumb schema on module pages (only guide pages)
+  [ ] Core Web Vitals not audited (Three.js Starfield on every page)
+  [ ] No image alt text audit completed
+  [ ] No canonical URL strategy for tab-based pages (?tab= params)
+  [ ] No programmatic SEO pages (individual companies, vehicles, launches)
+  [ ] Homepage uses force-dynamic (should use ISR for better TTFB)
+  [ ] Individual launch pages (/launch/[eventId]) not in sitemap
+
+
+TARGET KEYWORDS (Organized by Intent)
+--------------------------------------
+
+INFORMATIONAL (Awareness -- target with pillar content):
+
+  Keyword                              Est. Volume   Competition   Priority
+  ---------------------------------------------------------------------------
+  "space industry market size"         2,400/mo      Medium        HIGH [x]
+  "how satellite tracking works"       1,900/mo      Low           HIGH [x]
+  "ITAR compliance"                    6,600/mo      Medium        HIGH [x]
+  "space launch cost"                  3,600/mo      Low           HIGH [x]
+  "commercial space industry"          2,900/mo      Medium        HIGH [x]
+  "space debris problem"               2,400/mo      Low           MEDIUM
+  "how do satellites work"             9,900/mo      Low           MEDIUM
+  "orbital mechanics basics"           1,600/mo      Low           MEDIUM
+  "space economy statistics"           720/mo        Low           HIGH
+  "space industry trends 2026"         880/mo        Low           HIGH
+  "satellite constellation comparison" 480/mo        Very Low      HIGH
+  "space mining feasibility"           1,300/mo      Low           MEDIUM
+  "cubesat cost breakdown"             590/mo        Very Low      HIGH
+
+COMMERCIAL (Consideration -- target with product pages):
+
+  Keyword                              Est. Volume   Competition   Priority
+  ---------------------------------------------------------------------------
+  "space market intelligence"          390/mo        Very Low      HIGHEST
+  "satellite tracking software"        1,600/mo      Medium        HIGH
+  "space industry data"                590/mo        Low           HIGHEST
+  "space company database"             320/mo        Very Low      HIGHEST
+  "launch vehicle comparison tool"     210/mo        Very Low      HIGHEST
+  "space regulatory compliance tool"   170/mo        Very Low      HIGHEST
+  "space supply chain analytics"       140/mo        Very Low      HIGHEST
+  "orbital debris tracker"             260/mo        Low           HIGH
+  "space weather dashboard"            390/mo        Low           HIGH
+  "mission cost calculator"            480/mo        Very Low      HIGH
+
+TRANSACTIONAL (Conversion -- target with landing/pricing pages):
+
+  Keyword                              Est. Volume   Competition   Priority
+  ---------------------------------------------------------------------------
+  "space industry newsletter"          720/mo        Medium        HIGH
+  "space data subscription"            170/mo        Very Low      HIGH
+  "space analytics platform"           210/mo        Very Low      HIGHEST
+  "satellite data API"                 320/mo        Medium        HIGH
+  "space business intelligence"        260/mo        Low           HIGHEST
+
+NOTE: Volume estimates are approximate based on aerospace industry keyword
+research. Exact volumes should be verified once Google Search Console and
+a keyword tool (Ahrefs, SEMrush, or even free Ubersuggest) are connected.
+
+
+COMPETITIVE SEO LANDSCAPE
+--------------------------
+
+DOMINANT DOMAINS (we cannot outrank these on general terms):
+
+  Domain                    Est. DA    Est. Monthly Traffic
+  ----------------------------------------------------------
+  nasa.gov                  94         80M+ visits
+  esa.int                   87         15M+ visits
+  spacenews.com             72         3M+ visits
+  space.com                 88         25M+ visits
+  wikipedia.org             99         N/A
+
+DIRECT COMPETITORS (these are our real SEO competitors):
+
+  Domain                    Est. DA    Est. Monthly Traffic    Weakness
+  -----------------------------------------------------------------------
+  payloadspace.com          45         200K-400K               Limited tools content
+  quiltyspace.com           35         20K-50K                 Paywalled, thin public content
+  brycetech.com             42         30K-80K                 Report-focused, static PDFs
+  nova.space (Novaspace)    38         15K-40K                 Enterprise-only positioning
+  slingshot.space           40         10K-30K                 SDA-focused, narrow
+  leolabs.space             35         5K-15K                  Tracking-only
+
+GAP OPPORTUNITIES (keywords competitors don't target well):
+
+  1. "space company database" -- No dominant player. Crunchbase has some
+     coverage but no space-specific depth. HUGE opportunity.
+
+  2. "launch cost comparison" -- Our guide page can rank for this.
+     No strong interactive tool exists publicly.
+
+  3. "space regulatory compliance" -- Quilty and BryceTech write about this
+     but don't offer tools. We have actual compliance modules.
+
+  4. "satellite constellation tracker" -- CelesTrak has raw data; we can
+     offer a more user-friendly, visually engaging version.
+
+  5. "space SBIR opportunities" -- Government contracting + space is an
+     underserved niche. Our procurement module could own this.
+
+  6. "space industry jobs" -- Indeed and LinkedIn dominate, but a
+     space-specific job board (our Space Talent Hub) can rank for
+     long-tail queries like "satellite engineer jobs" or "space policy jobs."
+
+
+TECHNICAL SEO FIXES (Do This Week)
+------------------------------------
+
+PRIORITY 1 -- Immediate (hours of work):
+
+  [ ] Connect Google Search Console (verify domain)
+  [ ] Submit sitemap.xml to Search Console
+  [ ] Connect Google Analytics 4 (or Plausible for privacy)
+  [ ] Add Organization JSON-LD schema to layout.tsx:
+      {
+        "@type": "Organization",
+        "name": "SpaceNexus",
+        "url": "https://spacenexus.io",
+        "logo": "https://spacenexus.io/icons/icon-512x512.png",
+        "sameAs": ["linkedin-url", "twitter-url"]
+      }
+
+  [ ] Add breadcrumb schema to all module pages
+  [ ] Verify all pages have unique meta descriptions
+  [ ] Add OG image generation (Next.js opengraph-image.tsx)
+
+PRIORITY 2 -- This month:
+
+  [ ] Audit Core Web Vitals via PageSpeed Insights
+      - LCP target: < 2.5s (Three.js may cause issues)
+      - FID target: < 100ms
+      - CLS target: < 0.1
+  [ ] Lazy-load Three.js components below the fold
+  [ ] Add image optimization (next/image for all images)
+  [ ] Implement internal linking strategy:
+      - Each pillar page links to 3-5 related module pages
+      - Each module page links back to relevant pillar pages
+      - Add "Related Resources" section at bottom of each page
+  [ ] Create FAQ schema for pricing page, guide pages
+  [ ] Add Product schema for subscription tiers
+
+
+CONTENT STRATEGY (10 Additional Pillar Pages)
+-----------------------------------------------
+
+Based on keyword gap analysis, these 10 pages would have the highest
+SEO impact if published over the next 3 months:
+
+  1. "Complete Guide to Space Industry Companies" (ties to Company Database)
+     Target: "space companies list", "space industry companies", "newspace companies"
+     Est. volume: 4,000+/mo combined
+
+  2. "Space Debris: The Complete Guide to Orbital Debris Tracking"
+     Target: "space debris", "orbital debris tracking", "kessler syndrome"
+     Est. volume: 8,000+/mo combined
+
+  3. "Guide to Satellite Orbits: LEO, MEO, GEO, HEO Explained"
+     Target: "types of satellite orbits", "LEO vs GEO", "satellite orbit comparison"
+     Est. volume: 12,000+/mo combined
+
+  4. "Space Industry Funding & Investment Guide"
+     Target: "space industry investment", "space startups funding", "space VC"
+     Est. volume: 3,000+/mo combined
+
+  5. "Complete Guide to Space Spectrum Management"
+     Target: "satellite spectrum", "space frequency allocation", "FCC space filings"
+     Est. volume: 1,500+/mo combined
+
+  6. "Government Space Contracts: How to Win SBIR/STTR Awards"
+     Target: "space SBIR", "NASA SBIR", "space government contracts"
+     Est. volume: 2,000+/mo combined
+
+  7. "Space Insurance: Complete Guide for Satellite Operators"
+     Target: "space insurance", "satellite insurance", "launch insurance cost"
+     Est. volume: 1,500+/mo combined
+
+  8. "Cislunar Economy: The $100B Opportunity Beyond Earth Orbit"
+     Target: "cislunar economy", "lunar economy", "artemis economy"
+     Est. volume: 1,000+/mo combined
+
+  9. "Space Situational Awareness: Tracking Objects in Orbit"
+     Target: "space situational awareness", "SSA", "space tracking"
+     Est. volume: 2,500+/mo combined
+
+  10. "Space Manufacturing: Building in Microgravity"
+      Target: "space manufacturing", "in-space manufacturing", "microgravity manufacturing"
+      Est. volume: 1,500+/mo combined
+
+
+BACKLINK STRATEGY
+------------------
+
+Space industry backlinks are difficult because the ecosystem is small and
+most content is paywalled or institutional. Here's the realistic strategy:
+
+  1. DATA CITATION STRATEGY (highest ROI)
+     Publish original data analysis that journalists want to cite:
+     - "SpaceNexus Launch Index: Monthly launch cadence tracker"
+     - "SpaceNexus Space Economy Dashboard: Real-time market data"
+     - Weekly/monthly data reports with embeddable charts
+     When SpaceNews or Payload cites "according to SpaceNexus data..."
+     that's a high-DA backlink.
+
+  2. GUEST POSTING TARGETS
+     - SpaceNews (DA 72): pitch op-eds on space market trends
+     - Via Satellite (DA 55): satellite industry analysis
+     - The Space Report (Space Foundation, DA 65): data partnership
+     - Space Policy Online (DA 40): regulatory analysis
+     - SatelliteToday (DA 50): satellite industry data
+
+  3. HARO / JOURNALIST OUTREACH
+     Sign up for HARO (Help A Reporter Out) and respond to queries
+     about space industry, satellite technology, and commercial space.
+     Space journalists at Bloomberg, Reuters, CNBC regularly seek
+     expert sources. Each media mention = potential high-DA backlink.
+
+  4. ACADEMIC/EDUCATIONAL PARTNERSHIPS
+     - Space Foundation: potential data partnership / citation
+     - Secure World Foundation: space sustainability data
+     - The Aerospace Corporation: reference data source
+     - University space programs (MIT AeroAstro, Stanford, etc.)
+
+  5. OPEN DATA STRATEGY
+     Publish certain datasets freely (like our launch tracker data)
+     with attribution requirement. This creates natural backlinks as
+     researchers, students, and journalists use and cite the data.
+
+
+90-DAY SEO EXECUTION PLAN
+---------------------------
+
+DAYS 1-7: Foundation
+  [ ] Google Search Console: verify, submit sitemap
+  [ ] Google Analytics 4: install tracking
+  [ ] Organization schema in layout.tsx
+  [ ] OG image template for all pages
+  [ ] Audit and fix meta descriptions on all 48 URLs
+
+DAYS 8-14: Technical Fixes
+  [ ] PageSpeed Insights audit → fix critical issues
+  [ ] Internal linking: add 3-5 cross-links per page
+  [ ] Breadcrumb schema on all module pages
+  [ ] FAQ schema on pricing and guide pages
+  [ ] Image alt text audit
+
+DAYS 15-30: Content Push
+  [ ] Publish pillar pages #6 and #7 (from list above)
+  [ ] Create first "SpaceNexus Launch Index" monthly report
+  [ ] Pitch 3 guest articles to SpaceNews/Via Satellite
+  [ ] Sign up for HARO, respond to first 5 relevant queries
+
+DAYS 31-60: Authority Building
+  [ ] Publish pillar pages #8 and #9
+  [ ] Publish first embeddable data visualization
+  [ ] First guest article published (or submitted)
+  [ ] Monitor Search Console for indexing issues
+  [ ] Analyze top performing keywords, double down
+
+DAYS 61-90: Optimization
+  [ ] Publish pillar page #10
+  [ ] Create "State of Space" quarterly data report (link magnet)
+  [ ] Analyze backlink acquisition rate
+  [ ] A/B test meta descriptions on top pages
+  [ ] Content refresh on existing guide pages (add 2026 data)
+
+TARGETS AT 90 DAYS:
+  - 200+ pages indexed in Google
+  - 10+ referring domains (backlinks)
+  - 1,000+ organic search visits per month
+  - 5+ keywords ranking page 1 for long-tail terms
+  - 20+ keywords ranking in top 50
+
+
+================================================================================
+ISSUE 4: CONFERENCE STRATEGY -- SPACE SYMPOSIUM + SATELLITE 2026
+================================================================================
+
+TWO MAJOR CONFERENCES CONFIRMED FOR SPRING 2026
+-------------------------------------------------
+
+SATELLITE 2026 (SATSHOW WEEK)
+  Dates: March 23-26, 2026 (6 weeks from now)
+  Location: Walter E. Washington Convention Center, Washington DC
+  Scale: 15,000+ attendees, 450+ exhibitors, 90,000+ sq ft
+  Focus: Satellite communications, broadband, government/military satcom
+  Exhibition: March 24-26, 2026
+  Exhibit space: $62/sq ft
+  Startup Pavilion: Available for companies <100 employees seeking Seed/Series A
+  Exhibit Hall Pass: Free (conference sessions require paid registration)
+
+  ATTENDEE PROFILE:
+  - Heavy satellite communications focus (Viasat, SES, Telesat, etc.)
+  - Government satellite buyers (DoD, NGA, NRO, NOAA)
+  - GovMilSpace track specifically for defense/intel community
+  - International operators and regulators
+  - Venture capital and private equity investors
+  - More "established industry" than Space Symposium
+
+41ST SPACE SYMPOSIUM
+  Dates: April 13-16, 2026 (9 weeks from now)
+  Location: The Broadmoor, Colorado Springs, CO
+  Scale: 15,000+ attendees (has grown significantly in recent years)
+  Focus: Broad space industry -- military, civil, commercial, international
+  Registration: ~$1,310+ for military, likely $1,500-2,000+ for industry
+  Exhibition: Included in broader campus
+
+  ATTENDEE PROFILE:
+  - Broader than SATELLITE: civil space, military space, commercial, international
+  - Senior military leadership (Space Force, Space Command)
+  - CEOs and C-suite of major primes and NewSpace companies
+  - International delegation heads (ESA, JAXA, KARI, ISRO, etc.)
+  - The "networking conference" -- hallway conversations > panel sessions
+  - More "deal-making" atmosphere at receptions and dinners
+
+
+BUDGET ANALYSIS FOR A BOOTSTRAPPED STARTUP
+-------------------------------------------
+
+OPTION A: MINIMAL PRESENCE -- Just Attend (One Conference)
+  Budget: $2,000-$3,500
+
+  Registration fee:              $1,500-2,000
+  Flights (if needed):           $300-600
+  Hotel (3 nights):              $600-1,200 (Broadmoor is expensive)
+  Meals and transportation:      $200-400
+  Business cards:                $50
+  ----------------------------------------
+  Total:                         $2,650-$4,250
+
+  What you get:
+  - Access to all sessions and panels
+  - Access to exhibit hall and receptions
+  - Ability to schedule 1-on-1 meetings with prospects
+  - Networking at receptions (this is where deals happen)
+
+  ROI expectation:
+  - 10-20 meaningful conversations
+  - 5-10 qualified leads
+  - 1-3 demo requests
+  - Brand awareness among 50-100 people who see your demo on a laptop
+
+OPTION B: STARTUP PAVILION (SATELLITE only)
+  Budget: $5,000-$8,000
+
+  Startup Pavilion booth (turnkey):  $2,500-5,000 (estimate; contact for exact)
+  Registration (included or add-on): $0-500
+  Flights + hotel (3 nights DC):     $800-1,500
+  Marketing materials:               $500-1,000
+    - Pull-up banner: $200-300
+    - One-pagers/flyers: $150-200
+    - Branded tablecloth: $50-100
+    - Business cards: $50
+    - Stickers/swag: $100-200
+  ----------------------------------------
+  Total:                             $3,850-$8,000
+
+  What you get:
+  - Branded exhibit space in startup section
+  - Foot traffic from investors and partners specifically browsing startups
+  - Promotional exposure through SATELLITE marketing
+  - More professional presence than "guy with a laptop"
+
+  ROI expectation:
+  - 30-50 booth conversations
+  - 15-25 qualified leads
+  - 5-10 demo requests
+  - 2-5 follow-up meetings within 2 weeks
+  - Potential investor conversations
+
+OPTION C: FULL BOOTH (Either Conference)
+  Budget: $15,000-$30,000
+
+  Exhibit space (200 sq ft @ $62/sqft):  $12,400 (SATELLITE)
+  Booth design and build:                $3,000-8,000
+  A/V equipment rental:                  $500-1,500
+  Registration + travel:                 $2,000-3,000
+  Marketing materials:                   $1,000-2,000
+  Networking reception hosting:          $2,000-5,000
+  ----------------------------------------
+  Total:                                 $20,900-$31,900
+
+  This is NOT recommended for Year 1. The cost is too high relative to
+  the potential return at current brand recognition levels.
+
+
+CONFERENCE EXECUTION PLAYBOOK
+-------------------------------
+
+PRE-CONFERENCE (2-4 weeks before):
+
+  1. IDENTIFY TARGETS
+     - Use Sales Navigator to find attendees from target companies
+     - Filter by "attending [conference name]" in LinkedIn activity
+     - Build list of 30-50 people you want to meet
+     - Prioritize: enterprise prospects, investors, potential partners, media
+
+  2. PRE-SCHEDULE MEETINGS
+     - Send LinkedIn messages: "I'll be at [conference]. Would love 15 minutes
+       to show you what we're building at SpaceNexus."
+     - Use conference networking app (most have one) to book slots
+     - Target: 8-12 pre-scheduled meetings
+
+  3. PREPARE DEMO
+     - 3-minute "elevator pitch" demo on laptop/tablet
+     - Focus on Company Intelligence Database (if built by then)
+     - Show satellite tracker, market intel dashboard, mission cost calculator
+     - Have free trial signup QR code ready
+
+  4. SOCIAL MEDIA PRE-BUZZ
+     - Post on LinkedIn: "Excited to attend [conference]. Come find me to
+       see the future of space market intelligence."
+     - Tag the conference account
+     - Share relevant data/analysis leading up to the event
+
+DURING CONFERENCE:
+
+  1. MORNING ROUTINE
+     - Check conference app for session schedule, speaker changes
+     - Review meeting schedule, confirm appointments
+     - Post LinkedIn content (live from conference floor gets high engagement)
+
+  2. SESSION STRATEGY
+     - Attend 2-3 sessions per day max (rest of time for networking)
+     - Sit near the front, ask intelligent questions (builds visibility)
+     - Take photos at sessions for social media content
+
+  3. NETWORKING TACTICS
+     - RECEPTIONS ARE EVERYTHING: The evening receptions at Space Symposium
+       are where real relationships form. Budget time for these.
+     - Carry 50+ business cards (people still exchange them in aerospace)
+     - When someone shows interest, do a live demo on your phone/tablet
+     - After each conversation, immediately add them on LinkedIn with a note
+
+  4. LEAD CAPTURE
+     - Simple spreadsheet or CRM entry: Name, company, title, interest level,
+       follow-up action, notes
+     - Rate each lead: Hot (demo requested), Warm (interested), Cold (polite)
+     - Photo of their business card for records
+
+POST-CONFERENCE:
+
+  1. SAME-DAY FOLLOW-UP (within 24 hours of meeting)
+     - Send LinkedIn connection request with personal note
+     - "Great meeting you at [conference]. Enjoyed discussing [topic]."
+
+  2. WEEK 1 FOLLOW-UP
+     - Email hot leads with demo link and free trial offer
+     - Email warm leads with relevant content piece (pillar page, data report)
+     - Post "conference recap" on LinkedIn with takeaways
+
+  3. WEEK 2-4 NURTURE
+     - Add all contacts to email nurture sequence
+     - Schedule follow-up calls with hot leads
+     - Create "conference insights" blog post (SEO + content marketing)
+
+
+RECOMMENDATION: WHICH CONFERENCE TO ATTEND FIRST
+--------------------------------------------------
+
+SATELLITE 2026 (March 23-26) -- RECOMMENDED FIRST CHOICE
+
+Reasons:
+  1. It's sooner (6 weeks vs 9 weeks) -- build momentum faster
+  2. Startup Pavilion is designed for companies exactly like SpaceNexus
+  3. Washington DC location: government buyers, policy makers, defense
+  4. Free exhibit hall pass means low minimum investment
+  5. GovMilSpace track aligns with our government revenue strategy
+  6. Smaller "pond" for a startup to make a splash vs Space Symposium
+
+Budget recommendation: $5,000-$8,000 for Startup Pavilion option.
+If budget is very tight: $2,500-$3,500 for attend-only.
+
+Space Symposium (April 13-16) -- ATTEND IF BUDGET ALLOWS
+
+If you attend SATELLITE in March AND have budget remaining:
+  - Attend Space Symposium (registration only, no booth)
+  - Focus entirely on networking at receptions
+  - The Broadmoor setting is intimate and conducive to conversations
+  - Use lessons learned from SATELLITE to refine pitch
+
+If forced to choose only ONE: Choose Space Symposium. It has a broader
+attendee base, more decision-makers, and more "deal energy." But
+SATELLITE's Startup Pavilion is a better fit for our current stage.
+
+ALTERNATIVE CONFERENCES (Consider for later in 2026):
+
+  SmallSat Conference (August, Logan UT): $500 registration, very
+  affordable, strong NewSpace/startup community. Good for early traction.
+
+  Space Tech Expo (May, Long Beach CA): More manufacturing/supply chain
+  focused. Aligns with our Business Opportunities module.
+
+  AMOS Conference (September, Maui HI): Space situational awareness
+  community. Aligns with our satellite tracking and debris modules.
+  Strong government/military attendance.
+
+  Satellite Innovation (October, Silicon Valley): VC-heavy, good for
+  fundraising conversations if pursuing investment.
+
+
+================================================================================
+ISSUE 5: THE "BLOOMBERG TERMINAL OF SPACE" VISION
+================================================================================
+
+THE BLOOMBERG MODEL (Inspiration, Not Literal Comparison)
+----------------------------------------------------------
+
+Bloomberg Terminal by the Numbers:
+  - Founded: 1981 by Michael Bloomberg
+  - First customer: Merrill Lynch (22 terminals)
+  - 2025-2026 revenue: ~$13-14 billion/year (Bloomberg LP)
+  - Terminal subscribers: ~335,000+ globally
+  - Price: ~$24,000/year per terminal ($2,000/month)
+  - Employees: ~20,000+
+  - Revenue per employee: ~$650,000
+
+Why Bloomberg Won:
+  1. IT BECAME A UTILITY: You literally cannot work in finance without it.
+     Bloomberg Anywhere is the first app opened and last app closed.
+  2. MESSAGING LOCK-IN: Bloomberg Chat/IB messaging created a closed network
+     of 335,000 finance professionals. The social graph is the moat.
+  3. DATA + TOOLS + WORKFLOW: Not just data access -- it integrates into
+     the actual work: order execution, portfolio analytics, compliance.
+  4. MUSCLE MEMORY: The keyboard shortcuts, the command line -- users
+     develop physical habits that make switching painful.
+
+Why Bloomberg Is MISLEADING as a SpaceNexus Comparison:
+  - Bloomberg serves 335,000 subscribers in a market of millions of
+    finance professionals worldwide
+  - The space industry has ~2,670 companies and ~373,000 total workers
+  - Even at 100% penetration of decision-makers, the addressable market
+    for a space intelligence terminal is 15,000-50,000 potential subscribers
+  - Bloomberg's $14B revenue is impossible in a market this size
+  - But a "Bloomberg-like" EXPERIENCE is absolutely achievable
+
+
+PITCHBOOK: THE BEST COMPARISON MODEL
+--------------------------------------
+
+PitchBook serves as the most realistic aspiration for SpaceNexus because:
+
+  - Niche professional market (PE/VC investors, M&A advisors)
+  - Data + analytics + tools in one platform
+  - Freemium to enterprise pricing ladder
+  - Built on aggregated public + proprietary data
+  - Acquired by Morningstar for $225M in 2016
+
+PitchBook's Financial Trajectory (verified from Morningstar filings):
+
+  Year          Revenue (Est.)    Key Milestone
+  ----------------------------------------------------------
+  2007          Founded in Seattle
+  2009          ~$1M              First customers (VC/PE firms)
+  2012          ~$10M             Growing data coverage
+  2016          ~$31M             Acquired by Morningstar for $225M
+  2018          ~$100M            Rapid growth post-acquisition
+  2020          ~$200M            Pandemic accelerated demand
+  2022          ~$450M            Expansion into new verticals
+  2024          ~$600M+           100,000+ licensed users globally
+  2025 Q1       $163.7M/quarter   ($655M annualized, 10.9% YoY growth)
+  2025 Q3       $169M/quarter     ($676M annualized, 7.9% YoY growth)
+
+PitchBook Pricing:
+  - Individual licenses: $12,000-$25,000/year per seat
+  - Team licenses: Custom pricing
+  - Enterprise: $50,000-$200,000+/year
+
+PitchBook Customer Base:
+  - 100,000+ licensed users worldwide (as of 2025)
+  - ~6,000+ organizations
+  - Primarily PE/VC firms, investment banks, corporate M&A teams, law firms
+
+SpaceNexus Parallel to PitchBook:
+  - PitchBook aggregated scattered deal data into one platform
+  - SpaceNexus aggregates scattered space industry data into one platform
+  - PitchBook started as a database; grew into analytics + tools
+  - SpaceNexus started as tools; needs to grow into database + analytics
+  - PitchBook took 9 years to reach $31M revenue (at acquisition)
+  - With AI and modern distribution, SpaceNexus can move faster
+
+Realistic SpaceNexus-as-PitchBook trajectory:
+  Year 1:  $300K-$600K ARR     (100-200 paid, 10-25 enterprise)
+  Year 2:  $1-3M ARR           (500-1,000 paid, 50-100 enterprise)
+  Year 3:  $3-10M ARR          (1,000-3,000 paid, 100-300 enterprise)
+  Year 5:  $10-50M ARR         (3,000-10,000 paid, 500-1,000 enterprise)
+
+
+CB INSIGHTS: THE AI-NATIVE COMPARISON
+---------------------------------------
+
+CB Insights is the second-best comparison because of its AI-first approach:
+
+  - Started as a blog analyzing startup funding data (2008)
+  - Built AI-powered market intelligence platform
+  - Revenue: ~$145M (estimated)
+  - Pricing: Free newsletter → $50,000-$150,000/year enterprise
+  - Key insight: They transformed public data into proprietary insights
+    using AI, then sold those insights to enterprises
+
+CB Insights Growth Story:
+  2008: Founded as a blog analyzing startup data
+  2010: First paying customers (basic data subscriptions)
+  2014: ~$10M revenue, raised Series B
+  2017: ~$40M revenue, "Expert Intelligence" platform launch
+  2019: ~$100M revenue, AI-powered market intelligence
+  2021: $145.8M revenue reported, raised debt financing
+  2022+: Matured platform, enterprise focus
+
+SpaceNexus parallels to CB Insights:
+  - Both started with aggregated public data (RSS, APIs, databases)
+  - Both adding AI-powered analysis (Claude-generated insights)
+  - Both targeting the "what companies should I know about" question
+  - Both building tools on top of data (not just data access)
+  - CB Insights proved the model: blog → data → AI → $145M revenue
+
+
+SPACE INDUSTRY MARKET SIZING
+------------------------------
+
+Global Space Economy (2024-2025):
+  - $613 billion in 2024 (Space Foundation, verified)
+  - ~$647 billion estimated for 2025
+  - Growing at 7.8% year-over-year
+  - Projected to reach $1.4 trillion by 2032
+
+Number of Space Companies:
+  - Estimated 2,670+ companies globally (BryceTech)
+  - ~10,000+ if you include all suppliers and service providers
+  - Growing rapidly: 100+ new space startups founded annually
+
+Space Industry Workforce:
+  - ~373,000 directly employed in US space industry
+  - ~500,000+ globally including international
+  - Growing 5-10% annually
+
+TOTAL ADDRESSABLE MARKET (TAM) for Space Intelligence:
+
+  Segment                    Size      ARPU         Revenue Potential
+  -------------------------------------------------------------------
+  Enterprise (defense primes, 500      $10,000/yr   $5M
+  large operators, gov)
+
+  Mid-Market (NewSpace, mid-  2,000    $2,000/yr    $4M
+  size companies)
+
+  Professional (individual    15,000   $800/yr      $12M
+  analysts, managers)
+
+  Academic/Research           5,000    $200/yr      $1M
+
+  API Licensing               200      $5,000/yr    $1M
+
+  Consulting/Advisory         N/A      N/A          $2M
+
+  Sponsored/Advertising       N/A      N/A          $1M
+  -------------------------------------------------------------------
+  TOTAL REALISTIC TAM:                              ~$26M/yr
+
+  With aggressive pricing and market expansion:     $50-200M/yr
+
+  This is a niche market. SpaceNexus will never be Bloomberg ($14B).
+  But a well-executed "PitchBook for Space" at $10-50M ARR is very
+  achievable and would be extremely valuable.
+
+
+GROWTH TRAJECTORY AND MILESTONES
+---------------------------------
+
+Year 1 Targets (Feb 2026 - Feb 2027):
+
+  Revenue: $300,000-$600,000 ARR
+  Customers: 200 paid (Pro), 25 enterprise
+  Free users: 5,000+
+  Team: Founder + 3 (ops generalist, enterprise AE, developer)
+
+  Key milestones:
+  - Month 3: First paying enterprise customer
+  - Month 6: 100 paying customers, $200K ARR run rate
+  - Month 9: Company Intelligence Database has 500 companies
+  - Month 12: First enterprise contract renewal (proves retention)
+
+  KEY METRIC TO WATCH: "Daily users who open SpaceNexus before 9 AM"
+  This measures whether we're becoming a daily habit vs. an occasional tool.
+  Target: 50 daily (Month 3), 200 daily (Month 6), 500 daily (Month 12)
+
+Year 3 Targets (Feb 2028):
+
+  Revenue: $3,000,000-$10,000,000 ARR
+  Customers: 1,000 paid, 100 enterprise
+  Team: 15-25 people
+
+  Key milestones:
+  - Company database covers 2,000+ companies
+  - API product generating $500K+ ARR independently
+  - First government contracts (GSA Schedule or direct agency)
+  - Data cited by major media (SpaceNews, Bloomberg, Reuters)
+  - Recognized brand in space industry (conference speaker invitations)
+
+Year 5 Targets (Feb 2030):
+
+  Revenue: $10,000,000-$50,000,000 ARR
+  Customers: 3,000 paid, 500 enterprise
+  Team: 50-100 people
+
+  Key milestones:
+  - Dominant position in space market intelligence
+  - Acquisition interest from S&P Global, Bloomberg, Morningstar,
+    or defense prime (L3Harris, Northrop)
+  - Or: Profitable with strong cash flow, no need to sell
+  - Platform becomes industry standard for space company data
+
+
+EXIT / ENDGAME SCENARIOS
+-------------------------
+
+SCENARIO A: ACQUISITION ($70M-$500M valuation)
+
+  Most likely acquirers:
+  1. S&P Global / IHS Markit ($150B+ company) -- owns specialized data
+     businesses; space would complement defense/aerospace coverage
+  2. Morningstar ($10B+ company) -- already owns PitchBook; space
+     intelligence is a natural extension
+  3. Bloomberg -- adding space to their terminal
+  4. Slingshot Aerospace -- most likely acqui-hire if smaller exit
+  5. Defense prime (L3Harris, Northrop, SAIC) -- intelligence for their
+     own use + customer offering
+
+  Valuation: 7-15x revenue for data/analytics companies
+    At $10M ARR: $70M-$150M
+    At $25M ARR: $175M-$375M
+    At $50M ARR: $350M-$750M
+
+  PitchBook was acquired at 7.3x revenue ($225M / $31M).
+  CB Insights was valued at ~$2B at peak ($145M revenue, ~14x).
+
+SCENARIO B: IPO (requires $50M+ ARR minimum)
+
+  Not realistic before Year 7-10. Would require significant scale and
+  market dominance. The space industry niche may be too small for a
+  standalone public company unless the platform expands into adjacent
+  markets (defense intelligence, maritime, energy).
+
+SCENARIO C: PROFITABLE LIFESTYLE BUSINESS ($3-10M ARR)
+
+  If acquisition isn't the goal, a space intelligence platform at
+  $3-10M ARR with 40%+ margins generates $1.2-4M annual profit.
+  This supports a 10-15 person team, continuous product development,
+  and a very comfortable founder outcome without external pressure.
+
+
+================================================================================
+ISSUE 6: PAYLOAD SPACE -- THE #1 COMPETITOR THREAT
+================================================================================
+
+COMPANY PROFILE
+----------------
+
+  Company: Payload Space, Inc.
+  Founded: September 2020 (newsletter); April 2021 (full-time)
+  Founders: Mo Islam (CEO), Ari Lewis
+  Location: Los Angeles, CA
+  Employees: 5-15 (estimated)
+  Funding: $650K Seed (September 2021)
+    - Investors: Winklevoss Capital, Boost VC, SkyGate Digital, Litquidity
+  Revenue: $1M+ (2023 reported), estimated $2-3M+ (2025-2026)
+
+  Background: Mo Islam was previously at Deutsche Bank and J.P. Morgan,
+  where he raised $250M+ in strategic capital for growth-stage tech companies.
+  He brings institutional finance credibility to space industry coverage.
+
+PRODUCT OFFERING
+-----------------
+
+  1. FREE NEWSLETTER
+     - Daily email covering space business and policy
+     - Estimated 40,000-60,000 subscribers (extrapolating from 10K at
+       launch in 2021, with reported 70% YoY growth through 2024)
+     - Written by editorial team with personality and voice
+     - Revenue from newsletter advertising/sponsorship
+
+  2. PAYLOAD PRO (launched 2024)
+
+     Essential Tier ($999/year):
+     - Business articles (in-depth analysis)
+     - Research articles
+     - "Payload Insights: Chart of the Week"
+     - In-depth research reports
+     - Quarterly market trends call
+     - Executive polls
+     - Discounts for multi-seat sign-ups
+
+     Institutional Tier (custom pricing, likely $5,000-25,000/year):
+     - All Essential features
+     - Invite-only executive dinners and summits
+     - 2x member breakout sessions with Payload Editor and SMEs
+     - Exclusive member conference calls with institutional investors
+     - Ad-hoc strategy, investment, and fundraising advice calls
+
+  3. PATHFINDER PODCAST
+     - Regular episodes featuring space industry executives
+     - Additional distribution channel and brand building
+
+  4. EVENTS
+     - Executive dinners (intimate, invite-only)
+     - Investor conferences
+     - Breakout sessions for institutional members
+
+REVENUE BREAKDOWN (Estimated):
+  - Newsletter advertising/sponsorship: 40-50% ($800K-$1.5M)
+  - Payload Pro subscriptions: 30-35% ($600K-$1M)
+  - Events revenue: 10-15% ($200K-$450K)
+  - Advisory/consulting: 5-10% ($100K-$300K)
+  - Total estimated: $1.7M-$3.3M (2025-2026)
+
+
+PAYLOAD'S COMPETITIVE STRENGTHS
+---------------------------------
+
+  1. DISTRIBUTION MOAT (Most Dangerous Advantage)
+     40,000-60,000 newsletter subscribers who read their content daily.
+     SpaceNexus has ~0 newsletter subscribers. Building a subscriber base
+     from scratch takes years. Payload already has the audience that
+     SpaceNexus needs to reach.
+
+  2. BRAND RECOGNITION AND TRUST
+     Space professionals know Payload by name. They are cited by SpaceNews,
+     referenced in podcast discussions, and invited to speak at conferences.
+     SpaceNexus is unknown outside of our direct contacts.
+
+  3. EDITORIAL VOICE
+     Human-written analysis with personality. Mo Islam's finance background
+     gives credibility to business/investment analysis. Readers form
+     relationships with writers -- this creates emotional switching costs.
+
+  4. COMMUNITY ASSETS
+     Executive dinners create relationships that are impossible to replicate
+     digitally. Institutional members are paying for access to a network,
+     not just content. This is the same model as The Information, Lenny's
+     Newsletter, and other premium media businesses.
+
+  5. REVENUE DIVERSIFICATION
+     Not dependent on any single revenue stream. Advertising, subscriptions,
+     events, and advisory create resilience.
+
+
+PAYLOAD'S COMPETITIVE WEAKNESSES (Where SpaceNexus Wins)
+---------------------------------------------------------
+
+  1. NO REAL-TIME DATA TOOLS
+     Payload cannot show you where the ISS is right now. They cannot track
+     satellite constellations. They cannot display DSN communication status.
+     They cannot show orbital debris density. SpaceNexus has 26+ live API
+     integrations and real-time data feeds.
+
+  2. NO INTERACTIVE CALCULATORS AND PLANNING TOOLS
+     Payload has no mission cost calculator, no insurance estimator, no
+     launch window planner, no link budget calculator. These are operational
+     tools that professionals use daily -- not occasional reads.
+
+  3. NO REGULATORY/COMPLIANCE FUNCTIONALITY
+     Payload covers space policy editorially. SpaceNexus has actual spectrum
+     management tools, regulatory filing trackers, compliance dashboards,
+     and ITAR guidance. For compliance officers and regulatory affairs teams,
+     this is a workflow tool, not a news source.
+
+  4. NO API PRODUCT
+     Payload has no programmatic data access. No API for developers.
+     No data feeds for integration into enterprise workflows. SpaceNexus
+     has a v1 API product with key management and rate limiting.
+
+  5. NO VISUALIZATION ENGINE
+     Payload has charts in their research reports, but no interactive
+     visualizations, no 3D orbital views, no real-time tracking maps,
+     no customizable dashboards. SpaceNexus has extensive visualization.
+
+  6. CONTENT IS EPISODIC, NOT PERSISTENT
+     A newsletter article is consumed once and buried in an inbox.
+     SpaceNexus modules are persistent, always-up-to-date reference
+     tools that professionals return to daily.
+
+  7. NO COMPANY DATABASE (Yet)
+     Payload Pro does not appear to have a searchable company database.
+     If SpaceNexus builds the Company Intelligence Database first and
+     does it well, this becomes a significant differentiator.
+
+  8. SMALL TEAM, LIMITED ENGINEERING CAPACITY
+     Payload is 5-15 people, primarily editorial. Building the kind of
+     engineering-heavy features SpaceNexus has (44 modules, real-time
+     data, API product, dashboard builder) would require significant
+     hiring that may not align with their media-first DNA.
+
+
+THE COLLISION POINT
+--------------------
+
+Both companies are converging on "the daily intelligence platform for space":
+
+  Payload's trajectory:       Media → Research → Data → Tools
+  SpaceNexus's trajectory:    Tools → Data → Content → Audience
+
+  Timeline for head-to-head collision: 12-18 months
+
+  Where they'll compete:
+  - Both will offer "space market intelligence" dashboards
+  - Both will have company profiles/analysis
+  - Both will cover deals, M&A, funding
+  - Both will target the same enterprise buyers
+
+  Where they WON'T compete (our safe zones):
+  - Real-time satellite tracking (Payload will never build this)
+  - Regulatory compliance tools (too technical for a media company)
+  - Mission planning calculators (operational, not editorial)
+  - API data feeds (engineering-heavy infrastructure)
+  - 3D visualization and interactive maps (engineering-heavy)
+
+
+STRATEGIC RESPONSE RECOMMENDATION
+-----------------------------------
+
+PRIMARY STRATEGY: DIFFERENTIATE (Option C)
+  Go deep on tools and professional features that Payload cannot easily
+  replicate. Position SpaceNexus as the "operational intelligence platform"
+  vs Payload's "editorial intelligence platform."
+
+  Key message: "Payload tells you what happened. SpaceNexus shows you
+  what to do about it."
+
+  What this means tactically:
+  - Prioritize the Company Intelligence Database (with operational data
+    like orbital assets, contracts, spectrum -- things Payload can't match)
+  - Build smart alerts that are data-driven, not editorial-driven
+  - Create workflow integrations (Slack/Teams, email digests, API feeds)
+  - Make compliance/regulatory tools the best in the industry
+  - Build the mission planning toolkit that defense contractors need
+
+SECONDARY STRATEGY: COMPLEMENT (Option B)
+  In parallel, explore whether a partnership with Payload makes sense:
+  - SpaceNexus provides data/tools that complement Payload's editorial
+  - Could license our data to Payload for their research reports
+  - Could cross-promote: "Analysis by Payload, data by SpaceNexus"
+  - This turns a competitor into a distribution channel
+
+  BUT: Only pursue this from a position of strength. Build the product
+  first, get traction, THEN approach Payload. Coming to them as an
+  unknown startup asking for a partnership will not work. Come to them
+  as the platform their Pro subscribers are already using.
+
+LONG-TERM STRATEGY: COMPETE (Option A)
+  In 12-18 months, once SpaceNexus has:
+  - 500+ paying customers
+  - Company Intelligence Database with 500+ companies
+  - Strong SEO rankings driving organic traffic
+  - Regular data publications being cited by industry media
+
+  THEN begin building editorial voice:
+  - Hire 1-2 industry analysts to write original analysis
+  - Launch "SpaceNexus Insights" weekly data briefing
+  - Produce quarterly "State of Space" reports
+  - Invite guest contributors from industry
+
+  The endgame: SpaceNexus offers both the DATA and the ANALYSIS.
+  Payload offers analysis but needs to license data from others.
+  We win by being both Bloomberg (data) and Goldman Sachs Research
+  (analysis).
+
+
+90-DAY COMPETITIVE RESPONSE PLAN
+----------------------------------
+
+WEEKS 1-2:
+  [ ] Begin Company Intelligence Database (the feature Payload doesn't have)
+  [ ] Launch CEO LinkedIn content (position as the "data-driven" voice vs
+      Payload's "editorial" voice -- complementary, not combative)
+  [ ] Study Payload Pro content closely -- what do they cover that we should
+      cover with data/tools instead of articles?
+
+WEEKS 3-6:
+  [ ] Company Intelligence Database MVP with 30 companies
+  [ ] Publish first "SpaceNexus Data Briefing" with original data analysis
+  [ ] Begin commenting on Payload's LinkedIn posts with data-driven additions
+      (e.g., "Great analysis from Payload. Here's the data backing this up:
+      [SpaceNexus chart]" -- positions us as the quantitative complement)
+  [ ] Attend SATELLITE 2026, demo company database
+
+WEEKS 7-10:
+  [ ] Company database at 70+ companies
+  [ ] Smart alerts system live (data-driven, not editorial)
+  [ ] Second "SpaceNexus Data Briefing" published
+  [ ] Begin tracking Payload Pro content for feature parity gaps
+
+WEEKS 11-13:
+  [ ] Company database at 100 companies
+  [ ] API product launched for developer access
+  [ ] Evaluate: Is a partnership conversation with Payload worth having?
+  [ ] Continue LinkedIn strategy -- build following to 500+ connections
+
+PRICING STRATEGY RELATIVE TO PAYLOAD:
+
+  Payload Pro Essential: $999/year ($83/month)
+
+  SpaceNexus should be priced to COMPLEMENT, not undercut:
+  - SpaceNexus Pro: $79/month ($948/year) -- slightly below Payload Pro
+    but positioned as "daily tools" vs "weekly research"
+  - SpaceNexus Enterprise: $999/month ($11,988/year) -- premium tier for
+    teams and API access, well above Payload Pro
+  - The free tier should be generous enough that Payload newsletter readers
+    try SpaceNexus and discover value they can't get from a newsletter
+
+
+OTHER EMERGING COMPETITORS TO WATCH
+-------------------------------------
+
+  1. NOVASPACE (Euroconsult + SpaceTec Partners)
+     Threat Level: MEDIUM
+     - 40+ years of Euroconsult market research credibility
+     - Digital platform with "Space Market Monitoring" (50 key indicators)
+     - Offices in 10 cities globally
+     - Weakness: Enterprise-only, high price point, no free tier
+     - Strategy: They serve the top of the market ($15K-$50K/yr reports).
+       SpaceNexus serves the middle and bottom that they ignore.
+
+  2. SLINGSHOT AEROSPACE (acquired Seradata/SpaceTrak)
+     Threat Level: MEDIUM-HIGH
+     - $120M+ raised, $60M+ annual contract bookings
+     - SpaceTrak database with 60+ years of satellite data
+     - $27M Space Force TALOS contract (AI wargaming)
+     - Weakness: SDA/military focused, not business intelligence
+     - Strategy: They do operational space domain awareness. We do
+       business intelligence. Different use cases, different buyers.
+       But watch if they expand into business intel.
+
+  3. KAYHAN SPACE (Satcat)
+     Threat Level: LOW-MEDIUM
+     - "Industry's first unified space intelligence and operations platform"
+     - Branding overlap with "space intelligence"
+     - Weakness: Space traffic management focus, not market intel
+     - Strategy: Monitor their roadmap. If they add market data, reassess.
+
+  4. QUILTY SPACE
+     Threat Level: MEDIUM
+     - Chris Quilty is the most recognized space business analyst
+     - M&A tracking, investment analysis, consulting
+     - Weakness: High price ($2,500-$10,000+/yr), manual research, PDFs
+     - Strategy: We democratize what Quilty sells to large institutions.
+       "Quilty for the rest of us" at 1/10th the price.
+
+  5. BRYCE TECH
+     Threat Level: LOW-MEDIUM
+     - Government-adjacent research firm (NASA, DoD, intelligence community)
+     - Published annual reports widely cited
+     - Weakness: Consulting-first, not SaaS. Reports are annual, not real-time.
+     - Strategy: When BryceTech publishes annual data, we show the same
+       data updated in real-time on our platform. Embarrass their lag.
+
+
+================================================================================
+UNIFIED 90-DAY EXECUTION PLAN (ALL 6 ISSUES)
+================================================================================
+
+This plan integrates all 6 strategic issues into a single timeline.
+
+WEEK 1 (Feb 8-14):
+  Product:
+  [ ] Begin Company Intelligence Database Prisma schema and API
+  [ ] Design company profile page layout
+
+  Marketing:
+  [ ] Optimize CEO LinkedIn profile (headline, about, featured section)
+  [ ] Create/optimize SpaceNexus company page on LinkedIn
+  [ ] Install LinkedIn Insight Tag on spacenexus.io
+  [ ] Subscribe to Sales Navigator Core ($100/month)
+  [ ] Publish first CEO LinkedIn post
+
+  SEO:
+  [ ] Connect Google Search Console, submit sitemap
+  [ ] Connect Google Analytics 4
+  [ ] Add Organization JSON-LD schema to layout.tsx
+
+WEEK 2 (Feb 15-21):
+  Product:
+  [ ] Seed first 10 company profiles (Tier 1 top 10)
+  [ ] SAM.gov API integration for contract data
+  [ ] Company profile page v1 (basic view)
+
+  Marketing:
+  [ ] Begin daily LinkedIn commenting (15 min/day)
+  [ ] Publish 3 more LinkedIn posts (CEO profile)
+  [ ] Send 50 LinkedIn connection requests
+
+  SEO:
+  [ ] PageSpeed Insights audit → fix critical issues
+  [ ] Internal linking: add cross-links between pages
+  [ ] OG image template for social sharing
+
+WEEK 3 (Feb 22-28):
+  Product:
+  [ ] Seed 20 more company profiles (30 total = full Tier 1)
+  [ ] CelesTrak cross-reference for orbital assets
+  [ ] Crunchbase Basic API for funding data
+  [ ] Company search/list page
+
+  Marketing:
+  [ ] 4x LinkedIn posts this week (CEO profile)
+  [ ] 3x company page posts
+  [ ] First InMail batch: 10 messages to target prospects
+
+  SEO:
+  [ ] Publish 6th pillar content page
+  [ ] Breadcrumb schema on all module pages
+  [ ] FAQ schema on pricing page
+
+WEEK 4 (Mar 1-7):
+  Product:
+  [ ] AI entity extraction from news articles → company profiles
+  [ ] Company profile v2: financial data, key people, orbital assets
+  [ ] Start seeding Tier 2 companies
+
+  Marketing:
+  [ ] Publish first LinkedIn article ("State of Space: Feb 2026")
+  [ ] Build enterprise prospect list: 50 target companies
+  [ ] Create 5-minute demo video
+
+  SEO:
+  [ ] Publish 7th pillar content page
+  [ ] Sign up for HARO, respond to first queries
+  [ ] First guest article pitch to SpaceNews
+
+WEEK 5 (Mar 8-14):
+  Product:
+  [ ] 50 company profiles complete
+  [ ] Watchlist functionality (save + alert)
+  [ ] Smart alerts v1 (email-based company news alerts)
+
+  Marketing:
+  [ ] LinkedIn: Begin A/B testing ad creative (visual variants)
+  [ ] Draft enterprise sales deck (10 slides)
+  [ ] Personal outreach to 10 prospects with free trial
+
+  Conference:
+  [ ] Confirm SATELLITE 2026 registration (March 23-26)
+  [ ] Book travel and hotel for DC
+
+WEEK 6 (Mar 15-21):
+  Product:
+  [ ] 60 company profiles complete
+  [ ] Company comparison feature (side-by-side)
+  [ ] Free tier gating (5 profiles/day)
+
+  Marketing:
+  [ ] Launch LinkedIn paid campaigns (Thought Leader Ads first)
+  [ ] Budget: $40/day = $280/week
+  [ ] Pre-conference LinkedIn posts about SATELLITE attendance
+
+  Conference:
+  [ ] Pre-schedule 8-12 meetings at SATELLITE
+  [ ] Prepare demo: Company Database + satellite tracker + market intel
+  [ ] Print business cards, one-pagers
+
+WEEK 7 (Mar 22-28) -- SATELLITE CONFERENCE WEEK:
+  Product:
+  [ ] 70 company profiles complete
+  [ ] Bug fixes and polish from conference demo feedback
+
+  Conference:
+  [ ] SATELLITE 2026 (March 23-26, Washington DC)
+  [ ] Demo SpaceNexus to 30-50 people
+  [ ] Capture 15-25 qualified leads
+  [ ] Network at all receptions and evening events
+
+  Marketing:
+  [ ] Live LinkedIn posts from conference floor
+  [ ] Photo content for social media
+
+WEEK 8 (Mar 29 - Apr 4):
+  Product:
+  [ ] 80 company profiles complete
+  [ ] Implement feedback from conference demos
+  [ ] API documentation portal for developer access
+
+  Marketing:
+  [ ] Conference follow-up: LinkedIn connections + thank you messages
+  [ ] Email hot leads from SATELLITE with demo links
+  [ ] Publish "SATELLITE 2026 Takeaways" article
+
+  SEO:
+  [ ] Publish 8th pillar content page
+  [ ] Analyze first month of Search Console data
+
+WEEK 9 (Apr 5-11):
+  Product:
+  [ ] 90 company profiles complete
+  [ ] API product v1 launch (Developer tier)
+  [ ] Data freshness indicators on company profiles
+
+  Marketing:
+  [ ] Scale LinkedIn ads based on SATELLITE lead data
+  [ ] First "SpaceNexus Data Briefing" publication
+  [ ] Convert first 5-10 paying subscribers
+
+  Conference:
+  [ ] Final prep for Space Symposium (if attending)
+
+WEEK 10 (Apr 12-18) -- SPACE SYMPOSIUM WEEK:
+  Product:
+  [ ] 100 company profiles complete (MVP ACHIEVED)
+  [ ] Company Intelligence Database public launch
+
+  Conference:
+  [ ] Space Symposium (April 13-16, if budget allows)
+  [ ] Or: Remote content blitz during Space Symposium week
+
+  Marketing:
+  [ ] LinkedIn: "SpaceNexus Company Intelligence Database is live"
+  [ ] Email blast to all leads and free users
+
+WEEKS 11-13 (Apr 19 - May 9):
+  Product:
+  [ ] Begin Tier 2 expansion (target: 150 companies by end of May)
+  [ ] Smart alerts v2 (push notifications)
+  [ ] Saved watchlists with daily digest emails
+
+  Marketing:
+  [ ] Convert SATELLITE and Space Symposium leads to paying customers
+  [ ] LinkedIn campaign optimization (kill underperformers)
+  [ ] Monthly MRR target: $5,000-$10,000
+
+  SEO:
+  [ ] Publish pillar pages #9 and #10
+  [ ] First quarterly "State of Space" data report
+  [ ] Analyze keyword rankings, adjust strategy
+
+
+================================================================================
+BUDGET SUMMARY (90-DAY PLAN)
+================================================================================
+
+PRODUCT DEVELOPMENT
+  Crunchbase Enterprise API:           $49/month x 3 = $147
+  Development tools/hosting:           Already covered by Railway
+  ---
+  Product subtotal:                    $147
+
+LINKEDIN MARKETING
+  Month 1 (organic only):             $203
+    - Sales Navigator Core: $100
+    - LinkedIn Premium: $60
+    - Buffer scheduling: $30
+    - Canva Pro: $13
+  Month 2 (paid campaigns):           $2,703
+    - Sales Navigator: $100
+    - LinkedIn Premium: $60
+    - Buffer: $30
+    - Canva: $13
+    - Ad spend: $2,500
+  Month 3 (scale):                    $4,503
+    - Sales Navigator: $100
+    - LinkedIn Premium: $60
+    - Buffer: $30
+    - Canva: $13
+    - Ad spend: $3,500
+    - Content creator (contract): $800
+  ---
+  LinkedIn subtotal:                   $7,409
+
+SEO
+  Domain/hosting: Already covered
+  HARO subscription: Free
+  Google Search Console: Free
+  ---
+  SEO subtotal:                        $0
+
+CONFERENCES
+  SATELLITE 2026 (Startup Pavilion):   ~$5,000-$8,000
+    - Startup Pavilion booth: ~$3,000-5,000
+    - Travel + hotel (3 nights DC): $1,000-1,500
+    - Marketing materials: $500-1,000
+    - Business cards: $50
+    - Meals: $200-300
+  Space Symposium (attend only):       ~$3,000-4,000
+    - Registration: $1,500-2,000
+    - Travel + hotel (3 nights): $1,200-1,800
+    - Meals: $200-300
+  ---
+  Conference subtotal:                 $8,000-$12,000
+
+=========================================
+TOTAL 90-DAY BUDGET:                   $15,556-$19,556
+=========================================
+
+  Conservative (SATELLITE only, no Space Symposium): ~$12,556
+  Moderate (both conferences):                       ~$19,556
+  Aggressive (bigger booth, more ad spend):           ~$25,000
+
+
+================================================================================
+FINAL NOTES FOR CEO MORNING REVIEW
+================================================================================
+
+DECISIONS NEEDED THIS WEEK:
+
+  1. [ ] START Company Intelligence Database? (Recommended: YES, immediately)
+
+  2. [ ] REGISTER for SATELLITE 2026? (March 23-26, 6 weeks away)
+         - Decision needed by: February 15 at latest for Startup Pavilion
+         - Startup Pavilion deadline may be sooner -- contact organizers
+
+  3. [ ] START LinkedIn immediately? (Recommended: YES, this week)
+         - First post: Tuesday Feb 11 (highest engagement day)
+         - Profile optimization: Today
+
+  4. [ ] CONNECT Google Search Console? (Recommended: YES, takes 30 minutes)
+
+  5. [ ] REGISTER for Space Symposium? (April 13-16, 9 weeks away)
+         - Can decide by March 1 without losing much
+         - Early bird pricing may have expired Feb 3
+
+COMPANION DOCUMENTS:
+  - docs/LINKEDIN_B2B_STRATEGY.md (823 lines, complete strategy)
+  - docs/LINKEDIN_CONTENT_CALENDAR.md (30-day posting calendar)
+  - docs/CEO_EVALUATION_REPORT.md (product evaluation and recommendations)
+  - docs/GOVERNMENT_PROCUREMENT_STRATEGY.md (gov revenue strategy)
+  - docs/CASE_STUDIES.md (enterprise case study templates)
+  - docs/EMAIL_NURTURE_SEQUENCE.md (email sequence for leads)
+  - docs/PRODUCT_HUNT_LAUNCH_STRATEGY.md (PH launch playbook)
+  - docs/STRIPE_AUDIT_REPORT.md (payment integration review)
+  - public/OWNER-ACTION-ITEMS.txt (manual setup tasks)
+  - strategic-brainstorm-analysis.txt (original strategic analysis)
+
+================================================================================
+END OF CEO STRATEGIC DEEP DIVE
+Prepared by Claude | February 8, 2026
+================================================================================
