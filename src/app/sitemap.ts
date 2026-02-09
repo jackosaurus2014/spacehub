@@ -43,10 +43,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/blueprints`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${baseUrl}/procurement`, changeFrequency: 'daily' as const, priority: 0.7 },
 
+    // Additional module pages
+    { url: `${baseUrl}/space-tourism`, changeFrequency: 'weekly' as const, priority: 0.7 },
+
+    // Company Intelligence
+    { url: `${baseUrl}/company-profiles`, changeFrequency: 'daily' as const, priority: 0.8 },
+
     // Content and tools
     { url: `${baseUrl}/blogs`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${baseUrl}/launch`, changeFrequency: 'daily' as const, priority: 0.6 },
+    { url: `${baseUrl}/live`, changeFrequency: 'hourly' as const, priority: 0.6 },
+    { url: `${baseUrl}/ai-insights`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${baseUrl}/search`, changeFrequency: 'weekly' as const, priority: 0.5 },
+    { url: `${baseUrl}/dashboard`, changeFrequency: 'daily' as const, priority: 0.5 },
+    { url: `${baseUrl}/alerts`, changeFrequency: 'daily' as const, priority: 0.5 },
     { url: `${baseUrl}/guide/space-industry`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${baseUrl}/guide/space-industry-market-size`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${baseUrl}/guide/how-satellite-tracking-works`, changeFrequency: 'monthly' as const, priority: 0.6 },
@@ -57,8 +67,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Conversion pages
     { url: `${baseUrl}/pricing`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${baseUrl}/developer`, changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${baseUrl}/advertise`, changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${baseUrl}/contact`, changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${baseUrl}/faq`, changeFrequency: 'monthly' as const, priority: 0.4 },
+
+    // Legal pages
+    { url: `${baseUrl}/privacy`, changeFrequency: 'monthly' as const, priority: 0.3 },
+    { url: `${baseUrl}/terms`, changeFrequency: 'monthly' as const, priority: 0.3 },
+    { url: `${baseUrl}/cookies`, changeFrequency: 'monthly' as const, priority: 0.3 },
 
     // Auth pages
     { url: `${baseUrl}/login`, changeFrequency: 'monthly' as const, priority: 0.3 },
