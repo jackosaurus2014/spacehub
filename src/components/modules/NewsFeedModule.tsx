@@ -42,7 +42,7 @@ export default function NewsFeedModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-100 flex items-center">
             <span className="text-3xl mr-3">📰</span>
             News & Categories
           </h2>
@@ -62,7 +62,7 @@ export default function NewsFeedModule() {
       {/* Browse by Category - Compact */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold text-slate-800 flex items-center">
+          <h3 className="text-lg font-semibold text-slate-100 flex items-center">
             <span className="text-xl mr-2">📂</span>
             Browse by Category
           </h3>
@@ -78,10 +78,10 @@ export default function NewsFeedModule() {
             <Link
               key={category.slug}
               href={`/news?category=${category.slug}`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 hover:border-nebula-500/50 rounded-full text-sm transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-space-700/50 hover:bg-space-600/50 border border-space-600 hover:border-nebula-500/50 rounded-full text-sm transition-all"
             >
               <span className="text-base">{categoryIcons[category.slug] || '📁'}</span>
-              <span className="text-slate-400 group-hover:text-slate-800">{category.name}</span>
+              <span className="text-star-200">{category.name}</span>
             </Link>
           ))}
         </div>
@@ -91,7 +91,7 @@ export default function NewsFeedModule() {
       {featuredArticle && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+            <h2 className="text-2xl font-display font-bold text-slate-100 flex items-center">
               <span className="text-3xl mr-3">✨</span>
               Featured Story
             </h2>
@@ -104,7 +104,7 @@ export default function NewsFeedModule() {
       {recentArticles.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+            <h2 className="text-2xl font-display font-bold text-slate-100 flex items-center">
               <span className="text-3xl mr-3">📰</span>
               Recent News
             </h2>
@@ -120,7 +120,7 @@ export default function NewsFeedModule() {
       {articles.length === 0 && (
         <div className="card p-8 text-center">
           <span className="text-5xl block mb-4">📭</span>
-          <h3 className="text-xl font-semibold text-slate-800 mb-2">No News Available</h3>
+          <h3 className="text-xl font-semibold text-slate-100 mb-2">No News Available</h3>
           <p className="text-slate-400">Check back soon for the latest space industry updates.</p>
         </div>
       )}

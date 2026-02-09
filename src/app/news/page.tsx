@@ -125,7 +125,7 @@ function NewsContent() {
       ) : articles.length === 0 ? (
         <div className="text-center py-20">
           <span className="text-6xl block mb-4">🔭</span>
-          <h2 className="text-2xl font-semibold text-slate-900 mb-2">
+          <h2 className="text-2xl font-semibold text-slate-100 mb-2">
             No articles found
           </h2>
           <p className="text-slate-400">
