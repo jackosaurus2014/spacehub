@@ -8,43 +8,49 @@ datasource db {
 }
 
 model User {
-  id                String              @id @default(cuid())
-  email             String              @unique
+  id                String                 @id @default(cuid())
+  email             String                 @unique
   password          String
   name              String?
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
   modulePreferences UserModulePreference[]
 
   // Subscription
-  subscriptionTier     String    @default("free") // free, pro, enterprise
-  subscriptionStatus   String    @default("active") // active, canceled, past_due
+  subscriptionTier      String    @default("free") // free, pro, enterprise
+  subscriptionStatus    String    @default("active") // active, canceled, past_due
   subscriptionStartDate DateTime?
-  subscriptionEndDate  DateTime?
-  stripeCustomerId     String?   @unique
-  stripeSubscriptionId String?   @unique
+  subscriptionEndDate   DateTime?
+  stripeCustomerId      String?   @unique
+  stripeSubscriptionId  String?   @unique
 
   // Free trial
-  trialTier       String?   // The tier being trialed: "pro" or "enterprise"
-  trialStartDate  DateTime?
-  trialEndDate    DateTime?
+  trialTier      String? // The tier being trialed: "pro" or "enterprise"
+  trialStartDate DateTime?
+  trialEndDate   DateTime?
 
   // Admin
-  isAdmin              Boolean   @default(false)
+  isAdmin Boolean @default(false)
 
   // Email verification & password reset
-  emailVerified     Boolean             @default(false)
-  verificationToken String?             @unique
+  emailVerified     Boolean @default(false)
+  verificationToken String? @unique
 
   // Usage tracking (for free tier limits)
-  dailyArticleViews    Int       @default(0)
-  lastArticleViewReset DateTime  @default(now())
+  dailyArticleViews    Int      @default(0)
+  lastArticleViewReset DateTime @default(now())
 
   // Relations
-  featureRequests      FeatureRequest[]
-  helpRequests         HelpRequest[]
-  newsletterSubscription NewsletterSubscriber?
-  passwordResetTokens PasswordResetToken[]
+  featureRequests          FeatureRequest[]
+  helpRequests             HelpRequest[]
+  newsletterSubscription   NewsletterSubscriber?
+  passwordResetTokens      PasswordResetToken[]
+  alerts                   AlertRule[]
+  apiKeys                  ApiKey[]
+  advertiserProfile        Advertiser?
+  savedProcurementSearches SavedProcurementSearch[]
+  dashboardLayouts         DashboardLayout[]
+  launchChatMessages       LaunchChatMessage[]
 }
 
 model PasswordResetToken {
@@ -80,63 +86,71 @@ model NewsArticle {
 }
 
 model Category {
-  id          String @id @default(cuid())
-  name        String @unique
-  slug        String @unique
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
   description String?
 }
 
 model SpaceEvent {
-  id            String   @id @default(cuid())
-  externalId    String?  @unique
-  name          String
-  description   String?
-  type          String   // launch, moon_mission, mars_mission, rover, payload, orbital_hab, space_station
-  status        String   // upcoming, in_progress, completed, scrubbed, tbd
-  launchDate    DateTime?
+  id                  String    @id @default(cuid())
+  externalId          String?   @unique
+  name                String
+  description         String?
+  type                String // launch, moon_mission, mars_mission, rover, payload, orbital_hab, space_station
+  status              String // upcoming, in_progress, completed, scrubbed, tbd
+  launchDate          DateTime?
   launchDatePrecision String? // exact, hour, day, month, quarter, year
-  windowStart   DateTime?
-  windowEnd     DateTime?
-  location      String?
-  country       String?
-  agency        String?
-  rocket        String?
-  mission       String?
-  imageUrl      String?
-  infoUrl       String?
-  videoUrl      String?
-  webcastLive   Boolean  @default(false)
-  fetchedAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  windowStart         DateTime?
+  windowEnd           DateTime?
+  location            String?
+  country             String?
+  agency              String?
+  rocket              String?
+  mission             String?
+  imageUrl            String?
+  infoUrl             String?
+  videoUrl            String?
+  webcastLive         Boolean   @default(false)
+  streamUrl           String?
+  missionPhase        String?
+  isLive              Boolean   @default(false)
+  fetchedAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Launch day relations
+  telemetry    LaunchTelemetry[]
+  chatMessages LaunchChatMessage[]
 
   @@index([type])
   @@index([status])
   @@index([launchDate])
   @@index([country])
   @@index([status, launchDate])
+  @@index([isLive])
 }
 
 model UserModulePreference {
-  id         String  @id @default(cuid())
-  userId     String
-  moduleId   String  // e.g., "mission-control", "news-feed", etc.
-  enabled    Boolean @default(true)
-  position   Int     @default(0)
-  settings   String? // JSON string for module-specific settings
-  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id       String  @id @default(cuid())
+  userId   String
+  moduleId String // e.g., "mission-control", "news-feed", etc.
+  enabled  Boolean @default(true)
+  position Int     @default(0)
+  settings String? // JSON string for module-specific settings
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, moduleId])
   @@index([userId])
 }
 
 model ModuleDefinition {
-  id          String  @id @default(cuid())
-  moduleId    String  @unique
-  name        String
-  description String?
-  icon        String?
-  defaultEnabled Boolean @default(true)
-  defaultPosition Int @default(0)
+  id              String  @id @default(cuid())
+  moduleId        String  @unique
+  name            String
+  description     String?
+  icon            String?
+  defaultEnabled  Boolean @default(true)
+  defaultPosition Int     @default(0)
 }
 
 model BlogSource {
@@ -144,11 +158,11 @@ model BlogSource {
   name        String
   slug        String     @unique
   url         String
-  feedUrl     String?    // RSS feed URL if available
-  type        String     // blog, newsletter, medium, substack, linkedin
+  feedUrl     String? // RSS feed URL if available
+  type        String // blog, newsletter, medium, substack, linkedin
   authorName  String?
-  authorTitle String?    // e.g., "Space Law Attorney", "Aerospace Consultant"
-  authorType  String     // consultant, lawyer, entrepreneur, investor, engineer, journalist
+  authorTitle String? // e.g., "Space Law Attorney", "Aerospace Consultant"
+  authorType  String // consultant, lawyer, entrepreneur, investor, engineer, journalist
   description String?
   imageUrl    String?
   isActive    Boolean    @default(true)
@@ -171,8 +185,8 @@ model BlogPost {
   source      BlogSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
   authorName  String?
   imageUrl    String?
-  tags        String?    // JSON array of tags
-  topic       String?    // space_law, investment, policy, technology, business, exploration
+  tags        String? // JSON array of tags
+  topic       String? // space_law, investment, policy, technology, business, exploration
   publishedAt DateTime
   fetchedAt   DateTime   @default(now())
 
@@ -183,44 +197,44 @@ model BlogPost {
 }
 
 model SpaceCompany {
-  id              String   @id @default(cuid())
-  slug            String   @unique
-  name            String
-  description     String?
-  country         String   // USA, CHN, RUS, JPN, etc.
-  headquarters    String?
-  founded         Int?     // Year founded
-  website         String?
-  logoUrl         String?
+  id           String  @id @default(cuid())
+  slug         String  @unique
+  name         String
+  description  String?
+  country      String // USA, CHN, RUS, JPN, etc.
+  headquarters String?
+  founded      Int? // Year founded
+  website      String?
+  logoUrl      String?
 
   // Public company info
-  isPublic        Boolean  @default(false)
-  ticker          String?
-  exchange        String?  // NYSE, NASDAQ, TSE, SSE, etc.
-  marketCap       Float?   // In billions USD
-  stockPrice      Float?
-  priceChange24h  Float?   // Percentage
+  isPublic       Boolean @default(false)
+  ticker         String?
+  exchange       String? // NYSE, NASDAQ, TSE, SSE, etc.
+  marketCap      Float? // In billions USD
+  stockPrice     Float?
+  priceChange24h Float? // Percentage
 
   // Private company info
-  isPreIPO        Boolean  @default(false)
-  expectedIPODate String?  // e.g., "2025", "Q2 2026", "TBD"
-  lastFundingRound String? // e.g., "Series D", "Series B"
+  isPreIPO          Boolean @default(false)
+  expectedIPODate   String? // e.g., "2025", "Q2 2026", "TBD"
+  lastFundingRound  String? // e.g., "Series D", "Series B"
   lastFundingAmount Float? // In millions USD
-  lastFundingDate  String?
-  totalFunding    Float?   // In millions USD
-  nextFundingRound String? // Expected next round
-  valuation       Float?   // In billions USD (for private companies)
+  lastFundingDate   String?
+  totalFunding      Float? // In millions USD
+  nextFundingRound  String? // Expected next round
+  valuation         Float? // In billions USD (for private companies)
 
   // Space industry focus
-  focusAreas      String   // JSON array: ["launch_provider", "satellites", "space_stations", etc.]
-  subSectors      String?  // JSON array of more specific sectors
+  focusAreas String // JSON array: ["launch_provider", "satellites", "space_stations", etc.]
+  subSectors String? // JSON array of more specific sectors
 
   // Metadata
   employeeCount   Int?
-  revenueEstimate Float?   // In millions USD
+  revenueEstimate Float? // In millions USD
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([country])
   @@index([isPublic])
@@ -229,101 +243,101 @@ model SpaceCompany {
 }
 
 model SpaceResource {
-  id              String   @id @default(cuid())
-  slug            String   @unique
-  name            String
-  description     String?
-  category        String   // raw_material, composite, component, fuel, life_support, electronics, exotic
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  description String?
+  category    String // raw_material, composite, component, fuel, life_support, electronics, exotic
 
   // Earth pricing
-  earthPricePerKg Float    // USD per kg on Earth
-  priceUnit       String?  // Optional unit clarification (e.g., "per kg", "per liter", "per unit")
-  priceSource     String?  // Source of pricing data
+  earthPricePerKg Float // USD per kg on Earth
+  priceUnit       String? // Optional unit clarification (e.g., "per kg", "per liter", "per unit")
+  priceSource     String? // Source of pricing data
 
   // Properties
-  density         Float?   // kg per cubic meter (for volume calculations)
+  density Float? // kg per cubic meter (for volume calculations)
 
   // Space applications
-  applications    String   // JSON array of space applications
-  usedIn          String?  // JSON array of systems/missions that use this
+  applications String // JSON array of space applications
+  usedIn       String? // JSON array of systems/missions that use this
 
   // Supply chain info
   primarySuppliers String? // JSON array of major suppliers/countries
-  availability    String?  // abundant, common, limited, rare, critical
+  availability     String? // abundant, common, limited, rare, critical
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([category])
   @@index([availability])
 }
 
 model LaunchProvider {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id              String  @id @default(cuid())
+  slug            String  @unique
   name            String
-  vehicle         String   // Rocket/vehicle name
-  costPerKgToLEO  Float    // USD per kg to Low Earth Orbit
-  costPerKgToGEO  Float?   // USD per kg to Geostationary Orbit
-  costPerKgToMoon Float?   // USD per kg to lunar orbit/surface
-  costPerKgToMars Float?   // USD per kg to Mars
-  payloadToLEO    Float?   // Max payload to LEO in kg
-  status          String   // operational, development, retired
+  vehicle         String // Rocket/vehicle name
+  costPerKgToLEO  Float // USD per kg to Low Earth Orbit
+  costPerKgToGEO  Float? // USD per kg to Geostationary Orbit
+  costPerKgToMoon Float? // USD per kg to lunar orbit/surface
+  costPerKgToMars Float? // USD per kg to Mars
+  payloadToLEO    Float? // Max payload to LEO in kg
+  status          String // operational, development, retired
   country         String
-  reusable        Boolean  @default(false)
+  reusable        Boolean @default(false)
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([status])
   @@index([country])
 }
 
 model BusinessOpportunity {
-  id              String   @id @default(cuid())
-  slug            String   @unique
-  title           String
-  description     String
-  fullAnalysis    String?  // Detailed AI analysis
+  id           String  @id @default(cuid())
+  slug         String  @unique
+  title        String
+  description  String
+  fullAnalysis String? // Detailed AI analysis
 
   // Classification
-  type            String   // government_contract, industry_need, resource_shortage, service_gap, ai_insight, market_trend
-  category        String   // launch_services, hardware, satellites, software, logistics, manufacturing, research, consulting, other
-  sector          String?  // defense, commercial, civil, scientific
+  type     String // government_contract, industry_need, resource_shortage, service_gap, ai_insight, market_trend
+  category String // launch_services, hardware, satellites, software, logistics, manufacturing, research, consulting, other
+  sector   String? // defense, commercial, civil, scientific
 
   // Opportunity details
-  estimatedValue  String?  // Could be a range like "$1M-$5M" or "Unknown"
-  timeframe       String?  // immediate, short_term, medium_term, long_term
-  difficulty      String?  // low, medium, high, expert
+  estimatedValue String? // Could be a range like "$1M-$5M" or "Unknown"
+  timeframe      String? // immediate, short_term, medium_term, long_term
+  difficulty     String? // low, medium, high, expert
 
   // Source information
-  sourceType      String   // sam_gov, news_analysis, company_report, ai_generated, user_submitted
-  sourceUrl       String?
-  sourceName      String?
+  sourceType String // sam_gov, news_analysis, company_report, ai_generated, user_submitted
+  sourceUrl  String?
+  sourceName String?
 
   // Government contract specific
-  solicitationId  String?  @unique
-  agency          String?
-  dueDate         DateTime?
-  contractType    String?  // fixed_price, cost_plus, idiq, etc.
-  setAside        String?  // small_business, 8a, hubzone, etc.
+  solicitationId String?   @unique
+  agency         String?
+  dueDate        DateTime?
+  contractType   String? // fixed_price, cost_plus, idiq, etc.
+  setAside       String? // small_business, 8a, hubzone, etc.
 
   // AI analysis metadata
-  aiConfidence    Float?   // 0-1 confidence score
-  aiReasoning     String?  // Why AI thinks this is an opportunity
-  relatedTrends   String?  // JSON array of related trends
-  targetAudience  String?  // JSON array: entrepreneurs, investors, students, corporations
+  aiConfidence   Float? // 0-1 confidence score
+  aiReasoning    String? // Why AI thinks this is an opportunity
+  relatedTrends  String? // JSON array of related trends
+  targetAudience String? // JSON array: entrepreneurs, investors, students, corporations
 
   // Status
-  status          String   @default("active") // active, expired, archived, flagged
-  featured        Boolean  @default(false)
-  viewCount       Int      @default(0)
+  status    String  @default("active") // active, expired, archived, flagged
+  featured  Boolean @default(false)
+  viewCount Int     @default(0)
 
   // Timestamps
-  discoveredAt    DateTime @default(now())
-  publishedAt     DateTime?
-  expiresAt       DateTime?
-  updatedAt       DateTime @updatedAt
+  discoveredAt DateTime  @default(now())
+  publishedAt  DateTime?
+  expiresAt    DateTime?
+  updatedAt    DateTime  @updatedAt
 
   @@index([type])
   @@index([category])
@@ -334,26 +348,26 @@ model BusinessOpportunity {
 }
 
 model AIAnalysisRun {
-  id              String   @id @default(cuid())
-  runType         String   // daily_scan, deep_dive, contract_analysis, trend_analysis
-  status          String   // pending, running, completed, failed
+  id      String @id @default(cuid())
+  runType String // daily_scan, deep_dive, contract_analysis, trend_analysis
+  status  String // pending, running, completed, failed
 
   // Analysis parameters
-  focusAreas      String?  // JSON array of focus areas
-  newsSourcesUsed String?  // JSON array of news sources analyzed
+  focusAreas      String? // JSON array of focus areas
+  newsSourcesUsed String? // JSON array of news sources analyzed
 
   // Results
-  opportunitiesFound Int   @default(0)
-  insightsGenerated  Int   @default(0)
-  summaryReport   String?  // Overall findings summary
+  opportunitiesFound Int     @default(0)
+  insightsGenerated  Int     @default(0)
+  summaryReport      String? // Overall findings summary
 
   // Metadata
-  tokensUsed      Int?
-  processingTime  Int?     // in seconds
-  errorMessage    String?
+  tokensUsed     Int?
+  processingTime Int? // in seconds
+  errorMessage   String?
 
-  startedAt       DateTime @default(now())
-  completedAt     DateTime?
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
 
   @@index([runType])
   @@index([status])
@@ -363,37 +377,37 @@ model AIAnalysisRun {
 // Compliance Module Models
 
 model ExportClassification {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Classification type
-  regime          String   // EAR, ITAR
-  classification  String   // ECCN (e.g., 9A515) or USML Category (e.g., XV)
+  regime         String // EAR, ITAR
+  classification String // ECCN (e.g., 9A515) or USML Category (e.g., XV)
 
   // Item details
-  name            String
-  description     String
-  technicalNotes  String?  // Additional technical parameters
+  name           String
+  description    String
+  technicalNotes String? // Additional technical parameters
 
   // Categorization
-  category        String   // spacecraft, satellite, launch_vehicle, component, software, technology, orbital_hab, rover
-  subCategory     String?  // propulsion, avionics, structures, thermal, power, communications, etc.
+  category    String // spacecraft, satellite, launch_vehicle, component, software, technology, orbital_hab, rover
+  subCategory String? // propulsion, avionics, structures, thermal, power, communications, etc.
 
   // Control information
-  controlReason   String?  // NS, MT, NP, CB, CC, RS, AT, UN, etc.
-  licenseRequired String?  // License requirement description
-  exceptions      String?  // JSON array of available license exceptions
+  controlReason   String? // NS, MT, NP, CB, CC, RS, AT, UN, etc.
+  licenseRequired String? // License requirement description
+  exceptions      String? // JSON array of available license exceptions
 
   // Related items
-  relatedECCNs    String?  // JSON array of related classifications
+  relatedECCNs String? // JSON array of related classifications
 
   // Source and updates
-  sourceUrl       String?
-  effectiveDate   DateTime?
-  lastUpdated     DateTime @default(now())
+  sourceUrl     String?
+  effectiveDate DateTime?
+  lastUpdated   DateTime  @default(now())
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([regime])
   @@index([category])
@@ -401,26 +415,26 @@ model ExportClassification {
 }
 
 model ProposedRegulation {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Regulation details
-  title           String
-  summary         String
-  fullText        String?  // Full regulation text or key excerpts
+  title    String
+  summary  String
+  fullText String? // Full regulation text or key excerpts
 
   // Source information
-  agency          String   // BIS, DDTC, FAA, FCC, NASA, etc.
-  docketNumber    String?  // Federal Register docket number
+  agency                  String // BIS, DDTC, FAA, FCC, NASA, etc.
+  docketNumber            String? // Federal Register docket number
   federalRegisterCitation String?
 
   // Classification
-  type            String   // proposed_rule, final_rule, notice, guidance, executive_order
-  category        String   // export_control, licensing, safety, spectrum, environmental, commercial_space
+  type     String // proposed_rule, final_rule, notice, guidance, executive_order
+  category String // export_control, licensing, safety, spectrum, environmental, commercial_space
 
   // Impact assessment
-  impactAreas     String   // JSON array: launch, satellite, components, software, technology
-  impactSeverity  String?  // low, medium, high, critical
+  impactAreas    String // JSON array: launch, satellite, components, software, technology
+  impactSeverity String? // low, medium, high, critical
 
   // Timeline
   publishedDate   DateTime
@@ -428,18 +442,18 @@ model ProposedRegulation {
   effectiveDate   DateTime?
 
   // Status tracking
-  status          String   @default("open") // open, comment_period, closed, final, withdrawn
+  status String @default("open") // open, comment_period, closed, final, withdrawn
 
   // Links
-  sourceUrl       String
-  commentUrl      String?  // URL to submit comments
+  sourceUrl  String
+  commentUrl String? // URL to submit comments
 
   // Analysis
-  keyChanges      String?  // JSON array of key changes
-  industryImpact  String?  // Analysis of industry impact
+  keyChanges     String? // JSON array of key changes
+  industryImpact String? // Analysis of industry impact
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([agency])
   @@index([type])
@@ -449,59 +463,59 @@ model ProposedRegulation {
 }
 
 model LegalUpdate {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Content
-  title           String
-  excerpt         String?
-  content         String?
+  title   String
+  excerpt String?
+  content String?
 
   // Source
-  sourceId        String
-  source          LegalSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
-  authorName      String?
+  sourceId   String
+  source     LegalSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  authorName String?
 
   // Classification
-  topics          String   // JSON array: export_control, itar, ear, space_law, faa, licensing, trade
-  relevantRegimes String?  // JSON array: EAR, ITAR, FAA, FCC
+  topics          String // JSON array: export_control, itar, ear, space_law, faa, licensing, trade
+  relevantRegimes String? // JSON array: EAR, ITAR, FAA, FCC
 
   // Links
-  url             String   @unique
+  url String @unique
 
   // Dates
-  publishedAt     DateTime
-  fetchedAt       DateTime @default(now())
+  publishedAt DateTime
+  fetchedAt   DateTime @default(now())
 
   @@index([sourceId])
   @@index([publishedAt])
 }
 
 model LegalSource {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Source info
-  name            String
-  slug            String   @unique
-  type            String   // law_firm, government, industry_association, think_tank
+  name String
+  slug String @unique
+  type String // law_firm, government, industry_association, think_tank
 
   // Organization details
-  organization    String?  // Parent organization
-  specialty       String?  // export_control, space_law, regulatory, general
+  organization String? // Parent organization
+  specialty    String? // export_control, space_law, regulatory, general
 
   // Feed info
-  url             String
-  feedUrl         String?  // RSS feed if available
+  url     String
+  feedUrl String? // RSS feed if available
 
   // Status
-  isActive        Boolean  @default(true)
-  lastFetched     DateTime?
+  isActive    Boolean   @default(true)
+  lastFetched DateTime?
 
   // Related
-  updates         LegalUpdate[]
+  updates LegalUpdate[]
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([type])
   @@index([isActive])
@@ -510,53 +524,53 @@ model LegalSource {
 // Solar Exploration Module Models
 
 model PlanetaryBody {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id              String  @id @default(cuid())
+  slug            String  @unique
   name            String
   description     String?
-  diameter        Float    // km
-  type            String   // planet, moon, asteroid
+  diameter        Float // km
+  type            String // planet, moon, asteroid
   textureUrl      String?
-  color           String?  // fallback hex color
-  hasBeenExplored Boolean  @default(false)
+  color           String? // fallback hex color
+  hasBeenExplored Boolean @default(false)
 
-  landers         SurfaceLander[]
+  landers SurfaceLander[]
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([type])
 }
 
 model SurfaceLander {
-  id              String   @id @default(cuid())
-  slug            String   @unique
-  name            String
-  missionType     String   // lander, rover, probe, sample_return
-  status          String   // active, inactive, completed, lost
+  id          String @id @default(cuid())
+  slug        String @unique
+  name        String
+  missionType String // lander, rover, probe, sample_return
+  status      String // active, inactive, completed, lost
 
   planetaryBodyId String
   planetaryBody   PlanetaryBody @relation(fields: [planetaryBodyId], references: [id], onDelete: Cascade)
 
-  latitude        Float
-  longitude       Float
-  landingSite     String?
+  latitude    Float
+  longitude   Float
+  landingSite String?
 
-  country         String
-  agency          String?
-  company         String?
+  country String
+  agency  String?
+  company String?
 
-  launchDate      DateTime?
-  landingDate     DateTime?
-  endDate         DateTime?
+  launchDate  DateTime?
+  landingDate DateTime?
+  endDate     DateTime?
 
-  description     String?
-  objectives      String?  // JSON array of mission objectives
-  mass            Float?   // kg
-  powerSource     String?  // solar, RTG, battery
+  description String?
+  objectives  String? // JSON array of mission objectives
+  mass        Float? // kg
+  powerSource String? // solar, RTG, battery
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([planetaryBodyId])
   @@index([status])
@@ -566,33 +580,33 @@ model SurfaceLander {
 // Solar Flare Tracker Models
 
 model SolarFlare {
-  id              String   @id @default(cuid())
-  flareId         String   @unique  // External ID (e.g., from NOAA)
+  id      String @id @default(cuid())
+  flareId String @unique // External ID (e.g., from NOAA)
 
   // Classification
-  classification  String   // X, M, C, B, A class
-  intensity       Float    // Peak intensity value (e.g., X5.0 = 5.0)
+  classification String // X, M, C, B, A class
+  intensity      Float // Peak intensity value (e.g., X5.0 = 5.0)
 
   // Timing
-  startTime       DateTime
-  peakTime        DateTime?
-  endTime         DateTime?
+  startTime DateTime
+  peakTime  DateTime?
+  endTime   DateTime?
 
   // Location on Sun
-  activeRegion    String?  // NOAA Active Region number
-  sourceLocation  String?  // Heliographic coordinates
+  activeRegion   String? // NOAA Active Region number
+  sourceLocation String? // Heliographic coordinates
 
   // Impact assessment
-  radioBlackout   String?  // none, minor, moderate, strong, severe, extreme
-  solarRadiation  String?  // none, minor, moderate, strong, severe, extreme
+  radioBlackout    String? // none, minor, moderate, strong, severe, extreme
+  solarRadiation   String? // none, minor, moderate, strong, severe, extreme
   geomagneticStorm String? // none, minor, moderate, strong, severe, extreme
 
   // Additional data
-  description     String?
-  linkedCME       Boolean  @default(false)  // Associated Coronal Mass Ejection
+  description String?
+  linkedCME   Boolean @default(false) // Associated Coronal Mass Ejection
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([classification])
   @@index([startTime])
@@ -600,32 +614,32 @@ model SolarFlare {
 }
 
 model SolarForecast {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Forecast period
-  forecastDate    DateTime  // Date this forecast is for
-  issueDate       DateTime  // When forecast was issued
+  forecastDate DateTime // Date this forecast is for
+  issueDate    DateTime // When forecast was issued
 
   // Probabilities (0-100)
-  probC           Int       // Probability of C-class flare
-  probM           Int       // Probability of M-class flare
-  probX           Int       // Probability of X-class flare
-  probProton      Int?      // Probability of proton event
+  probC      Int // Probability of C-class flare
+  probM      Int // Probability of M-class flare
+  probX      Int // Probability of X-class flare
+  probProton Int? // Probability of proton event
 
   // Geomagnetic activity
-  kpIndex         Float?    // Predicted Kp index (0-9)
-  geomagneticLevel String?  // quiet, unsettled, active, storm
+  kpIndex          Float? // Predicted Kp index (0-9)
+  geomagneticLevel String? // quiet, unsettled, active, storm
 
   // Risk assessment
-  riskLevel       String    // low, moderate, high, severe, extreme
-  alertActive     Boolean   @default(false)
+  riskLevel   String // low, moderate, high, severe, extreme
+  alertActive Boolean @default(false)
 
   // Context
-  activeRegions   String?   // JSON array of active region numbers
-  notes           String?
+  activeRegions String? // JSON array of active region numbers
+  notes         String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([forecastDate])
   @@index([forecastDate])
@@ -633,31 +647,31 @@ model SolarForecast {
 }
 
 model SolarActivity {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Current conditions (updated regularly)
-  timestamp       DateTime @default(now())
+  timestamp DateTime @default(now())
 
   // Solar wind
-  solarWindSpeed  Float?   // km/s
-  solarWindDensity Float?  // particles/cm³
+  solarWindSpeed   Float? // km/s
+  solarWindDensity Float? // particles/cm³
 
   // Magnetic field
-  bz              Float?   // nT (negative = southward, geoeffective)
-  bt              Float?   // nT total field
+  bz Float? // nT (negative = southward, geoeffective)
+  bt Float? // nT total field
 
   // Indices
-  kpIndex         Float?   // Current Kp index
-  dstIndex        Float?   // Disturbance Storm Time index
-  sunspotNumber   Int?     // Daily sunspot number
+  kpIndex       Float? // Current Kp index
+  dstIndex      Float? // Disturbance Storm Time index
+  sunspotNumber Int? // Daily sunspot number
 
   // Radio flux
-  f107            Float?   // 10.7 cm radio flux
+  f107 Float? // 10.7 cm radio flux
 
   // Current status
-  overallStatus   String   // quiet, active, stormy
+  overallStatus String // quiet, active, stormy
 
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([timestamp])
 }
@@ -665,88 +679,88 @@ model SolarActivity {
 // Orbital Slots Module Models
 
 model OrbitalSlot {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Orbit classification
-  orbitType       String   // LEO, MEO, GEO, HEO, SSO, Molniya, Lagrange, Lunar, Interplanetary
-  orbitName       String   // Full name (e.g., "Low Earth Orbit")
+  orbitType String // LEO, MEO, GEO, HEO, SSO, Molniya, Lagrange, Lunar, Interplanetary
+  orbitName String // Full name (e.g., "Low Earth Orbit")
 
   // Orbital parameters
-  altitudeMin     Float?   // km
-  altitudeMax     Float?   // km
-  inclinationMin  Float?   // degrees
-  inclinationMax  Float?   // degrees
+  altitudeMin    Float? // km
+  altitudeMax    Float? // km
+  inclinationMin Float? // degrees
+  inclinationMax Float? // degrees
 
   // Current statistics
-  activeSatellites Int     @default(0)
-  inactiveSatellites Int   @default(0)
-  debrisCount     Int      @default(0)
+  activeSatellites   Int @default(0)
+  inactiveSatellites Int @default(0)
+  debrisCount        Int @default(0)
 
   // Projections
-  projected1Year  Int      @default(0)  // Expected satellites in 1 year
-  projected5Year  Int      @default(0)  // Expected satellites in 5 years
+  projected1Year Int @default(0) // Expected satellites in 1 year
+  projected5Year Int @default(0) // Expected satellites in 5 years
 
   // Metadata
-  description     String?
-  congestionLevel String?  // low, moderate, high, critical
+  description      String?
+  congestionLevel  String? // low, moderate, high, critical
   slotAvailability String? // available, limited, scarce, full
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([orbitType])
 }
 
 model SatelliteOperator {
-  id              String   @id @default(cuid())
-  slug            String   @unique
-  name            String
-  country         String
+  id      String @id @default(cuid())
+  slug    String @unique
+  name    String
+  country String
 
   // Satellite counts by orbit
-  leoCount        Int      @default(0)
-  meoCount        Int      @default(0)
-  geoCount        Int      @default(0)
-  otherCount      Int      @default(0)
-  totalActive     Int      @default(0)
+  leoCount    Int @default(0)
+  meoCount    Int @default(0)
+  geoCount    Int @default(0)
+  otherCount  Int @default(0)
+  totalActive Int @default(0)
 
   // Fleet info
-  primaryPurpose  String?  // communications, earth_observation, navigation, research, military
+  primaryPurpose    String? // communications, earth_observation, navigation, research, military
   constellationName String? // e.g., "Starlink", "OneWeb"
 
   // Projections
-  planned1Year    Int      @default(0)
-  planned5Year    Int      @default(0)
+  planned1Year Int @default(0)
+  planned5Year Int @default(0)
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([country])
   @@index([totalActive])
 }
 
 model OrbitalEvent {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Event details
-  eventType       String   // launch, reentry, conjunction, debris_event, maneuver
-  orbitType       String   // Target/affected orbit
+  eventType String // launch, reentry, conjunction, debris_event, maneuver
+  orbitType String // Target/affected orbit
 
   // Timing
-  expectedDate    DateTime
-  dateConfidence  String?  // confirmed, tentative, estimated
+  expectedDate   DateTime
+  dateConfidence String? // confirmed, tentative, estimated
 
   // Satellites involved
-  satelliteCount  Int      @default(1)
-  operatorName    String?
-  missionName     String?
+  satelliteCount Int     @default(1)
+  operatorName   String?
+  missionName    String?
 
   // Impact
-  description     String?
+  description String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([eventType])
   @@index([expectedDate])
@@ -756,39 +770,39 @@ model OrbitalEvent {
 // Space Insurance & Risk Calculator Models
 
 model InsurancePolicy {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Policy details
-  missionType     String   // launch, in_orbit, liability, third_party, ground
-  coverageType    String   // full, partial, excess, reinsurance
-  insurer         String
-  country         String
+  missionType  String // launch, in_orbit, liability, third_party, ground
+  coverageType String // full, partial, excess, reinsurance
+  insurer      String
+  country      String
 
   // Financials
-  premiumRate     Float    // % of insured value
-  insuredValue    Float    // USD millions
-  premiumAmount   Float    // USD millions
-  deductible      Float?   // USD millions
-  maxPayout       Float?   // USD millions
+  premiumRate   Float // % of insured value
+  insuredValue  Float // USD millions
+  premiumAmount Float // USD millions
+  deductible    Float? // USD millions
+  maxPayout     Float? // USD millions
 
   // Mission details
-  missionName     String?
-  launchVehicle   String?
-  operator        String?
-  yearWritten     Int
+  missionName   String?
+  launchVehicle String?
+  operator      String?
+  yearWritten   Int
 
   // Claims
-  claimFiled      Boolean  @default(false)
-  claimAmount     Float?   // USD millions
-  claimPaid       Float?   // USD millions
-  claimReason     String?
+  claimFiled  Boolean @default(false)
+  claimAmount Float? // USD millions
+  claimPaid   Float? // USD millions
+  claimReason String?
 
   // Status
-  status          String   // active, expired, claimed, settled
+  status String // active, expired, claimed, settled
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([missionType])
   @@index([status])
@@ -796,26 +810,26 @@ model InsurancePolicy {
 }
 
 model InsuranceMarketData {
-  id              String   @id @default(cuid())
-  year            Int      @unique
+  id   String @id @default(cuid())
+  year Int    @unique
 
   // Market metrics
-  totalPremiums   Float    // USD millions
-  totalClaims     Float    // USD millions
-  lossRatio       Float    // claims/premiums as percentage
-  marketCapacity  Float    // USD billions
+  totalPremiums  Float // USD millions
+  totalClaims    Float // USD millions
+  lossRatio      Float // claims/premiums as percentage
+  marketCapacity Float // USD billions
 
   // By segment
-  launchPremiums  Float?
-  inOrbitPremiums Float?
+  launchPremiums    Float?
+  inOrbitPremiums   Float?
   liabilityPremiums Float?
 
   // Trends
-  avgPremiumRate  Float    // average premium as % of insured value
-  largestClaim    Float?   // USD millions
+  avgPremiumRate   Float // average premium as % of insured value
+  largestClaim     Float? // USD millions
   numberOfPolicies Int
 
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([year])
 }
@@ -823,34 +837,34 @@ model InsuranceMarketData {
 // Spectrum & Frequency Allocation Models
 
 model SpectrumAllocation {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Frequency info
-  bandName        String   // L-band, S-band, C-band, Ku-band, Ka-band, V-band, etc.
-  frequencyMin    Float    // MHz
-  frequencyMax    Float    // MHz
-  bandwidth       Float    // MHz
+  bandName     String // L-band, S-band, C-band, Ku-band, Ka-band, V-band, etc.
+  frequencyMin Float // MHz
+  frequencyMax Float // MHz
+  bandwidth    Float // MHz
 
   // Allocation
-  service         String   // fixed_satellite, mobile_satellite, earth_exploration, radio_astronomy, inter_satellite
-  region          String   // Region 1, 2, 3 or Global
-  allocationType  String   // primary, secondary, shared
+  service        String // fixed_satellite, mobile_satellite, earth_exploration, radio_astronomy, inter_satellite
+  region         String // Region 1, 2, 3 or Global
+  allocationType String // primary, secondary, shared
 
   // Usage
-  assignedTo      String?  // Operator or constellation name
-  filingStatus    String   // available, filed, coordinating, assigned, congested
-  numberOfFilings Int      @default(0)
+  assignedTo      String? // Operator or constellation name
+  filingStatus    String // available, filed, coordinating, assigned, congested
+  numberOfFilings Int     @default(0)
 
   // Regulatory
-  ituReference    String?
-  fccReference    String?
+  ituReference         String?
+  fccReference         String?
   coordinationRequired Boolean @default(false)
 
-  description     String?
+  description String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([bandName])
   @@index([service])
@@ -858,32 +872,32 @@ model SpectrumAllocation {
 }
 
 model SpectrumFiling {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Filing info
-  filingId        String   @unique
-  operator        String
-  system          String   // Constellation or satellite name
-  agency          String   // FCC, ITU, Ofcom, etc.
+  filingId String @unique
+  operator String
+  system   String // Constellation or satellite name
+  agency   String // FCC, ITU, Ofcom, etc.
 
   // Frequency
-  bandName        String
-  frequencyMin    Float
-  frequencyMax    Float
+  bandName     String
+  frequencyMin Float
+  frequencyMax Float
 
   // Details
-  orbitType       String   // GEO, NGSO, MEO, LEO
+  orbitType          String // GEO, NGSO, MEO, LEO
   numberOfSatellites Int?
-  status          String   // pending, approved, denied, expired, coordinating
-  filingDate      DateTime
-  grantDate       DateTime?
-  expiryDate      DateTime?
+  status             String // pending, approved, denied, expired, coordinating
+  filingDate         DateTime
+  grantDate          DateTime?
+  expiryDate         DateTime?
 
-  description     String?
-  country         String
+  description String?
+  country     String
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([operator])
   @@index([status])
@@ -893,36 +907,36 @@ model SpectrumFiling {
 // Space Workforce & Talent Analytics Models
 
 model SpaceJobPosting {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Job details
-  title           String
-  company         String
-  location        String
-  remoteOk        Boolean  @default(false)
+  title    String
+  company  String
+  location String
+  remoteOk Boolean @default(false)
 
   // Classification
-  category        String   // engineering, operations, business, research, legal, manufacturing
-  specialization  String?  // propulsion, avionics, software, systems, thermal, structures, RF, etc.
-  seniorityLevel  String   // entry, mid, senior, lead, director, vp, c_suite
+  category       String // engineering, operations, business, research, legal, manufacturing
+  specialization String? // propulsion, avionics, software, systems, thermal, structures, RF, etc.
+  seniorityLevel String // entry, mid, senior, lead, director, vp, c_suite
 
   // Compensation
-  salaryMin       Float?   // USD annual
-  salaryMax       Float?   // USD annual
-  salaryMedian    Float?
+  salaryMin    Float? // USD annual
+  salaryMax    Float? // USD annual
+  salaryMedian Float?
 
   // Requirements
-  yearsExperience Int?
+  yearsExperience   Int?
   clearanceRequired Boolean @default(false)
-  degreeRequired  String?  // bachelor, master, phd, none
+  degreeRequired    String? // bachelor, master, phd, none
 
   // Status
-  isActive        Boolean  @default(true)
-  postedDate      DateTime
-  sourceUrl       String?
+  isActive   Boolean  @default(true)
+  postedDate DateTime
+  sourceUrl  String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([company])
   @@index([category])
@@ -933,33 +947,33 @@ model SpaceJobPosting {
 }
 
 model WorkforceTrend {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Time period
-  period          String   @unique  // e.g., "2026-Q1"
-  year            Int
-  quarter         Int
+  period  String @unique // e.g., "2026-Q1"
+  year    Int
+  quarter Int
 
   // Workforce metrics
-  totalOpenings   Int
-  totalHires      Int?
-  avgSalary       Float?
-  medianSalary    Float?
+  totalOpenings Int
+  totalHires    Int?
+  avgSalary     Float?
+  medianSalary  Float?
 
   // By category
-  engineeringOpenings Int   @default(0)
-  operationsOpenings  Int   @default(0)
-  businessOpenings    Int   @default(0)
-  researchOpenings    Int   @default(0)
+  engineeringOpenings Int @default(0)
+  operationsOpenings  Int @default(0)
+  businessOpenings    Int @default(0)
+  researchOpenings    Int @default(0)
 
   // Top skills in demand (JSON array)
-  topSkills       String?
-  topCompanies    String?  // JSON array of top hiring companies
+  topSkills    String?
+  topCompanies String? // JSON array of top hiring companies
 
   // Growth metrics
-  yoyGrowth       Float?   // Year-over-year growth percentage
+  yoyGrowth Float? // Year-over-year growth percentage
 
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([year])
 }
@@ -967,64 +981,64 @@ model WorkforceTrend {
 // Launch Windows & Mission Planner Models
 
 model LaunchWindow {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Destination
-  destination     String   // Moon, Mars, Venus, Jupiter, Saturn, Asteroid_Belt, etc.
-  missionType     String   // flyby, orbit, landing, sample_return
+  destination String // Moon, Mars, Venus, Jupiter, Saturn, Asteroid_Belt, etc.
+  missionType String // flyby, orbit, landing, sample_return
 
   // Window details
-  windowOpen      DateTime
-  windowClose     DateTime
-  optimalDate     DateTime?
+  windowOpen  DateTime
+  windowClose DateTime
+  optimalDate DateTime?
 
   // Trajectory
-  deltaV          Float    // km/s total delta-V required
-  travelTime      Int      // days
-  transferType    String   // hohmann, low_energy, gravity_assist, direct
+  deltaV       Float // km/s total delta-V required
+  travelTime   Int // days
+  transferType String // hohmann, low_energy, gravity_assist, direct
 
   // Parameters
-  c3Energy        Float?   // km²/s² (characteristic energy)
-  arrivalVelocity Float?   // km/s
+  c3Energy        Float? // km²/s² (characteristic energy)
+  arrivalVelocity Float? // km/s
 
   // Status
-  frequency       String   // e.g., "Every 26 months" for Mars
-  nextAfter       DateTime? // Next window after this one
+  frequency String // e.g., "Every 26 months" for Mars
+  nextAfter DateTime? // Next window after this one
 
-  description     String?
+  description String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([destination])
   @@index([windowOpen])
 }
 
 model CelestialDestination {
-  id              String   @id @default(cuid())
-  slug            String   @unique
-  name            String
-  type            String   // planet, moon, asteroid, dwarf_planet, lagrange
+  id   String @id @default(cuid())
+  slug String @unique
+  name String
+  type String // planet, moon, asteroid, dwarf_planet, lagrange
 
   // Orbital parameters
-  distanceFromSun Float?   // AU (average)
+  distanceFromSun   Float? // AU (average)
   distanceFromEarth Float? // AU (current/average)
-  orbitalPeriod   Float?   // Earth years
-  synodicPeriod   Float?   // days (time between launch windows)
+  orbitalPeriod     Float? // Earth years
+  synodicPeriod     Float? // days (time between launch windows)
 
   // Delta-V requirements
-  deltaVToOrbit   Float?   // km/s from LEO
-  deltaVToLand    Float?   // km/s additional for landing
+  deltaVToOrbit Float? // km/s from LEO
+  deltaVToLand  Float? // km/s additional for landing
 
   // Mission history
-  totalMissions   Int      @default(0)
-  successfulMissions Int   @default(0)
+  totalMissions      Int @default(0)
+  successfulMissions Int @default(0)
 
-  description     String?
+  description String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([type])
 }
@@ -1032,35 +1046,35 @@ model CelestialDestination {
 // Space Debris & Collision Risk Monitor Models
 
 model DebrisObject {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Identification
-  noradId         String?  @unique
-  name            String
-  objectType      String   // payload, rocket_body, debris, unknown
+  noradId    String? @unique
+  name       String
+  objectType String // payload, rocket_body, debris, unknown
 
   // Orbit
-  orbitType       String   // LEO, MEO, GEO, HEO
-  altitude        Float    // km (average)
-  inclination     Float?   // degrees
-  eccentricity    Float?
+  orbitType    String // LEO, MEO, GEO, HEO
+  altitude     Float // km (average)
+  inclination  Float? // degrees
+  eccentricity Float?
 
   // Physical
-  size            String?  // small (<10cm), medium (10cm-1m), large (>1m)
-  mass            Float?   // kg (estimated)
+  size String? // small (<10cm), medium (10cm-1m), large (>1m)
+  mass Float? // kg (estimated)
 
   // Origin
-  originMission   String?
-  originCountry   String?
-  originYear      Int?
+  originMission String?
+  originCountry String?
+  originYear    Int?
 
   // Status
-  isActive        Boolean  @default(false)
-  trackable       Boolean  @default(true)
-  deorbitDate     DateTime? // Expected or actual
+  isActive    Boolean   @default(false)
+  trackable   Boolean   @default(true)
+  deorbitDate DateTime? // Expected or actual
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([orbitType])
   @@index([objectType])
@@ -1068,65 +1082,65 @@ model DebrisObject {
 }
 
 model ConjunctionEvent {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Event details
-  eventTime       DateTime
-  probability     Float    // 0-1 collision probability
-  missDistance     Float    // meters
+  eventTime    DateTime
+  probability  Float // 0-1 collision probability
+  missDistance Float // meters
 
   // Objects involved
-  primaryObject   String   // Name of primary object
-  secondaryObject String   // Name of secondary object
-  primaryType     String   // payload, debris
+  primaryObject   String // Name of primary object
+  secondaryObject String // Name of secondary object
+  primaryType     String // payload, debris
   secondaryType   String
 
   // Orbit info
-  altitude        Float    // km
-  orbitType       String
+  altitude  Float // km
+  orbitType String
 
   // Risk assessment
-  riskLevel       String   // low, moderate, high, critical
+  riskLevel        String // low, moderate, high, critical
   maneuverRequired Boolean @default(false)
   maneuverExecuted Boolean @default(false)
 
-  description     String?
+  description String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([eventTime])
   @@index([riskLevel])
 }
 
 model DebrisStats {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Snapshot date
-  snapshotDate    DateTime @unique
+  snapshotDate DateTime @unique
 
   // Object counts
-  totalTracked    Int
-  totalPayloads   Int
+  totalTracked      Int
+  totalPayloads     Int
   totalRocketBodies Int
-  totalDebris     Int
-  totalUnknown    Int
+  totalDebris       Int
+  totalUnknown      Int
 
   // By orbit
-  leoCount        Int      @default(0)
-  meoCount        Int      @default(0)
-  geoCount        Int      @default(0)
+  leoCount Int @default(0)
+  meoCount Int @default(0)
+  geoCount Int @default(0)
 
   // Risk metrics
-  kesslerRiskIndex Float?  // 0-10 custom risk score
+  kesslerRiskIndex   Float? // 0-10 custom risk score
   conjunctionsPerDay Float? // Average daily conjunction events
-  avgCollisionProb Float?  // Average collision probability
+  avgCollisionProb   Float? // Average collision probability
 
   // Compliance
-  compliant25Year Int?     // Objects meeting 25-year deorbit rule
+  compliant25Year Int? // Objects meeting 25-year deorbit rule
   nonCompliant    Int?
 
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([snapshotDate])
 }
@@ -1134,18 +1148,18 @@ model DebrisStats {
 // Feature Request & Help Request Models
 
 model FeatureRequest {
-  id          String   @id @default(cuid())
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  email       String
-  type        String   // "existing_module" | "new_module"
-  module      String?  // module ID if type is existing_module
-  title       String
-  details     String
-  status      String   @default("new") // new, under_review, planned, in_progress, completed, declined
-  adminNotes  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  email      String
+  type       String // "existing_module" | "new_module"
+  module     String? // module ID if type is existing_module
+  title      String
+  details    String
+  status     String   @default("new") // new, under_review, planned, in_progress, completed, declined
+  adminNotes String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([userId])
   @@index([status])
@@ -1171,16 +1185,16 @@ model HelpRequest {
 }
 
 model ContactSubmission {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  subject   String   // general, technical, billing, partnership
-  message   String
-  userId    String?
-  status    String   @default("new") // new, in_progress, resolved, closed
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  subject    String // general, technical, billing, partnership
+  message    String
+  userId     String?
+  status     String   @default("new") // new, in_progress, resolved, closed
   adminNotes String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([subject])
   @@index([status])
@@ -1213,9 +1227,9 @@ model DailyDigest {
   subject            String
   htmlContent        String
   plainContent       String
-  featureArticles    String    // JSON array
+  featureArticles    String // JSON array
   newsArticleCount   Int
-  categoriesIncluded String    // JSON array
+  categoriesIncluded String // JSON array
   status             String    @default("draft") // draft|sending|sent|failed
   sendStartedAt      DateTime?
   sendCompletedAt    DateTime?
@@ -1240,8 +1254,8 @@ model AIInsight {
   slug        String   @unique
   summary     String   @db.Text
   content     String   @db.Text
-  category    String   // regulatory, market, technology, geopolitical
-  sources     String   @db.Text  // JSON array of source URLs/titles
+  category    String // regulatory, market, technology, geopolitical
+  sources     String   @db.Text // JSON array of source URLs/titles
   generatedAt DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -1253,15 +1267,15 @@ model AIInsight {
 
 // Company Addition Request
 model CompanyAddRequest {
-  id          String   @id @default(cuid())
-  companyName String
-  description String
-  website     String?
+  id             String   @id @default(cuid())
+  companyName    String
+  description    String
+  website        String?
   submitterEmail String?
-  status      String   @default("pending") // pending, approved, rejected, duplicate
-  adminNotes  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status         String   @default("pending") // pending, approved, rejected, duplicate
+  adminNotes     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([status])
   @@index([createdAt])
@@ -1272,46 +1286,46 @@ model CompanyAddRequest {
 // ============================================================
 
 model OrbitalService {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Provider info
   providerName    String
-  providerSlug    String?  // Link to SpaceCompany if exists
+  providerSlug    String? // Link to SpaceCompany if exists
   providerCountry String
   providerWebsite String?
 
   // Service classification
-  category        String   // earth_observation, in_orbit_computing, hosted_payload, space_solar, communications, sensor_service
-  serviceType     String   // Specific type within category
-  serviceName     String
-  description     String
+  category    String // earth_observation, in_orbit_computing, hosted_payload, space_solar, communications, sensor_service
+  serviceType String // Specific type within category
+  serviceName String
+  description String
 
   // Capability specs
-  specifications  String?  // JSON: resolution, power, bandwidth, etc.
-  orbitType       String?  // LEO, MEO, GEO, SSO
-  coverage        String?  // Global, regional, on-demand
-  availability    String   // available, limited, waitlist, coming_soon
+  specifications String? // JSON: resolution, power, bandwidth, etc.
+  orbitType      String? // LEO, MEO, GEO, SSO
+  coverage       String? // Global, regional, on-demand
+  availability   String // available, limited, waitlist, coming_soon
 
   // Pricing
-  pricingModel    String   // per_km2, per_hour, per_kg_year, subscription, per_gb, custom
-  priceMin        Float?   // Minimum price point
-  priceMax        Float?   // Maximum price point
-  priceUnit       String?  // km², hour, kg/year, month, GB
-  pricingNotes    String?  // Volume discounts, minimums, etc.
+  pricingModel String // per_km2, per_hour, per_kg_year, subscription, per_gb, custom
+  priceMin     Float? // Minimum price point
+  priceMax     Float? // Maximum price point
+  priceUnit    String? // km², hour, kg/year, month, GB
+  pricingNotes String? // Volume discounts, minimums, etc.
 
   // Estimated value metrics
-  launchCostBasis Float?   // $/kg used in cost calc
-  operationalCost Float?   // Annual ops estimate
-  marketRate      Float?   // Current market rate
-  marginEstimate  Float?   // Estimated margin %
+  launchCostBasis Float? // $/kg used in cost calc
+  operationalCost Float? // Annual ops estimate
+  marketRate      Float? // Current market rate
+  marginEstimate  Float? // Estimated margin %
 
   // Status
-  status          String   @default("active") // active, beta, planned, retired
-  launchDate      DateTime?
+  status     String    @default("active") // active, beta, planned, retired
+  launchDate DateTime?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([category])
   @@index([providerName])
@@ -1320,40 +1334,40 @@ model OrbitalService {
 }
 
 model OrbitalServiceContract {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Contract details
-  title           String
-  description     String
+  title       String
+  description String
 
   // Parties
-  customerName    String   // NASA, NOAA, Commercial, etc.
-  customerType    String   // government, commercial, academic
-  providerName    String
+  customerName String // NASA, NOAA, Commercial, etc.
+  customerType String // government, commercial, academic
+  providerName String
 
   // Financials
-  contractValue   Float?   // Total value in millions USD
-  contractType    String   // idiq, firm_fixed, cost_plus, subscription
-  duration        String?  // Contract duration
+  contractValue Float? // Total value in millions USD
+  contractType  String // idiq, firm_fixed, cost_plus, subscription
+  duration      String? // Contract duration
 
   // Scope
-  serviceCategory String   // earth_observation, communications, etc.
-  scope           String?  // Description of services
+  serviceCategory String // earth_observation, communications, etc.
+  scope           String? // Description of services
 
   // Timeline
-  awardDate       DateTime?
-  startDate       DateTime?
-  endDate         DateTime?
+  awardDate DateTime?
+  startDate DateTime?
+  endDate   DateTime?
 
   // Source
-  sourceUrl       String?
+  sourceUrl        String?
   announcementDate DateTime?
 
-  status          String   @default("active") // active, completed, pending
+  status String @default("active") // active, completed, pending
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([customerType])
   @@index([serviceCategory])
@@ -1362,55 +1376,55 @@ model OrbitalServiceContract {
 }
 
 model OrbitalServiceRequest {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Requester (anonymous or logged in)
-  email           String?
-  companyName     String?
+  email       String?
+  companyName String?
 
   // Request details
-  category        String
-  serviceType     String?
-  description     String
+  category    String
+  serviceType String?
+  description String
 
   // Requirements
-  requirements    String?  // JSON: specific needs
-  budget          String?  // Budget range
-  timeline        String?  // When needed
+  requirements String? // JSON: specific needs
+  budget       String? // Budget range
+  timeline     String? // When needed
 
   // Status
-  status          String   @default("new") // new, contacted, matched, closed
-  adminNotes      String?
+  status     String  @default("new") // new, contacted, matched, closed
+  adminNotes String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([category])
   @@index([status])
 }
 
 model OrbitalServiceListing {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Provider info
-  companyName     String
-  companyWebsite  String?
-  contactEmail    String
+  companyName    String
+  companyWebsite String?
+  contactEmail   String
 
   // Service details
-  serviceName     String
+  serviceName        String
   serviceDescription String
-  category        String?  // earth_observation, in_orbit_computing, etc.
+  category           String? // earth_observation, in_orbit_computing, etc.
 
   // Pricing
-  pricingDetails  String   // Free-form pricing description
+  pricingDetails String // Free-form pricing description
 
   // Status
-  status          String   @default("pending") // pending, approved, rejected, listed
-  adminNotes      String?
+  status     String  @default("pending") // pending, approved, rejected, listed
+  adminNotes String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([status])
   @@index([createdAt])
@@ -1421,41 +1435,41 @@ model OrbitalServiceListing {
 // ============================================================
 
 model GovernmentContract {
-  id                String   @id @default(cuid())
-  slug              String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Agency info
-  agency            String   // NASA, USSF, ESA
+  agency String // NASA, USSF, ESA
 
   // Contract details
-  title             String
-  description       String
-  type              String   // RFP, RFI, Award, IDIQ
-  value             String?  // Display value (e.g., "$150M", "TBD")
-  valueMin          Float?   // Numeric min for filtering
-  valueMax          Float?   // Numeric max for filtering
+  title       String
+  description String
+  type        String // RFP, RFI, Award, IDIQ
+  value       String? // Display value (e.g., "$150M", "TBD")
+  valueMin    Float? // Numeric min for filtering
+  valueMax    Float? // Numeric max for filtering
 
   // Solicitation info
   solicitationNumber String?
-  naicsCode         String?
-  category          String   // lunar_exploration, earth_observation, satellite_launch, ground_systems, research_development, space_station, defense_systems, communications, propulsion, sbir_sttr
+  naicsCode          String?
+  category           String // lunar_exploration, earth_observation, satellite_launch, ground_systems, research_development, space_station, defense_systems, communications, propulsion, sbir_sttr
 
   // Timeline
-  postedDate        DateTime
-  dueDate           DateTime?
-  awardDate         DateTime?
+  postedDate DateTime
+  dueDate    DateTime?
+  awardDate  DateTime?
 
   // Award info
-  awardee           String?
+  awardee String?
 
   // Status
-  status            String   @default("open") // open, closed, awarded, closing_soon
+  status String @default("open") // open, closed, awarded, closing_soon
 
   // Source
-  sourceUrl         String?
+  sourceUrl String?
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([agency])
   @@index([type])
@@ -1469,50 +1483,50 @@ model GovernmentContract {
 // ============================================================
 
 model MiningBody {
-  id                String   @id @default(cuid())
-  slug              String   @unique
-  name              String
-  designation       String?  // Official designation (e.g., "162173 Ryugu")
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  designation String? // Official designation (e.g., "162173 Ryugu")
 
   // Classification
-  bodyType          String   // asteroid, moon, planet, dwarf_planet
-  spectralType      String?  // C-type, S-type, M-type, V-type, etc.
-  orbitalFamily     String?  // NEA, Main Belt, Trojan, Mars-crosser, etc.
+  bodyType      String // asteroid, moon, planet, dwarf_planet
+  spectralType  String? // C-type, S-type, M-type, V-type, etc.
+  orbitalFamily String? // NEA, Main Belt, Trojan, Mars-crosser, etc.
 
   // Physical properties
-  diameter          Float?   // km
-  mass              Float?   // kg (use scientific notation in data)
-  density           Float?   // g/cm^3
-  rotationPeriod    Float?   // hours
+  diameter       Float? // km
+  mass           Float? // kg (use scientific notation in data)
+  density        Float? // g/cm^3
+  rotationPeriod Float? // hours
 
   // Orbital parameters
-  semiMajorAxis     Float?   // AU
-  eccentricity      Float?   // 0-1
-  inclination       Float?   // degrees
-  perihelion        Float?   // AU
-  aphelion          Float?   // AU
-  orbitalPeriod     Float?   // years
+  semiMajorAxis Float? // AU
+  eccentricity  Float? // 0-1
+  inclination   Float? // degrees
+  perihelion    Float? // AU
+  aphelion      Float? // AU
+  orbitalPeriod Float? // years
 
   // Mining accessibility
-  deltaV            Float?   // km/s from LEO
-  trajectoryStatus  String?  // accessible, challenging, difficult, not_feasible
-  missionHistory    String?  // JSON array of past missions
+  deltaV           Float? // km/s from LEO
+  trajectoryStatus String? // accessible, challenging, difficult, not_feasible
+  missionHistory   String? // JSON array of past missions
 
   // Economic data
-  estimatedValue    Float?   // USD (total estimated value)
-  valueConfidence   String?  // high, medium, low, speculative
+  estimatedValue  Float? // USD (total estimated value)
+  valueConfidence String? // high, medium, low, speculative
 
   // Composition (stored as JSON for flexibility)
-  composition       String?  // JSON object with element percentages
+  composition String? // JSON object with element percentages
 
-  description       String?
-  imageUrl          String?
+  description String?
+  imageUrl    String?
 
   // Relations
-  resources         MiningResource[]
+  resources MiningResource[]
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([bodyType])
   @@index([spectralType])
@@ -1521,31 +1535,31 @@ model MiningBody {
 }
 
 model MiningResource {
-  id                String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Link to body
-  miningBodyId      String
-  miningBody        MiningBody @relation(fields: [miningBodyId], references: [id], onDelete: Cascade)
+  miningBodyId String
+  miningBody   MiningBody @relation(fields: [miningBodyId], references: [id], onDelete: Cascade)
 
   // Resource info
-  resourceType      String   // water, iron, nickel, cobalt, platinum, gold, etc.
-  category          String   // volatile, metal, precious_metal, rare_earth, silicate
+  resourceType String // water, iron, nickel, cobalt, platinum, gold, etc.
+  category     String // volatile, metal, precious_metal, rare_earth, silicate
 
   // Abundance
-  abundancePercent  Float?   // Percentage by mass
-  estimatedMass     Float?   // kg of this resource
+  abundancePercent Float? // Percentage by mass
+  estimatedMass    Float? // kg of this resource
 
   // Economic value
-  estimatedValue    Float?   // USD value of this resource on the body
+  estimatedValue Float? // USD value of this resource on the body
 
   // Extraction difficulty
-  extractionMethod  String?  // surface_mining, subsurface, electrolysis, etc.
-  extractionCost    String?  // low, medium, high, very_high
+  extractionMethod String? // surface_mining, subsurface, electrolysis, etc.
+  extractionCost   String? // low, medium, high, very_high
 
-  notes             String?
+  notes String?
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([miningBodyId])
   @@index([resourceType])
@@ -1553,34 +1567,34 @@ model MiningResource {
 }
 
 model CommodityPrice {
-  id                String   @id @default(cuid())
-  slug              String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Commodity info
-  name              String
-  symbol            String?  // Chemical symbol or trade symbol
-  category          String   // precious_metal, industrial_metal, rare_earth, volatile, mineral
+  name     String
+  symbol   String? // Chemical symbol or trade symbol
+  category String // precious_metal, industrial_metal, rare_earth, volatile, mineral
 
   // Pricing
-  pricePerKg        Float    // USD per kg
-  pricePerTonne     Float?   // USD per metric tonne
-  priceUnit         String?  // Custom unit if different
-  priceSource       String?  // Where the price data comes from
-  lastPriceUpdate   DateTime?
+  pricePerKg      Float // USD per kg
+  pricePerTonne   Float? // USD per metric tonne
+  priceUnit       String? // Custom unit if different
+  priceSource     String? // Where the price data comes from
+  lastPriceUpdate DateTime?
 
   // Market data
-  annualProduction  Float?   // Tonnes per year globally
-  marketCap         Float?   // Total market value
-  priceVolatility   String?  // low, medium, high
+  annualProduction Float? // Tonnes per year globally
+  marketCap        Float? // Total market value
+  priceVolatility  String? // low, medium, high
 
   // Space relevance
-  spaceApplications String?  // JSON array of space applications
-  inSpaceValue      Float?   // Estimated value if produced in space
+  spaceApplications String? // JSON array of space applications
+  inSpaceValue      Float? // Estimated value if produced in space
 
-  description       String?
+  description String?
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([category])
   @@index([pricePerKg])
@@ -1591,84 +1605,84 @@ model CommodityPrice {
 // ============================================================
 
 model RegulatoryAgency {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Agency info
-  name            String   // Short name (e.g., "FAA AST")
-  fullName        String   // Full name
-  parentAgency    String   // Parent department
-  jurisdiction    String   // What they regulate
-  website         String
-  contactEmail    String?
-  description     String
+  name         String // Short name (e.g., "FAA AST")
+  fullName     String // Full name
+  parentAgency String // Parent department
+  jurisdiction String // What they regulate
+  website      String
+  contactEmail String?
+  description  String
 
   // Legal framework (JSON arrays)
-  keyStatutes     String   // JSON array of enabling statutes
-  keyRegulations  String   // JSON array of CFR parts
+  keyStatutes    String // JSON array of enabling statutes
+  keyRegulations String // JSON array of CFR parts
 
   // Relations
-  licenseTypes    SpaceLicenseType[]
-  ruleChanges     RegulatoryRuleChange[]
+  licenseTypes SpaceLicenseType[]
+  ruleChanges  RegulatoryRuleChange[]
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([slug])
 }
 
 model SpaceLicenseType {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Agency relation
-  agencyId        String
-  agency          RegulatoryAgency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  agencyId String
+  agency   RegulatoryAgency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
   // License details
   name            String
   description     String
-  regulatoryBasis String   // CFR reference
+  regulatoryBasis String // CFR reference
 
   // Applicability (JSON array)
-  applicableTo    String   // JSON array of what this license covers
+  applicableTo String // JSON array of what this license covers
 
   // Timeline
   processingDaysMin Int
   processingDaysMax Int
-  validityYears   Int?     // null = no expiration
-  isRenewable     Boolean  @default(true)
+  validityYears     Int? // null = no expiration
+  isRenewable       Boolean @default(true)
 
   // Costs (in USD)
   applicationFeeMin Float?
   applicationFeeMax Float?
-  annualFee       Float?
+  annualFee         Float?
 
   // Requirements (JSON arrays)
-  keyRequirements String   // JSON array of main requirements
+  keyRequirements   String // JSON array of main requirements
   guidanceDocuments String? // JSON array of advisory circulars/guides
-  recentChanges   String?  // JSON array of recent updates
+  recentChanges     String? // JSON array of recent updates
 
   // Links
-  applicationUrl  String?
-  notes           String?
-  effectiveDate   DateTime?
+  applicationUrl String?
+  notes          String?
+  effectiveDate  DateTime?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([agencyId])
   @@index([slug])
 }
 
 model InternationalSpaceTreaty {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Treaty info
-  name            String   // Short name
-  fullName        String   // Official title
-  depositaryOrg   String   // UN, ITU, etc.
+  name          String // Short name
+  fullName      String // Official title
+  depositaryOrg String // UN, ITU, etc.
 
   // Dates
   adoptedDate     DateTime
@@ -1676,43 +1690,43 @@ model InternationalSpaceTreaty {
   numberOfParties Int
 
   // Content (JSON arrays)
-  keyProvisions   String   // JSON array of main provisions
+  keyProvisions          String // JSON array of main provisions
   commercialImplications String // JSON array of implications for commercial space
-  usImplementation String  // How US implements treaty
+  usImplementation       String // How US implements treaty
 
-  sourceUrl       String
+  sourceUrl String
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([slug])
 }
 
 model RegulatoryRuleChange {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Agency relation
-  agencyId        String
-  agency          RegulatoryAgency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  agencyId String
+  agency   RegulatoryAgency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
   // Rule details
-  title           String
-  summary         String
+  title                   String
+  summary                 String
   federalRegisterCitation String?
-  effectiveDate   DateTime
+  effectiveDate           DateTime
 
   // Impact (JSON arrays)
-  impactAreas     String   // JSON array of affected areas
-  keyChanges      String   // JSON array of specific changes
+  impactAreas String // JSON array of affected areas
+  keyChanges  String // JSON array of specific changes
 
   // Status
-  status          String   // proposed, final, effective, pending
+  status String // proposed, final, effective, pending
 
-  sourceUrl       String
+  sourceUrl String
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([agencyId])
   @@index([status])
@@ -1720,26 +1734,26 @@ model RegulatoryRuleChange {
 }
 
 model FinancialResponsibility {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Agency
-  agencyId        String
-  name            String
-  description     String
+  agencyId    String
+  name        String
+  description String
 
   // Limits (in USD)
-  thirdPartyMax   Float    // Max third-party liability
-  governmentMax   Float    // Max government property liability
+  thirdPartyMax Float // Max third-party liability
+  governmentMax Float // Max government property liability
 
   // Determination
-  determinationBasis String  // How MPL is calculated
-  alternatives    String   // JSON array of alternatives to insurance
+  determinationBasis String // How MPL is calculated
+  alternatives       String // JSON array of alternatives to insurance
 
-  notes           String?
+  notes String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([agencyId])
 }
@@ -1749,24 +1763,24 @@ model FinancialResponsibility {
 // ============================================================
 
 model Blueprint {
-  id              String   @id @default(cuid())
-  slug            String   @unique
-  name            String
-  category        String   // engine, satellite_bus, lander, spacecraft
-  manufacturer    String
-  specifications  String?  // JSON object with technical specs
-  propellantType  String?
-  firstFlight     DateTime?
-  missionsFlown   Int?
-  keyInnovations  String?  // JSON array of key innovations
-  description     String
-  technicalNotes  String?
-  imageUrl        String?
-  diagramUrl      String?
-  sourceUrls      String?  // JSON array of reference URLs
-  status          String   @default("operational") // operational, development, retired, proposed
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String    @id @default(cuid())
+  slug           String    @unique
+  name           String
+  category       String // engine, satellite_bus, lander, spacecraft
+  manufacturer   String
+  specifications String? // JSON object with technical specs
+  propellantType String?
+  firstFlight    DateTime?
+  missionsFlown  Int?
+  keyInnovations String? // JSON array of key innovations
+  description    String
+  technicalNotes String?
+  imageUrl       String?
+  diagramUrl     String?
+  sourceUrls     String? // JSON array of reference URLs
+  status         String    @default("operational") // operational, development, retired, proposed
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([category])
   @@index([manufacturer])
@@ -1778,17 +1792,17 @@ model Blueprint {
 // ============================================================
 
 model OperationalConjunction {
-  id                String   @id @default(cuid())
-  eventId           String   @unique
-  primaryObject     String
-  secondaryObject   String
-  tca               DateTime  // Time of Closest Approach
-  missDistance      Float     // meters
-  collisionProb     Float?
-  relativeVelocity  Float?    // m/s
-  alertLevel        String    // green, yellow, orange, red
-  status            String    // predicted, confirmed, resolved
-  createdAt         DateTime @default(now())
+  id               String   @id @default(cuid())
+  eventId          String   @unique
+  primaryObject    String
+  secondaryObject  String
+  tca              DateTime // Time of Closest Approach
+  missDistance     Float // meters
+  collisionProb    Float?
+  relativeVelocity Float? // m/s
+  alertLevel       String // green, yellow, orange, red
+  status           String // predicted, confirmed, resolved
+  createdAt        DateTime @default(now())
 
   @@index([tca])
   @@index([alertLevel])
@@ -1800,12 +1814,12 @@ model SustainabilityScorecard {
   operatorName      String   @unique
   operatorSlug      String   @unique
   totalSatellites   Int
-  deorbitScore      Int      // 0-100
-  maneuverScore     Int      // 0-100
-  debrisScore       Int      // 0-100
-  transparencyScore Int      // 0-100
-  overallScore      Int      // 0-100
-  grade             String   // A, B, C, D, F
+  deorbitScore      Int // 0-100
+  maneuverScore     Int // 0-100
+  debrisScore       Int // 0-100
+  transparencyScore Int // 0-100
+  overallScore      Int // 0-100
+  grade             String // A, B, C, D, F
   deorbitPlan       String?
   notes             String?
   lastUpdated       DateTime
@@ -1817,11 +1831,11 @@ model SustainabilityScorecard {
 
 model SpectrumAlert {
   id              String    @id @default(cuid())
-  alertType       String    // interference, congestion, coordination
+  alertType       String // interference, congestion, coordination
   frequencyBand   String
   affectedService String?
   location        String?
-  severity        String    // low, medium, high, critical
+  severity        String // low, medium, high, critical
   description     String
   reportedAt      DateTime
   resolvedAt      DateTime?
@@ -1838,38 +1852,38 @@ model SpectrumAlert {
 // ============================================================
 
 model PolicyChange {
-  id                      String    @id @default(cuid())
-  slug                    String    @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Agency and identification
-  agency                  String    // FAA, FCC, NOAA, BIS, DDTC, NASA, DOD, DOS
-  title                   String
-  summary                 String
-  fullText                String?
+  agency   String // FAA, FCC, NOAA, BIS, DDTC, NASA, DOD, DOS
+  title    String
+  summary  String
+  fullText String?
 
   // Impact assessment
-  impactAnalysis          String
-  impactSeverity          String    // low, medium, high, critical
-  impactAreas             String    // JSON array of affected areas
+  impactAnalysis String
+  impactSeverity String // low, medium, high, critical
+  impactAreas    String // JSON array of affected areas
 
   // Status and citations
-  status                  String    // proposed, final, effective, pending, withdrawn, superseded
+  status                  String // proposed, final, effective, pending, withdrawn, superseded
   federalRegisterCitation String?
   docketNumber            String?
 
   // Timeline
-  publishedDate           DateTime
-  commentDeadline         DateTime?
-  effectiveDate           DateTime?
+  publishedDate   DateTime
+  commentDeadline DateTime?
+  effectiveDate   DateTime?
 
   // Details
-  keyChanges              String    // JSON array of key changes
-  affectedParties         String    // JSON array of affected parties
-  sourceUrl               String
-  relatedPolicies         String?   // JSON array of related policy slugs
+  keyChanges      String // JSON array of key changes
+  affectedParties String // JSON array of affected parties
+  sourceUrl       String
+  relatedPolicies String? // JSON array of related policy slugs
 
-  createdAt               DateTime  @default(now())
-  updatedAt               DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([agency])
   @@index([status])
@@ -1878,37 +1892,37 @@ model PolicyChange {
 }
 
 model LicenseRequirement {
-  id                String    @id @default(cuid())
-  slug              String    @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Agency and type
-  agency            String    // FAA, FCC, NOAA
-  licenseType       String
-  category          String    // launch, satellite, remote_sensing, spectrum, export
-  description       String
-  regulatoryBasis   String
+  agency          String // FAA, FCC, NOAA
+  licenseType     String
+  category        String // launch, satellite, remote_sensing, spectrum, export
+  description     String
+  regulatoryBasis String
 
   // Requirements and process
-  requirements      String    // JSON array of requirements
-  processingTimeMin Int       // days
-  processingTimeMax Int       // days
+  requirements      String // JSON array of requirements
+  processingTimeMin Int // days
+  processingTimeMax Int // days
 
   // Fees
-  applicationFee    Float?    // USD
-  annualFee         Float?    // USD
+  applicationFee Float? // USD
+  annualFee      Float? // USD
 
   // Validity
-  validityYears     Int?      // null = no expiration
-  isRenewable       Boolean   @default(true)
+  validityYears Int? // null = no expiration
+  isRenewable   Boolean @default(true)
 
   // Guidance
-  guidanceDocuments String    // JSON array of guidance docs
+  guidanceDocuments String // JSON array of guidance docs
   applicationUrl    String?
-  recentChanges     String?   // JSON array of recent updates
+  recentChanges     String? // JSON array of recent updates
   notes             String?
 
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([agency])
   @@index([category])
@@ -1916,42 +1930,42 @@ model LicenseRequirement {
 }
 
 model SpaceLawCase {
-  id                String    @id @default(cuid())
-  slug              String    @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Case identification
-  caseName          String
-  citation          String?
-  year              Int
-  jurisdiction      String    // federal, state, international, arbitration, gao
-  court             String?
+  caseName     String
+  citation     String?
+  year         Int
+  jurisdiction String // federal, state, international, arbitration, gao
+  court        String?
 
   // Parties
-  plaintiff         String
-  defendant         String
+  plaintiff String
+  defendant String
 
   // Subject matter
-  subjectMatter     String    // JSON array of subject matters
+  subjectMatter String // JSON array of subject matters
 
   // Content
-  summary           String
-  facts             String
-  holdings          String    // JSON array of holdings
+  summary  String
+  facts    String
+  holdings String // JSON array of holdings
 
   // Outcome
-  outcome           String    // plaintiff_victory, defendant_victory, settlement, dismissed, pending, vacated
-  damages           Float?    // USD if applicable
+  outcome            String // plaintiff_victory, defendant_victory, settlement, dismissed, pending, vacated
+  damages            Float? // USD if applicable
   damagesDescription String?
 
   // Significance
-  significance      String
-  precedentValue    String
-  keyQuotes         String?   // JSON array of key quotes
-  relatedCases      String?   // JSON array of related case slugs
-  sourceUrl         String?
+  significance   String
+  precedentValue String
+  keyQuotes      String? // JSON array of key quotes
+  relatedCases   String? // JSON array of related case slugs
+  sourceUrl      String?
 
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([jurisdiction])
   @@index([year])
@@ -1959,104 +1973,104 @@ model SpaceLawCase {
 }
 
 model ExpertSource {
-  id                String    @id @default(cuid())
-  slug              String    @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Source details
-  name              String
-  type              String    // law_firm, think_tank, government, academic, industry_association
-  organization      String?
-  url               String
-  feedUrl           String?   // RSS feed if available
+  name         String
+  type         String // law_firm, think_tank, government, academic, industry_association
+  organization String?
+  url          String
+  feedUrl      String? // RSS feed if available
 
   // Coverage
-  topics            String    // JSON array of topics
-  description       String
-  keyContributors   String?   // JSON array of key contributors
+  topics          String // JSON array of topics
+  description     String
+  keyContributors String? // JSON array of key contributors
 
   // Status
-  isActive          Boolean   @default(true)
-  lastFetched       DateTime?
+  isActive    Boolean   @default(true)
+  lastFetched DateTime?
 
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([type])
   @@index([isActive])
 }
 
 model ECCNClassification {
-  id                  String    @id @default(cuid())
-  eccn                String    @unique
+  id   String @id @default(cuid())
+  eccn String @unique
 
   // Classification details
-  description         String
-  category            String    // EAR category (e.g., "9 - Aerospace and Propulsion")
-  productGroup        String    // A, B, C, D, or E
+  description  String
+  category     String // EAR category (e.g., "9 - Aerospace and Propulsion")
+  productGroup String // A, B, C, D, or E
 
   // Control information
-  reasonForControl    String    // JSON array (NS, RS, MT, AT, etc.)
+  reasonForControl    String // JSON array (NS, RS, MT, AT, etc.)
   licenseRequirements String
-  licenseExceptions   String    // JSON array
+  licenseExceptions   String // JSON array
 
   // Space relevance
-  spaceRelevance      String
-  examples            String    // JSON array of examples
-  relatedECCNs        String?   // JSON array of related ECCNs
+  spaceRelevance String
+  examples       String // JSON array of examples
+  relatedECCNs   String? // JSON array of related ECCNs
 
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([category])
   @@index([productGroup])
 }
 
 model USMLCategory {
-  id                  String    @id @default(cuid())
-  category            String    @unique    // Roman numeral (IV, XV, etc.)
-  subcategory         String?
+  id          String  @id @default(cuid())
+  category    String  @unique // Roman numeral (IV, XV, etc.)
+  subcategory String?
 
   // Content
-  title               String
-  description         String
-  items               String    // JSON array of controlled items
-  spaceRelevance      String
-  licensingAuthority  String
+  title              String
+  description        String
+  items              String // JSON array of controlled items
+  spaceRelevance     String
+  licensingAuthority String
 
   // Related info
-  exemptions          String?   // JSON array of exemptions
-  relatedCategories   String?   // JSON array of related categories
+  exemptions        String? // JSON array of exemptions
+  relatedCategories String? // JSON array of related categories
 
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([category])
 }
 
 model TreatyObligation {
-  id                      String    @id @default(cuid())
-  slug                    String    @unique
+  id   String @id @default(cuid())
+  slug String @unique
 
   // Treaty identification
-  name                    String
-  fullName                String
-  type                    String    // un_treaty, bilateral, multilateral, itu, memorandum
+  name     String
+  fullName String
+  type     String // un_treaty, bilateral, multilateral, itu, memorandum
 
   // Dates and parties
-  adoptedDate             DateTime
-  effectiveDate           DateTime
-  parties                 Int       // number of parties
-  usRatified              Boolean   @default(true)
+  adoptedDate   DateTime
+  effectiveDate DateTime
+  parties       Int // number of parties
+  usRatified    Boolean  @default(true)
 
   // Content
-  keyObligations          String    // JSON array
-  commercialImplications  String    // JSON array
-  enforcementMechanism    String
-  usImplementation        String
-  sourceUrl               String
+  keyObligations         String // JSON array
+  commercialImplications String // JSON array
+  enforcementMechanism   String
+  usImplementation       String
+  sourceUrl              String
 
-  createdAt               DateTime  @default(now())
-  updatedAt               DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([type])
   @@index([usRatified])
@@ -2067,38 +2081,38 @@ model TreatyObligation {
 // ============================================================
 
 model MissionLaunchCost {
-  id                  String   @id @default(cuid())
-  slug                String   @unique
-  provider            String
-  vehicle             String
-  country             String
-  status              String   // operational, development, retired
-  reusable            Boolean  @default(false)
-  firstFlight         Int?
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  provider    String
+  vehicle     String
+  country     String
+  status      String // operational, development, retired
+  reusable    Boolean @default(false)
+  firstFlight Int?
 
   // Payload capacities (kg)
-  payloadLEO          Int?
-  payloadSSO          Int?
-  payloadGTO          Int?
-  payloadGEO          Int?
-  payloadTLI          Int?
+  payloadLEO Int?
+  payloadSSO Int?
+  payloadGTO Int?
+  payloadGEO Int?
+  payloadTLI Int?
 
   // Pricing (JSON strings for min/max/typical)
-  dedicatedLaunchPrice String?  // JSON
-  ridesharePrice       String?  // JSON
+  dedicatedLaunchPrice String? // JSON
+  ridesharePrice       String? // JSON
 
   // Cost per kg by orbit (JSON strings)
-  costPerKgLEO        String   // JSON
-  costPerKgSSO        String?  // JSON
-  costPerKgGTO        String?  // JSON
-  costPerKgGEO        String?  // JSON
-  costPerKgTLI        String?  // JSON
+  costPerKgLEO String // JSON
+  costPerKgSSO String? // JSON
+  costPerKgGTO String? // JSON
+  costPerKgGEO String? // JSON
+  costPerKgTLI String? // JSON
 
-  notes               String?  // JSON array
-  lastUpdated         String?
+  notes       String? // JSON array
+  lastUpdated String?
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([provider])
   @@index([country])
@@ -2106,75 +2120,75 @@ model MissionLaunchCost {
 }
 
 model MissionInsuranceRate {
-  id                  String   @id @default(cuid())
-  category            String   // launch, in_orbit, third_party, etc.
-  coverageType        String   // full_value, partial, etc.
-  rateMin             Float
-  rateMax             Float
-  rateTypical         Float
-  factors             String?  // JSON array of factors
-  notes               String?  // JSON array
+  id           String  @id @default(cuid())
+  category     String // launch, in_orbit, third_party, etc.
+  coverageType String // full_value, partial, etc.
+  rateMin      Float
+  rateMax      Float
+  rateTypical  Float
+  factors      String? // JSON array of factors
+  notes        String? // JSON array
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([category, coverageType])
   @@index([category])
 }
 
 model MissionRegulatoryFee {
-  id                  String   @id @default(cuid())
-  slug                String   @unique
-  agency              String
-  country             String
-  feeType             String
-  amountMin           Float
-  amountMax           Float
-  amountTypical       Float
-  currency            String   @default("USD")
-  frequency           String   // one_time, annual, per_launch, etc.
-  notes               String?  // JSON array
-  lastUpdated         String?
+  id            String  @id @default(cuid())
+  slug          String  @unique
+  agency        String
+  country       String
+  feeType       String
+  amountMin     Float
+  amountMax     Float
+  amountTypical Float
+  currency      String  @default("USD")
+  frequency     String // one_time, annual, per_launch, etc.
+  notes         String? // JSON array
+  lastUpdated   String?
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([agency])
   @@index([country])
 }
 
 model MissionMiscCost {
-  id                  String   @id @default(cuid())
-  slug                String   @unique
-  category            String
-  item                String
-  costMin             Float
-  costMax             Float
-  costTypical         Float
-  currency            String   @default("USD")
-  unit                String?
-  notes               String?  // JSON array
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  category    String
+  item        String
+  costMin     Float
+  costMax     Float
+  costTypical Float
+  currency    String  @default("USD")
+  unit        String?
+  notes       String? // JSON array
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([category])
 }
 
 model MissionRidesharePricing {
-  id                  String   @id @default(cuid())
-  slug                String   @unique
-  provider            String
-  program             String
-  pricePerKg          Float
-  minMass             Int?
-  maxMass             Int?
-  orbit               String
-  frequency           String?
-  notes               String?  // JSON array
+  id         String  @id @default(cuid())
+  slug       String  @unique
+  provider   String
+  program    String
+  pricePerKg Float
+  minMass    Int?
+  maxMass    Int?
+  orbit      String
+  frequency  String?
+  notes      String? // JSON array
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([provider])
   @@index([orbit])
@@ -2187,10 +2201,10 @@ model MissionRidesharePricing {
 model WebhookSubscription {
   id             String    @id @default(cuid())
   url            String
-  events         String[]  // e.g., ["launch.upcoming", "news.published", "alert.solar_flare"]
-  secret         String    // HMAC secret for signing payloads
+  events         String[] // e.g., ["launch.upcoming", "news.published", "alert.solar_flare"]
+  secret         String // HMAC secret for signing payloads
   isActive       Boolean   @default(true)
-  userId         String?   // optional association with a user
+  userId         String? // optional association with a user
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   lastDeliveryAt DateTime?
@@ -2201,17 +2215,17 @@ model WebhookSubscription {
 }
 
 model ServiceProviderSubmission {
-  id          String   @id @default(cuid())
+  id           String   @id @default(cuid())
   businessName String
   contactName  String?
-  phone       String?
-  email       String
-  website     String?
-  description String
-  pricing     String?
-  status      String   @default("pending") // pending, approved, rejected
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  phone        String?
+  email        String
+  website      String?
+  description  String
+  pricing      String?
+  status       String   @default("pending") // pending, approved, rejected
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([status])
   @@index([createdAt])
@@ -2219,22 +2233,22 @@ model ServiceProviderSubmission {
 
 // Generic content storage for module data (replaces hardcoded arrays)
 model DynamicContent {
-  id            String   @id @default(cuid())
-  contentKey    String   @unique  // e.g. "space-stations:iss", "constellations:starlink"
-  module        String             // e.g. "space-stations", "constellations"
-  section       String?            // e.g. "crew", "active", "commercial"
-  data          String   @db.Text  // JSON blob matching page TypeScript interfaces
-  sourceType    String   @default("seed") // "api", "ai-research", "seed", "manual"
-  sourceUrl     String?
-  lastVerified  DateTime @default(now())
-  refreshedAt   DateTime @default(now())
-  expiresAt     DateTime
-  aiConfidence  Float?   // 0-1 confidence from AI verification
-  aiNotes       String?  @db.Text
-  isActive      Boolean  @default(true)
-  version       Int      @default(1)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String   @id @default(cuid())
+  contentKey   String   @unique // e.g. "space-stations:iss", "constellations:starlink"
+  module       String // e.g. "space-stations", "constellations"
+  section      String? // e.g. "crew", "active", "commercial"
+  data         String   @db.Text // JSON blob matching page TypeScript interfaces
+  sourceType   String   @default("seed") // "api", "ai-research", "seed", "manual"
+  sourceUrl    String?
+  lastVerified DateTime @default(now())
+  refreshedAt  DateTime @default(now())
+  expiresAt    DateTime
+  aiConfidence Float? // 0-1 confidence from AI verification
+  aiNotes      String?  @db.Text
+  isActive     Boolean  @default(true)
+  version      Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([module])
   @@index([module, section])
@@ -2244,22 +2258,677 @@ model DynamicContent {
 
 // Audit log for data refresh operations
 model DataRefreshLog {
-  id            String   @id @default(cuid())
-  module        String
-  refreshType   String   // "api-fetch", "ai-research", "staleness-check", "cleanup"
-  status        String   // "success", "partial", "failed"
-  itemsChecked  Int      @default(0)
-  itemsUpdated  Int      @default(0)
-  itemsExpired  Int      @default(0)
-  itemsCreated  Int      @default(0)
-  tokensUsed    Int?
-  apiCallsMade  Int?
-  duration      Int?     // milliseconds
-  errorMessage  String?  @db.Text
-  details       String?  @db.Text // JSON with detailed results
-  createdAt     DateTime @default(now())
+  id           String   @id @default(cuid())
+  module       String
+  refreshType  String // "api-fetch", "ai-research", "staleness-check", "cleanup"
+  status       String // "success", "partial", "failed"
+  itemsChecked Int      @default(0)
+  itemsUpdated Int      @default(0)
+  itemsExpired Int      @default(0)
+  itemsCreated Int      @default(0)
+  tokensUsed   Int?
+  apiCallsMade Int?
+  duration     Int? // milliseconds
+  errorMessage String?  @db.Text
+  details      String?  @db.Text // JSON with detailed results
+  createdAt    DateTime @default(now())
 
   @@index([module])
   @@index([refreshType])
+  @@index([createdAt])
+}
+
+// ============================================================
+// Smart Alert System
+// ============================================================
+
+model AlertRule {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  description     String?
+  triggerType     String // "keyword", "price_threshold", "regulatory_filing", "launch_status", "contract_award", "funding_round", "weather_severity"
+  triggerConfig   Json // Type-specific config
+  channels        String[] // ["in_app", "email", "push", "webhook"]
+  emailFrequency  String    @default("immediate") // "immediate", "daily_digest", "weekly_digest"
+  isActive        Boolean   @default(true)
+  priority        String    @default("normal") // "low", "normal", "high", "critical"
+  lastTriggeredAt DateTime?
+  triggerCount    Int       @default(0)
+  cooldownMinutes Int       @default(60) // Min time between same trigger
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  deliveries AlertDelivery[]
+
+  @@index([userId])
+  @@index([triggerType])
+  @@index([isActive])
+}
+
+model AlertDelivery {
+  id          String    @id @default(cuid())
+  alertRuleId String
+  alertRule   AlertRule @relation(fields: [alertRuleId], references: [id], onDelete: Cascade)
+  userId      String
+  channel     String // "in_app", "email", "push", "webhook"
+  status      String    @default("pending") // "pending", "sent", "delivered", "failed", "read"
+  title       String
+  message     String    @db.Text
+  data        Json? // Additional context (article URL, stock price, etc.)
+  sentAt      DateTime?
+  readAt      DateTime?
+  failReason  String?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
+  @@index([alertRuleId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([channel])
+}
+
+model AlertHistory {
+  id          String   @id @default(cuid())
+  alertRuleId String
+  userId      String
+  triggerType String
+  triggerData Json // What triggered this alert
+  matchedAt   DateTime @default(now())
+
+  @@index([alertRuleId])
+  @@index([userId])
+  @@index([matchedAt])
+}
+
+// ============================================================
+// Company Intelligence Database
+// ============================================================
+
+model CompanyProfile {
+  id                  String    @id @default(cuid())
+  companyId           String? // Link to existing SpaceCompany if applicable
+  name                String
+  legalName           String?
+  ticker              String?
+  headquarters        String?
+  foundedDate         DateTime?
+  employeeCount       Int?
+  employeeCountSource String? // "LinkedIn", "SEC Filing", etc.
+  website             String?
+  description         String?   @db.Text
+  logoUrl             String?
+  ceo                 String?
+  cto                 String?
+  isPublic            Boolean   @default(false)
+  status              String    @default("active") // active, acquired, defunct, stealth
+  sector              String? // launch, satellite, ground-systems, exploration, services
+  subsector           String?
+  naicsCode           String?
+  dunsNumber          String?
+  cageCode            String? // For government contracting
+  samUei              String? // SAM.gov Unique Entity ID
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  fundingRounds    FundingRound[]
+  revenueEstimates RevenueEstimate[]
+  products         CompanyProduct[]
+  keyPersonnel     KeyPersonnel[]
+  acquisitions     MergerAcquisition[]       @relation("acquirer")
+  acquisitionsOf   MergerAcquisition[]       @relation("target")
+  partnerships     Partnership[]
+  partnerOf        Partnership[]             @relation("partner")
+  secFilings       SECFiling[]
+  competitorOf     CompetitiveMapping[]      @relation("company")
+  competitorTo     CompetitiveMapping[]      @relation("competitor")
+  contracts        GovernmentContractAward[]
+
+  @@index([name])
+  @@index([ticker])
+  @@index([sector])
+  @@index([status])
+  @@index([cageCode])
+  @@index([samUei])
+}
+
+model FundingRound {
+  id            String         @id @default(cuid())
+  companyId     String
+  company       CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  date          DateTime
+  amount        Float? // In USD
+  currency      String         @default("USD")
+  seriesLabel   String? // "Seed", "Series A", "Series B", etc.
+  roundType     String? // "equity", "debt", "convertible_note", "grant", "spac"
+  preValuation  Float?
+  postValuation Float?
+  leadInvestor  String?
+  investors     String[] // Array of investor names
+  source        String? // "Crunchbase", "SEC Filing", "Press Release"
+  sourceUrl     String?
+  notes         String?        @db.Text
+  createdAt     DateTime       @default(now())
+
+  @@index([companyId])
+  @@index([date])
+  @@index([seriesLabel])
+}
+
+model RevenueEstimate {
+  id              String         @id @default(cuid())
+  companyId       String
+  company         CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  year            Int
+  quarter         Int? // 1-4, null for annual
+  revenue         Float? // In USD
+  revenueRange    String? // "$100M-$500M" for private companies
+  source          String? // "SEC Filing", "Industry Report", "Estimate"
+  confidenceLevel String         @default("estimate") // "reported", "estimate", "speculation"
+  notes           String?        @db.Text
+  createdAt       DateTime       @default(now())
+
+  @@unique([companyId, year, quarter])
+  @@index([companyId])
+  @@index([year])
+}
+
+model CompanyProduct {
+  id          String         @id @default(cuid())
+  companyId   String
+  company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name        String
+  category    String? // "launch_vehicle", "satellite_bus", "ground_station", "software", "service"
+  description String?        @db.Text
+  status      String         @default("active") // "development", "active", "retired"
+  launchDate  DateTime?
+  specs       Json? // Flexible key-value specs
+  imageUrl    String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([companyId])
+  @@index([category])
+}
+
+model KeyPersonnel {
+  id                String         @id @default(cuid())
+  companyId         String
+  company           CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name              String
+  title             String
+  role              String? // "executive", "board", "advisor", "founder"
+  linkedinUrl       String?
+  bio               String?        @db.Text
+  startDate         DateTime?
+  endDate           DateTime? // null = current
+  isCurrent         Boolean        @default(true)
+  previousCompanies String[] // Notable prior roles
+  createdAt         DateTime       @default(now())
+
+  @@index([companyId])
+  @@index([name])
+}
+
+model MergerAcquisition {
+  id         String          @id @default(cuid())
+  acquirerId String
+  acquirer   CompanyProfile  @relation("acquirer", fields: [acquirerId], references: [id], onDelete: Cascade)
+  targetId   String?
+  target     CompanyProfile? @relation("target", fields: [targetId], references: [id])
+  targetName String // Always store name (target may not be in our DB)
+  date       DateTime?
+  price      Float? // In USD
+  currency   String          @default("USD")
+  dealType   String? // "acquisition", "merger", "asset_purchase", "spac"
+  status     String          @default("completed") // "announced", "pending", "completed", "terminated"
+  rationale  String?         @db.Text
+  source     String?
+  sourceUrl  String?
+  createdAt  DateTime        @default(now())
+
+  @@index([acquirerId])
+  @@index([targetId])
+  @@index([date])
+}
+
+model Partnership {
+  id            String          @id @default(cuid())
+  companyId     String
+  company       CompanyProfile  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  partnerId     String?
+  partner       CompanyProfile? @relation("partner", fields: [partnerId], references: [id])
+  partnerName   String // Always store name
+  type          String? // "joint_venture", "strategic_alliance", "supply_agreement", "licensing", "research"
+  description   String?         @db.Text
+  announcedDate DateTime?
+  endDate       DateTime?
+  value         Float?
+  source        String?
+  createdAt     DateTime        @default(now())
+
+  @@index([companyId])
+  @@index([partnerId])
+}
+
+model SECFiling {
+  id              String         @id @default(cuid())
+  companyId       String
+  company         CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  filingType      String // "10-K", "10-Q", "8-K", "S-1", "DEF 14A"
+  filingDate      DateTime
+  periodEnd       DateTime?
+  description     String?        @db.Text
+  edgarUrl        String?
+  accessionNumber String?        @unique
+  highlights      Json? // Key extracted data points
+  createdAt       DateTime       @default(now())
+
+  @@index([companyId])
+  @@index([filingType])
+  @@index([filingDate])
+}
+
+model CompetitiveMapping {
+  id           String         @id @default(cuid())
+  companyId    String
+  company      CompanyProfile @relation("company", fields: [companyId], references: [id], onDelete: Cascade)
+  competitorId String
+  competitor   CompanyProfile @relation("competitor", fields: [competitorId], references: [id], onDelete: Cascade)
+  segment      String? // "small_launch", "LEO_broadband", "earth_observation"
+  relationship String? // "direct", "indirect", "potential"
+  notes        String?        @db.Text
+  createdAt    DateTime       @default(now())
+
+  @@unique([companyId, competitorId, segment])
+  @@index([companyId])
+  @@index([competitorId])
+}
+
+model GovernmentContractAward {
+  id                     String          @id @default(cuid())
+  companyId              String?
+  company                CompanyProfile? @relation(fields: [companyId], references: [id])
+  companyName            String
+  contractNumber         String?         @unique
+  agency                 String // "NASA", "Space Force", "NRO", "NOAA"
+  title                  String
+  description            String?         @db.Text
+  awardDate              DateTime?
+  value                  Float?
+  ceiling                Float? // Max potential value
+  type                   String? // "firm_fixed_price", "cost_plus", "idiq", "bpa"
+  naicsCode              String?
+  setAside               String? // "small_business", "8a", "hubzone", "wosb", "none"
+  performancePeriodStart DateTime?
+  performancePeriodEnd   DateTime?
+  placeOfPerformance     String?
+  samOpportunityId       String?
+  source                 String?
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+
+  @@index([companyId])
+  @@index([agency])
+  @@index([awardDate])
+  @@index([naicsCode])
+}
+
+// ============================================================
+// Developer API Keys & Usage Tracking
+// ============================================================
+
+model ApiKey {
+  id                 String    @id @default(cuid())
+  userId             String
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name               String // User-friendly name ("Production Key", "Dev Key")
+  keyHash            String    @unique // SHA-256 hash of the actual key
+  keyPrefix          String // First 8 chars for identification ("snx_abc1...")
+  tier               String    @default("developer") // "developer", "business", "enterprise"
+  rateLimitPerMonth  Int       @default(5000) // Monthly call limit
+  rateLimitPerMinute Int       @default(60) // Burst limit
+  isActive           Boolean   @default(true)
+  lastUsedAt         DateTime?
+  expiresAt          DateTime?
+  createdAt          DateTime  @default(now())
+  revokedAt          DateTime?
+
+  usageLogs ApiUsageLog[]
+
+  @@index([userId])
+  @@index([keyHash])
+  @@index([keyPrefix])
+}
+
+model ApiUsageLog {
+  id             String   @id @default(cuid())
+  apiKeyId       String
+  apiKey         ApiKey   @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  endpoint       String
+  method         String
+  statusCode     Int
+  responseTimeMs Int?
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime @default(now())
+
+  @@index([apiKeyId])
+  @@index([endpoint])
+  @@index([createdAt])
+}
+
+// ============================================================
+// Sponsored Content & Ad Revenue System
+// ============================================================
+
+model Advertiser {
+  id           String   @id @default(cuid())
+  userId       String?  @unique // If they have a SpaceNexus account
+  user         User?    @relation(fields: [userId], references: [id])
+  companyName  String
+  contactName  String
+  contactEmail String
+  website      String?
+  logoUrl      String?
+  status       String   @default("pending") // "pending", "approved", "suspended"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  campaigns AdCampaign[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model AdCampaign {
+  id            String     @id @default(cuid())
+  advertiserId  String
+  advertiser    Advertiser @relation(fields: [advertiserId], references: [id], onDelete: Cascade)
+  name          String
+  type          String // "banner", "native", "sponsored_content", "job_listing"
+  status        String     @default("draft") // "draft", "pending_review", "active", "paused", "completed", "rejected"
+  budget        Float // Total budget in USD
+  spent         Float      @default(0)
+  dailyBudget   Float?
+  cpmRate       Float      @default(25) // Cost per 1000 impressions
+  cpcRate       Float? // Optional cost per click
+  startDate     DateTime
+  endDate       DateTime
+  targetModules String[] // Module IDs where this ad appears
+  targetTiers   String[]   @default(["free"]) // Which subscription tiers see this
+  priority      Int        @default(0) // Higher = more likely to show
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  placements  AdPlacement[]
+  impressions AdImpression[]
+
+  @@index([advertiserId])
+  @@index([status])
+  @@index([startDate, endDate])
+}
+
+model AdPlacement {
+  id          String     @id @default(cuid())
+  campaignId  String
+  campaign    AdCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  position    String // "top_banner", "sidebar", "in_feed", "footer", "interstitial"
+  format      String // "banner_728x90", "banner_300x250", "native_card", "sponsored_article"
+  title       String?
+  description String?    @db.Text
+  imageUrl    String?
+  linkUrl     String
+  ctaText     String?    @default("Learn More")
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+
+  impressions AdImpression[]
+
+  @@index([campaignId])
+  @@index([position])
+}
+
+model AdImpression {
+  id          String       @id @default(cuid())
+  campaignId  String
+  campaign    AdCampaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  placementId String?
+  placement   AdPlacement? @relation(fields: [placementId], references: [id])
+  userId      String? // null for anonymous
+  sessionId   String?
+  type        String // "impression", "click", "conversion"
+  module      String? // Which module page it was shown on
+  ipAddress   String?
+  userAgent   String?
+  revenue     Float        @default(0) // Revenue generated
+  createdAt   DateTime     @default(now())
+
+  @@index([campaignId])
+  @@index([placementId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([module])
+}
+
+// ============================================================
+// Procurement Intelligence Module
+// ============================================================
+
+model ProcurementOpportunity {
+  id                 String    @id @default(cuid())
+  samNoticeId        String?   @unique // SAM.gov notice ID
+  title              String
+  description        String?   @db.Text
+  agency             String // "NASA", "Space Force", "NOAA", "NRO", etc.
+  subAgency          String?
+  office             String?
+  type               String // "presolicitation", "solicitation", "award", "sources_sought", "special_notice"
+  naicsCode          String?
+  naicsDescription   String?
+  setAside           String? // "Total Small Business", "8(a)", "HUBZone", "WOSB", "SDVOSB", "None"
+  classificationCode String? // Product/service code
+  estimatedValue     Float?
+  awardAmount        Float?
+  postedDate         DateTime?
+  responseDeadline   DateTime?
+  awardDate          DateTime?
+  placeOfPerformance String?
+  pointOfContact     String?
+  contactEmail       String?
+  solicitationNumber String?
+  awardee            String? // Company name for awards
+  incumbentName      String?
+  samUrl             String?
+  isActive           Boolean   @default(true)
+  tags               String[] // Auto-generated tags
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  savedSearchMatches SavedSearchMatch[]
+
+  @@index([agency])
+  @@index([type])
+  @@index([naicsCode])
+  @@index([setAside])
+  @@index([postedDate])
+  @@index([responseDeadline])
+  @@index([isActive])
+}
+
+model SBIRSolicitation {
+  id          String    @id @default(cuid())
+  program     String // "SBIR", "STTR"
+  agency      String // "NASA", "SpaceWERX", "NOAA"
+  topicNumber String?
+  topicTitle  String
+  description String?   @db.Text
+  phase       String? // "Phase I", "Phase II", "Phase III"
+  awardAmount Float?
+  openDate    DateTime?
+  closeDate   DateTime?
+  url         String?
+  keywords    String[]
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  @@index([agency])
+  @@index([program])
+  @@index([closeDate])
+  @@index([isActive])
+}
+
+model SpaceBudgetItem {
+  id            String   @id @default(cuid())
+  agency        String // "NASA", "Space Force", "NOAA"
+  fiscalYear    Int
+  category      String // "Exploration", "Science", "Aeronautics", "Space Technology", etc.
+  subcategory   String?
+  program       String? // "Artemis", "ISS", "SLS", "GPS III", etc.
+  requestAmount Float? // President's Budget Request
+  enactedAmount Float? // What was actually appropriated
+  previousYear  Float? // Prior year for comparison
+  changePercent Float? // YoY change
+  notes         String?  @db.Text
+  source        String?
+  createdAt     DateTime @default(now())
+
+  @@unique([agency, fiscalYear, category, program])
+  @@index([agency])
+  @@index([fiscalYear])
+  @@index([category])
+}
+
+model CongressionalActivity {
+  id           String    @id @default(cuid())
+  type         String // "hearing", "markup", "authorization", "appropriation", "report"
+  committee    String // "Senate Commerce", "House Science", "SASC", "HASC"
+  subcommittee String?
+  title        String
+  description  String?   @db.Text
+  date         DateTime?
+  status       String? // "scheduled", "completed", "postponed"
+  billNumber   String? // e.g., "H.R. 1234", "S. 5678"
+  witnesses    String[]
+  relevance    String? // Why it matters for space industry
+  sourceUrl    String?
+  createdAt    DateTime  @default(now())
+
+  @@index([type])
+  @@index([committee])
+  @@index([date])
+}
+
+model SavedProcurementSearch {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  filters       Json // { agencies, naicsCodes, setAsides, minValue, maxValue, keywords }
+  alertEnabled  Boolean   @default(true)
+  lastCheckedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  matches SavedSearchMatch[]
+
+  @@index([userId])
+}
+
+model SavedSearchMatch {
+  id            String                 @id @default(cuid())
+  searchId      String
+  search        SavedProcurementSearch @relation(fields: [searchId], references: [id], onDelete: Cascade)
+  opportunityId String
+  opportunity   ProcurementOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  isNew         Boolean                @default(true)
+  matchedAt     DateTime               @default(now())
+
+  @@unique([searchId, opportunityId])
+  @@index([searchId])
+  @@index([isNew])
+}
+
+// ============================================================
+// Personalized Dashboard Builder
+// ============================================================
+
+model DashboardLayout {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  isDefault   Boolean  @default(false)
+  isPublic    Boolean  @default(false)
+  gridColumns Int      @default(12)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  widgets DashboardWidget[]
+
+  @@index([userId])
+  @@index([isDefault])
+}
+
+model DashboardWidget {
+  id         String          @id @default(cuid())
+  layoutId   String
+  layout     DashboardLayout @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  moduleId   String
+  widgetType String
+  title      String?
+  x          Int             @default(0)
+  y          Int             @default(0)
+  w          Int             @default(6)
+  h          Int             @default(4)
+  minW       Int             @default(3)
+  minH       Int             @default(2)
+  config     Json?
+  order      Int             @default(0)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@index([layoutId])
+  @@index([moduleId])
+}
+
+// ============================================================
+// Launch Day Dashboard
+// ============================================================
+
+model LaunchTelemetry {
+  id           String     @id @default(cuid())
+  eventId      String
+  event        SpaceEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  timestamp    DateTime   @default(now())
+  missionTime  Float // T+ seconds
+  altitude     Float? // km
+  velocity     Float? // km/s
+  downrange    Float? // km
+  acceleration Float? // g
+  phase        String? // Current mission phase
+  latitude     Float?
+  longitude    Float?
+  throttle     Float? // 0-100%
+  isSimulated  Boolean    @default(true)
+
+  @@index([eventId])
+  @@index([timestamp])
+}
+
+model LaunchChatMessage {
+  id        String     @id @default(cuid())
+  eventId   String
+  event     SpaceEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?      @relation(fields: [userId], references: [id])
+  userName  String     @default("Anonymous")
+  message   String
+  type      String     @default("chat") // "chat", "system", "milestone"
+  createdAt DateTime   @default(now())
+
+  @@index([eventId])
   @@index([createdAt])
 }

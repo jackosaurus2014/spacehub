@@ -169,5 +169,40 @@
   },
   "edge_side_panel": {
     "preferred_width": 400
-  }
+  },
+  "widgets": [
+    {
+      "name": "Next Launch",
+      "short_name": "Launch",
+      "description": "Countdown to the next space launch",
+      "tag": "next-launch",
+      "url": "/widgets/next-launch",
+      "data": "/api/widgets/next-launch",
+      "type": "application/json",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }],
+      "update": "*/15 * * * *"
+    },
+    {
+      "name": "Market Snapshot",
+      "short_name": "Markets",
+      "description": "Space industry market overview",
+      "tag": "market-snapshot",
+      "url": "/widgets/market-snapshot",
+      "data": "/api/widgets/market-snapshot",
+      "type": "application/json",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }],
+      "update": "*/30 * * * *"
+    },
+    {
+      "name": "Space Weather",
+      "short_name": "Weather",
+      "description": "Current space weather alerts",
+      "tag": "space-weather",
+      "url": "/widgets/space-weather",
+      "data": "/api/widgets/space-weather",
+      "type": "application/json",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }],
+      "update": "*/15 * * * *"
+    }
+  ]
 }

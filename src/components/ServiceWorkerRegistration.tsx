@@ -45,6 +45,18 @@ export default function ServiceWorkerRegistration() {
           console.log('[PWA] Update is waiting to be activated');
         }
 
+        // Register for Background Sync
+        if ('sync' in registration) {
+          (registration as any).sync.register('sync-offline-actions').catch(() => {});
+        }
+
+        // Register for Periodic Sync (widget data refresh)
+        if ('periodicSync' in registration) {
+          (registration as any).periodicSync.register('widget-data-refresh', {
+            minInterval: 15 * 60 * 1000, // 15 minutes
+          }).catch(() => {});
+        }
+
         // Check for updates every hour
         setInterval(() => {
           registration.update().catch(console.error);

@@ -384,7 +384,545 @@ export const searchQuerySchema = z.object({
     .default('desc'),
 });
 
+// Stripe checkout schema
+export const stripeCheckoutSchema = z.object({
+  tier: z.enum(['pro', 'enterprise'], {
+    message: 'Tier must be "pro" or "enterprise"',
+  }),
+  interval: z.enum(['month', 'year'], {
+    message: 'Interval must be "month" or "year"',
+  }),
+});
+
+// Company Intelligence query schema
+export const companyProfileQuerySchema = z.object({
+  search: z
+    .string()
+    .max(200, 'Search query is too long')
+    .optional()
+    .transform((val) => val?.trim()),
+  sector: z
+    .string()
+    .max(100)
+    .optional()
+    .transform((val) => val?.trim()),
+  status: z
+    .string()
+    .max(50)
+    .optional()
+    .transform((val) => val?.trim()),
+  isPublic: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (val === 'true') return true;
+      if (val === 'false') return false;
+      return undefined;
+    }),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => Math.min(Math.max(1, parseInt(val || '20', 10) || 20), 100)),
+  offset: z
+    .string()
+    .optional()
+    .transform((val) => Math.max(0, parseInt(val || '0', 10) || 0)),
+});
+
+// Funding round creation schema
+export const fundingRoundSchema = z.object({
+  date: z.string().datetime('Invalid date format'),
+  amount: z.number().positive('Amount must be positive').optional().nullable(),
+  currency: z.string().max(10).default('USD'),
+  seriesLabel: z
+    .string()
+    .max(50, 'Series label is too long')
+    .optional()
+    .nullable()
+    .transform((val) => val?.trim()),
+  roundType: z
+    .string()
+    .max(50)
+    .optional()
+    .nullable()
+    .transform((val) => val?.trim()),
+  preValuation: z.number().positive().optional().nullable(),
+  postValuation: z.number().positive().optional().nullable(),
+  leadInvestor: z
+    .string()
+    .max(200)
+    .optional()
+    .nullable()
+    .transform((val) => val?.trim()),
+  investors: z
+    .array(z.string().max(200))
+    .optional()
+    .default([]),
+  source: z
+    .string()
+    .max(200)
+    .optional()
+    .nullable()
+    .transform((val) => val?.trim()),
+  sourceUrl: z
+    .string()
+    .url('Invalid source URL')
+    .optional()
+    .nullable()
+    .or(z.literal('').transform(() => null)),
+  notes: z
+    .string()
+    .max(5000)
+    .optional()
+    .nullable()
+    .transform((val) => val?.trim()),
+});
+
+// Personnel creation schema
+export const personnelSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(200, 'Name is too long')
+    .transform((val) => val.trim()),
+  title: z
+    .string()
+    .min(1, 'Title is required')
+    .max(200, 'Title is too long')
+    .transform((val) => val.trim()),
+  role: z
+    .string()
+    .max(50)
+    .optional()
+    .nullable()
+    .transform((val) => val?.trim()),
+  linkedinUrl: z
+    .string()
+    .url('Invalid LinkedIn URL')
+    .optional()
+    .nullable()
+    .or(z.literal('').transform(() => null)),
+  bio: z
+    .string()
+    .max(5000)
+    .optional()
+    .nullable()
+    .transform((val) => val?.trim()),
+  startDate: z.string().datetime().optional().nullable(),
+  endDate: z.string().datetime().optional().nullable(),
+  isCurrent: z.boolean().default(true),
+  previousCompanies: z
+    .array(z.string().max(200))
+    .optional()
+    .default([]),
+});
+
+// API Key management schemas
+export const apiKeyCreateSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Key name is required')
+    .max(100, 'Key name is too long')
+    .transform((val) => val.trim()),
+});
+
+export const apiKeyUpdateSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Key name is required')
+    .max(100, 'Key name is too long')
+    .transform((val) => val.trim())
+    .optional(),
+  isActive: z.boolean().optional(),
+});
+
+export const apiUsageQuerySchema = z.object({
+  keyId: z.string().cuid('Invalid key ID format').optional(),
+  period: z.enum(['day', 'week', 'month'], {
+    message: 'Period must be "day", "week", or "month"',
+  }).optional().default('month'),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+});
+
+// ============================================================
+// Sponsored Content & Ad Revenue Schemas
+// ============================================================
+
+// Valid ad campaign types
+export const AD_CAMPAIGN_TYPES = ['banner', 'native', 'sponsored_content', 'job_listing'] as const;
+export type AdCampaignType = (typeof AD_CAMPAIGN_TYPES)[number];
+
+// Valid ad positions
+export const AD_POSITIONS = ['top_banner', 'sidebar', 'in_feed', 'footer', 'interstitial'] as const;
+export type AdPosition = (typeof AD_POSITIONS)[number];
+
+// Valid ad formats
+export const AD_FORMATS = ['banner_728x90', 'banner_300x250', 'native_card', 'sponsored_article'] as const;
+export type AdFormat = (typeof AD_FORMATS)[number];
+
+// Valid campaign statuses
+export const AD_CAMPAIGN_STATUSES = ['draft', 'pending_review', 'active', 'paused', 'completed', 'rejected'] as const;
+
+// Advertiser registration schema
+export const advertiserRegistrationSchema = z.object({
+  companyName: z
+    .string()
+    .min(1, 'Company name is required')
+    .max(200, 'Company name is too long')
+    .transform((val) => val.trim()),
+  contactName: z
+    .string()
+    .min(1, 'Contact name is required')
+    .max(100, 'Contact name is too long')
+    .transform((val) => val.trim()),
+  contactEmail: emailSchema,
+  website: z
+    .string()
+    .url('Please provide a valid URL')
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+});
+
+// Ad campaign creation schema
+export const adCampaignCreateSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Campaign name is required')
+    .max(200, 'Campaign name is too long')
+    .transform((val) => val.trim()),
+  type: z.enum(AD_CAMPAIGN_TYPES, {
+    message: `Campaign type must be one of: ${AD_CAMPAIGN_TYPES.join(', ')}`,
+  }),
+  budget: z
+    .number()
+    .positive('Budget must be positive')
+    .max(1000000, 'Budget cannot exceed $1,000,000'),
+  dailyBudget: z
+    .number()
+    .positive('Daily budget must be positive')
+    .optional()
+    .nullable(),
+  cpmRate: z
+    .number()
+    .min(20, 'Minimum CPM rate is $20')
+    .max(200, 'Maximum CPM rate is $200')
+    .default(25),
+  cpcRate: z
+    .number()
+    .positive('CPC rate must be positive')
+    .optional()
+    .nullable(),
+  startDate: z.string().datetime('Invalid start date format'),
+  endDate: z.string().datetime('Invalid end date format'),
+  targetModules: z
+    .array(z.string().max(100))
+    .min(1, 'At least one target module is required')
+    .max(20, 'Maximum 20 target modules'),
+  targetTiers: z
+    .array(z.enum(['free', 'pro', 'enterprise']))
+    .optional()
+    .default(['free']),
+  priority: z
+    .number()
+    .int()
+    .min(0)
+    .max(100)
+    .optional()
+    .default(0),
+  placements: z
+    .array(
+      z.object({
+        position: z.enum(AD_POSITIONS, {
+          message: `Position must be one of: ${AD_POSITIONS.join(', ')}`,
+        }),
+        format: z.enum(AD_FORMATS, {
+          message: `Format must be one of: ${AD_FORMATS.join(', ')}`,
+        }),
+        title: z
+          .string()
+          .max(200, 'Title is too long')
+          .optional()
+          .transform((val) => val?.trim()),
+        description: z
+          .string()
+          .max(2000, 'Description is too long')
+          .optional()
+          .transform((val) => val?.trim()),
+        imageUrl: z
+          .string()
+          .url('Invalid image URL')
+          .optional()
+          .or(z.literal('').transform(() => undefined)),
+        linkUrl: z.string().url('Link URL must be a valid URL'),
+        ctaText: z
+          .string()
+          .max(50, 'CTA text is too long')
+          .optional()
+          .default('Learn More')
+          .transform((val) => val.trim()),
+      })
+    )
+    .min(1, 'At least one placement is required')
+    .max(10, 'Maximum 10 placements per campaign'),
+});
+
+// Ad campaign update schema
+export const adCampaignUpdateSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Campaign name is required')
+    .max(200, 'Campaign name is too long')
+    .transform((val) => val.trim())
+    .optional(),
+  status: z
+    .enum(['draft', 'pending_review', 'active', 'paused', 'completed'] as const, {
+      message: 'Invalid campaign status',
+    })
+    .optional(),
+  budget: z
+    .number()
+    .positive('Budget must be positive')
+    .max(1000000, 'Budget cannot exceed $1,000,000')
+    .optional(),
+  dailyBudget: z
+    .number()
+    .positive('Daily budget must be positive')
+    .optional()
+    .nullable(),
+  endDate: z
+    .string()
+    .datetime('Invalid end date format')
+    .optional(),
+  priority: z
+    .number()
+    .int()
+    .min(0)
+    .max(100)
+    .optional(),
+});
+
+// Ad impression tracking schema
+export const adImpressionSchema = z.object({
+  placementId: z.string().min(1, 'Placement ID is required'),
+  campaignId: z.string().min(1, 'Campaign ID is required'),
+  type: z.enum(['impression', 'click', 'conversion'], {
+    message: 'Type must be "impression", "click", or "conversion"',
+  }),
+  module: z
+    .string()
+    .max(100)
+    .optional()
+    .transform((val) => val?.trim()),
+});
+
+// ============================================================
+// Launch Day Dashboard Schemas
+// ============================================================
+
+// Chat message schema
+export const chatMessageSchema = z.object({
+  message: z
+    .string()
+    .min(1, 'Message is required')
+    .max(500, 'Message is too long')
+    .transform((val) => val.trim()),
+});
+
+// Telemetry query schema
+export const telemetryQuerySchema = z.object({
+  since: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? undefined : d;
+    }),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => Math.min(Math.max(1, parseInt(val || '50', 10) || 50), 200)),
+});
+
+export type ChatMessageData = z.infer<typeof chatMessageSchema>;
+export type TelemetryQueryParams = z.infer<typeof telemetryQuerySchema>;
+
+// ============================================================
+// Smart Alert System Schemas
+// ============================================================
+
+export const ALERT_TRIGGER_TYPES = [
+  'keyword',
+  'price_threshold',
+  'regulatory_filing',
+  'launch_status',
+  'contract_award',
+  'funding_round',
+  'weather_severity',
+] as const;
+
+export type AlertTriggerType = (typeof ALERT_TRIGGER_TYPES)[number];
+
+export const ALERT_CHANNELS = ['in_app', 'email', 'push', 'webhook'] as const;
+export type AlertChannel = (typeof ALERT_CHANNELS)[number];
+
+export const ALERT_EMAIL_FREQUENCIES = ['immediate', 'daily_digest', 'weekly_digest'] as const;
+export type AlertEmailFrequency = (typeof ALERT_EMAIL_FREQUENCIES)[number];
+
+export const ALERT_PRIORITIES = ['low', 'normal', 'high', 'critical'] as const;
+export type AlertPriority = (typeof ALERT_PRIORITIES)[number];
+
+// Trigger config sub-schemas
+const keywordTriggerConfigSchema = z.object({
+  keywords: z
+    .array(z.string().min(1).max(100))
+    .min(1, 'At least one keyword is required')
+    .max(20, 'Maximum 20 keywords'),
+  matchType: z.enum(['any', 'all']).default('any'),
+  sources: z.array(z.string()).optional(),
+});
+
+const priceThresholdConfigSchema = z.object({
+  ticker: z.string().min(1, 'Ticker is required').max(10),
+  condition: z.enum(['above', 'below', 'percent_change']),
+  value: z.number().positive('Value must be positive'),
+});
+
+const regulatoryFilingConfigSchema = z.object({
+  agencies: z.array(z.string()).optional(),
+  categories: z.array(z.string()).optional(),
+});
+
+const launchStatusConfigSchema = z.object({
+  providers: z.array(z.string()).optional(),
+  statusChanges: z.array(z.string()).optional(),
+});
+
+const contractAwardConfigSchema = z.object({
+  agencies: z.array(z.string()).optional(),
+  naicsCodes: z.array(z.string()).optional(),
+  minValue: z.number().positive().optional(),
+  keywords: z.array(z.string()).optional(),
+});
+
+const fundingRoundAlertConfigSchema = z.object({
+  sectors: z.array(z.string()).optional(),
+  minAmount: z.number().positive().optional(),
+  roundTypes: z.array(z.string()).optional(),
+});
+
+const weatherSeverityConfigSchema = z.object({
+  minKpIndex: z.number().min(0).max(9).optional(),
+  alertTypes: z.array(z.string()).optional(),
+});
+
+// Alert rule creation schema
+export const alertRuleSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(100, 'Name is too long')
+    .transform((val) => val.trim()),
+  description: z
+    .string()
+    .max(500, 'Description is too long')
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+  triggerType: z.enum(ALERT_TRIGGER_TYPES, {
+    message: `Invalid trigger type. Valid types: ${ALERT_TRIGGER_TYPES.join(', ')}`,
+  }),
+  triggerConfig: z.union([
+    keywordTriggerConfigSchema,
+    priceThresholdConfigSchema,
+    regulatoryFilingConfigSchema,
+    launchStatusConfigSchema,
+    contractAwardConfigSchema,
+    fundingRoundAlertConfigSchema,
+    weatherSeverityConfigSchema,
+  ]),
+  channels: z
+    .array(
+      z.enum(ALERT_CHANNELS, {
+        message: `Invalid channel. Valid channels: ${ALERT_CHANNELS.join(', ')}`,
+      })
+    )
+    .min(1, 'At least one channel is required')
+    .max(ALERT_CHANNELS.length),
+  emailFrequency: z.enum(ALERT_EMAIL_FREQUENCIES).optional().default('immediate'),
+  priority: z.enum(ALERT_PRIORITIES).optional().default('normal'),
+  cooldownMinutes: z
+    .number()
+    .int()
+    .min(1, 'Cooldown must be at least 1 minute')
+    .max(10080, 'Cooldown cannot exceed 7 days')
+    .optional()
+    .default(60),
+});
+
+// Alert rule update schema (partial)
+export const alertRuleUpdateSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(100, 'Name is too long')
+    .transform((val) => val.trim())
+    .optional(),
+  description: z
+    .string()
+    .max(500, 'Description is too long')
+    .transform((val) => val?.trim() || undefined)
+    .optional(),
+  triggerConfig: z.union([
+    keywordTriggerConfigSchema,
+    priceThresholdConfigSchema,
+    regulatoryFilingConfigSchema,
+    launchStatusConfigSchema,
+    contractAwardConfigSchema,
+    fundingRoundAlertConfigSchema,
+    weatherSeverityConfigSchema,
+  ]).optional(),
+  channels: z
+    .array(
+      z.enum(ALERT_CHANNELS, {
+        message: `Invalid channel. Valid channels: ${ALERT_CHANNELS.join(', ')}`,
+      })
+    )
+    .min(1, 'At least one channel is required')
+    .max(ALERT_CHANNELS.length)
+    .optional(),
+  emailFrequency: z.enum(ALERT_EMAIL_FREQUENCIES).optional(),
+  isActive: z.boolean().optional(),
+  priority: z.enum(ALERT_PRIORITIES).optional(),
+  cooldownMinutes: z
+    .number()
+    .int()
+    .min(1, 'Cooldown must be at least 1 minute')
+    .max(10080, 'Cooldown cannot exceed 7 days')
+    .optional(),
+});
+
+// Alert delivery query schema (for GET /api/alerts/deliveries)
+export const alertDeliveryQuerySchema = z.object({
+  channel: z.enum(ALERT_CHANNELS).optional(),
+  status: z
+    .enum(['pending', 'sent', 'delivered', 'failed', 'read'])
+    .optional(),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => Math.min(Math.max(1, parseInt(val || '20', 10) || 20), 100)),
+  offset: z
+    .string()
+    .optional()
+    .transform((val) => Math.max(0, parseInt(val || '0', 10) || 0)),
+});
+
 // Export types
+export type ApiKeyCreateData = z.infer<typeof apiKeyCreateSchema>;
+export type ApiKeyUpdateData = z.infer<typeof apiKeyUpdateSchema>;
+export type ApiUsageQueryParams = z.infer<typeof apiUsageQuerySchema>;
+export type StripeCheckoutData = z.infer<typeof stripeCheckoutSchema>;
 export type ContactFormData = z.infer<typeof contactFormSchema>;
 export type FeatureRequestData = z.infer<typeof featureRequestSchema>;
 export type HelpRequestData = z.infer<typeof helpRequestSchema>;
@@ -402,3 +940,292 @@ export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
 export type VerifyEmailData = z.infer<typeof verifyEmailSchema>;
 export type WebhookSubscribeData = z.infer<typeof webhookSubscribeSchema>;
 export type WebhookUnsubscribeData = z.infer<typeof webhookUnsubscribeSchema>;
+export type CompanyProfileQueryParams = z.infer<typeof companyProfileQuerySchema>;
+export type FundingRoundData = z.infer<typeof fundingRoundSchema>;
+export type PersonnelData = z.infer<typeof personnelSchema>;
+export type AdvertiserRegistrationData = z.infer<typeof advertiserRegistrationSchema>;
+export type AdCampaignCreateData = z.infer<typeof adCampaignCreateSchema>;
+export type AdCampaignUpdateData = z.infer<typeof adCampaignUpdateSchema>;
+export type AdImpressionData = z.infer<typeof adImpressionSchema>;
+export type AlertRuleData = z.infer<typeof alertRuleSchema>;
+export type AlertRuleUpdateData = z.infer<typeof alertRuleUpdateSchema>;
+export type AlertDeliveryQueryParams = z.infer<typeof alertDeliveryQuerySchema>;
+
+// ============================================================
+// Procurement Intelligence Schemas
+// ============================================================
+
+// Procurement opportunities query schema
+export const procurementQuerySchema = z.object({
+  agency: z
+    .string()
+    .max(100)
+    .optional()
+    .transform((val) => val?.trim()),
+  naicsCode: z
+    .string()
+    .max(10)
+    .optional()
+    .transform((val) => val?.trim()),
+  setAside: z
+    .string()
+    .max(100)
+    .optional()
+    .transform((val) => val?.trim()),
+  type: z
+    .string()
+    .max(50)
+    .optional()
+    .transform((val) => val?.trim()),
+  minValue: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      const n = parseFloat(val);
+      return isNaN(n) ? undefined : n;
+    }),
+  maxValue: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      const n = parseFloat(val);
+      return isNaN(n) ? undefined : n;
+    }),
+  search: z
+    .string()
+    .max(200)
+    .optional()
+    .transform((val) => val?.trim()),
+  deadlineAfter: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? undefined : d;
+    }),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => Math.min(Math.max(1, parseInt(val || '25', 10) || 25), 100)),
+  offset: z
+    .string()
+    .optional()
+    .transform((val) => Math.max(0, parseInt(val || '0', 10) || 0)),
+});
+
+// SBIR/STTR query schema
+export const sbirQuerySchema = z.object({
+  agency: z
+    .string()
+    .max(100)
+    .optional()
+    .transform((val) => val?.trim()),
+  program: z
+    .string()
+    .max(10)
+    .optional()
+    .transform((val) => val?.trim()),
+  isActive: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (val === 'true') return true;
+      if (val === 'false') return false;
+      return undefined;
+    }),
+  search: z
+    .string()
+    .max(200)
+    .optional()
+    .transform((val) => val?.trim()),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => Math.min(Math.max(1, parseInt(val || '25', 10) || 25), 100)),
+  offset: z
+    .string()
+    .optional()
+    .transform((val) => Math.max(0, parseInt(val || '0', 10) || 0)),
+});
+
+// Budget query schema
+export const budgetQuerySchema = z.object({
+  agency: z
+    .string()
+    .max(100)
+    .optional()
+    .transform((val) => val?.trim()),
+  fiscalYear: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      const n = parseInt(val, 10);
+      return isNaN(n) ? undefined : n;
+    }),
+  category: z
+    .string()
+    .max(100)
+    .optional()
+    .transform((val) => val?.trim()),
+});
+
+// Saved procurement search schema
+export const savedSearchSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Search name is required')
+    .max(200, 'Search name is too long')
+    .transform((val) => val.trim()),
+  filters: z.object({
+    agencies: z.array(z.string().max(100)).optional().default([]),
+    naicsCodes: z.array(z.string().max(10)).optional().default([]),
+    setAsides: z.array(z.string().max(100)).optional().default([]),
+    minValue: z.number().min(0).optional().nullable(),
+    maxValue: z.number().min(0).optional().nullable(),
+    keywords: z.string().max(500).optional().nullable(),
+    types: z.array(z.string().max(50)).optional().default([]),
+  }),
+  alertEnabled: z.boolean().default(true),
+});
+
+// Congressional activity query schema
+export const congressionalQuerySchema = z.object({
+  type: z
+    .string()
+    .max(50)
+    .optional()
+    .transform((val) => val?.trim()),
+  committee: z
+    .string()
+    .max(100)
+    .optional()
+    .transform((val) => val?.trim()),
+  dateAfter: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? undefined : d;
+    }),
+  dateBefore: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? undefined : d;
+    }),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => Math.min(Math.max(1, parseInt(val || '25', 10) || 25), 100)),
+  offset: z
+    .string()
+    .optional()
+    .transform((val) => Math.max(0, parseInt(val || '0', 10) || 0)),
+});
+
+export type ProcurementQueryParams = z.infer<typeof procurementQuerySchema>;
+export type SBIRQueryParams = z.infer<typeof sbirQuerySchema>;
+export type BudgetQueryParams = z.infer<typeof budgetQuerySchema>;
+export type SavedSearchData = z.infer<typeof savedSearchSchema>;
+export type CongressionalQueryParams = z.infer<typeof congressionalQuerySchema>;
+
+// ============================================================
+// Dashboard Builder Schemas
+// ============================================================
+
+// Valid widget types
+export const DASHBOARD_WIDGET_TYPES = ['full', 'compact', 'chart', 'stats', 'feed'] as const;
+export type DashboardWidgetType = (typeof DASHBOARD_WIDGET_TYPES)[number];
+
+// Widget schema (for creating/updating widgets)
+export const dashboardWidgetSchema = z.object({
+  moduleId: z
+    .string()
+    .min(1, 'Module ID is required')
+    .max(100, 'Module ID is too long'),
+  widgetType: z.enum(DASHBOARD_WIDGET_TYPES, {
+    message: `Widget type must be one of: ${DASHBOARD_WIDGET_TYPES.join(', ')}`,
+  }),
+  title: z
+    .string()
+    .max(200, 'Title is too long')
+    .optional()
+    .nullable()
+    .transform((val) => val?.trim() || null),
+  x: z.number().int().min(0).max(11).default(0),
+  y: z.number().int().min(0).max(100).default(0),
+  w: z.number().int().min(1).max(12).default(6),
+  h: z.number().int().min(1).max(12).default(4),
+  minW: z.number().int().min(1).max(12).default(3),
+  minH: z.number().int().min(1).max(12).default(2),
+  config: z.record(z.string(), z.unknown()).optional().nullable(),
+  order: z.number().int().min(0).default(0),
+});
+
+// Dashboard layout creation schema
+export const dashboardLayoutCreateSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Layout name is required')
+    .max(100, 'Layout name is too long')
+    .transform((val) => val.trim()),
+  description: z
+    .string()
+    .max(500, 'Description is too long')
+    .optional()
+    .nullable()
+    .transform((val) => val?.trim() || null),
+  isDefault: z.boolean().default(false),
+  isPublic: z.boolean().default(false),
+  gridColumns: z.number().int().min(1).max(12).default(12),
+  widgets: z.array(dashboardWidgetSchema).max(20, 'Maximum 20 widgets per layout').default([]),
+});
+
+// Dashboard layout update schema
+export const dashboardLayoutUpdateSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Layout name is required')
+    .max(100, 'Layout name is too long')
+    .transform((val) => val.trim())
+    .optional(),
+  description: z
+    .string()
+    .max(500, 'Description is too long')
+    .optional()
+    .nullable()
+    .transform((val) => val?.trim() || null),
+  isDefault: z.boolean().optional(),
+  isPublic: z.boolean().optional(),
+  gridColumns: z.number().int().min(1).max(12).optional(),
+  widgets: z.array(dashboardWidgetSchema).max(20, 'Maximum 20 widgets per layout').optional(),
+});
+
+// Widget update schema (position/size/config changes)
+export const dashboardWidgetUpdateSchema = z.object({
+  widgetType: z.enum(DASHBOARD_WIDGET_TYPES).optional(),
+  title: z
+    .string()
+    .max(200, 'Title is too long')
+    .optional()
+    .nullable()
+    .transform((val) => val?.trim() || null),
+  x: z.number().int().min(0).max(11).optional(),
+  y: z.number().int().min(0).max(100).optional(),
+  w: z.number().int().min(1).max(12).optional(),
+  h: z.number().int().min(1).max(12).optional(),
+  config: z.record(z.string(), z.unknown()).optional().nullable(),
+  order: z.number().int().min(0).optional(),
+});
+
+export type DashboardLayoutCreateData = z.infer<typeof dashboardLayoutCreateSchema>;
+export type DashboardLayoutUpdateData = z.infer<typeof dashboardLayoutUpdateSchema>;
+export type DashboardWidgetData = z.infer<typeof dashboardWidgetSchema>;
+export type DashboardWidgetUpdateData = z.infer<typeof dashboardWidgetUpdateSchema>;

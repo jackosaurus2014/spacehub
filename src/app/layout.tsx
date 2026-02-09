@@ -8,7 +8,7 @@ import SubscriptionProvider from '@/components/SubscriptionProvider';
 import DataInitializer from '@/components/DataInitializer';
 import Footer from '@/components/Footer';
 import QuickAccessSidebar from '@/components/QuickAccessSidebar';
-import MobileBottomNav from '@/components/MobileBottomNav';
+import MobileTabBar from '@/components/mobile/MobileTabBar';
 import StructuredData from '@/components/StructuredData';
 import SearchCommandPalette from '@/components/SearchCommandPalette';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
@@ -19,7 +19,9 @@ import ToastContainer from '@/components/ui/Toast';
 import NavigationProgress from '@/components/ui/NavigationProgress';
 import KeyboardShortcutsModal from '@/components/ui/KeyboardShortcutsModal';
 import PageTracker from '@/components/PageTracker';
-import SwipeNavigation from '@/components/SwipeNavigation';
+import SwipeModuleNavigation from '@/components/mobile/SwipeModuleNavigation';
+import PageTransitionProvider from '@/components/mobile/PageTransitionProvider';
+import OfflineIndicator from '@/components/ui/OfflineIndicator';
 import ModuleNavBar from '@/components/ModuleNavBar';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -164,6 +166,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <NavigationProgress />
+        <OfflineIndicator />
         <AuthProvider>
           <SubscriptionProvider>
             <DataInitializer />
@@ -173,10 +176,12 @@ export default function RootLayout({
               <QuickAccessSidebar />
               <main id="main-content" className="flex-1 lg:pl-16 pb-16 lg:pb-0" tabIndex={-1}>
                 <ModuleNavBar />
-                {children}
+                <PageTransitionProvider>
+                  {children}
+                </PageTransitionProvider>
               </main>
               <Footer />
-              <MobileBottomNav />
+              <MobileTabBar />
               <SearchCommandPalette />
               <CookieConsent />
               <PWAInstallPrompt />
@@ -184,7 +189,7 @@ export default function RootLayout({
               <ToastContainer />
               <PageTracker />
               <KeyboardShortcutsModal />
-              <SwipeNavigation />
+              <SwipeModuleNavigation />
             </div>
           </SubscriptionProvider>
         </AuthProvider>

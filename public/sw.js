@@ -3,6 +3,16 @@ const CACHE_NAME = 'spacenexus-v1';
 const STATIC_CACHE_NAME = 'spacenexus-static-v1';
 const DYNAMIC_CACHE_NAME = 'spacenexus-dynamic-v1';
 
+// Module-specific API cache TTLs (in milliseconds)
+const API_CACHE_TTLS = {
+  '/api/news': 60000,          // 1 min
+  '/api/events': 120000,       // 2 min
+  '/api/stocks': 60000,        // 1 min
+  '/api/space-weather': 300000, // 5 min
+  '/api/modules': 3600000,     // 1 hr
+  '/api/blogs': 300000,        // 5 min
+};
+
 // Static assets to cache on install
 const STATIC_ASSETS = [
   '/',
@@ -261,6 +271,38 @@ self.addEventListener('sync', (event) => {
   }
 });
 
+// Background Sync: process offline action queue
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-offline-actions') {
+    event.waitUntil(
+      self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({ type: 'PROCESS_SYNC_QUEUE' });
+        });
+      })
+    );
+  }
+});
+
+// Periodic Sync: refresh widget data
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'widget-data-refresh') {
+    event.waitUntil(
+      Promise.all([
+        fetch('/api/widgets/next-launch').then(r => {
+          if (r.ok) return caches.open(DYNAMIC_CACHE).then(c => c.put('/api/widgets/next-launch', r));
+        }).catch(() => {}),
+        fetch('/api/widgets/market-snapshot').then(r => {
+          if (r.ok) return caches.open(DYNAMIC_CACHE).then(c => c.put('/api/widgets/market-snapshot', r));
+        }).catch(() => {}),
+        fetch('/api/widgets/space-weather').then(r => {
+          if (r.ok) return caches.open(DYNAMIC_CACHE).then(c => c.put('/api/widgets/space-weather', r));
+        }).catch(() => {}),
+      ])
+    );
+  }
+});
+
 // Message handling for communication with main thread
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
@@ -281,5 +323,22 @@ self.addEventListener('message', (event) => {
         event.ports[0].postMessage({ cleared: true });
       })
     );
+  }
+
+  if (event.data && event.data.type === 'CACHE_API_RESPONSE') {
+    const { url, response } = event.data;
+    caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
+      cache.put(url, new Response(JSON.stringify(response), {
+        headers: { 'Content-Type': 'application/json' },
+      }));
+    });
+  }
+
+  if (event.data && event.data.type === 'GET_CACHE_SIZE') {
+    caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
+      cache.keys().then((keys) => {
+        event.source.postMessage({ type: 'CACHE_SIZE', count: keys.length });
+      });
+    });
   }
 });

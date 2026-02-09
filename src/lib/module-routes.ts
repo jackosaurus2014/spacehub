@@ -29,6 +29,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   'space-mining': '/space-mining',
   'patent-tracker': '/patents',
   'manufacturing-imagery': '/space-manufacturing',
+  'procurement-intelligence': '/procurement',
 
   // ── Mission Planning children ──
   'mission-cost': '/mission-cost',

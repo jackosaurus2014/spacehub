@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 import { SUBSCRIPTION_PLANS, SubscriptionTier } from '@/types';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import { toast } from '@/lib/toast';
@@ -21,8 +22,11 @@ function PricingCard({
   isTrialing,
   trialEndsAt,
   onStartTrial,
+  onSubscribe,
   isStartingTrial,
+  isCheckingOut,
   isLoggedIn,
+  hasPaymentMethod,
 }: {
   plan: typeof SUBSCRIPTION_PLANS[0];
   isYearly: boolean;
@@ -30,8 +34,11 @@ function PricingCard({
   isTrialing: boolean;
   trialEndsAt: Date | null;
   onStartTrial: (tier: SubscriptionTier) => void;
+  onSubscribe: (tier: SubscriptionTier, interval: 'month' | 'year') => void;
   isStartingTrial: boolean;
+  isCheckingOut: boolean;
   isLoggedIn: boolean;
+  hasPaymentMethod: boolean;
 }) {
   const price = isYearly ? plan.priceYearly : plan.price;
   const period = isYearly ? '/year' : '/month';
@@ -110,12 +117,25 @@ function PricingCard({
           Current Plan
         </button>
       ) : isTrialingThisPlan ? (
-        <button
-          disabled
-          className="w-full py-3 px-4 rounded-lg bg-amber-100 text-amber-700 cursor-not-allowed font-semibold"
-        >
-          Trial Active &mdash; {daysLeft} day{daysLeft !== 1 ? 's' : ''} left
-        </button>
+        <div className="space-y-2">
+          <button
+            disabled
+            className="w-full py-3 px-4 rounded-lg bg-amber-100 text-amber-700 cursor-not-allowed font-semibold"
+          >
+            Trial Active &mdash; {daysLeft} day{daysLeft !== 1 ? 's' : ''} left
+          </button>
+          <button
+            onClick={() => onSubscribe(plan.id, isYearly ? 'year' : 'month')}
+            disabled={isCheckingOut}
+            className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+              plan.highlighted
+                ? 'bg-nebula-500 text-slate-900 hover:bg-nebula-600'
+                : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
+            } ${isCheckingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {isCheckingOut ? 'Redirecting...' : 'Subscribe Now'}
+          </button>
+        </div>
       ) : plan.id === 'free' ? (
         <Link
           href="/register"
@@ -124,44 +144,85 @@ function PricingCard({
           Get Started Free
         </Link>
       ) : isLoggedIn && plan.trialDays && !isTrialing ? (
-        <button
-          onClick={() => onStartTrial(plan.id)}
-          disabled={isStartingTrial}
-          className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
-            plan.highlighted
-              ? 'bg-nebula-500 text-slate-900 hover:bg-nebula-600'
-              : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
-          } ${isStartingTrial ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          {isStartingTrial ? 'Starting Trial...' : `Start ${plan.trialDays}-Day Free Trial`}
-        </button>
+        <div className="space-y-2">
+          <button
+            onClick={() => onStartTrial(plan.id)}
+            disabled={isStartingTrial}
+            className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
+              plan.highlighted
+                ? 'bg-nebula-500 text-slate-900 hover:bg-nebula-600'
+                : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
+            } ${isStartingTrial ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {isStartingTrial ? 'Starting Trial...' : `Start ${plan.trialDays}-Day Free Trial`}
+          </button>
+          <button
+            onClick={() => onSubscribe(plan.id, isYearly ? 'year' : 'month')}
+            disabled={isCheckingOut}
+            className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors bg-slate-100 text-slate-700 hover:bg-slate-200 ${
+              isCheckingOut ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            {isCheckingOut ? 'Redirecting...' : 'Or Subscribe Now'}
+          </button>
+        </div>
       ) : (
         <button
           onClick={() => {
             if (!isLoggedIn) {
-              toast.info('Please sign in to start a free trial.');
+              toast.info('Please sign in to subscribe.');
               return;
             }
-            alert('Payment integration coming soon! For now, contact us for enterprise access.');
+            onSubscribe(plan.id, isYearly ? 'year' : 'month');
           }}
+          disabled={isCheckingOut}
           className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
             plan.highlighted
               ? 'bg-nebula-500 text-slate-900 hover:bg-nebula-600'
               : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
-          }`}
+          } ${isCheckingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          {plan.id === 'enterprise' ? 'Contact Sales' : 'Subscribe Now'}
+          {isCheckingOut ? 'Redirecting...' : 'Subscribe Now'}
         </button>
       )}
     </div>
   );
 }
 
-export default function PricingPage() {
+function PricingPageContent() {
   const { data: session } = useSession();
   const { tier, isTrialing, trialEndsAt, refreshSubscription } = useSubscription();
+  const searchParams = useSearchParams();
   const [isYearly, setIsYearly] = useState(true);
   const [isStartingTrial, setIsStartingTrial] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
+  const [hasPaymentMethod, setHasPaymentMethod] = useState(false);
+
+  // Show success/cancel messages based on URL params
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      toast.success('Subscription activated! Welcome aboard.');
+      refreshSubscription();
+    } else if (searchParams.get('canceled') === 'true') {
+      toast.info('Checkout was canceled. No charges were made.');
+    }
+  }, [searchParams, refreshSubscription]);
+
+  // Fetch payment method status
+  useEffect(() => {
+    async function checkPaymentMethod() {
+      if (!session?.user) return;
+      try {
+        const res = await fetch('/api/subscription');
+        const data = await res.json();
+        setHasPaymentMethod(data.hasPaymentMethod || false);
+      } catch {
+        // Silently fail
+      }
+    }
+    checkPaymentMethod();
+  }, [session]);
 
   const handleStartTrial = async (planTier: SubscriptionTier) => {
     if (!session?.user) {
@@ -193,6 +254,73 @@ export default function PricingPage() {
     }
   };
 
+  const handleSubscribe = async (planTier: SubscriptionTier, interval: 'month' | 'year') => {
+    if (!session?.user) {
+      toast.info('Please sign in to subscribe.');
+      return;
+    }
+
+    setIsCheckingOut(true);
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tier: planTier, interval }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        const errorMsg = data.error?.message || data.error || 'Failed to start checkout.';
+        toast.error(errorMsg);
+        return;
+      }
+
+      // Redirect to Stripe Checkout
+      const checkoutUrl = data.data?.url;
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      } else {
+        toast.error('Failed to get checkout URL. Please try again.');
+      }
+    } catch {
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setIsOpeningPortal(true);
+    try {
+      const res = await fetch('/api/stripe/portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        const errorMsg = data.error?.message || data.error || 'Failed to open billing portal.';
+        toast.error(errorMsg);
+        return;
+      }
+
+      const portalUrl = data.data?.url;
+      if (portalUrl) {
+        window.location.href = portalUrl;
+      } else {
+        toast.error('Failed to get portal URL. Please try again.');
+      }
+    } catch {
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setIsOpeningPortal(false);
+    }
+  };
+
+  const isPaidSubscriber = tier !== 'free' && !isTrialing && hasPaymentMethod;
+
   return (
     <div className="min-h-screen pb-12">
       <div className="container mx-auto px-4">
@@ -212,6 +340,19 @@ export default function PricingPage() {
             </span>
           ))}
         </div>
+
+        {/* Manage Subscription button for existing paid subscribers */}
+        {isPaidSubscriber && (
+          <div className="flex justify-center mb-8">
+            <button
+              onClick={handleManageSubscription}
+              disabled={isOpeningPortal}
+              className="px-6 py-3 rounded-lg bg-nebula-500 text-slate-900 font-semibold hover:bg-nebula-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isOpeningPortal ? 'Opening Portal...' : 'Manage Subscription'}
+            </button>
+          </div>
+        )}
 
         {/* Billing Toggle */}
         <div className="flex items-center justify-center gap-4 mb-12">
@@ -247,8 +388,11 @@ export default function PricingPage() {
               isTrialing={isTrialing}
               trialEndsAt={trialEndsAt}
               onStartTrial={handleStartTrial}
+              onSubscribe={handleSubscribe}
               isStartingTrial={isStartingTrial}
+              isCheckingOut={isCheckingOut}
               isLoggedIn={!!session?.user}
+              hasPaymentMethod={hasPaymentMethod}
             />
           ))}
         </div>
@@ -312,5 +456,13 @@ export default function PricingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="text-slate-400">Loading pricing...</div></div>}>
+      <PricingPageContent />
+    </Suspense>
   );
 }

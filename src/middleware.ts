@@ -164,6 +164,11 @@ function checkCsrf(req: NextRequest): boolean {
     return true;
   }
 
+  // Skip CSRF check for /api/v1/* routes (API key auth, not cookie-based)
+  if (pathname.startsWith('/api/v1/')) {
+    return true;
+  }
+
   const origin = req.headers.get('origin');
   const referer = req.headers.get('referer');
   const host = req.headers.get('host');

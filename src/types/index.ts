@@ -277,7 +277,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 3,
     isParent: true,
-    subModuleIds: ['business-opportunities', 'supply-chain', 'space-mining', 'patent-tracker', 'manufacturing-imagery'],
+    subModuleIds: ['business-opportunities', 'supply-chain', 'space-mining', 'patent-tracker', 'manufacturing-imagery', 'procurement-intelligence'],
   },
 
   // 5. Mission Planning (parent, absorbs Blueprints)
@@ -488,6 +488,17 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     section: 'business',
     defaultEnabled: true,
     defaultPosition: 20,
+    isPremium: true,
+    parentModuleId: 'business-opportunities-group',
+  },
+  {
+    moduleId: 'procurement-intelligence',
+    name: 'Procurement Intelligence',
+    description: 'SAM.gov contract tracking, SBIR/STTR solicitations, budget analysis, and congressional activity',
+    icon: '📋',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 21,
     isPremium: true,
     parentModuleId: 'business-opportunities-group',
   },

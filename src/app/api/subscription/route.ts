@@ -33,6 +33,7 @@ export async function GET() {
         trialTier: true,
         trialStartDate: true,
         trialEndDate: true,
+        stripeCustomerId: true,
       },
     });
 
@@ -73,6 +74,7 @@ export async function GET() {
           dailyArticleViews: isNewDay ? 0 : user.dailyArticleViews,
           isTrialing: true,
           trialEndsAt: user.trialEndDate,
+          hasPaymentMethod: !!user.stripeCustomerId,
         });
       } else {
         // Trial has expired — clear trial fields (auto-downgrade)
@@ -95,6 +97,7 @@ export async function GET() {
       dailyArticleViews: isNewDay ? 0 : user.dailyArticleViews,
       isTrialing: false,
       trialEndsAt: null,
+      hasPaymentMethod: !!user.stripeCustomerId,
     });
   } catch (error) {
     logger.error('Failed to fetch subscription', { error: error instanceof Error ? error.message : String(error) });
@@ -114,6 +117,39 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+
+    // Handle Stripe checkout redirect
+    if (body.action === 'create-checkout') {
+      const checkoutRes = await fetch(
+        `${process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.com'}/api/stripe/checkout`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            cookie: request.headers.get('cookie') || '',
+          },
+          body: JSON.stringify({ tier: body.tier, interval: body.interval }),
+        }
+      );
+      const checkoutData = await checkoutRes.json();
+      return NextResponse.json(checkoutData, { status: checkoutRes.status });
+    }
+
+    // Handle Stripe portal redirect
+    if (body.action === 'create-portal') {
+      const portalRes = await fetch(
+        `${process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.com'}/api/stripe/portal`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            cookie: request.headers.get('cookie') || '',
+          },
+        }
+      );
+      const portalData = await portalRes.json();
+      return NextResponse.json(portalData, { status: portalRes.status });
+    }
 
     // Handle trial activation
     if (body.action === 'start-trial') {

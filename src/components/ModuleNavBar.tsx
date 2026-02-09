@@ -1,28 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { MODULE_ROUTES } from '@/lib/module-routes';
+import { useState, useEffect, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 import { MODULE_SECTIONS } from '@/types';
 import { getRequiredTierForModule } from '@/lib/subscription';
-
-interface ModuleInfo {
-  moduleId: string;
-  name: string;
-  icon: string;
-  section: string;
-  enabled: boolean;
-  position: number;
-}
-
-// Build a reverse lookup: route path → moduleId
-const ROUTE_TO_MODULE: Record<string, string> = {};
-for (const [moduleId, route] of Object.entries(MODULE_ROUTES)) {
-  // Only map if this route isn't already claimed (first match wins — parent modules take priority)
-  if (!ROUTE_TO_MODULE[route]) {
-    ROUTE_TO_MODULE[route] = moduleId;
-  }
-}
+import { useModuleNavigation } from '@/hooks/useModuleNavigation';
 
 function getTierInfo(moduleId: string) {
   const tier = getRequiredTierForModule(moduleId);
@@ -35,76 +17,30 @@ function getTierInfo(moduleId: string) {
   return { label: 'Enthusiast', color: 'text-emerald-700', bgColor: 'bg-gradient-to-r from-emerald-100 to-teal-100 border-emerald-300', dotColor: 'bg-emerald-500' };
 }
 
-// Pages where the nav bar should NOT appear
-const EXCLUDED_PATHS = new Set([
-  '/', '/pricing', '/about', '/contact', '/faq', '/login', '/register',
-  '/forgot-password', '/reset-password', '/verify-email', '/dashboard',
-  '/admin', '/search', '/live', '/cookies', '/privacy', '/terms',
-]);
-
 export default function ModuleNavBar() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [modules, setModules] = useState<ModuleInfo[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [loaded, setLoaded] = useState(false);
 
-  // Don't render on excluded pages
-  const isModulePage = !EXCLUDED_PATHS.has(pathname);
-
-  useEffect(() => {
-    if (!isModulePage) return;
-
-    const fetchModules = async () => {
-      try {
-        const res = await fetch('/api/modules');
-        const data = await res.json();
-        setModules(data.modules || []);
-      } catch {
-        // Silently fail — nav bar just won't show
-      } finally {
-        setLoaded(true);
-      }
-    };
-
-    fetchModules();
-  }, [isModulePage]);
-
-  const enabledModules = useMemo(() =>
-    modules.filter(m => m.enabled).sort((a, b) => a.position - b.position),
-    [modules]
-  );
-
-  // Find current module index from pathname
-  const currentIndex = useMemo(() => {
-    const currentModuleId = ROUTE_TO_MODULE[pathname];
-    if (!currentModuleId) return -1;
-    return enabledModules.findIndex(m => {
-      // Check direct match
-      if (m.moduleId === currentModuleId) return true;
-      // Check if this module's route matches the current path
-      const route = MODULE_ROUTES[m.moduleId];
-      return route === pathname;
-    });
-  }, [pathname, enabledModules]);
-
-  const currentModule = currentIndex >= 0 ? enabledModules[currentIndex] : null;
-  const prevIndex = currentIndex > 0 ? currentIndex - 1 : enabledModules.length - 1;
-  const nextIndex = currentIndex < enabledModules.length - 1 ? currentIndex + 1 : 0;
-  const prevModule = enabledModules[prevIndex];
-  const nextModule = enabledModules[nextIndex];
+  const {
+    currentModule,
+    prevModule,
+    nextModule,
+    enabledModules,
+    currentIndex,
+    isModulePage,
+    loaded,
+    navigateTo: baseNavigateTo,
+  } = useModuleNavigation();
 
   const navigateTo = useCallback((moduleId: string) => {
-    const route = MODULE_ROUTES[moduleId] || '/dashboard';
-    router.push(route);
+    baseNavigateTo(moduleId);
     setIsDropdownOpen(false);
-  }, [router]);
+  }, [baseNavigateTo]);
 
   // Keyboard navigation
   useEffect(() => {
     if (!currentModule || isDropdownOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't intercept if user is typing in an input
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.key === 'ArrowLeft' && prevModule) {
         e.preventDefault();

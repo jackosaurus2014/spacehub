@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, type ReactNode } from 'react';
+import { useCallback, useRef, useEffect, type ReactNode } from 'react';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
+import { useHaptics } from '@/hooks/useHaptics';
 
 interface PullToRefreshProps {
   /** Async callback invoked when the user pulls down past the threshold */
@@ -19,6 +20,8 @@ interface PullToRefreshProps {
  */
 export default function PullToRefresh({ onRefresh, children, enabled = true }: PullToRefreshProps) {
   const stableOnRefresh = useCallback(() => onRefresh(), [onRefresh]);
+  const haptics = useHaptics();
+  const hapticFiredRef = useRef(false);
 
   const { isPulling, pullDistance, isRefreshing } = usePullToRefresh({
     onRefresh: stableOnRefresh,
@@ -32,6 +35,17 @@ export default function PullToRefresh({ onRefresh, children, enabled = true }: P
   const progress = Math.min(pullDistance / 80, 1);
   // Rotation of the arrow indicator based on pull progress
   const rotation = progress * 180;
+
+  // Haptic feedback when crossing the threshold
+  useEffect(() => {
+    if (progress >= 1 && !hapticFiredRef.current) {
+      haptics.trigger('medium');
+      hapticFiredRef.current = true;
+    }
+    if (progress < 0.5) {
+      hapticFiredRef.current = false;
+    }
+  }, [progress, haptics]);
 
   return (
     <div className="relative">

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { onToast, onDismiss, dismissToast } from '@/lib/toast';
 import type { Toast, ToastType } from '@/lib/toast';
+import { useHaptics } from '@/hooks/useHaptics';
 
 const MAX_VISIBLE = 5;
 
@@ -171,6 +172,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
 
 export default function ToastContainer() {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const haptics = useHaptics();
 
   const removeToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -178,9 +180,13 @@ export default function ToastContainer() {
 
   useEffect(() => {
     const unsubToast = onToast((newToast) => {
+      // Haptic feedback based on toast type
+      if (newToast.type === 'error') haptics.trigger('error');
+      else if (newToast.type === 'success') haptics.trigger('success');
+      else if (newToast.type === 'warning') haptics.trigger('warning');
+
       setToasts((prev) => {
         const updated = [...prev, newToast];
-        // Keep only the latest MAX_VISIBLE toasts
         if (updated.length > MAX_VISIBLE) {
           return updated.slice(updated.length - MAX_VISIBLE);
         }
