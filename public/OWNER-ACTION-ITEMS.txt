@@ -1,0 +1,184 @@
+SpaceNexus — Owner Action Items
+================================
+Generated: February 8, 2026
+Reference: docs/CEO_EVALUATION_REPORT.md, docs/STRIPE_AUDIT_REPORT.md
+
+All code changes are complete. The items below require manual configuration,
+account creation, or business execution that cannot be done programmatically.
+
+
+1. STRIPE PAYMENT ACTIVATION (Critical — Revenue is $0 until this is done)
+---------------------------------------------------------------------------
+Full guide: docs/STRIPE_SETUP.md
+Audit report: docs/STRIPE_AUDIT_REPORT.md
+
+Step 1: Create Stripe account at https://dashboard.stripe.com (if not done)
+
+Step 2: Create two Products in Stripe Dashboard > Products:
+
+   Product: Professional
+     - Monthly price: $9.99/month (recurring) → copy price_xxx ID
+     - Yearly price: $99.00/year (recurring) → copy price_xxx ID
+
+   Product: Enterprise
+     - Monthly price: $29.99/month (recurring) → copy price_xxx ID
+     - Yearly price: $250.00/year (recurring) → copy price_xxx ID
+
+Step 3: Create Webhook Endpoint in Stripe Dashboard > Developers > Webhooks:
+   - URL: https://spacenexus.com/api/stripe/webhooks
+   - Events to listen for:
+     * checkout.session.completed
+     * customer.subscription.updated
+     * customer.subscription.deleted
+     * invoice.payment_succeeded
+     * invoice.payment_failed
+   - Copy the Signing Secret (whsec_xxx)
+
+Step 4: Configure Customer Portal in Stripe Dashboard > Settings > Billing > Customer Portal:
+   - Enable subscription cancellation
+   - Enable plan switching
+   - Enable payment method updates
+   - Set default return URL: https://spacenexus.com/pricing
+
+Step 5: Set environment variables in Railway:
+   STRIPE_SECRET_KEY=sk_live_xxx
+   STRIPE_WEBHOOK_SECRET=whsec_xxx
+   STRIPE_PRICE_PRO_MONTHLY=price_xxx
+   STRIPE_PRICE_PRO_YEARLY=price_xxx
+   STRIPE_PRICE_ENTERPRISE_MONTHLY=price_xxx
+   STRIPE_PRICE_ENTERPRISE_YEARLY=price_xxx
+   NEXT_PUBLIC_APP_URL=https://spacenexus.com
+
+Step 6: Test with Stripe CLI before going live:
+   stripe listen --forward-to localhost:3000/api/stripe/webhooks
+   stripe trigger checkout.session.completed
+
+Step 7: Create promo codes in Stripe Dashboard > Products > Coupons:
+   - PRODUCTHUNT: 50% off for 3 months (for Product Hunt launch)
+   - SPACE20: 20% off forever (for email nurture Day 21)
+
+
+2. CRON JOB FOR EMAIL NURTURE (Medium-High — Automates free-to-paid conversion)
+---------------------------------------------------------------------------------
+Reference: docs/EMAIL_NURTURE_SEQUENCE.md
+
+Step 1: Set CRON_SECRET environment variable in Railway:
+   CRON_SECRET=<generate a random 32+ character string>
+
+Step 2: Set up a daily cron job (Railway cron, or external like cron-job.org):
+   - Schedule: Once daily, e.g. 9:00 AM ET
+   - Method: POST
+   - URL: https://spacenexus.com/api/nurture/process
+   - Header: Authorization: Bearer <your CRON_SECRET value>
+
+   Example curl:
+   curl -X POST https://spacenexus.com/api/nurture/process \
+     -H "Authorization: Bearer YOUR_CRON_SECRET"
+
+The endpoint processes all 7 nurture emails automatically:
+   Day 1: Welcome + quick start guide
+   Day 3: Premium feature highlight
+   Day 5: Social proof (industry stats)
+   Day 7: AI Insights spotlight
+   Day 10: Case study
+   Day 14: 14-day free trial offer
+   Day 21: 20% discount with code SPACE20
+
+
+3. SOCIAL MEDIA ACCOUNTS (High — Marketing execution)
+------------------------------------------------------
+Reference: docs/LINKEDIN_CONTENT_CALENDAR.md
+
+a) LinkedIn Company Page:
+   - Create SpaceNexus company page on LinkedIn
+   - 30-day content calendar is ready in docs/LINKEDIN_CONTENT_CALENDAR.md
+   - Start posting Day 1 immediately — content is fully drafted
+   - Optimal posting times: Tue-Thu 8-10 AM ET
+
+b) X (Twitter) Account:
+   - Create @SpaceNexus (or similar available handle)
+   - Focus: real-time data — launch countdowns, space weather alerts, market moves
+   - 2-3 posts/day, repurpose LinkedIn content in shorter format
+
+c) Product Hunt Launch:
+   - Full strategy: docs/PRODUCT_HUNT_LAUNCH_STRATEGY.md
+   - Allow 2 weeks prep (screenshots, hunter outreach, supporter list)
+   - Target a Tuesday or Thursday for launch
+   - Create PRODUCTHUNT promo code in Stripe first (see item 1)
+
+
+4. GOOGLE ANALYTICS (Medium — Track conversions)
+-------------------------------------------------
+The app has Google Analytics integration (src/components/analytics/GoogleAnalytics.tsx).
+
+Set in Railway:
+   NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+
+Create a Google Analytics 4 property at https://analytics.google.com if not done.
+
+
+5. RESEND EMAIL (Medium — Required for nurture emails and payment notifications)
+---------------------------------------------------------------------------------
+If not already configured:
+
+Step 1: Create account at https://resend.com
+Step 2: Verify your domain (spacenexus.com)
+Step 3: Set in Railway:
+   RESEND_API_KEY=re_xxx
+   NEWSLETTER_FROM_EMAIL=SpaceNexus <hello@spacenexus.com>
+
+
+6. GOVERNMENT BUSINESS DEVELOPMENT (Medium — Highest revenue potential)
+------------------------------------------------------------------------
+Reference: docs/GOVERNMENT_PROCUREMENT_STRATEGY.md
+
+Month 1:
+   - Register in SAM.gov (free, required for any government contracting)
+   - Contact local PTAC for free procurement counseling
+   - Get DUNS/UEI number if not already registered
+
+Month 2:
+   - Identify open SBIR/STTR topics from SpaceWERX and NASA
+   - Begin drafting Phase I proposal using outline in the strategy doc
+
+Month 3:
+   - Submit first SBIR Phase I proposal ($150K potential)
+
+Key conferences to attend:
+   - Space Symposium (Colorado Springs, April) — $3-5K
+   - SATELLITE Conference — $3-5K
+
+
+7. BETA ADVERTISERS (Low — Proves ad revenue model)
+-----------------------------------------------------
+Reference: docs/AD_INTEGRATION_GUIDE.md
+
+Contact 2-3 space industry companies and offer free 30-day ad campaigns:
+   - Launch providers (Rocket Lab, Relativity Space)
+   - Satellite manufacturers (Planet, Spire)
+   - Space insurance firms
+   - Space law firms
+
+Use their campaign data to validate CPM/CPC rates before paid sales.
+
+
+QUICK REFERENCE: ALL RAILWAY ENV VARS NEEDED
+=============================================
+# Stripe (required for payments)
+STRIPE_SECRET_KEY=sk_live_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+STRIPE_PRICE_PRO_MONTHLY=price_xxx
+STRIPE_PRICE_PRO_YEARLY=price_xxx
+STRIPE_PRICE_ENTERPRISE_MONTHLY=price_xxx
+STRIPE_PRICE_ENTERPRISE_YEARLY=price_xxx
+NEXT_PUBLIC_APP_URL=https://spacenexus.com
+
+# Email (required for nurture + payment emails)
+RESEND_API_KEY=re_xxx
+NEWSLETTER_FROM_EMAIL=SpaceNexus <hello@spacenexus.com>
+
+# Cron (required for automated nurture emails)
+CRON_SECRET=<random 32+ char string>
+
+# Analytics (recommended)
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
