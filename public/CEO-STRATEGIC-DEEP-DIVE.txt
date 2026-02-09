@@ -1301,28 +1301,48 @@ ISSUE 6: PAYLOAD SPACE -- THE #1 COMPETITOR THREAT
 COMPANY PROFILE
 ----------------
 
-  Company: Payload Space, Inc.
-  Founded: September 2020 (newsletter); April 2021 (full-time)
-  Founders: Mo Islam (CEO), Ari Lewis
-  Location: Los Angeles, CA
-  Employees: 5-15 (estimated)
-  Funding: $650K Seed (September 2021)
-    - Investors: Winklevoss Capital, Boost VC, SkyGate Digital, Litquidity
-  Revenue: $1M+ (2023 reported), estimated $2-3M+ (2025-2026)
+  Company: Arkaea Media Group (parent); Payload (flagship brand)
+  Founded: September 2021 (full-time after newsletter launch Sept 2020)
+  Founders: Mo Islam (CEO), Ari Lewis (DEPARTED -- sold stake in 2025)
+  Location: Santa Monica, CA (previously El Segundo)
+  Employees: 10-19
+  Funding: $2.15M total ($650K seed 2021 + $1.4M early 2025)
+    - Investors: Winklevoss Capital, Boost VC, SkyGate Digital, Litquidity,
+      Arden Road Investments, Industrious Ventures
+  Revenue: $1M (2023) → $1.8M (2024, confirmed via Axios) → est. $2.5-3.5M (2025)
+  Profitable: Payload business unit was profitable in 2024
 
   Background: Mo Islam was previously at Deutsche Bank and J.P. Morgan,
   where he raised $250M+ in strategic capital for growth-stage tech companies.
   He brings institutional finance credibility to space industry coverage.
 
+  KEY DEVELOPMENT: Co-founder Ari Lewis sold his stake to an undisclosed
+  "within the industry" buyer and departed day-to-day operations. This
+  signals either founder disagreement, desire to cash out, or strategic
+  positioning by the buyer. Single-founder risk is now elevated.
+
+  ARKAEA EXPANSION: In Feb 2025, Payload rebranded its corporate entity
+  to Arkaea Media Group, retaining "Payload" for space while launching:
+  - Ignition (ignitionnuclear.com) -- Nuclear energy newsletter
+  - Tectonic (tectonicdefense.com) -- Defense innovation newsletter
+  This signals a repeatable media playbook across deep-tech verticals.
+
+  EDITORIAL TEAM (credentialed journalists, not content marketers):
+  - Jacqueline Feldscher (Managing Editor) -- from Defense One & POLITICO
+  - Tim Fernholz (Senior Space Reporter) -- from Quartz (11+ yrs),
+    author of "Rocket Billionaires"
+  - Rachael Zisk (Reporter)
+  - Brian D'Erario (Client Partner/Sales) -- from Dow Jones
+
 PRODUCT OFFERING
 -----------------
 
   1. FREE NEWSLETTER
-     - Daily email covering space business and policy
-     - Estimated 40,000-60,000 subscribers (extrapolating from 10K at
-       launch in 2021, with reported 70% YoY growth through 2024)
-     - Written by editorial team with personality and voice
-     - Revenue from newsletter advertising/sponsorship
+     - Daily email (M-F, 9am ET) covering space business and policy
+     - 19,000+ confirmed subscribers (delivered via Beehiiv platform)
+     - Written by professional editorial team with personality and voice
+     - Revenue from newsletter advertising/sponsorship (sold out months ahead)
+     - ALSO: Parallax (weekly science), Polaris (weekly policy by Feldscher)
 
   2. PAYLOAD PRO (launched 2024)
 
@@ -1351,21 +1371,41 @@ PRODUCT OFFERING
      - Investor conferences
      - Breakout sessions for institutional members
 
-REVENUE BREAKDOWN (Estimated):
-  - Newsletter advertising/sponsorship: 40-50% ($800K-$1.5M)
-  - Payload Pro subscriptions: 30-35% ($600K-$1M)
-  - Events revenue: 10-15% ($200K-$450K)
-  - Advisory/consulting: 5-10% ($100K-$300K)
-  - Total estimated: $1.7M-$3.3M (2025-2026)
+  3. PATHFINDER PODCAST
+     - Weekly, ~1 hour talk-show format hosted by Mo Islam
+     - 87+ episodes with CEOs, astronauts, policymakers, military leaders
+     - Lockheed Martin has been a podcast series sponsor
+
+  4. EVENTS PROGRAM (critical competitive intelligence)
+     - Investor Summit (annual): 180+ executives, $8T institutional capital
+     - Lunar & Mars Economy Summit: 2-day at NASA Space Center, Houston
+     - Space Capitol Forum: Policy summit at Embassy of Australia, DC
+     - Polaris After Dark: Evening policy networking in DC
+     - Monthly happy hours: El Segundo, Long Beach, Denver, SLC, CO Springs, DC
+     - Event sponsors: Bank of America, Deloitte, Lockheed Martin, In-Q-Tel,
+       Epsilon3, Loft Orbital, Moss Adams, Velo3D, and more
+
+  5. JOB BOARD
+     - Via Pallet platform (payload-space.pallet.com)
+
+REVENUE BREAKDOWN (Estimated 2024, $1.8M):
+  - Newsletter advertising/sponsorship: ~47% (~$850K)
+  - Events (tickets + sponsorships): ~25% (~$450K)
+  - Custom content / branded partnerships: ~15% (~$270K)
+  - Podcast advertising: ~8% (~$145K)
+  - Payload Pro subscriptions: ~5% (~$90K, new and growing)
+  - Total 2024: $1.8M (confirmed)
+  - Projected 2025: $2.5-3.5M (80% YoY growth trend)
 
 
 PAYLOAD'S COMPETITIVE STRENGTHS
 ---------------------------------
 
   1. DISTRIBUTION MOAT (Most Dangerous Advantage)
-     40,000-60,000 newsletter subscribers who read their content daily.
-     SpaceNexus has ~0 newsletter subscribers. Building a subscriber base
-     from scratch takes years. Payload already has the audience that
+     19,000+ engaged newsletter subscribers who read their content daily,
+     plus separate Parallax and Polaris newsletter audiences. SpaceNexus
+     has ~0 newsletter subscribers. Building a subscriber base from
+     scratch takes years. Payload already has the audience that
      SpaceNexus needs to reach.
 
   2. BRAND RECOGNITION AND TRUST
