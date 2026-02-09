@@ -112,7 +112,7 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
 
         <div className="relative flex">
           {/* Image */}
-          <div className="relative w-36 h-40 flex-shrink-0 bg-slate-800">
+          <div className="relative w-36 h-40 flex-shrink-0 bg-slate-800 overflow-hidden">
             {event.imageUrl ? (
               <Image
                 src={event.imageUrl}
@@ -125,8 +125,11 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
                 <span className="text-5xl">{typeInfo.icon}</span>
               </div>
             )}
-            <div className="absolute top-2 left-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-1 rounded-full animate-pulse flex items-center gap-1">
-              <span className="w-2 h-2 bg-slate-900 rounded-full animate-ping" />
+            <div className="absolute top-2 left-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 z-10">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-900 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-900" />
+              </span>
               LIVE
             </div>
           </div>
@@ -531,7 +534,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
     <div className={`card overflow-hidden ${isWithin48Hours ? 'border-green-500/50 glow-border' : ''} ${isLiveOrImminent ? 'border-red-500/50' : ''}`}>
       <div className="flex">
         {/* Image */}
-        <div className="relative w-32 h-32 flex-shrink-0 bg-slate-100">
+        <div className="relative w-32 h-32 flex-shrink-0 bg-slate-100 overflow-hidden">
           {event.imageUrl ? (
             <Image
               src={event.imageUrl}
@@ -545,13 +548,16 @@ function EventCard({ event }: { event: SpaceEvent }) {
             </div>
           )}
           {event.isLive && (
-            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-white rounded-full" />
+            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded flex items-center gap-1 z-10">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
+              </span>
               LIVE
             </div>
           )}
           {!event.isLive && isWithin48Hours && (
-            <div className="absolute top-2 left-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-0.5 rounded animate-pulse">
+            <div className="absolute top-2 left-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-0.5 rounded z-10">
               SOON
             </div>
           )}
