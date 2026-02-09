@@ -125,7 +125,7 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
                 <span className="text-5xl">{typeInfo.icon}</span>
               </div>
             )}
-            <div className="absolute top-2 left-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 z-10">
+            <div className="absolute top-2 right-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 z-10">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-900 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-900" />
@@ -408,7 +408,7 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
                     )}
                     {/* Live indicator */}
                     {isActuallyLive && (
-                      <div className="absolute top-1 left-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                      <div className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
                         <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
                         LIVE
                       </div>
@@ -548,7 +548,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
             </div>
           )}
           {event.isLive && (
-            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded flex items-center gap-1 z-10">
+            <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded flex items-center gap-1 z-10">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
@@ -557,7 +557,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
             </div>
           )}
           {!event.isLive && isWithin48Hours && (
-            <div className="absolute top-2 left-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-0.5 rounded z-10">
+            <div className="absolute top-2 right-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-0.5 rounded z-10">
               SOON
             </div>
           )}
