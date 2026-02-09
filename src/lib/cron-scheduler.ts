@@ -45,6 +45,12 @@ export function startCronJobs() {
     triggerEndpoint('/api/refresh?type=events', 'events-fetch');
   });
 
+  // Blog/article fetch — every 4 hours
+  // Fetches from 39 RSS blog sources (NASA, ESA, SpaceX, etc.)
+  cron.schedule('0 */4 * * *', () => {
+    triggerEndpoint('/api/refresh?type=blogs', 'blogs-fetch');
+  });
+
   // Daily full data refresh + newsletter digest — midnight UTC
   cron.schedule('0 0 * * *', () => {
     triggerEndpoint('/api/refresh?type=daily', 'daily-refresh');
@@ -94,6 +100,7 @@ export function startCronJobs() {
     jobs: [
       'news-fetch: every 5 minutes',
       'events-fetch: every 15 minutes',
+      'blogs-fetch: every 4 hours',
       'daily-refresh: midnight UTC',
       'ai-insights: 1:00 AM UTC',
       'external-api-refresh: every 4 hours',

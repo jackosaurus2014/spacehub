@@ -41,6 +41,14 @@ async function refreshEvents(): Promise<Record<string, string>> {
   return results;
 }
 
+async function refreshBlogs(): Promise<Record<string, string>> {
+  const results: Record<string, string> = {};
+  await initializeBlogSources();
+  const blogCount = await fetchBlogPosts();
+  results.blogs = `Refreshed ${blogCount} blog posts`;
+  return results;
+}
+
 async function refreshDaily(): Promise<Record<string, string>> {
   const results: Record<string, string> = {};
 
@@ -156,7 +164,7 @@ export async function POST(request: Request) {
   if (authError) return authError;
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type'); // 'news', 'events', 'daily', 'external-apis', 'space-weather', 'ai-research', 'live-streams', 'realtime', or null (all)
+  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'live-streams', 'realtime', or null (all)
 
   const results: Record<string, unknown> = {};
 
@@ -169,6 +177,11 @@ export async function POST(request: Request) {
     if (!type || type === 'events') {
       const eventsResults = await refreshEvents();
       Object.assign(results, eventsResults);
+    }
+
+    if (!type || type === 'blogs') {
+      const blogsResults = await refreshBlogs();
+      Object.assign(results, blogsResults);
     }
 
     if (!type || type === 'daily') {
