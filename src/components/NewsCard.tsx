@@ -10,26 +10,39 @@ interface NewsCardProps {
 function CompanyBadges({ companies }: { companies: NewsArticleCompanyTag[] }) {
   if (!companies || companies.length === 0) return null;
 
+  // Dark-appropriate badge colors (cards have dark backgrounds)
   const tierColors: Record<number, string> = {
-    1: 'bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200',
-    2: 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200',
-    3: 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200',
+    1: 'bg-amber-500/20 text-amber-300 border-amber-500/30 hover:bg-amber-500/30',
+    2: 'bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30',
+    3: 'bg-slate-500/20 text-slate-300 border-slate-500/30 hover:bg-slate-500/30',
   };
 
   return (
     <div className="flex flex-wrap gap-1.5 mt-2">
       {companies.slice(0, 3).map(company => (
-        <Link
+        <span
           key={company.id}
-          href={`/company-profiles/${company.slug}`}
-          onClick={(e) => e.stopPropagation()}
-          className={`inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors ${tierColors[company.tier] || tierColors[3]}`}
+          role="link"
+          tabIndex={0}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            window.location.href = `/company-profiles/${company.slug}`;
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.stopPropagation();
+              e.preventDefault();
+              window.location.href = `/company-profiles/${company.slug}`;
+            }
+          }}
+          className={`inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors cursor-pointer ${tierColors[company.tier] || tierColors[3]}`}
         >
           {company.logoUrl && (
             <Image src={company.logoUrl} alt="" width={12} height={12} className="rounded-sm" />
           )}
           {company.name}
-        </Link>
+        </span>
       ))}
       {companies.length > 3 && (
         <span className="text-[10px] text-slate-400 self-center">+{companies.length - 3}</span>
@@ -100,14 +113,26 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
             {article.companyTags && article.companyTags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-2">
                 {article.companyTags.slice(0, 3).map(company => (
-                  <Link
+                  <span
                     key={company.id}
-                    href={`/company-profiles/${company.slug}`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-colors"
+                    role="link"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      window.location.href = `/company-profiles/${company.slug}`;
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        window.location.href = `/company-profiles/${company.slug}`;
+                      }
+                    }}
+                    className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-colors cursor-pointer"
                   >
                     {company.name}
-                  </Link>
+                  </span>
                 ))}
               </div>
             )}
