@@ -22,6 +22,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   'market-intel': '/market-intel',
   'space-economy': '/space-economy',
   'startup-tracker': '/startups',
+  'company-profiles': '/company-profiles',
 
   // ── Business Opportunities children ──
   'business-opportunities': '/business-opportunities',

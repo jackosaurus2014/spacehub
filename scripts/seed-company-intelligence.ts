@@ -817,8 +817,10 @@ async function main() {
   for (const companySeed of companies) {
     console.log(`  Creating: ${companySeed.name}...`);
 
+    const slug = companySeed.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     const profile = await prisma.companyProfile.create({
       data: {
+        slug,
         name: companySeed.name,
         legalName: companySeed.legalName,
         ticker: companySeed.ticker,

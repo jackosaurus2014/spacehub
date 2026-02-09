@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { fetchSpaceflightNews } from '@/lib/news-fetcher';
+import { fetchSpaceflightNews, tagRecentArticlesWithCompanies } from '@/lib/news-fetcher';
 import { apiCache, CacheTTL } from '@/lib/api-cache';
 import { logger } from '@/lib/logger';
 
@@ -10,6 +10,14 @@ const CACHE_KEY = 'news:fetch-result';
 export async function POST() {
   try {
     const count = await fetchSpaceflightNews();
+
+    // Tag newly fetched articles with company profiles (best-effort)
+    try {
+      const tagged = await tagRecentArticlesWithCompanies(count || 200);
+      logger.info(`[News] Tagged ${tagged} articles with company profiles`);
+    } catch (tagError) {
+      logger.warn('[News] Company tagging failed', { error: String(tagError) });
+    }
 
     const responseData = {
       success: true,

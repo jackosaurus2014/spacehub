@@ -9,11 +9,13 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get('category') || undefined;
+    const companySlug = searchParams.get('company') || undefined;
     const limit = constrainPagination(parseInt(searchParams.get('limit') || '20'));
     const offset = constrainOffset(parseInt(searchParams.get('offset') || '0'));
 
     const { articles, total } = await getNewsArticles({
       category,
+      companySlug,
       limit,
       offset,
     });

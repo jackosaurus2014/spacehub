@@ -327,18 +327,120 @@ async function fetchRSSFeeds(): Promise<number> {
   return results.reduce((sum, count) => sum + count, 0);
 }
 
+// --- Company tagging ---
+
+// Cache company names for tagging (refreshed per fetch cycle)
+let companyNameCache: Array<{ id: string; slug: string; name: string; aliases: string[] }> | null = null;
+
+async function getCompanyNameCache() {
+  if (companyNameCache) return companyNameCache;
+
+  try {
+    const companies = await prisma.companyProfile.findMany({
+      select: { id: true, slug: true, name: true, ticker: true, tags: true },
+    });
+
+    companyNameCache = companies.map(c => ({
+      id: c.id,
+      slug: c.slug,
+      name: c.name,
+      aliases: [
+        c.name.toLowerCase(),
+        // Add ticker as alias if it exists
+        ...(c.ticker ? [c.ticker.toLowerCase()] : []),
+        // Common name variants (e.g., "Rocket Lab" matches "RocketLab")
+        c.name.toLowerCase().replace(/\s+/g, ''),
+      ].filter(Boolean),
+    }));
+
+    return companyNameCache;
+  } catch {
+    return [];
+  }
+}
+
+export function clearCompanyNameCache() {
+  companyNameCache = null;
+}
+
+async function tagArticleWithCompanies(articleId: string, title: string, summary: string): Promise<void> {
+  const companies = await getCompanyNameCache();
+  if (companies.length === 0) return;
+
+  const text = `${title} ${summary || ''}`.toLowerCase();
+  const matchedIds: string[] = [];
+
+  for (const company of companies) {
+    for (const alias of company.aliases) {
+      // Use word boundary check for short names to avoid false positives
+      if (alias.length <= 3) {
+        // For short names like "SES", "ULA", "ABL" - require word boundaries
+        const regex = new RegExp(`\\b${alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+        if (regex.test(text)) {
+          matchedIds.push(company.id);
+          break;
+        }
+      } else if (text.includes(alias)) {
+        matchedIds.push(company.id);
+        break;
+      }
+    }
+  }
+
+  if (matchedIds.length > 0) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (prisma.newsArticle as any).update({
+        where: { id: articleId },
+        data: {
+          companyTags: {
+            set: matchedIds.map(id => ({ id })),
+          },
+        },
+      });
+    } catch {
+      // Silently fail - tagging is best-effort
+    }
+  }
+}
+
+// Tag recent articles with company profiles (called after news fetch)
+export async function tagRecentArticlesWithCompanies(limit = 200): Promise<number> {
+  clearCompanyNameCache();
+  const companies = await getCompanyNameCache();
+  if (companies.length === 0) return 0;
+
+  const articles = await prisma.newsArticle.findMany({
+    select: { id: true, title: true, summary: true },
+    orderBy: { publishedAt: 'desc' },
+    take: limit,
+  });
+
+  let tagged = 0;
+  for (const article of articles) {
+    await tagArticleWithCompanies(article.id, article.title, article.summary || '');
+    tagged++;
+  }
+
+  return tagged;
+}
+
 // --- Query functions ---
 
 export async function getNewsArticles(options?: {
   category?: string;
   limit?: number;
   offset?: number;
+  companySlug?: string;
 }) {
-  const { category, limit = 20, offset = 0 } = options || {};
+  const { category, limit = 20, offset = 0, companySlug } = options || {};
 
-  const where = category ? { category } : {};
+  const where: Record<string, unknown> = {};
+  if (category) where.category = category;
+  if (companySlug) where.companyTags = { some: { slug: companySlug } };
 
-  const articles = await prisma.newsArticle.findMany({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const articles = await (prisma.newsArticle as any).findMany({
     where,
     select: {
       id: true,
@@ -349,13 +451,23 @@ export async function getNewsArticles(options?: {
       imageUrl: true,
       url: true,
       publishedAt: true,
+      companyTags: {
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          logoUrl: true,
+          tier: true,
+        },
+      },
     },
     orderBy: { publishedAt: 'desc' },
     take: limit,
     skip: offset,
   });
 
-  const total = await prisma.newsArticle.count({ where });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const total = await (prisma.newsArticle as any).count({ where });
 
   return { articles, total };
 }

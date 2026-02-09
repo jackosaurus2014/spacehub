@@ -1,10 +1,41 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { NewsArticle } from '@/types';
+import { NewsArticle, NewsArticleCompanyTag } from '@/types';
 
 interface NewsCardProps {
   article: NewsArticle;
   featured?: boolean;
+}
+
+function CompanyBadges({ companies }: { companies: NewsArticleCompanyTag[] }) {
+  if (!companies || companies.length === 0) return null;
+
+  const tierColors: Record<number, string> = {
+    1: 'bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200',
+    2: 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200',
+    3: 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200',
+  };
+
+  return (
+    <div className="flex flex-wrap gap-1.5 mt-2">
+      {companies.slice(0, 3).map(company => (
+        <Link
+          key={company.id}
+          href={`/company-profiles/${company.slug}`}
+          onClick={(e) => e.stopPropagation()}
+          className={`inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors ${tierColors[company.tier] || tierColors[3]}`}
+        >
+          {company.logoUrl && (
+            <Image src={company.logoUrl} alt="" width={12} height={12} className="rounded-sm" />
+          )}
+          {company.name}
+        </Link>
+      ))}
+      {companies.length > 3 && (
+        <span className="text-[10px] text-slate-400 self-center">+{companies.length - 3}</span>
+      )}
+    </div>
+  );
 }
 
 const categoryColors: Record<string, string> = {
@@ -66,6 +97,20 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
             <h3 className="text-xl md:text-2xl font-bold text-white mt-3 line-clamp-2 group-hover:text-nebula-200 transition-colors">
               {article.title}
             </h3>
+            {article.companyTags && article.companyTags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {article.companyTags.slice(0, 3).map(company => (
+                  <Link
+                    key={company.id}
+                    href={`/company-profiles/${company.slug}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-colors"
+                  >
+                    {company.name}
+                  </Link>
+                ))}
+              </div>
+            )}
             <div className="flex items-center space-x-4 mt-3 text-slate-300 text-sm">
               <span>{article.source}</span>
               <span className="text-slate-400/50">·</span>
@@ -115,6 +160,9 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
         </h3>
         {article.summary && (
           <p className="text-slate-400 text-sm mt-2 line-clamp-2">{article.summary}</p>
+        )}
+        {article.companyTags && article.companyTags.length > 0 && (
+          <CompanyBadges companies={article.companyTags} />
         )}
         <div className="flex items-center space-x-3 mt-3 text-slate-400 text-xs">
           <span>{article.source}</span>

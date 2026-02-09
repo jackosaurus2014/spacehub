@@ -1,3 +1,11 @@
+export interface NewsArticleCompanyTag {
+  id: string;
+  slug: string;
+  name: string;
+  logoUrl: string | null;
+  tier: number;
+}
+
 export interface NewsArticle {
   id: string;
   title: string;
@@ -9,6 +17,7 @@ export interface NewsArticle {
   imageUrl: string | null;
   publishedAt: Date;
   fetchedAt: Date;
+  companyTags?: NewsArticleCompanyTag[];
 }
 
 export interface Category {
@@ -264,7 +273,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 2,
     isParent: true,
-    subModuleIds: ['market-intel', 'space-economy', 'startup-tracker'],
+    subModuleIds: ['market-intel', 'space-economy', 'startup-tracker', 'company-profiles'],
   },
 
   // 4. Business Opportunities (parent)
@@ -431,6 +440,17 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     section: 'business',
     defaultEnabled: true,
     defaultPosition: 15,
+    isPremium: true,
+    parentModuleId: 'space-market-intelligence',
+  },
+  {
+    moduleId: 'company-profiles',
+    name: 'Space Company Profiles',
+    description: 'Comprehensive intelligence profiles for 100+ space industry companies with financials, key people, products, contracts, and relationships',
+    icon: '🏢',
+    section: 'intelligence',
+    defaultEnabled: true,
+    defaultPosition: 16,
     isPremium: true,
     parentModuleId: 'space-market-intelligence',
   },

@@ -91,6 +91,7 @@ model NewsArticle {
   imageUrl    String?
   publishedAt DateTime
   fetchedAt   DateTime @default(now())
+  companyTags CompanyProfile[] @relation("NewsCompanyTags")
 
   @@index([category])
   @@index([publishedAt])
@@ -2361,27 +2362,49 @@ model AlertHistory {
 
 model CompanyProfile {
   id                  String    @id @default(cuid())
+  slug                String    @unique // URL-friendly identifier
   companyId           String? // Link to existing SpaceCompany if applicable
   name                String
   legalName           String?
   ticker              String?
+  exchange            String? // NYSE, NASDAQ, etc.
   headquarters        String?
+  country             String? // ISO country code
   foundedDate         DateTime?
+  foundedYear         Int? // Year only for display
   employeeCount       Int?
+  employeeRange       String? // "1-50", "51-200", "201-500", "501-1000", "1001-5000", "5000+"
   employeeCountSource String? // "LinkedIn", "SEC Filing", etc.
   website             String?
   description         String?   @db.Text
+  longDescription     String?   @db.Text // Detailed company overview
   logoUrl             String?
   ceo                 String?
   cto                 String?
+  linkedinUrl         String?
+  twitterUrl          String?
   isPublic            Boolean   @default(false)
-  status              String    @default("active") // active, acquired, defunct, stealth
-  sector              String? // launch, satellite, ground-systems, exploration, services
+  marketCap           Float? // In USD for public companies
+  stockPrice          Float?
+  priceChange24h      Float?
+  status              String    @default("active") // active, acquired, defunct, stealth, pre-revenue
+  sector              String? // launch, satellite, ground-segment, infrastructure, defense, analytics, manufacturing, agency
   subsector           String?
+  tags                String[] // Focus area tags: ["earth-observation", "sar", "leo", etc.]
+  tier                Int       @default(3) // 1=must-have, 2=high-growth, 3=emerging
   naicsCode           String?
   dunsNumber          String?
   cageCode            String? // For government contracting
   samUei              String? // SAM.gov Unique Entity ID
+  totalFunding        Float? // Aggregate total funding in USD
+  lastFundingRound    String? // "Series D", "SPAC", etc.
+  lastFundingDate     DateTime?
+  valuation           Float? // Last known valuation in USD
+  revenueEstimate     Float? // Latest annual revenue estimate in USD
+  ownershipType       String? // "private", "public", "government", "subsidiary", "joint-venture"
+  parentCompany       String? // Name of parent company if subsidiary
+  lastVerified        DateTime? // When data was last verified
+  dataCompleteness    Int       @default(0) // 0-100 score of profile completeness
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
@@ -2397,11 +2420,19 @@ model CompanyProfile {
   competitorOf     CompetitiveMapping[]      @relation("company")
   competitorTo     CompetitiveMapping[]      @relation("competitor")
   contracts        GovernmentContractAward[]
+  events           CompanyEvent[]
+  satelliteAssets  SatelliteAsset[]
+  facilities       FacilityLocation[]
+  scores           CompanyScore[]
+  newsArticles     NewsArticle[]     @relation("NewsCompanyTags")
 
+  @@index([slug])
   @@index([name])
   @@index([ticker])
   @@index([sector])
   @@index([status])
+  @@index([tier])
+  @@index([country])
   @@index([cageCode])
   @@index([samUei])
 }
@@ -2586,6 +2617,92 @@ model GovernmentContractAward {
   @@index([agency])
   @@index([awardDate])
   @@index([naicsCode])
+}
+
+// ============================================================
+// Company Intelligence - Extended Models
+// ============================================================
+
+model CompanyEvent {
+  id          String         @id @default(cuid())
+  companyId   String
+  company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  date        DateTime
+  type        String // "founding", "first_launch", "ipo", "acquisition", "contract_win", "milestone", "product_launch", "funding", "partnership", "regulatory"
+  title       String
+  description String?        @db.Text
+  source      String?
+  sourceUrl   String?
+  importance  Int            @default(5) // 1-10 scale
+  createdAt   DateTime       @default(now())
+
+  @@index([companyId])
+  @@index([date])
+  @@index([type])
+}
+
+model SatelliteAsset {
+  id              String          @id @default(cuid())
+  companyId       String?
+  company         CompanyProfile? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  operatorName    String
+  satelliteName   String
+  noradId         String?
+  cosparId        String?
+  launchDate      DateTime?
+  orbitType       String? // "LEO", "MEO", "GEO", "HEO", "SSO", "Lunar", "Interplanetary"
+  orbitAltitudeKm Float?
+  inclination     Float?
+  status          String          @default("active") // "active", "decommissioned", "failed", "planned", "deorbited"
+  missionType     String? // "broadband", "earth-observation", "sar", "signals", "navigation", "weather", "science", "technology-demo"
+  massKg          Float?
+  manufacturer    String?
+  launchProvider  String?
+  constellation   String? // "Starlink", "OneWeb", "Kuiper", etc.
+  createdAt       DateTime        @default(now())
+
+  @@index([companyId])
+  @@index([orbitType])
+  @@index([status])
+  @@index([missionType])
+  @@index([constellation])
+}
+
+model FacilityLocation {
+  id          String         @id @default(cuid())
+  companyId   String
+  company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name        String
+  type        String // "headquarters", "manufacturing", "test_facility", "launch_site", "ground_station", "office", "r_and_d"
+  address     String?
+  city        String?
+  state       String?
+  country     String
+  latitude    Float?
+  longitude   Float?
+  employees   Int?
+  description String?        @db.Text
+  createdAt   DateTime       @default(now())
+
+  @@index([companyId])
+  @@index([type])
+  @@index([country])
+}
+
+model CompanyScore {
+  id           String         @id @default(cuid())
+  companyId    String
+  company      CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  scoreType    String // "overall", "technology", "team", "funding", "market_position", "growth", "momentum"
+  score        Float // 0-100
+  methodology  String?
+  calculatedAt DateTime       @default(now())
+  validUntil   DateTime?
+  breakdown    Json? // Detailed scoring breakdown
+
+  @@unique([companyId, scoreType])
+  @@index([companyId])
+  @@index([scoreType])
 }
 
 // ============================================================
