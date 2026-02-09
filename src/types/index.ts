@@ -195,7 +195,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     price: 9.99,
     priceYearly: 99,
     highlighted: true,
-    trialDays: 3,
+    trialDays: 14,
     features: [
       'Everything in Enthusiast',
       'Unlimited article access',
@@ -211,7 +211,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     name: 'Enterprise',
     price: 29.99,
     priceYearly: 250,
-    trialDays: 3,
+    trialDays: 14,
     features: [
       'Everything in Professional',
       'AI-powered business opportunities',

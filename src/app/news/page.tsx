@@ -10,6 +10,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import PullToRefresh from '@/components/ui/PullToRefresh';
+import ArticleLimitBanner from '@/components/ui/ArticleLimitBanner';
+import { useSubscription } from '@/components/SubscriptionProvider';
 import { NewsArticle } from '@/types';
 
 function NewsContent() {
@@ -17,6 +19,7 @@ function NewsContent() {
   const router = useRouter();
   const pathname = usePathname();
   const initialCategory = searchParams.get('category');
+  const { remainingArticles } = useSubscription();
 
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
@@ -26,6 +29,13 @@ function NewsContent() {
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
   const limit = 12;
+
+  // Calculate how many articles have been viewed today
+  // remainingArticles is null for paid users, or 0-10 for free users
+  const maxDailyArticles = 10;
+  const articlesViewed = remainingArticles !== null
+    ? maxDailyArticles - remainingArticles
+    : 0;
 
   // Sync category to URL
   useEffect(() => {
@@ -102,6 +112,12 @@ function NewsContent() {
           />
         </div>
       </div>
+
+      {/* Article Limit Banner */}
+      <ArticleLimitBanner
+        articlesViewed={articlesViewed}
+        maxArticles={maxDailyArticles}
+      />
 
       {/* News Grid */}
       {loading && articles.length === 0 ? (

@@ -48,6 +48,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/launch`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${baseUrl}/search`, changeFrequency: 'weekly' as const, priority: 0.5 },
     { url: `${baseUrl}/guide/space-industry`, changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${baseUrl}/guide/space-industry-market-size`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/guide/how-satellite-tracking-works`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/guide/itar-compliance-guide`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/guide/space-launch-cost-comparison`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/guide/commercial-space-economy`, changeFrequency: 'monthly' as const, priority: 0.6 },
 
     // Conversion pages
     { url: `${baseUrl}/pricing`, changeFrequency: 'monthly' as const, priority: 0.5 },

@@ -245,7 +245,7 @@ function PricingPageContent() {
         return;
       }
 
-      toast.success(`Your 3-day ${planTier === 'pro' ? 'Professional' : 'Enterprise'} trial has started!`);
+      toast.success(`Your 14-day ${planTier === 'pro' ? 'Professional' : 'Enterprise'} trial has started!`);
       refreshSubscription();
     } catch {
       toast.error('Something went wrong. Please try again.');
@@ -426,7 +426,7 @@ function PricingPageContent() {
                 Is there a free trial?
               </h3>
               <p className="text-slate-400 text-sm">
-                Yes! All paid plans include a 3-day free trial. Try any plan with
+                Yes! All paid plans include a 14-day free trial. Try any plan with
                 full access before you subscribe &mdash; no credit card required.
               </p>
             </div>

@@ -83,7 +83,7 @@ export async function POST(req: Request) {
     // Determine if the user should get a trial period
     // Only grant trial if user hasn't had a trial before
     const hasHadTrial = user.trialTier !== null || user.trialEndDate !== null;
-    const trialPeriodDays = hasHadTrial ? undefined : 3;
+    const trialPeriodDays = hasHadTrial ? undefined : 14;
 
     const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.com';
 

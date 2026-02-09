@@ -62,31 +62,24 @@ export function canAccessFeature(
   return TIER_ACCESS[tier][feature] as boolean;
 }
 
+// Module tier requirements — single source of truth
+const PREMIUM_MODULES: Record<string, SubscriptionTier> = {
+  'resource-exchange': 'pro',
+  'business-opportunities': 'enterprise',
+  'spectrum-tracker': 'enterprise',
+  'space-insurance': 'enterprise',
+  'compliance': 'enterprise',
+  'orbital-services': 'enterprise',
+};
+
+const TIER_ORDER: SubscriptionTier[] = ['free', 'pro', 'enterprise'];
+
 export function canAccessModule(tier: SubscriptionTier, moduleId: string): boolean {
-  const premiumModules: Record<string, SubscriptionTier> = {
-    'resource-exchange': 'pro',
-    'business-opportunities': 'enterprise',
-    'spectrum-tracker': 'enterprise',
-    'space-insurance': 'enterprise',
-    'compliance': 'enterprise',
-    'orbital-services': 'enterprise',
-  };
-
-  const requiredTier = premiumModules[moduleId];
+  const requiredTier = PREMIUM_MODULES[moduleId];
   if (!requiredTier) return true; // Free module
-
-  const tierOrder: SubscriptionTier[] = ['free', 'pro', 'enterprise'];
-  return tierOrder.indexOf(tier) >= tierOrder.indexOf(requiredTier);
+  return TIER_ORDER.indexOf(tier) >= TIER_ORDER.indexOf(requiredTier);
 }
 
 export function getRequiredTierForModule(moduleId: string): SubscriptionTier | null {
-  const premiumModules: Record<string, SubscriptionTier> = {
-    'resource-exchange': 'pro',
-    'business-opportunities': 'enterprise',
-    'spectrum-tracker': 'enterprise',
-    'space-insurance': 'enterprise',
-    'compliance': 'enterprise',
-    'orbital-services': 'enterprise',
-  };
-  return premiumModules[moduleId] || null;
+  return PREMIUM_MODULES[moduleId] || null;
 }
