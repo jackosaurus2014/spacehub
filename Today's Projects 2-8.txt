@@ -1,0 +1,175 @@
+Use agent teams if it will improve efficiency and effectiveness.  Do an exhaustive deep dive analysis to verify that the proposed task is the best approach to take.  Feel free to refine the tasks if you identify any improvements that can be made.  
+
+TASK 1: Stripe Payment Integration
+--------------------------------------
+Context: SpaceNexus has subscription tiers defined in src/types/index.ts
+(SUBSCRIPTION_PLANS: Free/Professional/Enterprise) with pricing
+($0/$9.99mo/$29.99mo). The pricing page (src/app/pricing/page.tsx) has trial
+start functionality via /api/subscription endpoint but no actual payment
+processing -- the "Subscribe Now" button shows an alert saying "Payment
+integration coming soon." We have a SubscriptionProvider component and
+useSubscription hook. User model likely has subscriptionTier and trial fields.
+
+Task: Implement complete Stripe payment integration including: (a) Stripe
+Checkout for new subscriptions, (b) Stripe Customer Portal for managing
+existing subscriptions, (c) webhook handler for subscription events
+(created, updated, canceled, payment_failed), (d) trial-to-paid conversion
+flow (3-day trial to auto-charge), (e) proration handling for plan upgrades/
+downgrades, (f) invoice generation, (g) failed payment recovery emails.
+Provide the API routes (src/app/api/stripe/route.ts, webhook.ts), Prisma
+schema updates (stripeCustomerId, stripeSubscriptionId on User), the updated
+pricing page component, and environment variable requirements. Follow our
+existing validation pattern (Zod schemas + validateBody) and error handling
+(src/lib/errors.ts).
+
+TASK 2: API Product Design and Documentation
+-----------------------------------------------
+Context: SpaceNexus has internal API routes for all modules under
+src/app/api/. Data includes news articles, space events, companies with stock
+data, compliance classifications, satellite data, launch vehicles, resource
+exchange rates, and more. We have an api-cache layer (src/lib/api-cache.ts)
+and circuit breaker (src/lib/circuit-breaker.ts).
+
+Task: Design a commercial API product that exposes SpaceNexus data to
+external developers and businesses. Include: (a) API key management system
+(generate, revoke, rotate keys), (b) tiered rate limiting (Developer: 5K
+calls/mo, Business: 50K, Enterprise: unlimited), (c) usage tracking and
+billing integration, (d) API documentation portal (consider Swagger/OpenAPI
+spec or a custom docs page), (e) endpoint catalog organized by domain (News,
+Launches, Companies, Satellites, Regulatory, Market Data), (f) SDKs in
+Python and JavaScript (scaffolding), (g) interactive API playground for
+testing calls. Provide the middleware for API key authentication, the Prisma
+models (ApiKey, ApiUsage), rate limiting logic, and the OpenAPI 3.0 spec
+for at least 10 core endpoints.
+
+TASK 3: Sponsored Content and Ad Revenue System
+---------------------------------------------------
+Context: SpaceNexus already has an AdBanner component (src/components/ads)
+used on the homepage. We need to build a proper ad/sponsorship system that
+generates revenue without degrading user experience, especially for paid
+subscribers.
+
+Task: Design a sponsored content and advertising system for SpaceNexus that
+includes: (a) self-serve ad placement portal where space companies can buy
+banner ads, featured listings, and sponsored content slots, (b) ad targeting
+by module (e.g., an ad for a launch provider appears in Mission Planning),
+(c) ad-free experience for Professional+ subscribers (as promised), (d) native
+sponsored content format ("Sponsored Analysis" articles that maintain editorial
+standards), (e) job listing sponsorship in Space Talent Hub, (f) analytics
+dashboard showing impressions, clicks, and conversions. Design the Prisma
+models (AdCampaign, AdPlacement, AdImpression), the advertiser-facing portal,
+and the rendering components. Include pricing recommendations based on
+space industry CPMs ($15-50 for niche B2B).
+
+TASK 4: SEO Pillar Content: Space Industry Complete Guide
+-------------------------------------------------------------
+Context: SpaceNexus needs to rank for "space industry" related keywords. We
+currently have no long-form SEO content. The global space economy is $613B
+(2024) and projected to reach $780B+ by 2033. Our platform covers 10 main
+modules spanning news, market intelligence, operations, regulatory, and more.
+
+Task: Write a comprehensive 3,000+ word guide titled "The Complete Guide to
+the Space Industry in 2026: Markets, Technologies, and Opportunities." The
+guide should cover: (a) space economy market size and growth, (b) key sectors
+(launch, satellite, ground systems, exploration), (c) major companies and
+their market positions, (d) government programs and budgets, (e) emerging
+trends (cislunar economy, in-space manufacturing, space sustainability),
+(f) career opportunities, (g) investment landscape. Naturally incorporate
+internal links to SpaceNexus modules (e.g., "Track these companies in real-
+time with our Market Intelligence module"). Include an FAQ section at the
+bottom for featured snippet targeting. Write meta title and description
+optimized for "space industry 2026" keyword cluster.
+
+TASK 5: Procurement Intelligence Module (SAM.gov Integration)
+------------------------------------------------------------------
+Context: SpaceNexus has a government-contracts API (src/app/api/government-
+contracts/) with init and listing endpoints. We also track bid protests in
+the compliance module. U.S. government is 22% of the $613B space economy.
+
+Task: Build a comprehensive Procurement Intelligence module that integrates
+with SAM.gov and other government data sources. Include: (a) real-time
+contract opportunity feed filtered for space/aerospace NAICS codes (336414,
+336415, 336419, 517410, 541715), (b) contract award tracker with incumbent
+analysis, (c) SBIR/STTR solicitation tracker (NASA, SpaceWERX, NOAA topics),
+(d) budget tracker for key space line items (NASA appropriations by mission
+directorate, Space Force budget by program), (e) congressional tracking
+(committee hearings, authorizations, mark-ups relevant to space), (f) saved
+search alerts for matching opportunities. Provide the SAM.gov API integration
+code, Prisma models, and the React page with filters for agency, NAICS code,
+set-aside type, value range, and deadline. Include error handling for API
+rate limits and downtime.
+
+TASK 6: Company Intelligence Database Schema Design
+------------------------------------------------------
+Context: SpaceNexus (v0.7.4) is a space industry intelligence platform built on
+Next.js 14, Prisma ORM with PostgreSQL, and TypeScript. We currently track ~50
+space companies with basic profiles (name, ticker, description). Competitors like
+Quilty Space and BryceTech offer detailed company deep-dives.
+
+Task: Design a comprehensive Prisma schema for a Company Intelligence Database
+that tracks: company profiles (name, HQ, founding date, employee count, website,
+description, logo URL, CEO, public/private status), funding history (rounds with
+date, amount, investors, valuation, series label), revenue estimates (annual,
+source, confidence level), product/service catalog, key personnel with roles,
+M&A history (acquirer, target, date, price, status), partnerships and JVs,
+competitive landscape mapping, and SEC filing references. Include proper indexes,
+relations, and migration strategy for our existing Company model. Provide the
+Prisma schema, a seed script structure, and the Next.js API route pattern
+following our existing convention in src/app/api/companies/route.ts.
+
+TASK 7: Personalized Dashboard Builder
+-----------------------------------------
+Context: SpaceNexus currently has a ModuleConfigurator component that lets users
+enable/disable modules and reorder them. Module preferences are stored in
+localStorage with key 'spacenexus-module-config'. We have 10 main modules
+rendered via ModuleContainer.tsx using next/dynamic imports.
+
+Task: Design and implement a drag-and-drop dashboard builder that extends our
+existing module system. Users should be able to: (a) create multiple named
+dashboard layouts (e.g., "Morning Brief," "Investment Research," "Regulatory
+Watch"), (b) resize widgets within a responsive grid (2-column on desktop,
+1-column on mobile), (c) add widget-level data filters (date range, company
+filter, category filter), (d) save layouts to the database for logged-in users
+(fall back to localStorage for anonymous). Design the Prisma model
+(DashboardLayout with widgets), the React components using a library like
+react-grid-layout, and the API routes. Maintain backward compatibility with
+the existing ModuleConfigurator flow.
+
+TASK 8: Real-Time Launch Dashboard
+-------------------------------------
+Context: SpaceNexus has a Mission Control module with countdown timers for
+upcoming launches, and a /live page. We track SpaceEvent data with fields for
+isLive, streamUrl, and missionPhase. We use Three.js for 3D visualizations
+(via @react-three/fiber) with ssr: false for client-only rendering.
+
+Task: Design a rich "Launch Day" dashboard experience that activates
+automatically when a launch is imminent (T-minus 6 hours). The dashboard
+should include: (a) embedded livestream video player (YouTube/SpaceX webcast),
+(b) real-time mission phase tracker with visual timeline showing phases from
+pre_launch through mission_complete, (c) live telemetry display (altitude,
+velocity, downrange distance -- simulated or from available APIs), (d) 3D
+trajectory visualization showing the vehicle's flight path using our existing
+Three.js setup, (e) live chat/discussion sidebar for community interaction,
+(f) automated mission phase updates based on time markers. Provide component
+architecture, WebSocket implementation plan, and data source strategy.
+
+TASK 9: Smart Alert System Architecture
+------------------------------------------
+Context: SpaceNexus has basic notification infrastructure (toast system in
+src/lib/toast.ts, email via Resend, PWA push notification capability via
+service worker). We have a webhook dispatcher in src/lib/webhook-dispatcher.ts.
+Rate limiting exists in src/middleware.ts.
+
+Task: Design a comprehensive alert system where users can create custom alert
+rules with the following trigger types: (a) keyword match in news articles,
+(b) stock price threshold (above/below/percent change), (c) new regulatory
+filing by agency, (d) launch status change, (e) new contract award matching
+criteria, (f) new company funding round, (g) space weather severity threshold.
+Each alert should support multiple delivery channels: in-app notification,
+email digest (immediate/daily/weekly), push notification, webhook (enterprise).
+Design the Prisma models (AlertRule, AlertDelivery, AlertHistory), the background
+processing pipeline (using node-cron which we already have), the user settings
+UI, and the notification batching logic. Include rate limiting to prevent
+notification fatigue (max 5 push/day, configurable).
+
+
