@@ -11,7 +11,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-slate-100/80 backdrop-blur-sm border-t border-slate-200 py-16 pb-24 lg:pb-16 mt-auto">
+      <footer className="bg-slate-100 backdrop-blur-sm border-t border-slate-300 py-16 pb-24 lg:pb-16 mt-auto">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
             {/* Column 1: Logo & Tagline */}
@@ -23,7 +23,7 @@ export default function Footer() {
                 height={70}
                 className="h-9 w-auto mb-4 opacity-80"
               />
-              <p className="text-slate-500 text-sm leading-relaxed">
+              <p className="text-slate-600 text-sm leading-relaxed">
                 Your gateway to the space industry. Real-time data, market intelligence, and expert insights.
               </p>
             </div>
@@ -33,22 +33,22 @@ export default function Footer() {
               <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4">Platform</h4>
               <ul className="space-y-2.5">
                 <li>
-                  <Link href="/mission-control" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/mission-control" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     Mission Control
                   </Link>
                 </li>
                 <li>
-                  <Link href="/market-intel" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/market-intel" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     Market Intel
                   </Link>
                 </li>
                 <li>
-                  <Link href="/news" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/news" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     News
                   </Link>
                 </li>
                 <li>
-                  <Link href="/solar-exploration" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/solar-exploration" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     Solar Exploration
                   </Link>
                 </li>
@@ -60,22 +60,22 @@ export default function Footer() {
               <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4">Resources</h4>
               <ul className="space-y-2.5">
                 <li>
-                  <Link href="/blogs" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/blogs" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     Blogs
                   </Link>
                 </li>
                 <li>
-                  <Link href="/compliance" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/compliance" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     Compliance
                   </Link>
                 </li>
                 <li>
-                  <Link href="/pricing" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/pricing" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     Pricing
                   </Link>
                 </li>
                 <li>
-                  <Link href="/business-opportunities" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/business-opportunities" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     Business Opportunities
                   </Link>
                 </li>
@@ -85,17 +85,17 @@ export default function Footer() {
               <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4 mt-6">Legal</h4>
               <ul className="space-y-2.5">
                 <li>
-                  <Link href="/privacy" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/privacy" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link href="/terms" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/terms" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     Terms of Service
                   </Link>
                 </li>
                 <li>
-                  <Link href="/cookies" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/cookies" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     Cookie Policy
                   </Link>
                 </li>
@@ -105,12 +105,12 @@ export default function Footer() {
               <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4 mt-6">Support</h4>
               <ul className="space-y-2.5">
                 <li>
-                  <Link href="/faq" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/faq" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     FAQ
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="text-slate-500 hover:text-slate-800 text-sm transition-colors">
+                  <Link href="/contact" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     Contact Us
                   </Link>
                 </li>
@@ -130,7 +130,7 @@ export default function Footer() {
               <div className="mt-4 pt-4 border-t border-slate-200">
                 <button
                   onClick={() => setDisclaimerOpen(true)}
-                  className="text-slate-400 hover:text-slate-600 text-xs transition-colors"
+                  className="text-slate-500 hover:text-slate-700 text-xs transition-colors"
                 >
                   Legal Disclaimer
                 </button>
@@ -139,7 +139,7 @@ export default function Footer() {
           </div>
 
           {/* Bottom bar */}
-          <div className="border-t border-slate-200 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-slate-500 text-sm">
+          <div className="border-t border-slate-300 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-slate-600 text-sm">
             <p>&copy; {new Date().getFullYear()} SpaceNexus. All rights reserved.</p>
             <div className="flex items-center gap-4">
               <button
@@ -149,11 +149,11 @@ export default function Footer() {
                     (opener as () => void)();
                   }
                 }}
-                className="text-slate-400 hover:text-slate-600 text-xs transition-colors flex items-center gap-1"
+                className="text-slate-500 hover:text-slate-700 text-xs transition-colors flex items-center gap-1"
                 aria-label="Open keyboard shortcuts help"
               >
                 Keyboard shortcuts
-                <kbd className="inline-flex items-center justify-center min-w-[20px] h-5 bg-slate-200 border border-slate-300 rounded px-1 py-0 font-mono text-[10px] text-slate-500 ml-0.5">
+                <kbd className="inline-flex items-center justify-center min-w-[20px] h-5 bg-slate-200 border border-slate-300 rounded px-1 py-0 font-mono text-[10px] text-slate-600 ml-0.5">
                   ?
                 </kbd>
               </button>

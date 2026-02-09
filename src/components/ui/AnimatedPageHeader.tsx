@@ -76,7 +76,7 @@ export default function AnimatedPageHeader({
             hidden: { opacity: 0, y: 15 },
             visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
           }}
-          className="mt-3 text-lg text-slate-400 max-w-3xl"
+          className="mt-3 text-lg text-slate-300 max-w-3xl"
         >
           {subtitle}
         </motion.p>
