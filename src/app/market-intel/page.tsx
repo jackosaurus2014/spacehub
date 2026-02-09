@@ -668,7 +668,7 @@ function MarketIntelContent() {
                                 {stock ? (
                                   <span className="font-mono font-medium text-slate-900">${stock.price.toFixed(2)}</span>
                                 ) : (
-                                  <div className="h-4 w-16 bg-slate-100 rounded animate-pulse ml-auto" />
+                                  <div className="h-4 w-16 bg-slate-700/50 rounded animate-pulse ml-auto" />
                                 )}
                               </td>
                               <td className="py-4 px-4 text-right">
@@ -679,7 +679,7 @@ function MarketIntelContent() {
                                     {isPositive ? '+' : ''}{stock.changePercent.toFixed(2)}%
                                   </span>
                                 ) : (
-                                  <div className="h-4 w-14 bg-slate-100 rounded animate-pulse ml-auto" />
+                                  <div className="h-4 w-14 bg-slate-700/50 rounded animate-pulse ml-auto" />
                                 )}
                               </td>
                               <td className="py-4 px-4 text-right text-slate-400">

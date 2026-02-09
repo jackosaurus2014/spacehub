@@ -421,9 +421,9 @@ body::after {
 }
 
 /* Border colors in cards - lighten them */
-.card .border-slate-200, .card .border-slate-300,
-.card-elevated .border-slate-200, .card-elevated .border-slate-300,
-.card-interactive .border-slate-200, .card-interactive .border-slate-300 {
+.card .border-slate-100, .card .border-slate-200, .card .border-slate-300,
+.card-elevated .border-slate-100, .card-elevated .border-slate-200, .card-elevated .border-slate-300,
+.card-interactive .border-slate-100, .card-interactive .border-slate-200, .card-interactive .border-slate-300 {
   border-color: rgba(148, 163, 184, 0.3) !important; /* slate-400/30 */
 }
 
@@ -432,6 +432,50 @@ body::after {
 .card-elevated .bg-slate-50, .card-elevated .bg-slate-100, .card-elevated .bg-white,
 .card-interactive .bg-slate-50, .card-interactive .bg-slate-100, .card-interactive .bg-white {
   background-color: rgba(51, 65, 85, 0.5) !important; /* slate-700/50 */
+}
+
+/* Colored pastel backgrounds in cards — swap to dark-friendly tinted backgrounds */
+.card .bg-amber-100, .card-elevated .bg-amber-100, .card-interactive .bg-amber-100 {
+  background-color: rgba(245, 158, 11, 0.15) !important; /* amber-500/15 */
+}
+.card .bg-blue-100, .card-elevated .bg-blue-100, .card-interactive .bg-blue-100,
+.card .bg-blue-50, .card-elevated .bg-blue-50, .card-interactive .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.15) !important; /* blue-500/15 */
+}
+.card .bg-green-100, .card-elevated .bg-green-100, .card-interactive .bg-green-100 {
+  background-color: rgba(34, 197, 94, 0.15) !important; /* green-500/15 */
+}
+.card .bg-yellow-100, .card-elevated .bg-yellow-100, .card-interactive .bg-yellow-100 {
+  background-color: rgba(234, 179, 8, 0.15) !important; /* yellow-500/15 */
+}
+.card .bg-red-100, .card-elevated .bg-red-100, .card-interactive .bg-red-100 {
+  background-color: rgba(239, 68, 68, 0.15) !important; /* red-500/15 */
+}
+.card .bg-cyan-100, .card-elevated .bg-cyan-100, .card-interactive .bg-cyan-100 {
+  background-color: rgba(6, 182, 212, 0.15) !important; /* cyan-500/15 */
+}
+
+/* Colored dark text in cards — lighten to visible-on-dark equivalents */
+.card .text-blue-600, .card-elevated .text-blue-600, .card-interactive .text-blue-600,
+.card .text-blue-700, .card-elevated .text-blue-700, .card-interactive .text-blue-700 {
+  color: #93c5fd !important; /* blue-300 */
+}
+.card .text-green-600, .card-elevated .text-green-600, .card-interactive .text-green-600,
+.card .text-green-700, .card-elevated .text-green-700, .card-interactive .text-green-700 {
+  color: #86efac !important; /* green-300 */
+}
+.card .text-red-600, .card-elevated .text-red-600, .card-interactive .text-red-600 {
+  color: #fca5a5 !important; /* red-300 */
+}
+.card .text-amber-600, .card-elevated .text-amber-600, .card-interactive .text-amber-600,
+.card .text-amber-700, .card-elevated .text-amber-700, .card-interactive .text-amber-700 {
+  color: #fcd34d !important; /* amber-300 */
+}
+.card .text-yellow-700, .card-elevated .text-yellow-700, .card-interactive .text-yellow-700 {
+  color: #fde047 !important; /* yellow-300 */
+}
+.card .text-cyan-700, .card-elevated .text-cyan-700, .card-interactive .text-cyan-700 {
+  color: #67e8f9 !important; /* cyan-300 */
 }
 
 /* Input Styles */

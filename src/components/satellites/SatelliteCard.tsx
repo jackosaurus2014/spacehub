@@ -101,8 +101,8 @@ export default function SatelliteCard({ satellite, compact = false }: SatelliteC
           </span>
         </div>
         <div className="flex items-center gap-4 mt-3 text-xs text-slate-400">
-          <span>Alt: <span className="text-slate-700 font-medium">{formatAltitude(satellite.altitude)}</span></span>
-          <span>Vel: <span className="text-slate-700 font-medium">{formatVelocity(satellite.velocity)}</span></span>
+          <span>Alt: <span className="text-slate-200 font-medium">{formatAltitude(satellite.altitude)}</span></span>
+          <span>Vel: <span className="text-slate-200 font-medium">{formatVelocity(satellite.velocity)}</span></span>
         </div>
       </div>
     );
@@ -196,7 +196,7 @@ export default function SatelliteCard({ satellite, compact = false }: SatelliteC
           href={n2yoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-blue-500/15 text-blue-300 hover:bg-blue-500/25 transition-colors"
         >
           N2YO
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -207,7 +207,7 @@ export default function SatelliteCard({ satellite, compact = false }: SatelliteC
           href={celestrakUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors"
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-purple-500/15 text-purple-300 hover:bg-purple-500/25 transition-colors"
         >
           CelesTrak
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">

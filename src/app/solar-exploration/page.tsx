@@ -374,7 +374,7 @@ function SolarExplorationContent() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-slate-200">
+                      <tr className="border-b border-slate-600/40">
                         <th className="text-left py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Planet</th>
                         <th className="text-left py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Host Star</th>
                         <th className="text-left py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Year</th>
@@ -389,15 +389,15 @@ function SolarExplorationContent() {
                       {exoplanets.map((planet) => (
                         <tr
                           key={planet.pl_name}
-                          className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${
-                            planet.habitable_zone ? 'bg-green-50/50' : ''
+                          className={`border-b border-slate-700/30 hover:bg-slate-700/30 transition-colors ${
+                            planet.habitable_zone ? 'bg-green-500/10' : ''
                           }`}
                         >
                           <td className="py-2 px-3 font-medium text-slate-900">
                             <span className="flex items-center gap-2">
                               {planet.pl_name}
                               {planet.habitable_zone && (
-                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-700">
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-semibold bg-green-500/20 text-green-300">
                                   HZ
                                 </span>
                               )}

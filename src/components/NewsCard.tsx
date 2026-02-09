@@ -180,7 +180,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
         </div>
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-slate-800 line-clamp-2 group-hover:text-nebula-600 transition-colors">
+        <h3 className="font-semibold text-slate-100 line-clamp-2 group-hover:text-nebula-300 transition-colors">
           {article.title}
         </h3>
         {article.summary && (

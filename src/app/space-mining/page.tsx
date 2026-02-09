@@ -774,7 +774,7 @@ function SpaceMiningContent() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
               <span className="text-2xl">💎</span> Top Mining Targets
-              <span className="text-xs font-normal text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full ml-2">Trillion-Dollar Opportunities</span>
+              <span className="text-xs font-normal text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full ml-2">Trillion-Dollar Opportunities</span>
             </h3>
             {miningTargets.length > 0 && (
               <ExportButton

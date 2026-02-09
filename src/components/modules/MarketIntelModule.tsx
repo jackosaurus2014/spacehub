@@ -415,7 +415,7 @@ export default function MarketIntelModule() {
                           {formatPrice(companyStockData.price)}
                         </span>
                       ) : (
-                        <div className="h-4 w-16 bg-slate-100 rounded animate-pulse ml-auto" />
+                        <div className="h-4 w-16 bg-slate-700/50 rounded animate-pulse ml-auto" />
                       )}
                     </div>
 
@@ -431,7 +431,7 @@ export default function MarketIntelModule() {
                           {formatChange(companyStockData.changePercent, true)}
                         </span>
                       ) : (
-                        <div className="h-4 w-12 bg-slate-100 rounded animate-pulse ml-auto" />
+                        <div className="h-4 w-12 bg-slate-700/50 rounded animate-pulse ml-auto" />
                       )}
                     </div>
 

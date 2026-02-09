@@ -1,0 +1,147 @@
+SpaceNexus Development Session Summary — February 9, 2026
+=========================================================
+
+WORK COMPLETED THIS SESSION
+----------------------------
+
+1. COMPANY INTELLIGENCE SYSTEM (v1.0.0)
+   - Built complete Company Profiles feature with 101 seeded companies
+   - Prisma schema: CompanyProfile, CompanyEvent, SatelliteAsset, FacilityLocation, CompanyScore
+   - Many-to-many NewsArticle <-> CompanyProfile relation for auto-tagging
+   - API routes: /api/company-profiles (directory) and /api/company-profiles/[slug] (detail)
+   - UI: Directory page (grid/list views, filters, search) and 9-tab detail page
+   - Auto-tagging: tagRecentArticlesWithCompanies() links news to company profiles
+   - Company badges on NewsCard linking to profiles
+   - Seed script: 101 companies (31 Tier-1, 40 Tier-2, 30 Tier-3), 3791 lines
+
+2. SUBSCRIPTION TEST TIER
+   - Added 'test' tier to SubscriptionTier type with full feature access
+   - All features enabled: AI, API, alerts, ad-free, market intel, etc.
+   - Highest access level (above enterprise) — assign manually via DB
+   - Updated SubscriptionProvider (isPro/isEnterprise include test)
+   - PremiumGate shows green "Test" badge
+   - 2 new test cases (161 total tests, all passing)
+
+3. AI DEEP DIVE → WEEKLY CRON
+   - Removed "Run AI Deep Dive" button from Business Opportunities page
+   - Converted to automated weekly CRON analysis (2 opportunities per run)
+   - runType changed from 'deep_dive' to 'weekly_cron'
+   - UI updated to explain automated weekly analysis to users
+
+4. TRIAL DURATION FIX
+   - Fixed mismatch: in-app trial was 3 days but pricing page promises 14 days
+   - Updated subscription route: 3-day trial → 14-day trial
+
+5. NAVIGATION IMPROVEMENT
+   - Added "Home" text next to SN logo in navigation bar
+   - Links back to landing page with hover effect
+
+6. MISSION CONTROL LIVE BADGE FIX
+   - Fixed animate-pulse/ping overflow causing LIVE text to overlay card content
+   - Added overflow-hidden to image containers
+   - Replaced full-badge animation with contained ping-dot pattern
+
+7. NEWS CARD COMPANY BADGE FIX
+   - Fixed nested <a> tag issue (Link inside Link) causing DOM restructuring
+   - Changed company badges from Link to span with onClick handlers
+   - Updated badge colors to dark-appropriate variants
+
+8. COMPREHENSIVE UI AUDIT (12 issues fixed across 14 files)
+   - globals.css: Added missing dark-card color overrides for pastel backgrounds
+   - pricing/page.tsx: Fixed button contrast on dark cards
+   - compliance/page.tsx: Fixed extensive light-theme remnants (filters, tabs, badges)
+   - StreamEmbed.tsx: Fixed animate-ping overflow
+   - NewsCard.tsx: Fixed title text contrast
+   - SatelliteCard.tsx: Fixed link and data contrast
+   - LayoutSelector.tsx: Fixed light-theme remnants in dashboard
+   - space-mining/page.tsx: Fixed badge contrast
+   - solar-exploration/page.tsx: Fixed table contrast
+   - MarketIntelModule.tsx + market-intel/page.tsx: Fixed skeleton loader contrast
+   - WidgetContainer.tsx: Fixed delete button visibility + aria-label
+   - DashboardLayoutSelector.tsx + ModuleConfigurator.tsx: Added aria-labels, touch targets
+
+9. MARKETPLACE STRATEGY DOCUMENT (852 lines)
+   - Created docs/MARKETPLACE-STRATEGY.md
+   - Executive Summary, Current State Assessment, Vision
+   - 3-phase roadmap (Foundation → Growth → Scale)
+   - Revenue model analysis and projections
+   - Competitive moat strategy
+   - Key metrics and success criteria
+   - Technical architecture recommendations
+   - Risk assessment and mitigation
+
+FILES CHANGED THIS SESSION
+---------------------------
+Modified (14 files - UI audit):
+  src/app/compliance/page.tsx
+  src/app/globals.css
+  src/app/market-intel/page.tsx
+  src/app/pricing/page.tsx
+  src/app/solar-exploration/page.tsx
+  src/app/space-mining/page.tsx
+  src/components/DashboardLayoutSelector.tsx
+  src/components/ModuleConfigurator.tsx
+  src/components/NewsCard.tsx
+  src/components/dashboard/LayoutSelector.tsx
+  src/components/dashboard/WidgetContainer.tsx
+  src/components/live/StreamEmbed.tsx
+  src/components/modules/MarketIntelModule.tsx
+  src/components/satellites/SatelliteCard.tsx
+
+New files:
+  docs/MARKETPLACE-STRATEGY.md (852 lines)
+  docs/SESSION-SUMMARY-2026-02-09.txt (this file)
+
+Previously committed this session:
+  - Company Intelligence system (v1.0.0 features)
+  - Test subscription tier + CRON conversion
+  - Home nav link
+  - LIVE badge overflow fix
+  - NewsCard badge fixes
+
+SUGGESTED FOLLOW-ON WORK
+--------------------------
+
+HIGH PRIORITY (Revenue Activation):
+1. Configure Stripe Dashboard (products, prices, webhook endpoint)
+   → See plan file: Revenue Activation Plan for step-by-step instructions
+2. Set Railway environment variables (STRIPE_SECRET_KEY, etc.)
+3. Activate nurture email CRON (daily at 9 AM UTC)
+4. Activate weekly AI opportunities CRON
+5. Set up CRON_SECRET env var for authenticated cron endpoints
+
+HIGH PRIORITY (Company Intelligence):
+6. Seed 117 additional company profiles from docs/ADDITIONAL-COMPANIES-TO-PROFILE.md
+   → 7 categories: Launch Providers, Defense, Satellite Ops, Ground Segment,
+     Components/Manufacturing, High-Growth/Emerging, International
+   → Recommend batching: 30-40 companies per seed script run
+7. Run initial news-company tagging: POST /api/news/tag-companies
+8. Set up company tagging as part of news fetch cron
+
+MEDIUM PRIORITY (Marketplace — Phase 1):
+9. Implement service provider listing pages (per MARKETPLACE-STRATEGY.md)
+10. Add provider self-service onboarding flow
+11. Build comparison/shortlisting tool for buyers
+12. Integrate provider listings with existing module pages
+
+MEDIUM PRIORITY (Growth):
+13. Set up Google Analytics / Plausible for user behavior tracking
+14. Implement email capture on high-value pages (company profiles, market intel)
+15. Add social sharing buttons to news articles and company profiles
+16. Create landing pages for each major module (SEO pillar content exists)
+
+LOWER PRIORITY (Polish):
+17. Add loading states/skeletons to company profile pages
+18. Implement company profile comparison feature
+19. Add company watchlist/favorites for logged-in users
+20. Build company news digest email (weekly summary per watched company)
+21. Dark mode audit pass on any remaining pages not covered today
+22. Performance optimization: image lazy loading, route prefetching
+
+METRICS TO TRACK:
+- Time to first revenue (Stripe activation)
+- Company profile page views and engagement
+- News article ↔ company profile click-through rate
+- Service provider submission conversion
+- Module usage by subscription tier
+- Weekly CRON AI analysis quality/relevance

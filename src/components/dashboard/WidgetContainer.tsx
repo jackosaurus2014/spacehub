@@ -131,8 +131,9 @@ export default function WidgetContainer({
           {isEditing && (
             <button
               onClick={handleRemove}
-              className="text-red-400 hover:text-red-600 p-1 rounded hover:bg-red-50 transition-colors"
+              className="text-red-400 hover:text-red-300 p-1 rounded hover:bg-red-500/15 transition-colors"
               title="Remove widget"
+              aria-label="Remove widget"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

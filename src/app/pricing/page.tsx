@@ -112,7 +112,7 @@ function PricingCard({
       {isCurrentPlan && !isTrialing ? (
         <button
           disabled
-          className="w-full py-3 px-4 rounded-lg bg-slate-100 text-slate-500 cursor-not-allowed"
+          className="w-full py-3 px-4 rounded-lg bg-slate-600/50 text-slate-300 cursor-not-allowed border border-slate-500/30"
         >
           Current Plan
         </button>
@@ -120,7 +120,7 @@ function PricingCard({
         <div className="space-y-2">
           <button
             disabled
-            className="w-full py-3 px-4 rounded-lg bg-amber-100 text-amber-700 cursor-not-allowed font-semibold"
+            className="w-full py-3 px-4 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 cursor-not-allowed font-semibold"
           >
             Trial Active &mdash; {daysLeft} day{daysLeft !== 1 ? 's' : ''} left
           </button>
@@ -130,7 +130,7 @@ function PricingCard({
             className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
               plan.highlighted
                 ? 'bg-nebula-500 text-slate-900 hover:bg-nebula-600'
-                : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
+                : 'bg-slate-600/50 text-slate-100 hover:bg-slate-500/50 border border-slate-500/30'
             } ${isCheckingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isCheckingOut ? 'Redirecting...' : 'Subscribe Now'}
@@ -139,7 +139,7 @@ function PricingCard({
       ) : plan.id === 'free' ? (
         <Link
           href="/register"
-          className="block w-full py-3 px-4 rounded-lg bg-slate-100 text-slate-900 text-center hover:bg-slate-200 transition-colors"
+          className="block w-full py-3 px-4 rounded-lg bg-slate-600/50 text-slate-100 text-center hover:bg-slate-500/50 border border-slate-500/30 transition-colors"
         >
           Get Started Free
         </Link>
@@ -151,7 +151,7 @@ function PricingCard({
             className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
               plan.highlighted
                 ? 'bg-nebula-500 text-slate-900 hover:bg-nebula-600'
-                : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
+                : 'bg-slate-600/50 text-slate-100 hover:bg-slate-500/50 border border-slate-500/30'
             } ${isStartingTrial ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isStartingTrial ? 'Starting Trial...' : `Start ${plan.trialDays}-Day Free Trial`}
@@ -159,7 +159,7 @@ function PricingCard({
           <button
             onClick={() => onSubscribe(plan.id, isYearly ? 'year' : 'month')}
             disabled={isCheckingOut}
-            className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors bg-slate-100 text-slate-700 hover:bg-slate-200 ${
+            className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors bg-slate-600/50 text-slate-200 hover:bg-slate-500/50 border border-slate-500/30 ${
               isCheckingOut ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
@@ -179,7 +179,7 @@ function PricingCard({
           className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
             plan.highlighted
               ? 'bg-nebula-500 text-slate-900 hover:bg-nebula-600'
-              : 'bg-slate-100 text-slate-900 hover:bg-slate-200'
+              : 'bg-slate-600/50 text-slate-100 hover:bg-slate-500/50 border border-slate-500/30'
           } ${isCheckingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {isCheckingOut ? 'Redirecting...' : 'Subscribe Now'}

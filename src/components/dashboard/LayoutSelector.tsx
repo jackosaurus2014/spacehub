@@ -146,8 +146,8 @@ export default function LayoutSelector({
                         p-4 rounded-xl border transition-all
                         ${
                           layout.id === activeLayoutId
-                            ? 'border-cyan-400 bg-cyan-50/30'
-                            : 'border-slate-200 hover:border-slate-300'
+                            ? 'border-cyan-400/50 bg-cyan-500/10'
+                            : 'border-slate-600/50 hover:border-slate-500/50'
                         }
                       `}
                     >
@@ -157,14 +157,14 @@ export default function LayoutSelector({
                           className="flex-1 text-left"
                         >
                           <div className="flex items-center gap-2">
-                            <p className="text-sm font-semibold text-slate-900">{layout.name}</p>
+                            <p className="text-sm font-semibold text-slate-100">{layout.name}</p>
                             {layout.isDefault && (
-                              <span className="text-[10px] bg-cyan-100 text-cyan-700 px-1.5 py-0.5 rounded">
+                              <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded">
                                 Default
                               </span>
                             )}
                             {layout.id === activeLayoutId && (
-                              <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">
+                              <span className="text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded">
                                 Active
                               </span>
                             )}
