@@ -190,9 +190,9 @@ export async function POST(request: Request) {
         );
       }
 
-      // Start the 3-day trial
+      // Start the 14-day trial
       const now = new Date();
-      const trialEnd = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+      const trialEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
       await prisma.user.update({
         where: { email: session.user.email },
