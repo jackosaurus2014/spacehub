@@ -169,6 +169,11 @@ function checkCsrf(req: NextRequest): boolean {
     return true;
   }
 
+  // Skip CSRF check for Stripe webhooks (verified via signature, not cookie-based)
+  if (pathname.startsWith('/api/stripe/webhooks')) {
+    return true;
+  }
+
   const origin = req.headers.get('origin');
   const referer = req.headers.get('referer');
   const host = req.headers.get('host');

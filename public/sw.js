@@ -290,13 +290,13 @@ self.addEventListener('periodicsync', (event) => {
     event.waitUntil(
       Promise.all([
         fetch('/api/widgets/next-launch').then(r => {
-          if (r.ok) return caches.open(DYNAMIC_CACHE).then(c => c.put('/api/widgets/next-launch', r));
+          if (r.ok) return caches.open(DYNAMIC_CACHE_NAME).then(c => c.put('/api/widgets/next-launch', r));
         }).catch(() => {}),
         fetch('/api/widgets/market-snapshot').then(r => {
-          if (r.ok) return caches.open(DYNAMIC_CACHE).then(c => c.put('/api/widgets/market-snapshot', r));
+          if (r.ok) return caches.open(DYNAMIC_CACHE_NAME).then(c => c.put('/api/widgets/market-snapshot', r));
         }).catch(() => {}),
         fetch('/api/widgets/space-weather').then(r => {
-          if (r.ok) return caches.open(DYNAMIC_CACHE).then(c => c.put('/api/widgets/space-weather', r));
+          if (r.ok) return caches.open(DYNAMIC_CACHE_NAME).then(c => c.put('/api/widgets/space-weather', r));
         }).catch(() => {}),
       ])
     );

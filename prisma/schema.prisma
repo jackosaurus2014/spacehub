@@ -51,6 +51,7 @@ model User {
   savedProcurementSearches SavedProcurementSearch[]
   dashboardLayouts         DashboardLayout[]
   launchChatMessages       LaunchChatMessage[]
+  nurtureEmails            NurtureEmailLog[]
 }
 
 model PasswordResetToken {
@@ -65,6 +66,18 @@ model PasswordResetToken {
   @@index([userId])
   @@index([expiresAt])
   @@index([used])
+}
+
+model NurtureEmailLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailType String   // "welcome", "did_you_know", "social_proof", "ai_spotlight", "case_study", "trial_offer", "final_nudge"
+  sentAt    DateTime @default(now())
+
+  @@unique([userId, emailType])
+  @@index([userId])
+  @@index([emailType])
 }
 
 model NewsArticle {
