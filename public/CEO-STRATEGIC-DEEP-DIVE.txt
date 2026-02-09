@@ -1884,21 +1884,40 @@ FINAL NOTES FOR CEO MORNING REVIEW
 
 DECISIONS NEEDED THIS WEEK:
 
-  1. [ ] START Company Intelligence Database? (Recommended: YES, immediately)
+  *** TIME-SENSITIVE DEADLINES ***
 
-  2. [ ] REGISTER for SATELLITE 2026? (March 23-26, 6 weeks away)
-         - Decision needed by: February 15 at latest for Startup Pavilion
-         - Startup Pavilion deadline may be sooner -- contact organizers
+  1. [ ] APPLY to Space Symposium Innovate Pitch Competition
+         DEADLINE: FEBRUARY 15, 2026 (7 DAYS FROM NOW)
+         Partnership with Starburst Aerospace. Startup pitch exposure
+         to 12,000+ attendees at the premier space industry event.
+         Apply TODAY: spacesymposium.org/innovate-pitch-competition/
 
-  3. [ ] START LinkedIn immediately? (Recommended: YES, this week)
-         - First post: Tuesday Feb 11 (highest engagement day)
-         - Profile optimization: Today
+  2. [ ] REGISTER for SATELLITE free Exhibit Hall pass
+         "Activation Rate" expires FEBRUARY 19 (11 days from now)
+         SATELLITE Startup Space pitch competition (March 24) selects
+         9 startups with guaranteed investor meetings as prizes.
+         Check if applications are still open: satshow.com/startup-space/
 
-  4. [ ] CONNECT Google Search Console? (Recommended: YES, takes 30 minutes)
+  *** STANDARD DECISIONS ***
 
-  5. [ ] REGISTER for Space Symposium? (April 13-16, 9 weeks away)
-         - Can decide by March 1 without losing much
-         - Early bird pricing may have expired Feb 3
+  3. [ ] START Company Intelligence Database? (Recommended: YES, immediately)
+         Existing CompanyProfile schema is 80% ready; 123 companies
+         already seeded in SpaceCompany model. Closer to MVP than thought.
+
+  4. [ ] REGISTER for SATELLITE 2026? (March 23-26, 6 weeks away)
+         Free exhibit hall pass available. Conference pass ~$1,200-1,800.
+         Contact Startup Pavilion: mcassinelli@accessintel.com
+
+  5. [ ] START LinkedIn immediately? (Recommended: YES, this week)
+         First post: Tuesday Feb 11 (highest engagement day)
+         Profile optimization: Today
+
+  6. [ ] CONNECT Google Search Console? (Recommended: YES, takes 30 minutes)
+         CRITICAL: 57 pages have no unique metadata -- fix this first
+
+  7. [ ] REGISTER for Space Symposium? (April 13-16, 9 weeks away)
+         Standard industry registration: ~$2,000-$2,800
+         12,000+ attendees, 60+ countries, 300+ exhibitors
 
 COMPANION DOCUMENTS:
   - docs/LINKEDIN_B2B_STRATEGY.md (823 lines, complete strategy)
