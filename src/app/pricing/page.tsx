@@ -361,13 +361,13 @@ function PricingPageContent() {
           </span>
           <button
             onClick={() => setIsYearly(!isYearly)}
-            className={`relative w-14 h-7 rounded-full transition-colors ${
+            className={`relative w-14 h-7 rounded-full transition-colors overflow-hidden ${
               isYearly ? 'bg-nebula-500' : 'bg-slate-500'
             }`}
           >
             <span
-              className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                isYearly ? 'translate-x-8' : 'translate-x-1'
+              className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
+                isYearly ? 'translate-x-7' : 'translate-x-0'
               }`}
             />
           </button>
