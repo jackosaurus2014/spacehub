@@ -84,6 +84,7 @@ async function fetchSNAPIEndpoint(endpoint: string, limit: number): Promise<numb
             category,
             imageUrl: article.image_url || null,
             publishedAt: new Date(article.published_at),
+            fetchedAt: new Date(),
           },
           create: {
             title: article.title,
@@ -267,6 +268,7 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
               category,
               imageUrl,
               publishedAt,
+              fetchedAt: new Date(),
             },
             create: {
               title: item.title,

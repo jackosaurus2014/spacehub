@@ -39,18 +39,10 @@ export default function DataInitializer() {
 
       if (refreshData.newsStale) {
         console.log('News data is stale, refreshing in background...');
-        fetch('/api/refresh?type=news', { method: 'POST' })
+        fetch('/api/news/fetch', { method: 'POST' })
           .then(r => r.json())
           .then(data => console.log('News refresh complete:', data))
           .catch(err => console.error('News refresh failed:', err));
-      }
-
-      if (refreshData.dailyStale) {
-        console.log('Daily data is stale, refreshing in background...');
-        fetch('/api/refresh?type=daily', { method: 'POST' })
-          .then(r => r.json())
-          .then(data => console.log('Daily refresh complete:', data))
-          .catch(err => console.error('Daily refresh failed:', err));
       }
 
       setStatus('done');
