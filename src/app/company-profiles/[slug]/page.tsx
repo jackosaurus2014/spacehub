@@ -436,6 +436,38 @@ function FinancialsTab({ company }: { company: CompanyDetail }) {
   );
 }
 
+const SPEC_LABELS: Record<string, string> = {
+  payload_leo_kg: 'Payload (LEO)',
+  payload_gto_kg: 'Payload (GTO)',
+  payload_sso_kg: 'Payload (SSO)',
+  payload_tli_kg: 'Payload (TLI)',
+  height_m: 'Height',
+  diameter_m: 'Diameter',
+  mass_kg: 'Mass',
+  stages: 'Stages',
+  reusable: 'Reusable',
+  satellites_deployed: 'Satellites',
+  orbit_km: 'Orbit',
+  users_millions: 'Users',
+  cost_millions: 'Cost',
+  cost_per_kg_leo: 'Cost/kg (LEO)',
+};
+
+function formatSpecLabel(key: string): string {
+  return SPEC_LABELS[key] || key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function formatSpecValue(key: string, val: unknown): string {
+  const num = Number(val);
+  if (isNaN(num)) return String(val);
+  if (key.includes('_kg')) return `${num.toLocaleString()} kg`;
+  if (key.includes('_m') && !key.includes('_millions')) return `${num.toLocaleString()} m`;
+  if (key.includes('_km')) return `${num.toLocaleString()} km`;
+  if (key.includes('millions') || key.includes('cost')) return `$${num.toLocaleString()}M`;
+  if (key.includes('per_kg')) return `$${num.toLocaleString()}/kg`;
+  return num.toLocaleString();
+}
+
 function ProductsTab({ company }: { company: CompanyDetail }) {
   return (
     <SectionCard title="Products & Services" count={company.products.length}>
@@ -449,32 +481,45 @@ function ProductsTab({ company }: { company: CompanyDetail }) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08 }}
-              className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4 hover:border-cyan-500/30 transition-colors"
+              className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-colors"
             >
               <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold text-white">{p.name}</h4>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                <h4 className="font-semibold text-white text-lg">{p.name}</h4>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ml-2 ${
                   p.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
                   p.status === 'development' ? 'bg-amber-500/20 text-amber-400' :
                   'bg-slate-600/20 text-slate-400'
                 }`}>{p.status.toUpperCase()}</span>
               </div>
               {p.category && (
-                <div className="text-xs text-cyan-400 mb-2 capitalize">{p.category.replace(/_/g, ' ')}</div>
+                <div className="text-xs text-cyan-400 mb-3 capitalize">{p.category.replace(/_/g, ' ')}</div>
               )}
               {p.description && (
-                <p className="text-sm text-slate-400 leading-relaxed">{p.description}</p>
+                <p className="text-sm text-slate-400 leading-relaxed mb-3">{p.description}</p>
               )}
               {p.specs && Object.keys(p.specs).length > 0 && (
                 <div className="mt-3 pt-3 border-t border-slate-700/30">
-                  <div className="grid grid-cols-2 gap-1 text-xs">
-                    {Object.entries(p.specs).slice(0, 6).map(([key, val]) => (
-                      <div key={key} className="flex justify-between">
-                        <span className="text-slate-500 capitalize">{key.replace(/_/g, ' ')}</span>
-                        <span className="text-slate-300">{String(val)}</span>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
+                    {Object.entries(p.specs).map(([key, val]) => (
+                      <div key={key}>
+                        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">{formatSpecLabel(key)}</div>
+                        <div className="text-sm font-semibold text-white">{formatSpecValue(key, val)}</div>
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+              {p.category === 'launch_vehicle' && (
+                <div className="mt-3 pt-3 border-t border-slate-700/30">
+                  <Link
+                    href="/launch-vehicles"
+                    className="inline-flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                  >
+                    <span>View full specs in Launch Vehicles</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </Link>
                 </div>
               )}
             </motion.div>
