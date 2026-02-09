@@ -34,9 +34,15 @@ async function triggerEndpoint(path: string, label: string) {
 }
 
 export function startCronJobs() {
-  // News + events fetch — every 5 minutes
+  // News articles fetch — every 5 minutes
   cron.schedule('*/5 * * * *', () => {
     triggerEndpoint('/api/refresh?type=news', 'news-fetch');
+  });
+
+  // Launch/event data fetch — every 15 minutes
+  // Separated from news to stay within Launch Library free tier rate limit (15 req/hr)
+  cron.schedule('*/15 * * * *', () => {
+    triggerEndpoint('/api/refresh?type=events', 'events-fetch');
   });
 
   // Daily full data refresh + newsletter digest — midnight UTC
@@ -87,6 +93,7 @@ export function startCronJobs() {
   logger.info('Cron scheduler started', {
     jobs: [
       'news-fetch: every 5 minutes',
+      'events-fetch: every 15 minutes',
       'daily-refresh: midnight UTC',
       'ai-insights: 1:00 AM UTC',
       'external-api-refresh: every 4 hours',

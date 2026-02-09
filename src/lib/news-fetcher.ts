@@ -59,7 +59,7 @@ async function fetchSNAPIEndpoint(endpoint: string, limit: number): Promise<numb
   return snapiBreaker.execute(async () => {
     const response = await fetch(
       `https://api.spaceflightnewsapi.net/v4/${endpoint}/?limit=${limit}&ordering=-published_at`,
-      { next: { revalidate: 300 } }
+      { cache: 'no-store' }
     );
 
     if (!response.ok) {

@@ -31,6 +31,11 @@ async function refreshNews(): Promise<Record<string, string>> {
   const results: Record<string, string> = {};
   const newsCount = await fetchSpaceflightNews();
   results.news = `Refreshed ${newsCount} articles`;
+  return results;
+}
+
+async function refreshEvents(): Promise<Record<string, string>> {
+  const results: Record<string, string> = {};
   const eventsCount = await fetchLaunchLibraryEvents();
   results.events = `Refreshed ${eventsCount} events`;
   return results;
@@ -151,7 +156,7 @@ export async function POST(request: Request) {
   if (authError) return authError;
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type'); // 'news', 'daily', 'external-apis', 'space-weather', 'ai-research', 'live-streams', 'realtime', or null (both news+daily)
+  const type = searchParams.get('type'); // 'news', 'events', 'daily', 'external-apis', 'space-weather', 'ai-research', 'live-streams', 'realtime', or null (all)
 
   const results: Record<string, unknown> = {};
 
@@ -159,6 +164,11 @@ export async function POST(request: Request) {
     if (!type || type === 'news') {
       const newsResults = await refreshNews();
       Object.assign(results, newsResults);
+    }
+
+    if (!type || type === 'events') {
+      const eventsResults = await refreshEvents();
+      Object.assign(results, eventsResults);
     }
 
     if (!type || type === 'daily') {

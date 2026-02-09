@@ -111,7 +111,7 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
     const launchResponse = await fetch(
       'https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=100&mode=detailed',
       {
-        next: { revalidate: 1800 }, // Cache for 30 minutes
+        cache: 'no-store',
         headers: {
           'Accept': 'application/json',
         }
@@ -187,7 +187,7 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
       const eventsResponse = await fetch(
         'https://ll.thespacedevs.com/2.2.0/event/upcoming/?limit=50',
         {
-          next: { revalidate: 1800 },
+          cache: 'no-store',
           headers: { 'Accept': 'application/json' }
         }
       );
