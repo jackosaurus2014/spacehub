@@ -212,13 +212,6 @@ function BusinessOpportunitiesContent() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
-  const [analyzing, setAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<{
-    success: boolean;
-    opportunitiesFound: number;
-    insights: string[];
-    error?: string;
-  } | null>(null);
   const [selectedType, setSelectedType] = useState<OpportunityType | ''>(
     (searchParams.get('type') as OpportunityType | '') || ''
   );
@@ -286,33 +279,6 @@ function BusinessOpportunitiesContent() {
     }
   };
 
-  const handleRunAnalysis = async () => {
-    setAnalyzing(true);
-    setAnalysisResult(null);
-    try {
-      const res = await fetch('/api/opportunities/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      });
-      const result = await res.json();
-      setAnalysisResult(result);
-      if (result.success) {
-        await fetchData();
-      }
-    } catch (error) {
-      console.error('Failed to run analysis:', error);
-      setAnalysisResult({
-        success: false,
-        opportunitiesFound: 0,
-        insights: [],
-        error: 'Failed to connect to analysis service',
-      });
-    } finally {
-      setAnalyzing(false);
-    }
-  };
-
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
@@ -321,24 +287,7 @@ function BusinessOpportunitiesContent() {
           subtitle="AI-powered discovery of space industry opportunities for entrepreneurs, investors, and students"
           icon="💼"
           accentColor="amber"
-        >
-          <button
-            onClick={handleRunAnalysis}
-            disabled={analyzing}
-            className="btn-primary flex items-center gap-2"
-          >
-            {analyzing ? (
-              <>
-                <LoadingSpinner size="sm" />
-                <span>Running AI Analysis...</span>
-              </>
-            ) : (
-              <>
-                <span>Run AI Deep Dive</span>
-              </>
-            )}
-          </button>
-        </AnimatedPageHeader>
+        />
 
         {/* Government Contracts Ticker */}
         <div className="mb-8">
@@ -377,48 +326,6 @@ function BusinessOpportunitiesContent() {
         {/* AI Opportunities Tab Content */}
         {activeTab === 'opportunities' && (
           <>
-            {/* AI Analysis Result */}
-        {analysisResult && (
-          <div
-            className={`card p-4 mb-6 ${
-              analysisResult.success
-                ? 'border-green-500/50 bg-green-500/10'
-                : 'border-red-500/50 bg-red-500/10'
-            }`}
-          >
-            {analysisResult.success ? (
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-green-400">✓</span>
-                  <span className="text-slate-900 font-semibold">
-                    AI Analysis Complete
-                  </span>
-                </div>
-                <p className="text-slate-400 text-sm">
-                  Found {analysisResult.opportunitiesFound} new opportunities.
-                </p>
-                {analysisResult.insights.length > 0 && (
-                  <ul className="mt-2 text-sm text-slate-400">
-                    {analysisResult.insights.slice(0, 3).map((insight, i) => (
-                      <li key={i} className="flex items-center gap-2">
-                        <span className="text-nebula-300">•</span>
-                        {insight}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <span className="text-red-400">✗</span>
-                <span className="text-slate-900">
-                  {analysisResult.error || 'Analysis failed'}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-
         {stats && stats.total > 0 && (
           <>
             {/* Stats */}
@@ -602,10 +509,9 @@ function BusinessOpportunitiesContent() {
                     About AI-Powered Opportunities
                   </h3>
                   <p className="text-slate-400 text-sm max-w-3xl mx-auto">
-                    Our AI system analyzes news sources, government solicitations, company reports,
-                    and market trends to identify business opportunities in the space industry.
-                    The &quot;AI Deep Dive&quot; feature uses advanced analysis to discover emerging
-                    opportunities that may not be immediately obvious. Confidence scores indicate
+                    Every week, our AI system automatically analyzes news sources, government solicitations,
+                    company reports, and market trends to discover new business opportunities in the
+                    space industry. Fresh opportunities are added each week. Confidence scores indicate
                     how strongly the AI believes in the opportunity based on available data.
                     Always conduct your own due diligence before pursuing any opportunity.
                   </p>

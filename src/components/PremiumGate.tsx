@@ -311,19 +311,21 @@ export default function PremiumGate({
 export function PremiumBadge({ tier }: { tier: SubscriptionTier }) {
   if (tier === 'free') return null;
 
-  const colors = {
+  const colors: Record<string, string> = {
     pro: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/30',
     enterprise: 'bg-purple-500/10 text-purple-300 border-purple-500/30',
+    test: 'bg-green-500/10 text-green-300 border-green-500/30',
   };
 
-  const labels = {
+  const labels: Record<string, string> = {
     pro: 'PRO',
     enterprise: 'ENTERPRISE',
+    test: 'TEST',
   };
 
   return (
-    <span className={`text-xs font-semibold px-2 py-0.5 rounded border ${colors[tier]}`}>
-      {labels[tier]}
+    <span className={`text-xs font-semibold px-2 py-0.5 rounded border ${colors[tier] || colors.enterprise}`}>
+      {labels[tier] || tier.toUpperCase()}
     </span>
   );
 }

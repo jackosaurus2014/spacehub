@@ -46,10 +46,22 @@ describe('TIER_ACCESS', () => {
     expect(TIER_ACCESS.enterprise.adFree).toBe(true);
   });
 
-  it('only enterprise has API access', () => {
+  it('only enterprise and test have API access', () => {
     expect(TIER_ACCESS.free.hasAPIAccess).toBe(false);
     expect(TIER_ACCESS.pro.hasAPIAccess).toBe(false);
     expect(TIER_ACCESS.enterprise.hasAPIAccess).toBe(true);
+    expect(TIER_ACCESS.test.hasAPIAccess).toBe(true);
+  });
+
+  it('test tier has full access (same as enterprise)', () => {
+    expect(TIER_ACCESS.test.maxDailyArticles).toBe(-1);
+    expect(TIER_ACCESS.test.hasStockTracking).toBe(true);
+    expect(TIER_ACCESS.test.hasMarketIntel).toBe(true);
+    expect(TIER_ACCESS.test.hasResourceExchange).toBe(true);
+    expect(TIER_ACCESS.test.hasAIOpportunities).toBe(true);
+    expect(TIER_ACCESS.test.hasAlerts).toBe(true);
+    expect(TIER_ACCESS.test.hasAPIAccess).toBe(true);
+    expect(TIER_ACCESS.test.adFree).toBe(true);
   });
 });
 
@@ -120,6 +132,15 @@ describe('canAccessModule', () => {
     expect(canAccessModule('enterprise', 'space-insurance')).toBe(true);
     expect(canAccessModule('enterprise', 'compliance')).toBe(true);
     expect(canAccessModule('enterprise', 'orbital-services')).toBe(true);
+  });
+
+  it('test users can access all modules', () => {
+    expect(canAccessModule('test', 'news-feed')).toBe(true);
+    expect(canAccessModule('test', 'resource-exchange')).toBe(true);
+    expect(canAccessModule('test', 'business-opportunities')).toBe(true);
+    expect(canAccessModule('test', 'spectrum-tracker')).toBe(true);
+    expect(canAccessModule('test', 'compliance')).toBe(true);
+    expect(canAccessModule('test', 'patent-tracker')).toBe(true);
   });
 
   it('any tier can access an unknown module (defaults to free)', () => {

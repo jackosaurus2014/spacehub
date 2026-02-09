@@ -516,7 +516,7 @@ export async function runAIAnalysis(focusAreas?: string[]): Promise<{
   // Create analysis run record
   const analysisRun = await prisma.aIAnalysisRun.create({
     data: {
-      runType: 'deep_dive',
+      runType: 'weekly_cron',
       status: 'running',
       focusAreas: focusAreas ? JSON.stringify(focusAreas) : null,
     },
@@ -525,7 +525,7 @@ export async function runAIAnalysis(focusAreas?: string[]): Promise<{
   try {
     const prompt = `You are a space industry business analyst identifying opportunities for entrepreneurs, investors, and students.
 
-Analyze the current state of the space industry and generate 3-5 NEW business opportunities. Consider:
+Analyze the current state of the space industry and generate exactly 2 NEW business opportunities. Consider:
 
 1. **Government Programs**: Artemis, ISS transition, Space Force modernization, international programs
 2. **Commercial Trends**: Mega-constellations, space tourism, in-space manufacturing, lunar economy

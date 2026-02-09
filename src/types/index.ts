@@ -170,7 +170,7 @@ export interface ModuleConfig {
 }
 
 // Subscription tiers
-export type SubscriptionTier = 'free' | 'pro' | 'enterprise';
+export type SubscriptionTier = 'free' | 'pro' | 'enterprise' | 'test';
 
 export interface SubscriptionPlan {
   id: SubscriptionTier;

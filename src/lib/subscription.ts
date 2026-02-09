@@ -48,6 +48,16 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
     hasAPIAccess: true,
     adFree: true,
   },
+  test: {
+    maxDailyArticles: -1,
+    hasStockTracking: true,
+    hasMarketIntel: true,
+    hasResourceExchange: true,
+    hasAIOpportunities: true,
+    hasAlerts: true,
+    hasAPIAccess: true,
+    adFree: true,
+  },
 };
 
 export function isTrialActive(trialEndDate: Date | null): boolean {
@@ -78,7 +88,7 @@ const PREMIUM_MODULES: Record<string, SubscriptionTier> = {
   'patent-tracker': 'enterprise',
 };
 
-const TIER_ORDER: SubscriptionTier[] = ['free', 'pro', 'enterprise'];
+const TIER_ORDER: SubscriptionTier[] = ['free', 'pro', 'enterprise', 'test'];
 
 export function canAccessModule(tier: SubscriptionTier, moduleId: string): boolean {
   const requiredTier = PREMIUM_MODULES[moduleId];
