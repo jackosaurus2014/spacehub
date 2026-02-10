@@ -73,6 +73,7 @@ export default function RFQDetailPage({ params }: { params: Promise<{ id: string
   }
 
   const rfqData = rfq.rfq || rfq;
+  const userRole = rfq.role || 'public';
   const statusInfo = RFQ_STATUSES[rfqData.status as keyof typeof RFQ_STATUSES] || RFQ_STATUSES.open;
   const daysLeft = rfqData.deadline
     ? Math.max(0, Math.ceil((new Date(rfqData.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
@@ -161,7 +162,7 @@ export default function RFQDetailPage({ params }: { params: Promise<{ id: string
                 <ProposalCard
                   key={proposal.id}
                   proposal={proposal}
-                  isBuyer={rfq.role === 'buyer'}
+                  isBuyer={userRole === 'buyer'}
                   onAction={handleProposalAction}
                 />
               ))}
@@ -199,7 +200,7 @@ export default function RFQDetailPage({ params }: { params: Promise<{ id: string
         )}
 
         {/* Submit Proposal (provider view) */}
-        {rfq.role === 'provider' && rfqData.status === 'open' && (
+        {userRole === 'provider' && rfqData.status === 'open' && (
           <div>
             {showProposalForm ? (
               <div className="card p-5">
@@ -224,7 +225,7 @@ export default function RFQDetailPage({ params }: { params: Promise<{ id: string
         )}
 
         {/* Public view message */}
-        {rfq.role === 'public' && rfqData.status === 'open' && (
+        {userRole === 'public' && rfqData.status === 'open' && (
           <div className="card p-5 text-center">
             <p className="text-sm text-slate-400 mb-3">
               Sign in and claim a company profile to submit a proposal for this RFQ.

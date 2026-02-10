@@ -15,9 +15,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       where: { OR: [{ id: params.id }, { slug: params.id }] },
       include: {
         proposals: {
-          include: {
-            // Only include company info, not full proposal details for non-buyers
-          },
           orderBy: { submittedAt: 'desc' },
         },
         matches: {
@@ -25,7 +22,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           take: 10,
           include: {
             listing: {
-              select: { id: true, slug: true, name: true, category: true, priceMin: true, priceMax: true },
+              select: {
+                id: true, slug: true, name: true, category: true, priceMin: true, priceMax: true,
+                company: { select: { id: true, name: true, slug: true } },
+              },
             },
           },
         },
@@ -37,8 +37,18 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: 'RFQ not found' }, { status: 404 });
     }
 
-    // If buyer, show full details
+    // Determine user role
     const isBuyer = session?.user?.id === rfq.buyerUserId;
+    let isProvider = false;
+    if (session?.user?.id && !isBuyer) {
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { claimedCompanyId: true },
+      });
+      isProvider = !!user?.claimedCompanyId;
+    }
+
+    const role = isBuyer ? 'buyer' : isProvider ? 'provider' : 'public';
 
     if (!isBuyer && !rfq.isPublic) {
       return NextResponse.json({ error: 'This RFQ is private' }, { status: 403 });
@@ -46,6 +56,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     // For non-buyers, anonymize buyer info and hide proposal details
     const response: Record<string, unknown> = {
+      role,
       id: rfq.id,
       slug: rfq.slug,
       title: rfq.title,
@@ -66,7 +77,20 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     };
 
     if (isBuyer) {
-      response.proposals = rfq.proposals;
+      // Enrich proposals with company info
+      const companyIds = Array.from(new Set(rfq.proposals.map((p: any) => p.companyId)));
+      const companies = companyIds.length > 0
+        ? await prisma.companyProfile.findMany({
+            where: { id: { in: companyIds } },
+            select: { id: true, name: true, slug: true, tier: true },
+          })
+        : [];
+      const companyMap = Object.fromEntries(companies.map(c => [c.id, c]));
+
+      response.proposals = rfq.proposals.map((p: any) => ({
+        ...p,
+        company: companyMap[p.companyId] || null,
+      }));
       response.matches = rfq.matches;
       response.awardedToCompanyId = rfq.awardedToCompanyId;
     }

@@ -46,9 +46,10 @@ function DashboardContent() {
             setCompany(myCompany);
 
             // Load all data in parallel
-            const [listRes, reviewRes] = await Promise.all([
+            const [listRes, reviewRes, proposalRes] = await Promise.all([
               fetch(`/api/marketplace/listings?companyId=${myCompany.id}`),
               fetch(`/api/marketplace/reviews?companyId=${myCompany.id}`),
+              fetch(`/api/marketplace/proposals?companyId=${myCompany.id}`),
             ]);
 
             if (listRes.ok) {
@@ -58,6 +59,10 @@ function DashboardContent() {
             if (reviewRes.ok) {
               const d = await reviewRes.json();
               setReviews(d.reviews || []);
+            }
+            if (proposalRes.ok) {
+              const d = await proposalRes.json();
+              setProposals(d.proposals || []);
             }
           }
         }
@@ -112,7 +117,7 @@ function DashboardContent() {
   const tabs = [
     { key: 'overview', label: 'Overview' },
     { key: 'listings', label: `Listings (${listings.length})` },
-    { key: 'proposals', label: 'Proposals' },
+    { key: 'proposals', label: `Proposals (${proposals.length})` },
     { key: 'reviews', label: `Reviews (${reviews.length})` },
   ];
 
@@ -140,7 +145,7 @@ function DashboardContent() {
             { label: 'Active Listings', value: listings.filter((l) => l.status === 'active').length, color: 'text-cyan-400' },
             { label: 'Total Views', value: listings.reduce((s, l) => s + (l.viewCount || 0), 0), color: 'text-emerald-400' },
             { label: 'Avg Rating', value: reviews.length > 0 ? (reviews.reduce((s, r) => s + r.overallRating, 0) / reviews.length).toFixed(1) : 'N/A', color: 'text-yellow-400' },
-            { label: 'Reviews', value: reviews.length, color: 'text-purple-400' },
+            { label: 'Proposals', value: proposals.length, color: 'text-purple-400' },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -175,10 +180,10 @@ function DashboardContent() {
           <div className="space-y-6">
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Link href="/marketplace/rfq/new" className="card p-5 hover:ring-1 hover:ring-cyan-500 transition-all">
-                <div className="text-2xl mb-2">📝</div>
-                <div className="text-sm font-semibold text-white">Create Service Listing</div>
-                <div className="text-xs text-slate-400 mt-1">List a new service on the marketplace</div>
+              <Link href="/marketplace/search" className="card p-5 hover:ring-1 hover:ring-cyan-500 transition-all">
+                <div className="text-2xl mb-2">🏪</div>
+                <div className="text-sm font-semibold text-white">Browse Marketplace</div>
+                <div className="text-xs text-slate-400 mt-1">Explore services and find opportunities</div>
               </Link>
               <Link href="/marketplace/search?tab=rfqs" className="card p-5 hover:ring-1 hover:ring-cyan-500 transition-all">
                 <div className="text-2xl mb-2">📋</div>

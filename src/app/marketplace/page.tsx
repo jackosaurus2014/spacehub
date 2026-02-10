@@ -15,7 +15,7 @@ interface MarketplaceStats {
   openRFQs: number;
   activeProviders: number;
   totalProposals: number;
-  categories: { category: string; _count: { _all: number } }[];
+  categories: { category: string; count: number }[];
 }
 
 export default function MarketplacePage() {
@@ -52,8 +52,8 @@ export default function MarketplacePage() {
   }, []);
 
   const categoryCounts: Record<string, number> = {};
-  stats?.categories?.forEach((c) => {
-    categoryCounts[c.category] = c._count._all;
+  stats?.categories?.forEach((c: any) => {
+    categoryCounts[c.category] = c.count ?? c._count?._all ?? 0;
   });
 
   if (loading) {

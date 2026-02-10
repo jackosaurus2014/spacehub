@@ -14,8 +14,18 @@ interface Proposal {
     id: string;
     slug: string;
     name: string;
-    logoUrl: string | null;
-    verificationLevel: string | null;
+    logoUrl?: string | null;
+    verificationLevel?: string | null;
+  };
+  rfq?: {
+    id: string;
+    slug?: string;
+    title: string;
+    category?: string;
+    status?: string;
+    budgetMin?: number | null;
+    budgetMax?: number | null;
+    deadline?: string | null;
   };
   matchScore?: number | null;
 }
@@ -34,7 +44,20 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
-          {proposal.company && (
+          {proposal.rfq && !isBuyer ? (
+            <>
+              <div className="w-8 h-8 rounded bg-cyan-500/20 flex items-center justify-center text-sm flex-shrink-0">
+                📋
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-white">{proposal.rfq.title}</div>
+                <div className="text-[10px] text-slate-500">
+                  Submitted {new Date(proposal.submittedAt).toLocaleDateString()}
+                  {proposal.rfq.status && <span className="ml-1">· RFQ {proposal.rfq.status}</span>}
+                </div>
+              </div>
+            </>
+          ) : proposal.company ? (
             <>
               <div className="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-sm flex-shrink-0">
                 {proposal.company.logoUrl ? (
@@ -50,6 +73,10 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
                 </div>
               </div>
             </>
+          ) : (
+            <div className="text-[10px] text-slate-500">
+              Submitted {new Date(proposal.submittedAt).toLocaleDateString()}
+            </div>
           )}
         </div>
         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${statusInfo.bgColor}/20 ${statusInfo.color}`}>
