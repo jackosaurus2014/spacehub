@@ -8,6 +8,8 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PriceDisplay from '@/components/marketplace/PriceDisplay';
 import VerificationBadge from '@/components/marketplace/VerificationBadge';
 import ReviewCard from '@/components/marketplace/ReviewCard';
+import ReviewForm from '@/components/marketplace/ReviewForm';
+import RatingDistribution from '@/components/marketplace/RatingDistribution';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import { getCategoryIcon, getCategoryLabel, getSubcategoryLabel } from '@/lib/marketplace-types';
 
@@ -16,6 +18,7 @@ export default function ListingDetailPage({ params }: { params: Promise<{ slug: 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -99,6 +102,23 @@ export default function ListingDetailPage({ params }: { params: Promise<{ slug: 
               </div>
             </div>
 
+            {/* Editorial Banner */}
+            {listing.isEditorial && (
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4 flex items-start gap-3">
+                <span className="text-lg">📋</span>
+                <div>
+                  <div className="text-sm font-medium text-purple-300">Editorial Listing</div>
+                  <p className="text-xs text-slate-400 mt-1">
+                    This listing was curated by SpaceNexus from public data. Are you the provider?{' '}
+                    <Link href={`/company-profiles/${listing.company.slug}`} className="text-cyan-400 hover:underline">
+                      Claim this profile
+                    </Link>{' '}
+                    to manage and verify this listing.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Description */}
             <div className="card p-5">
               <h3 className="text-sm font-semibold text-white mb-2">Description</h3>
@@ -138,9 +158,41 @@ export default function ListingDetailPage({ params }: { params: Promise<{ slug: 
 
             {/* Reviews */}
             <div>
-              <h3 className="text-sm font-semibold text-white mb-3">
-                Reviews {reviews.length > 0 && `(${reviews.length})`}
-              </h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-white">
+                  Reviews {reviews.length > 0 && `(${reviews.length})`}
+                </h3>
+                {!showReviewForm && (
+                  <button
+                    onClick={() => setShowReviewForm(true)}
+                    className="text-xs text-cyan-400 hover:text-cyan-300 font-medium"
+                  >
+                    Write a Review
+                  </button>
+                )}
+              </div>
+
+              {/* Rating Distribution */}
+              {reviews.length > 0 && (
+                <div className="mb-4">
+                  <RatingDistribution reviews={reviews} avgRating={avgRating} />
+                </div>
+              )}
+
+              {/* Review Form */}
+              {showReviewForm && (
+                <div className="mb-4">
+                  <ReviewForm
+                    companyId={listing.companyId}
+                    onSuccess={() => {
+                      setShowReviewForm(false);
+                      // Reload data
+                      fetch(`/api/marketplace/listings/${encodeURIComponent(slug)}`).then(r => r.json()).then(setData);
+                    }}
+                  />
+                </div>
+              )}
+
               {reviews.length > 0 ? (
                 <div className="space-y-3">
                   {reviews.map((review: any) => (
@@ -149,7 +201,7 @@ export default function ListingDetailPage({ params }: { params: Promise<{ slug: 
                 </div>
               ) : (
                 <div className="card p-4 text-center text-sm text-slate-500">
-                  No reviews yet.
+                  No reviews yet. Be the first to review this provider.
                 </div>
               )}
             </div>

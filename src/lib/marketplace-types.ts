@@ -4,12 +4,19 @@
 
 // ---- Unified Service Taxonomy (10 categories, 40+ subcategories) ----
 
+export interface MarketplaceSubcategory {
+  value: string;
+  label: string;
+  description: string;
+  matchWeight?: number; // 0-1 weight for matching relevance
+}
+
 export interface MarketplaceCategory {
   value: string;
   label: string;
   icon: string;
   description: string;
-  subcategories: { value: string; label: string }[];
+  subcategories: MarketplaceSubcategory[];
 }
 
 export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
@@ -19,10 +26,10 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: '🚀',
     description: 'Dedicated launch, rideshare, rapid/responsive launch, orbital transfer',
     subcategories: [
-      { value: 'dedicated', label: 'Dedicated Launch' },
-      { value: 'rideshare', label: 'Rideshare' },
-      { value: 'rapid_responsive', label: 'Rapid/Responsive Launch' },
-      { value: 'orbital_transfer', label: 'Orbital Transfer Vehicle' },
+      { value: 'dedicated', label: 'Dedicated Launch', description: 'Full vehicle for a single payload', matchWeight: 1.0 },
+      { value: 'rideshare', label: 'Rideshare', description: 'Shared launch vehicle with other payloads', matchWeight: 0.8 },
+      { value: 'rapid_responsive', label: 'Rapid/Responsive Launch', description: 'Quick-turnaround launch on demand', matchWeight: 0.9 },
+      { value: 'orbital_transfer', label: 'Orbital Transfer Vehicle', description: 'Last-mile delivery to target orbit', matchWeight: 0.7 },
     ],
   },
   {
@@ -31,10 +38,10 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: '🛰️',
     description: 'Earth observation, communications, navigation, IoT connectivity',
     subcategories: [
-      { value: 'earth_observation', label: 'Earth Observation' },
-      { value: 'communications', label: 'Communications' },
-      { value: 'navigation', label: 'Navigation & PNT' },
-      { value: 'iot', label: 'IoT Connectivity' },
+      { value: 'earth_observation', label: 'Earth Observation', description: 'Optical, SAR, and multispectral imagery', matchWeight: 1.0 },
+      { value: 'communications', label: 'Communications', description: 'Broadband, narrowband, and relay services', matchWeight: 0.9 },
+      { value: 'navigation', label: 'Navigation & PNT', description: 'Positioning, navigation, and timing augmentation', matchWeight: 0.8 },
+      { value: 'iot', label: 'IoT Connectivity', description: 'Satellite-based IoT and M2M connectivity', matchWeight: 0.7 },
     ],
   },
   {
@@ -43,10 +50,10 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: '⚡',
     description: 'Hosted payloads, in-orbit computing, satellite servicing, logistics',
     subcategories: [
-      { value: 'hosted_payload', label: 'Hosted Payloads' },
-      { value: 'in_orbit_computing', label: 'In-Orbit Computing' },
-      { value: 'satellite_servicing', label: 'Satellite Servicing (RPO)' },
-      { value: 'space_logistics', label: 'Space Logistics' },
+      { value: 'hosted_payload', label: 'Hosted Payloads', description: 'Fly your instrument on an existing satellite', matchWeight: 0.9 },
+      { value: 'in_orbit_computing', label: 'In-Orbit Computing', description: 'Edge processing and cloud in space', matchWeight: 0.8 },
+      { value: 'satellite_servicing', label: 'Satellite Servicing (RPO)', description: 'Inspection, refueling, repair, de-orbit', matchWeight: 1.0 },
+      { value: 'space_logistics', label: 'Space Logistics', description: 'Cargo transport and orbital delivery', matchWeight: 0.8 },
     ],
   },
   {
@@ -55,10 +62,10 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: '📡',
     description: 'Ground stations, mission control, data processing, antenna networks',
     subcategories: [
-      { value: 'ground_stations', label: 'Ground Stations (GaaS)' },
-      { value: 'mission_control', label: 'Mission Control' },
-      { value: 'data_processing', label: 'Data Processing' },
-      { value: 'antenna_networks', label: 'Antenna Networks' },
+      { value: 'ground_stations', label: 'Ground Stations (GaaS)', description: 'Ground station as a service for satellite operations', matchWeight: 1.0 },
+      { value: 'mission_control', label: 'Mission Control', description: 'Outsourced spacecraft operations and monitoring', matchWeight: 0.9 },
+      { value: 'data_processing', label: 'Data Processing', description: 'Downlink, storage, and analytics pipelines', matchWeight: 0.8 },
+      { value: 'antenna_networks', label: 'Antenna Networks', description: 'Global antenna sharing and scheduling', matchWeight: 0.7 },
     ],
   },
   {
@@ -67,11 +74,11 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: '🏭',
     description: 'Satellite buses, propulsion, avionics, solar arrays, structures',
     subcategories: [
-      { value: 'satellite_buses', label: 'Satellite Buses' },
-      { value: 'propulsion', label: 'Propulsion Systems' },
-      { value: 'avionics', label: 'Avionics & Electronics' },
-      { value: 'solar_arrays', label: 'Solar Arrays & Power' },
-      { value: 'structures', label: 'Structures & Mechanisms' },
+      { value: 'satellite_buses', label: 'Satellite Buses', description: 'Complete satellite platforms and bus systems', matchWeight: 1.0 },
+      { value: 'propulsion', label: 'Propulsion Systems', description: 'Electric, chemical, and hybrid propulsion', matchWeight: 0.9 },
+      { value: 'avionics', label: 'Avionics & Electronics', description: 'Flight computers, sensors, and electronics', matchWeight: 0.8 },
+      { value: 'solar_arrays', label: 'Solar Arrays & Power', description: 'Power generation and distribution systems', matchWeight: 0.8 },
+      { value: 'structures', label: 'Structures & Mechanisms', description: 'Structural components and deployment mechanisms', matchWeight: 0.7 },
     ],
   },
   {
@@ -80,10 +87,10 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: '📐',
     description: 'Systems engineering, mission design, regulatory, testing & qualification',
     subcategories: [
-      { value: 'systems_engineering', label: 'Systems Engineering' },
-      { value: 'mission_design', label: 'Mission Design & Analysis' },
-      { value: 'regulatory', label: 'Regulatory Consulting' },
-      { value: 'testing', label: 'Testing & Qualification' },
+      { value: 'systems_engineering', label: 'Systems Engineering', description: 'End-to-end systems design and integration', matchWeight: 1.0 },
+      { value: 'mission_design', label: 'Mission Design & Analysis', description: 'Orbit analysis, mission planning, and simulation', matchWeight: 0.9 },
+      { value: 'regulatory', label: 'Regulatory Consulting', description: 'Licensing, spectrum, and compliance advisory', matchWeight: 0.7 },
+      { value: 'testing', label: 'Testing & Qualification', description: 'Environmental testing, vibration, thermal vacuum', matchWeight: 0.8 },
     ],
   },
   {
@@ -92,9 +99,9 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: '🌍',
     description: 'Weather/radiation monitoring, debris tracking, conjunction assessment',
     subcategories: [
-      { value: 'weather_radiation', label: 'Weather & Radiation Monitoring' },
-      { value: 'debris_tracking', label: 'Debris Tracking' },
-      { value: 'conjunction_assessment', label: 'Conjunction Assessment' },
+      { value: 'weather_radiation', label: 'Weather & Radiation Monitoring', description: 'Solar weather alerts and radiation forecasting', matchWeight: 0.9 },
+      { value: 'debris_tracking', label: 'Debris Tracking', description: 'Orbital debris cataloging and tracking', matchWeight: 1.0 },
+      { value: 'conjunction_assessment', label: 'Conjunction Assessment', description: 'Collision avoidance analysis and maneuver planning', matchWeight: 1.0 },
     ],
   },
   {
@@ -103,9 +110,9 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: '🔬',
     description: 'Materials research, microgravity experiments, technology demonstration',
     subcategories: [
-      { value: 'materials', label: 'Materials Research' },
-      { value: 'microgravity', label: 'Microgravity Experiments' },
-      { value: 'tech_demo', label: 'Technology Demonstration' },
+      { value: 'materials', label: 'Materials Research', description: 'Advanced materials development and testing', matchWeight: 0.8 },
+      { value: 'microgravity', label: 'Microgravity Experiments', description: 'ISS and free-flyer experiment platforms', matchWeight: 0.9 },
+      { value: 'tech_demo', label: 'Technology Demonstration', description: 'On-orbit technology validation missions', matchWeight: 1.0 },
     ],
   },
   {
@@ -114,10 +121,10 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: '👨‍🚀',
     description: 'Crew transport, habitat modules, life support, space tourism',
     subcategories: [
-      { value: 'crew_transport', label: 'Crew Transport' },
-      { value: 'habitats', label: 'Habitat Modules' },
-      { value: 'life_support', label: 'Life Support Systems' },
-      { value: 'tourism', label: 'Space Tourism' },
+      { value: 'crew_transport', label: 'Crew Transport', description: 'Crewed spacecraft and launch services', matchWeight: 1.0 },
+      { value: 'habitats', label: 'Habitat Modules', description: 'Space station modules and inflatable habitats', matchWeight: 0.9 },
+      { value: 'life_support', label: 'Life Support Systems', description: 'ECLSS, food, water, and air systems', matchWeight: 0.8 },
+      { value: 'tourism', label: 'Space Tourism', description: 'Suborbital and orbital tourism experiences', matchWeight: 0.7 },
     ],
   },
   {
@@ -126,9 +133,9 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: '☀️',
     description: 'Space solar, in-orbit power services, power beaming',
     subcategories: [
-      { value: 'space_solar', label: 'Space Solar Power' },
-      { value: 'in_orbit_power', label: 'In-Orbit Power Services' },
-      { value: 'power_beaming', label: 'Power Beaming' },
+      { value: 'space_solar', label: 'Space Solar Power', description: 'Orbital solar collection and transmission', matchWeight: 0.9 },
+      { value: 'in_orbit_power', label: 'In-Orbit Power Services', description: 'Power-as-a-service for space assets', matchWeight: 1.0 },
+      { value: 'power_beaming', label: 'Power Beaming', description: 'Wireless power transmission technology', matchWeight: 0.8 },
     ],
   },
 ];
@@ -268,4 +275,38 @@ export function generateSlug(text: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
     .substring(0, 80);
+}
+
+/** Search categories and subcategories by text query */
+export function getMatchingCategories(query: string): { category: MarketplaceCategory; subcategory?: MarketplaceSubcategory }[] {
+  const q = query.toLowerCase().trim();
+  if (!q) return [];
+  const results: { category: MarketplaceCategory; subcategory?: MarketplaceSubcategory }[] = [];
+  for (const cat of MARKETPLACE_CATEGORIES) {
+    if (cat.label.toLowerCase().includes(q) || cat.description.toLowerCase().includes(q)) {
+      results.push({ category: cat });
+    }
+    for (const sub of cat.subcategories) {
+      if (sub.label.toLowerCase().includes(q) || sub.description.toLowerCase().includes(q)) {
+        results.push({ category: cat, subcategory: sub });
+      }
+    }
+  }
+  return results;
+}
+
+/** Group certifications by their category */
+export function getCertificationsByGroup(): Record<string, typeof CERTIFICATION_OPTIONS> {
+  const groups: Record<string, typeof CERTIFICATION_OPTIONS> = {};
+  for (const cert of CERTIFICATION_OPTIONS) {
+    if (!groups[cert.category]) groups[cert.category] = [];
+    groups[cert.category].push(cert);
+  }
+  return groups;
+}
+
+/** Get subcategory description for tooltips */
+export function getSubcategoryDescription(category: string, subcategory: string): string {
+  const cat = MARKETPLACE_CATEGORIES.find((c) => c.value === category);
+  return cat?.subcategories.find((s) => s.value === subcategory)?.description || '';
 }

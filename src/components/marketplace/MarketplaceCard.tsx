@@ -20,6 +20,7 @@ interface ServiceListing {
   certifications: string[];
   status: string;
   viewCount: number;
+  isEditorial?: boolean;
   company: {
     id: string;
     slug: string;
@@ -65,6 +66,9 @@ export default function MarketplaceCard({ listing, index = 0 }: MarketplaceCardP
                     <span className="text-slate-600">/</span>
                     <span>{getSubcategoryLabel(listing.category, listing.subcategory)}</span>
                   </>
+                )}
+                {listing.isEditorial && (
+                  <span className="text-[9px] px-1 py-0.5 bg-purple-500/15 text-purple-400 rounded font-medium">Editorial</span>
                 )}
               </div>
             </div>

@@ -10,6 +10,8 @@ interface Review {
   title: string | null;
   content: string | null;
   isVerified: boolean;
+  providerResponse: string | null;
+  providerRespondedAt: string | null;
   createdAt: string;
 }
 
@@ -80,6 +82,21 @@ export default function ReviewCard({ review }: ReviewCardProps) {
               Value <StarRating rating={review.valueRating} />
             </div>
           )}
+        </div>
+      )}
+
+      {/* Provider Response */}
+      {review.providerResponse && (
+        <div className="bg-slate-800/50 rounded-lg p-3 ml-4 border-l-2 border-cyan-500/30">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold text-cyan-400">Provider Response</span>
+            {review.providerRespondedAt && (
+              <span className="text-[10px] text-slate-600">
+                {new Date(review.providerRespondedAt).toLocaleDateString()}
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-slate-400 leading-relaxed">{review.providerResponse}</p>
         </div>
       )}
     </div>

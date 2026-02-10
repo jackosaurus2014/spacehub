@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ProposalCard from '@/components/marketplace/ProposalCard';
 import ProposalForm from '@/components/marketplace/ProposalForm';
 import MatchScore from '@/components/marketplace/MatchScore';
+import ClarificationThread from '@/components/marketplace/ClarificationThread';
 import { getCategoryIcon, getCategoryLabel, formatPrice, RFQ_STATUSES } from '@/lib/marketplace-types';
 import { toast } from '@/lib/toast';
 
@@ -97,9 +98,25 @@ export default function RFQDetailPage({ params }: { params: Promise<{ id: string
             </span>
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">{rfqData.title}</h1>
-          <div className="text-xs text-slate-500">
-            Posted {new Date(rfqData.createdAt).toLocaleDateString()}
-            {daysLeft !== null && ` · ${daysLeft} days remaining`}
+          <div className="flex items-center gap-3 text-xs text-slate-500">
+            <span>Posted {new Date(rfqData.createdAt).toLocaleDateString()}</span>
+            {daysLeft !== null && daysLeft > 0 && (
+              <span className={`px-2 py-0.5 rounded-full font-medium ${
+                daysLeft <= 3 ? 'bg-red-500/15 text-red-400' :
+                daysLeft <= 7 ? 'bg-orange-500/15 text-orange-400' :
+                'bg-green-500/15 text-green-400'
+              }`}>
+                {daysLeft} day{daysLeft !== 1 ? 's' : ''} remaining
+              </span>
+            )}
+            {daysLeft !== null && daysLeft <= 0 && (
+              <span className="px-2 py-0.5 rounded-full font-medium bg-slate-500/15 text-slate-400">
+                Deadline passed
+              </span>
+            )}
+            {rfqData.proposalCount > 0 && (
+              <span>{rfqData.proposalCount} proposal{rfqData.proposalCount !== 1 ? 's' : ''}</span>
+            )}
           </div>
         </div>
 
@@ -222,6 +239,11 @@ export default function RFQDetailPage({ params }: { params: Promise<{ id: string
               </button>
             )}
           </div>
+        )}
+
+        {/* Clarifications Q&A */}
+        {(userRole === 'buyer' || userRole === 'provider' || rfqData.isPublic) && (
+          <ClarificationThread rfqId={id} userRole={userRole as 'buyer' | 'provider' | 'public'} />
         )}
 
         {/* Public view message */}

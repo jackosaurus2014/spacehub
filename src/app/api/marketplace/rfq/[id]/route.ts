@@ -74,6 +74,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       isPublic: rfq.isPublic,
       createdAt: rfq.createdAt,
       proposalCount: rfq._count.proposals,
+      clarificationCount: await prisma.rFQClarification.count({ where: { rfqId: rfq.id, isPublic: true } }),
     };
 
     if (isBuyer) {

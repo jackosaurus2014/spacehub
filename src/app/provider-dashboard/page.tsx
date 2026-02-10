@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import ProposalCard from '@/components/marketplace/ProposalCard';
 import ReviewCard from '@/components/marketplace/ReviewCard';
+import VerificationBadge from '@/components/marketplace/VerificationBadge';
 
 
 function DashboardContent() {
@@ -19,6 +20,7 @@ function DashboardContent() {
   const [proposals, setProposals] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [rfqMatches, setRfqMatches] = useState<any[]>([]);
+  const [verification, setVerification] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [notAuthed, setNotAuthed] = useState(false);
 
@@ -64,6 +66,14 @@ function DashboardContent() {
               const d = await proposalRes.json();
               setProposals(d.proposals || []);
             }
+
+            // Load verification status
+            try {
+              const verifyRes = await fetch('/api/marketplace/verify');
+              if (verifyRes.ok) {
+                setVerification(await verifyRes.json());
+              }
+            } catch { /* ignore */ }
           }
         }
       } catch (err) {
@@ -196,6 +206,44 @@ function DashboardContent() {
                 <div className="text-xs text-slate-400 mt-1">Update your company information</div>
               </Link>
             </div>
+
+            {/* Verification Status */}
+            {verification && (
+              <div className="card p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-white">Verification Status</h3>
+                  <VerificationBadge level={verification.currentLevel} size="md" />
+                </div>
+                {verification.criteria && (
+                  <div className="space-y-2">
+                    {[
+                      { key: 'claimed', label: 'Company profile claimed', level: 'Identity' },
+                      { key: 'hasThreeListingsWithCerts', label: '3+ certified service listings', level: 'Capability' },
+                      { key: 'hasSamRegistration', label: 'SAM.gov / CAGE code registered', level: 'Capability' },
+                      { key: 'hasGovContract', label: 'Government contract on record', level: 'Capability' },
+                      { key: 'fivePlusReviews', label: '5+ published reviews', level: 'Performance' },
+                      { key: 'avgRatingAboveFour', label: 'Average rating >= 4.0', level: 'Performance' },
+                      { key: 'hasAwardedRfq', label: 'At least 1 awarded RFQ', level: 'Performance' },
+                    ].map((item) => (
+                      <div key={item.key} className="flex items-center gap-2 text-xs">
+                        <span className={verification.criteria[item.key] ? 'text-green-400' : 'text-slate-600'}>
+                          {verification.criteria[item.key] ? '✓' : '○'}
+                        </span>
+                        <span className={verification.criteria[item.key] ? 'text-slate-300' : 'text-slate-500'}>
+                          {item.label}
+                        </span>
+                        <span className="text-[10px] text-slate-600 ml-auto">{item.level}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {verification.canUpgrade && (
+                  <div className="mt-3 text-xs text-cyan-400 bg-cyan-500/10 rounded p-2 text-center">
+                    You qualify for a verification upgrade! It will be applied automatically.
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Recent Listings */}
             {listings.length > 0 && (

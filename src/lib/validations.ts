@@ -1469,6 +1469,35 @@ export const marketplaceSearchSchema = z.object({
   offset: z.string().optional().transform((val) => Math.max(0, parseInt(val || '0', 10) || 0)),
 });
 
+// RFQ Clarification schema
+export const rfqClarificationSchema = z.object({
+  question: z
+    .string()
+    .min(5, 'Question must be at least 5 characters')
+    .max(2000, 'Question is too long')
+    .transform((val) => val.trim()),
+  isPublic: z.boolean().default(true),
+});
+
+// RFQ Clarification answer schema
+export const rfqClarificationAnswerSchema = z.object({
+  answer: z
+    .string()
+    .min(5, 'Answer must be at least 5 characters')
+    .max(5000, 'Answer is too long')
+    .transform((val) => val.trim()),
+  isPublic: z.boolean().optional(),
+});
+
+// Provider review response schema
+export const reviewResponseSchema = z.object({
+  response: z
+    .string()
+    .min(10, 'Response must be at least 10 characters')
+    .max(2000, 'Response is too long')
+    .transform((val) => val.trim()),
+});
+
 // Export marketplace types
 export type ServiceListingCreateData = z.infer<typeof serviceListingCreateSchema>;
 export type ServiceListingUpdateData = z.infer<typeof serviceListingUpdateSchema>;
@@ -1481,3 +1510,6 @@ export type InterestExpressionData = z.infer<typeof interestExpressionSchema>;
 export type TeamingCreateData = z.infer<typeof teamingCreateSchema>;
 export type ClaimProfileData = z.infer<typeof claimProfileSchema>;
 export type MarketplaceSearchParams = z.infer<typeof marketplaceSearchSchema>;
+export type RFQClarificationData = z.infer<typeof rfqClarificationSchema>;
+export type RFQClarificationAnswerData = z.infer<typeof rfqClarificationAnswerSchema>;
+export type ReviewResponseData = z.infer<typeof reviewResponseSchema>;

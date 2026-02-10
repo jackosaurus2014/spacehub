@@ -357,6 +357,109 @@ model ProviderReview {
 
 ---
 
+## Phase 1 Implementation Status
+
+*Last updated: February 2026*
+
+### 1.1 Provider Self-Service Profiles — COMPLETE
+- **Status:** Fully implemented and deployed
+- **What was built:** Company profile claim flow, provider dashboard at `/provider-dashboard`, ServiceListing model with full CRUD, marketplace search/browse at `/marketplace/search`, listing detail pages at `/marketplace/listings/[slug]`
+- **Key files:** `src/app/provider-dashboard/page.tsx`, `src/app/api/company-profiles/[slug]/claim/route.ts`, `src/app/api/marketplace/listings/route.ts`
+- **Seed data:** 80 editorial service listings across 41 companies via `scripts/seed-marketplace.ts`
+- **Notes:** CompanyProfile extended with `claimedByUserId`, `claimedAt`, `marketplaceActive` fields
+
+### 1.2 RFQ/RFP System — COMPLETE
+- **Status:** Fully implemented with clarifications, deadline processing, and email notifications
+- **What was built:**
+  - RFQ creation with AI-powered provider matching (`/marketplace/rfq/new`)
+  - Proposal submission and management (`/api/marketplace/proposals`)
+  - **Q&A Clarification system** — providers ask questions, buyers answer, public/private visibility (`RFQClarification` model, `/api/marketplace/rfq/[id]/clarifications`)
+  - **Deadline enforcement cron** — auto-transitions expired RFQs to "evaluating", stale evaluating to "closed" (`/api/marketplace/rfq/process`)
+  - **Countdown display** — color-coded deadline badges (red ≤3 days, orange ≤7 days, green) on RFQ detail pages
+  - **Email notifications** — 4 templates: RFQ match, proposal received, proposal status change, clarification Q&A
+- **Key files:** `src/app/api/marketplace/rfq/[id]/clarifications/route.ts`, `src/app/api/marketplace/rfq/process/route.ts`, `src/components/marketplace/ClarificationThread.tsx`
+- **Prisma:** New `RFQClarification` model with rfqId, authorId, authorRole, question, answer, isPublic, answeredAt
+
+### 1.3 Verified Provider Badges — COMPLETE
+- **Status:** Fully implemented with auto-verification engine and admin override
+- **What was built:**
+  - **Verification engine** — auto-evaluates companies for 3 levels: Identity (claimed profile), Capability (gov contract OR SAM/CAGE registration OR 3+ certified listings), Performance (5+ reviews avg ≥4.0 AND awarded RFQ)
+  - **Batch evaluation** — cron endpoint processes all claimed companies, upgrades qualifying ones (`POST /api/marketplace/verify`)
+  - **Admin override** — admin can manually set verification level + notes (`PUT /api/marketplace/verify/admin`)
+  - **Enhanced VerificationBadge component** — tooltip with criteria descriptions for each level
+  - **Provider dashboard integration** — verification progress card with criteria checklist and upgrade notification
+  - **Email notification** — template for verification level upgrades
+- **Key files:** `src/lib/marketplace/verification-engine.ts`, `src/app/api/marketplace/verify/route.ts`, `src/components/marketplace/VerificationBadge.tsx`
+- **Prisma:** CompanyProfile extended with `verificationDocuments Json?`, `verificationNotes String?`
+
+### 1.4 Review & Rating System — COMPLETE
+- **Status:** Fully implemented with review form, provider responses, and rating distribution
+- **What was built:**
+  - **ReviewForm component** — star selectors for 5 rating categories (overall, quality, timeline, communication, value), title, content, verified transaction detection
+  - **RatingDistribution component** — horizontal bar histogram of 1-5 star ratings + sub-rating averages grid
+  - **Provider responses** — company owners can respond to reviews via `PUT /api/marketplace/reviews/[id]` (one response per review)
+  - **Duplicate prevention** — unique constraint `@@unique([companyId, reviewerUserId])` ensures one review per user per company
+  - **Admin moderation** — admin can hide inappropriate reviews via `DELETE /api/marketplace/reviews/[id]`
+  - **Listing detail integration** — rating distribution + review form displayed on listing pages, "Write a Review" CTA
+  - **Email notifications** — review notification and review response templates
+- **Key files:** `src/components/marketplace/ReviewForm.tsx`, `src/components/marketplace/RatingDistribution.tsx`, `src/app/api/marketplace/reviews/[id]/route.ts`
+- **Prisma:** ProviderReview extended with `providerResponse String?`, `providerRespondedAt DateTime?`, `@@unique([companyId, reviewerUserId])`
+
+### 1.5 Enhanced Service Category Taxonomy — COMPLETE
+- **Status:** Fully implemented with descriptions, match weights, and helpers
+- **What was built:**
+  - 10 categories with 38 subcategories, each with `description` and `matchWeight` (0.0-1.0) for smarter matching
+  - 12 certifications grouped into 4 categories (Export Control, Quality, Process, Security)
+  - Helper functions: `getMatchingCategories(query)` for text-based category suggestions, `getCertificationsByGroup()` for grouped cert display, `getSubcategoryDescription(category, subcategory)` for tooltips
+  - Validation schemas: `rfqClarificationSchema`, `rfqClarificationAnswerSchema`, `reviewResponseSchema`
+- **Key files:** `src/lib/marketplace-types.ts`, `src/lib/validations.ts`
+
+### 1.6 Migrate Existing Data Into Marketplace Framework — COMPLETE
+- **Status:** Migration script ready, schema extended with editorial tracking
+- **What was built:**
+  - **Migration script** — `scripts/migrate-orbital-to-marketplace.ts` maps 43 orbital services to ServiceListing records linked to matching CompanyProfiles
+  - **Category mapping** — 11 orbital categories mapped to marketplace categories/subcategories
+  - **Pricing mapping** — 11 pricing models mapped to marketplace pricing types
+  - **Editorial tracking** — `isEditorial Boolean` and `sourceService String?` fields on ServiceListing
+  - **UI integration** — purple "Editorial" badge on MarketplaceCard, "Claim this listing" banner on detail pages for unclaimed editorial listings
+- **Key files:** `scripts/migrate-orbital-to-marketplace.ts`, `src/components/marketplace/MarketplaceCard.tsx`
+- **Run:** `npx tsx scripts/migrate-orbital-to-marketplace.ts`
+
+### Phase 1 File Inventory (New Files Created)
+
+| File | Purpose |
+|---|---|
+| `src/lib/marketplace/verification-engine.ts` | Auto-verification evaluation logic |
+| `src/app/api/marketplace/verify/route.ts` | Verification status API + batch cron |
+| `src/app/api/marketplace/verify/admin/route.ts` | Admin verification override |
+| `src/app/api/marketplace/reviews/[id]/route.ts` | Single review detail, provider response, admin moderation |
+| `src/app/api/marketplace/rfq/[id]/clarifications/route.ts` | RFQ Q&A clarification system |
+| `src/app/api/marketplace/rfq/process/route.ts` | Deadline enforcement cron |
+| `src/components/marketplace/ReviewForm.tsx` | Star rating review submission form |
+| `src/components/marketplace/RatingDistribution.tsx` | Rating histogram + sub-rating averages |
+| `src/components/marketplace/ClarificationThread.tsx` | Q&A thread display + ask/answer forms |
+| `scripts/migrate-orbital-to-marketplace.ts` | Orbital services → marketplace migration |
+
+### Phase 1 Modified Files
+
+| File | Changes |
+|---|---|
+| `prisma/schema.prisma` | RFQClarification model, ServiceListing + ProviderReview + CompanyProfile fields |
+| `src/lib/marketplace-types.ts` | Subcategory descriptions, match weights, helper functions |
+| `src/lib/validations.ts` | 3 new schemas + type exports |
+| `src/lib/newsletter/email-templates.ts` | 7 marketplace email templates |
+| `src/components/marketplace/MarketplaceCard.tsx` | Editorial badge |
+| `src/components/marketplace/ReviewCard.tsx` | Provider response display |
+| `src/components/marketplace/VerificationBadge.tsx` | Tooltip with criteria descriptions |
+| `src/app/marketplace/listings/[slug]/page.tsx` | Rating distribution, review form, editorial banner |
+| `src/app/marketplace/rfq/[id]/page.tsx` | Clarification thread, deadline countdown |
+| `src/app/provider-dashboard/page.tsx` | Verification progress card |
+| `src/app/api/marketplace/rfq/[id]/route.ts` | Clarification count in response |
+| `src/app/api/marketplace/listings/[slug]/route.ts` | Rating distribution data |
+| `src/app/api/marketplace/reviews/route.ts` | Duplicate review prevention |
+
+---
+
 ## Phase 2: Growth (Months 3-6)
 
 **Goal:** Scale both sides of the marketplace with tools that make SpaceNexus indispensable for space procurement workflows.

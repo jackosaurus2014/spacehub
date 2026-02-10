@@ -66,6 +66,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
+    // Check for duplicate review (one review per user per company)
+    const existingReview = await prisma.providerReview.findFirst({
+      where: { companyId: data.companyId, reviewerUserId: session.user.id },
+    });
+    if (existingReview) {
+      return NextResponse.json({ error: 'You have already reviewed this company' }, { status: 409 });
+    }
+
     // Check if user has an awarded RFQ with this company (verified review)
     const isVerified = data.rfqId ? await prisma.rFQ.findFirst({
       where: { id: data.rfqId, buyerUserId: session.user.id, awardedToCompanyId: data.companyId, status: 'awarded' },

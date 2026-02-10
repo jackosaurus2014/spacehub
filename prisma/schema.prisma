@@ -2414,10 +2414,12 @@ model CompanyProfile {
   // Marketplace fields
   claimedByUserId   String?
   claimedAt         DateTime?
-  verificationLevel String?   // "identity", "capability", "performance"
-  verifiedAt        DateTime?
-  contactEmail      String?   // For marketplace inquiries
-  marketplaceActive Boolean   @default(false)
+  verificationLevel     String?   // "identity", "capability", "performance"
+  verifiedAt            DateTime?
+  verificationDocuments Json?     // Array of { name, url, type, uploadedAt }
+  verificationNotes     String?   @db.Text
+  contactEmail          String?   // For marketplace inquiries
+  marketplaceActive     Boolean   @default(false)
 
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
@@ -3107,6 +3109,8 @@ model ServiceListing {
   leadTime        String?         // "2-4 weeks", "3 months", etc.
   capacity        String?         // "10 launches/year", etc.
   coverageArea    String?         // "Global", "LEO", "North America"
+  isEditorial     Boolean         @default(false) // Editorial listing (not created by provider)
+  sourceService   String?         // Source of editorial listing (e.g. 'orbital-services')
   status          String          @default("active") // active, pending, paused, archived
   featured        Boolean         @default(false)
   viewCount       Int             @default(0)
@@ -3122,6 +3126,7 @@ model ServiceListing {
   @@index([status])
   @@index([pricingType])
   @@index([featured])
+  @@index([isEditorial])
   @@index([category, status])
 }
 
@@ -3149,6 +3154,7 @@ model RFQ {
 
   proposals           Proposal[]
   matches             RFQProviderMatch[]
+  clarifications      RFQClarification[]
 
   @@index([buyerUserId])
   @@index([category])
@@ -3211,11 +3217,14 @@ model ProviderReview {
   valueRating    Int?           // 1-5
   title          String?
   content        String?        @db.Text
-  isVerified     Boolean        @default(false) // Verified transaction
-  status         String         @default("published") // published, hidden, flagged
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  isVerified          Boolean        @default(false) // Verified transaction
+  status              String         @default("published") // published, hidden, flagged
+  providerResponse    String?        @db.Text
+  providerRespondedAt DateTime?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
+  @@unique([companyId, reviewerUserId])
   @@index([companyId])
   @@index([reviewerUserId])
   @@index([overallRating])
@@ -3260,4 +3269,21 @@ model InterestExpression {
   @@index([opportunityId])
   @@index([userId])
   @@index([status])
+}
+
+model RFQClarification {
+  id          String    @id @default(cuid())
+  rfqId       String
+  rfq         RFQ       @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  authorId    String
+  authorRole  String    // 'buyer' or 'provider'
+  companyId   String?   // Provider's company ID if provider
+  question    String    @db.Text
+  answer      String?   @db.Text
+  isPublic    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  answeredAt  DateTime?
+
+  @@index([rfqId])
+  @@index([authorId])
 }

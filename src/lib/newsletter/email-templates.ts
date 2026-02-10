@@ -885,3 +885,144 @@ export function generateVerificationEmail(verifyUrl: string, userName?: string):
 
   return { html, text };
 }
+
+// ============================================================
+// Marketplace Email Templates
+// ============================================================
+
+export function generateRFQMatchEmail(providerName: string, rfqTitle: string, matchScore: number, rfqUrl: string): { html: string; text: string; subject: string } {
+  const subject = `New RFQ matches your services: ${rfqTitle}`;
+  const content = `
+    <tr><td style="padding:30px 40px;">
+      <h1 style="color:${styles.textWhite};font-size:22px;margin:0 0 16px 0;">New RFQ Match</h1>
+      <p style="color:${styles.textLight};font-size:14px;line-height:1.6;margin:0 0 20px 0;">
+        Hi ${escapeHtml(providerName)},<br><br>
+        A new Request for Quote matches your service listings on SpaceNexus Marketplace.
+      </p>
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px 0;width:100%;">
+        <tr><td style="padding:12px 16px;background:${styles.bgCard};border-radius:8px;">
+          <p style="color:${styles.textWhite};font-size:16px;font-weight:600;margin:0 0 4px 0;">${escapeHtml(rfqTitle)}</p>
+          <p style="color:${styles.accentNebulaLight};font-size:13px;margin:0;">Match Score: ${matchScore}%</p>
+        </td></tr>
+      </table>
+      <a href="${escapeHtml(rfqUrl)}" style="display:inline-block;padding:12px 24px;background:${styles.accentNebula};color:#fff;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;">
+        View RFQ & Submit Proposal
+      </a>
+    </td></tr>`;
+  const html = wrapInEmailTemplate(content, `New RFQ: ${rfqTitle}`);
+  const text = `Hi ${providerName},\n\nA new RFQ matches your services: "${rfqTitle}" (Match Score: ${matchScore}%)\n\nView and submit a proposal: ${rfqUrl}`;
+  return { html, text, subject };
+}
+
+export function generateProposalReceivedEmail(buyerName: string, rfqTitle: string, providerName: string, proposalCount: number): { html: string; text: string; subject: string } {
+  const subject = `New proposal received for: ${rfqTitle}`;
+  const rfqUrl = `${APP_URL}/marketplace/rfq`;
+  const content = `
+    <tr><td style="padding:30px 40px;">
+      <h1 style="color:${styles.textWhite};font-size:22px;margin:0 0 16px 0;">New Proposal Received</h1>
+      <p style="color:${styles.textLight};font-size:14px;line-height:1.6;margin:0 0 20px 0;">
+        Hi ${escapeHtml(buyerName)},<br><br>
+        <strong>${escapeHtml(providerName)}</strong> has submitted a proposal for your RFQ "${escapeHtml(rfqTitle)}".
+        You now have ${proposalCount} proposal${proposalCount !== 1 ? 's' : ''} to review.
+      </p>
+      <a href="${rfqUrl}" style="display:inline-block;padding:12px 24px;background:${styles.accentNebula};color:#fff;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;">
+        Review Proposals
+      </a>
+    </td></tr>`;
+  const html = wrapInEmailTemplate(content, `New proposal from ${providerName}`);
+  const text = `Hi ${buyerName},\n\n${providerName} submitted a proposal for "${rfqTitle}". You now have ${proposalCount} proposals.\n\nReview proposals: ${rfqUrl}`;
+  return { html, text, subject };
+}
+
+export function generateProposalStatusEmail(providerName: string, rfqTitle: string, newStatus: string): { html: string; text: string; subject: string } {
+  const statusLabels: Record<string, string> = { shortlisted: 'Shortlisted', awarded: 'Awarded', rejected: 'Not Selected' };
+  const statusLabel = statusLabels[newStatus] || newStatus;
+  const subject = `Your proposal was ${statusLabel.toLowerCase()}: ${rfqTitle}`;
+  const content = `
+    <tr><td style="padding:30px 40px;">
+      <h1 style="color:${styles.textWhite};font-size:22px;margin:0 0 16px 0;">Proposal Update</h1>
+      <p style="color:${styles.textLight};font-size:14px;line-height:1.6;margin:0 0 20px 0;">
+        Hi ${escapeHtml(providerName)},<br><br>
+        Your proposal for "${escapeHtml(rfqTitle)}" has been updated to: <strong style="color:${styles.textWhite};">${statusLabel}</strong>
+      </p>
+      <a href="${APP_URL}/marketplace" style="display:inline-block;padding:12px 24px;background:${styles.accentNebula};color:#fff;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;">
+        View on Marketplace
+      </a>
+    </td></tr>`;
+  const html = wrapInEmailTemplate(content, `Proposal ${statusLabel}`);
+  const text = `Hi ${providerName},\n\nYour proposal for "${rfqTitle}" has been ${statusLabel.toLowerCase()}.`;
+  return { html, text, subject };
+}
+
+export function generateClarificationEmail(recipientName: string, rfqTitle: string, questionPreview: string): { html: string; text: string; subject: string } {
+  const subject = `New Q&A on RFQ: ${rfqTitle}`;
+  const content = `
+    <tr><td style="padding:30px 40px;">
+      <h1 style="color:${styles.textWhite};font-size:22px;margin:0 0 16px 0;">RFQ Clarification</h1>
+      <p style="color:${styles.textLight};font-size:14px;line-height:1.6;margin:0 0 20px 0;">
+        Hi ${escapeHtml(recipientName)},<br><br>
+        A new question or answer has been posted on the RFQ "${escapeHtml(rfqTitle)}":
+      </p>
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px 0;width:100%;">
+        <tr><td style="padding:12px 16px;background:${styles.bgCard};border-radius:8px;border-left:3px solid ${styles.accentNebula};">
+          <p style="color:${styles.textLight};font-size:13px;font-style:italic;margin:0;">"${escapeHtml(questionPreview.substring(0, 200))}${questionPreview.length > 200 ? '...' : ''}"</p>
+        </td></tr>
+      </table>
+      <a href="${APP_URL}/marketplace" style="display:inline-block;padding:12px 24px;background:${styles.accentNebula};color:#fff;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;">
+        View Full Q&A
+      </a>
+    </td></tr>`;
+  const html = wrapInEmailTemplate(content, `Q&A: ${rfqTitle}`);
+  const text = `Hi ${recipientName},\n\nNew Q&A on "${rfqTitle}":\n"${questionPreview.substring(0, 200)}"\n\nView on SpaceNexus Marketplace.`;
+  return { html, text, subject };
+}
+
+export function generateReviewNotificationEmail(companyName: string, reviewerName: string, rating: number, reviewTitle: string): { html: string; text: string; subject: string } {
+  const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+  const subject = `New ${rating}-star review for ${companyName}`;
+  const content = `
+    <tr><td style="padding:30px 40px;">
+      <h1 style="color:${styles.textWhite};font-size:22px;margin:0 0 16px 0;">New Review</h1>
+      <p style="color:${styles.textLight};font-size:14px;line-height:1.6;margin:0 0 20px 0;">
+        ${escapeHtml(companyName)} has received a new review on SpaceNexus Marketplace.
+      </p>
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px 0;width:100%;">
+        <tr><td style="padding:12px 16px;background:${styles.bgCard};border-radius:8px;">
+          <p style="color:#facc15;font-size:18px;margin:0 0 4px 0;">${stars}</p>
+          ${reviewTitle ? `<p style="color:${styles.textWhite};font-size:14px;font-weight:600;margin:0 0 4px 0;">${escapeHtml(reviewTitle)}</p>` : ''}
+          <p style="color:${styles.textMuted};font-size:12px;margin:0;">by ${escapeHtml(reviewerName)}</p>
+        </td></tr>
+      </table>
+      <a href="${APP_URL}/provider-dashboard" style="display:inline-block;padding:12px 24px;background:${styles.accentNebula};color:#fff;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;">
+        View & Respond
+      </a>
+    </td></tr>`;
+  const html = wrapInEmailTemplate(content, `${rating}-star review for ${companyName}`);
+  const text = `${companyName} received a new ${rating}-star review "${reviewTitle}" from ${reviewerName}.\n\nRespond on your provider dashboard.`;
+  return { html, text, subject };
+}
+
+export function generateVerificationUpgradeEmail(companyName: string, newLevel: string, criteria: string): { html: string; text: string; subject: string } {
+  const levelLabels: Record<string, string> = { identity: 'Identity Verified', capability: 'Capability Verified', performance: 'Performance Verified' };
+  const levelLabel = levelLabels[newLevel] || newLevel;
+  const subject = `Congratulations! ${companyName} is now ${levelLabel}`;
+  const content = `
+    <tr><td style="padding:30px 40px;">
+      <h1 style="color:${styles.textWhite};font-size:22px;margin:0 0 16px 0;">Verification Upgrade</h1>
+      <p style="color:${styles.textLight};font-size:14px;line-height:1.6;margin:0 0 20px 0;">
+        Congratulations! <strong>${escapeHtml(companyName)}</strong> has been upgraded to <strong style="color:${styles.accentNebulaLight};">${levelLabel}</strong> on SpaceNexus Marketplace.
+      </p>
+      <p style="color:${styles.textMuted};font-size:13px;margin:0 0 20px 0;">
+        Criteria met: ${escapeHtml(criteria)}
+      </p>
+      <p style="color:${styles.textLight};font-size:14px;margin:0 0 20px 0;">
+        Your verified badge will now appear on all your service listings, increasing buyer confidence and visibility in search results.
+      </p>
+      <a href="${APP_URL}/provider-dashboard" style="display:inline-block;padding:12px 24px;background:${styles.accentNebula};color:#fff;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;">
+        View Your Dashboard
+      </a>
+    </td></tr>`;
+  const html = wrapInEmailTemplate(content, `${companyName} is now ${levelLabel}`);
+  const text = `Congratulations! ${companyName} is now ${levelLabel} on SpaceNexus Marketplace.\nCriteria: ${criteria}`;
+  return { html, text, subject };
+}

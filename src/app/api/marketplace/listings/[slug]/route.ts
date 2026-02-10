@@ -46,6 +46,14 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
       ? reviews.reduce((sum, r) => sum + r.overallRating, 0) / reviews.length
       : null;
 
+    // Rating distribution (star counts)
+    const ratingDistribution = [0, 0, 0, 0, 0]; // index 0 = 1 star, index 4 = 5 stars
+    for (const r of reviews) {
+      if (r.overallRating >= 1 && r.overallRating <= 5) {
+        ratingDistribution[r.overallRating - 1]++;
+      }
+    }
+
     // Get similar listings
     const similarListings = await prisma.serviceListing.findMany({
       where: {
@@ -65,6 +73,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
       listing,
       reviews,
       avgRating,
+      ratingDistribution,
       reviewCount: reviews.length,
       similarListings,
     });
