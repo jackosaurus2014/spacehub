@@ -65,9 +65,9 @@ export default function HeroStats() {
           const event = launchData.events[0];
           setLaunch({
             name: event.name,
-            date: event.date,
-            provider: event.provider || 'Unknown',
-            timeUntil: formatTimeUntil(event.date),
+            date: event.launchDate,
+            provider: event.agency || 'Unknown',
+            timeUntil: formatTimeUntil(event.launchDate),
           });
         }
 
@@ -147,7 +147,7 @@ export default function HeroStats() {
           const article = newsData.articles[0];
           setNews({
             headline: article.title,
-            source: article.newsSite,
+            source: article.source,
             url: article.url,
             publishedAt: article.publishedAt,
           });
