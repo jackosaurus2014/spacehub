@@ -22,6 +22,88 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import ExportButton from '@/components/ui/ExportButton';
 import { ContractTicker, ContractsList } from '@/components/contracts';
 
+function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
+  const [interested, setInterested] = useState(false);
+  const [count, setCount] = useState(0);
+  const [showForm, setShowForm] = useState(false);
+  const [email, setEmail] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetch(`/api/marketplace/interest?opportunityId=${opportunityId}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) {
+          setCount(data.totalInterested || 0);
+          setInterested(data.hasExpressedInterest || false);
+        }
+      })
+      .catch(() => {});
+  }, [opportunityId]);
+
+  const handleSubmit = async () => {
+    if (!email) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/marketplace/interest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ opportunityId, contactEmail: email }),
+      });
+      if (res.ok) {
+        setInterested(true);
+        setCount(c => c + 1);
+        setShowForm(false);
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Failed to express interest');
+      }
+    } catch {
+      alert('Please sign in to express interest');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2 mb-3">
+      {interested ? (
+        <span className="text-xs px-2.5 py-1 bg-green-500/20 text-green-400 rounded font-medium">
+          ✓ Interest Expressed
+        </span>
+      ) : showForm ? (
+        <div className="flex items-center gap-2">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Contact email"
+            className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white w-44"
+          />
+          <button
+            onClick={handleSubmit}
+            disabled={submitting || !email}
+            className="text-xs px-2.5 py-1 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 text-white rounded font-medium transition-colors"
+          >
+            {submitting ? '...' : 'Confirm'}
+          </button>
+          <button onClick={() => setShowForm(false)} className="text-xs text-slate-400 hover:text-white">Cancel</button>
+        </div>
+      ) : (
+        <button
+          onClick={() => setShowForm(true)}
+          className="text-xs px-2.5 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-medium transition-colors"
+        >
+          Express Interest
+        </button>
+      )}
+      {count > 0 && (
+        <span className="text-[10px] text-slate-500">{count} interested</span>
+      )}
+    </div>
+  );
+}
+
 function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
   const [expanded, setExpanded] = useState(false);
   const typeInfo = OPPORTUNITY_TYPES.find((t) => t.value === opportunity.type);
@@ -140,7 +222,16 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
                 Compliance requirements →
               </Link>
             )}
+            <Link
+              href={`/marketplace/search?category=${opportunity.category === 'launch_services' ? 'launch' : opportunity.category === 'satellites' ? 'satellite' : ''}`}
+              className="text-xs text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 px-2 py-1 rounded transition-colors"
+            >
+              Find providers on Marketplace →
+            </Link>
           </div>
+
+          {/* Express Interest */}
+          <ExpressInterestButton opportunityId={opportunity.id} />
 
           {/* Expandable Analysis */}
           {(opportunity.fullAnalysis || opportunity.aiReasoning) && (

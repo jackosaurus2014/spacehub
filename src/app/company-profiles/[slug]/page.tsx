@@ -135,6 +135,114 @@ function getScoreBarColor(score: number): string {
   return 'bg-red-500';
 }
 
+// ─── Marketplace Actions ─────────────────────────────────────────────────────
+
+function MarketplaceActions({ companySlug, companyId }: { companySlug: string; companyId: string }) {
+  const [claiming, setClaiming] = useState(false);
+  const [claimed, setClaimed] = useState(false);
+  const [claimEmail, setClaimEmail] = useState('');
+  const [showClaimForm, setShowClaimForm] = useState(false);
+  const [verLevel, setVerLevel] = useState<string | null>(null);
+  const [contactEmail, setContactEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check claim status
+    fetch(`/api/company-profiles/${companySlug}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.verificationLevel) {
+          setClaimed(true);
+          setVerLevel(data.verificationLevel);
+          setContactEmail(data.contactEmail);
+        }
+      })
+      .catch(() => {});
+  }, [companySlug]);
+
+  const handleClaim = async () => {
+    if (!claimEmail) return;
+    setClaiming(true);
+    try {
+      const res = await fetch(`/api/company-profiles/${companySlug}/claim`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactEmail: claimEmail }),
+      });
+      if (res.ok) {
+        setClaimed(true);
+        setVerLevel('identity');
+        setShowClaimForm(false);
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Failed to claim profile');
+      }
+    } catch {
+      alert('Failed to claim profile');
+    } finally {
+      setClaiming(false);
+    }
+  };
+
+  return (
+    <div className="mt-4 pt-4 border-t border-slate-700/30 flex flex-wrap items-center gap-3">
+      {claimed && verLevel && (
+        <span className={`text-[10px] font-bold px-2 py-1 rounded ${
+          verLevel === 'performance' ? 'bg-yellow-500/20 text-yellow-400' :
+          verLevel === 'capability' ? 'bg-green-500/20 text-green-400' :
+          'bg-blue-500/20 text-blue-400'
+        }`}>
+          {verLevel === 'performance' ? '★ Performance Verified' :
+           verLevel === 'capability' ? '✓✓ Capability Verified' :
+           '✓ Identity Verified'}
+        </span>
+      )}
+      {claimed && contactEmail && (
+        <a
+          href={`mailto:${contactEmail}`}
+          className="text-xs px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium transition-colors"
+        >
+          Contact Provider
+        </a>
+      )}
+      <Link href={`/marketplace/search?category=&companyId=${companyId}`} className="text-xs px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors">
+        View Service Listings
+      </Link>
+      {!claimed && !showClaimForm && (
+        <button
+          onClick={() => setShowClaimForm(true)}
+          className="text-xs px-3 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-medium transition-all"
+        >
+          Claim This Profile
+        </button>
+      )}
+      {showClaimForm && !claimed && (
+        <div className="flex items-center gap-2">
+          <input
+            type="email"
+            value={claimEmail}
+            onChange={(e) => setClaimEmail(e.target.value)}
+            placeholder="Your business email"
+            className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-white w-48"
+          />
+          <button
+            onClick={handleClaim}
+            disabled={claiming || !claimEmail}
+            className="text-xs px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 text-white rounded-lg font-medium transition-colors"
+          >
+            {claiming ? 'Claiming...' : 'Confirm'}
+          </button>
+          <button
+            onClick={() => setShowClaimForm(false)}
+            className="text-xs text-slate-400 hover:text-white"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Tab Definitions ─────────────────────────────────────────────────────────
 
 const TABS = [
@@ -1055,6 +1163,9 @@ export default function CompanyProfileDetailPage() {
               }`}>{company.dataCompleteness}%</span>
             </div>
           </div>
+
+          {/* Marketplace Actions */}
+          <MarketplaceActions companySlug={params.slug as string} companyId={company.id} />
         </div>
       </motion.div>
 

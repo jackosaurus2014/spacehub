@@ -365,7 +365,24 @@ export default function QuickAccessSidebar() {
         </nav>
 
         {/* Bottom Section */}
-        <div className="p-2 border-t border-slate-700/50">
+        <div className="p-2 border-t border-slate-700/50 space-y-0.5">
+          <Link
+            href="/marketplace"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+              pathname?.startsWith('/marketplace') || pathname?.startsWith('/provider-dashboard')
+                ? 'bg-cyan-500/20 text-cyan-300'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+            }`}
+          >
+            <span className="text-lg flex-shrink-0 w-6 text-center">🏪</span>
+            <span
+              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              }`}
+            >
+              Marketplace
+            </span>
+          </Link>
           <Link
             href="/dashboard"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${

@@ -58,6 +58,10 @@ export const MODULE_ROUTES: Record<string, string> = {
   'cislunar-ecosystem': '/cislunar',
   'asteroid-watch': '/asteroid-watch',
 
+  // ── Marketplace ──
+  'marketplace': '/marketplace',
+  'provider-dashboard': '/provider-dashboard',
+
   // ── Legacy backward-compat aliases ──
   // (These also have redirects in next.config.js for direct URL access)
   'news-intelligence': '/news',

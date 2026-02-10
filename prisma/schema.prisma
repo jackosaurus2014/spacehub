@@ -52,6 +52,11 @@ model User {
   dashboardLayouts         DashboardLayout[]
   launchChatMessages       LaunchChatMessage[]
   nurtureEmails            NurtureEmailLog[]
+
+  // Marketplace
+  claimedCompanyId         String? // CompanyProfile ID they've claimed
+  rfqs                     RFQ[]
+  interestExpressions      InterestExpression[]
 }
 
 model PasswordResetToken {
@@ -2405,6 +2410,15 @@ model CompanyProfile {
   parentCompany       String? // Name of parent company if subsidiary
   lastVerified        DateTime? // When data was last verified
   dataCompleteness    Int       @default(0) // 0-100 score of profile completeness
+
+  // Marketplace fields
+  claimedByUserId   String?
+  claimedAt         DateTime?
+  verificationLevel String?   // "identity", "capability", "performance"
+  verifiedAt        DateTime?
+  contactEmail      String?   // For marketplace inquiries
+  marketplaceActive Boolean   @default(false)
+
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
@@ -2425,6 +2439,9 @@ model CompanyProfile {
   facilities       FacilityLocation[]
   scores           CompanyScore[]
   newsArticles     NewsArticle[]     @relation("NewsCompanyTags")
+  serviceListings  ServiceListing[]
+  reviews          ProviderReview[]
+  teamingOpps      TeamingOpportunity[]
 
   @@index([slug])
   @@index([name])
@@ -2435,6 +2452,9 @@ model CompanyProfile {
   @@index([country])
   @@index([cageCode])
   @@index([samUei])
+  @@index([claimedByUserId])
+  @@index([verificationLevel])
+  @@index([marketplaceActive])
 }
 
 model FundingRound {
@@ -3061,4 +3081,183 @@ model LaunchChatMessage {
 
   @@index([eventId])
   @@index([createdAt])
+}
+
+// ============================================================
+// Marketplace System
+// ============================================================
+
+model ServiceListing {
+  id              String          @id @default(cuid())
+  companyId       String
+  company         CompanyProfile  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  slug            String          @unique
+  name            String
+  description     String          @db.Text
+  category        String          // launch, satellite, in_space, ground, manufacturing, engineering, environment, rnd, human, power
+  subcategory     String?
+  pricingType     String          // fixed, hourly, per_unit, subscription, rfq_only
+  priceMin        Float?
+  priceMax        Float?
+  priceUnit       String?         // km², hour, kg, month, unit
+  pricingNotes    String?         @db.Text
+  specifications  Json?           // Flexible specs per category
+  certifications  String[]        // ITAR, ISO 9001, AS9100, etc.
+  pastPerformance String?         @db.Text
+  leadTime        String?         // "2-4 weeks", "3 months", etc.
+  capacity        String?         // "10 launches/year", etc.
+  coverageArea    String?         // "Global", "LEO", "North America"
+  status          String          @default("active") // active, pending, paused, archived
+  featured        Boolean         @default(false)
+  viewCount       Int             @default(0)
+  inquiryCount    Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  matches         RFQProviderMatch[]
+
+  @@index([companyId])
+  @@index([category])
+  @@index([subcategory])
+  @@index([status])
+  @@index([pricingType])
+  @@index([featured])
+  @@index([category, status])
+}
+
+model RFQ {
+  id                  String    @id @default(cuid())
+  slug                String    @unique
+  buyerUserId         String
+  buyer               User      @relation(fields: [buyerUserId], references: [id], onDelete: Cascade)
+  title               String
+  description         String    @db.Text
+  category            String
+  subcategory         String?
+  requirements        Json?     // Structured requirements per category
+  budgetMin           Float?
+  budgetMax           Float?
+  budgetCurrency      String    @default("USD")
+  deadline            DateTime? // Response deadline
+  deliveryDate        DateTime? // When service is needed
+  complianceReqs      String[]  // ITAR, AS9100, etc.
+  isPublic            Boolean   @default(true)
+  status              String    @default("open") // open, evaluating, awarded, cancelled, closed
+  awardedToCompanyId  String?   // CompanyProfile ID of winner
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  proposals           Proposal[]
+  matches             RFQProviderMatch[]
+
+  @@index([buyerUserId])
+  @@index([category])
+  @@index([status])
+  @@index([isPublic])
+  @@index([deadline])
+  @@index([status, isPublic])
+  @@index([category, status])
+}
+
+model Proposal {
+  id            String   @id @default(cuid())
+  rfqId         String
+  rfq           RFQ      @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  companyId     String   // CompanyProfile ID of proposer
+  price         Float?
+  pricingDetail String?  @db.Text
+  timeline      String?
+  approach      String?  @db.Text
+  attachments   Json?    // Array of { name, url, type }
+  status        String   @default("submitted") // submitted, shortlisted, awarded, rejected, withdrawn
+  submittedAt   DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([rfqId, companyId])
+  @@index([rfqId])
+  @@index([companyId])
+  @@index([status])
+}
+
+model RFQProviderMatch {
+  id           String          @id @default(cuid())
+  rfqId        String
+  rfq          RFQ             @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  listingId    String?
+  listing      ServiceListing? @relation(fields: [listingId], references: [id])
+  companyId    String          // CompanyProfile ID
+  matchScore   Float           // 0-100 weighted score
+  matchReasons Json?           // { category: 30, price: 20, certs: 20, ... }
+  notified     Boolean         @default(false)
+  respondedAt  DateTime?
+  createdAt    DateTime        @default(now())
+
+  @@unique([rfqId, companyId])
+  @@index([rfqId])
+  @@index([companyId])
+  @@index([matchScore])
+}
+
+model ProviderReview {
+  id             String         @id @default(cuid())
+  companyId      String
+  company        CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  reviewerUserId String
+  rfqId          String?        // Link to original RFQ if applicable
+  overallRating  Int            // 1-5 stars
+  qualityRating  Int?           // 1-5
+  timelineRating Int?           // 1-5
+  commRating     Int?           // 1-5 Communication
+  valueRating    Int?           // 1-5
+  title          String?
+  content        String?        @db.Text
+  isVerified     Boolean        @default(false) // Verified transaction
+  status         String         @default("published") // published, hidden, flagged
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([companyId])
+  @@index([reviewerUserId])
+  @@index([overallRating])
+  @@index([status])
+}
+
+model TeamingOpportunity {
+  id                     String         @id @default(cuid())
+  companyId              String
+  company                CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  contractReference      String?        // GovernmentContract or ProcurementOpportunity ID/title
+  contractTitle          String
+  contractAgency         String?        // NASA, Space Force, etc.
+  seekingRole            String         // prime, subcontractor, teammate
+  capabilitiesNeeded     String[]       // What they need from partners
+  capabilitiesOffered    String[]       // What they bring to the team
+  setAsideQualifications String[]       // 8(a), HUBZone, WOSB, SDVOSB, etc.
+  description            String?        @db.Text
+  contactEmail           String
+  status                 String         @default("open") // open, closed, teamed
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  @@index([companyId])
+  @@index([contractReference])
+  @@index([status])
+  @@index([seekingRole])
+}
+
+model InterestExpression {
+  id            String   @id @default(cuid())
+  opportunityId String   // BusinessOpportunity ID
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId     String?  // CompanyProfile ID if they have one
+  contactEmail  String
+  message       String?  @db.Text
+  status        String   @default("expressed") // expressed, contacted, converted
+  createdAt     DateTime @default(now())
+
+  @@unique([opportunityId, userId])
+  @@index([opportunityId])
+  @@index([userId])
+  @@index([status])
 }

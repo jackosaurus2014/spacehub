@@ -1229,3 +1229,255 @@ export type DashboardLayoutCreateData = z.infer<typeof dashboardLayoutCreateSche
 export type DashboardLayoutUpdateData = z.infer<typeof dashboardLayoutUpdateSchema>;
 export type DashboardWidgetData = z.infer<typeof dashboardWidgetSchema>;
 export type DashboardWidgetUpdateData = z.infer<typeof dashboardWidgetUpdateSchema>;
+
+// ============================================================
+// Marketplace Schemas
+// ============================================================
+
+const MARKETPLACE_CATEGORY_VALUES = [
+  'launch', 'satellite', 'in_space', 'ground', 'manufacturing',
+  'engineering', 'environment', 'rnd', 'human', 'power',
+] as const;
+
+const PRICING_TYPE_VALUES = ['fixed', 'hourly', 'per_unit', 'subscription', 'rfq_only'] as const;
+
+// Service Listing schemas
+export const serviceListingCreateSchema = z.object({
+  name: z
+    .string()
+    .min(3, 'Service name must be at least 3 characters')
+    .max(200, 'Service name is too long')
+    .transform((val) => val.trim()),
+  description: z
+    .string()
+    .min(20, 'Description must be at least 20 characters')
+    .max(10000, 'Description is too long')
+    .transform((val) => val.trim()),
+  category: z.enum(MARKETPLACE_CATEGORY_VALUES, {
+    message: 'Please select a valid service category',
+  }),
+  subcategory: z
+    .string()
+    .max(100)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+  pricingType: z.enum(PRICING_TYPE_VALUES, {
+    message: 'Please select a valid pricing type',
+  }),
+  priceMin: z.number().min(0).optional().nullable(),
+  priceMax: z.number().min(0).optional().nullable(),
+  priceUnit: z
+    .string()
+    .max(50)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+  pricingNotes: z
+    .string()
+    .max(2000)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+  specifications: z.record(z.string(), z.unknown()).optional().nullable(),
+  certifications: z
+    .array(z.string().max(100))
+    .optional()
+    .default([]),
+  pastPerformance: z
+    .string()
+    .max(5000)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+  leadTime: z
+    .string()
+    .max(100)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+  capacity: z
+    .string()
+    .max(200)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+  coverageArea: z
+    .string()
+    .max(200)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+});
+
+export const serviceListingUpdateSchema = serviceListingCreateSchema.partial();
+
+// RFQ schemas
+export const rfqCreateSchema = z.object({
+  title: z
+    .string()
+    .min(5, 'Title must be at least 5 characters')
+    .max(300, 'Title is too long')
+    .transform((val) => val.trim()),
+  description: z
+    .string()
+    .min(20, 'Description must be at least 20 characters')
+    .max(10000, 'Description is too long')
+    .transform((val) => val.trim()),
+  category: z.enum(MARKETPLACE_CATEGORY_VALUES, {
+    message: 'Please select a valid service category',
+  }),
+  subcategory: z
+    .string()
+    .max(100)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+  requirements: z.record(z.string(), z.unknown()).optional().nullable(),
+  budgetMin: z.number().min(0).optional().nullable(),
+  budgetMax: z.number().min(0).optional().nullable(),
+  budgetCurrency: z.string().max(10).default('USD'),
+  deadline: z.string().datetime().optional().nullable(),
+  deliveryDate: z.string().datetime().optional().nullable(),
+  complianceReqs: z
+    .array(z.string().max(100))
+    .optional()
+    .default([]),
+  isPublic: z.boolean().default(true),
+});
+
+export const rfqUpdateSchema = z.object({
+  title: z.string().min(5).max(300).transform((val) => val.trim()).optional(),
+  description: z.string().min(20).max(10000).transform((val) => val.trim()).optional(),
+  status: z.enum(['open', 'evaluating', 'awarded', 'cancelled', 'closed']).optional(),
+  awardedToCompanyId: z.string().optional().nullable(),
+  deadline: z.string().datetime().optional().nullable(),
+});
+
+// Proposal schemas
+export const proposalCreateSchema = z.object({
+  rfqId: z.string().min(1, 'RFQ ID is required'),
+  price: z.number().min(0).optional().nullable(),
+  pricingDetail: z
+    .string()
+    .max(5000)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+  timeline: z
+    .string()
+    .max(500)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+  approach: z
+    .string()
+    .min(20, 'Approach must be at least 20 characters')
+    .max(10000, 'Approach is too long')
+    .transform((val) => val.trim()),
+  attachments: z.array(z.object({
+    name: z.string().max(200),
+    url: z.string().url(),
+    type: z.string().max(50).optional(),
+  })).optional().default([]),
+});
+
+export const proposalUpdateSchema = z.object({
+  status: z.enum(['submitted', 'shortlisted', 'awarded', 'rejected', 'withdrawn']).optional(),
+  price: z.number().min(0).optional().nullable(),
+  pricingDetail: z.string().max(5000).optional(),
+  timeline: z.string().max(500).optional(),
+  approach: z.string().max(10000).optional(),
+});
+
+// Review schema
+export const reviewCreateSchema = z.object({
+  companyId: z.string().min(1, 'Company ID is required'),
+  rfqId: z.string().optional().nullable(),
+  overallRating: z.number().int().min(1).max(5),
+  qualityRating: z.number().int().min(1).max(5).optional().nullable(),
+  timelineRating: z.number().int().min(1).max(5).optional().nullable(),
+  commRating: z.number().int().min(1).max(5).optional().nullable(),
+  valueRating: z.number().int().min(1).max(5).optional().nullable(),
+  title: z
+    .string()
+    .max(200)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+  content: z
+    .string()
+    .max(5000)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+});
+
+// Interest expression schema
+export const interestExpressionSchema = z.object({
+  opportunityId: z.string().min(1, 'Opportunity ID is required'),
+  contactEmail: emailSchema,
+  companyId: z.string().optional().nullable(),
+  message: z
+    .string()
+    .max(2000)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+});
+
+// Teaming opportunity schema
+export const teamingCreateSchema = z.object({
+  contractReference: z.string().max(200).optional(),
+  contractTitle: z
+    .string()
+    .min(3, 'Contract title is required')
+    .max(300)
+    .transform((val) => val.trim()),
+  contractAgency: z.string().max(100).optional(),
+  seekingRole: z.enum(['prime', 'subcontractor', 'teammate'], {
+    message: 'Please select a valid role',
+  }),
+  capabilitiesNeeded: z
+    .array(z.string().max(200))
+    .min(1, 'Please specify at least one capability needed')
+    .max(20),
+  capabilitiesOffered: z
+    .array(z.string().max(200))
+    .min(1, 'Please specify at least one capability offered')
+    .max(20),
+  setAsideQualifications: z
+    .array(z.string().max(100))
+    .optional()
+    .default([]),
+  description: z
+    .string()
+    .max(5000)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+  contactEmail: emailSchema,
+});
+
+// Company profile claim schema
+export const claimProfileSchema = z.object({
+  contactEmail: emailSchema,
+  verificationNote: z
+    .string()
+    .max(1000)
+    .optional()
+    .transform((val) => val?.trim() || undefined),
+});
+
+// Marketplace search schema
+export const marketplaceSearchSchema = z.object({
+  q: z.string().max(200).optional().transform((val) => val?.trim()),
+  category: z.string().max(50).optional(),
+  subcategory: z.string().max(100).optional(),
+  priceMin: z.string().optional().transform((val) => val ? parseFloat(val) : undefined),
+  priceMax: z.string().optional().transform((val) => val ? parseFloat(val) : undefined),
+  certifications: z.string().optional().transform((val) => val?.split(',').filter(Boolean)),
+  verificationLevel: z.string().max(50).optional(),
+  sort: z.enum(['relevance', 'price_asc', 'price_desc', 'rating', 'newest']).optional().default('relevance'),
+  limit: z.string().optional().transform((val) => Math.min(Math.max(1, parseInt(val || '20', 10) || 20), 100)),
+  offset: z.string().optional().transform((val) => Math.max(0, parseInt(val || '0', 10) || 0)),
+});
+
+// Export marketplace types
+export type ServiceListingCreateData = z.infer<typeof serviceListingCreateSchema>;
+export type ServiceListingUpdateData = z.infer<typeof serviceListingUpdateSchema>;
+export type RFQCreateData = z.infer<typeof rfqCreateSchema>;
+export type RFQUpdateData = z.infer<typeof rfqUpdateSchema>;
+export type ProposalCreateData = z.infer<typeof proposalCreateSchema>;
+export type ProposalUpdateData = z.infer<typeof proposalUpdateSchema>;
+export type ReviewCreateData = z.infer<typeof reviewCreateSchema>;
+export type InterestExpressionData = z.infer<typeof interestExpressionSchema>;
+export type TeamingCreateData = z.infer<typeof teamingCreateSchema>;
+export type ClaimProfileData = z.infer<typeof claimProfileSchema>;
+export type MarketplaceSearchParams = z.infer<typeof marketplaceSearchSchema>;
