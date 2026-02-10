@@ -16,6 +16,12 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
     (c) => c.value === shortage.category
   );
 
+  // Safely handle missing arrays from incomplete seed data
+  const affectedProducts = shortage.affectedProducts || [];
+  const impactedCompanies = shortage.impactedCompanies || [];
+  const alternativeSuppliers = shortage.alternativeSuppliers || [];
+  const geopoliticalFactors = shortage.geopoliticalFactors || [];
+
   // Get border color based on severity
   const getBorderColor = () => {
     switch (shortage.severity) {
@@ -89,10 +95,10 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
         {/* Quick stats */}
         <div className="flex flex-wrap items-center gap-3 mt-3 text-xs">
           <span className="text-slate-400">
-            <span className="text-slate-300 font-medium">{shortage.affectedProducts.length}</span> affected products
+            <span className="text-slate-300 font-medium">{affectedProducts.length}</span> affected products
           </span>
           <span className="text-slate-400">
-            <span className="text-slate-300 font-medium">{shortage.impactedCompanies.length}</span> companies impacted
+            <span className="text-slate-300 font-medium">{impactedCompanies.length}</span> companies impacted
           </span>
           {shortage.estimatedResolution && (
             <span className="text-slate-400">
@@ -111,7 +117,7 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
               Affected Products
             </h4>
             <div className="flex flex-wrap gap-1">
-              {shortage.affectedProducts.map((product) => (
+              {affectedProducts.map((product) => (
                 <span
                   key={product}
                   className="text-xs bg-red-500/10 text-red-300 border border-red-500/30 px-2 py-1 rounded"
@@ -128,7 +134,7 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
               Impacted Companies
             </h4>
             <div className="flex flex-wrap gap-1">
-              {shortage.impactedCompanies.map((company) => (
+              {impactedCompanies.map((company) => (
                 <span
                   key={company}
                   className="text-xs bg-space-700 text-slate-300 px-2 py-1 rounded"
@@ -140,13 +146,13 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
           </div>
 
           {/* Alternative suppliers */}
-          {shortage.alternativeSuppliers.length > 0 && (
+          {alternativeSuppliers.length > 0 && (
             <div>
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
                 Alternative Suppliers
               </h4>
               <div className="flex flex-wrap gap-1">
-                {shortage.alternativeSuppliers.map((supplier) => (
+                {alternativeSuppliers.map((supplier) => (
                   <span
                     key={supplier}
                     className="text-xs bg-green-500/10 text-green-300 border border-green-500/30 px-2 py-1 rounded"
@@ -159,13 +165,13 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
           )}
 
           {/* Geopolitical factors */}
-          {shortage.geopoliticalFactors && shortage.geopoliticalFactors.length > 0 && (
+          {geopoliticalFactors.length > 0 && (
             <div>
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
                 Geopolitical Factors
               </h4>
               <div className="flex flex-wrap gap-1">
-                {shortage.geopoliticalFactors.map((factor) => (
+                {geopoliticalFactors.map((factor) => (
                   <span
                     key={factor}
                     className="text-xs bg-yellow-500/10 text-yellow-300 border border-yellow-500/30 px-2 py-1 rounded"

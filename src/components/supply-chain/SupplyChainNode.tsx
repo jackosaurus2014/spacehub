@@ -139,7 +139,7 @@ export default function SupplyChainNode({
 
         {/* Products preview */}
         <div className="mt-3 flex flex-wrap gap-1">
-          {company.products.slice(0, 4).map((product) => (
+          {(company.products || []).slice(0, 4).map((product) => (
             <span
               key={product}
               className="text-xs bg-space-700 text-slate-300 px-2 py-0.5 rounded"
@@ -147,7 +147,7 @@ export default function SupplyChainNode({
               {product.replace(/_/g, ' ')}
             </span>
           ))}
-          {company.products.length > 4 && (
+          {(company.products || []).length > 4 && (
             <span className="text-xs text-slate-400">+{company.products.length - 4} more</span>
           )}
         </div>
@@ -240,7 +240,7 @@ export default function SupplyChainNode({
               Products & Services
             </h4>
             <div className="flex flex-wrap gap-1">
-              {company.products.map((product) => (
+              {(company.products || []).map((product) => (
                 <span
                   key={product}
                   className="text-xs bg-space-700 text-slate-300 px-2 py-1 rounded"

@@ -52,9 +52,19 @@ export async function GET(request: Request) {
         getModuleContent<SupplyRelationship>('supply-chain', 'relationships'),
         getModuleContent<SupplyShortage>('supply-chain', 'shortages'),
       ]);
-      if (dynamicCompanies.length > 0) allCompanies = dynamicCompanies.map((item) => item.data);
-      if (dynamicRelationships.length > 0) allRelationships = dynamicRelationships.map((item) => item.data);
-      if (dynamicShortages.length > 0) allShortages = dynamicShortages.map((item) => item.data);
+      // DynamicContent stores each section as a single JSON blob containing the full array
+      if (dynamicCompanies.length > 0) {
+        const data = dynamicCompanies[0].data;
+        allCompanies = Array.isArray(data) ? data : [data];
+      }
+      if (dynamicRelationships.length > 0) {
+        const data = dynamicRelationships[0].data;
+        allRelationships = Array.isArray(data) ? data : [data];
+      }
+      if (dynamicShortages.length > 0) {
+        const data = dynamicShortages[0].data;
+        allShortages = Array.isArray(data) ? data : [data];
+      }
     } catch {
       // DynamicContent unavailable, use fallback data
     }
