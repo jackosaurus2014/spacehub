@@ -185,12 +185,12 @@ function OverviewTab({ investors, fundingByYear, startups }: {
         </div>
       </div>
 
-      {/* Quick Preview: Top 5 Investors + Top 5 Startups */}
+      {/* Top 20 Investors + Top 20 Startups */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Top 5 Investors</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Top 20 Investors</h3>
           <div className="space-y-3">
-            {investors.slice(0, 5).map((inv, i) => (
+            {investors.slice(0, 20).map((inv, i) => (
               <div key={inv.id} className="flex items-center gap-3">
                 <span className="text-lg font-bold text-slate-500 w-6 text-right">{i + 1}</span>
                 <div className="flex-1 min-w-0">
@@ -203,10 +203,10 @@ function OverviewTab({ investors, fundingByYear, startups }: {
           </div>
         </div>
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Top 5 Funded Startups</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Top 20 Funded Startups</h3>
           <div className="space-y-3">
-            {startups.slice(0, 5).map((s, i) => (
-              <div key={s.slug} className="flex items-center gap-3">
+            {startups.slice(0, 20).map((s, i) => (
+              <div key={s.slug || s.name} className="flex items-center gap-3">
                 <span className="text-lg font-bold text-slate-500 w-6 text-right">{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <div className="text-white font-medium text-sm truncate">{s.name}</div>
@@ -751,7 +751,9 @@ function SpaceCapitalInner() {
 
         if (investorsJson.data) setInvestors(investorsJson.data);
         if (fundingJson.data) setFundingByYear(fundingJson.data);
-        if (startupsJson.data) {
+        if (startupsJson.companies) {
+          setStartups(startupsJson.companies);
+        } else if (startupsJson.data) {
           setStartups(startupsJson.data);
         } else if (Array.isArray(startupsJson)) {
           setStartups(startupsJson);

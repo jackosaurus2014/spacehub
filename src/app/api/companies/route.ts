@@ -35,28 +35,37 @@ export async function GET(request: Request) {
       };
     }
 
+    const sort = searchParams.get('sort');
+    const orderBy = sort === 'totalFunding'
+      ? [{ totalFunding: 'desc' as const }, { valuation: 'desc' as const }, { name: 'asc' as const }]
+      : [{ isPublic: 'desc' as const }, { marketCap: 'desc' as const }, { valuation: 'desc' as const }, { name: 'asc' as const }];
+
     const [companies, total] = await Promise.all([
       prisma.spaceCompany.findMany({
         where,
         select: {
           id: true,
+          slug: true,
           name: true,
           ticker: true,
           country: true,
+          headquarters: true,
+          founded: true,
+          website: true,
           isPublic: true,
           isPreIPO: true,
           marketCap: true,
           valuation: true,
+          totalFunding: true,
+          lastFundingRound: true,
+          lastFundingAmount: true,
+          lastFundingDate: true,
           focusAreas: true,
           subSectors: true,
+          employeeCount: true,
           description: true,
         },
-        orderBy: [
-          { isPublic: 'desc' },
-          { marketCap: 'desc' },
-          { valuation: 'desc' },
-          { name: 'asc' },
-        ],
+        orderBy,
         take: limit,
         skip: offset,
       }),
