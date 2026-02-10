@@ -92,6 +92,15 @@ export default function MarketplacePage() {
                 Post an RFQ
               </motion.button>
             </Link>
+            <Link href="/marketplace/copilot">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-2.5 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-purple-500/30 text-purple-300 hover:border-purple-400/50 rounded-lg font-semibold transition-all flex items-center gap-2"
+              >
+                <span>🤖</span> AI Copilot
+              </motion.button>
+            </Link>
           </div>
         </div>
 

@@ -60,6 +60,7 @@ export const MODULE_ROUTES: Record<string, string> = {
 
   // ── Marketplace ──
   'marketplace': '/marketplace',
+  'procurement-copilot': '/marketplace/copilot',
   'provider-dashboard': '/provider-dashboard',
 
   // ── Legacy backward-compat aliases ──
