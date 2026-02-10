@@ -2,6 +2,7 @@
 
 import { PROPOSAL_STATUSES } from '@/lib/marketplace-types';
 import MatchScore from './MatchScore';
+import ComingSoonBadge from './ComingSoonBadge';
 
 interface Proposal {
   id: string;
@@ -130,13 +131,14 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
           </button>
         </div>
       )}
-      {isBuyer && proposal.status === 'shortlisted' && onAction && (
+      {isBuyer && proposal.status === 'shortlisted' && (
         <div className="flex gap-2 pt-2 border-t border-slate-700/50">
           <button
-            onClick={() => onAction(proposal.id, 'awarded')}
-            className="flex-1 text-xs py-1.5 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 transition-colors font-semibold"
+            disabled
+            title="Secure contract awarding with escrow payments is coming soon"
+            className="flex-1 text-xs py-1.5 bg-green-500/10 text-green-400/50 rounded font-semibold cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Award Contract
+            Award Contract <ComingSoonBadge />
           </button>
         </div>
       )}

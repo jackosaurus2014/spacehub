@@ -8,6 +8,8 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import CategoryGrid from '@/components/marketplace/CategoryGrid';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import RFQCard from '@/components/marketplace/RFQCard';
+import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
+import { toast } from '@/lib/toast';
 
 interface MarketplaceStats {
   totalListings: number;
@@ -179,7 +181,7 @@ export default function MarketplacePage() {
         {/* How It Works */}
         <div className="card p-8">
           <h2 className="text-lg font-semibold text-white text-center mb-6">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
                 step: '1',
@@ -196,8 +198,16 @@ export default function MarketplacePage() {
               {
                 step: '3',
                 title: 'Award & Procure',
-                desc: 'Compare proposals, shortlist candidates, and award the contract to your chosen provider.',
+                desc: 'Compare proposals and shortlist candidates. Secure contract awarding with integrated payments coming soon.',
                 icon: '🏆',
+                comingSoon: true,
+              },
+              {
+                step: '4',
+                title: 'Secure Payments',
+                desc: 'Escrow-based milestone payments, invoicing, and contract management.',
+                icon: '🔒',
+                comingSoon: true,
               },
             ].map((item, i) => (
               <motion.div
@@ -208,8 +218,56 @@ export default function MarketplacePage() {
                 className="text-center"
               >
                 <div className="text-3xl mb-3">{item.icon}</div>
-                <div className="text-sm font-semibold text-white mb-1">{item.title}</div>
+                <div className="text-sm font-semibold text-white mb-1 flex items-center justify-center gap-2">
+                  {item.title}
+                  {(item as any).comingSoon && <ComingSoonBadge />}
+                </div>
                 <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Coming Soon Features */}
+        <div>
+          <h2 className="text-lg font-semibold text-white text-center mb-6 flex items-center justify-center gap-3">
+            On the Roadmap <ComingSoonBadge size="md" />
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                title: 'Escrow & Milestone Payments',
+                desc: 'Fund contracts with milestone-based escrow. Release payments as deliverables are confirmed.',
+                icon: '💰',
+              },
+              {
+                title: 'Contract Management',
+                desc: 'Templates, change orders, SLA tracking, and automated invoicing for space service agreements.',
+                icon: '📄',
+              },
+              {
+                title: 'AI Proposal Analysis',
+                desc: 'AI-powered proposal comparison, gap analysis, and bid recommendations to help you choose faster.',
+                icon: '🧠',
+              },
+            ].map((feature, i) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + i * 0.1 }}
+                className="card p-5 border-blue-500/10 relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                <div className="text-2xl mb-3">{feature.icon}</div>
+                <div className="text-sm font-semibold text-white mb-1">{feature.title}</div>
+                <p className="text-xs text-slate-400 leading-relaxed mb-3">{feature.desc}</p>
+                <button
+                  onClick={() => toast.info(`We'll notify you when ${feature.title} launches!`, 'Interest Registered')}
+                  className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                >
+                  Notify Me →
+                </button>
               </motion.div>
             ))}
           </div>

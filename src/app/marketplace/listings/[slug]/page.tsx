@@ -11,6 +11,7 @@ import ReviewCard from '@/components/marketplace/ReviewCard';
 import ReviewForm from '@/components/marketplace/ReviewForm';
 import RatingDistribution from '@/components/marketplace/RatingDistribution';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
+import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { getCategoryIcon, getCategoryLabel, getSubcategoryLabel } from '@/lib/marketplace-types';
 
 export default function ListingDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -244,6 +245,14 @@ export default function ListingDetailPage({ params }: { params: Promise<{ slug: 
                   Request a Quote
                 </button>
               </Link>
+
+              <button
+                disabled
+                title="Direct hiring with secure payments coming soon"
+                className="w-full py-2 bg-slate-800/50 text-slate-500 text-sm rounded-lg font-medium cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+              >
+                Hire Directly <ComingSoonBadge />
+              </button>
             </div>
 
             {/* Quick Details */}

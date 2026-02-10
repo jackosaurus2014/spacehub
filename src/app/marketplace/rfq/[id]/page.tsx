@@ -9,6 +9,7 @@ import ProposalCard from '@/components/marketplace/ProposalCard';
 import ProposalForm from '@/components/marketplace/ProposalForm';
 import MatchScore from '@/components/marketplace/MatchScore';
 import ClarificationThread from '@/components/marketplace/ClarificationThread';
+import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { getCategoryIcon, getCategoryLabel, formatPrice, RFQ_STATUSES } from '@/lib/marketplace-types';
 import { toast } from '@/lib/toast';
 
@@ -174,6 +175,12 @@ export default function RFQDetailPage({ params }: { params: Promise<{ id: string
             <h3 className="text-sm font-semibold text-white mb-3">
               Proposals ({rfqData.proposals.length})
             </h3>
+            {userRole === 'buyer' && (
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mb-3 flex items-center gap-2">
+                <span className="text-xs text-blue-300">You can shortlist and evaluate proposals. Secure contract awarding with payments is</span>
+                <ComingSoonBadge />
+              </div>
+            )}
             <div className="space-y-3">
               {rfqData.proposals.map((proposal: any) => (
                 <ProposalCard

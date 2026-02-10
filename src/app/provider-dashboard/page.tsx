@@ -10,6 +10,7 @@ import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import ProposalCard from '@/components/marketplace/ProposalCard';
 import ReviewCard from '@/components/marketplace/ReviewCard';
 import VerificationBadge from '@/components/marketplace/VerificationBadge';
+import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 
 
 function DashboardContent() {
@@ -268,6 +269,29 @@ function DashboardContent() {
                 </div>
               </div>
             )}
+
+            {/* Coming Soon Features */}
+            <div>
+              <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                Coming Soon <ComingSoonBadge />
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { icon: '💰', title: 'Revenue Tracking', desc: 'Track platform-facilitated transactions, invoices, and payouts' },
+                  { icon: '📊', title: 'Proposal Analytics', desc: 'Win/loss rates, competitive benchmarking, and market demand trends' },
+                  { icon: '📄', title: 'Contract Manager', desc: 'Milestone tracking, change orders, and SLA monitoring' },
+                ].map((feature) => (
+                  <div
+                    key={feature.title}
+                    className="card p-4 opacity-60 border-dashed border-slate-700"
+                  >
+                    <div className="text-xl mb-2">{feature.icon}</div>
+                    <div className="text-xs font-semibold text-slate-300">{feature.title}</div>
+                    <div className="text-[10px] text-slate-500 mt-1">{feature.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
@@ -324,7 +348,7 @@ function DashboardContent() {
             ) : (
               <div className="text-center py-16">
                 <div className="text-4xl mb-3">⭐</div>
-                <p className="text-sm text-slate-400">No reviews yet. Complete transactions to build your reputation.</p>
+                <p className="text-sm text-slate-400">No reviews yet. Get reviews from your clients to build your reputation.</p>
               </div>
             )}
           </div>
