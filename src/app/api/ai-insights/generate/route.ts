@@ -83,6 +83,22 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Fetch blog posts from the last 24 hours
+    const blogPosts = await prisma.blogPost.findMany({
+      where: {
+        publishedAt: { gte: twentyFourHoursAgo },
+      },
+      orderBy: { publishedAt: 'desc' },
+      take: 30,
+      select: {
+        title: true,
+        excerpt: true,
+        url: true,
+        topic: true,
+        source: { select: { name: true } },
+      },
+    });
+
     // Fetch legal updates from the last 48 hours
     const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
     const legalUpdates = await prisma.legalUpdate.findMany({
@@ -99,9 +115,14 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    if (newsArticles.length === 0 && legalUpdates.length === 0) {
+    if (newsArticles.length === 0 && blogPosts.length === 0 && legalUpdates.length === 0) {
+      logger.warn('AI insights generation skipped — no recent content', {
+        newsCount: newsArticles.length,
+        blogCount: blogPosts.length,
+        legalCount: legalUpdates.length,
+      });
       return NextResponse.json(
-        { success: false, error: 'No recent news articles or legal updates found to analyze' },
+        { success: false, error: 'No recent news articles, blog posts, or legal updates found to analyze' },
         { status: 404 }
       );
     }
@@ -113,6 +134,16 @@ export async function POST(request: NextRequest) {
           `${i + 1}. [${a.category}] ${a.title}\n   Source: ${a.source}\n   Summary: ${a.summary || 'N/A'}\n   URL: ${a.url}`
       )
       .join('\n\n');
+
+    const blogContext =
+      blogPosts.length > 0
+        ? blogPosts
+            .map(
+              (b, i) =>
+                `${i + 1}. [${b.topic || 'general'}] ${b.title}\n   Source: ${b.source?.name || 'Unknown'}\n   Excerpt: ${b.excerpt || 'N/A'}\n   URL: ${b.url}`
+            )
+            .join('\n\n')
+        : 'No recent blog posts available.';
 
     const legalContext =
       legalUpdates.length > 0
@@ -127,10 +158,13 @@ export async function POST(request: NextRequest) {
     // Call Claude to generate insights
     const anthropic = new Anthropic();
 
-    const prompt = `You are a senior space industry analyst writing in-depth intelligence briefings for SpaceNexus, a professional space industry platform. Based on the following recent news articles and legal/regulatory updates, identify the 2 most significant space industry developments and write a comprehensive analysis for each.
+    const prompt = `You are a senior space industry analyst writing in-depth intelligence briefings for SpaceNexus, a professional space industry platform. Based on the following recent news articles, blog posts, and legal/regulatory updates, identify the 2 most significant space industry developments and write a comprehensive analysis for each.
 
 ## Recent News Articles (Last 24 Hours)
 ${newsContext}
+
+## Recent Blog Posts & Analysis (Last 24 Hours)
+${blogContext}
 
 ## Recent Legal & Regulatory Updates (Last 48 Hours)
 ${legalContext}
@@ -170,9 +204,15 @@ Respond with valid JSON in this exact format (no markdown code fences):
   ]
 }`;
 
+    logger.info('Generating AI insights', {
+      newsCount: newsArticles.length,
+      blogCount: blogPosts.length,
+      legalCount: legalUpdates.length,
+    });
+
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8000,
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 16000,
       messages: [
         {
           role: 'user',
@@ -259,6 +299,7 @@ Respond with valid JSON in this exact format (no markdown code fences):
       count: upsertedInsights.length,
       categories: upsertedInsights.map((i) => i.category),
       newsArticlesUsed: newsArticles.length,
+      blogPostsUsed: blogPosts.length,
       legalUpdatesUsed: legalUpdates.length,
     });
 
