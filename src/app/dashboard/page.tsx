@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { NEWS_CATEGORIES } from '@/types';
 import DashboardLayoutSelector from '@/components/DashboardLayoutSelector';
 import ModuleConfigurator from '@/components/ModuleConfigurator';
 import { SkeletonPage } from '@/components/ui/Skeleton';
@@ -18,19 +17,99 @@ import {
   type DashboardSection,
 } from '@/lib/dashboard-layouts';
 
-const categoryIcons: Record<string, string> = {
-  launches: '🚀',
-  missions: '🛸',
-  companies: '🏢',
-  earnings: '💰',
-  development: '🔧',
-  policy: '📜',
-};
+interface ModuleItem {
+  label: string;
+  href: string;
+  description: string;
+  icon: string;
+}
+
+const EXPLORE_MODULES: ModuleItem[] = [
+  { icon: '🎯', label: 'Mission Control', href: '/mission-control', description: 'Upcoming launches and events' },
+  { icon: '📰', label: 'News & Categories', href: '/news', description: 'Latest space industry updates' },
+  { icon: '📝', label: 'Blogs & Articles', href: '/blogs', description: 'Expert industry insights' },
+  { icon: '🛡️', label: 'Space Defense', href: '/space-defense', description: 'Military space & national security' },
+  { icon: '🤖', label: 'AI Insights', href: '/ai-insights', description: 'AI-powered industry analysis' },
+  { icon: '🪐', label: 'Solar Exploration', href: '/solar-exploration', description: '3D planetary visualization' },
+  { icon: '🔴', label: 'Mars Mission Planner', href: '/mars-planner', description: 'Mars missions and launch windows' },
+  { icon: '🌙', label: 'Cislunar Ecosystem', href: '/cislunar', description: 'Gateway, Artemis & lunar economy' },
+  { icon: '☄️', label: 'Asteroid Watch', href: '/asteroid-watch', description: 'NEOs, planetary defense, and mining' },
+];
+
+const INTELLIGENCE_MODULES: ModuleItem[] = [
+  { icon: '📊', label: 'Market Intel', href: '/market-intel', description: 'Companies and stock tracking' },
+  { icon: '💹', label: 'Space Economy', href: '/space-economy', description: 'Market size, investment & budgets' },
+  { icon: '💸', label: 'Space Capital', href: '/space-capital', description: 'VC investors, startups & matchmaking' },
+  { icon: '⚖️', label: 'Regulatory Hub', href: '/compliance', description: 'Compliance, space law & filings' },
+  { icon: '📡', label: 'Spectrum Management', href: '/spectrum', description: 'Allocations, auctions & filings' },
+  { icon: '📋', label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },
+];
+
+const BUSINESS_MODULES: ModuleItem[] = [
+  { icon: '💼', label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
+  { icon: '👥', label: 'Space Talent Hub', href: '/space-talent', description: 'Jobs, experts & workforce analytics' },
+  { icon: '🔗', label: 'Global Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain & shortage alerts' },
+  { icon: '⛏️', label: 'Space Mining', href: '/space-mining', description: 'Asteroid and planetary mining intelligence' },
+  { icon: '🛡️', label: 'Space Insurance', href: '/space-insurance', description: 'Risk calculator and market data' },
+  { icon: '🏭', label: 'Manufacturing & Imagery', href: '/space-manufacturing', description: 'In-space manufacturing & EO providers' },
+];
+
+const TOOLS_MODULES: ModuleItem[] = [
+  { icon: '💰', label: 'Mission Cost Simulator', href: '/mission-cost', description: 'Estimate launch costs and fees' },
+  { icon: '🚀', label: 'Launch Vehicle Comparison', href: '/launch-vehicles', description: 'Compare rocket specs and costs' },
+  { icon: '🛰️', label: 'Satellite Tracker', href: '/satellites', description: 'Track ISS, Starlink & weather satellites' },
+  { icon: '🏗️', label: 'Space Station Tracker', href: '/space-stations', description: 'ISS, Tiangong & commercial stations' },
+  { icon: '🌍', label: 'Orbital Management', href: '/orbital-slots', description: 'Orbital slots and satellite services' },
+  { icon: '✨', label: 'Constellation Tracker', href: '/constellations', description: 'Satellite constellation monitoring' },
+  { icon: '📡', label: 'Ground Stations', href: '/ground-stations', description: 'Global ground station networks' },
+  { icon: '🏛️', label: 'Infrastructure Network', href: '/spaceports', description: 'Spaceports & communications networks' },
+  { icon: '⚡', label: 'Resource Exchange', href: '/resource-exchange', description: 'Space commodity pricing' },
+  { icon: '🗓️', label: 'Launch Windows', href: '/launch-windows', description: 'Optimal launch timing' },
+  { icon: '🌤️', label: 'Space Environment', href: '/space-environment', description: 'Weather, debris & operations' },
+  { icon: '📐', label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
+];
+
+function ModuleSection({ title, icon, modules, sizeClasses, delay }: {
+  title: string;
+  icon: string;
+  modules: ModuleItem[];
+  sizeClasses: ReturnType<typeof getModuleSizeClasses>;
+  delay: string;
+}) {
+  return (
+    <div className={`mb-8 animate-fade-in`} style={{ animationDelay: delay }}>
+      <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+        <span className="text-xl">{icon}</span>
+        {title}
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        {modules.map((mod) => (
+          <Link
+            key={mod.href}
+            href={mod.href}
+            className={`group relative bg-slate-800/50 border border-slate-700/50 rounded-xl ${sizeClasses.padding} hover:border-cyan-400/40 hover:bg-slate-800/80 transition-all duration-200`}
+          >
+            <div className="flex items-start gap-3">
+              <span className="text-2xl flex-shrink-0 mt-0.5">{mod.icon}</span>
+              <div className="min-w-0">
+                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-cyan-300 transition-colors truncate">
+                  {mod.label}
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
+                  {mod.description}
+                </p>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [articleCounts, setArticleCounts] = useState<Record<string, number>>({});
   const [layoutSelectorOpen, setLayoutSelectorOpen] = useState(false);
   const [moduleConfigOpen, setModuleConfigOpen] = useState(false);
 
@@ -59,26 +138,6 @@ export default function DashboardPage() {
     }
   }, [status, router]);
 
-  useEffect(() => {
-    const fetchCounts = async () => {
-      const counts: Record<string, number> = {};
-      for (const category of NEWS_CATEGORIES) {
-        try {
-          const res = await fetch(`/api/news?category=${category.slug}&limit=1`);
-          const data = await res.json();
-          counts[category.slug] = data.total;
-        } catch {
-          counts[category.slug] = 0;
-        }
-      }
-      setArticleCounts(counts);
-    };
-
-    if (status === 'authenticated') {
-      fetchCounts();
-    }
-  }, [status]);
-
   const handleLayoutChange = () => {
     loadLayout();
   };
@@ -92,15 +151,8 @@ export default function DashboardPage() {
   }
 
   const sizeClasses = getModuleSizeClasses(moduleSize);
-  const gridClass = getGridColumnsClass(gridColumns);
 
-  // For category grid, adjust columns based on layout
-  const categoryGridClass =
-    gridColumns === 1
-      ? 'grid-cols-2 md:grid-cols-3'
-      : gridColumns === 2
-      ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
-      : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6';
+  const totalModules = EXPLORE_MODULES.length + INTELLIGENCE_MODULES.length + BUSINESS_MODULES.length + TOOLS_MODULES.length;
 
   return (
     <div className="min-h-screen py-8">
@@ -119,20 +171,10 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => setLayoutSelectorOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-500 hover:text-slate-700 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-lg hover:border-nebula-300/50 transition-all shadow-sm hover:shadow-md"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-400 hover:text-cyan-300 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-lg hover:border-cyan-400/30 transition-all shadow-sm"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
-              />
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
             </svg>
             Customize Layout
           </button>
@@ -140,287 +182,67 @@ export default function DashboardPage() {
 
         {/* Welcome Header */}
         {isSectionVisible('welcome', sections) && (
-          <div className={`card ${sizeClasses.padding} mb-8 glow-border animate-fade-in`}>
-            <div className="flex items-center space-x-4">
-              <div
-                className={`${
-                  moduleSize === 'compact'
-                    ? 'w-12 h-12 text-lg'
-                    : moduleSize === 'expanded'
-                    ? 'w-20 h-20 text-2xl'
-                    : 'w-16 h-16 text-xl'
-                } rounded-full bg-gradient-to-br from-nebula-500 to-rocket-500 flex items-center justify-center text-slate-900 font-bold`}
-              >
-                {session.user?.name?.charAt(0)?.toUpperCase() || 'E'}
-              </div>
-              <div>
-                <h1
-                  className={`font-display font-bold text-slate-900 ${
-                    moduleSize === 'compact'
-                      ? 'text-xl'
-                      : moduleSize === 'expanded'
-                      ? 'text-3xl'
-                      : 'text-2xl'
-                  }`}
-                >
-                  Welcome back, {session.user?.name || 'Explorer'}!
-                </h1>
-                <p className={`text-slate-400 ${sizeClasses.text}`}>
-                  {session.user?.email}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Quick Stats */}
-        {isSectionVisible('quick-stats', sections) && (
-          <div className={`grid ${gridClass} ${sizeClasses.gap} mb-8`}>
-            <div className={`card ${sizeClasses.padding} animate-fade-in`} style={{ animationDelay: '0.1s' }}>
+          <div className="bg-gradient-to-r from-slate-800/80 via-slate-800/60 to-slate-800/80 border border-slate-700/50 rounded-2xl p-6 mb-8 animate-fade-in">
+            <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <span className={sizeClasses.icon}>📊</span>
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center text-white text-xl font-bold">
+                  {session.user?.name?.charAt(0)?.toUpperCase() || 'E'}
+                </div>
                 <div>
-                  <p className={`text-slate-400 ${moduleSize === 'compact' ? 'text-xs' : 'text-sm'}`}>
-                    Total Articles
-                  </p>
-                  <p
-                    className={`font-bold text-slate-900 ${
-                      moduleSize === 'compact'
-                        ? 'text-xl'
-                        : moduleSize === 'expanded'
-                        ? 'text-3xl'
-                        : 'text-2xl'
-                    }`}
-                  >
-                    {Object.values(articleCounts).reduce((a, b) => a + b, 0)}
+                  <h1 className="text-2xl font-bold text-white">
+                    Welcome back, {session.user?.name || 'Explorer'}!
+                  </h1>
+                  <p className="text-slate-400 text-sm">
+                    {session.user?.email}
                   </p>
                 </div>
               </div>
-            </div>
-            <div className={`card ${sizeClasses.padding} animate-fade-in`} style={{ animationDelay: '0.15s' }}>
-              <div className="flex items-center space-x-4">
-                <span className={sizeClasses.icon}>📂</span>
+              <div className="hidden md:flex items-center gap-6 text-center">
                 <div>
-                  <p className={`text-slate-400 ${moduleSize === 'compact' ? 'text-xs' : 'text-sm'}`}>
-                    Categories
-                  </p>
-                  <p
-                    className={`font-bold text-slate-900 ${
-                      moduleSize === 'compact'
-                        ? 'text-xl'
-                        : moduleSize === 'expanded'
-                        ? 'text-3xl'
-                        : 'text-2xl'
-                    }`}
-                  >
-                    {NEWS_CATEGORIES.length}
-                  </p>
+                  <p className="text-2xl font-bold text-cyan-400">{totalModules}</p>
+                  <p className="text-xs text-slate-400">Modules</p>
                 </div>
-              </div>
-            </div>
-            <div className={`card ${sizeClasses.padding} animate-fade-in`} style={{ animationDelay: '0.2s' }}>
-              <div className="flex items-center space-x-4">
-                <span className={sizeClasses.icon}>🌟</span>
                 <div>
-                  <p className={`text-slate-400 ${moduleSize === 'compact' ? 'text-xs' : 'text-sm'}`}>
-                    Member Since
-                  </p>
-                  <p
-                    className={`font-bold text-slate-900 ${
-                      moduleSize === 'compact'
-                        ? 'text-xl'
-                        : moduleSize === 'expanded'
-                        ? 'text-3xl'
-                        : 'text-2xl'
-                    }`}
-                  >
-                    Today
-                  </p>
+                  <p className="text-2xl font-bold text-purple-400">4</p>
+                  <p className="text-xs text-slate-400">Categories</p>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Category Overview */}
-        {isSectionVisible('category-overview', sections) && (
-          <div className={`card ${sizeClasses.padding} mb-8 animate-fade-in`} style={{ animationDelay: '0.25s' }}>
-            <h2
-              className={`font-display font-bold text-slate-900 mb-6 flex items-center ${
-                moduleSize === 'compact'
-                  ? 'text-lg'
-                  : moduleSize === 'expanded'
-                  ? 'text-2xl'
-                  : 'text-xl'
-              }`}
-            >
-              <span className={`mr-3 ${moduleSize === 'compact' ? 'text-xl' : 'text-2xl'}`}>
-                📈
-              </span>
-              Articles by Category
-            </h2>
-            <div className={`grid ${categoryGridClass} gap-4`}>
-              {NEWS_CATEGORIES.map((category) => (
-                <Link
-                  key={category.slug}
-                  href={`/news?category=${category.slug}`}
-                  className={`bg-slate-100 border border-slate-200 rounded-lg ${
-                    moduleSize === 'compact' ? 'p-3' : 'p-4'
-                  } text-center hover:border-nebula-500/50 transition-all`}
-                >
-                  <span
-                    className={`block mb-2 ${
-                      moduleSize === 'compact'
-                        ? 'text-2xl'
-                        : moduleSize === 'expanded'
-                        ? 'text-4xl'
-                        : 'text-3xl'
-                    }`}
-                  >
-                    {categoryIcons[category.slug]}
-                  </span>
-                  <p
-                    className={`text-slate-900 font-semibold ${
-                      moduleSize === 'compact' ? 'text-xs' : 'text-sm'
-                    }`}
-                  >
-                    {category.name}
-                  </p>
-                  <p
-                    className={`text-nebula-300 font-bold ${
-                      moduleSize === 'compact' ? 'text-base' : 'text-lg'
-                    }`}
-                  >
-                    {articleCounts[category.slug] || 0}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Module Sections - matching sidebar order */}
+        <ModuleSection
+          title="Explore"
+          icon="🔭"
+          modules={EXPLORE_MODULES}
+          sizeClasses={sizeClasses}
+          delay="0.1s"
+        />
 
-        {/* Quick Actions */}
-        {isSectionVisible('quick-actions', sections) && (
-          <div className={`card ${sizeClasses.padding} animate-fade-in`} style={{ animationDelay: '0.3s' }}>
-            <h2
-              className={`font-display font-bold text-slate-900 mb-6 flex items-center ${
-                moduleSize === 'compact'
-                  ? 'text-lg'
-                  : moduleSize === 'expanded'
-                  ? 'text-2xl'
-                  : 'text-xl'
-              }`}
-            >
-              <span className={`mr-3 ${moduleSize === 'compact' ? 'text-xl' : 'text-2xl'}`}>
-                ⚡
-              </span>
-              Quick Actions
-            </h2>
-            <div className={`grid ${gridClass} gap-4`}>
-              <Link
-                href="/news"
-                className={`bg-slate-100 border border-slate-200 rounded-lg ${sizeClasses.padding} hover:border-nebula-500/50 transition-all group`}
-              >
-                <span className={`block mb-3 ${sizeClasses.icon}`}>📰</span>
-                <h3
-                  className={`text-slate-900 font-semibold group-hover:text-nebula-200 transition-colors ${
-                    moduleSize === 'compact' ? 'text-sm' : ''
-                  }`}
-                >
-                  Browse All News
-                </h3>
-                <p
-                  className={`text-slate-400 mt-1 ${
-                    moduleSize === 'compact' ? 'text-xs' : 'text-sm'
-                  }`}
-                >
-                  Explore the latest space industry updates
-                </p>
-              </Link>
-              <Link
-                href="/news?category=launches"
-                className={`bg-slate-100 border border-slate-200 rounded-lg ${sizeClasses.padding} hover:border-nebula-500/50 transition-all group`}
-              >
-                <span className={`block mb-3 ${sizeClasses.icon}`}>🚀</span>
-                <h3
-                  className={`text-slate-900 font-semibold group-hover:text-nebula-200 transition-colors ${
-                    moduleSize === 'compact' ? 'text-sm' : ''
-                  }`}
-                >
-                  Upcoming Launches
-                </h3>
-                <p
-                  className={`text-slate-400 mt-1 ${
-                    moduleSize === 'compact' ? 'text-xs' : 'text-sm'
-                  }`}
-                >
-                  Stay updated on rocket launches
-                </p>
-              </Link>
-              <Link
-                href="/news?category=companies"
-                className={`bg-slate-100 border border-slate-200 rounded-lg ${sizeClasses.padding} hover:border-nebula-500/50 transition-all group`}
-              >
-                <span className={`block mb-3 ${sizeClasses.icon}`}>🏢</span>
-                <h3
-                  className={`text-slate-900 font-semibold group-hover:text-nebula-200 transition-colors ${
-                    moduleSize === 'compact' ? 'text-sm' : ''
-                  }`}
-                >
-                  Company News
-                </h3>
-                <p
-                  className={`text-slate-400 mt-1 ${
-                    moduleSize === 'compact' ? 'text-xs' : 'text-sm'
-                  }`}
-                >
-                  Follow major space companies
-                </p>
-              </Link>
-            </div>
-          </div>
-        )}
+        <ModuleSection
+          title="Intelligence"
+          icon="📊"
+          modules={INTELLIGENCE_MODULES}
+          sizeClasses={sizeClasses}
+          delay="0.15s"
+        />
 
-        {/* Future Features Teaser */}
-        {isSectionVisible('coming-soon', sections) && (
-          <div
-            className={`card ${sizeClasses.padding} mt-8 border-dashed animate-fade-in`}
-            style={{ animationDelay: '0.35s' }}
-          >
-            <div className="text-center">
-              <span
-                className={`block mb-4 ${
-                  moduleSize === 'compact'
-                    ? 'text-4xl'
-                    : moduleSize === 'expanded'
-                    ? 'text-6xl'
-                    : 'text-5xl'
-                }`}
-              >
-                🔮
-              </span>
-              <h2
-                className={`font-display font-bold text-slate-900 mb-2 ${
-                  moduleSize === 'compact'
-                    ? 'text-lg'
-                    : moduleSize === 'expanded'
-                    ? 'text-2xl'
-                    : 'text-xl'
-                }`}
-              >
-                Coming Soon
-              </h2>
-              <p
-                className={`text-slate-400 max-w-2xl mx-auto ${
-                  moduleSize === 'compact' ? 'text-sm' : ''
-                }`}
-              >
-                Save articles, customize your news feed, receive notifications for
-                launches, and more. Stay tuned for exciting new features!
-              </p>
-            </div>
-          </div>
-        )}
+        <ModuleSection
+          title="Business"
+          icon="💼"
+          modules={BUSINESS_MODULES}
+          sizeClasses={sizeClasses}
+          delay="0.2s"
+        />
+
+        <ModuleSection
+          title="Tools"
+          icon="🛠️"
+          modules={TOOLS_MODULES}
+          sizeClasses={sizeClasses}
+          delay="0.25s"
+        />
       </div>
 
       {/* Layout Selector Modal */}
