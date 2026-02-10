@@ -20,7 +20,7 @@ export default function ListingDetailPage({ params }: { params: Promise<{ slug: 
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(`/api/marketplace/listings/${slug}`);
+        const res = await fetch(`/api/marketplace/listings/${encodeURIComponent(slug)}`);
         if (!res.ok) {
           const err = await res.json();
           throw new Error(err.error || 'Failed to load listing');
@@ -164,7 +164,7 @@ export default function ListingDetailPage({ params }: { params: Promise<{ slug: 
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-lg bg-slate-700 flex items-center justify-center text-lg flex-shrink-0">
                     {listing.company.logoUrl ? (
-                      <img src={listing.company.logoUrl} alt="" className="w-10 h-10 rounded-lg object-contain" />
+                      <img src={listing.company.logoUrl} alt={`${listing.company.name} logo`} className="w-10 h-10 rounded-lg object-contain" />
                     ) : (
                       listing.company.name.charAt(0)
                     )}

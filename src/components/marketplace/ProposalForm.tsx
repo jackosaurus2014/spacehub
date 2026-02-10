@@ -56,7 +56,7 @@ export default function ProposalForm({ rfqId, onSuccess }: ProposalFormProps) {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm text-slate-400 mb-1">Proposed Price ($)</label>
+          <label className="block text-sm text-slate-400 mb-1">Proposed Price ($) <span className="text-slate-600 text-[10px]">optional</span></label>
           <input
             type="number"
             value={form.price}
@@ -66,7 +66,7 @@ export default function ProposalForm({ rfqId, onSuccess }: ProposalFormProps) {
           />
         </div>
         <div>
-          <label className="block text-sm text-slate-400 mb-1">Timeline</label>
+          <label className="block text-sm text-slate-400 mb-1">Timeline <span className="text-slate-600 text-[10px]">optional</span></label>
           <input
             type="text"
             value={form.timeline}
@@ -78,7 +78,7 @@ export default function ProposalForm({ rfqId, onSuccess }: ProposalFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm text-slate-400 mb-1">Your Approach</label>
+        <label className="block text-sm text-slate-400 mb-1">Your Approach <span className="text-red-400">*</span></label>
         <textarea
           value={form.approach}
           onChange={(e) => updateField('approach', e.target.value)}

@@ -202,7 +202,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
           <h3 className="text-lg font-semibold text-white">Budget, Timeline & Compliance</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Min Budget ($)</label>
+              <label className="block text-sm text-slate-400 mb-2">Min Budget ($) <span className="text-yellow-500/70 text-[10px]">recommended</span></label>
               <input
                 type="number"
                 value={form.budgetMin}
@@ -212,7 +212,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               />
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Max Budget ($)</label>
+              <label className="block text-sm text-slate-400 mb-2">Max Budget ($) <span className="text-yellow-500/70 text-[10px]">recommended</span></label>
               <input
                 type="number"
                 value={form.budgetMax}
@@ -321,6 +321,11 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                     <span key={c} className="text-[10px] px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded">{c}</span>
                   ))}
                 </div>
+              </div>
+            )}
+            {!form.budgetMin && !form.budgetMax && (
+              <div className="text-xs text-yellow-500/80 bg-yellow-500/10 rounded px-3 py-2">
+                No budget specified — adding a budget range helps providers submit more accurate proposals.
               </div>
             )}
             <div className="text-xs text-slate-500">

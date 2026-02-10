@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
@@ -28,6 +28,7 @@ function SearchContent() {
   const [sort, setSort] = useState('newest');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
@@ -80,6 +81,7 @@ function SearchContent() {
   useEffect(() => {
     if (tab === 'listings') fetchListings();
     else fetchRFQs();
+    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [tab, fetchListings, fetchRFQs]);
 
   const toggleCert = (cert: string) => {
@@ -202,7 +204,7 @@ function SearchContent() {
           </div>
 
           {/* Results */}
-          <div className="flex-1 min-w-0">
+          <div ref={resultsRef} className="flex-1 min-w-0">
             {/* Toolbar */}
             <div className="flex items-center justify-between mb-4">
               <div className="text-sm text-slate-400">
