@@ -1977,8 +1977,8 @@ function ManufacturingAndImageryContent() {
             <Link href="/orbital-services" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
               Orbital Services
             </Link>
-            <Link href="/startups" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
-              Space Startups
+            <Link href="/space-capital" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+              Space Capital
             </Link>
             <Link href="/supply-chain" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
               Supply Chain

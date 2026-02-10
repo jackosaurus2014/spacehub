@@ -25,7 +25,7 @@ export const DEFAULT_LAYOUTS: LayoutPreset[] = [
       { moduleId: 'market-intel', widgetType: 'stats', x: 8, y: 0, w: 4, h: 3 },
       { moduleId: 'mission-control', widgetType: 'compact', x: 8, y: 3, w: 4, h: 3 },
       { moduleId: 'space-environment', widgetType: 'compact', x: 0, y: 6, w: 6, h: 3 },
-      { moduleId: 'startup-tracker', widgetType: 'compact', x: 6, y: 6, w: 6, h: 3 },
+      { moduleId: 'space-capital', widgetType: 'compact', x: 6, y: 6, w: 6, h: 3 },
     ],
   },
   {
@@ -34,7 +34,7 @@ export const DEFAULT_LAYOUTS: LayoutPreset[] = [
     widgets: [
       { moduleId: 'market-intel', widgetType: 'full', x: 0, y: 0, w: 8, h: 6 },
       { moduleId: 'space-economy', widgetType: 'chart', x: 8, y: 0, w: 4, h: 6 },
-      { moduleId: 'startup-tracker', widgetType: 'feed', x: 0, y: 6, w: 6, h: 4 },
+      { moduleId: 'space-capital', widgetType: 'feed', x: 0, y: 6, w: 6, h: 4 },
       { moduleId: 'business-opportunities', widgetType: 'compact', x: 6, y: 6, w: 6, h: 4 },
     ],
   },

@@ -733,8 +733,8 @@ export default function CommercialSpaceEconomyPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/startups" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
-                      Track space startups and funding on SpaceNexus
+                    <Link href="/space-capital" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                      Track space investors and startups on SpaceNexus
                     </Link>
                   </p>
                 </div>
@@ -892,7 +892,7 @@ export default function CommercialSpaceEconomyPage() {
                   {[
                     { name: 'Space Economy', href: '/space-economy', desc: 'Macro-level space economy data and trend analysis' },
                     { name: 'Market Intelligence', href: '/market-intel', desc: 'Company analytics, market trends, and competitive intelligence' },
-                    { name: 'Startup Tracker', href: '/startups', desc: 'Venture funding, company profiles, and deal flow tracking' },
+                    { name: 'Space Capital', href: '/space-capital', desc: 'VC investors, startups, and matchmaking tools' },
                     { name: 'Business Opportunities', href: '/business-opportunities', desc: 'Government contracts, RFPs, and procurement opportunities' },
                     { name: 'Supply Chain', href: '/supply-chain', desc: 'Space supply chain mapping and vendor intelligence' },
                     { name: 'Space Talent Hub', href: '/space-talent', desc: 'Space industry jobs and workforce analytics' },

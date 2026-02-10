@@ -142,6 +142,7 @@ const nextConfig = {
       { source: '/space-comms', destination: '/spaceports?tab=communications', permanent: true },
       { source: '/imagery-marketplace', destination: '/space-manufacturing?tab=imagery', permanent: true },
       { source: '/bid-protests', destination: '/compliance?tab=protests-overview', permanent: true },
+      { source: '/startups', destination: '/space-capital', permanent: true },
     ];
   },
 }

@@ -76,10 +76,10 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     defaultType: 'full',
     minWidth: 4, minHeight: 3, maxWidth: 12, maxHeight: 8,
   },
-  'startup-tracker': {
-    moduleId: 'startup-tracker',
-    label: 'Startup Tracker',
-    icon: '🚀',
+  'space-capital': {
+    moduleId: 'space-capital',
+    label: 'Space Capital',
+    icon: '💸',
     supportedTypes: ['full', 'feed', 'compact', 'stats'],
     defaultType: 'compact',
     minWidth: 3, minHeight: 2, maxWidth: 12, maxHeight: 8,

@@ -77,7 +77,7 @@ const PREMIUM_MODULES: Record<string, SubscriptionTier> = {
   // Pro tier — professional analytics & intelligence
   'resource-exchange': 'pro',
   'supply-chain': 'pro',
-  'startup-tracker': 'pro',
+  'space-capital': 'pro',
   'space-economy': 'pro',
   // Enterprise tier — organizational & compliance tools
   'business-opportunities': 'enterprise',

@@ -959,7 +959,7 @@ export default function SpaceIndustryMarketSizePage() {
                   {[
                     { name: 'Market Intelligence', href: '/market-intel', desc: 'Company analytics, market trends, economy dashboards' },
                     { name: 'Space Economy', href: '/space-economy', desc: 'Macro-level space economy data and analysis' },
-                    { name: 'Startup Tracker', href: '/startups', desc: 'Venture funding, company profiles, deal flow' },
+                    { name: 'Space Capital', href: '/space-capital', desc: 'VC investors, startups, and matchmaking' },
                     { name: 'Business Opportunities', href: '/business-opportunities', desc: 'Government contracts and procurement tracking' },
                   ].map((mod) => (
                     <Link

@@ -226,7 +226,7 @@ async function fetchModuleData(
     'news-feed': '/api/news?limit=5',
     'market-intel': '/api/market-intel?limit=5',
     'mission-control': '/api/events?limit=5',
-    'startup-tracker': '/api/startups?limit=5',
+    'space-capital': '/api/content/space-capital?section=investors&limit=5',
     'blogs-articles': '/api/blogs?limit=5',
     'space-defense': '/api/news?category=defense&limit=5',
     'business-opportunities': '/api/opportunities?limit=5',
@@ -335,10 +335,10 @@ function getPlaceholderData(
       { id: '2', title: 'Ariane 6 Flight VA263', subtitle: 'Arianespace', date: 'Feb 12' },
       { id: '3', title: 'PSLV-C60 SPADEX', subtitle: 'ISRO', date: 'Feb 15' },
     ],
-    'startup-tracker': [
-      { id: '1', title: 'Axiom Space raises $350M Series D', subtitle: 'Space Stations', date: 'Today' },
-      { id: '2', title: 'Impulse Space secures $100M for Mars cargo', subtitle: 'In-space Transport', date: 'Yesterday' },
-      { id: '3', title: 'K2 Space closes $50M for megasatellites', subtitle: 'Satellites', date: '2 days ago' },
+    'space-capital': [
+      { id: '1', title: 'Space Capital closes $200M Fund III', subtitle: 'Dedicated Space VC', date: 'Today' },
+      { id: '2', title: 'Founders Fund leads $150M Stoke Space round', subtitle: 'Deep Tech VC', date: 'Yesterday' },
+      { id: '3', title: 'a16z backs K2 Space $100M Series A', subtitle: 'Generalist VC', date: '2 days ago' },
     ],
   };
 

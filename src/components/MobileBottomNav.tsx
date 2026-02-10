@@ -65,7 +65,7 @@ const MORE_MENU_CATEGORIES: MenuCategory[] = [
     items: [
       { id: 'market-intel', label: 'Market Intel', icon: 'chart', href: '/market-intel' },
       { id: 'space-economy', label: 'Space Economy', icon: 'chart', href: '/space-economy' },
-      { id: 'startups', label: 'Space Startups', icon: 'lightbulb', href: '/startups' },
+      { id: 'space-capital', label: 'Space Capital', icon: 'lightbulb', href: '/space-capital' },
       { id: 'blogs', label: 'Blogs & Articles', icon: 'newspaper', href: '/blogs' },
       { id: 'space-defense', label: 'Space Defense', icon: 'shield', href: '/space-defense' },
     ],

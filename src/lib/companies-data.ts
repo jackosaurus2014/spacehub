@@ -26,6 +26,7 @@ export interface CompanyData {
   subSectors?: string[];
   employeeCount?: number;
   revenueEstimate?: number;
+  keyInvestors?: string[];
 }
 
 // Initial company data
@@ -748,6 +749,7 @@ const SPACE_COMPANIES: CompanyData[] = [
     focusAreas: ['launch_provider', 'lunar_services', 'spacecraft'],
     subSectors: ['alpha', 'mlv', 'blue_ghost', 'elytra'],
     employeeCount: 600,
+    keyInvestors: ['Northrop Grumman', 'AE Industrial Partners', 'Draper Associates'],
   },
   {
     slug: 'stoke-space',
@@ -769,6 +771,7 @@ const SPACE_COMPANIES: CompanyData[] = [
     focusAreas: ['launch_provider'],
     subSectors: ['full_reusability', 'second_stage_recovery'],
     employeeCount: 250,
+    keyInvestors: ['Founders Fund', 'Breakthrough Energy Ventures', 'Industrious Ventures'],
   },
   {
     slug: 'impulse-space',
@@ -790,6 +793,7 @@ const SPACE_COMPANIES: CompanyData[] = [
     focusAreas: ['in_space_services', 'propulsion'],
     subSectors: ['mira', 'helios', 'mars_lander'],
     employeeCount: 150,
+    keyInvestors: ['Founders Fund', 'RTX Ventures', 'Lux Capital'],
   },
   {
     slug: 'astranis',
@@ -832,6 +836,7 @@ const SPACE_COMPANIES: CompanyData[] = [
     focusAreas: ['satellites', 'spacecraft'],
     subSectors: ['large_spacecraft', 'modular_satellites'],
     employeeCount: 80,
+    keyInvestors: ['a16z', 'Founders Fund', 'Khosla Ventures'],
   },
   {
     slug: 'apex-space',
@@ -1061,6 +1066,7 @@ const SPACE_COMPANIES: CompanyData[] = [
     focusAreas: ['launch_provider'],
     subSectors: ['rs1_rocket', 'e2_engine', 'gls_ground_system'],
     employeeCount: 300,
+    keyInvestors: ['Lockheed Martin Ventures', 'T. Rowe Price', 'Fidelity'],
   },
   {
     slug: 'terran-orbital',
@@ -1099,6 +1105,7 @@ const SPACE_COMPANIES: CompanyData[] = [
     focusAreas: ['in_space_services', 'space_infrastructure'],
     subSectors: ['debris_removal', 'life_extension', 'elsa_d', 'adras_j'],
     employeeCount: 350,
+    keyInvestors: ['SPARX Group', 'DNX Ventures', 'Seraphim Space'],
   },
   {
     slug: 'ispace-japan',

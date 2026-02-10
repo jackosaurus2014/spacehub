@@ -30,7 +30,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Market Intel', href: '/market-intel', description: 'Companies and stock tracking' },
   { label: 'Space Economy', href: '/space-economy', description: 'Market size, investment & budgets' },
-  { label: 'Space Startups', href: '/startups', description: 'Startup funding and ecosystem' },
+  { label: 'Space Capital', href: '/space-capital', description: 'VC investors, startups & matchmaking' },
   { label: 'Regulatory Hub', href: '/compliance', description: 'Compliance, space law & filings' },
   { label: 'Spectrum Management', href: '/spectrum', description: 'Allocations, auctions & filings' },
   { label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },

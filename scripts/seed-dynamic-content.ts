@@ -692,12 +692,6 @@ async function main() {
     },
   ]);
 
-  await upsertContent('space-economy', 'stocks', [
-    { name: 'SpaceX', ticker: 'Private', exchange: 'N/A', marketCap: 350, price: 0, ytdChange: 0, sector: 'Launch / Broadband', revenue2024: 13.6 },
-    { name: 'Lockheed Martin', ticker: 'LMT', exchange: 'NYSE', marketCap: 135, price: 565, ytdChange: 8.2, sector: 'Defense / Space Systems', revenue2024: 71.0 },
-    // Additional stocks from page...
-  ]);
-
   await upsertContent('space-economy', 'workforce-stats', [
     { category: 'Total U.S. Space Workforce', value: '360,000+', detail: 'Direct space industry employment including commercial, civil, and national security', source: 'Space Foundation 2024' },
     { category: 'Global Space Workforce', value: '1,200,000+', detail: 'Estimated total across all space-faring nations', source: 'OECD Space Economy 2024' },
@@ -711,33 +705,215 @@ async function main() {
   ]);
 
   // ═══════════════════════════════════════════════════════════════════
-  // 4. STARTUPS
+  // 4. SPACE CAPITAL
   // ═══════════════════════════════════════════════════════════════════
 
-  console.log('🚀 Seeding startups...');
+  console.log('💸 Seeding space-capital...');
 
-  await upsertContent('startups', 'startups', [
+  await upsertContent('space-capital', 'investors', [
     {
-      id: 'relativity-space',
-      name: 'Relativity Space',
-      founded: 2015,
-      hq: 'Long Beach, CA',
-      category: 'Launch',
-      stage: 'Growth',
-      totalRaised: '$1.34B',
-      totalRaisedNum: 1340,
-      lastRound: { round: 'Series E', amount: '$650M', date: 'Jun 2021' },
-      ticker: null,
-      marketCap: null,
-      keyProduct: 'Terran R (3D-printed rocket)',
-      status: 'Active',
-      description: 'Pioneering 3D-printed rockets with autonomous manufacturing, dramatically reducing part count and production time for orbital launch vehicles.',
-      website: 'https://relativityspace.com',
+      id: 'space-capital-vc', name: 'Space Capital', type: 'Dedicated Space VC',
+      description: 'The most active dedicated space venture fund, investing across the space value chain from launch to applications.',
+      investmentThesis: 'Space is a $5T industry being rebuilt by technology-driven companies. We invest in the infrastructure layer.',
+      aum: '$400M+', checkSizeRange: '$2M-$20M', stagePreference: ['Seed', 'Series A', 'Series B'],
+      sectorFocus: ['Launch', 'Earth Observation', 'Communications', 'In-Space Services', 'Analytics'],
+      dealCount: 85, totalDeployed: '$300M+',
+      notablePortfolio: ['Spire Global', 'Capella Space', 'Muon Space', 'Hawkeye 360'],
+      website: 'https://www.spacecapital.com', hqLocation: 'New York, NY', foundedYear: 2017,
     },
-    // Additional 14+ startups...
+    {
+      id: 'seraphim-space', name: 'Seraphim Space', type: 'Dedicated Space VC',
+      description: 'World\'s largest dedicated space tech fund, investing in companies harnessing the space ecosystem.',
+      investmentThesis: 'Space infrastructure is enabling a new wave of data-driven businesses that will transform every industry.',
+      aum: '$300M+', checkSizeRange: '$1M-$15M', stagePreference: ['Seed', 'Series A', 'Series B'],
+      sectorFocus: ['Earth Observation', 'Communications', 'Analytics', 'Climate', 'Maritime'],
+      dealCount: 60, totalDeployed: '$200M+',
+      notablePortfolio: ['ICEYE', 'LeoLabs', 'D-Orbit', 'Isotropic Systems'],
+      website: 'https://seraphim.vc', hqLocation: 'London, UK', foundedYear: 2016,
+    },
+    {
+      id: 'spacefund', name: 'SpaceFund', type: 'Dedicated Space VC',
+      description: 'Early-stage venture fund exclusively focused on space companies with a portfolio across the value chain.',
+      investmentThesis: 'We invest at the frontier of space commerce where deep tech meets market opportunity.',
+      aum: '$50M+', checkSizeRange: '$250K-$5M', stagePreference: ['Seed', 'Series A'],
+      sectorFocus: ['Launch', 'In-Space Services', 'Mining', 'Manufacturing'],
+      dealCount: 30, totalDeployed: '$40M+',
+      notablePortfolio: ['Orbit Fab', 'Stoke Space', 'Turion Space'],
+      website: 'https://spacefund.com', hqLocation: 'Houston, TX', foundedYear: 2017,
+    },
+    {
+      id: 'promus-ventures', name: 'Promus Ventures', type: 'Dedicated Space VC',
+      description: 'Space-focused venture capital firm investing in commercial space and advanced aerospace technologies.',
+      investmentThesis: 'Backing founders building the picks-and-shovels infrastructure for the space economy.',
+      aum: '$100M+', checkSizeRange: '$1M-$10M', stagePreference: ['Seed', 'Series A', 'Series B'],
+      sectorFocus: ['Launch', 'Satellites', 'Analytics', 'Defense'],
+      dealCount: 40, totalDeployed: '$75M+',
+      notablePortfolio: ['Multiple space startups'],
+      website: 'https://promusventures.com', hqLocation: 'San Francisco, CA', foundedYear: 2018,
+    },
+    {
+      id: 'type-one-ventures', name: 'Type One Ventures', type: 'Dedicated Space VC',
+      description: 'Australian-based space-focused venture fund investing in deep tech space companies globally.',
+      investmentThesis: 'Investing in the space technology platforms that will define the next decade of exploration and commerce.',
+      aum: '$50M+', checkSizeRange: '$500K-$5M', stagePreference: ['Seed', 'Series A'],
+      sectorFocus: ['Earth Observation', 'Communications', 'Launch', 'Space Domain Awareness'],
+      dealCount: 25, totalDeployed: '$35M+',
+      notablePortfolio: ['HEO Robotics', 'Fleet Space', 'Quasar Satellite Technologies'],
+      website: 'https://typeoneventures.com', hqLocation: 'Sydney, Australia', foundedYear: 2019,
+    },
+    {
+      id: 'in-q-tel', name: 'In-Q-Tel', type: 'Government/Strategic',
+      description: 'U.S. intelligence community\'s strategic investor, bridging national security needs with commercial innovation.',
+      investmentThesis: 'We identify and invest in cutting-edge technologies that protect and preserve U.S. security.',
+      aum: '$500M+', checkSizeRange: '$500K-$25M', stagePreference: ['Series A', 'Series B', 'Series C'],
+      sectorFocus: ['Space Domain Awareness', 'Earth Observation', 'Communications', 'Cybersecurity'],
+      dealCount: 40, totalDeployed: '$400M+',
+      notablePortfolio: ['Planet Labs', 'Capella Space', 'HawkEye 360', 'Aalyria'],
+      website: 'https://www.iqt.org', hqLocation: 'Arlington, VA', foundedYear: 1999,
+    },
+    {
+      id: 'founders-fund', name: 'Founders Fund', type: 'Deep Tech VC',
+      description: 'Peter Thiel\'s flagship fund known for backing transformative deep tech companies including multiple space leaders.',
+      investmentThesis: 'We invest in companies building breakthrough technologies that reshape industries and advance humanity.',
+      aum: '$12B+', checkSizeRange: '$5M-$100M', stagePreference: ['Series A', 'Series B', 'Late Stage'],
+      sectorFocus: ['Launch', 'In-Space Transport', 'Manufacturing', 'Defense'],
+      dealCount: 12, totalDeployed: '$2B+',
+      notablePortfolio: ['SpaceX', 'Relativity Space', 'Varda Space', 'Impulse Space', 'Stoke Space'],
+      website: 'https://foundersfund.com', hqLocation: 'San Francisco, CA', foundedYear: 2005,
+    },
+    {
+      id: 'a16z', name: 'a16z (Andreessen Horowitz)', type: 'Generalist VC',
+      description: 'Silicon Valley powerhouse with a growing space and defense portfolio through its American Dynamism practice.',
+      investmentThesis: 'American Dynamism backs companies building for national interest including aerospace, defense, and infrastructure.',
+      aum: '$35B+', checkSizeRange: '$10M-$200M', stagePreference: ['Series B', 'Series C', 'Late Stage'],
+      sectorFocus: ['Launch', 'Defense', 'Manufacturing', 'Satellites'],
+      dealCount: 8, totalDeployed: '$1B+',
+      notablePortfolio: ['Relativity Space', 'Hadrian', 'Anduril', 'K2 Space'],
+      website: 'https://a16z.com', hqLocation: 'Menlo Park, CA', foundedYear: 2009,
+    },
+    {
+      id: 'bessemer', name: 'Bessemer Venture Partners', type: 'Generalist VC',
+      description: 'One of the oldest U.S. VC firms with a strong track record in space and satellite investments.',
+      investmentThesis: 'Investing in category-defining companies from seed to IPO across cloud, space, and deep tech.',
+      aum: '$20B+', checkSizeRange: '$5M-$100M', stagePreference: ['Series A', 'Series B', 'Late Stage'],
+      sectorFocus: ['Launch', 'Earth Observation', 'Communications', 'Analytics'],
+      dealCount: 10, totalDeployed: '$500M+',
+      notablePortfolio: ['Rocket Lab', 'Spire Global', 'Slingshot Aerospace'],
+      website: 'https://www.bvp.com', hqLocation: 'San Francisco, CA', foundedYear: 1911,
+    },
+    {
+      id: 'khosla', name: 'Khosla Ventures', type: 'Deep Tech VC',
+      description: 'Deep tech-focused fund investing in space companies pushing technological boundaries.',
+      investmentThesis: 'We back audacious entrepreneurs building breakthrough technologies in energy, AI, space, and biotech.',
+      aum: '$15B+', checkSizeRange: '$5M-$50M', stagePreference: ['Series A', 'Series B'],
+      sectorFocus: ['Launch', 'Propulsion', 'Materials', 'Space Infrastructure'],
+      dealCount: 6, totalDeployed: '$200M+',
+      notablePortfolio: ['Astra', 'Momentus', 'K2 Space'],
+      website: 'https://www.khoslaventures.com', hqLocation: 'Menlo Park, CA', foundedYear: 2004,
+    },
+    {
+      id: 'dcvc', name: 'DCVC (Data Collective)', type: 'Deep Tech VC',
+      description: 'Deep tech venture fund that has been an early backer of multiple space and geospatial companies.',
+      investmentThesis: 'We invest in deep tech companies where computational approaches create unfair advantages.',
+      aum: '$3B+', checkSizeRange: '$2M-$25M', stagePreference: ['Series A', 'Series B'],
+      sectorFocus: ['Earth Observation', 'Analytics', 'Climate', 'Geospatial'],
+      dealCount: 8, totalDeployed: '$100M+',
+      notablePortfolio: ['Planet Labs', 'Capella Space', 'Descartes Labs'],
+      website: 'https://www.dcvc.com', hqLocation: 'San Francisco, CA', foundedYear: 2011,
+    },
+    {
+      id: 'draper', name: 'Draper Associates', type: 'Deep Tech VC',
+      description: 'Tim Draper\'s early-stage fund, one of the earliest investors in SpaceX and other space companies.',
+      investmentThesis: 'We back visionary entrepreneurs tackling the world\'s biggest challenges with disruptive technology.',
+      aum: '$4B+', checkSizeRange: '$500K-$10M', stagePreference: ['Seed', 'Series A'],
+      sectorFocus: ['Launch', 'Space Infrastructure', 'Defense', 'Propulsion'],
+      dealCount: 5, totalDeployed: '$50M+',
+      notablePortfolio: ['SpaceX (early)', 'Firefly Aerospace', 'Planet Labs'],
+      website: 'https://www.draper.vc', hqLocation: 'San Mateo, CA', foundedYear: 1985,
+    },
+    {
+      id: 'initialized', name: 'Initialized Capital', type: 'Deep Tech VC',
+      description: 'Garry Tan\'s early-stage fund that backed Relativity Space in its earliest days.',
+      investmentThesis: 'Investing at the earliest stages in founders building category-defining companies.',
+      aum: '$3B+', checkSizeRange: '$1M-$15M', stagePreference: ['Seed', 'Series A'],
+      sectorFocus: ['Launch', 'Manufacturing', 'Software'],
+      dealCount: 4, totalDeployed: '$30M+',
+      notablePortfolio: ['Relativity Space', 'Coinbase', 'Instacart'],
+      website: 'https://initialized.com', hqLocation: 'San Francisco, CA', foundedYear: 2012,
+    },
+    {
+      id: 'obvious', name: 'Obvious Ventures', type: 'Impact VC',
+      description: 'Impact-focused fund backing companies with world-positive missions including space sustainability.',
+      investmentThesis: 'We invest in companies that are both world-positive and venture-scale, creating lasting impact.',
+      aum: '$1B+', checkSizeRange: '$2M-$20M', stagePreference: ['Series A', 'Series B'],
+      sectorFocus: ['Earth Observation', 'Climate', 'Sustainability', 'Analytics'],
+      dealCount: 3, totalDeployed: '$30M+',
+      notablePortfolio: ['Planet Labs', 'Medium', 'Beyond Meat'],
+      website: 'https://obvious.com', hqLocation: 'San Francisco, CA', foundedYear: 2014,
+    },
+    {
+      id: 'lockheed-ventures', name: 'Lockheed Martin Ventures', type: 'Corporate VC',
+      description: 'Strategic investment arm of the world\'s largest defense contractor, focused on dual-use space tech.',
+      investmentThesis: 'We invest in and partner with companies developing technologies that complement our core defense and space programs.',
+      aum: '$200M+', checkSizeRange: '$5M-$25M', stagePreference: ['Series A', 'Series B', 'Series C'],
+      sectorFocus: ['Defense', 'Satellites', 'Launch', 'Cybersecurity', 'AI'],
+      dealCount: 15, totalDeployed: '$150M+',
+      notablePortfolio: ['Terran Orbital', 'Rocket Lab', 'ABL Space', 'Omnispace'],
+      website: 'https://www.lockheedmartin.com/ventures', hqLocation: 'Bethesda, MD', foundedYear: 2007,
+    },
+    {
+      id: 'rtx-ventures', name: 'RTX Ventures', type: 'Corporate VC',
+      description: 'Strategic venture arm of RTX (Raytheon Technologies), investing in next-gen aerospace and defense.',
+      investmentThesis: 'Accelerating innovation by investing in startups with technologies adjacent to our aerospace and defense businesses.',
+      aum: '$300M+', checkSizeRange: '$5M-$25M', stagePreference: ['Series A', 'Series B'],
+      sectorFocus: ['Defense', 'Propulsion', 'Materials', 'Space Domain Awareness'],
+      dealCount: 10, totalDeployed: '$100M+',
+      notablePortfolio: ['Slingshot Aerospace', 'Ursa Major Technologies', 'Impulse Space'],
+      website: 'https://www.rtx.com/ventures', hqLocation: 'Arlington, VA', foundedYear: 2019,
+    },
+    {
+      id: 'airbus-ventures', name: 'Airbus Ventures', type: 'Corporate VC',
+      description: 'Strategic VC arm of Airbus investing in disruptive aerospace, space, and defense technologies.',
+      investmentThesis: 'We partner with founders reshaping the future of flight, space, and connected intelligence.',
+      aum: '$250M+', checkSizeRange: '$2M-$20M', stagePreference: ['Series A', 'Series B'],
+      sectorFocus: ['Earth Observation', 'Communications', 'Analytics', 'Urban Air Mobility'],
+      dealCount: 12, totalDeployed: '$100M+',
+      notablePortfolio: ['Spire Global', 'LeoLabs', 'Isotropic Systems', 'Mynaric'],
+      website: 'https://airbusventures.vc', hqLocation: 'San Francisco, CA', foundedYear: 2015,
+    },
+    {
+      id: 'boeing-horizonx', name: 'Boeing HorizonX', type: 'Corporate VC',
+      description: 'Boeing\'s venture investment arm identifying and investing in emerging aerospace technologies.',
+      investmentThesis: 'Identifying technologies transforming aerospace and manufacturing to maintain Boeing\'s competitive edge.',
+      aum: '$200M+', checkSizeRange: '$5M-$20M', stagePreference: ['Series A', 'Series B'],
+      sectorFocus: ['Manufacturing', 'AI', 'Autonomy', 'Advanced Materials'],
+      dealCount: 8, totalDeployed: '$80M+',
+      notablePortfolio: ['SparkCognition', 'Matternet', 'Fortem Technologies'],
+      website: 'https://www.boeing.com/company/key-orgs/horizon-x', hqLocation: 'Chicago, IL', foundedYear: 2017,
+    },
+    {
+      id: 'y-combinator', name: 'Y Combinator', type: 'Accelerator',
+      description: 'World\'s top startup accelerator with a growing cohort of space and deep tech companies.',
+      investmentThesis: 'We fund early-stage startups and provide mentorship, network, and demo day access to 1000+ investors.',
+      aum: 'N/A', checkSizeRange: '$500K (standard deal)', stagePreference: ['Pre-seed', 'Seed'],
+      sectorFocus: ['Launch', 'Satellites', 'Software', 'Analytics', 'All Sectors'],
+      dealCount: 20, totalDeployed: '$10M+',
+      notablePortfolio: ['Relativity Space (early)', 'Astranis', 'Phantom Space'],
+      website: 'https://www.ycombinator.com', hqLocation: 'San Francisco, CA', foundedYear: 2005,
+    },
+    {
+      id: 'techstars-allied', name: 'Techstars (Allied Space)', type: 'Accelerator',
+      description: 'Techstars accelerator program in partnership with the U.S. Space Force and Air Force.',
+      investmentThesis: 'Connecting dual-use startups with military end-users and DoD funding through structured acceleration.',
+      aum: 'N/A', checkSizeRange: '$120K (standard deal)', stagePreference: ['Pre-seed', 'Seed'],
+      sectorFocus: ['Defense', 'Space Domain Awareness', 'Communications', 'Cybersecurity'],
+      dealCount: 15, totalDeployed: '$5M+',
+      notablePortfolio: ['Slingshot Aerospace', 'Scout Space', 'Kall Morris'],
+      website: 'https://www.techstars.com/accelerators/allied-space', hqLocation: 'Los Angeles, CA', foundedYear: 2020,
+    },
   ]);
 
-  await upsertContent('startups', 'funding-by-year', [
+  await upsertContent('space-capital', 'funding-by-year', [
     { year: 2019, amount: 5.8, deals: 178 },
     { year: 2020, amount: 7.7, deals: 163 },
     { year: 2021, amount: 15.4, deals: 272 },
@@ -745,12 +921,6 @@ async function main() {
     { year: 2023, amount: 6.9, deals: 198 },
     { year: 2024, amount: 8.4, deals: 210 },
     { year: 2025, amount: 7.2, deals: 185 },
-  ]);
-
-  await upsertContent('startups', 'top-investors', [
-    { name: 'Space Capital', focus: 'Space-dedicated VC', investments: 85, notable: 'Spire, Capella, Muon' },
-    { name: 'Founders Fund', focus: 'Deep tech VC', investments: 12, notable: 'SpaceX, Relativity, Varda' },
-    // Additional investors...
   ]);
 
   // ═══════════════════════════════════════════════════════════════════

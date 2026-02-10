@@ -45,7 +45,7 @@ const PATH_TITLES: Record<string, string> = {
   '/cislunar': 'Cislunar Ecosystem',
   '/mars-planner': 'Mars Mission Planner',
   '/asteroid-watch': 'Asteroid Watch',
-  '/startups': 'Space Startups',
+  '/space-capital': 'Space Capital',
   '/space-economy': 'Space Economy',
   '/space-defense': 'Space Defense',
   '/patents': 'Patent & IP Tracker',

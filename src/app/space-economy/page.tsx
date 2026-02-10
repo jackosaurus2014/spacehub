@@ -9,7 +9,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 // Types
 // ────────────────────────────────────────
 
-type TabId = 'market' | 'investment' | 'government' | 'public-markets' | 'workforce';
+type TabId = 'market' | 'investment' | 'government' | 'workforce';
 
 interface MarketSegment {
   name: string;
@@ -60,26 +60,6 @@ interface GovernmentBudget {
   notes: string;
 }
 
-interface SpaceCompanyStock {
-  name: string;
-  ticker: string;
-  exchange: string;
-  marketCap: number; // billions
-  price: number;
-  ytdChange: number; // percentage
-  sector: string;
-  revenue2024: number; // billions
-}
-
-interface SpaceETF {
-  name: string;
-  ticker: string;
-  aum: number; // billions
-  expenseRatio: number; // percentage
-  ytdReturn: number; // percentage
-  topHoldings: string[];
-}
-
 interface WorkforceStat {
   category: string;
   value: string;
@@ -112,7 +92,6 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'market', label: 'Market Overview', icon: '📊' },
   { id: 'investment', label: 'Investment', icon: '💰' },
   { id: 'government', label: 'Government Budgets', icon: '🏛️' },
-  { id: 'public-markets', label: 'Public Markets', icon: '📈' },
   { id: 'workforce', label: 'Workforce & Trends', icon: '👷' },
 ];
 
@@ -123,8 +102,6 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
 // (Investment data fetched from API)
 
 // (Government budget data fetched from API)
-
-// (Public markets data fetched from API)
 
 // (Workforce & trends data fetched from API)
 
@@ -578,204 +555,7 @@ function GovernmentBudgetsTab({ governmentBudgets }: GovernmentBudgetsTabProps) 
 }
 
 // ────────────────────────────────────────
-// Tab 4: Public Markets
-// ────────────────────────────────────────
-
-interface PublicMarketsTabProps {
-  stocks: SpaceCompanyStock[];
-  etfs?: SpaceETF[];
-}
-
-function PublicMarketsTab({ stocks, etfs = [] }: PublicMarketsTabProps) {
-  const [sectorFilter, setSectorFilter] = useState<string>('');
-
-  const publicStocks = stocks.filter((s) => s.ticker !== 'Private' && s.ticker !== 'Acquired');
-  const sectors = Array.from(new Set(publicStocks.map((s) => s.sector))).sort();
-
-  const filteredStocks = sectorFilter
-    ? publicStocks.filter((s) => s.sector === sectorFilter)
-    : publicStocks;
-
-  const totalMarketCap = publicStocks.reduce((sum, s) => sum + s.marketCap, 0);
-
-  return (
-    <div className="space-y-8">
-      {/* Headline Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl font-bold text-cyan-400">{publicStocks.length}</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Tracked Stocks</div>
-        </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl font-bold text-green-400">{formatBillions(totalMarketCap)}</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Combined Market Cap</div>
-        </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl font-bold text-amber-400">
-            {formatPercent(publicStocks.reduce((sum, s) => sum + s.ytdChange, 0) / publicStocks.length)}
-          </div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Avg YTD Change</div>
-        </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl font-bold text-purple-400">{etfs.length}</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Space ETFs</div>
-        </div>
-      </div>
-
-      {/* Sector Filter */}
-      <div className="flex gap-2 items-center flex-wrap">
-        <span className="text-slate-400 text-sm">Filter:</span>
-        <button
-          onClick={() => setSectorFilter('')}
-          className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-            !sectorFilter
-              ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40'
-              : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
-          }`}
-        >
-          All
-        </button>
-        {sectors.map((sector) => (
-          <button
-            key={sector}
-            onClick={() => setSectorFilter(sector)}
-            className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-              sectorFilter === sector
-                ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40'
-                : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
-            }`}
-          >
-            {sector}
-          </button>
-        ))}
-      </div>
-
-      {/* Stock Table */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-slate-700/50 bg-slate-900/50">
-                <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Company</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Ticker</th>
-                <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">Price</th>
-                <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">Market Cap</th>
-                <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">YTD</th>
-                <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm hidden md:table-cell">Revenue (2024)</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm hidden lg:table-cell">Sector</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredStocks
-                .sort((a, b) => b.marketCap - a.marketCap)
-                .map((stock) => (
-                  <tr key={stock.ticker} className="border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors">
-                    <td className="py-3 px-4 text-white font-medium">{stock.name}</td>
-                    <td className="py-3 px-4 text-cyan-400 font-mono text-sm">
-                      {stock.exchange}:{stock.ticker}
-                    </td>
-                    <td className="py-3 px-4 text-right text-slate-300 font-mono">
-                      ${(stock.price ?? 0).toFixed(2)}
-                    </td>
-                    <td className="py-3 px-4 text-right text-slate-300 font-mono">
-                      {formatBillions(stock.marketCap)}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <span className={`text-sm font-medium px-2 py-0.5 rounded ${
-                        stock.ytdChange >= 0
-                          ? 'bg-green-900/30 text-green-400'
-                          : 'bg-red-900/30 text-red-400'
-                      }`}>
-                        {formatPercent(stock.ytdChange)}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right text-slate-400 font-mono hidden md:table-cell">
-                      {(stock.revenue2024 ?? 0) >= 1 ? formatBillions(stock.revenue2024 ?? 0) : `$${((stock.revenue2024 ?? 0) * 1000).toFixed(0)}M`}
-                    </td>
-                    <td className="py-3 px-4 hidden lg:table-cell">
-                      <span className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">{stock.sector}</span>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Notable Private Companies */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-lg">🔒</span>
-          Notable Private Companies
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {stocks.filter((s) => s.ticker === 'Private').map((company) => (
-            <div key={company.name} className="bg-slate-900/50 rounded-lg border border-slate-700/30 p-4">
-              <div className="text-white font-semibold">{company.name}</div>
-              <div className="text-purple-400 text-lg font-bold">{formatBillions(company.marketCap)} valuation</div>
-              <div className="text-slate-400 text-sm">{company.sector}</div>
-              <div className="text-slate-500 text-xs mt-1">2024 Revenue: {formatBillions(company.revenue2024)}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Space ETFs */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center text-lg">📊</span>
-          Space-Related ETFs
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {etfs.map((etf) => (
-            <div key={etf.ticker} className="bg-slate-900/50 rounded-lg border border-slate-700/30 p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <div className="text-white font-semibold text-sm">{etf.name}</div>
-                  <div className="text-cyan-400 font-mono text-sm">{etf.ticker}</div>
-                </div>
-                <span className={`text-sm font-medium px-2 py-0.5 rounded ${
-                  etf.ytdReturn >= 0 ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
-                }`}>
-                  {formatPercent(etf.ytdReturn)}
-                </span>
-              </div>
-              <div className="flex gap-4 text-sm mb-3">
-                <div>
-                  <span className="text-slate-500">AUM: </span>
-                  <span className="text-slate-300">{formatBillions(etf.aum)}</span>
-                </div>
-                <div>
-                  <span className="text-slate-500">Expense: </span>
-                  <span className="text-slate-300">{etf.expenseRatio}%</span>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-1">
-                {etf.topHoldings.map((holding) => (
-                  <span key={holding} className="text-xs bg-slate-700/50 text-slate-400 px-1.5 py-0.5 rounded">
-                    {holding}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Disclaimer */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/30 p-4 text-center">
-        <p className="text-slate-500 text-xs">
-          Stock prices and market data are approximate and may not reflect real-time values.
-          For publicly traded companies, data is based on recent filings and market reports.
-          This is not investment advice. Always conduct your own research.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// ────────────────────────────────────────
-// Tab 5: Workforce & Trends
+// Tab 4: Workforce & Trends
 // ────────────────────────────────────────
 
 interface WorkforceTrendsTabProps {
@@ -1000,7 +780,6 @@ export default function SpaceEconomyPage() {
   const [quarterlyVC, setQuarterlyVC] = useState<VCDeal[]>([]);
   const [annualInvestment, setAnnualInvestment] = useState<AnnualInvestment[]>([]);
   const [governmentBudgets, setGovernmentBudgets] = useState<GovernmentBudget[]>([]);
-  const [stocks, setStocks] = useState<SpaceCompanyStock[]>([]);
   const [workforceStats, setWorkforceStats] = useState<WorkforceStat[]>([]);
   const [launchCostTrends, setLaunchCostTrends] = useState<LaunchCostDataPoint[]>([]);
 
@@ -1018,7 +797,6 @@ export default function SpaceEconomyPage() {
           vcRes,
           investmentRes,
           budgetsRes,
-          stocksRes,
           workforceRes,
           launchRes,
         ] = await Promise.all([
@@ -1026,7 +804,6 @@ export default function SpaceEconomyPage() {
           fetchSection('quarterly-vc'),
           fetchSection('annual-investment'),
           fetchSection('government-budgets'),
-          fetchSection('stocks'),
           fetchSection('workforce-stats'),
           fetchSection('launch-cost-trends'),
         ]);
@@ -1035,12 +812,11 @@ export default function SpaceEconomyPage() {
         setQuarterlyVC(vcRes.data || []);
         setAnnualInvestment(investmentRes.data || []);
         setGovernmentBudgets(budgetsRes.data || []);
-        setStocks(stocksRes.data || []);
         setWorkforceStats(workforceRes.data || []);
         setLaunchCostTrends(launchRes.data || []);
 
         // Use the freshest lastRefreshed from any section
-        const allMetas = [segmentsRes, vcRes, investmentRes, budgetsRes, stocksRes, workforceRes, launchRes];
+        const allMetas = [segmentsRes, vcRes, investmentRes, budgetsRes, workforceRes, launchRes];
         const freshest = allMetas
           .map(r => r.meta?.lastRefreshed)
           .filter(Boolean)
@@ -1081,7 +857,7 @@ export default function SpaceEconomyPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Economy Dashboard"
-          subtitle="Comprehensive intelligence on the global space economy -- market size, investment trends, government budgets, public markets, and workforce data"
+          subtitle="Comprehensive intelligence on the global space economy -- market size, investment trends, government budgets, and workforce data"
           icon="💰"
           accentColor="emerald"
         />
@@ -1111,7 +887,6 @@ export default function SpaceEconomyPage() {
         {activeTab === 'market' && <MarketOverviewTab marketSegments={marketSegments} />}
         {activeTab === 'investment' && <InvestmentTab quarterlyVC={quarterlyVC} annualInvestment={annualInvestment} />}
         {activeTab === 'government' && <GovernmentBudgetsTab governmentBudgets={governmentBudgets} />}
-        {activeTab === 'public-markets' && <PublicMarketsTab stocks={stocks} />}
         {activeTab === 'workforce' && <WorkforceTrendsTab workforceStats={workforceStats} launchCostTrends={launchCostTrends} />}
 
         {/* Data Sources Footer */}

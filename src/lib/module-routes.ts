@@ -21,7 +21,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   // ── Space Market Intelligence children ──
   'market-intel': '/market-intel',
   'space-economy': '/space-economy',
-  'startup-tracker': '/startups',
+  'space-capital': '/space-capital',
   'company-profiles': '/company-profiles',
 
   // ── Business Opportunities children ──

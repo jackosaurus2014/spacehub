@@ -21,7 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // Sub-module pages
     { url: `${baseUrl}/space-economy`, changeFrequency: 'daily' as const, priority: 0.7 },
-    { url: `${baseUrl}/startups`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${baseUrl}/space-capital`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${baseUrl}/launch-vehicles`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${baseUrl}/launch-windows`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${baseUrl}/constellations`, changeFrequency: 'weekly' as const, priority: 0.7 },
