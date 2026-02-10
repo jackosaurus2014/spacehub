@@ -30,6 +30,27 @@ interface DetailedStockData {
   chartData: { daily: Array<{ close: number }>; monthly: Array<{ close: number }> };
 }
 
+interface SpaceETF {
+  ticker: string;
+  name: string;
+  category: 'pure_space' | 'aerospace_defense';
+  expenseRatio: number;
+  leveraged?: boolean;
+}
+
+const SPACE_ETFS: SpaceETF[] = [
+  // Pure Space ETFs
+  { ticker: 'UFO', name: 'Procure Space ETF', category: 'pure_space', expenseRatio: 0.75 },
+  { ticker: 'ARKX', name: 'ARK Space Exploration & Innovation ETF', category: 'pure_space', expenseRatio: 0.75 },
+  { ticker: 'ROKT', name: 'SPDR S&P Kensho Final Frontiers ETF', category: 'pure_space', expenseRatio: 0.45 },
+  // Aerospace & Defense ETFs (significant space exposure)
+  { ticker: 'ITA', name: 'iShares U.S. Aerospace & Defense ETF', category: 'aerospace_defense', expenseRatio: 0.38 },
+  { ticker: 'XAR', name: 'SPDR S&P Aerospace & Defense ETF', category: 'aerospace_defense', expenseRatio: 0.35 },
+  { ticker: 'PPA', name: 'Invesco Aerospace & Defense ETF', category: 'aerospace_defense', expenseRatio: 0.58 },
+  { ticker: 'DFEN', name: 'Direxion Daily A&D Bull 3X Shares', category: 'aerospace_defense', expenseRatio: 0.95, leveraged: true },
+  { ticker: 'FITE', name: 'SPDR S&P Kensho Future Security ETF', category: 'aerospace_defense', expenseRatio: 0.45 },
+];
+
 const COUNTRY_FILTERS = [
   { value: '', label: 'All Countries' },
   { value: 'USA', label: '🇺🇸 United States' },
@@ -216,6 +237,8 @@ function MarketIntelContent() {
   } | null>(null);
   const [stockData, setStockData] = useState<Record<string, StockData>>({});
   const [detailedStockData, setDetailedStockData] = useState<Record<string, DetailedStockData>>({});
+  const [etfData, setEtfData] = useState<Record<string, StockData>>({});
+  const [etfFilter, setEtfFilter] = useState<'all' | 'pure_space' | 'aerospace_defense'>('all');
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(searchParams.get('country') || '');
@@ -271,6 +294,9 @@ function MarketIntelContent() {
       if (statsData.total !== undefined) {
         setStats(statsData);
       }
+
+      // Fetch ETF data
+      fetchEtfData();
     } catch (error) {
       console.error('Failed to fetch market data:', error);
     } finally {
@@ -319,6 +345,26 @@ function MarketIntelContent() {
       setDetailedStockData(detailedMap);
     } catch (error) {
       console.error('Failed to fetch stock data:', error);
+    }
+  };
+
+  const fetchEtfData = async () => {
+    try {
+      const tickers = SPACE_ETFS.map((e) => e.ticker).join(',');
+      const res = await fetch(`/api/stocks?tickers=${tickers}`);
+      const data = await res.json();
+
+      if (data.stocks) {
+        const etfMap: Record<string, StockData> = {};
+        data.stocks.forEach((stock: StockData) => {
+          if (stock.success) {
+            etfMap[stock.ticker] = stock;
+          }
+        });
+        setEtfData(etfMap);
+      }
+    } catch (error) {
+      console.error('Failed to fetch ETF data:', error);
     }
   };
 
@@ -501,6 +547,120 @@ function MarketIntelContent() {
                       );
                     })}
                 </StaggerContainer>
+              </div>
+            )}
+
+            {/* Space ETFs & Funds */}
+            {Object.keys(etfData).length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-slate-900 font-semibold mb-4 flex items-center gap-2">
+                  <span className="text-xl">📊</span>
+                  Space ETFs & Funds
+                  <span className="text-xs text-slate-400 font-normal ml-2">Live prices via Yahoo Finance</span>
+                </h3>
+
+                {/* ETF Category Tabs */}
+                <div className="flex gap-2 mb-4">
+                  {[
+                    { value: 'all' as const, label: 'All' },
+                    { value: 'pure_space' as const, label: 'Pure Space' },
+                    { value: 'aerospace_defense' as const, label: 'Aerospace & Defense' },
+                  ].map((tab) => (
+                    <button
+                      key={tab.value}
+                      onClick={() => setEtfFilter(tab.value)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        etfFilter === tab.value
+                          ? 'bg-nebula-500 text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+
+                <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {SPACE_ETFS
+                    .filter((etf) => etfFilter === 'all' || etf.category === etfFilter)
+                    .filter((etf) => etfData[etf.ticker])
+                    .map((etf) => {
+                      const data = etfData[etf.ticker];
+                      const isPositive = data.changePercent >= 0;
+                      const is30DPositive = (data.change30D ?? 0) >= 0;
+
+                      return (
+                        <StaggerItem key={etf.ticker}>
+                          <div className="card p-4 hover:border-nebula-500/50 transition-all relative">
+                            {/* Category & leveraged badges */}
+                            <div className="flex items-center gap-1.5 mb-2">
+                              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${
+                                etf.category === 'pure_space'
+                                  ? 'bg-purple-500/20 text-purple-500'
+                                  : 'bg-blue-500/20 text-blue-500'
+                              }`}>
+                                {etf.category === 'pure_space' ? 'Pure Space' : 'A&D'}
+                              </span>
+                              {etf.leveraged && (
+                                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-600">
+                                  3x Leveraged
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="font-mono text-sm font-bold text-nebula-300">{etf.ticker}</div>
+                              <span
+                                className={`text-xs font-medium px-2 py-0.5 rounded ${
+                                  isPositive
+                                    ? 'bg-green-500/20 text-green-500'
+                                    : 'bg-red-500/20 text-red-500'
+                                }`}
+                              >
+                                {isPositive ? '+' : ''}{data.changePercent.toFixed(2)}%
+                              </span>
+                            </div>
+
+                            <div className="text-xs text-slate-500 mb-2 line-clamp-1">{etf.name}</div>
+
+                            <div className="flex items-baseline gap-2 mb-2">
+                              <span className="text-xl font-bold text-slate-900">${data.price.toFixed(2)}</span>
+                              <span className={`text-xs ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                                {isPositive ? '+' : ''}{data.change.toFixed(2)}
+                              </span>
+                            </div>
+
+                            {data.chartData && data.chartData.length > 0 && (
+                              <div className="mb-2">
+                                <StockMiniChart
+                                  data={data.chartData}
+                                  width={180}
+                                  height={40}
+                                  positive={is30DPositive}
+                                />
+                              </div>
+                            )}
+
+                            <div className="flex items-center justify-between text-xs text-slate-500">
+                              <span>
+                                30D: <span className={is30DPositive ? 'text-green-500' : 'text-red-500'}>
+                                  {is30DPositive ? '+' : ''}{(data.change30D ?? 0).toFixed(1)}%
+                                </span>
+                              </span>
+                              <span>ER: {etf.expenseRatio}%</span>
+                            </div>
+                          </div>
+                        </StaggerItem>
+                      );
+                    })}
+                </StaggerContainer>
+
+                {/* Show message if filter hides all ETFs */}
+                {SPACE_ETFS
+                  .filter((etf) => etfFilter === 'all' || etf.category === etfFilter)
+                  .filter((etf) => etfData[etf.ticker]).length === 0 && (
+                  <p className="text-slate-400 text-sm text-center py-4">No ETF data available for this category.</p>
+                )}
               </div>
             )}
 
