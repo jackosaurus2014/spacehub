@@ -132,12 +132,44 @@ const TABS: { id: TabId; label: string }[] = [
 // Sub-components
 // ────────────────────────────────────────
 
-function HeroStats() {
+interface LiveProcurement {
+  id: string;
+  title: string;
+  contractor: string;
+  value: string;
+  awardDate: string;
+  agency: string;
+  category: string;
+  description: string;
+  period?: string;
+  samUrl?: string;
+  naicsCode?: string;
+  naicsDescription?: string;
+  type?: string;
+}
+
+interface DefenseNewsItem {
+  id: string;
+  title: string;
+  summary: string;
+  source: string;
+  url: string;
+  imageUrl?: string;
+  publishedAt: string;
+  category?: string;
+}
+
+function HeroStats({ forceCount, programCount, contractCount, allianceCount }: {
+  forceCount: number;
+  programCount: number;
+  contractCount: number;
+  allianceCount: number;
+}) {
   const stats = [
-    { label: 'USSF Budget (FY25)', value: '$33.3B', sub: 'Requested' },
-    { label: 'NRO Budget (FY25)', value: '$18.9B', sub: 'Publicly disclosed' },
-    { label: 'Nations w/ Space Forces', value: '9+', sub: 'Dedicated commands' },
-    { label: 'SDA Satellites Planned', value: '300+', sub: 'PWSA total' },
+    { label: 'Space Forces', value: forceCount > 0 ? String(forceCount) : '10', sub: 'Military organizations' },
+    { label: 'Defense Programs', value: programCount > 0 ? String(programCount) : '22+', sub: 'Major programs tracked' },
+    { label: 'Major Contracts', value: contractCount > 0 ? String(contractCount) : '16+', sub: 'Recent awards' },
+    { label: 'Allied Partnerships', value: allianceCount > 0 ? String(allianceCount) : '9', sub: 'International frameworks' },
   ];
 
   return (
@@ -621,6 +653,8 @@ export default function SpaceDefensePage() {
   const [recentContracts, setRecentContracts] = useState<ContractAward[]>([]);
   const [counterspaceEvents, setCounterspaceEvents] = useState<CounterspaceEvent[]>([]);
   const [alliances, setAlliances] = useState<Alliance[]>([]);
+  const [liveProcurement, setLiveProcurement] = useState<LiveProcurement[]>([]);
+  const [defenseNews, setDefenseNews] = useState<DefenseNewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
@@ -631,20 +665,24 @@ export default function SpaceDefensePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [forcesRes, programsRes, contractsRes, eventsRes, alliancesRes] = await Promise.all([
+        const [forcesRes, programsRes, contractsRes, eventsRes, alliancesRes, procurementRes, newsRes] = await Promise.all([
           fetch('/api/content/space-defense?section=space-forces'),
           fetch('/api/content/space-defense?section=defense-programs'),
           fetch('/api/content/space-defense?section=recent-contracts'),
           fetch('/api/content/space-defense?section=counterspace-events'),
           fetch('/api/content/space-defense?section=alliances'),
+          fetch('/api/content/space-defense?section=live-procurement'),
+          fetch('/api/content/space-defense?section=defense-news'),
         ]);
 
-        const [forcesJson, programsJson, contractsJson, eventsJson, alliancesJson] = await Promise.all([
+        const [forcesJson, programsJson, contractsJson, eventsJson, alliancesJson, procurementJson, newsJson] = await Promise.all([
           forcesRes.json(),
           programsRes.json(),
           contractsRes.json(),
           eventsRes.json(),
           alliancesRes.json(),
+          procurementRes.json(),
+          newsRes.json(),
         ]);
 
         if (forcesJson.data) setSpaceForces(forcesJson.data);
@@ -652,6 +690,8 @@ export default function SpaceDefensePage() {
         if (contractsJson.data) setRecentContracts(contractsJson.data);
         if (eventsJson.data) setCounterspaceEvents(eventsJson.data);
         if (alliancesJson.data) setAlliances(alliancesJson.data);
+        if (procurementJson.data) setLiveProcurement(procurementJson.data);
+        if (newsJson.data) setDefenseNews(newsJson.data);
 
         // Use the most recent lastRefreshed from any section
         const timestamps = [
@@ -713,7 +753,12 @@ export default function SpaceDefensePage() {
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
 
         {/* Hero Stats */}
-        <HeroStats />
+        <HeroStats
+          forceCount={spaceForces.length}
+          programCount={defensePrograms.length}
+          contractCount={recentContracts.length}
+          allianceCount={alliances.length}
+        />
 
         {/* Classification Disclaimer */}
         <div className="card p-4 border border-yellow-500/30 bg-yellow-900/10 mb-8">
@@ -911,6 +956,110 @@ export default function SpaceDefensePage() {
                 ))}
               </div>
             </div>
+
+            {/* Live SAM.gov Solicitations */}
+            {liveProcurement.length > 0 && (
+              <div>
+                <h2 className="text-xl font-bold text-white mb-2">Active Solicitations & Opportunities</h2>
+                <p className="text-star-300 text-sm mb-6">
+                  Live defense space opportunities from SAM.gov, updated daily at 6:00 AM UTC.
+                  Filtered for DoD/Space Force/DARPA agencies with space-related NAICS codes.
+                </p>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {liveProcurement.map((opp) => {
+                    const typeStyles: Record<string, { label: string; color: string; bg: string }> = {
+                      solicitation: { label: 'Solicitation', color: 'text-blue-400', bg: 'bg-blue-900/20' },
+                      presolicitation: { label: 'Pre-Solicitation', color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
+                      award: { label: 'Award', color: 'text-green-400', bg: 'bg-green-900/20' },
+                      sources_sought: { label: 'Sources Sought', color: 'text-purple-400', bg: 'bg-purple-900/20' },
+                      special_notice: { label: 'Special Notice', color: 'text-cyan-400', bg: 'bg-cyan-900/20' },
+                    };
+                    const typeStyle = typeStyles[opp.type || 'solicitation'] || typeStyles.solicitation;
+
+                    return (
+                      <div key={opp.id} className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h3 className="text-white font-semibold text-sm line-clamp-2">{opp.title}</h3>
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap ${typeStyle.bg} ${typeStyle.color}`}>
+                            {typeStyle.label}
+                          </span>
+                        </div>
+                        <div className="space-y-1 mb-2 text-xs">
+                          <div className="flex items-center gap-2">
+                            <span className="text-star-400 min-w-[60px]">Agency:</span>
+                            <span className="text-star-200 truncate">{opp.agency}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-star-400 min-w-[60px]">Value:</span>
+                            <span className="text-green-400 font-medium">{opp.value}</span>
+                          </div>
+                          {opp.period && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-star-400 min-w-[60px]">Deadline:</span>
+                              <span className="text-yellow-400">{opp.period}</span>
+                            </div>
+                          )}
+                          {opp.naicsDescription && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-star-400 min-w-[60px]">NAICS:</span>
+                              <span className="text-star-300">{opp.naicsDescription}</span>
+                            </div>
+                          )}
+                        </div>
+                        {opp.description && (
+                          <p className="text-star-400 text-xs line-clamp-2 mb-2">{opp.description}</p>
+                        )}
+                        {opp.samUrl && (
+                          <a
+                            href={opp.samUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-nebula-400 hover:text-nebula-300 transition-colors flex items-center gap-1"
+                          >
+                            View on SAM.gov
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </a>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Defense News */}
+            {defenseNews.length > 0 && (
+              <div>
+                <h2 className="text-xl font-bold text-white mb-2">Recent Defense & Security News</h2>
+                <p className="text-star-300 text-sm mb-4">
+                  Latest news articles related to space defense and national security.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {defenseNews.slice(0, 9).map((article) => (
+                    <a
+                      key={article.id}
+                      href={article.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all group"
+                    >
+                      <h4 className="text-white text-sm font-semibold group-hover:text-nebula-300 transition-colors line-clamp-2 mb-2">
+                        {article.title}
+                      </h4>
+                      {article.summary && (
+                        <p className="text-star-400 text-xs line-clamp-2 mb-2">{article.summary}</p>
+                      )}
+                      <div className="flex items-center justify-between text-xs text-star-500">
+                        <span>{article.source}</span>
+                        <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* SBIR/STTR Note */}
             <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">

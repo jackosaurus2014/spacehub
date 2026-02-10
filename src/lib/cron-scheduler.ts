@@ -79,6 +79,12 @@ export function startCronJobs() {
     triggerEndpoint('/api/refresh?type=ai-research', 'ai-data-research');
   });
 
+  // Space Defense refresh — 6:00 AM UTC daily
+  // Fetches SAM.gov defense procurement + compiles defense news
+  cron.schedule('0 6 * * *', () => {
+    triggerEndpoint('/api/refresh?type=space-defense', 'space-defense-refresh');
+  });
+
   // Staleness cleanup — 3:00 AM UTC (expire old content, prune logs)
   cron.schedule('0 3 * * *', () => {
     triggerEndpoint('/api/refresh/cleanup', 'staleness-cleanup');
@@ -109,6 +115,7 @@ export function startCronJobs() {
       'staleness-cleanup: 3:00 AM UTC',
       'live-stream-check: every 30 minutes',
       'realtime-refresh: every 15 minutes',
+      'space-defense-refresh: 6:00 AM UTC daily',
     ],
   });
 }

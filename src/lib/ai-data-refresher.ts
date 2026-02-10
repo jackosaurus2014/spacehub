@@ -73,13 +73,46 @@ const MODULE_PROMPTS: Record<string, string> = {
 - Funding trends and total quarterly/annual investment figures
 - Top space VC investors and their recent deals`,
 
-  'space-defense': `Verify and update space defense data:
-- US Space Force: personnel count, budget, key programs
-- Space Development Agency: latest satellite constellation deployments
-- Other national space forces: UK, France, Japan, India, China, Russia
-- Key defense contracts awarded
-- Counterspace developments and ASAT tests
-- International alliances and agreements (Combined Space Operations)`,
+  'space-defense': `Verify and update space defense data across all 5 sections:
+
+SPACE FORCES (section: space-forces):
+- US Space Force: update personnel count, budget (FY2025/2026), Chief of Space Operations, field command changes
+- China PLA/Information Support Force: restructuring updates, new satellite launches, Beidou status
+- Russia VKS Space Troops: GLONASS updates, new launches, Angara/Soyuz status, Ukraine conflict space impacts
+- France CDE, UK Space Command, Japan SOG, India DSA, Germany, Australia, South Korea: personnel, budget, program updates
+
+DEFENSE PROGRAMS (section: defense-programs):
+- SDA Proliferated Warfighter Space Architecture: Tranche 1/2 launch progress, new contract awards
+- GPS III/IIIF: latest satellite launches, constellation status
+- Next-Gen OPIR: GEO/Polar satellite development/launch milestones
+- NSSL Phase 2/3: launch assignments, Vulcan certification, Blue Origin New Glenn status
+- AEHF/ESS: Evolved Strategic SATCOM development progress
+- WGS-11+: production and launch timeline
+- GSSAP/SILENTBARKER: any disclosed operations
+- Allied programs: Skynet 6, CSO, SARah, CERES, Syracuse IV status updates
+
+CONTRACTS (section: recent-contracts):
+- New major defense space contract awards (>$100M)
+- SDA tranche awards and modifications
+- NSSL task order assignments
+- Allied nation defense space procurements
+- Emerging companies winning space defense contracts (Anduril, Palantir, etc.)
+
+COUNTERSPACE (section: counterspace-events):
+- New ASAT tests or demonstrations by any nation
+- RPO incidents (Russian Luch, Chinese Shijian satellites near Western assets)
+- GPS/GNSS jamming and spoofing events (Ukraine, Baltic, Middle East)
+- Cyber attacks on space systems or ground infrastructure
+- Directed energy weapon tests or incidents
+- New counterspace capabilities disclosed in intelligence reports
+
+ALLIANCES (section: alliances):
+- CSpO membership changes or new joint exercises
+- NATO Space Centre activities and policy updates
+- AUKUS Pillar II space cooperation milestones
+- Quad space initiatives progress
+- New bilateral space security agreements
+- Schriever Wargame or Global Sentinel exercise outcomes`,
 
   'cislunar': `Verify and update cislunar/Artemis data:
 - Artemis mission timeline: Artemis II, III, IV, V current target dates and status

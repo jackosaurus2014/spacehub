@@ -36,10 +36,10 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     keywords: ['startup', 'funding round', 'Series A', 'Series B', 'space startup', 'seed round', 'space venture'],
   },
   'space-defense': {
-    ttlHours: 168,
+    ttlHours: 24,
     refreshPriority: 'high',
-    refreshSource: 'both', // USAspending API + AI
-    keywords: ['Space Force', 'space defense', 'SDA', 'military space', 'space command', 'NRO', 'defense contract'],
+    refreshSource: 'both', // USAspending API + SAM.gov + AI
+    keywords: ['Space Force', 'space defense', 'SDA', 'military space', 'space command', 'NRO', 'defense contract', 'NSSL', 'ASAT', 'counterspace'],
   },
   'cislunar': {
     ttlHours: 168,

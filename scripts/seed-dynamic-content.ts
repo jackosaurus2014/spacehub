@@ -924,42 +924,11 @@ async function main() {
   ]);
 
   // ═══════════════════════════════════════════════════════════════════
-  // 5. SPACE DEFENSE
+  // 5. SPACE DEFENSE — Now seeded via dedicated scripts/seed-space-defense.ts
+  // Run separately: npx tsx scripts/seed-space-defense.ts
   // ═══════════════════════════════════════════════════════════════════
 
-  console.log('🛡️ Seeding space-defense...');
-
-  await upsertContent('space-defense', 'space-forces', [
-    {
-      id: 'ussf',
-      name: 'United States Space Force',
-      country: 'United States',
-      flag: 'US',
-      established: 'December 20, 2019',
-      personnel: '~9,800 Guardians + ~5,300 civilians',
-      budget: '$29.4B (FY2025 request)',
-      budgetYear: 'FY2025',
-      parentService: 'Department of the Air Force',
-      commander: 'Gen. B. Chance Saltzman, Chief of Space Operations',
-      headquarters: 'The Pentagon, Arlington, VA',
-      keyPrograms: [
-        'National Security Space Launch (NSSL)',
-        'GPS III / IIIF',
-        'Next-Generation Overhead Persistent Infrared (Next-Gen OPIR)',
-        'Evolved Strategic SATCOM (ESS)',
-        'Space Development Agency (SDA) Proliferated Warfighter Space Architecture',
-        'Space Fence (Kwajalein)',
-        'Space Domain Awareness',
-      ],
-      description: 'The United States Space Force (USSF) is the space service branch of the U.S. Armed Forces, one of the eight uniformed services, and the world\'s first and currently only independent space force. It was established on December 20, 2019, with the signing of the National Defense Authorization Act for Fiscal Year 2020. The USSF organizes, trains, and equips space forces to protect U.S. and allied interests in space and to provide space capabilities to the joint force. The FY2025 budget request of $29.4 billion reflects growing emphasis on space as a warfighting domain.',
-      fieldCommands: [
-        'Space Operations Command (SpOC) -- Peterson SFB, CO',
-        'Space Systems Command (SSC) -- Los Angeles AFB, CA',
-        'Space Training and Readiness Command (STARCOM) -- Peterson SFB, CO',
-      ],
-    },
-    // Additional 8 space forces...
-  ]);
+  console.log('🛡️ Space defense: skipped (use scripts/seed-space-defense.ts)');
 
   // ═══════════════════════════════════════════════════════════════════
   // 6. CISLUNAR

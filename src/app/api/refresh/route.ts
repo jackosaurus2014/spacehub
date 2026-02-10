@@ -164,7 +164,7 @@ export async function POST(request: Request) {
   if (authError) return authError;
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'live-streams', 'realtime', or null (all)
+  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'space-defense', 'live-streams', 'realtime', or null (all)
 
   const results: Record<string, unknown> = {};
 
@@ -222,6 +222,16 @@ export async function POST(request: Request) {
         take: 20,
       });
       results.liveStreams = `Found ${upcomingLaunches.length} upcoming launches`;
+    }
+
+    if (type === 'space-defense') {
+      const { fetchDefenseProcurement, fetchDefenseNews } = await import('@/lib/space-defense-fetcher');
+      const procurementCount = await fetchDefenseProcurement();
+      const newsCount = await fetchDefenseNews();
+      results.spaceDefense = {
+        liveProcurement: procurementCount,
+        defenseNews: newsCount,
+      };
     }
 
     if (type === 'realtime') {
