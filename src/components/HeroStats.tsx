@@ -153,14 +153,27 @@ export default function HeroStats() {
           });
         }
 
-        // Fetch solar activity
-        const solarRes = await fetch('/api/solar-flares/danger');
+        // Fetch live solar activity from DB (populated by cron from NOAA SWPC + NASA DONKI)
+        const solarRes = await fetch('/api/solar-flares');
         const solarData = await solarRes.json();
-        setSolar({
-          status: solarData.dangerLevel === 'high' ? 'storm' : solarData.dangerLevel === 'elevated' ? 'active' : 'quiet',
-          flareClass: solarData.recentFlares?.[0]?.classType || null,
-          kpIndex: solarData.geomagneticActivity?.kpIndex || 0,
-        });
+
+        // Get Kp index and status from solarActivity table
+        const kpIndex = solarData.activity?.kpIndex ?? 0;
+        const overallStatus = solarData.activity?.overallStatus || 'quiet';
+
+        // Get latest flare classification
+        const latestFlare = solarData.flares?.[0];
+        const flareClass = latestFlare?.classification || null;
+
+        // Determine status from live Kp + flare activity
+        let status: 'quiet' | 'active' | 'storm' = 'quiet';
+        if (overallStatus === 'stormy' || kpIndex >= 5 || flareClass?.startsWith('X')) {
+          status = 'storm';
+        } else if (overallStatus === 'active' || kpIndex >= 4 || flareClass?.startsWith('M')) {
+          status = 'active';
+        }
+
+        setSolar({ status, flareClass, kpIndex });
       } catch (error) {
         console.error('Error fetching hero stats:', error);
       } finally {

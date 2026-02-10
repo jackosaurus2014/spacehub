@@ -56,7 +56,7 @@ export async function fetchRecentSolarFlares(days: number = 7): Promise<SolarFla
 
     const response = await fetch(
       `https://api.nasa.gov/DONKI/FLR?startDate=${startDate}&endDate=${endDate}&api_key=DEMO_KEY`,
-      { next: { revalidate: 1800 } }
+      { cache: 'no-store' }
     );
 
     if (!response.ok) {
@@ -78,7 +78,7 @@ export async function fetchRecentGeomagneticStorms(days: number = 30): Promise<G
 
     const response = await fetch(
       `https://api.nasa.gov/DONKI/GST?startDate=${startDate}&endDate=${endDate}&api_key=DEMO_KEY`,
-      { next: { revalidate: 1800 } }
+      { cache: 'no-store' }
     );
 
     if (!response.ok) {
@@ -100,7 +100,7 @@ export async function fetchRecentCMEs(days: number = 14): Promise<CMEData[]> {
 
     const response = await fetch(
       `https://api.nasa.gov/DONKI/CME?startDate=${startDate}&endDate=${endDate}&api_key=DEMO_KEY`,
-      { next: { revalidate: 1800 } }
+      { cache: 'no-store' }
     );
 
     if (!response.ok) {
