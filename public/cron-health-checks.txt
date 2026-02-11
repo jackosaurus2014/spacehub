@@ -1,0 +1,415 @@
+================================================================================
+  SPACENEXUS CRON JOB HEALTH CHECK GUIDE
+  Last updated: 2026-02-10
+================================================================================
+
+This file lists all automated cron jobs, how to verify they're running,
+what log messages to look for in Railway, and how to manually trigger them.
+
+Your site URL: https://spacenexus.up.railway.app  (adjust if different)
+All times are UTC.
+
+================================================================================
+  REQUIRED ENVIRONMENT VARIABLES (Railway > Service > Variables)
+================================================================================
+
+  CRON_SECRET         - Shared secret for cron auth (required for ALL cron jobs)
+  ANTHROPIC_API_KEY   - Anthropic API key (required for AI Insights + AI Research)
+  DATABASE_URL        - PostgreSQL connection string (required for everything)
+  RESEND_API_KEY      - Resend email API key (required for newsletter digest)
+
+  If CRON_SECRET is missing, ALL cron jobs will fail with 401 Unauthorized.
+  If ANTHROPIC_API_KEY is missing, AI Insights and AI Research will fail.
+
+================================================================================
+  RAILWAY LOG SEARCH KEYWORDS
+================================================================================
+
+  To check if crons are firing at all:
+    Search: "Cron scheduler started"
+    (Should appear once after each deploy)
+
+  To check a specific cron:
+    Search: "Cron [<label>]"
+    Examples:
+      "Cron [news-fetch]"
+      "Cron [blogs-fetch]"
+      "Cron [ai-insights]"
+      "Cron [ai-insights-retry]"
+      "Cron [external-api-refresh]"
+
+  To find failures:
+    Search: "failed"
+    Search: "error"
+    Search: "status: 401"    (auth problem — check CRON_SECRET)
+    Search: "status: 500"    (runtime error — check logs for details)
+
+================================================================================
+  STATUS CHECK ENDPOINTS (no auth required)
+================================================================================
+
+  1. DATA FRESHNESS STATUS
+     GET /api/refresh
+     Shows: last news/events/daily update timestamps, staleness flags,
+            DynamicContent freshness per module
+     Check: newsAgeMinutes < 15, eventsAgeMinutes < 30
+
+  2. AI INSIGHTS LIST
+     GET /api/ai-insights
+     Shows: most recent AI insights with generatedAt timestamps
+     Check: latest generatedAt should be today's date
+
+  3. BLOG POSTS LIST
+     GET /api/blogs
+     Shows: most recent blog posts ordered by publishedAt
+     Check: should have posts from recent days
+
+  4. BLOG SOURCES
+     GET /api/blogs?type=sources
+     Shows: all blog sources with lastFetched timestamps
+     Check: sources should have lastFetched within last 4 hours
+
+================================================================================
+  ADMIN DASHBOARD (requires admin login)
+================================================================================
+
+  /admin/data-freshness
+  Shows: core data source ages, circuit breaker states, manual refresh
+         buttons, dynamic content modules, recent refresh logs
+
+================================================================================
+  CRON JOB DETAILS + MANUAL TRIGGERS
+================================================================================
+
+  Replace YOUR_CRON_SECRET with your actual CRON_SECRET value.
+  Replace YOUR_SITE with your Railway URL.
+
+  All manual triggers use:
+    curl -X POST "URL" -H "Authorization: Bearer YOUR_CRON_SECRET" -H "Content-Type: application/json"
+
+  ──────────────────────────────────────────────────────────────────────────────
+  1. NEWS FETCH
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Every 5 minutes (*/5 * * * *)
+  Endpoint:    POST /api/refresh?type=news
+  Source:      Spaceflight News API (SNAPI)
+  Log search:  "Cron [news-fetch]"
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=news" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"results":{"news":"Refreshed X articles"}}
+  Verify:      GET /api/refresh → newsAgeMinutes should be < 10
+
+  ──────────────────────────────────────────────────────────────────────────────
+  2. EVENTS/LAUNCHES FETCH
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Every 15 minutes (*/15 * * * *)
+  Endpoint:    POST /api/refresh?type=events
+  Source:      Launch Library 2 API (LL2)
+  Log search:  "Cron [events-fetch]"
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=events" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"results":{"events":"Refreshed X events"}}
+  Verify:      GET /api/refresh → eventsAgeMinutes should be < 30
+
+  ──────────────────────────────────────────────────────────────────────────────
+  3. BLOGS FETCH
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Every 4 hours (0 */4 * * *)
+  Endpoint:    POST /api/refresh?type=blogs
+  Sources:     39 RSS feeds (NASA, ESA, SpaceX, SpaceNews, etc.)
+  Log search:  "Cron [blogs-fetch]"
+               "[Blogs] Fetch complete"
+               "[Blogs] Failed to fetch feed"  (per-source failures)
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=blogs" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"results":{"blogs":"Refreshed X blog posts"}}
+  Verify:      GET /api/blogs → check publishedAt dates on recent posts
+               GET /api/blogs?type=sources → check lastFetched timestamps
+
+  ──────────────────────────────────────────────────────────────────────────────
+  4. SPACE WEATHER
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Every 30 minutes (*/30 * * * *)
+  Endpoint:    POST /api/refresh?type=space-weather
+  Sources:     NOAA SWPC (Kp index, solar flux, alerts, X-ray, protons,
+               geomagnetic forecast, DONKI events)
+  Log search:  "Cron [space-weather-refresh]"
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=space-weather" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"results":{"spaceWeather":{"swpcDatasets":X,"donkiEventTypes":Y}}}
+  Verify:      GET /api/refresh → dynamicContent should have space-environment entries
+
+  ──────────────────────────────────────────────────────────────────────────────
+  5. REALTIME DATA (ISS + DSN)
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Every 15 minutes (*/15 * * * *)
+  Endpoint:    POST /api/refresh?type=realtime
+  Sources:     Open Notify (ISS position), NASA DSN Now
+  Log search:  "Cron [realtime-refresh]"
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=realtime" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"results":{"realtime":{"issPosition":1,"dsnStatus":1}}}
+
+  ──────────────────────────────────────────────────────────────────────────────
+  6. LIVE STREAM MATCHING
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Every 30 minutes (*/30 * * * *)
+  Endpoint:    POST /api/refresh?type=live-streams
+  Source:      Matches SpaceEvents to YouTube provider channels
+  Log search:  "Cron [live-stream-check]"
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=live-streams" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"results":{"liveStreams":"Found X upcoming launches"}}
+
+  ──────────────────────────────────────────────────────────────────────────────
+  7. EXTERNAL APIs
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Every 4 hours (0 */4 * * *)
+  Endpoint:    POST /api/refresh?type=external-apis
+  Sources:     NASA NeoWs, CelesTrak, USAspending, USPTO, NASA APOD,
+               TechPort, JPL SBDB, NOAA SWPC, Finnhub, SAM.gov,
+               FCC ECFS, Federal Register
+  Log search:  "Cron [external-api-refresh]"
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=external-apis" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"results":{"externalApis":{...counts per source...}}}
+
+  ──────────────────────────────────────────────────────────────────────────────
+  8. DAILY FULL REFRESH + NEWSLETTER
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Midnight UTC (0 0 * * *)
+  Endpoint:    POST /api/refresh?type=daily
+  Actions:     Blogs, companies, resources, opportunities, compliance,
+               solar exploration, spectrum, insurance, workforce, solar flares,
+               orbital slots, launch windows, debris, newsletter digest + send
+  Log search:  "Cron [daily-refresh]"
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=daily" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"results":{"blogs":"...", "companies":"Refreshed", ...}}
+  Note:        This is the longest-running cron — may take 1-2 minutes.
+               Also sends newsletter to verified subscribers (requires RESEND_API_KEY).
+
+  ──────────────────────────────────────────────────────────────────────────────
+  9. AI INSIGHTS GENERATION
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    1:00 AM UTC (0 1 * * *) + retry at 7:00 AM UTC (0 7 * * *)
+  Endpoint:    POST /api/ai-insights/generate
+  Requires:    ANTHROPIC_API_KEY env var
+  Source:      Analyzes last 36h of news, 48h of blogs, 72h of legal updates
+               via Claude Sonnet 4.5 to generate 2 in-depth industry briefings
+  Log search:  "Cron [ai-insights]"
+               "Cron [ai-insights-retry]"
+               "AI insights generated successfully"
+               "AI insights generation failed"
+               "AI insights content availability"
+               "AI insights already generated today"
+               "ANTHROPIC_API_KEY not set"
+  Manual:
+    curl -X POST "YOUR_SITE/api/ai-insights/generate" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"count":2,"insights":[...]}
+  Verify:      GET /api/ai-insights → latest insight generatedAt = today
+  Dedup:       If insights already generated today, retry returns:
+               {"success":true,"skipped":true,"message":"2 insights already generated today"}
+
+  ──────────────────────────────────────────────────────────────────────────────
+  10. AI DATA RESEARCH
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    2:00 AM UTC (0 2 * * *)
+  Endpoint:    POST /api/refresh?type=ai-research
+  Requires:    ANTHROPIC_API_KEY env var
+  Source:      Uses Claude to verify/update data for various modules
+  Log search:  "Cron [ai-data-research]"
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=ai-research" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"results":{"aiResearch":{...}}}
+
+  ──────────────────────────────────────────────────────────────────────────────
+  11. STALENESS CLEANUP
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    3:00 AM UTC (0 3 * * *)
+  Endpoint:    POST /api/refresh/cleanup
+  Actions:     Expires old DynamicContent, prunes refresh logs
+  Log search:  "Cron [staleness-cleanup]"
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh/cleanup" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+
+  ──────────────────────────────────────────────────────────────────────────────
+  12. SPACE DEFENSE
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    6:00 AM UTC (0 6 * * *)
+  Endpoint:    POST /api/refresh?type=space-defense
+  Sources:     SAM.gov defense procurement, defense news compilation
+  Log search:  "Cron [space-defense-refresh]"
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=space-defense" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"results":{"spaceDefense":{"liveProcurement":X,"defenseNews":Y}}}
+
+  ──────────────────────────────────────────────────────────────────────────────
+  13. REGULATORY FEEDS (FCC + FAA)
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Not on automatic cron — triggered manually or via admin dashboard
+  Endpoint:    POST /api/refresh?type=regulatory-feeds
+  Sources:     FCC ECFS (satellite/NGSO filings), FAA Federal Register (licenses)
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=regulatory-feeds" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"results":{"regulatoryFeeds":{"faaLicenses":X,"fccFilings":Y}}}
+  Note:        Consider adding to a cron schedule if you want daily regulatory updates.
+
+  ──────────────────────────────────────────────────────────────────────────────
+  14. SEC FILINGS
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Not on automatic cron — triggered manually or via admin dashboard
+  Endpoint:    POST /api/refresh?type=sec-filings
+  Sources:     SEC EDGAR for 9 public space companies (RKLB, SPCE, LUNR, etc.)
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=sec-filings" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+  Expected:    {"success":true,"results":{"secFilings":{"count":X}}}
+  Note:        Consider adding to a cron schedule if you want daily SEC updates.
+
+  ──────────────────────────────────────────────────────────────────────────────
+  15. REGULATION EXPLAINERS (AI-generated)
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Not on automatic cron — triggered manually
+  Endpoint:    POST /api/refresh?type=regulation-explainers
+  Requires:    ANTHROPIC_API_KEY
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=regulation-explainers" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+
+  ──────────────────────────────────────────────────────────────────────────────
+  16. COMPANY DIGESTS (AI-generated)
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Not on automatic cron — triggered manually
+  Endpoint:    POST /api/refresh?type=company-digests
+  Requires:    ANTHROPIC_API_KEY
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=company-digests" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+
+  ──────────────────────────────────────────────────────────────────────────────
+  17. WATCHLIST ALERTS
+  ──────────────────────────────────────────────────────────────────────────────
+  Schedule:    Not on automatic cron — triggered manually
+  Endpoint:    POST /api/refresh?type=watchlist-alerts
+  Manual:
+    curl -X POST "YOUR_SITE/api/refresh?type=watchlist-alerts" \
+      -H "Authorization: Bearer YOUR_CRON_SECRET" \
+      -H "Content-Type: application/json"
+
+================================================================================
+  DAILY HEALTH CHECK SEQUENCE (recommended morning check)
+================================================================================
+
+  Run these in order to verify everything is healthy:
+
+  1. Check overall freshness:
+     curl "YOUR_SITE/api/refresh"
+     -> newsAgeMinutes < 10, eventsAgeMinutes < 30
+
+  2. Check AI insights were generated today:
+     curl "YOUR_SITE/api/ai-insights"
+     -> latest insight generatedAt should be today
+
+  3. Check blog freshness:
+     curl "YOUR_SITE/api/blogs?type=sources&limit=5"
+     -> sources should have lastFetched within last 4-8 hours
+
+  4. Check admin dashboard (in browser, requires login):
+     YOUR_SITE/admin/data-freshness
+     -> All circuit breakers should be CLOSED (green)
+     -> Core data sources should show recent timestamps
+     -> No red/orange staleness indicators
+
+================================================================================
+  TROUBLESHOOTING
+================================================================================
+
+  PROBLEM: All crons return 401 Unauthorized
+  FIX:     Set CRON_SECRET in Railway Variables. Redeploy.
+
+  PROBLEM: AI Insights not generating
+  FIX:     Set ANTHROPIC_API_KEY in Railway Variables. Redeploy.
+           Check logs for: "ANTHROPIC_API_KEY not set"
+           Or: "no recent content found" (news pipeline may also be broken)
+
+  PROBLEM: News not updating (newsAgeMinutes > 15)
+  FIX:     Check logs for "Cron [news-fetch] failed"
+           Manually trigger: POST /api/refresh?type=news
+           Check if Spaceflight News API is down: https://api.spaceflightnewsapi.net/v4/articles
+
+  PROBLEM: Blogs not updating
+  FIX:     Check logs for "[Blogs] Fetch complete" — look at sourcesFailed count
+           If sourcesFailed is high, RSS feeds may be down
+           Manually trigger: POST /api/refresh?type=blogs
+
+  PROBLEM: Circuit breakers showing OPEN on admin dashboard
+  FIX:     External API is likely down. Breaker resets automatically after 5 min.
+           Check which breaker is open on /admin/data-freshness
+           Wait for automatic reset or redeploy to force-reset all breakers.
+
+  PROBLEM: "Cron scheduler started" never appears in logs
+  FIX:     Check src/instrumentation.ts is present and deploying.
+           Verify NEXT_RUNTIME=nodejs on Railway (should be default).
+           Check that node-cron is in dependencies.
+
+  PROBLEM: Newsletter not sending
+  FIX:     Set RESEND_API_KEY in Railway Variables.
+           Check logs for "Newsletter error in refresh"
+           Verify subscribers exist: check newsletterSubscriber table.
+
+================================================================================
+  CRON SCHEDULE OVERVIEW (all times UTC)
+================================================================================
+
+  Every 5 min     News fetch           /api/refresh?type=news
+  Every 15 min    Events fetch         /api/refresh?type=events
+  Every 15 min    Realtime (ISS/DSN)   /api/refresh?type=realtime
+  Every 30 min    Space weather        /api/refresh?type=space-weather
+  Every 30 min    Live stream match    /api/refresh?type=live-streams
+  Every 4 hours   Blogs fetch          /api/refresh?type=blogs
+  Every 4 hours   External APIs        /api/refresh?type=external-apis
+  00:00           Daily refresh        /api/refresh?type=daily
+  01:00           AI Insights          /api/ai-insights/generate
+  02:00           AI Data Research     /api/refresh?type=ai-research
+  03:00           Staleness cleanup    /api/refresh/cleanup
+  06:00           Space Defense        /api/refresh?type=space-defense
+  07:00           AI Insights retry    /api/ai-insights/generate
+
+  NOT SCHEDULED (manual only):
+  - Regulatory feeds (FCC/FAA)         /api/refresh?type=regulatory-feeds
+  - SEC filings                        /api/refresh?type=sec-filings
+  - Regulation explainers              /api/refresh?type=regulation-explainers
+  - Company digests                    /api/refresh?type=company-digests
+  - Watchlist alerts                   /api/refresh?type=watchlist-alerts
+
+================================================================================
