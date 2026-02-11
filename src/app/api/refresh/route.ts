@@ -20,7 +20,6 @@ import { initializeSpaceMiningData } from '@/lib/space-mining-data';
 import { initializeBlueprintData } from '@/lib/blueprint-data';
 import { initializeGovernmentContracts } from '@/lib/government-contracts-data';
 import { initializeOrbitalServices } from '@/lib/orbital-services-data';
-import { initializeMissionCostData } from '@/lib/mission-cost-data';
 import { initializeRegulatoryHubData } from '@/lib/regulatory-hub-data';
 import { generateDailyDigest } from '@/lib/newsletter/digest-generator';
 import { sendDailyDigest } from '@/lib/newsletter/email-service';
@@ -113,9 +112,6 @@ async function refreshDaily(): Promise<Record<string, string>> {
 
   await initializeOrbitalServices();
   results.orbitalServices = 'Refreshed';
-
-  await initializeMissionCostData();
-  results.missionCost = 'Refreshed';
 
   await initializeRegulatoryHubData();
   results.regulatoryHub = 'Refreshed';
