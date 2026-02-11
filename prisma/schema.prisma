@@ -57,6 +57,10 @@ model User {
   claimedCompanyId         String? // CompanyProfile ID they've claimed
   rfqs                     RFQ[]
   interestExpressions      InterestExpression[]
+
+  // Watchlists & Saved Searches
+  companyWatchlist          CompanyWatchlistItem[]
+  savedSearches            SavedSearch[]
 }
 
 model PasswordResetToken {
@@ -2444,6 +2448,7 @@ model CompanyProfile {
   serviceListings  ServiceListing[]
   reviews          ProviderReview[]
   teamingOpps      TeamingOpportunity[]
+  watchedBy        CompanyWatchlistItem[]
 
   @@index([slug])
   @@index([name])
@@ -3286,4 +3291,41 @@ model RFQClarification {
 
   @@index([rfqId])
   @@index([authorId])
+}
+
+// ─── Watchlists & Saved Searches ────────────────────────────────────────────
+
+model CompanyWatchlistItem {
+  id               String         @id @default(cuid())
+  userId           String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyProfileId String
+  companyProfile   CompanyProfile @relation(fields: [companyProfileId], references: [id], onDelete: Cascade)
+  priority         String         @default("medium") // high, medium, low
+  notifyNews       Boolean        @default(true)
+  notifyContracts  Boolean        @default(true)
+  notifyListings   Boolean        @default(false)
+  notes            String?        @db.Text
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@unique([userId, companyProfileId])
+  @@index([userId])
+  @@index([companyProfileId])
+}
+
+model SavedSearch {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  searchType   String    // company_directory, marketplace_listings, marketplace_rfqs
+  filters      Json      // Type-specific filter object
+  query        String?   // Text search query
+  alertEnabled Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([searchType])
 }

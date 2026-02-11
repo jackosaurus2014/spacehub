@@ -58,6 +58,7 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Launch Windows', href: '/launch-windows', description: 'Optimal launch timing' },
   { label: 'Space Environment', href: '/space-environment', description: 'Weather, debris & operations' },
   { label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
+  { label: 'My Watchlists', href: '/my-watchlists', description: 'Watched companies & saved searches' },
   { label: 'Dashboard', href: '/dashboard', description: 'Your personalized hub' },
 ];
 

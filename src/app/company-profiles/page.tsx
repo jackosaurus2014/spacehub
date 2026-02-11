@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import WatchButton from '@/components/watchlist/WatchButton';
+import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
 
 interface CompanyCard {
   id: string;
@@ -159,7 +161,10 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
                   </div>
                 </div>
               </div>
-              {getTierBadge(company.tier)}
+              <div className="flex items-center gap-2">
+                <WatchButton companyProfileId={company.id} companyName={company.name} size="sm" />
+                {getTierBadge(company.tier)}
+              </div>
             </div>
 
             {/* Description */}
@@ -429,7 +434,14 @@ export default function CompanyProfilesPage() {
           </div>
 
           <div className="flex items-center justify-between mt-3 text-xs text-slate-500">
-            <span>{total} companies found</span>
+            <div className="flex items-center gap-3">
+              <span>{total} companies found</span>
+              <SaveSearchButton
+                searchType="company_directory"
+                filters={{ sector, tier, status: statusFilter, sortBy, sortOrder }}
+                query={search || undefined}
+              />
+            </div>
             {stats && stats.sectors.length > 0 && (
               <div className="flex gap-2">
                 {stats.sectors.slice(0, 5).map(s => (

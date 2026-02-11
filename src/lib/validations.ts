@@ -1513,3 +1513,27 @@ export type MarketplaceSearchParams = z.infer<typeof marketplaceSearchSchema>;
 export type RFQClarificationData = z.infer<typeof rfqClarificationSchema>;
 export type RFQClarificationAnswerData = z.infer<typeof rfqClarificationAnswerSchema>;
 export type ReviewResponseData = z.infer<typeof reviewResponseSchema>;
+
+// ============================================================
+// Company Watchlists & Saved Searches
+// ============================================================
+
+export const companyWatchlistSchema = z.object({
+  companyProfileId: z.string().min(1, 'Company ID is required'),
+  priority: z.enum(['high', 'medium', 'low']).default('medium'),
+  notifyNews: z.boolean().default(true),
+  notifyContracts: z.boolean().default(true),
+  notifyListings: z.boolean().default(false),
+  notes: z.string().max(1000).optional().nullable().transform((val) => val?.trim() || null),
+});
+
+export const generalSavedSearchSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(200).transform((val) => val.trim()),
+  searchType: z.enum(['company_directory', 'marketplace_listings', 'marketplace_rfqs']),
+  filters: z.record(z.string(), z.unknown()),
+  query: z.string().max(500).optional().nullable().transform((val) => val?.trim() || null),
+  alertEnabled: z.boolean().default(false),
+});
+
+export type CompanyWatchlistData = z.infer<typeof companyWatchlistSchema>;
+export type GeneralSavedSearchData = z.infer<typeof generalSavedSearchSchema>;

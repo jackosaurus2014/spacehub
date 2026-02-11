@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import RFQCard from '@/components/marketplace/RFQCard';
 import { MARKETPLACE_CATEGORIES, CERTIFICATION_OPTIONS, VERIFICATION_LEVELS } from '@/lib/marketplace-types';
+import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -211,6 +212,10 @@ function SearchContent() {
                 {total} result{total !== 1 ? 's' : ''}
               </div>
               <div className="flex items-center gap-2">
+                <SaveSearchButton
+                  searchType={tab === 'rfqs' ? 'marketplace_rfqs' : 'marketplace_listings'}
+                  filters={{ category, priceMin, priceMax, certifications: certFilter.join(','), verification: verFilter, sort }}
+                />
                 {tab === 'listings' && (
                   <select
                     value={sort}

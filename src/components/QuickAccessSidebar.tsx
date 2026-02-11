@@ -384,6 +384,23 @@ export default function QuickAccessSidebar() {
             </span>
           </Link>
           <Link
+            href="/my-watchlists"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+              pathname === '/my-watchlists'
+                ? 'bg-cyan-500/20 text-cyan-300'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+            }`}
+          >
+            <span className="text-lg flex-shrink-0 w-6 text-center">★</span>
+            <span
+              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              }`}
+            >
+              Watchlists
+            </span>
+          </Link>
+          <Link
             href="/dashboard"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname === '/dashboard'

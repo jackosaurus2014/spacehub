@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import WatchButton from '@/components/watchlist/WatchButton';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -137,7 +138,7 @@ function getScoreBarColor(score: number): string {
 
 // ─── Marketplace Actions ─────────────────────────────────────────────────────
 
-function MarketplaceActions({ companySlug, companyId }: { companySlug: string; companyId: string }) {
+function MarketplaceActions({ companySlug, companyId, companyName }: { companySlug: string; companyId: string; companyName: string }) {
   const [claiming, setClaiming] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const [claimEmail, setClaimEmail] = useState('');
@@ -207,6 +208,7 @@ function MarketplaceActions({ companySlug, companyId }: { companySlug: string; c
       <Link href={`/marketplace/search?category=&companyId=${companyId}`} className="text-xs px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors">
         View Service Listings
       </Link>
+      <WatchButton companyProfileId={companyId} companyName={companyName} size="md" />
       {!claimed && !showClaimForm && (
         <button
           onClick={() => setShowClaimForm(true)}
@@ -1165,7 +1167,7 @@ export default function CompanyProfileDetailPage() {
           </div>
 
           {/* Marketplace Actions */}
-          <MarketplaceActions companySlug={params.slug as string} companyId={company.id} />
+          <MarketplaceActions companySlug={params.slug as string} companyId={company.id} companyName={company.name} />
         </div>
       </motion.div>
 
