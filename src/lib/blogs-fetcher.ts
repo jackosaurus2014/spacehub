@@ -1,13 +1,7 @@
 import prisma from './db';
 import Parser from 'rss-parser';
 import sanitizeHtml from 'sanitize-html';
-import { createCircuitBreaker } from './circuit-breaker';
 import { logger } from './logger';
-
-const blogRssBreaker = createCircuitBreaker('rss-blogs', {
-  failureThreshold: 5,
-  resetTimeout: 60_000, // 1 minute
-});
 
 const parser = new Parser({
   customFields: {
@@ -468,6 +462,8 @@ export async function fetchBlogPosts(): Promise<number> {
   });
 
   let totalSaved = 0;
+  let successCount = 0;
+  let failCount = 0;
 
   for (const source of sources) {
     if (!source.feedUrl) continue;
@@ -477,8 +473,18 @@ export async function fetchBlogPosts(): Promise<number> {
     const sourceId = source.id;
     const sourceAuthorName = source.authorName;
 
-    const saved = await blogRssBreaker.execute(async () => {
-      const feed = await parser.parseURL(feedUrl);
+    try {
+      // Per-source timeout: 15 seconds to parse the feed
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15_000);
+
+      let feed;
+      try {
+        feed = await parser.parseURL(feedUrl);
+      } finally {
+        clearTimeout(timeout);
+      }
+
       let count = 0;
 
       for (const item of feed.items.slice(0, 20)) {
@@ -507,11 +513,15 @@ export async function fetchBlogPosts(): Promise<number> {
               authorName: item['dc:creator'] || item.creator || sourceAuthorName,
               topic,
               publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
+              fetchedAt: new Date(),
             },
           });
           count++;
-        } catch {
-          // Skip duplicates or errors
+        } catch (err) {
+          logger.warn(`[Blogs] Failed to upsert post from ${sourceName}`, {
+            url: item.link,
+            error: err instanceof Error ? err.message : String(err),
+          });
           continue;
         }
       }
@@ -522,15 +532,24 @@ export async function fetchBlogPosts(): Promise<number> {
         data: { lastFetched: new Date() },
       });
 
-      return count;
-    }, 0); // fallback: 0 saved posts
-
-    if (saved === 0 && blogRssBreaker.getStatus().state !== 'CLOSED') {
-      logger.warn(`[Blogs] Circuit breaker active - skipped ${sourceName}`);
+      totalSaved += count;
+      successCount++;
+    } catch (err) {
+      failCount++;
+      logger.warn(`[Blogs] Failed to fetch feed: ${sourceName}`, {
+        feedUrl,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      // Continue to next source — don't let one broken feed block others
     }
-
-    totalSaved += saved;
   }
+
+  logger.info(`[Blogs] Fetch complete`, {
+    totalSaved,
+    sourcesSuccess: successCount,
+    sourcesFailed: failCount,
+    totalSources: sources.length,
+  });
 
   return totalSaved;
 }
