@@ -207,9 +207,38 @@ function WatchlistsContent() {
     );
   }
 
+  const [digests, setDigests] = useState<any[]>([]);
+  const [digestsLoading, setDigestsLoading] = useState(false);
+
+  useEffect(() => {
+    if (tab === 'digests' && digests.length === 0 && !digestsLoading) {
+      setDigestsLoading(true);
+      // Fetch digests for all watched companies
+      const companyIds = watchlist.map((w) => w.companyProfile.id);
+      if (companyIds.length > 0) {
+        Promise.all(
+          companyIds.slice(0, 20).map((id) =>
+            fetch(`/api/company-digests?companyProfileId=${id}&limit=1`)
+              .then((r) => (r.ok ? r.json() : { digests: [] }))
+              .catch(() => ({ digests: [] }))
+          )
+        )
+          .then((results) => {
+            const allDigests = results.flatMap((r) => r.digests || []);
+            allDigests.sort((a: any, b: any) => new Date(b.periodEnd).getTime() - new Date(a.periodEnd).getTime());
+            setDigests(allDigests);
+          })
+          .finally(() => setDigestsLoading(false));
+      } else {
+        setDigestsLoading(false);
+      }
+    }
+  }, [tab, watchlist, digests.length, digestsLoading]);
+
   const tabs = [
     { key: 'companies', label: `Watched Companies (${watchlist.length})` },
     { key: 'searches', label: `Saved Searches (${savedSearches.length})` },
+    { key: 'digests', label: 'Digests' },
   ];
 
   return (
@@ -444,6 +473,85 @@ function WatchlistsContent() {
                     </button>
                   </Link>
                 </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Digests Tab */}
+        {tab === 'digests' && (
+          <div className="space-y-4">
+            {digestsLoading ? (
+              <div className="flex justify-center py-10"><LoadingSpinner /></div>
+            ) : digests.length > 0 ? (
+              digests.map((digest: any, i: number) => {
+                let highlights: string[] = [];
+                try { highlights = Array.isArray(digest.highlights) ? digest.highlights : JSON.parse(digest.highlights || '[]'); } catch {}
+
+                return (
+                  <motion.div
+                    key={digest.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    className="card p-4 space-y-3"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        {digest.companyProfile && (
+                          <Link href={`/company-profiles/${digest.companyProfile.slug}`} className="flex items-center gap-2 group">
+                            <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-xs flex-shrink-0">
+                              {digest.companyProfile.logoUrl ? (
+                                <img src={digest.companyProfile.logoUrl} alt="" className="w-6 h-6 rounded-lg object-contain" />
+                              ) : (
+                                digest.companyProfile.name.charAt(0)
+                              )}
+                            </div>
+                            <span className="text-sm font-semibold text-white group-hover:text-cyan-400 transition-colors">
+                              {digest.companyProfile.name}
+                            </span>
+                          </Link>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-slate-500">
+                        {new Date(digest.periodStart).toLocaleDateString()} – {new Date(digest.periodEnd).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    <p className="text-slate-300 text-xs leading-relaxed">{digest.summary}</p>
+
+                    {highlights.length > 0 && (
+                      <ul className="space-y-1">
+                        {highlights.slice(0, 3).map((h: string, j: number) => (
+                          <li key={j} className="flex items-start gap-2 text-[11px] text-slate-400">
+                            <span className="text-cyan-400 mt-0.5">•</span>
+                            <span>{h}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    <div className="text-[10px] text-slate-500 pt-1 border-t border-slate-700/50">
+                      {digest.newsCount} articles analyzed
+                    </div>
+                  </motion.div>
+                );
+              })
+            ) : (
+              <div className="text-center py-16">
+                <div className="text-4xl mb-3">📊</div>
+                <p className="text-sm text-slate-400 mb-2">
+                  {watchlist.length === 0
+                    ? 'Watch some companies first to see their weekly digests here.'
+                    : 'No digests available yet. Digests are generated weekly for companies with recent news.'}
+                </p>
+                {watchlist.length === 0 && (
+                  <Link href="/company-profiles">
+                    <button className="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors mt-2">
+                      Browse Companies
+                    </button>
+                  </Link>
+                )}
               </div>
             )}
           </div>

@@ -93,7 +93,8 @@ export async function deliverAlerts(prisma: PrismaClient): Promise<{
 
           case 'email': {
             // Check if this should be immediate or digest
-            const frequency = delivery.alertRule?.emailFrequency || 'immediate';
+            const dataFreq = (delivery.data as any)?.emailFrequency;
+            const frequency = delivery.alertRule?.emailFrequency || dataFreq || 'immediate';
 
             if (frequency === 'immediate') {
               // Send email via Resend
@@ -303,13 +304,15 @@ export async function sendDailyDigest(prisma: PrismaClient): Promise<{
 
   try {
     // Find users with pending daily digest email deliveries
+    // Include both alert-rule-based digests AND watchlist-sourced digests
     const pendingDigestDeliveries = await prisma.alertDelivery.findMany({
       where: {
         channel: 'email',
         status: 'pending',
-        alertRule: {
-          emailFrequency: 'daily_digest',
-        },
+        OR: [
+          { alertRule: { emailFrequency: 'daily_digest' } },
+          { source: 'watchlist' },
+        ],
       },
       include: {
         alertRule: {

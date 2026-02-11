@@ -485,6 +485,68 @@ model ProposedRegulation {
   @@index([publishedDate])
 }
 
+model RegulationExplainer {
+  id                     String   @id @default(cuid())
+  slug                   String   @unique
+  proposedRegulationId   String?
+  title                  String
+  summary                String   @db.Text
+  content                String   @db.Text
+  whatItMeans             String?  @db.Text
+  whoItAffects           String?  @db.Text
+  whatToDoNext            String?  @db.Text
+  affectedCompanyTypes   String? // JSON array of company types affected
+  agency                 String
+  category               String
+  impactLevel            String   @default("medium") // low, medium, high, critical
+  sourceUrls             String   @db.Text // JSON array of source URLs
+  regulationDocketNumber String?
+  generatedAt            DateTime @default(now())
+  viewCount              Int      @default(0)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@index([agency])
+  @@index([category])
+  @@index([impactLevel])
+  @@index([generatedAt])
+}
+
+model CompanyDigest {
+  id               String          @id @default(cuid())
+  companyProfileId String?
+  companyProfile   CompanyProfile? @relation(fields: [companyProfileId], references: [id], onDelete: Cascade)
+  sector           String?
+  title            String
+  summary          String          @db.Text
+  content          String          @db.Text
+  highlights       String?         @db.Text // JSON array of key highlights
+  periodStart      DateTime
+  periodEnd        DateTime
+  newsCount        Int             @default(0)
+  generatedAt      DateTime        @default(now())
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([companyProfileId])
+  @@index([sector])
+  @@index([periodEnd])
+  @@unique([companyProfileId, periodStart, periodEnd])
+}
+
+model WatchlistAlertLog {
+  id               String   @id @default(cuid())
+  userId           String
+  companyProfileId String
+  alertType        String // "news", "contract", "listing"
+  referenceId      String? // ID of the article/contract/listing
+  createdAt        DateTime @default(now())
+
+  @@unique([userId, companyProfileId, alertType, referenceId])
+  @@index([userId, createdAt])
+  @@index([companyProfileId])
+}
+
 model LegalUpdate {
   id   String @id @default(cuid())
   slug String @unique
@@ -2331,25 +2393,27 @@ model AlertRule {
 }
 
 model AlertDelivery {
-  id          String    @id @default(cuid())
-  alertRuleId String
-  alertRule   AlertRule @relation(fields: [alertRuleId], references: [id], onDelete: Cascade)
+  id          String     @id @default(cuid())
+  alertRuleId String?
+  alertRule   AlertRule? @relation(fields: [alertRuleId], references: [id], onDelete: Cascade)
   userId      String
   channel     String // "in_app", "email", "push", "webhook"
-  status      String    @default("pending") // "pending", "sent", "delivered", "failed", "read"
+  status      String     @default("pending") // "pending", "sent", "delivered", "failed", "read"
   title       String
-  message     String    @db.Text
+  message     String     @db.Text
   data        Json? // Additional context (article URL, stock price, etc.)
+  source      String     @default("alert_rule") // "alert_rule" or "watchlist"
   sentAt      DateTime?
   readAt      DateTime?
   failReason  String?
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime   @default(now())
 
   @@index([userId])
   @@index([alertRuleId])
   @@index([status])
   @@index([createdAt])
   @@index([channel])
+  @@index([source])
 }
 
 model AlertHistory {
@@ -2449,6 +2513,7 @@ model CompanyProfile {
   reviews          ProviderReview[]
   teamingOpps      TeamingOpportunity[]
   watchedBy        CompanyWatchlistItem[]
+  digests          CompanyDigest[]
 
   @@index([slug])
   @@index([name])

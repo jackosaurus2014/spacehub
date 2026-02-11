@@ -32,6 +32,7 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Space Economy', href: '/space-economy', description: 'Market size, investment & budgets' },
   { label: 'Space Capital', href: '/space-capital', description: 'VC investors, startups & matchmaking' },
   { label: 'Regulatory Hub', href: '/compliance', description: 'Compliance, space law & filings' },
+  { label: 'Regulation Explainers', href: '/regulation-explainers', description: 'AI plain-English regulation summaries' },
   { label: 'Spectrum Management', href: '/spectrum', description: 'Allocations, auctions & filings' },
   { label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },
 ];

@@ -1,6 +1,6 @@
 // Notification types and utilities for SpaceNexus
 
-export type NotificationType = 'launch' | 'price_alert' | 'news' | 'system';
+export type NotificationType = 'launch' | 'price_alert' | 'news' | 'system' | 'watchlist';
 
 export interface Notification {
   id: string;
@@ -129,6 +129,8 @@ export function getNotificationIcon(type: NotificationType): string {
       return 'newspaper';
     case 'system':
       return 'settings';
+    case 'watchlist':
+      return 'eye';
     default:
       return 'bell';
   }

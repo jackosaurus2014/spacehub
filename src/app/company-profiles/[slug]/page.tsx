@@ -256,6 +256,7 @@ const TABS = [
   { id: 'space-assets', label: 'Space Assets', icon: '🛰️' },
   { id: 'timeline', label: 'Timeline', icon: '📅' },
   { id: 'news', label: 'News', icon: '📰' },
+  { id: 'digest', label: 'Weekly Digest', icon: '📊' },
   { id: 'relationships', label: 'Relationships', icon: '🔗' },
 ] as const;
 
@@ -935,6 +936,84 @@ function NewsTab({ companySlug, companyName }: { companySlug: string; companyNam
   );
 }
 
+function DigestTab({ companyId, companyName }: { companyId: string; companyName: string }) {
+  const [digests, setDigests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchDigests() {
+      try {
+        const res = await fetch(`/api/company-digests?companyProfileId=${companyId}&limit=10`);
+        if (res.ok) {
+          const data = await res.json();
+          setDigests(data.digests || []);
+        }
+      } catch {
+        // silent
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDigests();
+  }, [companyId]);
+
+  if (loading) return <div className="flex justify-center py-10"><LoadingSpinner /></div>;
+
+  if (digests.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <div className="text-4xl mb-3">📊</div>
+        <p className="text-slate-400 text-sm">No weekly digests available for {companyName} yet.</p>
+        <p className="text-slate-500 text-xs mt-2">Digests are generated weekly for companies with recent news activity.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {digests.map((digest: any) => {
+        let highlights: string[] = [];
+        try { highlights = Array.isArray(digest.highlights) ? digest.highlights : JSON.parse(digest.highlights || '[]'); } catch {}
+
+        return (
+          <div key={digest.id} className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-white font-semibold text-sm">{digest.title}</h3>
+              <span className="text-xs text-slate-500">
+                {new Date(digest.periodStart).toLocaleDateString()} – {new Date(digest.periodEnd).toLocaleDateString()}
+              </span>
+            </div>
+            <p className="text-slate-300 text-sm mb-4">{digest.summary}</p>
+
+            {highlights.length > 0 && (
+              <div className="mb-4">
+                <h4 className="text-xs font-semibold text-slate-400 uppercase mb-2">Key Highlights</h4>
+                <ul className="space-y-1">
+                  {highlights.map((h: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
+                      <span className="text-cyan-400 mt-0.5">•</span>
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="text-slate-400 text-xs leading-relaxed whitespace-pre-line">
+              {digest.content}
+            </div>
+
+            <div className="flex items-center gap-3 text-[10px] text-slate-500 mt-3 pt-2 border-t border-slate-700/50">
+              <span>{digest.newsCount} articles analyzed</span>
+              <span>Generated {new Date(digest.generatedAt).toLocaleDateString()}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function RelationshipsTab({ company }: { company: CompanyDetail }) {
   return (
     <div className="space-y-4">
@@ -1213,6 +1292,7 @@ export default function CompanyProfileDetailPage() {
           {activeTab === 'space-assets' && <SpaceAssetsTab company={company} />}
           {activeTab === 'timeline' && <TimelineTab company={company} />}
           {activeTab === 'news' && <NewsTab companySlug={company.slug} companyName={company.name} />}
+          {activeTab === 'digest' && <DigestTab companyId={company.id} companyName={company.name} />}
           {activeTab === 'relationships' && <RelationshipsTab company={company} />}
         </motion.div>
       </AnimatePresence>

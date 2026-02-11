@@ -45,6 +45,15 @@ function SettingsIcon({ className }: { className?: string }) {
   );
 }
 
+function EyeIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  );
+}
+
 function BellIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -64,6 +73,8 @@ function getNotificationIcon(type: NotificationType) {
       return <NewspaperIcon className={iconClass} />;
     case 'system':
       return <SettingsIcon className={iconClass} />;
+    case 'watchlist':
+      return <EyeIcon className={iconClass} />;
     default:
       return <BellIcon className={iconClass} />;
   }
@@ -79,6 +90,8 @@ function getNotificationColor(type: NotificationType): string {
       return 'text-blue-400 bg-blue-400/10';
     case 'system':
       return 'text-purple-400 bg-purple-400/10';
+    case 'watchlist':
+      return 'text-indigo-400 bg-indigo-400/10';
     default:
       return 'text-cyan-400 bg-cyan-400/10';
   }
@@ -90,12 +103,41 @@ export default function NotificationCenter() {
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Load notifications on mount
+  // Load notifications on mount — merge localStorage + server-side watchlist alerts
   useEffect(() => {
-    const loadNotifications = () => {
-      const notifs = getNotifications();
-      setNotifications(notifs);
-      setUnreadCount(notifs.filter(n => !n.read).length);
+    const loadNotifications = async () => {
+      const localNotifs = getNotifications();
+
+      // Fetch server-side watchlist alerts (if authenticated)
+      let serverNotifs: Notification[] = [];
+      try {
+        const res = await fetch('/api/alerts/watchlist?limit=20');
+        if (res.ok) {
+          const data = await res.json();
+          serverNotifs = (data.alerts || []).map((alert: any) => ({
+            id: `srv_${alert.id}`,
+            type: 'watchlist' as NotificationType,
+            title: alert.title,
+            message: alert.message,
+            timestamp: alert.createdAt,
+            read: !!alert.readAt,
+            link: alert.data?.link || undefined,
+            metadata: alert.data || undefined,
+          }));
+        }
+      } catch {
+        // Not authenticated or fetch failed — ignore
+      }
+
+      // Merge: server alerts first, then local, deduplicated by id
+      const merged = [...serverNotifs, ...localNotifs];
+      // Sort by timestamp descending
+      merged.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      // Keep max 50
+      const capped = merged.slice(0, 50);
+
+      setNotifications(capped);
+      setUnreadCount(capped.filter(n => !n.read).length);
     };
 
     loadNotifications();
@@ -131,7 +173,11 @@ export default function NotificationCenter() {
 
   const handleMarkAllAsRead = () => {
     const updated = markAllAsRead();
-    setNotifications(updated);
+    // Also mark server-side watchlist alerts as read
+    fetch('/api/alerts/watchlist', { method: 'PUT' }).catch(() => {});
+    // Update all notifications including server-side ones
+    const allUpdated = notifications.map(n => ({ ...n, read: true }));
+    setNotifications(allUpdated);
     setUnreadCount(0);
   };
 

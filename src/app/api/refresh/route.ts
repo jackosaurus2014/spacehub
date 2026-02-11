@@ -246,6 +246,25 @@ export async function POST(request: Request) {
       };
     }
 
+    if (type === 'regulation-explainers') {
+      const { generateRegulationExplainers } = await import('@/lib/regulation-explainer-generator');
+      const explainerResult = await generateRegulationExplainers();
+      results.regulationExplainers = explainerResult;
+    }
+
+    if (type === 'company-digests') {
+      const { generateCompanyDigests } = await import('@/lib/company-digest-generator');
+      const digestResult = await generateCompanyDigests();
+      results.companyDigests = digestResult;
+    }
+
+    if (type === 'watchlist-alerts') {
+      const { processWatchlistAlerts, sendWatchlistDailyDigest } = await import('@/lib/alerts/watchlist-alert-processor');
+      const alertResult = await processWatchlistAlerts(prisma);
+      const digestResult = await sendWatchlistDailyDigest(prisma);
+      results.watchlistAlerts = { alerts: alertResult, digest: digestResult };
+    }
+
     logger.info(`Data refresh completed (type=${type || 'all'})`, results);
 
     return NextResponse.json({
