@@ -10,6 +10,11 @@ export interface TelemetryPoint {
   latitude: number;
   longitude: number;
   phase: string;
+  dynamicPressure: number; // kPa
+  fuelRemaining: number; // 0-100%
+  stageStatus: 'attached' | 'separated' | 'landing' | 'landed';
+  fairingStatus: 'attached' | 'separated';
+  isMaxQ: boolean;
 }
 
 // Cape Canaveral launch site coordinates
@@ -50,6 +55,12 @@ export function generateTelemetryPoint(
   let latitude = LAUNCH_LAT;
   let longitude = LAUNCH_LON;
 
+  let dynamicPressure = 0;
+  let fuelRemaining = 100;
+  let stageStatus: TelemetryPoint['stageStatus'] = 'attached';
+  let fairingStatus: TelemetryPoint['fairingStatus'] = 'attached';
+  let isMaxQ = false;
+
   if (t < 0) {
     // Pre-launch: everything at zero
     altitude = 0;
@@ -59,6 +70,7 @@ export function generateTelemetryPoint(
     throttle = t > -10 ? 100 : 0; // Engine ramp in final 10 seconds
     latitude = LAUNCH_LAT;
     longitude = LAUNCH_LON;
+    fuelRemaining = 100;
   } else if (t <= 162) {
     // First stage burn
     // Altitude: quadratic ramp to ~80 km
@@ -84,6 +96,20 @@ export function generateTelemetryPoint(
     // Trajectory: heading east from Cape Canaveral
     latitude = LAUNCH_LAT + tNorm * 2 + noise(0.01);
     longitude = LAUNCH_LON + tNorm * 5 + noise(0.01);
+
+    // Dynamic pressure: peaks ~35 kPa at T+72s (Max-Q)
+    const qPeak = 35;
+    const qSigma = 25;
+    dynamicPressure = qPeak * Math.exp(-0.5 * Math.pow((t - 72) / qSigma, 2)) + noise(0.3);
+    dynamicPressure = Math.max(0, dynamicPressure);
+
+    // Max-Q detection (within 5 seconds of peak)
+    isMaxQ = t >= 67 && t <= 77;
+
+    // Fuel remaining: S1 100% -> 0% by MECO (T+162)
+    fuelRemaining = Math.max(0, 100 * (1 - tNorm)) + noise(0.2);
+    stageStatus = 'attached';
+    fairingStatus = 'attached';
   } else if (t <= 165) {
     // Stage separation - brief coast
     altitude = 80 + (t - 162) * 0.5 + noise(0.3);
@@ -93,6 +119,10 @@ export function generateTelemetryPoint(
     throttle = 0;
     latitude = LAUNCH_LAT + 2 + noise(0.01);
     longitude = LAUNCH_LON + 5 + noise(0.01);
+    dynamicPressure = 0;
+    fuelRemaining = 0;
+    stageStatus = 'separated';
+    fairingStatus = 'attached';
   } else if (t <= 510) {
     // Second stage burn
     const t2 = t - 165;
@@ -116,6 +146,16 @@ export function generateTelemetryPoint(
     // Continue heading east
     latitude = LAUNCH_LAT + 2 + t2Norm * 10 + noise(0.02);
     longitude = LAUNCH_LON + 5 + t2Norm * 30 + noise(0.02);
+
+    // Dynamic pressure: negligible in upper atmosphere
+    dynamicPressure = Math.max(0, 0.5 * (1 - t2Norm) + noise(0.05));
+
+    // Fuel remaining: S2 resets to 100% at T+170, burns to ~15% by SECO
+    fuelRemaining = Math.max(0, 100 * (1 - t2Norm * 0.85)) + noise(0.2);
+
+    // Stage statuses
+    stageStatus = t >= 480 ? 'landing' : 'separated';
+    fairingStatus = t >= 210 ? 'separated' : 'attached';
   } else {
     // Orbital coast / payload deployment
     const tCoast = t - 510;
@@ -130,6 +170,11 @@ export function generateTelemetryPoint(
     // Orbital trajectory (simplified)
     latitude = LAUNCH_LAT + 12 + coastNorm * 20 * Math.sin(coastNorm * Math.PI) + noise(0.05);
     longitude = LAUNCH_LON + 35 + coastNorm * 60 + noise(0.05);
+
+    dynamicPressure = 0;
+    fuelRemaining = Math.max(0, 15 * (1 - coastNorm * 0.3)) + noise(0.1);
+    stageStatus = tCoast < 30 ? 'landing' : 'landed';
+    fairingStatus = 'separated';
   }
 
   // Clamp values to reasonable ranges
@@ -137,6 +182,8 @@ export function generateTelemetryPoint(
   velocity = Math.max(0, velocity);
   downrange = Math.max(0, downrange);
   throttle = Math.max(0, Math.min(100, throttle));
+  fuelRemaining = Math.max(0, Math.min(100, fuelRemaining));
+  dynamicPressure = Math.max(0, dynamicPressure);
 
   return {
     missionTime: t,
@@ -148,6 +195,63 @@ export function generateTelemetryPoint(
     latitude: Math.round(latitude * 10000) / 10000,
     longitude: Math.round(longitude * 10000) / 10000,
     phase: phase.id,
+    dynamicPressure: Math.round(dynamicPressure * 100) / 100,
+    fuelRemaining: Math.round(fuelRemaining * 10) / 10,
+    stageStatus,
+    fairingStatus,
+    isMaxQ,
+  };
+}
+
+/**
+ * Get noise-free canonical telemetry values for a given mission time.
+ * Useful for plotting "nominal profile" overlays.
+ */
+export function getTypicalProfile(missionTimeSec: number): Pick<TelemetryPoint, 'altitude' | 'velocity' | 'downrange' | 'acceleration' | 'dynamicPressure'> {
+  const t = missionTimeSec;
+
+  if (t < 0) {
+    return { altitude: 0, velocity: 0, downrange: 0, acceleration: 0, dynamicPressure: 0 };
+  }
+
+  if (t <= 162) {
+    const tNorm = t / 162;
+    return {
+      altitude: Math.round(80 * (tNorm * tNorm * 0.3 + tNorm * 0.7) * 100) / 100,
+      velocity: Math.round(2.3 * tNorm * (0.5 + 0.5 * tNorm) * 1000) / 1000,
+      downrange: Math.round(100 * tNorm * tNorm * tNorm * 100) / 100,
+      acceleration: Math.round((1.3 + 2.2 * tNorm) * 100) / 100,
+      dynamicPressure: Math.round(35 * Math.exp(-0.5 * Math.pow((t - 72) / 25, 2)) * 100) / 100,
+    };
+  }
+
+  if (t <= 165) {
+    return {
+      altitude: Math.round((80 + (t - 162) * 0.5) * 100) / 100,
+      velocity: 2.3,
+      downrange: Math.round((100 + (t - 162) * 2) * 100) / 100,
+      acceleration: 0,
+      dynamicPressure: 0,
+    };
+  }
+
+  if (t <= 510) {
+    const t2Norm = (t - 165) / (510 - 165);
+    return {
+      altitude: Math.round((80 + 170 * t2Norm) * 100) / 100,
+      velocity: Math.round((2.3 + 5.5 * t2Norm) * 1000) / 1000,
+      downrange: Math.round((100 + 1900 * t2Norm * (0.3 + 0.7 * t2Norm)) * 100) / 100,
+      acceleration: Math.round((0.8 + 2.2 * t2Norm) * 100) / 100,
+      dynamicPressure: Math.round(0.5 * (1 - t2Norm) * 100) / 100,
+    };
+  }
+
+  return {
+    altitude: 250,
+    velocity: 7.8,
+    downrange: Math.round((2000 + (t - 510) * 7.8) * 100) / 100,
+    acceleration: 0,
+    dynamicPressure: 0,
   };
 }
 

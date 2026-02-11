@@ -61,6 +61,10 @@ model User {
   // Watchlists & Saved Searches
   companyWatchlist          CompanyWatchlistItem[]
   savedSearches            SavedSearch[]
+
+  // Launch engagement
+  launchPollVotes          LaunchPollVote[]
+  launchReactions          LaunchReaction[]
 }
 
 model PasswordResetToken {
@@ -144,6 +148,8 @@ model SpaceEvent {
   // Launch day relations
   telemetry    LaunchTelemetry[]
   chatMessages LaunchChatMessage[]
+  polls        LaunchPoll[]
+  reactions    LaunchReaction[]
 
   @@index([type])
   @@index([status])
@@ -3153,6 +3159,55 @@ model LaunchChatMessage {
 
   @@index([eventId])
   @@index([createdAt])
+}
+
+// ============================================================
+// Launch Engagement (Polls & Reactions)
+// ============================================================
+
+model LaunchPoll {
+  id        String     @id @default(cuid())
+  eventId   String
+  event     SpaceEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  question  String
+  options   Json       // Array of option strings
+  votes     Json       @default("{}") // { optionIndex: count }
+  isActive  Boolean    @default(true)
+  closedAt  DateTime?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  pollVotes LaunchPollVote[]
+
+  @@index([eventId])
+  @@index([isActive])
+}
+
+model LaunchPollVote {
+  id        String     @id @default(cuid())
+  pollId    String
+  poll      LaunchPoll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  option    Int        // Index of chosen option
+  createdAt DateTime   @default(now())
+
+  @@unique([pollId, userId])
+  @@index([pollId])
+}
+
+model LaunchReaction {
+  id        String     @id @default(cuid())
+  eventId   String
+  event     SpaceEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?      @relation(fields: [userId], references: [id])
+  emoji     String     // "rocket", "fire", "star", "heart", "100"
+  phase     String?    // Mission phase when reaction was sent
+  createdAt DateTime   @default(now())
+
+  @@index([eventId, createdAt])
+  @@index([eventId, emoji])
 }
 
 // ============================================================

@@ -8,6 +8,11 @@ import MissionTimeline from './MissionTimeline';
 import TelemetryDisplay from './TelemetryDisplay';
 import LaunchLiveChat from './LaunchLiveChat';
 import TrajectoryFallback from './TrajectoryFallback';
+import WeatherGoNoGo from './WeatherGoNoGo';
+import NotificationBell from './NotificationBell';
+import PostLaunchSummary from './PostLaunchSummary';
+import ReactionBar from './ReactionBar';
+import LaunchPollCard from './LaunchPollCard';
 import { formatMissionTime } from '@/lib/launch/mission-phases';
 import type { TelemetryPoint } from '@/lib/launch/telemetry-simulator';
 
@@ -159,6 +164,11 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
               </div>
             </div>
             <div className="flex items-center gap-3 flex-shrink-0">
+              <NotificationBell
+                eventId={event.id}
+                eventName={event.name}
+                launchDate={event.launchDate}
+              />
               <span
                 className={`font-mono text-xl font-bold ${
                   missionTime !== null && missionTime >= 0
@@ -189,6 +199,11 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
             >
               <VideoStream streamUrl={streamUrl} eventName={event.name} />
             </motion.div>
+
+            {/* Reaction Bar (below video) */}
+            {isLive && (
+              <ReactionBar eventId={event.id} currentPhase={currentPhaseId || undefined} />
+            )}
 
             {/* Mission Info Cards */}
             <motion.div
@@ -221,6 +236,15 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
                   <div className="text-white text-sm font-medium truncate">{event.country}</div>
                 </div>
               )}
+            </motion.div>
+
+            {/* Weather & Go/No-Go */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+            >
+              <WeatherGoNoGo eventId={event.id} />
             </motion.div>
 
             {/* Telemetry Display */}
@@ -268,6 +292,17 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
               />
             </motion.div>
 
+            {/* Live Polls */}
+            {isLive && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.25 }}
+              >
+                <LaunchPollCard eventId={event.id} />
+              </motion.div>
+            )}
+
             {/* Live Chat */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -278,6 +313,18 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
             </motion.div>
           </div>
         </div>
+
+        {/* Post-Launch Summary (shown after mission complete) */}
+        {missionTime !== null && missionTime > 3600 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-4"
+          >
+            <PostLaunchSummary eventId={event.id} missionTimeSeconds={missionTime} />
+          </motion.div>
+        )}
 
         {/* Data Disclaimer */}
         <div className="mt-6 text-center">

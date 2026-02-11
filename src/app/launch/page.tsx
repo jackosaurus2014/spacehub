@@ -5,6 +5,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import PageHeader from '@/components/ui/PageHeader';
+import MultiLaunchTabs from '@/components/launch/MultiLaunchTabs';
+import CompactLaunchCard from '@/components/launch/CompactLaunchCard';
+import NotificationBell from '@/components/launch/NotificationBell';
 
 interface LaunchEvent {
   id: string;
@@ -142,16 +145,26 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
               </div>
             )}
 
-            <Link
-              href={`/launch/${event.id}`}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                variant === 'live'
-                  ? 'bg-red-500 text-white hover:bg-red-400'
-                  : 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 border border-cyan-500/30'
-              }`}
-            >
-              {variant === 'live' ? 'Watch Live' : 'View Details'}
-            </Link>
+            <div className="flex items-center gap-2">
+              {variant !== 'recent' && event.launchDate && (
+                <NotificationBell
+                  eventId={event.id}
+                  eventName={event.name}
+                  launchDate={event.launchDate}
+                  size="sm"
+                />
+              )}
+              <Link
+                href={`/launch/${event.id}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                  variant === 'live'
+                    ? 'bg-red-500 text-white hover:bg-red-400'
+                    : 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 border border-cyan-500/30'
+                }`}
+              >
+                {variant === 'live' ? 'Watch Live' : 'View Details'}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -233,6 +246,11 @@ export default function LaunchListPage() {
           </div>
         ) : (
           <div className="space-y-8">
+            {/* Multi-Launch Tabs (shown when 2+ live) */}
+            {data.live.length >= 2 && (
+              <MultiLaunchTabs launches={data.live} />
+            )}
+
             {/* Live Launches */}
             {data.live.length > 0 && (
               <section>
@@ -241,13 +259,22 @@ export default function LaunchListPage() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
                   </span>
-                  Live Now
+                  Live Now ({data.live.length})
                 </h2>
-                <div className="space-y-4">
-                  {data.live.map(event => (
-                    <LaunchCard key={event.id} event={event} variant="live" />
-                  ))}
-                </div>
+                {data.live.length >= 3 ? (
+                  /* Compact view for 3+ simultaneous launches */
+                  <div className="space-y-2">
+                    {data.live.map(event => (
+                      <CompactLaunchCard key={event.id} event={event} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {data.live.map(event => (
+                      <LaunchCard key={event.id} event={event} variant="live" />
+                    ))}
+                  </div>
+                )}
               </section>
             )}
 

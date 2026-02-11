@@ -1537,3 +1537,26 @@ export const generalSavedSearchSchema = z.object({
 
 export type CompanyWatchlistData = z.infer<typeof companyWatchlistSchema>;
 export type GeneralSavedSearchData = z.infer<typeof generalSavedSearchSchema>;
+
+// ============================================================
+// Launch Engagement
+// ============================================================
+
+export const launchPollSchema = z.object({
+  question: z.string().min(5, 'Question must be at least 5 characters').max(300),
+  options: z.array(z.string().min(1).max(100)).min(2, 'At least 2 options').max(6, 'At most 6 options'),
+});
+
+export const launchPollVoteSchema = z.object({
+  pollId: z.string().min(1, 'Poll ID is required'),
+  option: z.number().int().min(0, 'Invalid option'),
+});
+
+export const launchReactionSchema = z.object({
+  emoji: z.enum(['rocket', 'fire', 'star', 'heart', '100']),
+  phase: z.string().max(50).optional().nullable(),
+});
+
+export type LaunchPollData = z.infer<typeof launchPollSchema>;
+export type LaunchPollVoteData = z.infer<typeof launchPollVoteSchema>;
+export type LaunchReactionData = z.infer<typeof launchReactionSchema>;

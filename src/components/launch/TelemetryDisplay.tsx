@@ -70,6 +70,29 @@ function Sparkline({ data, color, height = 32 }: { data: number[]; color: string
   );
 }
 
+// Stage/Fairing status badge
+function StatusBadge({ status, type }: { status: string; type: 'stage' | 'fairing' }) {
+  const colors: Record<string, string> = {
+    attached: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+    separated: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+    landing: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+    landed: 'bg-green-500/20 text-green-400 border-green-500/30',
+  };
+
+  const labels: Record<string, string> = {
+    attached: type === 'stage' ? 'S1 Attached' : 'Fairing On',
+    separated: type === 'stage' ? 'S1 Separated' : 'Fairing Jettisoned',
+    landing: 'S1 Landing',
+    landed: 'S1 Landed',
+  };
+
+  return (
+    <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${colors[status] || colors.attached}`}>
+      {labels[status] || status}
+    </span>
+  );
+}
+
 export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayProps) {
   const [telemetry, setTelemetry] = useState<TelemetryPoint | null>(null);
   const [history, setHistory] = useState<TelemetryPoint[]>([]);
@@ -112,6 +135,8 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
   const velocityHistory = history.map(p => p.velocity);
   const downrangeHistory = history.map(p => p.downrange);
   const accelerationHistory = history.map(p => p.acceleration);
+  const dynamicPressureHistory = history.map(p => p.dynamicPressure ?? 0);
+  const fuelHistory = history.map(p => p.fuelRemaining ?? 100);
 
   if (!isLive) {
     return (
@@ -140,6 +165,8 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
     );
   }
 
+  const isMaxQ = telemetry?.isMaxQ ?? false;
+
   return (
     <div className="bg-slate-900/95 rounded-xl border border-slate-700/50 overflow-hidden">
       {/* Header */}
@@ -151,6 +178,24 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
           Live Telemetry
         </h3>
         <div className="flex items-center gap-2">
+          {/* Max-Q Badge */}
+          {isMaxQ && (
+            <motion.span
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/30 text-red-300 font-bold uppercase tracking-wider border border-red-500/40"
+              style={{ boxShadow: '0 0 12px rgba(239,68,68,0.4), 0 0 24px rgba(239,68,68,0.2)' }}
+            >
+              MAX Q
+            </motion.span>
+          )}
+          {/* Stage/Fairing Status */}
+          {telemetry && (
+            <div className="flex items-center gap-1.5">
+              <StatusBadge status={telemetry.stageStatus} type="stage" />
+              <StatusBadge status={telemetry.fairingStatus} type="fairing" />
+            </div>
+          )}
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-medium uppercase tracking-wider">
             Simulated Data
           </span>
@@ -245,12 +290,71 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
           <Sparkline data={accelerationHistory} color="#fb923c" height={24} />
         </motion.div>
 
-        {/* Throttle */}
+        {/* Dynamic Pressure */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30 col-span-2 lg:col-span-2"
+          className={`bg-slate-800/50 rounded-lg p-3 border ${isMaxQ ? 'border-red-500/50' : 'border-slate-700/30'} relative overflow-hidden`}
+        >
+          {isMaxQ && (
+            <div className="absolute inset-0 bg-red-500/5 animate-pulse pointer-events-none" />
+          )}
+          <div className="flex items-center gap-1.5 mb-1 relative">
+            <svg className={`w-3.5 h-3.5 ${isMaxQ ? 'text-red-400' : 'text-rose-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span className={`text-xs uppercase tracking-wider ${isMaxQ ? 'text-red-400 font-bold' : 'text-slate-400'}`}>
+              Q (Dynamic Pressure)
+            </span>
+          </div>
+          <div className="text-xl font-mono font-bold text-white relative" style={{ textShadow: isMaxQ ? '0 0 12px rgba(239,68,68,0.6)' : '0 0 8px rgba(244,63,94,0.4)' }}>
+            <AnimatedValue value={telemetry?.dynamicPressure ?? 0} decimals={1} />
+            <span className="text-slate-400 text-xs ml-1 font-sans">kPa</span>
+          </div>
+          <Sparkline data={dynamicPressureHistory} color={isMaxQ ? '#ef4444' : '#f43f5e'} height={24} />
+        </motion.div>
+
+        {/* Fuel Remaining */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30"
+        >
+          <div className="flex items-center gap-1.5 mb-1">
+            <svg className="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+            </svg>
+            <span className="text-slate-400 text-xs uppercase tracking-wider">Fuel</span>
+            <span className={`ml-auto font-mono text-sm font-bold ${
+              (telemetry?.fuelRemaining ?? 100) > 50 ? 'text-green-400' :
+              (telemetry?.fuelRemaining ?? 100) > 20 ? 'text-yellow-400' : 'text-red-400'
+            }`}>
+              {(telemetry?.fuelRemaining ?? 100).toFixed(0)}%
+            </span>
+          </div>
+          <div className="w-full bg-slate-700/50 rounded-full h-2.5 overflow-hidden">
+            <motion.div
+              className={`h-full rounded-full ${
+                (telemetry?.fuelRemaining ?? 100) > 50 ? 'bg-gradient-to-r from-green-500 to-green-400' :
+                (telemetry?.fuelRemaining ?? 100) > 20 ? 'bg-gradient-to-r from-yellow-500 to-yellow-400' :
+                'bg-gradient-to-r from-red-500 to-red-400'
+              }`}
+              initial={{ width: '100%' }}
+              animate={{ width: `${telemetry?.fuelRemaining ?? 100}%` }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+            />
+          </div>
+          <Sparkline data={fuelHistory} color="#f59e0b" height={20} />
+        </motion.div>
+
+        {/* Throttle - spans 2 columns */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30 col-span-2 lg:col-span-3"
         >
           <div className="flex items-center gap-1.5 mb-1">
             <svg className="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
