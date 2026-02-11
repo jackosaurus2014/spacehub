@@ -61,6 +61,11 @@ export function startCronJobs() {
     triggerEndpoint('/api/ai-insights/generate', 'ai-insights');
   });
 
+  // AI Insights retry — 7:00 AM UTC (fallback if 1 AM run failed or had no content)
+  cron.schedule('0 7 * * *', () => {
+    triggerEndpoint('/api/ai-insights/generate', 'ai-insights-retry');
+  });
+
   // External API data refresh — every 4 hours
   // Fetches from Open Notify, NASA NeoWs, CelesTrak, USAspending, USPTO,
   // NASA APOD, TechPort, JPL SBDB, NOAA SWPC, Finnhub, SAM.gov, FCC ECFS, Federal Register
@@ -109,6 +114,7 @@ export function startCronJobs() {
       'blogs-fetch: every 4 hours',
       'daily-refresh: midnight UTC',
       'ai-insights: 1:00 AM UTC',
+      'ai-insights-retry: 7:00 AM UTC',
       'external-api-refresh: every 4 hours',
       'space-weather-refresh: every 30 minutes',
       'ai-data-research: 2:00 AM UTC',

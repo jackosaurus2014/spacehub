@@ -66,11 +66,35 @@ export async function POST(request: NextRequest) {
       return unauthorizedError('Valid CRON_SECRET token or admin session required');
     }
 
-    // Fetch news articles from the last 24 hours
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    // Check for ANTHROPIC_API_KEY early to fail fast with a clear message
+    if (!process.env.ANTHROPIC_API_KEY) {
+      logger.error('AI insights generation failed — ANTHROPIC_API_KEY not set');
+      return NextResponse.json(
+        { success: false, error: 'ANTHROPIC_API_KEY environment variable is not configured' },
+        { status: 500 }
+      );
+    }
+
+    // Skip if insights were already generated today (avoids duplicate work on retry)
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+    const existingToday = await prisma.aIInsight.count({
+      where: { generatedAt: { gte: todayStart } },
+    });
+    if (existingToday > 0) {
+      logger.info('AI insights already generated today, skipping', { count: existingToday });
+      return NextResponse.json({
+        success: true,
+        skipped: true,
+        message: `${existingToday} insights already generated today`,
+      });
+    }
+
+    // Fetch news articles from the last 36 hours (wider window for timezone resilience)
+    const thirtysSixHoursAgo = new Date(Date.now() - 36 * 60 * 60 * 1000);
     const newsArticles = await prisma.newsArticle.findMany({
       where: {
-        publishedAt: { gte: twentyFourHoursAgo },
+        publishedAt: { gte: thirtysSixHoursAgo },
       },
       orderBy: { publishedAt: 'desc' },
       take: 50,
@@ -83,10 +107,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Fetch blog posts from the last 24 hours
+    // Fetch blog posts from the last 48 hours (blogs publish less frequently)
+    const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
     const blogPosts = await prisma.blogPost.findMany({
       where: {
-        publishedAt: { gte: twentyFourHoursAgo },
+        publishedAt: { gte: fortyEightHoursAgo },
       },
       orderBy: { publishedAt: 'desc' },
       take: 30,
@@ -99,11 +124,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Fetch legal updates from the last 48 hours
-    const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    // Fetch legal updates from the last 72 hours
+    const seventyTwoHoursAgo = new Date(Date.now() - 72 * 60 * 60 * 1000);
     const legalUpdates = await prisma.legalUpdate.findMany({
       where: {
-        publishedAt: { gte: fortyEightHoursAgo },
+        publishedAt: { gte: seventyTwoHoursAgo },
       },
       orderBy: { publishedAt: 'desc' },
       take: 20,
@@ -115,11 +140,17 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    logger.info('AI insights content availability', {
+      newsCount: newsArticles.length,
+      blogCount: blogPosts.length,
+      legalCount: legalUpdates.length,
+    });
+
     if (newsArticles.length === 0 && blogPosts.length === 0 && legalUpdates.length === 0) {
-      logger.warn('AI insights generation skipped — no recent content', {
-        newsCount: newsArticles.length,
-        blogCount: blogPosts.length,
-        legalCount: legalUpdates.length,
+      logger.error('AI insights generation skipped — no recent content found in any source', {
+        newsWindow: '36h',
+        blogWindow: '48h',
+        legalWindow: '72h',
       });
       return NextResponse.json(
         { success: false, error: 'No recent news articles, blog posts, or legal updates found to analyze' },
