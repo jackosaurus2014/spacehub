@@ -122,6 +122,24 @@ export function startCronJobs() {
     triggerEndpoint('/api/refresh?type=realtime', 'realtime-refresh');
   });
 
+  // Compliance refresh — 4:00 AM UTC daily
+  // Legal RSS feeds, ITU filings, export control updates from Federal Register
+  cron.schedule('0 4 * * *', () => {
+    triggerEndpoint('/api/refresh?type=compliance-refresh', 'compliance-refresh');
+  });
+
+  // Space environment daily refresh — 4:30 AM UTC daily
+  // Full NOAA SWPC sweep + DONKI + 27-day outlook + solar probabilities
+  cron.schedule('30 4 * * *', () => {
+    triggerEndpoint('/api/refresh?type=space-environment-daily', 'space-environment-daily');
+  });
+
+  // Business opportunities refresh — 5:00 AM UTC daily
+  // Broad SAM.gov space procurement + SBIR/STTR solicitations
+  cron.schedule('0 5 * * *', () => {
+    triggerEndpoint('/api/refresh?type=business-opportunities', 'business-opportunities');
+  });
+
   logger.info('Cron scheduler started', {
     jobs: [
       'news-fetch: every 5 minutes',
@@ -134,9 +152,12 @@ export function startCronJobs() {
       'space-weather-refresh: every 30 minutes',
       'ai-data-research: 2:00 AM UTC',
       'staleness-cleanup: 3:00 AM UTC',
+      'compliance-refresh: 4:00 AM UTC daily',
+      'space-environment-daily: 4:30 AM UTC daily',
+      'business-opportunities: 5:00 AM UTC daily',
+      'space-defense-refresh: 6:00 AM UTC daily',
       'live-stream-check: every 30 minutes',
       'realtime-refresh: every 15 minutes',
-      'space-defense-refresh: 6:00 AM UTC daily',
       'regulatory-feeds: noon UTC daily',
       'sec-filings: 2:00 PM UTC daily',
       'watchlist-alerts: 8:00 AM UTC daily',

@@ -164,7 +164,7 @@ export async function POST(request: Request) {
   if (authError) return authError;
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'space-defense', 'live-streams', 'realtime', 'regulatory-feeds', 'sec-filings', or null (all)
+  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'space-defense', 'live-streams', 'realtime', 'regulatory-feeds', 'sec-filings', 'compliance-refresh', 'space-environment-daily', 'business-opportunities', or null (all)
 
   const results: Record<string, unknown> = {};
 
@@ -281,6 +281,24 @@ export async function POST(request: Request) {
       const { fetchAndStoreSECFilings } = await import('@/lib/fetchers/sec-edgar-fetcher');
       const secCount = await fetchAndStoreSECFilings();
       results.secFilings = { count: secCount };
+    }
+
+    if (type === 'compliance-refresh') {
+      const { refreshComplianceData } = await import('@/lib/fetchers/compliance-fetcher');
+      const complianceResult = await refreshComplianceData();
+      results.complianceRefresh = complianceResult;
+    }
+
+    if (type === 'space-environment-daily') {
+      const { refreshSpaceEnvironmentDaily } = await import('@/lib/fetchers/space-environment-fetcher');
+      const spaceEnvResult = await refreshSpaceEnvironmentDaily();
+      results.spaceEnvironmentDaily = spaceEnvResult;
+    }
+
+    if (type === 'business-opportunities') {
+      const { refreshBusinessOpportunities } = await import('@/lib/fetchers/business-opportunities-fetcher');
+      const bizOppResult = await refreshBusinessOpportunities();
+      results.businessOpportunities = bizOppResult;
     }
 
     logger.info(`Data refresh completed (type=${type || 'all'})`, results);
