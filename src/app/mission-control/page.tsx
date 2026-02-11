@@ -319,7 +319,7 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
   if (liveMissions.length === 0) {
     return (
       <div className="mb-8">
-        <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
           <span className="text-2xl">📺</span>
           Live Now
         </h2>
@@ -346,7 +346,7 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
 
   return (
     <div className="mb-8">
-      <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+      <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
         <span className="relative flex h-3 w-3">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
@@ -388,12 +388,12 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
                 className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
                   isSelected
                     ? 'bg-gradient-to-r from-red-500/20 to-orange-500/20 border-2 border-red-500/50 shadow-lg shadow-red-500/10'
-                    : 'bg-slate-100 hover:bg-slate-200 border-2 border-transparent'
+                    : 'bg-slate-800/50 hover:bg-slate-700/50 border-2 border-slate-700/50'
                 }`}
               >
                 <div className="flex items-start gap-3">
                   {/* Thumbnail */}
-                  <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-slate-200">
+                  <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-slate-700">
                     {mission.imageUrl ? (
                       <Image
                         src={mission.imageUrl}
@@ -421,7 +421,7 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
                         </span>
                       )}
                     </div>
-                    <h4 className="font-semibold text-slate-900 text-sm line-clamp-1">{mission.name}</h4>
+                    <h4 className="font-semibold text-white text-sm line-clamp-1">{mission.name}</h4>
                     {mission.agency && (
                       <p className="text-slate-400 text-xs">{mission.agency}</p>
                     )}
@@ -477,11 +477,11 @@ function UpcomingIn48Hours({ events }: { events: SpaceEvent[] }) {
   if (upcomingEvents.length === 0) {
     return (
       <div className="mb-8">
-        <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
           <span className="text-2xl">⏰</span>
           Upcoming in 48 Hours
         </h2>
-        <div className="card p-8 text-center bg-gradient-to-br from-slate-50 to-slate-100 border-dashed border-2 border-slate-200">
+        <div className="card p-8 text-center border-dashed border-2 border-slate-700/50">
           <span className="text-4xl block mb-3">🌙</span>
           <p className="text-slate-400 font-medium">No launches scheduled in the next 48 hours</p>
           <p className="text-slate-400 text-sm mt-1">Check back soon for imminent missions</p>
@@ -492,7 +492,7 @@ function UpcomingIn48Hours({ events }: { events: SpaceEvent[] }) {
 
   return (
     <div className="mb-8">
-      <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+      <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
         <span className="text-2xl animate-pulse">⏰</span>
         Upcoming in 48 Hours
         <span className="ml-2 bg-green-500 text-slate-900 text-xs font-bold px-2 py-1 rounded-full">
@@ -533,7 +533,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
     <div className={`card overflow-hidden ${isWithin48Hours ? 'border-green-500/50 glow-border' : ''} ${isLiveOrImminent ? 'border-red-500/50' : ''}`}>
       <div className="flex">
         {/* Image */}
-        <div className="relative w-32 h-32 flex-shrink-0 bg-slate-100 overflow-hidden">
+        <div className="relative w-32 h-32 flex-shrink-0 bg-slate-800 overflow-hidden">
           {event.imageUrl ? (
             <Image
               src={event.imageUrl}
@@ -574,13 +574,13 @@ function EventCard({ event }: { event: SpaceEvent }) {
                   <span className="text-slate-400 text-xs">{event.country}</span>
                 )}
                 {phaseInfo && (
-                  <span className={`text-xs flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 ${phaseInfo.color}`}>
+                  <span className={`text-xs flex items-center gap-1 px-2 py-0.5 rounded bg-slate-700/50 ${phaseInfo.color}`}>
                     <span>{phaseInfo.icon}</span>
                     <span>{phaseInfo.label}</span>
                   </span>
                 )}
               </div>
-              <h3 className={`font-semibold text-slate-900 line-clamp-2 ${isPast && !event.isLive ? 'opacity-60' : ''}`}>
+              <h3 className={`font-semibold text-white line-clamp-2 ${isPast && !event.isLive ? 'opacity-60' : ''}`}>
                 {event.name}
               </h3>
             </div>
@@ -890,8 +890,8 @@ function MissionControlContent() {
                   onClick={() => setSelectedType(type.value)}
                   className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-1 text-sm ${
                     selectedType === type.value
-                      ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                      : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                      ? 'bg-cyan-500/20 text-white border-cyan-400/50 shadow-glow-sm'
+                      : 'bg-transparent text-slate-300 border border-slate-700/50 hover:border-slate-600'
                   }`}
                 >
                   <span>{type.icon}</span>
@@ -920,7 +920,7 @@ function MissionControlContent() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{events.length}</div>
+            <div className="text-4xl font-bold font-display tracking-tight text-cyan-400">{events.length}</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Events</div>
           </div>
           <div className="card-elevated p-6 text-center">
@@ -960,7 +960,7 @@ function MissionControlContent() {
         ) : years.length === 0 ? (
           <div className="text-center py-20">
             <span className="text-6xl block mb-4">🔭</span>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-2">No Events Found</h2>
+            <h2 className="text-2xl font-semibold text-white mb-2">No Events Found</h2>
             <p className="text-slate-400">
               {searchQuery
                 ? 'Try adjusting your search terms'
@@ -971,7 +971,7 @@ function MissionControlContent() {
           <div className="space-y-12">
             {years.map((year) => (
               <div key={year}>
-                <h2 className="text-2xl font-display font-bold text-slate-900 mb-6 flex items-center gap-3 sticky top-16 bg-white/95 backdrop-blur-sm py-3 z-10">
+                <h2 className="text-2xl font-display font-bold text-white mb-6 flex items-center gap-3 sticky top-16 bg-slate-950/95 backdrop-blur-sm py-3 z-10">
                   <span className="text-nebula-300">📅</span>
                   {year}
                   <span className="text-slate-400 text-sm font-normal">
@@ -990,7 +990,7 @@ function MissionControlContent() {
                       </div>
 
                       <div className="ml-6">
-                        <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                        <h3 className="text-lg font-semibold text-white mb-4">
                           {month}
                           <span className="text-slate-400 text-sm font-normal ml-2">
                             ({monthEvents.length} events)
@@ -1029,7 +1029,7 @@ function MissionControlContent() {
             {/* Earth from Space - EPIC Earth Images */}
             {epicEarthImages.length > 0 && (
               <div className="mb-8">
-                <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
                   <span className="text-2xl">🌍</span>
                   Earth from Space
                   <span className="ml-2 text-slate-400 text-sm font-normal">NASA EPIC</span>
@@ -1038,7 +1038,7 @@ function MissionControlContent() {
                   <div className="flex gap-4 min-w-max">
                     {epicEarthImages.map((img) => (
                       <div key={img.identifier} className="card overflow-hidden w-72 flex-shrink-0">
-                        <div className="relative h-48 bg-slate-100">
+                        <div className="relative h-48 bg-slate-800">
                           <img
                             src={img.image_url}
                             alt={img.caption || 'Earth from EPIC camera'}
@@ -1057,7 +1057,7 @@ function MissionControlContent() {
                             })}
                           </div>
                           {img.caption && (
-                            <p className="text-slate-900 text-sm line-clamp-2">{img.caption}</p>
+                            <p className="text-slate-200 text-sm line-clamp-2">{img.caption}</p>
                           )}
                           {img.centroid_coordinates && (
                             <p className="text-slate-400 text-xs mt-1">
@@ -1075,7 +1075,7 @@ function MissionControlContent() {
             {/* NASA Image Gallery */}
             {nasaImages.length > 0 && (
               <div className="mb-8">
-                <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
                   <span className="text-2xl">📸</span>
                   NASA Image Gallery
                   <span className="ml-2 text-slate-400 text-sm font-normal">Image & Video Library</span>
@@ -1083,7 +1083,7 @@ function MissionControlContent() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {nasaImages.map((img) => (
                     <div key={img.nasa_id} className="card overflow-hidden">
-                      <div className="relative h-40 bg-slate-100">
+                      <div className="relative h-40 bg-slate-800">
                         <img
                           src={img.thumbnail_url}
                           alt={img.title}
@@ -1097,7 +1097,7 @@ function MissionControlContent() {
                         )}
                       </div>
                       <div className="p-3">
-                        <h3 className="text-slate-900 text-sm font-semibold line-clamp-2">{img.title}</h3>
+                        <h3 className="text-white text-sm font-semibold line-clamp-2">{img.title}</h3>
                         <div className="text-xs text-slate-400 mt-1">
                           {new Date(img.date_created).toLocaleDateString('en-US', {
                             month: 'short',
@@ -1118,7 +1118,7 @@ function MissionControlContent() {
             {/* Deep Space Network Status */}
             {dsnAntennas.length > 0 && (
               <div className="mb-8">
-                <h2 className="text-xl font-display font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
                   <span className="text-2xl">📡</span>
                   Deep Space Network Status
                   <span className="ml-2 text-slate-400 text-sm font-normal">Antenna Activity</span>
@@ -1127,25 +1127,25 @@ function MissionControlContent() {
                   {dsnAntennas.map((antenna) => (
                     <div key={antenna.dish_name} className="card p-4">
                       <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-slate-900 font-bold text-lg">{antenna.dish_name}</h3>
-                        <span className={`w-3 h-3 rounded-full ${antenna.is_active ? 'bg-green-500 animate-pulse' : 'bg-slate-300'}`} />
+                        <h3 className="text-white font-bold text-lg">{antenna.dish_name}</h3>
+                        <span className={`w-3 h-3 rounded-full ${antenna.is_active ? 'bg-green-500 animate-pulse' : 'bg-slate-600'}`} />
                       </div>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span className="text-slate-400">Target</span>
-                          <span className="text-slate-900 font-medium">{antenna.target || 'Idle'}</span>
+                          <span className="text-slate-200 font-medium">{antenna.target || 'Idle'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-slate-400">Signal</span>
-                          <span className="text-slate-900 font-medium">{antenna.signal_type || '-'}</span>
+                          <span className="text-slate-200 font-medium">{antenna.signal_type || '-'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-slate-400">Data Rate</span>
-                          <span className="text-slate-900 font-medium">{antenna.data_rate || '-'}</span>
+                          <span className="text-slate-200 font-medium">{antenna.data_rate || '-'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-slate-400">Frequency</span>
-                          <span className="text-slate-900 font-medium">{antenna.frequency || '-'}</span>
+                          <span className="text-slate-200 font-medium">{antenna.frequency || '-'}</span>
                         </div>
                       </div>
                     </div>
@@ -1159,24 +1159,24 @@ function MissionControlContent() {
         {/* Related Intelligence */}
         {!loading && events.length > 0 && (
           <div className="card p-6 mt-8">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
               <span>🔗</span> Related Intelligence
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <Link href="/solar-flares" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">☀️ Solar Flares</div>
+              <Link href="/solar-flares" className="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors group">
+                <div className="text-sm font-medium text-slate-200 group-hover:text-nebula-200">☀️ Solar Flares</div>
                 <p className="text-xs text-slate-400 mt-1">Solar weather can delay launches</p>
               </Link>
-              <Link href="/debris-monitor" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">🛰️ Debris Monitor</div>
+              <Link href="/debris-monitor" className="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors group">
+                <div className="text-sm font-medium text-slate-200 group-hover:text-nebula-200">🛰️ Debris Monitor</div>
                 <p className="text-xs text-slate-400 mt-1">Track orbital debris near missions</p>
               </Link>
-              <Link href="/orbital-slots" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">📡 Orbital Slots</div>
+              <Link href="/orbital-slots" className="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors group">
+                <div className="text-sm font-medium text-slate-200 group-hover:text-nebula-200">📡 Orbital Slots</div>
                 <p className="text-xs text-slate-400 mt-1">Satellite registry and congestion</p>
               </Link>
-              <Link href="/space-insurance" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">🛡️ Space Insurance</div>
+              <Link href="/space-insurance" className="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors group">
+                <div className="text-sm font-medium text-slate-200 group-hover:text-nebula-200">🛡️ Space Insurance</div>
                 <p className="text-xs text-slate-400 mt-1">Mission risk and coverage data</p>
               </Link>
             </div>
