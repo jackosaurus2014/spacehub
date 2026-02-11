@@ -244,10 +244,10 @@ export default function HeroStats() {
             <div className="text-2xl font-bold text-cyan-400 font-mono mb-1">
               {launch.timeUntil}
             </div>
-            <p className="text-sm text-slate-300 truncate group-hover:text-white transition-colors">
+            <p className="text-sm text-white truncate">
               {launch.name}
             </p>
-            <p className="text-xs text-slate-300">{launch.provider}</p>
+            <p className="text-xs text-slate-200">{launch.provider}</p>
           </>
         ) : (
           <p className="text-slate-400">No upcoming launches</p>
@@ -268,10 +268,10 @@ export default function HeroStats() {
               <div className="text-2xl font-bold text-amber-400 font-mono mb-1">
                 {market.ipoCompany.daysUntil === 0 ? 'Today!' : market.ipoCompany.daysUntil === 1 ? 'Tomorrow' : `${market.ipoCompany.daysUntil}d`}
               </div>
-              <p className="text-sm text-slate-300 truncate group-hover:text-white transition-colors">
+              <p className="text-sm text-white truncate">
                 {market.ipoCompany.name}
               </p>
-              <p className="text-xs text-slate-300">IPO Date: {market.ipoCompany.expectedDate}</p>
+              <p className="text-xs text-slate-200">IPO Date: {market.ipoCompany.expectedDate}</p>
             </>
           ) : market.topGainer ? (
             <>
@@ -280,10 +280,10 @@ export default function HeroStats() {
                   {market.topGainer.change >= 0 ? '+' : ''}{market.topGainer.change.toFixed(1)}%
                 </span>
               </div>
-              <p className="text-sm text-slate-300 truncate group-hover:text-white transition-colors">
+              <p className="text-sm text-white truncate">
                 {market.topGainer.name}
               </p>
-              <p className="text-xs text-slate-300">{market.topGainer.ticker}</p>
+              <p className="text-xs text-slate-200">{market.topGainer.ticker}</p>
             </>
           ) : (
             <p className="text-slate-400">No market data</p>
@@ -301,10 +301,10 @@ export default function HeroStats() {
         </div>
         {news ? (
           <>
-            <p className="text-sm text-slate-200 line-clamp-2 group-hover:text-white transition-colors">
+            <p className="text-sm text-white line-clamp-2">
               {news.headline}
             </p>
-            <p className="text-xs text-slate-300 mt-1">{news.source}</p>
+            <p className="text-xs text-slate-200 mt-1">{news.source}</p>
           </>
         ) : (
           <p className="text-slate-400">No recent news</p>
@@ -322,7 +322,7 @@ export default function HeroStats() {
             <div className={`text-xl font-bold ${solarStatusColors[solar.status]} mb-1`}>
               {solarStatusLabels[solar.status]}
             </div>
-            <div className="flex items-center gap-3 text-xs text-slate-300">
+            <div className="flex items-center gap-3 text-xs text-slate-200">
               {solar.flareClass && (
                 <span>Latest: {solar.flareClass}</span>
               )}
