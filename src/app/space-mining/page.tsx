@@ -206,13 +206,13 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
     .slice(0, 5);
 
   return (
-    <div className="card p-5 border border-slate-200 hover:border-nebula-500/50 transition-all">
+    <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 hover:border-amber-500/30 transition-all">
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <span className="text-3xl">{getBodyIcon(body.bodyType)}</span>
           <div>
-            <h3 className="text-slate-900 font-semibold text-lg">{body.name}</h3>
+            <h3 className="text-white font-semibold text-lg">{body.name}</h3>
             {body.designation && (
               <span className="text-slate-400 text-sm">{body.designation}</span>
             )}
@@ -239,30 +239,30 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
 
       {/* Key Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <div className="bg-slate-50 rounded-lg p-2.5 text-center">
+        <div className="bg-slate-900/50 rounded-lg p-2.5 text-center border border-slate-700/30">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Value</div>
-          <div className="text-slate-900 font-bold text-sm">
+          <div className="text-white font-bold text-sm">
             {body.estimatedValue ? formatLargeValue(body.estimatedValue) : 'Unknown'}
           </div>
           {confidence && (
             <div className={`text-xs ${confidence.color}`}>{confidence.label}</div>
           )}
         </div>
-        <div className="bg-slate-50 rounded-lg p-2.5 text-center">
+        <div className="bg-slate-900/50 rounded-lg p-2.5 text-center border border-slate-700/30">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Delta-V</div>
           <div className={`font-bold text-sm ${getDeltaVColor(body.deltaV)}`}>
             {formatDeltaV(body.deltaV)}
           </div>
         </div>
-        <div className="bg-slate-50 rounded-lg p-2.5 text-center">
+        <div className="bg-slate-900/50 rounded-lg p-2.5 text-center border border-slate-700/30">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Diameter</div>
-          <div className="text-slate-900 font-bold text-sm">
+          <div className="text-white font-bold text-sm">
             {body.diameter ? formatDistance(body.diameter) : 'Unknown'}
           </div>
         </div>
-        <div className="bg-slate-50 rounded-lg p-2.5 text-center">
+        <div className="bg-slate-900/50 rounded-lg p-2.5 text-center border border-slate-700/30">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Mass</div>
-          <div className="text-slate-900 font-bold text-sm">
+          <div className="text-white font-bold text-sm">
             {body.mass ? formatMass(body.mass) : 'Unknown'}
           </div>
         </div>
@@ -276,7 +276,7 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
             {topResources.map(([resource, percent]) => (
               <span
                 key={resource}
-                className="px-2 py-0.5 bg-nebula-500/10 text-nebula-600 rounded text-xs font-medium"
+                className="px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded text-xs font-medium"
               >
                 {resource}: {percent}%
               </span>
@@ -286,27 +286,27 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
       )}
 
       {/* Orbital Info */}
-      <div className="flex flex-wrap gap-3 text-xs text-slate-400 border-t border-slate-100 pt-3">
+      <div className="flex flex-wrap gap-3 text-xs text-slate-400 border-t border-slate-700/30 pt-3">
         {body.orbitalFamily && (
           <span className="flex items-center gap-1">
-            <span className="text-slate-400">Family:</span> {body.orbitalFamily}
+            <span className="text-slate-500">Family:</span> {body.orbitalFamily}
           </span>
         )}
         {body.semiMajorAxis && (
           <span className="flex items-center gap-1">
-            <span className="text-slate-400">SMA:</span> {body.semiMajorAxis.toFixed(3)} AU
+            <span className="text-slate-500">SMA:</span> {body.semiMajorAxis.toFixed(3)} AU
           </span>
         )}
         {body.orbitalPeriod && (
           <span className="flex items-center gap-1">
-            <span className="text-slate-400">Period:</span> {body.orbitalPeriod.toFixed(2)} years
+            <span className="text-slate-500">Period:</span> {body.orbitalPeriod.toFixed(2)} years
           </span>
         )}
       </div>
 
       {/* Mission History */}
       {missionHistory.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-slate-100">
+        <div className="mt-3 pt-3 border-t border-slate-700/30">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Missions</div>
           <div className="text-slate-400 text-xs">{missionHistory.join(', ')}</div>
         </div>
@@ -337,23 +337,23 @@ function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
   } catch { /* ignore malformed JSON */ }
 
   return (
-    <div className="card p-4 border border-slate-200 hover:border-nebula-500/50 transition-all">
+    <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-amber-500/30 transition-all">
       <div className="flex items-start justify-between mb-2">
         <div>
-          <h4 className="text-slate-900 font-semibold">{commodity.name}</h4>
+          <h4 className="text-white font-semibold">{commodity.name}</h4>
           {commodity.symbol && (
             <span className="text-slate-400 text-sm">{commodity.symbol}</span>
           )}
         </div>
-        <span className={`text-xs font-medium px-2 py-0.5 rounded ${categoryInfo.color} bg-slate-100`}>
+        <span className={`text-xs font-medium px-2 py-0.5 rounded ${categoryInfo.color} bg-slate-700/50`}>
           {categoryInfo.label}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2 mb-3">
-        <div className="bg-slate-50 rounded p-2">
+        <div className="bg-slate-900/50 rounded p-2 border border-slate-700/30">
           <div className="text-slate-400 text-xs">Earth Price</div>
-          <div className="text-slate-900 font-bold text-sm">
+          <div className="text-white font-bold text-sm">
             ${commodity.pricePerKg != null
               ? (commodity.pricePerKg >= 1000
                   ? formatNumber(commodity.pricePerKg)
@@ -362,9 +362,9 @@ function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
           </div>
         </div>
         {commodity.inSpaceValue && (
-          <div className="bg-nebula-500/10 rounded p-2">
-            <div className="text-nebula-600 text-xs">In-Space Value</div>
-            <div className="text-nebula-700 font-bold text-sm">
+          <div className="bg-amber-500/10 rounded p-2 border border-amber-500/20">
+            <div className="text-amber-400 text-xs">In-Space Value</div>
+            <div className="text-amber-300 font-bold text-sm">
               ${formatNumber(commodity.inSpaceValue)}/kg
             </div>
           </div>
@@ -380,7 +380,7 @@ function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
       {spaceApplications.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {spaceApplications.slice(0, 3).map((app: string) => (
-            <span key={app} className="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">
+            <span key={app} className="px-1.5 py-0.5 bg-slate-700/50 text-slate-300 rounded text-xs">
               {app}
             </span>
           ))}
@@ -396,12 +396,12 @@ function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
 
 function StatsCard({ label, value, subValue, icon }: { label: string; value: string; subValue?: string; icon: string }) {
   return (
-    <div className="card p-4 border border-slate-200">
+    <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
       <div className="flex items-center gap-3">
         <span className="text-2xl">{icon}</span>
         <div>
           <div className="text-slate-400 text-xs uppercase tracking-widest">{label}</div>
-          <div className="text-slate-900 font-bold text-xl">{value}</div>
+          <div className="text-white font-bold text-xl">{value}</div>
           {subValue && <div className="text-slate-400 text-xs">{subValue}</div>}
         </div>
       </div>
@@ -437,7 +437,7 @@ function FilterBar({
       <select
         value={bodyType}
         onChange={(e) => setBodyType(e.target.value as MiningBodyType | '')}
-        className="input-primary text-sm min-w-[140px]"
+        className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm min-w-[140px] focus:outline-none focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50"
       >
         <option value="">All Body Types</option>
         {MINING_BODY_TYPES.map((t) => (
@@ -448,7 +448,7 @@ function FilterBar({
       <select
         value={spectralType}
         onChange={(e) => setSpectralType(e.target.value as SpectralType | '')}
-        className="input-primary text-sm min-w-[140px]"
+        className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm min-w-[140px] focus:outline-none focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50"
       >
         <option value="">All Spectral Types</option>
         {SPECTRAL_TYPES.map((t) => (
@@ -459,7 +459,7 @@ function FilterBar({
       <select
         value={trajectoryStatus}
         onChange={(e) => setTrajectoryStatus(e.target.value as TrajectoryStatus | '')}
-        className="input-primary text-sm min-w-[140px]"
+        className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm min-w-[140px] focus:outline-none focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50"
       >
         <option value="">All Accessibility</option>
         {Object.entries(TRAJECTORY_STYLES).map(([key, { label }]) => (
@@ -470,7 +470,7 @@ function FilterBar({
       <select
         value={sortBy}
         onChange={(e) => setSortBy(e.target.value as 'value' | 'deltaV' | 'diameter' | 'name')}
-        className="input-primary text-sm min-w-[140px]"
+        className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm min-w-[140px] focus:outline-none focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50"
       >
         <option value="value">Sort by Value</option>
         <option value="deltaV">Sort by Delta-V</option>
@@ -752,14 +752,14 @@ function SpaceMiningContent() {
 
       {/* Spectral Type Legend */}
       {activeTab !== 'commodities' && (
-        <div className="card p-4 border border-slate-200">
-          <h3 className="text-sm font-semibold text-slate-900 mb-3">Spectral Type Guide</h3>
+        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+          <h3 className="text-sm font-semibold text-white mb-3">Spectral Type Guide</h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {Object.entries(SPECTRAL_TYPE_INFO).slice(0, 5).map(([type, info]) => (
               <div key={type} className="flex items-start gap-2">
                 <span className={`font-bold ${info.color}`}>{type}</span>
                 <div>
-                  <div className="text-slate-700 text-xs font-medium">{info.label.split('(')[1]?.replace(')', '') || info.label}</div>
+                  <div className="text-slate-300 text-xs font-medium">{info.label.split('(')[1]?.replace(')', '') || info.label}</div>
                   <div className="text-slate-400 text-xs">{info.description}</div>
                 </div>
               </div>
@@ -770,9 +770,9 @@ function SpaceMiningContent() {
 
       {/* Top Mining Targets (DynamicContent) */}
       <ScrollReveal>
-        <div className="card p-6 border border-slate-200 bg-gradient-to-br from-amber-50/50 to-slate-50">
+        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
               <span className="text-2xl">💎</span> Top Mining Targets
               <span className="text-xs font-normal text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full ml-2">Trillion-Dollar Opportunities</span>
             </h3>
@@ -805,15 +805,15 @@ function SpaceMiningContent() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b-2 border-amber-200">
-                    <th className="text-left py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">#</th>
-                    <th className="text-left py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">Asteroid</th>
-                    <th className="text-left py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">Spectral</th>
-                    <th className="text-right py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">Est. Profit</th>
-                    <th className="text-right py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">Price/kg</th>
-                    <th className="text-right py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">Diameter</th>
-                    <th className="text-right py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">Accessibility</th>
-                    <th className="text-right py-2.5 px-3 text-slate-500 text-xs uppercase tracking-widest font-semibold">MOID (AU)</th>
+                  <tr className="border-b-2 border-amber-500/30">
+                    <th className="text-left py-2.5 px-3 text-slate-400 text-xs uppercase tracking-widest font-semibold">#</th>
+                    <th className="text-left py-2.5 px-3 text-slate-400 text-xs uppercase tracking-widest font-semibold">Asteroid</th>
+                    <th className="text-left py-2.5 px-3 text-slate-400 text-xs uppercase tracking-widest font-semibold">Spectral</th>
+                    <th className="text-right py-2.5 px-3 text-slate-400 text-xs uppercase tracking-widest font-semibold">Est. Profit</th>
+                    <th className="text-right py-2.5 px-3 text-slate-400 text-xs uppercase tracking-widest font-semibold">Price/kg</th>
+                    <th className="text-right py-2.5 px-3 text-slate-400 text-xs uppercase tracking-widest font-semibold">Diameter</th>
+                    <th className="text-right py-2.5 px-3 text-slate-400 text-xs uppercase tracking-widest font-semibold">Accessibility</th>
+                    <th className="text-right py-2.5 px-3 text-slate-400 text-xs uppercase tracking-widest font-semibold">MOID (AU)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -822,8 +822,8 @@ function SpaceMiningContent() {
                     return (
                       <tr
                         key={target.full_name}
-                        className={`border-b border-slate-100 hover:bg-amber-50/50 transition-colors ${
-                          isTop3 ? 'bg-amber-50/30' : ''
+                        className={`border-b border-slate-700/30 hover:bg-amber-500/5 transition-colors ${
+                          isTop3 ? 'bg-amber-500/5' : ''
                         }`}
                       >
                         <td className="py-2.5 px-3">
@@ -836,17 +836,17 @@ function SpaceMiningContent() {
                           )}
                         </td>
                         <td className="py-2.5 px-3">
-                          <span className={`font-semibold ${isTop3 ? 'text-slate-900' : 'text-slate-700'}`}>
+                          <span className={`font-semibold ${isTop3 ? 'text-white' : 'text-slate-300'}`}>
                             {target.full_name}
                           </span>
                         </td>
                         <td className="py-2.5 px-3">
                           <div className="flex gap-1">
                             {target.spec_T && (
-                              <span className="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">{target.spec_T}</span>
+                              <span className="px-1.5 py-0.5 bg-slate-700/50 text-slate-300 rounded text-xs">{target.spec_T}</span>
                             )}
                             {target.spec_B && (
-                              <span className="px-1.5 py-0.5 bg-nebula-500/10 text-nebula-600 rounded text-xs">{target.spec_B}</span>
+                              <span className="px-1.5 py-0.5 bg-nebula-500/10 text-nebula-400 rounded text-xs">{target.spec_B}</span>
                             )}
                             {!target.spec_T && !target.spec_B && (
                               <span className="text-slate-400 text-xs">—</span>
@@ -855,31 +855,31 @@ function SpaceMiningContent() {
                         </td>
                         <td className="py-2.5 px-3 text-right">
                           <span className={`font-bold ${
-                            (target.profit ?? 0) >= 1e12 ? 'text-green-600' :
-                            (target.profit ?? 0) >= 1e9 ? 'text-emerald-600' :
-                            'text-slate-700'
+                            (target.profit ?? 0) >= 1e12 ? 'text-green-400' :
+                            (target.profit ?? 0) >= 1e9 ? 'text-emerald-400' :
+                            'text-slate-300'
                           }`}>
                             {formatProfit(target.profit)}
                           </span>
                         </td>
-                        <td className="py-2.5 px-3 text-right text-slate-600">
+                        <td className="py-2.5 px-3 text-right text-slate-300">
                           {formatPricePerKgShort(target.price)}
                         </td>
-                        <td className="py-2.5 px-3 text-right text-slate-600">
+                        <td className="py-2.5 px-3 text-right text-slate-300">
                           {target.diameter != null ? `${target.diameter.toFixed(target.diameter < 1 ? 3 : 1)} km` : '—'}
                         </td>
                         <td className="py-2.5 px-3 text-right">
                           {target.accessibility != null ? (
                             <span className={`font-medium ${
-                              target.accessibility >= 1.5 ? 'text-green-600' :
-                              target.accessibility >= 1.0 ? 'text-yellow-600' :
-                              'text-orange-600'
+                              target.accessibility >= 1.5 ? 'text-green-400' :
+                              target.accessibility >= 1.0 ? 'text-yellow-400' :
+                              'text-orange-400'
                             }`}>
                               {target.accessibility.toFixed(2)}
                             </span>
                           ) : '—'}
                         </td>
-                        <td className="py-2.5 px-3 text-right text-slate-600">
+                        <td className="py-2.5 px-3 text-right text-slate-300">
                           {target.moid != null ? target.moid.toFixed(4) : '—'}
                         </td>
                       </tr>
@@ -894,8 +894,8 @@ function SpaceMiningContent() {
 
       {/* Cross-links */}
       <ScrollReveal>
-      <div className="card p-4 border border-slate-200">
-        <h3 className="text-sm font-semibold text-slate-900 mb-3">Related Modules</h3>
+      <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+        <h3 className="text-sm font-semibold text-white mb-3">Related Modules</h3>
         <div className="flex flex-wrap gap-3">
           <Link href="/solar-exploration" className="btn-secondary text-sm">
             🌍 Solar Exploration
@@ -922,7 +922,7 @@ function SpaceMiningContent() {
 
 export default function SpaceMiningPage() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Mining Intelligence"
