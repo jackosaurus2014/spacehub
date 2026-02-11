@@ -95,6 +95,21 @@ export function startCronJobs() {
     triggerEndpoint('/api/refresh/cleanup', 'staleness-cleanup');
   });
 
+  // Regulatory feeds — noon UTC daily (FAA licenses + FCC space filings)
+  cron.schedule('0 12 * * *', () => {
+    triggerEndpoint('/api/refresh?type=regulatory-feeds', 'regulatory-feeds');
+  });
+
+  // SEC EDGAR filings — 2:00 PM UTC daily (10-K, 10-Q, 8-K for public space companies)
+  cron.schedule('0 14 * * *', () => {
+    triggerEndpoint('/api/refresh?type=sec-filings', 'sec-filings');
+  });
+
+  // Watchlist alerts — 8:00 AM UTC daily (digest for user-watched companies/searches)
+  cron.schedule('0 8 * * *', () => {
+    triggerEndpoint('/api/refresh?type=watchlist-alerts', 'watchlist-alerts');
+  });
+
   // Live stream matching — every 30 minutes
   // Matches upcoming SpaceEvents to YouTube provider channels
   cron.schedule('*/30 * * * *', () => {
@@ -122,6 +137,9 @@ export function startCronJobs() {
       'live-stream-check: every 30 minutes',
       'realtime-refresh: every 15 minutes',
       'space-defense-refresh: 6:00 AM UTC daily',
+      'regulatory-feeds: noon UTC daily',
+      'sec-filings: 2:00 PM UTC daily',
+      'watchlist-alerts: 8:00 AM UTC daily',
     ],
   });
 }
