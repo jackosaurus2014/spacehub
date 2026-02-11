@@ -11,6 +11,7 @@ const launchLibraryBreaker = createCircuitBreaker('launch-library', {
 interface LaunchLibraryLaunch {
   id: string;
   name: string;
+  slug?: string;
   status: {
     id: number;
     name: string;
@@ -23,6 +24,7 @@ interface LaunchLibraryLaunch {
     name: string;
     description: string;
     type: string;
+    info_urls?: Array<{ url: string }>;
   };
   pad?: {
     name: string;
@@ -49,7 +51,8 @@ interface LaunchLibraryLaunch {
   orbital_launch_attempt_count?: number;
   image?: string;
   infographic?: string;
-  url?: string; // Info page URL from Launch Library
+  url?: string; // LL2 API URL (not human-readable)
+  infoURLs?: Array<{ url: string }>;
   webcast_live?: boolean;
   vidURLs?: Array<{ url: string }>;
   orbit?: {
@@ -175,7 +178,10 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
             rocket: launch.rocket?.configuration?.full_name || launch.rocket?.configuration?.name || null,
             mission: launch.mission?.name || null,
             imageUrl: launch.image || launch.infographic || null,
-            infoUrl: launch.url || null,
+            infoUrl: launch.infoURLs?.[0]?.url
+              || launch.mission?.info_urls?.[0]?.url
+              || (launch.slug ? `https://www.spacelaunchnow.me/launch/${launch.slug}` : null)
+              || null,
             videoUrl: launch.vidURLs?.[0]?.url || null,
             webcastLive: launch.webcast_live ?? false,
             padLatitude: padLat && !isNaN(padLat) ? padLat : undefined,
@@ -204,7 +210,10 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
             rocket: launch.rocket?.configuration?.full_name || launch.rocket?.configuration?.name || null,
             mission: launch.mission?.name || null,
             imageUrl: launch.image || launch.infographic || null,
-            infoUrl: launch.url || null,
+            infoUrl: launch.infoURLs?.[0]?.url
+              || launch.mission?.info_urls?.[0]?.url
+              || (launch.slug ? `https://www.spacelaunchnow.me/launch/${launch.slug}` : null)
+              || null,
             videoUrl: launch.vidURLs?.[0]?.url || null,
             webcastLive: launch.webcast_live ?? false,
             padLatitude: padLat && !isNaN(padLat) ? padLat : null,
