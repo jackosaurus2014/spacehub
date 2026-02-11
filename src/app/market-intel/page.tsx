@@ -98,12 +98,12 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
   };
 
   return (
-    <tr className="border-b border-slate-200/50 hover:bg-slate-100/30 transition-colors">
+    <tr className="border-b border-slate-700/50/50 hover:bg-slate-800/30 transition-colors">
       <td className="py-4 px-4">
         <div className="flex items-center gap-3">
           <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
           <div>
-            <div className="font-semibold text-slate-900">{company.name}</div>
+            <div className="font-semibold text-white">{company.name}</div>
             {company.ticker ? (
               <div className="text-xs text-nebula-300 font-mono">
                 {company.exchange}:{company.ticker}
@@ -124,13 +124,13 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
             Pre-IPO
           </span>
         ) : (
-          <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded">
+          <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-1 rounded">
             Private
           </span>
         )}
       </td>
       <td className="py-4 px-4 text-right">
-        <div className="text-slate-900 font-medium">
+        <div className="text-white font-medium">
           {company.isPublic ? formatMarketCap(company.marketCap) : formatMarketCap(company.valuation)}
         </div>
         {company.isPublic && company.priceChange24h !== null && (
@@ -143,7 +143,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
         ) : (
           <div>
             {company.lastFundingRound && (
-              <div className="text-sm text-slate-900">{company.lastFundingRound}</div>
+              <div className="text-sm text-white">{company.lastFundingRound}</div>
             )}
             {company.lastFundingAmount && (
               <div className="text-xs text-slate-400">{formatFunding(company.lastFundingAmount)}</div>
@@ -165,7 +165,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
             return (
               <span
                 key={area}
-                className="text-xs bg-slate-100/50 text-slate-600 px-2 py-0.5 rounded whitespace-nowrap"
+                className="text-xs bg-slate-700/30 text-slate-300 px-2 py-0.5 rounded whitespace-nowrap"
               >
                 {focusInfo?.icon} {focusInfo?.label || area}
               </span>
@@ -391,7 +391,7 @@ function MarketIntelContent() {
             <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <StaggerItem>
                 <div className="card-elevated p-6 text-center">
-                  <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.total}</div>
+                  <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.total}</div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Companies</div>
                 </div>
               </StaggerItem>
@@ -421,18 +421,18 @@ function MarketIntelContent() {
 
             {/* Country Distribution */}
             <div className="card p-4 mb-4">
-              <h3 className="text-slate-900 font-semibold mb-3">Companies by Region</h3>
+              <h3 className="text-white font-semibold mb-3">Companies by Region</h3>
               <div className="flex flex-wrap gap-3">
                 {Object.entries(stats.byCountry).map(([country, count]) => {
                   const info = COUNTRY_INFO[country as CompanyCountry];
                   return (
                     <div
                       key={country}
-                      className="flex items-center gap-2 bg-slate-100/50 px-3 py-2 rounded-lg"
+                      className="flex items-center gap-2 bg-slate-700/30 px-3 py-2 rounded-lg"
                     >
                       <span>{info?.flag || '🌐'}</span>
                       <span className="text-slate-400">{info?.name || country}</span>
-                      <span className="text-slate-900 font-semibold">{count}</span>
+                      <span className="text-white font-semibold">{count}</span>
                     </div>
                   );
                 })}
@@ -455,7 +455,7 @@ function MarketIntelContent() {
             {/* Live Stock Ticker */}
             {Object.keys(detailedStockData).length > 0 && (
               <div className="mb-8">
-                <h3 className="text-slate-900 font-semibold mb-4 flex items-center gap-2">
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                   <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                   Live Stock Performance
                 </h3>
@@ -477,7 +477,7 @@ function MarketIntelContent() {
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div>
-                              <div className="font-semibold text-slate-900">{company.name}</div>
+                              <div className="font-semibold text-white">{company.name}</div>
                               <div className="text-xs text-nebula-300 font-mono">
                                 {company.exchange}:{company.ticker}
                               </div>
@@ -494,7 +494,7 @@ function MarketIntelContent() {
                           </div>
 
                           <div className="flex items-center gap-4 mb-3">
-                            <div className="text-2xl font-bold text-slate-900">
+                            <div className="text-2xl font-bold text-white">
                               ${stock.price.toFixed(2)}
                             </div>
                             <div className={`text-sm ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
@@ -553,7 +553,7 @@ function MarketIntelContent() {
             {/* Space ETFs & Funds */}
             {Object.keys(etfData).length > 0 && (
               <div className="mb-8">
-                <h3 className="text-slate-900 font-semibold mb-4 flex items-center gap-2">
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                   <span className="text-xl">📊</span>
                   Space ETFs & Funds
                   <span className="text-xs text-slate-400 font-normal ml-2">Live prices via Yahoo Finance</span>
@@ -572,7 +572,7 @@ function MarketIntelContent() {
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                         etfFilter === tab.value
                           ? 'bg-nebula-500 text-white'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                       }`}
                     >
                       {tab.label}
@@ -602,7 +602,7 @@ function MarketIntelContent() {
                                 {etf.category === 'pure_space' ? 'Pure Space' : 'A&D'}
                               </span>
                               {etf.leveraged && (
-                                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-600">
+                                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">
                                   3x Leveraged
                                 </span>
                               )}
@@ -624,7 +624,7 @@ function MarketIntelContent() {
                             <div className="text-xs text-slate-500 mb-2 line-clamp-1">{etf.name}</div>
 
                             <div className="flex items-baseline gap-2 mb-2">
-                              <span className="text-xl font-bold text-slate-900">${data.price.toFixed(2)}</span>
+                              <span className="text-xl font-bold text-white">${data.price.toFixed(2)}</span>
                               <span className={`text-xs ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
                                 {isPositive ? '+' : ''}{data.change.toFixed(2)}
                               </span>
@@ -672,7 +672,7 @@ function MarketIntelContent() {
                   <select
                     value={selectedCountry}
                     onChange={(e) => setSelectedCountry(e.target.value)}
-                    className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-nebula-500/50 focus:border-nebula-500"
                   >
                     {COUNTRY_FILTERS.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -687,7 +687,7 @@ function MarketIntelContent() {
                   <select
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value as '' | 'public' | 'private')}
-                    className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-nebula-500/50 focus:border-nebula-500"
                   >
                     <option value="">All Types</option>
                     <option value="public">Public</option>
@@ -700,7 +700,7 @@ function MarketIntelContent() {
                   <select
                     value={selectedFocus}
                     onChange={(e) => setSelectedFocus(e.target.value as CompanyFocusArea | '')}
-                    className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-nebula-500/50 focus:border-nebula-500"
                   >
                     <option value="">All Focus Areas</option>
                     {FOCUS_AREAS.map((focus) => (
@@ -755,7 +755,7 @@ function MarketIntelContent() {
         ) : companies.length === 0 && !stats?.total ? (
           <div className="card p-12 text-center">
             <span className="text-6xl block mb-4">📊</span>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-2">No Company Data</h2>
+            <h2 className="text-2xl font-semibold text-white mb-2">No Company Data</h2>
             <p className="text-slate-400 mb-6">
               Initialize the database with space industry companies to get started.
             </p>
@@ -777,7 +777,7 @@ function MarketIntelContent() {
         ) : companies.length === 0 ? (
           <div className="card p-12 text-center">
             <span className="text-6xl block mb-4">🔍</span>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-2">No Results</h2>
+            <h2 className="text-2xl font-semibold text-white mb-2">No Results</h2>
             <p className="text-slate-400">
               No companies match your current filters. Try adjusting your criteria.
             </p>
@@ -787,7 +787,7 @@ function MarketIntelContent() {
             {/* Publicly Traded Companies */}
             {companies.filter(c => c.isPublic).length > 0 && (
               <div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                   <span className="text-green-400">📈</span>
                   Publicly Traded Companies
                   <span className="text-slate-400 font-normal text-sm">({companies.filter(c => c.isPublic).length})</span>
@@ -796,7 +796,7 @@ function MarketIntelContent() {
                   <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
                     <table className="w-full min-w-[640px]">
                       <thead className="sticky top-0 z-10">
-                        <tr className="bg-slate-50 border-b border-slate-200">
+                        <tr className="bg-slate-800/80 border-b border-slate-700/50">
                           <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Company</th>
                           <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">Stock Price</th>
                           <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">Today</th>
@@ -812,12 +812,12 @@ function MarketIntelContent() {
                           const isPositive = stock ? stock.changePercent >= 0 : true;
 
                           return (
-                            <tr key={company.id} className="border-b border-slate-200/50 hover:bg-slate-100/30 transition-colors">
+                            <tr key={company.id} className="border-b border-slate-700/50/50 hover:bg-slate-800/30 transition-colors">
                               <td className="py-4 px-4">
                                 <div className="flex items-center gap-3">
                                   <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
                                   <div>
-                                    <div className="font-semibold text-slate-900">{company.name}</div>
+                                    <div className="font-semibold text-white">{company.name}</div>
                                     <div className="text-xs text-nebula-300 font-mono">
                                       {company.exchange}:{company.ticker}
                                     </div>
@@ -826,7 +826,7 @@ function MarketIntelContent() {
                               </td>
                               <td className="py-4 px-4 text-right">
                                 {stock ? (
-                                  <span className="font-mono font-medium text-slate-900">${stock.price.toFixed(2)}</span>
+                                  <span className="font-mono font-medium text-white">${stock.price.toFixed(2)}</span>
                                 ) : (
                                   <div className="h-4 w-16 bg-slate-700/50 rounded animate-pulse ml-auto" />
                                 )}
@@ -852,7 +852,7 @@ function MarketIntelContent() {
                                   {(company.focusAreas as string[]).slice(0, 2).map((area) => {
                                     const focusInfo = FOCUS_AREAS.find(f => f.value === area);
                                     return (
-                                      <span key={area} className="text-xs bg-slate-100/50 text-slate-600 px-2 py-0.5 rounded whitespace-nowrap">
+                                      <span key={area} className="text-xs bg-slate-700/30 text-slate-300 px-2 py-0.5 rounded whitespace-nowrap">
                                         {focusInfo?.icon} {focusInfo?.label || area}
                                       </span>
                                     );
@@ -879,7 +879,7 @@ function MarketIntelContent() {
             {/* Private Companies */}
             {companies.filter(c => !c.isPublic).length > 0 && (
               <div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                   <span className="text-yellow-400">🔒</span>
                   Private Companies
                   <span className="text-slate-400 font-normal text-sm">({companies.filter(c => !c.isPublic).length})</span>
@@ -888,7 +888,7 @@ function MarketIntelContent() {
                   <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
                     <table className="w-full min-w-[720px]">
                       <thead className="sticky top-0 z-10">
-                        <tr className="bg-slate-50 border-b border-slate-200">
+                        <tr className="bg-slate-800/80 border-b border-slate-700/50">
                           <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Company</th>
                           <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Status</th>
                           <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">Valuation</th>
@@ -909,12 +909,12 @@ function MarketIntelContent() {
                           };
 
                           return (
-                            <tr key={company.id} className="border-b border-slate-200/50 hover:bg-slate-100/30 transition-colors">
+                            <tr key={company.id} className="border-b border-slate-700/50/50 hover:bg-slate-800/30 transition-colors">
                               <td className="py-4 px-4">
                                 <div className="flex items-center gap-3">
                                   <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
                                   <div>
-                                    <div className="font-semibold text-slate-900">{company.name}</div>
+                                    <div className="font-semibold text-white">{company.name}</div>
                                     <div className="text-xs text-slate-400">{countryInfo?.name || company.country}</div>
                                   </div>
                                 </div>
@@ -923,7 +923,7 @@ function MarketIntelContent() {
                                 {company.isPreIPO ? (
                                   <span className="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded font-medium">Pre-IPO</span>
                                 ) : (
-                                  <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded">Private</span>
+                                  <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-1 rounded">Private</span>
                                 )}
                               </td>
                               <td className="py-4 px-4 text-right text-slate-400">
@@ -934,7 +934,7 @@ function MarketIntelContent() {
                               <td className="py-4 px-4">
                                 {company.lastFundingRound ? (
                                   <div>
-                                    <div className="text-sm text-slate-900">{company.lastFundingRound}</div>
+                                    <div className="text-sm text-white">{company.lastFundingRound}</div>
                                     <div className="text-xs text-slate-400">{formatFunding(company.lastFundingAmount)}</div>
                                   </div>
                                 ) : (
@@ -953,7 +953,7 @@ function MarketIntelContent() {
                                   {(company.focusAreas as string[]).slice(0, 2).map((area) => {
                                     const focusInfo = FOCUS_AREAS.find(f => f.value === area);
                                     return (
-                                      <span key={area} className="text-xs bg-slate-100/50 text-slate-600 px-2 py-0.5 rounded whitespace-nowrap">
+                                      <span key={area} className="text-xs bg-slate-700/30 text-slate-300 px-2 py-0.5 rounded whitespace-nowrap">
                                         {focusInfo?.icon} {focusInfo?.label || area}
                                       </span>
                                     );
@@ -984,7 +984,7 @@ function MarketIntelContent() {
           <div className="card p-6 mt-8 border-dashed">
             <div className="text-center">
               <span className="text-4xl block mb-3">💡</span>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">About Market Intel</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">About Market Intel</h3>
               <p className="text-slate-400 text-sm max-w-2xl mx-auto">
                 Market data is provided for informational purposes only and may not reflect real-time prices.
                 For publicly traded companies, market cap and price changes are approximate.
