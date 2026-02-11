@@ -140,6 +140,24 @@ export function startCronJobs() {
     triggerEndpoint('/api/refresh?type=business-opportunities', 'business-opportunities');
   });
 
+  // Regulation explainers — 5:30 AM UTC daily
+  // AI generates plain-English guides for proposed space regulations
+  cron.schedule('30 5 * * *', () => {
+    triggerEndpoint('/api/refresh?type=regulation-explainers', 'regulation-explainers');
+  });
+
+  // Company digests — 9:00 AM UTC weekly (Mondays)
+  // AI summarizes weekly news per company profile
+  cron.schedule('0 9 * * 1', () => {
+    triggerEndpoint('/api/refresh?type=company-digests', 'company-digests');
+  });
+
+  // AI opportunities analysis — 10:00 AM UTC weekly (Wednesdays)
+  // AI discovers new space business opportunities from recent trends
+  cron.schedule('0 10 * * 3', () => {
+    triggerEndpoint('/api/refresh?type=opportunities-analysis', 'opportunities-analysis');
+  });
+
   logger.info('Cron scheduler started', {
     jobs: [
       'news-fetch: every 5 minutes',
@@ -155,12 +173,15 @@ export function startCronJobs() {
       'compliance-refresh: 4:00 AM UTC daily',
       'space-environment-daily: 4:30 AM UTC daily',
       'business-opportunities: 5:00 AM UTC daily',
+      'regulation-explainers: 5:30 AM UTC daily',
       'space-defense-refresh: 6:00 AM UTC daily',
       'live-stream-check: every 30 minutes',
       'realtime-refresh: every 15 minutes',
+      'watchlist-alerts: 8:00 AM UTC daily',
+      'company-digests: 9:00 AM UTC weekly (Mon)',
+      'opportunities-analysis: 10:00 AM UTC weekly (Wed)',
       'regulatory-feeds: noon UTC daily',
       'sec-filings: 2:00 PM UTC daily',
-      'watchlist-alerts: 8:00 AM UTC daily',
     ],
   });
 }

@@ -15,6 +15,13 @@ import { initializeSolarFlareData } from '@/lib/solar-flare-data';
 import { initializeOrbitalData } from '@/lib/orbital-slots-data';
 import { initializeLaunchWindowsData } from '@/lib/launch-windows-data';
 import { initializeDebrisData } from '@/lib/debris-data';
+import { initializeOperationalAwarenessData } from '@/lib/operational-awareness-data';
+import { initializeSpaceMiningData } from '@/lib/space-mining-data';
+import { initializeBlueprintData } from '@/lib/blueprint-data';
+import { initializeGovernmentContracts } from '@/lib/government-contracts-data';
+import { initializeOrbitalServices } from '@/lib/orbital-services-data';
+import { initializeMissionCostData } from '@/lib/mission-cost-data';
+import { initializeRegulatoryHubData } from '@/lib/regulatory-hub-data';
 import { generateDailyDigest } from '@/lib/newsletter/digest-generator';
 import { sendDailyDigest } from '@/lib/newsletter/email-service';
 import { refreshAllExternalAPIs, fetchAndStoreEnhancedSpaceWeather, fetchAndStoreDonkiEnhanced } from '@/lib/module-api-fetchers';
@@ -91,6 +98,27 @@ async function refreshDaily(): Promise<Record<string, string>> {
 
   await initializeDebrisData();
   results.debris = 'Refreshed';
+
+  await initializeOperationalAwarenessData();
+  results.operationalAwareness = 'Refreshed';
+
+  await initializeSpaceMiningData();
+  results.spaceMining = 'Refreshed';
+
+  await initializeBlueprintData();
+  results.blueprints = 'Refreshed';
+
+  await initializeGovernmentContracts();
+  results.governmentContracts = 'Refreshed';
+
+  await initializeOrbitalServices();
+  results.orbitalServices = 'Refreshed';
+
+  await initializeMissionCostData();
+  results.missionCost = 'Refreshed';
+
+  await initializeRegulatoryHubData();
+  results.regulatoryHub = 'Refreshed';
 
   // Generate and send newsletter digest
   try {
@@ -299,6 +327,12 @@ export async function POST(request: Request) {
       const { refreshBusinessOpportunities } = await import('@/lib/fetchers/business-opportunities-fetcher');
       const bizOppResult = await refreshBusinessOpportunities();
       results.businessOpportunities = bizOppResult;
+    }
+
+    if (type === 'opportunities-analysis') {
+      const { runAIAnalysis } = await import('@/lib/opportunities-data');
+      const analysisResult = await runAIAnalysis();
+      results.opportunitiesAnalysis = analysisResult;
     }
 
     logger.info(`Data refresh completed (type=${type || 'all'})`, results);
