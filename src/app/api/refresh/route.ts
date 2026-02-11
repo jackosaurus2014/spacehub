@@ -164,7 +164,7 @@ export async function POST(request: Request) {
   if (authError) return authError;
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'space-defense', 'live-streams', 'realtime', or null (all)
+  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'space-defense', 'live-streams', 'realtime', 'regulatory-feeds', 'sec-filings', or null (all)
 
   const results: Record<string, unknown> = {};
 
@@ -263,6 +263,24 @@ export async function POST(request: Request) {
       const alertResult = await processWatchlistAlerts(prisma);
       const digestResult = await sendWatchlistDailyDigest(prisma);
       results.watchlistAlerts = { alerts: alertResult, digest: digestResult };
+    }
+
+    if (type === 'regulatory-feeds') {
+      const { fetchAndStoreFAALicenses } = await import('@/lib/fetchers/faa-license-fetcher');
+      const { fetchAndStoreFCCFilings } = await import('@/lib/fetchers/fcc-space-filings-fetcher');
+      const faaCount = await fetchAndStoreFAALicenses();
+      const fccCount = await fetchAndStoreFCCFilings();
+      results.regulatoryFeeds = {
+        faaLicenses: faaCount,
+        fccFilings: fccCount,
+        totalUpdated: faaCount + fccCount,
+      };
+    }
+
+    if (type === 'sec-filings') {
+      const { fetchAndStoreSECFilings } = await import('@/lib/fetchers/sec-edgar-fetcher');
+      const secCount = await fetchAndStoreSECFilings();
+      results.secFilings = { count: secCount };
     }
 
     logger.info(`Data refresh completed (type=${type || 'all'})`, results);

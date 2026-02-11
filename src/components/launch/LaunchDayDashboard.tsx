@@ -49,6 +49,10 @@ interface LaunchEvent {
   videoUrl: string | null;
   missionPhase: string | null;
   isLive: boolean;
+  orbitType?: string | null;
+  missionPatchUrl?: string | null;
+  crewCount?: number | null;
+  providerType?: string | null;
 }
 
 interface LaunchDayDashboardProps {
@@ -234,6 +238,18 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
                 <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30">
                   <div className="text-slate-400 text-xs mb-1">Country</div>
                   <div className="text-white text-sm font-medium truncate">{event.country}</div>
+                </div>
+              )}
+              {event.orbitType && (
+                <div className="bg-slate-800/50 rounded-lg p-3 border border-cyan-500/20">
+                  <div className="text-slate-400 text-xs mb-1">Target Orbit</div>
+                  <div className="text-cyan-400 text-sm font-medium truncate">{event.orbitType}</div>
+                </div>
+              )}
+              {event.crewCount && event.crewCount > 0 && (
+                <div className="bg-slate-800/50 rounded-lg p-3 border border-purple-500/20">
+                  <div className="text-slate-400 text-xs mb-1">Crew</div>
+                  <div className="text-purple-400 text-sm font-medium">{event.crewCount} astronaut{event.crewCount > 1 ? 's' : ''}</div>
                 </div>
               )}
             </motion.div>

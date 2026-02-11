@@ -165,12 +165,44 @@ export async function GET(
   const hasCaution = criteria.some(c => c.status === 'caution');
   const rangeStatus: WeatherResponse['rangeStatus'] = hasNoGo ? 'red' : hasCaution ? 'yellow' : 'green';
 
-  const response: WeatherResponse = {
-    weather,
-    rangeStatus,
-    criteria,
-    lastUpdated: new Date().toISOString(),
-  };
+  // Fetch real space weather data from DynamicContent
+  let spaceWeather = null;
+  try {
+    const { getContentItem } = await import('@/lib/dynamic-content');
+    const [xray6h, geomagForecast, integralProtons] = await Promise.all([
+      getContentItem('space-environment:xray-6hour').catch(() => null),
+      getContentItem('space-environment:geomagnetic-forecast').catch(() => null),
+      getContentItem('space-environment:integral-protons').catch(() => null),
+    ]);
 
-  return NextResponse.json({ success: true, data: response });
+    const xrayData = xray6h?.data as Record<string, unknown> | null;
+    const geomagData = geomagForecast?.data as Record<string, unknown> | null;
+    const protonData = integralProtons?.data as Record<string, unknown> | null;
+
+    if (xrayData || geomagData || protonData) {
+      spaceWeather = {
+        xrayConstraint: (xrayData?.launchConstraint as string) || 'GO',
+        xrayClass: (xrayData?.peakFlareClass6h as string) || 'A',
+        geomagConstraint: (geomagData?.launchConstraint as string) || 'GO',
+        geomagScale: (geomagData?.maxGeomagneticScale as number) || 0,
+        protonConstraint: (protonData?.launchConstraint as string) || 'GO',
+        protonFlux: (protonData?.peakFlux24h as number) || 0,
+        radiationRisk: (protonData?.radiationRisk as string) || 'Normal',
+        sepEvent: (protonData?.sepEvent as boolean) || false,
+      };
+    }
+  } catch {
+    // Space weather data is supplementary, don't fail if unavailable
+  }
+
+  return NextResponse.json({
+    success: true,
+    data: {
+      weather,
+      rangeStatus,
+      criteria,
+      spaceWeather,
+      lastUpdated: new Date().toISOString(),
+    },
+  });
 }

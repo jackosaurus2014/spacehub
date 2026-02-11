@@ -26,6 +26,8 @@ interface LaunchLibraryLaunch {
   };
   pad?: {
     name: string;
+    latitude?: string | number;
+    longitude?: string | number;
     location: {
       name: string;
       country_code: string;
@@ -34,18 +36,31 @@ interface LaunchLibraryLaunch {
   launch_service_provider?: {
     name: string;
     country_code: string;
+    type?: string;
   };
   rocket?: {
     configuration: {
       name: string;
       full_name: string;
+      image_url?: string;
     };
   };
+  mission_patches?: Array<{ image_url: string; name?: string }>;
+  orbital_launch_attempt_count?: number;
   image?: string;
   infographic?: string;
   url?: string; // Info page URL from Launch Library
   webcast_live?: boolean;
   vidURLs?: Array<{ url: string }>;
+  orbit?: {
+    name?: string;
+    abbrev?: string;
+  };
+  astronauts?: Array<{
+    name: string;
+    agency?: { name: string };
+    role?: string;
+  }>;
 }
 
 interface LaunchLibraryEvent {
@@ -132,6 +147,17 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
       const status = mapStatusToInternal(launch.status?.name || 'TBD');
 
       try {
+        const padLat = launch.pad?.latitude ? Number(launch.pad.latitude) : null;
+        const padLon = launch.pad?.longitude ? Number(launch.pad.longitude) : null;
+        const orbitType = launch.orbit?.name || launch.orbit?.abbrev || null;
+        const missionPatchUrl = launch.mission_patches?.[0]?.image_url || null;
+        const rocketImageUrl = launch.rocket?.configuration?.image_url || null;
+        const crewCount = launch.astronauts?.length || null;
+        const crewDetails = launch.astronauts && launch.astronauts.length > 0
+          ? launch.astronauts.map(a => ({ name: a.name, agency: a.agency?.name, role: a.role }))
+          : null;
+        const providerType = launch.launch_service_provider?.type || null;
+
         await prisma.spaceEvent.upsert({
           where: { externalId: launch.id },
           update: {
@@ -152,6 +178,14 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
             infoUrl: launch.url || null,
             videoUrl: launch.vidURLs?.[0]?.url || null,
             webcastLive: launch.webcast_live ?? false,
+            padLatitude: padLat && !isNaN(padLat) ? padLat : undefined,
+            padLongitude: padLon && !isNaN(padLon) ? padLon : undefined,
+            orbitType: orbitType ?? undefined,
+            missionPatchUrl: missionPatchUrl ?? undefined,
+            rocketImageUrl: rocketImageUrl ?? undefined,
+            crewCount: crewCount ?? undefined,
+            crewDetails: crewDetails as any ?? undefined,
+            providerType: providerType ?? undefined,
             updatedAt: new Date(),
           },
           create: {
@@ -173,6 +207,14 @@ export async function fetchLaunchLibraryEvents(): Promise<number> {
             infoUrl: launch.url || null,
             videoUrl: launch.vidURLs?.[0]?.url || null,
             webcastLive: launch.webcast_live ?? false,
+            padLatitude: padLat && !isNaN(padLat) ? padLat : null,
+            padLongitude: padLon && !isNaN(padLon) ? padLon : null,
+            orbitType,
+            missionPatchUrl,
+            rocketImageUrl,
+            crewCount,
+            crewDetails: crewDetails as any,
+            providerType,
           },
         });
         savedCount++;

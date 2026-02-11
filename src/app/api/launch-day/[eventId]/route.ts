@@ -37,6 +37,13 @@ export async function GET(
         missionPhase: true,
         isLive: true,
         webcastLive: true,
+        padLatitude: true,
+        padLongitude: true,
+        orbitType: true,
+        missionPatchUrl: true,
+        rocketImageUrl: true,
+        crewCount: true,
+        providerType: true,
       },
     });
 

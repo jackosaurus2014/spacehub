@@ -1384,9 +1384,151 @@ export async function fetchAndStoreEnhancedSpaceWeather(): Promise<number> {
     logger.warn('Failed to fetch solar probabilities data', { error: error instanceof Error ? error.message : String(error) });
   }
 
+  // 14. GOES X-Ray Flux 6-hour (radiation belt electron environment for launch ops)
+  try {
+    const xray6h = await fetchNoaaSwpcJson('goes/primary/xrays-6-hour.json') as Array<{
+      time_tag: string;
+      satellite: number;
+      flux: number;
+      observed_flux: number;
+      energy: string;
+      current_class?: string;
+    }> | null;
+
+    if (xray6h && Array.isArray(xray6h) && xray6h.length > 0) {
+      const shortWave = xray6h.filter((d) => d.energy === '0.1-0.8nm');
+      const data = shortWave.length > 0 ? shortWave : xray6h;
+      const recent = data.slice(-72); // ~6 hours at 5-min cadence
+      const latest = recent[recent.length - 1];
+      const peakFlux = Math.max(...recent.map((d) => d.flux).filter((f) => f > 0));
+      const flareClass = peakFlux >= 1e-4 ? 'X' : peakFlux >= 1e-5 ? 'M' : peakFlux >= 1e-6 ? 'C' : peakFlux >= 1e-7 ? 'B' : 'A';
+
+      // Launch constraint: M-class or above = caution, X-class = no-go
+      const launchConstraint = flareClass === 'X' ? 'NO-GO' : flareClass === 'M' ? 'CAUTION' : 'GO';
+
+      await upsertContent(
+        'space-environment:xray-6hour',
+        'space-environment',
+        'radiation-belt',
+        {
+          latest: {
+            time: latest.time_tag,
+            flux: latest.flux,
+            currentClass: latest.current_class || null,
+          },
+          peakFlux6h: peakFlux,
+          peakFlareClass6h: flareClass,
+          launchConstraint,
+          readingCount: recent.length,
+          fetchedAt: new Date().toISOString(),
+        },
+        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/json/goes/primary/xrays-6-hour.json' }
+      );
+      updated++;
+    }
+  } catch (error) {
+    logger.warn('Failed to fetch GOES X-ray 6-hour data', { error: error instanceof Error ? error.message : String(error) });
+  }
+
+  // 15. NOAA Space Weather Scales (3-day geomagnetic forecast for launch ops)
+  try {
+    const scalesData = await fetchNoaaSwpcProducts('noaa-scales.json') as Array<{
+      DateStamp?: string;
+      TimeStamp?: string;
+      Scale?: string;
+      'R'?: { Scale?: number; Text?: string; MinorProb?: string; MajorProb?: string };
+      'S'?: { Scale?: number; Text?: string; Prob?: string };
+      'G'?: { Scale?: number; Text?: string };
+      [key: string]: unknown;
+    }> | null;
+
+    if (scalesData && Array.isArray(scalesData) && scalesData.length > 0) {
+      // The NOAA scales JSON typically contains current conditions + forecasts
+      // Parse the 3-day geomagnetic storm, solar radiation, and radio blackout scales
+      const entries = scalesData.slice(0, 7); // Current + forecast entries
+
+      const geomagScale = entries.map((e) => ({
+        date: e.DateStamp || null,
+        time: e.TimeStamp || null,
+        gScale: (e as Record<string, unknown>)['G'] ? ((e as Record<string, unknown>)['G'] as Record<string, unknown>)?.Scale ?? null : null,
+        gText: (e as Record<string, unknown>)['G'] ? ((e as Record<string, unknown>)['G'] as Record<string, unknown>)?.Text ?? null : null,
+        sScale: (e as Record<string, unknown>)['S'] ? ((e as Record<string, unknown>)['S'] as Record<string, unknown>)?.Scale ?? null : null,
+        rScale: (e as Record<string, unknown>)['R'] ? ((e as Record<string, unknown>)['R'] as Record<string, unknown>)?.Scale ?? null : null,
+      }));
+
+      // Determine launch constraint from G-scale
+      const maxGScale = Math.max(...geomagScale.map((g) => (typeof g.gScale === 'number' ? g.gScale : 0)));
+      const launchConstraint = maxGScale >= 4 ? 'NO-GO' : maxGScale >= 2 ? 'CAUTION' : 'GO';
+
+      await upsertContent(
+        'space-environment:geomagnetic-forecast',
+        'space-environment',
+        'geomagnetic-forecast',
+        {
+          forecast: geomagScale,
+          maxGeomagneticScale: maxGScale,
+          launchConstraint,
+          stormLevel: maxGScale >= 5 ? 'Extreme (G5)' : maxGScale >= 4 ? 'Severe (G4)' : maxGScale >= 3 ? 'Strong (G3)' : maxGScale >= 2 ? 'Moderate (G2)' : maxGScale >= 1 ? 'Minor (G1)' : 'None',
+          fetchedAt: new Date().toISOString(),
+        },
+        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/products/noaa-scales.json' }
+      );
+      updated++;
+    }
+  } catch (error) {
+    logger.warn('Failed to fetch NOAA scales data', { error: error instanceof Error ? error.message : String(error) });
+  }
+
+  // 16. GOES Integral Protons 1-day (radiation risk for crewed missions)
+  try {
+    const integralProtons = await fetchNoaaSwpcJson('goes/primary/integral-protons-1-day.json') as Array<{
+      time_tag: string;
+      satellite: number;
+      flux: number;
+      energy: string;
+      channel?: string;
+    }> | null;
+
+    if (integralProtons && Array.isArray(integralProtons) && integralProtons.length > 0) {
+      // Filter to >=10 MeV channel (S1-S5 threshold: 10 pfu)
+      const mev10 = integralProtons.filter((d) => d.energy === '>=10 MeV' || d.channel === 'P>10');
+      const data = mev10.length > 0 ? mev10 : integralProtons;
+      const recent = data.slice(-60); // Last ~60 readings
+      const latest = recent[recent.length - 1];
+      const peakFlux = Math.max(...recent.map((d) => d.flux).filter((f) => f > 0));
+
+      // SEP event threshold: 10 pfu for >=10 MeV protons
+      const sepEvent = peakFlux >= 10;
+      const launchConstraint = peakFlux >= 100 ? 'NO-GO' : peakFlux >= 10 ? 'CAUTION' : 'GO';
+
+      await upsertContent(
+        'space-environment:integral-protons',
+        'space-environment',
+        'proton-flux',
+        {
+          latest: {
+            time: latest.time_tag,
+            flux: latest.flux,
+            energy: latest.energy || latest.channel || '>=10 MeV',
+          },
+          peakFlux24h: peakFlux,
+          sepEvent,
+          launchConstraint,
+          radiationRisk: peakFlux >= 1000 ? 'Extreme' : peakFlux >= 100 ? 'High' : peakFlux >= 10 ? 'Elevated' : 'Normal',
+          readingCount: recent.length,
+          fetchedAt: new Date().toISOString(),
+        },
+        { sourceType: 'api', sourceUrl: 'https://services.swpc.noaa.gov/json/goes/primary/integral-protons-1-day.json' }
+      );
+      updated++;
+    }
+  } catch (error) {
+    logger.warn('Failed to fetch GOES integral protons data', { error: error instanceof Error ? error.message : String(error) });
+  }
+
   await logRefresh('space-environment', 'api-fetch', updated > 0 ? 'success' : 'failed', {
     itemsUpdated: updated,
-    apiCallsMade: 13,
+    apiCallsMade: 16,
     duration: Date.now() - start,
   });
 
