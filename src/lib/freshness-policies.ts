@@ -103,6 +103,18 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     refreshSource: 'ai-research',
     keywords: ['space supply chain', 'space components', 'satellite manufacturing', 'launch supply'],
   },
+  'talent-board': {
+    ttlHours: 168, // 7 days
+    refreshPriority: 'moderate',
+    refreshSource: 'ai-research',
+    keywords: ['space expert', 'space consultant', 'chief engineer', 'space workforce', 'space career', 'space appointment'],
+  },
+  'webinars': {
+    ttlHours: 168, // 7 days
+    refreshPriority: 'moderate',
+    refreshSource: 'ai-research',
+    keywords: ['space conference', 'space webinar', 'space symposium', 'space forum', 'IAC', 'SpaceCom'],
+  },
 
   // Mission Control (APOD + TechPort)
   'mission-control': {

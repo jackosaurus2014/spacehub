@@ -47,6 +47,8 @@ const MODULE_NEWS_KEYWORDS: Record<string, string[]> = {
   'spaceports': ['spaceport', 'launch site', 'launch pad', 'Cape Canaveral', 'Boca Chica', 'launch complex', 'Vandenberg'],
   'space-manufacturing': ['space manufacturing', 'in-space production', 'Varda', 'Redwire', 'space factory', 'microgravity', 'space materials'],
   'compliance': ['FCC space', 'FAA license', 'space law', 'space regulation', 'ITU filing', 'Artemis Accords', 'space treaty', 'spectrum allocation'],
+  'talent-board': ['space expert', 'space consultant', 'space advisor', 'chief engineer', 'space workforce', 'space career', 'astronaut selection', 'space appointment', 'space executive'],
+  'webinars': ['space conference', 'space webinar', 'space summit', 'space symposium', 'space forum', 'IAC', 'SATELLITE conference', 'SpaceCom', 'Space Symposium', 'space expo'],
 };
 
 // Module-specific prompt instructions
@@ -159,6 +161,27 @@ ALLIANCES (section: alliances):
 - ITU coordination changes
 - New or proposed space regulations (US, EU, international)
 - Notable legal proceedings or bid protests in space sector`,
+
+  'talent-board': `Research and update notable space industry professionals and experts:
+- New executive appointments at major space companies (CEO, CTO, VP Engineering, Chief Scientist)
+- Advisory board changes at space organizations and companies
+- Award winners (Space Foundation awards, AIAA fellowships, NASA Distinguished Service medals)
+- Prominent conference speakers and panelists from recent events
+- New space consulting firms or notable independent consultants
+- Space law practitioners handling significant cases
+- Export control/ITAR compliance specialists at major defense/space firms
+- Government affairs leaders at commercial space companies
+- International space policy figures (UN COPUOS delegates, Artemis Accords negotiators)
+For each person provide: name, current title, organization, expertise areas (space_law, export_controls, regulatory, propulsion, avionics, systems_engineering, government_relations, international_policy), brief bio, and availability status`,
+
+  'webinars': `Research and update upcoming space industry events, conferences, and webinars:
+- Major conferences: Space Symposium, SATELLITE, IAC, SmallSat, SpaceCom, AIAA Space Forum
+- Industry events: Space Tech Expo, Satellite Innovation, World Satellite Business Week, AMOS
+- Defense events: Global MilSatCom, Space & Missile Defense Symposium
+- Advocacy events: ISDC, Humans to Mars Summit, Von Braun Symposium
+- Virtual webinars and panels from industry organizations
+- Government-hosted events: National Space Council, FAA Commercial Space Transportation Conference
+For each event provide: title, description, date, duration in minutes, key speaker(s), speaker bios, topic category, registration URL. Mark events as past if their date has passed.`,
 };
 
 /**
