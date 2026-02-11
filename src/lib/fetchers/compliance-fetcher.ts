@@ -61,6 +61,13 @@ export async function fetchAndStoreLegalUpdates(): Promise<number> {
           if (!item.title || !item.link) continue;
 
           try {
+            // Generate a slug from the title
+            const slug = item.title
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-|-$/g, '')
+              .slice(0, 100);
+
             await prisma.legalUpdate.upsert({
               where: { url: item.link },
               update: {
@@ -70,9 +77,10 @@ export async function fetchAndStoreLegalUpdates(): Promise<number> {
               },
               create: {
                 title: item.title,
+                slug,
                 content: item.content || item.contentSnippet || null,
                 excerpt: (item.contentSnippet || item.content || '').slice(0, 500) || null,
-                source: source.name,
+                sourceId: source.id,
                 url: item.link,
                 topics: source.type || 'general',
                 publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
