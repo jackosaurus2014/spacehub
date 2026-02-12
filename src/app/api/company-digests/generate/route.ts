@@ -2,24 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { logger } from '@/lib/logger';
-import { unauthorizedError, internalError } from '@/lib/errors';
+import { unauthorizedError, internalError, requireCronSecret } from '@/lib/errors';
 import { generateCompanyDigests } from '@/lib/company-digest-generator';
 
 export const dynamic = 'force-dynamic';
 
 async function isAuthorized(request: NextRequest): Promise<boolean> {
+  // Timing-safe Bearer token check for cron/automated calls
+  if (requireCronSecret(request) === null) return true;
+
+  // Fall back to admin session (only when no Bearer token was attempted)
   const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
-    return true;
-  }
-
   if (!authHeader) {
     const session = await getServerSession(authOptions);
-    if (session?.user?.isAdmin) {
-      return true;
-    }
+    if (session?.user?.isAdmin) return true;
   }
 
   return false;

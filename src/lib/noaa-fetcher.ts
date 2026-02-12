@@ -55,7 +55,7 @@ export async function fetchRecentSolarFlares(days: number = 7): Promise<SolarFla
     const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
     const response = await fetch(
-      `https://api.nasa.gov/DONKI/FLR?startDate=${startDate}&endDate=${endDate}&api_key=DEMO_KEY`,
+      `https://api.nasa.gov/DONKI/FLR?startDate=${startDate}&endDate=${endDate}&api_key=${process.env.NASA_API_KEY || 'DEMO_KEY'}`,
       { cache: 'no-store' }
     );
 
@@ -77,7 +77,7 @@ export async function fetchRecentGeomagneticStorms(days: number = 30): Promise<G
     const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
     const response = await fetch(
-      `https://api.nasa.gov/DONKI/GST?startDate=${startDate}&endDate=${endDate}&api_key=DEMO_KEY`,
+      `https://api.nasa.gov/DONKI/GST?startDate=${startDate}&endDate=${endDate}&api_key=${process.env.NASA_API_KEY || 'DEMO_KEY'}`,
       { cache: 'no-store' }
     );
 
@@ -99,7 +99,7 @@ export async function fetchRecentCMEs(days: number = 14): Promise<CMEData[]> {
     const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
     const response = await fetch(
-      `https://api.nasa.gov/DONKI/CME?startDate=${startDate}&endDate=${endDate}&api_key=DEMO_KEY`,
+      `https://api.nasa.gov/DONKI/CME?startDate=${startDate}&endDate=${endDate}&api_key=${process.env.NASA_API_KEY || 'DEMO_KEY'}`,
       { cache: 'no-store' }
     );
 

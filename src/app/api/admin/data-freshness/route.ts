@@ -4,7 +4,7 @@ import { getCircuitBreakerStatus } from '@/lib/circuit-breaker';
 import { getAllModuleFreshness } from '@/lib/dynamic-content';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { unauthorizedError, internalError } from '@/lib/errors';
+import { unauthorizedError, internalError, requireCronSecret } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -13,11 +13,11 @@ export const dynamic = 'force-dynamic';
  * Check if the request is authorized via Bearer token (CRON_SECRET) or admin session.
  */
 async function isAuthorized(request: NextRequest): Promise<boolean> {
+  // Timing-safe Bearer token check for cron/automated calls
+  if (requireCronSecret(request) === null) return true;
+
+  // Fall back to admin session (only when no Bearer token was attempted)
   const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (cronSecret && authHeader === `Bearer ${cronSecret}`) return true;
-
   if (!authHeader) {
     const session = await getServerSession(authOptions);
     if (session?.user?.isAdmin) return true;

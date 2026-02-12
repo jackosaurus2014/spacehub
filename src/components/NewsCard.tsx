@@ -39,7 +39,7 @@ function CompanyBadges({ companies }: { companies: NewsArticleCompanyTag[] }) {
           className={`inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors cursor-pointer ${tierColors[company.tier] || tierColors[3]}`}
         >
           {company.logoUrl && (
-            <Image src={company.logoUrl} alt="" width={12} height={12} className="rounded-sm" />
+            <Image src={company.logoUrl} alt={`${company.name} logo`} width={12} height={12} className="rounded-sm" />
           )}
           {company.name}
         </span>

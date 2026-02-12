@@ -272,7 +272,7 @@ export function escapeHtml(str: string): string {
  * Timing-safe string comparison to prevent timing attacks.
  * Always compares the full length regardless of where differences occur.
  */
-function timingSafeEqual(a: string, b: string): boolean {
+export function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) {
     // Still do a comparison to avoid length-based timing leaks
     let result = a.length ^ b.length;

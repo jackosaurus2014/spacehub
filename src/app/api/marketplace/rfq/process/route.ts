@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { internalError } from '@/lib/errors';
+import { internalError, timingSafeEqual } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +9,8 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     const cronSecret = request.headers.get('x-cron-secret');
-    if (cronSecret !== process.env.CRON_SECRET) {
+    const expectedSecret = process.env.CRON_SECRET;
+    if (!expectedSecret || !cronSecret || !timingSafeEqual(cronSecret, expectedSecret)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

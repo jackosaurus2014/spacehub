@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import { logger } from '@/lib/logger';
-import { unauthorizedError, internalError } from '@/lib/errors';
+import { unauthorizedError, internalError, requireCronSecret } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,20 +40,14 @@ function generateSlug(title: string): string {
  * 2. An authenticated admin session
  */
 async function isAuthorized(request: NextRequest): Promise<boolean> {
-  // Check Bearer token first (for cron/automated calls)
+  // Timing-safe Bearer token check for cron/automated calls
+  if (requireCronSecret(request) === null) return true;
+
+  // Fall back to admin session (only when no Bearer token was attempted)
   const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
-    return true;
-  }
-
-  // Fall back to session-based admin check (only if no Bearer token was attempted)
   if (!authHeader) {
     const session = await getServerSession(authOptions);
-    if (session?.user?.isAdmin) {
-      return true;
-    }
+    if (session?.user?.isAdmin) return true;
   }
 
   return false;

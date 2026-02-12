@@ -142,7 +142,7 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg flex-shrink-0 border border-slate-600/50">
                   {company.logoUrl ? (
-                    <img src={company.logoUrl} alt="" className="w-7 h-7 rounded object-contain" />
+                    <img src={company.logoUrl} alt={`${company.name} logo`} className="w-7 h-7 rounded object-contain" />
                   ) : (
                     getSectorIcon(company.sector)
                   )}
@@ -505,7 +505,7 @@ export default function CompanyProfilesPage() {
                   >
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg flex-shrink-0 border border-slate-600/50">
                       {company.logoUrl ? (
-                        <img src={company.logoUrl} alt="" className="w-7 h-7 rounded object-contain" />
+                        <img src={company.logoUrl} alt={`${company.name} logo`} className="w-7 h-7 rounded object-contain" />
                       ) : (
                         getSectorIcon(company.sector)
                       )}
