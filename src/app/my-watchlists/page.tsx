@@ -92,6 +92,9 @@ function WatchlistsContent() {
   const [notAuthed, setNotAuthed] = useState(false);
   const [watchlistMeta, setWatchlistMeta] = useState<{ count: number; limit: number | null; tier: string }>({ count: 0, limit: null, tier: 'free' });
   const [searchMeta, setSearchMeta] = useState<{ count: number; limit: number | null; tier: string }>({ count: 0, limit: null, tier: 'free' });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [digests, setDigests] = useState<any[]>([]);
+  const [digestsLoading, setDigestsLoading] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -199,16 +202,13 @@ function WatchlistsContent() {
           <div className="text-4xl">🔒</div>
           <h2 className="text-lg font-semibold text-white">Sign in Required</h2>
           <p className="text-sm text-slate-400">Please sign in to manage your watchlists and saved searches.</p>
-          <Link href="/auth/signin" className="text-cyan-400 hover:text-cyan-300 text-sm font-medium">
+          <Link href="/login" className="text-cyan-400 hover:text-cyan-300 text-sm font-medium">
             Sign In →
           </Link>
         </div>
       </div>
     );
   }
-
-  const [digests, setDigests] = useState<any[]>([]);
-  const [digestsLoading, setDigestsLoading] = useState(false);
 
   useEffect(() => {
     if (tab === 'digests' && digests.length === 0 && !digestsLoading) {

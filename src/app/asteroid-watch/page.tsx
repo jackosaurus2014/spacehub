@@ -364,7 +364,7 @@ function AsteroidWatchContent() {
           <StatCard value={NEO_STATS.totalPHAs.toLocaleString()} label="Known PHAs" valueColor="text-orange-400" />
           <StatCard value={`${CLOSE_APPROACHES.length}`} label="Tracked Approaches" />
           <StatCard value={`${phaCount}`} label="PHAs in List" valueColor={phaCount > 0 ? 'text-red-400' : 'text-green-400'} />
-          <StatCard value={`${closestApproach?.distanceLD.toFixed(1)} LD`} label="Closest Pass" valueColor={getDistanceColor(closestApproach?.distanceLD || 99)} />
+          <StatCard value={closestApproach ? `${closestApproach.distanceLD.toFixed(1)} LD` : 'N/A'} label="Closest Pass" valueColor={getDistanceColor(closestApproach?.distanceLD || 99)} />
           <StatCard
             value={`${highestTorino?.torino || 0}`}
             label="Highest Torino"

@@ -145,7 +145,8 @@ export async function GET(req: NextRequest) {
         },
       });
     } else if (hours) {
-      const futureDate = new Date(now.getTime() + parseInt(hours) * 60 * 60 * 1000);
+      const parsedHours = parseInt(hours);
+      const futureDate = new Date(now.getTime() + (isNaN(parsedHours) ? 24 : Math.min(parsedHours, 8760)) * 60 * 60 * 1000);
       events = await prisma.spaceEvent.findMany({
         where: {
           launchDate: {
@@ -198,7 +199,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     logger.error('Error fetching events', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
-      { error: 'Failed to fetch events', details: String(error) },
+      { error: 'Failed to fetch events' },
       { status: 500 }
     );
   }

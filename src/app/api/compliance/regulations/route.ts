@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const agency = searchParams.get('agency') || undefined;
     const category = searchParams.get('category') as RegulationCategory | null;
     const status = searchParams.get('status') as RegulationStatus | null;
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
 
     const regulations = await getProposedRegulations({
       agency,

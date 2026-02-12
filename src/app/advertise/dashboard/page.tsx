@@ -113,7 +113,7 @@ export default function AdvertiserDashboard() {
 
   useEffect(() => {
     if (sessionStatus === 'unauthenticated') {
-      router.push('/auth/signin');
+      router.push('/login');
       return;
     }
 

@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const riskLevel = searchParams.get('riskLevel') || undefined;
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
 
     const [overview, conjunctions, notableDebris] = await Promise.all([
       getDebrisOverview(),

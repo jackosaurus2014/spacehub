@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const topic = searchParams.get('topic') || undefined;
     const isLive = searchParams.get('isLive');
     const isPast = searchParams.get('isPast');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // Load webinars: try DynamicContent first, fall back to seed data

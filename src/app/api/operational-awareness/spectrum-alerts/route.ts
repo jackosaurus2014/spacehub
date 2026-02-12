@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const severity = searchParams.get('severity') as SpectrumSeverity | null;
     const status = searchParams.get('status') as SpectrumAlertStatus | null;
     const frequencyBand = searchParams.get('frequencyBand');
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
     const includeCounts = searchParams.get('includeCounts') === 'true';
     const includeBandInfo = searchParams.get('includeBandInfo') === 'true';
 

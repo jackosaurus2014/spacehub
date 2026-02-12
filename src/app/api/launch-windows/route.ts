@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const destination = searchParams.get('destination') || undefined;
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
 
     const [destinations, windows, stats] = await Promise.all([
       getCelestialDestinations(),

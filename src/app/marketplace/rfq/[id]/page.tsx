@@ -259,7 +259,7 @@ export default function RFQDetailPage({ params }: { params: Promise<{ id: string
             <p className="text-sm text-slate-400 mb-3">
               Sign in and claim a company profile to submit a proposal for this RFQ.
             </p>
-            <Link href="/auth/signin" className="text-cyan-400 hover:text-cyan-300 text-sm font-medium">
+            <Link href="/login" className="text-cyan-400 hover:text-cyan-300 text-sm font-medium">
               Sign In →
             </Link>
           </div>

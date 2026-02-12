@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const alertLevel = searchParams.get('alertLevel') as AlertLevel | null;
     const status = searchParams.get('status') as ConjunctionStatus | null;
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
     const includeCounts = searchParams.get('includeCounts') === 'true';
 
     const [events, counts] = await Promise.all([

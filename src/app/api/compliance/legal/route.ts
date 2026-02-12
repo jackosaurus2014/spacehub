@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const type = searchParams.get('type'); // 'sources' or 'updates'
     const sourceType = searchParams.get('sourceType') || undefined;
     const sourceId = searchParams.get('sourceId') || undefined;
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
     const offset = parseInt(searchParams.get('offset') || '0');
 
     if (type === 'sources') {

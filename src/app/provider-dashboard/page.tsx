@@ -97,7 +97,7 @@ function DashboardContent() {
           <div className="text-4xl">🔒</div>
           <h2 className="text-lg font-semibold text-white">Sign in Required</h2>
           <p className="text-sm text-slate-400">Please sign in to access the provider dashboard.</p>
-          <Link href="/auth/signin" className="text-cyan-400 hover:text-cyan-300 text-sm font-medium">
+          <Link href="/login" className="text-cyan-400 hover:text-cyan-300 text-sm font-medium">
             Sign In →
           </Link>
         </div>

@@ -281,14 +281,14 @@ export default function AdvertisePage() {
           ) : !session?.user ? (
             <div className="text-center py-8">
               <Link
-                href="/auth/signin"
+                href="/login"
                 className="btn-primary inline-flex items-center gap-2 px-6 py-3"
               >
                 Sign In to Get Started
               </Link>
               <p className="text-star-300 text-sm mt-4">
                 Don&apos;t have an account?{' '}
-                <Link href="/auth/register" className="text-nebula-400 hover:text-nebula-300">
+                <Link href="/register" className="text-nebula-400 hover:text-nebula-300">
                   Register for free
                 </Link>
               </p>

@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     const company = searchParams.get('company') || undefined;
     const search = searchParams.get('search') || undefined;
     const remoteOnly = searchParams.get('remoteOnly');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
     const offset = parseInt(searchParams.get('offset') || '0');
 
     const [jobsResult, trends, stats, salaryBenchmarks] = await Promise.all([

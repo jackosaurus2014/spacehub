@@ -1197,7 +1197,7 @@ function ProtestsAnalysisTab() {
           <h4 className="text-sm font-semibold text-star-300 uppercase tracking-wider mb-4">Overall Protest Effectiveness</h4>
           <div className="text-center mb-3">
             <div className="text-4xl font-bold font-display text-white">
-              {Math.round((BID_PROTESTS.filter((p) => p.outcome === 'sustained' || p.outcome === 'corrective_action').length / totalProtests) * 100)}%
+              {totalProtests > 0 ? Math.round((BID_PROTESTS.filter((p) => p.outcome === 'sustained' || p.outcome === 'corrective_action').length / totalProtests) * 100) : 0}%
             </div>
             <p className="text-xs text-star-300 mt-1">Result in Protester-Favorable Outcome</p>
           </div>
@@ -1227,7 +1227,7 @@ function ProtestsAnalysisTab() {
           <div className="space-y-3">
             {byOutcome.map(([outcome, count]) => {
               const style = PROTEST_OUTCOME_STYLES[outcome as ProtestOutcome];
-              const pct = Math.round((count / totalProtests) * 100);
+              const pct = totalProtests > 0 ? Math.round((count / totalProtests) * 100) : 0;
               return (
                 <div key={outcome}>
                   <div className="flex items-center justify-between mb-1">

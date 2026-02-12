@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const availability = searchParams.get('availability') as TalentAvailability | null;
     const featured = searchParams.get('featured');
     const search = searchParams.get('search') || undefined;
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // Load talent: try DynamicContent first, fall back to seed data

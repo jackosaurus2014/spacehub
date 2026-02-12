@@ -311,7 +311,7 @@ export default function CompanyProfilesPage() {
       const res = await fetch(`/api/company-profiles?${params}`);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-      setCompanies(data.companies);
+      setCompanies(data.companies || []);
       setTotal(data.total);
       setStats(data.stats);
     } catch {

@@ -58,9 +58,9 @@ function NewsContent() {
       const data = await res.json();
 
       if (off === 0) {
-        setArticles(data.articles);
+        setArticles(data.articles || []);
       } else {
-        setArticles((prev) => [...prev, ...data.articles]);
+        setArticles((prev) => [...prev, ...(data.articles || [])]);
       }
       setTotal(data.total);
     } catch (error) {

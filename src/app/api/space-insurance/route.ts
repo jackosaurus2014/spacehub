@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const missionType = (searchParams.get('missionType') || undefined) as InsuranceMissionType | undefined;
     const status = (searchParams.get('status') || undefined) as InsuranceStatus | undefined;
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
 
     const [policies, marketHistory, stats] = await Promise.all([
       getInsurancePolicies({ missionType, status, limit }),

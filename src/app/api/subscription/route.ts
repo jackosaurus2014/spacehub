@@ -234,7 +234,8 @@ export async function POST(request: Request) {
 
     // Reset if new day
     const now = new Date();
-    const isNewDay = user.lastArticleViewReset.toDateString() !== now.toDateString();
+    const lastReset = user.lastArticleViewReset ? new Date(user.lastArticleViewReset) : null;
+    const isNewDay = !lastReset || lastReset.toDateString() !== now.toDateString();
     const currentViews = isNewDay ? 0 : user.dailyArticleViews;
 
     if (currentViews >= 25) {

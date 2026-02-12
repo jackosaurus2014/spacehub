@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     const type = searchParams.get('type') as ContractType | null;
     const status = searchParams.get('status') as ContractStatus | null;
     const category = searchParams.get('category') as ContractCategory | null;
-    const limit = parseInt(searchParams.get('limit') || '30');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '30'), 100);
     const offset = parseInt(searchParams.get('offset') || '0');
     const recent = searchParams.get('recent') === 'true';
     const stats = searchParams.get('stats') === 'true';

@@ -222,7 +222,7 @@ function SatelliteTrackerContent() {
               </div>
               <div className="card-elevated p-4 text-center">
                 <div className="text-2xl font-bold font-display text-green-500">
-                  {stats?.byStatus.active.toLocaleString() || 0}
+                  {stats?.byStatus?.active?.toLocaleString() || 0}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Active
@@ -230,7 +230,7 @@ function SatelliteTrackerContent() {
               </div>
               <div className="card-elevated p-4 text-center">
                 <div className="text-2xl font-bold font-display text-blue-500">
-                  {stats?.byOrbitType.LEO.toLocaleString() || 0}
+                  {stats?.byOrbitType?.LEO?.toLocaleString() || 0}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   LEO
@@ -238,7 +238,7 @@ function SatelliteTrackerContent() {
               </div>
               <div className="card-elevated p-4 text-center">
                 <div className="text-2xl font-bold font-display text-purple-500">
-                  {stats?.byOrbitType.MEO.toLocaleString() || 0}
+                  {stats?.byOrbitType?.MEO?.toLocaleString() || 0}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   MEO
@@ -246,7 +246,7 @@ function SatelliteTrackerContent() {
               </div>
               <div className="card-elevated p-4 text-center">
                 <div className="text-2xl font-bold font-display text-amber-500">
-                  {stats?.byOrbitType.GEO.toLocaleString() || 0}
+                  {stats?.byOrbitType?.GEO?.toLocaleString() || 0}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   GEO
@@ -254,7 +254,7 @@ function SatelliteTrackerContent() {
               </div>
               <div className="card-elevated p-4 text-center">
                 <div className="text-2xl font-bold font-display text-nebula-300">
-                  {stats?.topOperators.length || 0}
+                  {stats?.topOperators?.length || 0}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                   Operators
@@ -268,7 +268,7 @@ function SatelliteTrackerContent() {
               {([
                 { id: 'overview' as const, label: 'Overview' },
                 { id: 'satellites' as const, label: 'All Satellites', count: data?.total },
-                { id: 'operators' as const, label: 'By Operator', count: stats?.topOperators.length },
+                { id: 'operators' as const, label: 'By Operator', count: stats?.topOperators?.length },
               ]).map((tab) => (
                 <button
                   key={tab.id}
@@ -392,7 +392,7 @@ function SatelliteTrackerContent() {
                     </button>
                   </div>
                   <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {data?.notableSatellites.map((sat) => (
+                    {data?.notableSatellites?.map((sat) => (
                       <StaggerItem key={sat.id}>
                         <SatelliteCard satellite={sat} />
                       </StaggerItem>

@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
     const isPublic = searchParams.get('isPublic');
     const sortBy = searchParams.get('sortBy') || 'name';
     const sortOrder = searchParams.get('sortOrder') || 'asc';
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
+    const offset = Math.max(0, parseInt(searchParams.get('offset') || '0'));
 
     const where: Record<string, unknown> = {};
 

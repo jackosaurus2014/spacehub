@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const planetaryBodyId = searchParams.get('bodyId') || undefined;
     const status = searchParams.get('status') || undefined;
     const missionType = searchParams.get('type') || undefined;
-    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined;
+    const limit = searchParams.get('limit') ? Math.min(parseInt(searchParams.get('limit')!), 100) : undefined;
 
     const landers = await getSurfaceLanders({
       planetaryBodyId,
