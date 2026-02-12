@@ -355,6 +355,7 @@ export default function CompanyProfilesPage() {
             <div className="flex-1 relative">
               <input
                 type="text"
+                aria-label="Search companies by name, ticker, or location"
                 placeholder="Search companies by name, ticker, or location..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -367,6 +368,7 @@ export default function CompanyProfilesPage() {
 
             {/* Filter dropdowns */}
             <select
+              aria-label="Filter by sector"
               value={sector}
               onChange={(e) => setSector(e.target.value)}
               className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
@@ -377,6 +379,7 @@ export default function CompanyProfilesPage() {
             </select>
 
             <select
+              aria-label="Filter by tier"
               value={tier}
               onChange={(e) => setTier(e.target.value)}
               className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
@@ -387,6 +390,7 @@ export default function CompanyProfilesPage() {
             </select>
 
             <select
+              aria-label="Filter by status"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
@@ -398,6 +402,7 @@ export default function CompanyProfilesPage() {
 
             {/* Sort */}
             <select
+              aria-label="Sort companies"
               value={`${sortBy}-${sortOrder}`}
               onChange={(e) => {
                 const [field, order] = e.target.value.split('-');

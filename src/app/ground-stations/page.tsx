@@ -706,10 +706,7 @@ export default function GroundStationsPage() {
                   <StaggerItem key={idx}>
                   <div className="card-elevated p-6 border border-space-700">
                     <div className="flex items-center gap-3 mb-3">
-                      <span
-                        className="text-2xl"
-                        dangerouslySetInnerHTML={{ __html: factor.icon }}
-                      />
+                      <span className="text-2xl">{factor.icon}</span>
                       <h4 className="text-white font-semibold text-lg">{factor.title}</h4>
                     </div>
                     <p className="text-slate-400 text-sm mb-4">{factor.description}</p>

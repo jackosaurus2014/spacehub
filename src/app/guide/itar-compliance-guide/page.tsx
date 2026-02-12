@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+export const revalidate = 3600; // ISR: revalidate every hour
+
 export const metadata: Metadata = {
   title: 'ITAR Compliance Guide for Space Companies | SpaceNexus Guide',
   description:

@@ -77,6 +77,7 @@ function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            aria-label="Contact email"
             placeholder="Contact email"
             className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white w-44"
           />
@@ -470,8 +471,9 @@ function BusinessOpportunitiesContent() {
             <div className="card p-4 mb-6">
               <div className="flex flex-wrap items-center gap-4">
                 <div>
-                  <label className="block text-slate-400 text-sm mb-1">Type</label>
+                  <label htmlFor="opp-type-filter" className="block text-slate-400 text-sm mb-1">Type</label>
                   <select
+                    id="opp-type-filter"
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value as OpportunityType | '')}
                     className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
@@ -486,8 +488,9 @@ function BusinessOpportunitiesContent() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 text-sm mb-1">Category</label>
+                  <label htmlFor="opp-category-filter" className="block text-slate-400 text-sm mb-1">Category</label>
                   <select
+                    id="opp-category-filter"
                     value={selectedCategory}
                     onChange={(e) =>
                       setSelectedCategory(e.target.value as OpportunityCategory | '')
@@ -504,8 +507,9 @@ function BusinessOpportunitiesContent() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 text-sm mb-1">For</label>
+                  <label htmlFor="opp-audience-filter" className="block text-slate-400 text-sm mb-1">For</label>
                   <select
+                    id="opp-audience-filter"
                     value={selectedAudience}
                     onChange={(e) =>
                       setSelectedAudience(e.target.value as TargetAudience | '')

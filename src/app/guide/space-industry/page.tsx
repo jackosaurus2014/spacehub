@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+export const revalidate = 3600; // ISR: revalidate every hour
+
 export const metadata: Metadata = {
   title: 'Complete Guide to the Space Industry 2026 | Markets, Tech & Opportunities',
   description:

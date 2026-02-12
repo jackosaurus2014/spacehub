@@ -124,8 +124,9 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
           </div>
           {selectedCategory && (
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Subcategory (optional)</label>
+              <label htmlFor="rfq-subcategory" className="block text-sm text-slate-400 mb-2">Subcategory (optional)</label>
               <select
+                id="rfq-subcategory"
                 value={form.subcategory}
                 onChange={(e) => updateField('subcategory', e.target.value)}
                 className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
@@ -138,8 +139,9 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
             </div>
           )}
           <div>
-            <label className="block text-sm text-slate-400 mb-2">RFQ Title</label>
+            <label htmlFor="rfq-title" className="block text-sm text-slate-400 mb-2">RFQ Title</label>
             <input
+              id="rfq-title"
               type="text"
               value={form.title}
               onChange={(e) => updateField('title', e.target.value)}
@@ -162,8 +164,9 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-white">Describe your requirements</h3>
           <div>
-            <label className="block text-sm text-slate-400 mb-2">Description</label>
+            <label htmlFor="rfq-description" className="block text-sm text-slate-400 mb-2">Description</label>
             <textarea
+              id="rfq-description"
               value={form.description}
               onChange={(e) => updateField('description', e.target.value)}
               rows={4}
@@ -172,8 +175,9 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
             />
           </div>
           <div>
-            <label className="block text-sm text-slate-400 mb-2">Technical Requirements (optional)</label>
+            <label htmlFor="rfq-requirements" className="block text-sm text-slate-400 mb-2">Technical Requirements (optional)</label>
             <textarea
+              id="rfq-requirements"
               value={form.requirements}
               onChange={(e) => updateField('requirements', e.target.value)}
               rows={3}
@@ -202,8 +206,9 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
           <h3 className="text-lg font-semibold text-white">Budget, Timeline & Compliance</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Min Budget ($) <span className="text-yellow-500/70 text-[10px]">recommended</span></label>
+              <label htmlFor="rfq-budget-min" className="block text-sm text-slate-400 mb-2">Min Budget ($) <span className="text-yellow-500/70 text-[10px]">recommended</span></label>
               <input
+                id="rfq-budget-min"
                 type="number"
                 value={form.budgetMin}
                 onChange={(e) => updateField('budgetMin', e.target.value)}
@@ -212,8 +217,9 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               />
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Max Budget ($) <span className="text-yellow-500/70 text-[10px]">recommended</span></label>
+              <label htmlFor="rfq-budget-max" className="block text-sm text-slate-400 mb-2">Max Budget ($) <span className="text-yellow-500/70 text-[10px]">recommended</span></label>
               <input
+                id="rfq-budget-max"
                 type="number"
                 value={form.budgetMax}
                 onChange={(e) => updateField('budgetMax', e.target.value)}
@@ -224,8 +230,9 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Response Deadline</label>
+              <label htmlFor="rfq-deadline" className="block text-sm text-slate-400 mb-2">Response Deadline</label>
               <input
+                id="rfq-deadline"
                 type="date"
                 value={form.deadline}
                 onChange={(e) => updateField('deadline', e.target.value)}
@@ -233,8 +240,9 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               />
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Delivery Date</label>
+              <label htmlFor="rfq-delivery-date" className="block text-sm text-slate-400 mb-2">Delivery Date</label>
               <input
+                id="rfq-delivery-date"
                 type="date"
                 value={form.deliveryDate}
                 onChange={(e) => updateField('deliveryDate', e.target.value)}

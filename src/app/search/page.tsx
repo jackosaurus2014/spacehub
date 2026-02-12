@@ -578,6 +578,7 @@ function SearchContent() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          aria-label="Search across news, companies, events, opportunities, and blogs"
           placeholder="Search across news, companies, events, opportunities, and blogs..."
           className="w-full pl-14 pr-12 py-4 text-lg bg-slate-800/60 border border-cyan-400/30 rounded-2xl text-slate-100 placeholder-star-400 focus:outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-400/20 transition-all"
         />

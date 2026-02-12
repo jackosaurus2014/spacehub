@@ -928,13 +928,13 @@ export default function SpaceDefensePage() {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                  { layer: 'Transport Layer', purpose: 'Mesh networking and data transport', icon: '&#128752;' },
-                  { layer: 'Tracking Layer', purpose: 'Missile warning and missile tracking', icon: '&#128269;' },
-                  { layer: 'Custody Layer', purpose: 'Target custody for beyond-LOS fires', icon: '&#127919;' },
-                  { layer: 'Deterrence Layer', purpose: 'Demonstration of capabilities', icon: '&#128737;' },
+                  { layer: 'Transport Layer', purpose: 'Mesh networking and data transport', icon: '\u{1F6F0}' },
+                  { layer: 'Tracking Layer', purpose: 'Missile warning and missile tracking', icon: '\u{1F50D}' },
+                  { layer: 'Custody Layer', purpose: 'Target custody for beyond-LOS fires', icon: '\u{1F3AF}' },
+                  { layer: 'Deterrence Layer', purpose: 'Demonstration of capabilities', icon: '\u{1F6E1}' },
                 ].map((layer) => (
                   <div key={layer.layer} className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4 text-center">
-                    <span className="text-2xl block mb-2" dangerouslySetInnerHTML={{ __html: layer.icon }} />
+                    <span className="text-2xl block mb-2">{layer.icon}</span>
                     <h4 className="text-nebula-400 font-semibold text-sm">{layer.layer}</h4>
                     <p className="text-star-400 text-xs mt-1">{layer.purpose}</p>
                   </div>

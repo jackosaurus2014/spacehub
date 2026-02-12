@@ -448,6 +448,7 @@ function SatelliteTrackerContent() {
                     <div className="flex-1 min-w-[200px]">
                       <input
                         type="text"
+                        aria-label="Search by name, NORAD ID, or operator"
                         placeholder="Search by name, NORAD ID, or operator..."
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
@@ -457,8 +458,9 @@ function SatelliteTrackerContent() {
 
                     {/* Orbit Filter */}
                     <div className="flex items-center gap-2">
-                      <span className="text-slate-400 text-sm">Orbit:</span>
+                      <label htmlFor="satellite-orbit-filter" className="text-slate-400 text-sm">Orbit:</label>
                       <select
+                        id="satellite-orbit-filter"
                         value={orbitFilter}
                         onChange={(e) => handleOrbitFilterChange(e.target.value as OrbitType | '')}
                         className="px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-nebula-500"
@@ -474,8 +476,9 @@ function SatelliteTrackerContent() {
 
                     {/* Status Filter */}
                     <div className="flex items-center gap-2">
-                      <span className="text-slate-400 text-sm">Status:</span>
+                      <label htmlFor="satellite-status-filter" className="text-slate-400 text-sm">Status:</label>
                       <select
+                        id="satellite-status-filter"
                         value={statusFilter}
                         onChange={(e) => handleStatusFilterChange(e.target.value as SatelliteStatus | '')}
                         className="px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-nebula-500"

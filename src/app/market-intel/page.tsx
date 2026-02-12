@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { SpaceCompany, FOCUS_AREAS, COUNTRY_INFO, CompanyCountry, CompanyFocusArea } from '@/types';
@@ -71,21 +71,21 @@ const COUNTRY_FILTERS = [
   { value: 'ARE', label: '🇦🇪 UAE' },
 ];
 
+const formatMarketCap = (cap: number | null) => {
+  if (!cap) return '—';
+  if (cap >= 1000) return `$${(cap / 1000).toFixed(2)}T`;
+  if (cap >= 1) return `$${cap.toFixed(2)}B`;
+  return `$${(cap * 1000).toFixed(0)}M`;
+};
+
+const formatFunding = (amount: number | null) => {
+  if (!amount) return '—';
+  if (amount >= 1000) return `$${(amount / 1000).toFixed(1)}B`;
+  return `$${amount.toFixed(0)}M`;
+};
+
 function CompanyRow({ company }: { company: SpaceCompany }) {
   const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
-
-  const formatMarketCap = (cap: number | null) => {
-    if (!cap) return '—';
-    if (cap >= 1000) return `$${(cap / 1000).toFixed(2)}T`;
-    if (cap >= 1) return `$${cap.toFixed(2)}B`;
-    return `$${(cap * 1000).toFixed(0)}M`;
-  };
-
-  const formatFunding = (amount: number | null) => {
-    if (!amount) return '—';
-    if (amount >= 1000) return `$${(amount / 1000).toFixed(1)}B`;
-    return `$${amount.toFixed(0)}M`;
-  };
 
   const formatPriceChange = (change: number | null) => {
     if (change === null || change === undefined) return null;
@@ -308,16 +308,28 @@ function MarketIntelContent() {
     }
   };
 
-  const fetchStockData = async (publicCompanies: SpaceCompany[]) => {
+  const fetchStockData = useCallback(async (publicCompanies: SpaceCompany[]) => {
     const tickers = publicCompanies.map((c) => c.ticker).join(',');
     try {
-      // Fetch batch stock data
-      const res = await fetch(`/api/stocks?tickers=${tickers}`);
-      const data = await res.json();
+      // Fetch batch stock data + detailed data for top 6 in parallel
+      const topTickers = publicCompanies.slice(0, 6).map((c) => c.ticker);
 
-      if (data.stocks) {
+      const [batchRes, ...detailedResults] = await Promise.all([
+        fetch(`/api/stocks?tickers=${tickers}`).then(r => r.json()),
+        ...topTickers.map(async (ticker) => {
+          try {
+            const res = await fetch(`/api/stocks/${ticker}`);
+            const data = await res.json();
+            return !data.error ? { ticker, data } : null;
+          } catch {
+            return null;
+          }
+        }),
+      ]);
+
+      if (batchRes.stocks) {
         const stockMap: Record<string, StockData> = {};
-        data.stocks.forEach((stock: StockData) => {
+        batchRes.stocks.forEach((stock: StockData) => {
           if (stock.success) {
             stockMap[stock.ticker] = stock;
           }
@@ -325,21 +337,6 @@ function MarketIntelContent() {
         setStockData(stockMap);
       }
 
-      // Fetch detailed data for top 6 stocks
-      const topTickers = publicCompanies.slice(0, 6).map((c) => c.ticker);
-      const detailedPromises = topTickers.map(async (ticker) => {
-        try {
-          const res = await fetch(`/api/stocks/${ticker}`);
-          const data = await res.json();
-          if (!data.error) {
-            return { ticker, data };
-          }
-        } catch {
-          return null;
-        }
-      });
-
-      const detailedResults = await Promise.all(detailedPromises);
       const detailedMap: Record<string, DetailedStockData> = {};
       detailedResults.forEach((result) => {
         if (result && result.ticker) {
@@ -351,9 +348,9 @@ function MarketIntelContent() {
       console.error('Failed to fetch stock data:', error);
       setError('Failed to load data.');
     }
-  };
+  }, []);
 
-  const fetchEtfData = async () => {
+  const fetchEtfData = useCallback(async () => {
     try {
       const tickers = SPACE_ETFS.map((e) => e.ticker).join(',');
       const res = await fetch(`/api/stocks?tickers=${tickers}`);
@@ -372,7 +369,7 @@ function MarketIntelContent() {
       console.error('Failed to fetch ETF data:', error);
       setError('Failed to load data.');
     }
-  };
+  }, []);
 
   const handleInitialize = async () => {
     setInitializing(true);
@@ -914,12 +911,6 @@ function MarketIntelContent() {
                       <tbody>
                         {companies.filter(c => !c.isPublic).sort((a, b) => (b.valuation || 0) - (a.valuation || 0)).map((company) => {
                           const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
-
-                          const formatFunding = (amount: number | null) => {
-                            if (!amount) return '—';
-                            if (amount >= 1000) return `$${(amount / 1000).toFixed(1)}B`;
-                            return `$${amount.toFixed(0)}M`;
-                          };
 
                           return (
                             <tr key={company.id} className="border-b border-slate-700/50/50 hover:bg-slate-800/30 transition-colors">

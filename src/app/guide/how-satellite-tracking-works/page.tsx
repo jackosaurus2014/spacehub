@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+export const revalidate = 3600; // ISR: revalidate every hour
+
 export const metadata: Metadata = {
   title: 'How Satellite Tracking Works: Technology, Methods & Tools | SpaceNexus Guide',
   description:

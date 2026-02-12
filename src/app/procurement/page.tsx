@@ -728,12 +728,14 @@ function ProcurementContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                 <input
                   type="text"
+                  aria-label="Search opportunities"
                   placeholder="Search opportunities..."
                   value={searchQuery}
                   onChange={e => { setSearchQuery(e.target.value); setOppOffset(0); }}
                   className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
                 />
                 <select
+                  aria-label="Filter by agency"
                   value={agencyFilter}
                   onChange={e => { setAgencyFilter(e.target.value); setOppOffset(0); }}
                   className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
@@ -742,6 +744,7 @@ function ProcurementContent() {
                   {AGENCIES.map(a => <option key={a} value={a}>{a}</option>)}
                 </select>
                 <select
+                  aria-label="Filter by type"
                   value={typeFilter}
                   onChange={e => { setTypeFilter(e.target.value); setOppOffset(0); }}
                   className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
@@ -750,6 +753,7 @@ function ProcurementContent() {
                   {OPP_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
                 <select
+                  aria-label="Filter by set-aside"
                   value={setAsideFilter}
                   onChange={e => { setSetAsideFilter(e.target.value); setOppOffset(0); }}
                   className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
@@ -822,6 +826,7 @@ function ProcurementContent() {
             <div className="card p-4 mb-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <select
+                  aria-label="Filter SBIR by agency"
                   value={sbirAgencyFilter}
                   onChange={e => setSBIRAgencyFilter(e.target.value)}
                   className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
@@ -832,6 +837,7 @@ function ProcurementContent() {
                   <option value="NOAA">NOAA</option>
                 </select>
                 <select
+                  aria-label="Filter by program"
                   value={sbirProgramFilter}
                   onChange={e => setSBIRProgramFilter(e.target.value)}
                   className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
@@ -872,6 +878,7 @@ function ProcurementContent() {
             <div className="card p-4 mb-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <select
+                  aria-label="Filter budget by agency"
                   value={budgetAgencyFilter}
                   onChange={e => setBudgetAgencyFilter(e.target.value)}
                   className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
@@ -882,6 +889,7 @@ function ProcurementContent() {
                   <option value="NOAA">NOAA</option>
                 </select>
                 <select
+                  aria-label="Filter by fiscal year"
                   value={budgetYearFilter}
                   onChange={e => setBudgetYearFilter(e.target.value)}
                   className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
@@ -927,6 +935,7 @@ function ProcurementContent() {
             <div className="card p-4 mb-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <select
+                  aria-label="Filter congressional activity by type"
                   value={congressionalTypeFilter}
                   onChange={e => setCongressionalTypeFilter(e.target.value)}
                   className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
@@ -935,6 +944,7 @@ function ProcurementContent() {
                   {CONGRESSIONAL_TYPES.map(t => <option key={t.value} value={t.value}>{t.icon} {t.label}</option>)}
                 </select>
                 <select
+                  aria-label="Filter by committee"
                   value={congressionalCommitteeFilter}
                   onChange={e => setCongressionalCommitteeFilter(e.target.value)}
                   className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"

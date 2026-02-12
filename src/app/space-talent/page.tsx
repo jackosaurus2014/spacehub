@@ -852,6 +852,7 @@ function SpaceTalentHubContent() {
                   <div className="flex-1">
                     <input
                       type="text"
+                      aria-label="Search by name, title, organization, or expertise"
                       placeholder="Search by name, title, organization, or expertise..."
                       value={talentSearch}
                       onChange={(e) => setTalentSearch(e.target.value)}
@@ -859,6 +860,7 @@ function SpaceTalentHubContent() {
                     />
                   </div>
                   <select
+                    aria-label="Filter by expertise area"
                     value={expertiseFilter}
                     onChange={(e) => setExpertiseFilter(e.target.value as TalentExpertiseArea | '')}
                     className="bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-cyan-500"
@@ -871,6 +873,7 @@ function SpaceTalentHubContent() {
                     ))}
                   </select>
                   <select
+                    aria-label="Filter by availability"
                     value={availabilityFilter}
                     onChange={(e) => setAvailabilityFilter(e.target.value as TalentAvailability | '')}
                     className="bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-cyan-500"
@@ -1002,6 +1005,7 @@ function SpaceTalentHubContent() {
                     ))}
                   </div>
                   <select
+                    aria-label="Filter by topic"
                     value={topicFilter}
                     onChange={(e) => setTopicFilter(e.target.value)}
                     className="bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-cyan-500"
@@ -1206,10 +1210,11 @@ function SpaceTalentHubContent() {
 
                       {/* Business Name */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">
+                        <label htmlFor="sp-business-name" className="block text-sm font-medium text-slate-300 mb-1">
                           Business / Provider Name <span className="text-red-400">*</span>
                         </label>
                         <input
+                          id="sp-business-name"
                           type="text"
                           value={spFormData.businessName}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, businessName: e.target.value }))}
@@ -1225,10 +1230,11 @@ function SpaceTalentHubContent() {
 
                       {/* Contact Name */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">
+                        <label htmlFor="sp-contact-name" className="block text-sm font-medium text-slate-300 mb-1">
                           Contact Name
                         </label>
                         <input
+                          id="sp-contact-name"
                           type="text"
                           value={spFormData.contactName}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, contactName: e.target.value }))}
@@ -1239,10 +1245,11 @@ function SpaceTalentHubContent() {
 
                       {/* Phone */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">
+                        <label htmlFor="sp-phone" className="block text-sm font-medium text-slate-300 mb-1">
                           Phone Number
                         </label>
                         <input
+                          id="sp-phone"
                           type="tel"
                           value={spFormData.phone}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, phone: e.target.value }))}
@@ -1253,10 +1260,11 @@ function SpaceTalentHubContent() {
 
                       {/* Email */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">
+                        <label htmlFor="sp-email" className="block text-sm font-medium text-slate-300 mb-1">
                           Email Address <span className="text-red-400">*</span>
                         </label>
                         <input
+                          id="sp-email"
                           type="email"
                           value={spFormData.email}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, email: e.target.value }))}
@@ -1272,10 +1280,11 @@ function SpaceTalentHubContent() {
 
                       {/* Website */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">
+                        <label htmlFor="sp-website" className="block text-sm font-medium text-slate-300 mb-1">
                           Website
                         </label>
                         <input
+                          id="sp-website"
                           type="url"
                           value={spFormData.website}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, website: e.target.value }))}
@@ -1291,10 +1300,11 @@ function SpaceTalentHubContent() {
 
                       {/* Description */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">
+                        <label htmlFor="sp-description" className="block text-sm font-medium text-slate-300 mb-1">
                           Description of Services <span className="text-red-400">*</span>
                         </label>
                         <textarea
+                          id="sp-description"
                           value={spFormData.description}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, description: e.target.value }))}
                           rows={4}
@@ -1311,10 +1321,11 @@ function SpaceTalentHubContent() {
 
                       {/* Pricing */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1">
+                        <label htmlFor="sp-pricing" className="block text-sm font-medium text-slate-300 mb-1">
                           Pricing Information
                         </label>
                         <textarea
+                          id="sp-pricing"
                           value={spFormData.pricing}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, pricing: e.target.value }))}
                           rows={2}
@@ -1464,6 +1475,7 @@ function SpaceTalentHubContent() {
                   <div className="flex gap-2">
                     <input
                       type="text"
+                      aria-label="Search jobs by title, company, location, or specialization"
                       placeholder="Search jobs by title, company, location, or specialization..."
                       value={searchInput}
                       onChange={(e) => setSearchInput(e.target.value)}
@@ -1478,6 +1490,7 @@ function SpaceTalentHubContent() {
                 <div className="flex flex-wrap items-center gap-3">
                   {/* Category */}
                   <select
+                    aria-label="Filter by job category"
                     value={categoryFilter}
                     onChange={(e) => handleCategoryChange(e.target.value as JobCategory | '')}
                     className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-nebula-500/50"
@@ -1492,6 +1505,7 @@ function SpaceTalentHubContent() {
 
                   {/* Seniority */}
                   <select
+                    aria-label="Filter by seniority level"
                     value={seniorityFilter}
                     onChange={(e) => handleSeniorityChange(e.target.value as SeniorityLevel | '')}
                     className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-nebula-500/50"

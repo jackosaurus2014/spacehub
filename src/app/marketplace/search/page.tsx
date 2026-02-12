@@ -132,8 +132,9 @@ function SearchContent() {
           <div className={`w-56 flex-shrink-0 space-y-4 ${showMobileFilters ? 'block' : 'hidden lg:block'}`}>
             {/* Category */}
             <div>
-              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Category</h4>
+              <label htmlFor="marketplace-category" className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">Category</label>
               <select
+                id="marketplace-category"
                 value={category}
                 onChange={(e) => { setCategory(e.target.value); setPage(1); }}
                 className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
@@ -154,6 +155,7 @@ function SearchContent() {
                     <input
                       type="number"
                       placeholder="Min"
+                      aria-label="Minimum price"
                       value={priceMin}
                       onChange={(e) => { setPriceMin(e.target.value); setPage(1); }}
                       className="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-white"
@@ -161,6 +163,7 @@ function SearchContent() {
                     <input
                       type="number"
                       placeholder="Max"
+                      aria-label="Maximum price"
                       value={priceMax}
                       onChange={(e) => { setPriceMax(e.target.value); setPage(1); }}
                       className="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-white"
@@ -170,8 +173,9 @@ function SearchContent() {
 
                 {/* Verification */}
                 <div>
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Verification</h4>
+                  <label htmlFor="marketplace-verification" className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">Verification</label>
                   <select
+                    id="marketplace-verification"
                     value={verFilter}
                     onChange={(e) => { setVerFilter(e.target.value); setPage(1); }}
                     className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
@@ -218,6 +222,7 @@ function SearchContent() {
                 />
                 {tab === 'listings' && (
                   <select
+                    aria-label="Sort listings"
                     value={sort}
                     onChange={(e) => { setSort(e.target.value); setPage(1); }}
                     className="bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-white"

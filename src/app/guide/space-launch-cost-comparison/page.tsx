@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+export const revalidate = 3600; // ISR: revalidate every hour
+
 export const metadata: Metadata = {
   title: 'Space Launch Cost Comparison 2026: Prices by Vehicle & Provider | SpaceNexus Guide',
   description:

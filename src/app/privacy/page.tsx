@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 
+export const revalidate = 86400; // ISR: revalidate every 24 hours
+
 export default function PrivacyPolicyPage() {
   const lastUpdated = 'February 5, 2026';
 

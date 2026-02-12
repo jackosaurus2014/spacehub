@@ -49,6 +49,10 @@ const MODULE_NEWS_KEYWORDS: Record<string, string[]> = {
   'compliance': ['FCC space', 'FAA license', 'space law', 'space regulation', 'ITU filing', 'Artemis Accords', 'space treaty', 'spectrum allocation'],
   'talent-board': ['space expert', 'space consultant', 'space advisor', 'chief engineer', 'space workforce', 'space career', 'astronaut selection', 'space appointment', 'space executive'],
   'webinars': ['space conference', 'space webinar', 'space summit', 'space symposium', 'space forum', 'IAC', 'SATELLITE conference', 'SpaceCom', 'Space Symposium', 'space expo'],
+  'space-tourism': ['space tourism', 'Blue Origin flight', 'Virgin Galactic', 'SpaceX tourism', 'Axiom mission', 'private astronaut', 'suborbital flight', 'Space Perspective', 'space hotel', 'orbital tourism'],
+  'supply-chain': ['space supply chain', 'satellite components', 'space manufacturing', 'launch supply', 'radiation-hardened', 'space-grade', 'propulsion supplier', 'solar panel manufacturer', 'reaction wheel', 'star tracker'],
+  'business-opportunities': ['space contract', 'space RFP', 'NASA award', 'space procurement', 'SAM.gov', 'space grant', 'SBIR', 'space partnership', 'space opportunity', 'commercial crew'],
+  'ground-stations': ['ground station', 'satellite ground', 'KSAT', 'AWS Ground Station', 'SSC', 'antenna network', 'ground segment', 'TT&C', 'satellite uplink', 'deep space network'],
 };
 
 // Module-specific prompt instructions
@@ -204,6 +208,48 @@ For each person provide: name, current title, organization, expertise areas (spa
 - Virtual webinars and panels from industry organizations
 - Government-hosted events: National Space Council, FAA Commercial Space Transportation Conference
 For each event provide: title, description, date, duration in minutes, key speaker(s), speaker bios, topic category, registration URL. Mark events as past if their date has passed.`,
+
+  'space-tourism': `Verify and update space tourism offerings and missions:
+- Blue Origin New Shepard: latest flight number, crew details, ticket pricing, flight cadence
+- Virgin Galactic: operational status, flight count, ticket price, upcoming missions
+- SpaceX tourism missions: Inspiration4 follow-ons, dearMoon status, Polaris program updates
+- Axiom Space: ISS mission count, commercial station timeline, crew details
+- Space Perspective: Spaceship Neptune status, test flights, commercial timeline
+- Vast: Haven-1 station development status, planned launch date
+- Orbital Reef (Blue Origin/Sierra Space): development milestones
+- New entrants: any new companies offering space tourism
+For each offering: provider, vehicle/destination, type (suborbital/orbital/station), price range, status, upcoming missions`,
+
+  'supply-chain': `Verify and update space industry supply chain data:
+- Major component suppliers: reaction wheels, star trackers, solar panels, propulsion systems
+- Supply chain disruptions or shortages affecting the space industry
+- New supplier qualifications or partnerships
+- Radiation-hardened electronics availability and lead times
+- Launch vehicle component suppliers and manufacturing capacity
+- Satellite bus manufacturers and their order backlogs
+- Raw materials critical to space (titanium, carbon fiber, rare earths) — pricing and availability
+- Vertical integration trends (companies bringing manufacturing in-house)
+For each supplier/segment: company name, component type, key customers, production capacity, lead times, recent developments`,
+
+  'business-opportunities': `Verify and update space industry business opportunities:
+- Recent NASA contract awards (>$10M): Commercial Crew, CLPS, Artemis, SLS, ISS services
+- DoD/Space Force contract awards: SDA, NSSL, missile warning, space domain awareness
+- ESA and international space agency procurements
+- Commercial partnerships and joint ventures announced
+- New SAM.gov opportunities related to space/aerospace
+- SBIR/STTR awards for space technology
+- Industry RFPs and teaming opportunities
+For each opportunity: title, agency, value, awardee(s), deadline (if open), category (government/commercial/international), brief description`,
+
+  'ground-stations': `Verify and update ground station network data:
+- Major commercial networks: KSAT, SSC (Swedish Space Corp), Viasat RTE, AWS Ground Station, Azure Orbital, Leaf Space
+- Government networks: NASA DSN (Goldstone, Madrid, Canberra), ESA ESTRACK, CNES
+- New ground station deployments and expansions
+- Ground-station-as-a-service offerings and pricing
+- Optical ground terminals for laser communications
+- Ground station capacity and frequency band availability (S, X, Ka, optical)
+- Emerging players and M&A activity in ground segment
+For each network/station: operator, locations, antenna count, supported bands, key customers, recent expansions, service model`,
 };
 
 /**

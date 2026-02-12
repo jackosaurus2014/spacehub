@@ -364,6 +364,7 @@ export default function CopilotPage() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
+              aria-label="Describe what you need"
               placeholder="Describe what you need... (e.g., 'I need to launch a 500kg satellite to SSO by Q3 2027')"
               rows={1}
               className="w-full resize-none rounded-xl bg-space-800/60 border border-space-600/30 text-slate-200 placeholder-slate-500 px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 outline-none transition-colors"
