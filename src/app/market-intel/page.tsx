@@ -268,6 +268,7 @@ function MarketIntelContent() {
     setLoading(true);
     try {
       const params = new URLSearchParams();
+      params.set('limit', '200');
       if (selectedCountry) params.set('country', selectedCountry);
       if (selectedType) params.set('isPublic', selectedType === 'public' ? 'true' : 'false');
       if (selectedFocus) params.set('focusArea', selectedFocus);
@@ -899,7 +900,7 @@ function MarketIntelContent() {
                         </tr>
                       </thead>
                       <tbody>
-                        {companies.filter(c => !c.isPublic).map((company) => {
+                        {companies.filter(c => !c.isPublic).sort((a, b) => (b.valuation || 0) - (a.valuation || 0)).map((company) => {
                           const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
 
                           const formatFunding = (amount: number | null) => {

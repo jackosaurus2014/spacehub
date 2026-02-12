@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const isPublic = searchParams.get('isPublic');
     const preIPO = searchParams.get('preIPO');
     const focusArea = searchParams.get('focusArea');
-    const limit = constrainPagination(parseInt(searchParams.get('limit') || '50'));
+    const limit = constrainPagination(parseInt(searchParams.get('limit') || '50'), 200);
     const offset = constrainOffset(parseInt(searchParams.get('offset') || '0'));
 
     const where: Record<string, unknown> = {};
