@@ -2142,9 +2142,11 @@ function SpaceportDirectoryPage() {
   const [estrackStationsData, setEstrackStationsData] = useState<EstrackStation[]>(ESTRACK_STATIONS);
   const [loading, setLoading] = useState(true);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
+      setError(null);
       try {
         const sections = [
           'active-spaceports', 'emerging-spaceports', 'traffic-data',
@@ -2172,6 +2174,7 @@ function SpaceportDirectoryPage() {
         setRefreshedAt(data[0].meta?.lastRefreshed || null);
       } catch (error) {
         console.error('Failed to load spaceport data:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -2227,6 +2230,12 @@ function SpaceportDirectoryPage() {
         />
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Hero Stats */}
         <ScrollReveal>

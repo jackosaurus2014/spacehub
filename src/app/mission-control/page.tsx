@@ -731,6 +731,7 @@ function MissionControlContent() {
 
   const [events, setEvents] = useState<SpaceEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<SpaceEventType | 'all'>(
     (searchParams.get('type') as SpaceEventType | 'all') || 'all'
   );
@@ -753,6 +754,7 @@ function MissionControlContent() {
 
   const fetchEvents = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       // Fetch events for next 5 years
       const startDate = new Date().toISOString();
@@ -773,6 +775,7 @@ function MissionControlContent() {
       setEvents(data.events || []);
     } catch (error) {
       console.error('Failed to fetch events:', error);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -812,6 +815,7 @@ function MissionControlContent() {
         if (dsnData.data) setDsnAntennas(dsnData.data);
       } catch (error) {
         console.error('Failed to fetch dynamic content:', error);
+        setError('Failed to load data.');
       } finally {
         setContentLoading(false);
       }
@@ -862,6 +866,12 @@ function MissionControlContent() {
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
         <PageHeader title="Mission Control" subtitle="Explore all upcoming space missions, launches, and events for the next 5 years" breadcrumbs={[{label: 'Home', href: '/'}, {label: 'Mission Control'}]} />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Filters */}
         <div className="card p-4 mb-8">

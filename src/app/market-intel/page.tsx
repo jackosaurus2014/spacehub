@@ -240,6 +240,7 @@ function MarketIntelContent() {
   const [etfData, setEtfData] = useState<Record<string, StockData>>({});
   const [etfFilter, setEtfFilter] = useState<'all' | 'pure_space' | 'aerospace_defense'>('all');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [initializing, setInitializing] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(searchParams.get('country') || '');
   const [selectedType, setSelectedType] = useState<'' | 'public' | 'private'>(
@@ -266,6 +267,7 @@ function MarketIntelContent() {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       params.set('limit', '200');
@@ -300,6 +302,7 @@ function MarketIntelContent() {
       fetchEtfData();
     } catch (error) {
       console.error('Failed to fetch market data:', error);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -346,6 +349,7 @@ function MarketIntelContent() {
       setDetailedStockData(detailedMap);
     } catch (error) {
       console.error('Failed to fetch stock data:', error);
+      setError('Failed to load data.');
     }
   };
 
@@ -366,6 +370,7 @@ function MarketIntelContent() {
       }
     } catch (error) {
       console.error('Failed to fetch ETF data:', error);
+      setError('Failed to load data.');
     }
   };
 
@@ -746,6 +751,13 @@ function MarketIntelContent() {
               </div>
             </div>
           </>
+        )}
+
+        {/* Error Banner */}
+        {error && !loading && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
         )}
 
         {/* Companies Table */}

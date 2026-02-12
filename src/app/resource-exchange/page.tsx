@@ -173,6 +173,7 @@ function ResourceExchangeContent() {
     launchCosts: { min: number; max: number; avg: number };
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [initializing, setInitializing] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<string>(
     searchParams.get('provider') || 'spacex-falcon9'
@@ -201,6 +202,7 @@ function ResourceExchangeContent() {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (selectedCategory) params.set('category', selectedCategory);
@@ -232,6 +234,7 @@ function ResourceExchangeContent() {
       }
     } catch (error) {
       console.error('Failed to fetch resources:', error);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -290,6 +293,12 @@ function ResourceExchangeContent() {
           icon="⚡"
           accentColor="cyan"
         />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {stats && stats.total > 0 && (
           <>

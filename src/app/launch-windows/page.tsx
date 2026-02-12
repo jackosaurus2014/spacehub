@@ -395,6 +395,7 @@ function LaunchWindowsContent() {
   const [data, setData] = useState<LaunchWindowData | null>(null);
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [destinationFilter, setDestinationFilter] = useState<string>(initialDestination);
 
   // ── URL sync helper ──
@@ -446,6 +447,7 @@ function LaunchWindowsContent() {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch('/api/launch-windows?limit=50');
       const result = await res.json();
@@ -455,6 +457,7 @@ function LaunchWindowsContent() {
       setData(result);
     } catch (err) {
       console.error('Failed to fetch launch window data:', err);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -555,6 +558,12 @@ function LaunchWindowsContent() {
             Back to Dashboard
           </Link>
         </AnimatedPageHeader>
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

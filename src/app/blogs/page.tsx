@@ -129,6 +129,7 @@ function BlogsContent() {
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
   const limit = 12;
+  const [error, setError] = useState<string | null>(null);
 
   // ── URL sync helper ──
   const updateUrl = useCallback(
@@ -153,6 +154,7 @@ function BlogsContent() {
 
   const fetchPosts = async () => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (selectedTopic) params.set('topic', selectedTopic);
@@ -171,6 +173,7 @@ function BlogsContent() {
       setTotal(data.total || 0);
     } catch (error) {
       console.error('Failed to fetch posts:', error);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -213,6 +216,12 @@ function BlogsContent() {
 
   return (
     <>
+      {error && (
+        <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+          <div className="text-red-400 text-sm font-medium">{error}</div>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="card p-4 mb-8">
         <div className="space-y-4">

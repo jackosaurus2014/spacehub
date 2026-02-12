@@ -258,10 +258,12 @@ function AsteroidWatchContent() {
   const [IMPACT_RISK_OBJECTS, setImpactRiskObjects] = useState<ImpactRiskObject[]>([]);
   const [FIREBALL_EVENTS, setFireballEvents] = useState<FireballEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
+      setError(null);
       try {
         const [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11] = await Promise.all([
           fetch('/api/content/asteroid-watch?section=close-approaches'),
@@ -293,6 +295,7 @@ function AsteroidWatchContent() {
         setRefreshedAt(d1.meta?.lastRefreshed || null);
       } catch (error) {
         console.error('Failed to load asteroid watch data:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -357,6 +360,12 @@ function AsteroidWatchContent() {
         />
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
+
+        {error && !loading && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Quick Stats Banner */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">

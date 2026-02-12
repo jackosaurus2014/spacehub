@@ -899,6 +899,7 @@ export default function SpaceStationTrackerPage() {
   const [activeTab, setActiveTab] = useState<TabId>('active');
   const [loading, setLoading] = useState(true);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Data state
   const [issPosition, setIssPosition] = useState<ISSPosition | null>(null);
@@ -912,6 +913,7 @@ export default function SpaceStationTrackerPage() {
 
   useEffect(() => {
     async function loadData() {
+      setError(null);
       try {
         const [stationsRes, commercialRes, crewRes, rotationsRes, milestonesRes, risksRes, issRes] = await Promise.all([
           fetch('/api/content/space-stations?section=active-stations'),
@@ -942,6 +944,7 @@ export default function SpaceStationTrackerPage() {
         setRefreshedAt(stationsData.meta?.lastRefreshed || null);
       } catch (error) {
         console.error('Failed to load space stations data:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -997,6 +1000,12 @@ export default function SpaceStationTrackerPage() {
         />
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* ISS Live Position */}
         {issPosition && (

@@ -26,6 +26,7 @@ function NewsContent() {
     initialCategory
   );
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
   const limit = 12;
@@ -48,6 +49,7 @@ function NewsContent() {
   const fetchNews = useCallback(async (currentOffset?: number) => {
     const off = currentOffset ?? offset;
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (selectedCategory) params.set('category', selectedCategory);
@@ -65,6 +67,7 @@ function NewsContent() {
       setTotal(data.total);
     } catch (error) {
       console.error('Failed to fetch news:', error);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -118,6 +121,13 @@ function NewsContent() {
         articlesViewed={articlesViewed}
         maxArticles={maxDailyArticles}
       />
+
+      {/* Error Banner */}
+      {error && !loading && (
+        <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+          <div className="text-red-400 text-sm font-medium">{error}</div>
+        </div>
+      )}
 
       {/* News Grid */}
       {loading && articles.length === 0 ? (

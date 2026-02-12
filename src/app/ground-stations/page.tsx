@@ -291,6 +291,7 @@ export default function GroundStationsPage() {
   const [activeTab, setActiveTab] = useState<TabId>('networks');
   const [modelFilter, setModelFilter] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
   const [GROUND_STATION_NETWORKS, setNetworks] = useState<GroundStationNetwork[]>([]);
   const [FREQUENCY_BANDS, setFrequencyBands] = useState<FrequencyBand[]>([]);
@@ -299,6 +300,7 @@ export default function GroundStationsPage() {
 
   useEffect(() => {
     async function fetchData() {
+      setError(null);
       try {
         const [networksRes, bandsRes, statsRes, factorsRes] = await Promise.all([
           fetch('/api/content/ground-stations?section=networks'),
@@ -329,6 +331,7 @@ export default function GroundStationsPage() {
         if (latestRefresh) setRefreshedAt(latestRefresh);
       } catch (error) {
         console.error('Failed to fetch ground station data:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -378,6 +381,12 @@ export default function GroundStationsPage() {
         </AnimatedPageHeader>
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Hero Stats */}
         <ScrollReveal>

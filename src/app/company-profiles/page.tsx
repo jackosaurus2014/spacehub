@@ -287,6 +287,7 @@ export default function CompanyProfilesPage() {
   const [companies, setCompanies] = useState<CompanyCard[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [sector, setSector] = useState('');
   const [tier, setTier] = useState('');
@@ -298,6 +299,7 @@ export default function CompanyProfilesPage() {
 
   const fetchCompanies = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (search) params.set('search', search);
@@ -316,6 +318,7 @@ export default function CompanyProfilesPage() {
       setStats(data.stats);
     } catch {
       console.error('Failed to load companies');
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -458,6 +461,13 @@ export default function CompanyProfilesPage() {
           </div>
         </div>
       </ScrollReveal>
+
+      {/* Error Banner */}
+      {error && !loading && (
+        <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+          <div className="text-red-400 text-sm font-medium">{error}</div>
+        </div>
+      )}
 
       {/* Companies Grid/List */}
       {loading ? (

@@ -566,6 +566,7 @@ function OrbitalManagementContent() {
 
   const [data, setData] = useState<OrbitalData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [initializing, setInitializing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
   const [orbitFilter, setOrbitFilter] = useState<OrbitType | ''>(initialOrbit);
@@ -624,6 +625,7 @@ function OrbitalManagementContent() {
 
   // ── Orbital slots data fetching ──
   const fetchData = async () => {
+    setError(null);
     try {
       const res = await fetch('/api/orbital-slots');
       const result = await res.json();
@@ -633,6 +635,7 @@ function OrbitalManagementContent() {
       }
     } catch (error) {
       console.error('Failed to fetch orbital data:', error);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -687,6 +690,7 @@ function OrbitalManagementContent() {
       setContracts(cData.contracts || []);
     } catch (err) {
       console.error('Failed to fetch contracts:', err);
+      setError('Failed to load data.');
     }
   };
 
@@ -774,6 +778,12 @@ function OrbitalManagementContent() {
           icon="🌍"
           accentColor="cyan"
         />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {loading && !isServicesTab ? (
           <SkeletonPage statCards={4} contentCards={3} />

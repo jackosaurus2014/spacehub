@@ -77,6 +77,7 @@ function SolarExplorationContent() {
   const [typeFilter, setTypeFilter] = useState<string | null>(initialType);
   const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
   const [exoplanetsLoading, setExoplanetsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch exoplanet data from DynamicContent system
   useEffect(() => {
@@ -88,6 +89,7 @@ function SolarExplorationContent() {
         setExoplanets(json.data || []);
       } catch (err) {
         console.error('Failed to fetch exoplanets:', err);
+        setError('Failed to load data.');
       } finally {
         setExoplanetsLoading(false);
       }
@@ -107,6 +109,7 @@ function SolarExplorationContent() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setError(null);
       try {
         // Initialize data first
         await fetch('/api/solar-exploration/init', { method: 'POST' });
@@ -132,6 +135,7 @@ function SolarExplorationContent() {
         }
       } catch (err) {
         console.error('Failed to fetch data:', err);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -178,6 +182,12 @@ function SolarExplorationContent() {
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
         <AnimatedPageHeader title="Solar System Exploration" subtitle="Interactive 3D visualization of planetary bodies with rover and lander locations" icon="🌌" accentColor="purple" />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Stats Overview */}
         {stats && (

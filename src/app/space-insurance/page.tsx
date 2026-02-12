@@ -428,6 +428,7 @@ function InsuranceContent() {
 
   const [data, setData] = useState<InsuranceData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [initializing, setInitializing] = useState(false);
   const [activeTab, setActiveTab] = useState<'market' | 'policies' | 'calculator'>(
     ['market', 'policies', 'calculator'].includes(initialTab) ? initialTab : 'market'
@@ -473,6 +474,7 @@ function InsuranceContent() {
   // ── Data fetching ──
 
   const fetchData = async () => {
+    setError(null);
     try {
       const res = await fetch('/api/space-insurance?limit=50');
       const result = await res.json();
@@ -486,6 +488,7 @@ function InsuranceContent() {
       }
     } catch (error) {
       console.error('Failed to fetch space insurance data:', error);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -542,6 +545,12 @@ function InsuranceContent() {
           icon="🛡️"
           accentColor="amber"
         />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {loading ? (
           <SkeletonPage statCards={4} contentCards={3} />

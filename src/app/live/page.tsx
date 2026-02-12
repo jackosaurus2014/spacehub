@@ -33,10 +33,12 @@ function LiveHubContent() {
   const [loading, setLoading] = useState(true);
   const [selectedStream, setSelectedStream] = useState<LiveStream | null>(null);
   const [countdown, setCountdown] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch streams data
   useEffect(() => {
     const fetchStreams = async () => {
+      setError(null);
       try {
         const res = await fetch('/api/live');
         const result = await res.json();
@@ -49,6 +51,7 @@ function LiveHubContent() {
         }
       } catch (error) {
         console.error('Failed to fetch live streams:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -114,6 +117,12 @@ function LiveHubContent() {
           subtitle="Watch rocket launches live with real-time telemetry and community chat"
           breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Live' }]}
         />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-8">

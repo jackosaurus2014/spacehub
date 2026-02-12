@@ -700,6 +700,7 @@ function BlueprintsContent() {
   const [loading, setLoading] = useState(true);
   const [selectedBlueprint, setSelectedBlueprint] = useState<Blueprint | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const activeTab = (searchParams.get('tab') as TabId) || 'all';
   const selectedManufacturer = searchParams.get('manufacturer') || '';
@@ -720,6 +721,7 @@ function BlueprintsContent() {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
+      setError(null);
       try {
         const tab = TABS.find(t => t.id === activeTab);
         const category = tab?.category;
@@ -742,6 +744,7 @@ function BlueprintsContent() {
         }
       } catch (error) {
         console.error('Failed to fetch blueprints:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -766,6 +769,12 @@ function BlueprintsContent() {
       </AnimatedPageHeader>
 
       {stats && <StatsCards stats={stats} />}
+
+      {error && (
+        <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+          <div className="text-red-400 text-sm font-medium">{error}</div>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="border-b border-slate-500/30 mb-6">

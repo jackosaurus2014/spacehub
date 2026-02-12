@@ -1551,6 +1551,7 @@ export default function PatentTrackerPage() {
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
   const [loading, setLoading] = useState(true);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // API-fetched data (overrides module-level consts when available)
   const [filingsData, setFilingsData] = useState<FilingsByYear[]>(FILINGS_BY_YEAR);
@@ -1562,6 +1563,7 @@ export default function PatentTrackerPage() {
 
   useEffect(() => {
     async function loadData() {
+      setError(null);
       try {
         const [r1, r2, r3, r4, r5, r6] = await Promise.all([
           fetch('/api/content/patents?section=filings-by-year'),
@@ -1583,6 +1585,7 @@ export default function PatentTrackerPage() {
         setRefreshedAt(d1.meta?.lastRefreshed || null);
       } catch (error) {
         console.error('Failed to load patent data:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -1617,6 +1620,12 @@ export default function PatentTrackerPage() {
         />
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="border-b border-slate-500/30 mb-8">

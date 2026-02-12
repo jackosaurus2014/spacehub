@@ -1505,10 +1505,12 @@ function CislunarEcosystemContent() {
   const initialTab = tabParam && validTabs.includes(tabParam) ? tabParam : 'artemis';
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
+      setError(null);
       try {
         const sections = [
           'artemis-missions',
@@ -1544,6 +1546,7 @@ function CislunarEcosystemContent() {
         }
       } catch (error) {
         console.error('Failed to fetch cislunar data:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -1578,6 +1581,12 @@ function CislunarEcosystemContent() {
           accentColor="cyan"
         />
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Hero Stats */}
         <HeroStats />

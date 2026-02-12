@@ -1828,6 +1828,7 @@ function ManufacturingAndImageryContent() {
   const topTab = (searchParams.get('tab') === 'imagery' ? 'imagery' : 'manufacturing') as TopTabId;
   const [mfgTab, setMfgTab] = useState<MfgTabId>('overview');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [mfgData, setMfgData] = useState<MfgDataContextType>({
     COMPANIES: FALLBACK_COMPANIES,
     ISS_EXPERIMENT_CATEGORIES: FALLBACK_ISS_EXPERIMENT_CATEGORIES,
@@ -1842,6 +1843,7 @@ function ManufacturingAndImageryContent() {
 
   useEffect(() => {
     async function fetchData() {
+      setError(null);
       try {
         const sections = [
           'companies', 'iss-experiments', 'products', 'market-projections',
@@ -1870,6 +1872,7 @@ function ManufacturingAndImageryContent() {
         setMfgData((prev) => ({ ...prev, ...newData, refreshedAt: latestRefresh }));
       } catch (error) {
         console.error('Failed to fetch manufacturing data:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -1905,6 +1908,12 @@ function ManufacturingAndImageryContent() {
         />
 
         <DataFreshness refreshedAt={mfgData.refreshedAt} source="DynamicContent" />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Top-Level Tab Navigation */}
         <div className="border-b border-slate-700/50 mb-8">

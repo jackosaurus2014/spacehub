@@ -1346,12 +1346,27 @@ function RegulatoryHubContent() {
   const [activeSection, setActiveSection] = useState<TopSection>(initialSection);
   const [activeSubTab, setActiveSubTab] = useState(initialTab);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
   const stats = getRegulatoryHubStats();
 
   // Fetch data from DynamicContent API
   useEffect(() => {
+    // Reset module-level data on mount to prevent stale data from previous navigations
+    TREATIES = [];
+    NATIONAL_LAWS = [];
+    ARTEMIS_PRINCIPLES = [];
+    ARTEMIS_SIGNATORIES = [];
+    LEGAL_PROCEEDINGS = [];
+    REGULATORY_BODIES = [];
+    FCC_FILINGS = [];
+    FAA_LICENSES = [];
+    ITU_FILINGS = [];
+    SEC_FILINGS = [];
+    FEDERAL_REGISTER_ENTRIES = [];
+    BID_PROTESTS = [];
+
     async function fetchData() {
       try {
         const sections = [
@@ -1394,14 +1409,31 @@ function RegulatoryHubContent() {
         if (firstMeta?.lastRefreshed) {
           setRefreshedAt(firstMeta.lastRefreshed);
         }
-      } catch (error) {
-        console.error('Failed to fetch compliance data:', error);
+      } catch (err) {
+        console.error('Failed to fetch compliance data:', err);
+        setError('Failed to load compliance data. Please try again.');
       } finally {
         setLoading(false);
       }
     }
 
     fetchData();
+
+    // Clean up module-level data on unmount
+    return () => {
+      TREATIES = [];
+      NATIONAL_LAWS = [];
+      ARTEMIS_PRINCIPLES = [];
+      ARTEMIS_SIGNATORIES = [];
+      LEGAL_PROCEEDINGS = [];
+      REGULATORY_BODIES = [];
+      FCC_FILINGS = [];
+      FAA_LICENSES = [];
+      ITU_FILINGS = [];
+      SEC_FILINGS = [];
+      FEDERAL_REGISTER_ENTRIES = [];
+      BID_PROTESTS = [];
+    };
   }, []);
 
   // Sync tab to URL
@@ -1473,6 +1505,12 @@ function RegulatoryHubContent() {
 
   return (
     <>
+      {error && (
+        <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+          <div className="text-red-400 text-sm font-medium mb-2">{error}</div>
+          <button onClick={() => { setError(null); setLoading(true); window.location.reload(); }} className="text-xs text-red-300 hover:text-red-200 underline transition-colors">Try Again</button>
+        </div>
+      )}
       {/* Stats Overview */}
       <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">

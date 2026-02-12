@@ -486,6 +486,9 @@ function SpaceTalentHubContent() {
   const [webinarFilter, setWebinarFilter] = useState<'all' | 'live' | 'upcoming' | 'past'>('all');
   const [topicFilter, setTopicFilter] = useState<string>('');
 
+  // Error state
+  const [error, setError] = useState<string | null>(null);
+
   // ════════════════════════════════════════
   // WORKFORCE ANALYTICS STATE (from workforce)
   // ════════════════════════════════════════
@@ -532,6 +535,7 @@ function SpaceTalentHubContent() {
 
   const fetchTalent = async () => {
     setTalentLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (expertiseFilter) params.set('expertise', expertiseFilter);
@@ -545,6 +549,7 @@ function SpaceTalentHubContent() {
       if (data.stats) setTalentStats(data.stats);
     } catch (error) {
       console.error('Failed to fetch talent:', error);
+      setError('Failed to load data.');
     } finally {
       setTalentLoading(false);
     }
@@ -552,6 +557,7 @@ function SpaceTalentHubContent() {
 
   const fetchWebinars = async () => {
     setWebinarLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (topicFilter) params.set('topic', topicFilter);
@@ -569,6 +575,7 @@ function SpaceTalentHubContent() {
       if (data.stats) setWebinarStats(data.stats);
     } catch (error) {
       console.error('Failed to fetch webinars:', error);
+      setError('Failed to load data.');
     } finally {
       setWebinarLoading(false);
     }
@@ -594,6 +601,7 @@ function SpaceTalentHubContent() {
 
   const fetchJobs = useCallback(async (offset: number, append: boolean = false) => {
     setJobsLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (categoryFilter) params.set('category', categoryFilter);
@@ -624,6 +632,7 @@ function SpaceTalentHubContent() {
       setSalariesLoading(false);
     } catch (error) {
       console.error('Failed to fetch workforce data:', error);
+      setError('Failed to load data.');
     } finally {
       setJobsLoading(false);
     }
@@ -710,6 +719,12 @@ function SpaceTalentHubContent() {
 
   return (
     <>
+      {error && (
+        <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+          <div className="text-red-400 text-sm font-medium">{error}</div>
+        </div>
+      )}
+
       {/* ──────────────── TOP-LEVEL TAB NAVIGATION ──────────────── */}
       <div className="flex border-b border-slate-700/50 mb-8">
         <button

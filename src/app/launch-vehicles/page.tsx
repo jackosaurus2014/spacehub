@@ -941,10 +941,12 @@ export default function LaunchVehiclesPage() {
   // API-fetched data
   const [vehicles, setVehicles] = useState<LaunchVehicle[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
+      setError(null);
       try {
         const res = await fetch('/api/content/launch-vehicles?section=vehicles');
         const data = await res.json();
@@ -956,6 +958,7 @@ export default function LaunchVehiclesPage() {
         setRefreshedAt(data.meta?.lastRefreshed || null);
       } catch (error) {
         console.error('Failed to load launch vehicles data:', error);
+        setError('Failed to load data.');
         setVehicles(VEHICLES);
       } finally {
         setLoading(false);
@@ -1092,6 +1095,12 @@ export default function LaunchVehiclesPage() {
         />
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Quick Stats Banner */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

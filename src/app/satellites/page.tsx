@@ -122,6 +122,7 @@ function SatelliteTrackerContent() {
 
   const [data, setData] = useState<SatelliteData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
   const [orbitFilter, setOrbitFilter] = useState<OrbitType | ''>(initialOrbit);
   const [statusFilter, setStatusFilter] = useState<SatelliteStatus | ''>(initialStatus);
@@ -165,6 +166,7 @@ function SatelliteTrackerContent() {
   };
 
   const fetchData = async () => {
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (orbitFilter) params.set('orbitType', orbitFilter);
@@ -180,6 +182,7 @@ function SatelliteTrackerContent() {
       }
     } catch (error) {
       console.error('Failed to fetch satellite data:', error);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -202,6 +205,12 @@ function SatelliteTrackerContent() {
           icon="🛰️"
           accentColor="cyan"
         />
+
+        {error && !loading && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {loading ? (
           <div className="flex justify-center py-20">

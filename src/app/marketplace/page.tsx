@@ -25,9 +25,11 @@ export default function MarketplacePage() {
   const [featuredListings, setFeaturedListings] = useState<any[]>([]);
   const [recentRFQs, setRecentRFQs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
+      setError(null);
       try {
         const [statsRes, listingsRes, rfqRes] = await Promise.all([
           fetch('/api/marketplace/stats'),
@@ -46,6 +48,7 @@ export default function MarketplacePage() {
         }
       } catch (err) {
         console.error('Failed to load marketplace data', err);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -69,6 +72,12 @@ export default function MarketplacePage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
+
         {/* Hero */}
         <div className="text-center space-y-4">
           <AnimatedPageHeader

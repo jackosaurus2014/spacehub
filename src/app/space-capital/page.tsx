@@ -729,6 +729,7 @@ function SpaceCapitalInner() {
   const [startups, setStartups] = useState<StartupCompany[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleTabChange = (tab: TabId) => {
     setActiveTab(tab);
@@ -738,6 +739,7 @@ function SpaceCapitalInner() {
 
   useEffect(() => {
     async function fetchData() {
+      setError(null);
       try {
         const [investorsRes, fundingRes, startupsRes] = await Promise.all([
           fetch('/api/content/space-capital?section=investors'),
@@ -763,6 +765,7 @@ function SpaceCapitalInner() {
         if (timestamps.length > 0) setRefreshedAt(timestamps.sort().reverse()[0]);
       } catch (error) {
         console.error('Failed to fetch space capital data:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -796,6 +799,12 @@ function SpaceCapitalInner() {
           accentColor="emerald"
         />
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="border-b border-slate-700/50 mb-8">

@@ -58,6 +58,7 @@ function SupplyChainContent() {
   const [relationships, setRelationships] = useState<SupplyRelationship[]>([]);
   const [shortages, setShortages] = useState<SupplyShortage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
 
   // Filters
@@ -89,27 +90,32 @@ function SupplyChainContent() {
   }, [activeTab, tierFilter, countryFilter, severityFilter]);
 
   const fetchStats = async () => {
+    setError(null);
     try {
       const res = await fetch('/api/supply-chain?type=stats');
       const data = await res.json();
       setStats(data);
     } catch (error) {
       console.error('Failed to fetch stats:', error);
+      setError('Failed to load data.');
     }
   };
 
   const fetchRelationships = async () => {
+    setError(null);
     try {
       const res = await fetch('/api/supply-chain?type=relationships');
       const data = await res.json();
       setRelationships(data.relationships || []);
     } catch (error) {
       console.error('Failed to fetch relationships:', error);
+      setError('Failed to load data.');
     }
   };
 
   const fetchTabData = async () => {
     setLoading(true);
+    setError(null);
     try {
       switch (activeTab) {
         case 'overview':
@@ -144,6 +150,7 @@ function SupplyChainContent() {
       }
     } catch (error) {
       console.error('Failed to fetch data:', error);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -324,6 +331,13 @@ function SupplyChainContent() {
           </div>
         </div>
       </div>
+
+      {/* Error Banner */}
+      {error && !loading && (
+        <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+          <div className="text-red-400 text-sm font-medium">{error}</div>
+        </div>
+      )}
 
       {/* Content */}
       {loading ? (

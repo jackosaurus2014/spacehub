@@ -656,6 +656,7 @@ export default function SpaceDefensePage() {
   const [liveProcurement, setLiveProcurement] = useState<LiveProcurement[]>([]);
   const [defenseNews, setDefenseNews] = useState<DefenseNewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<TabId>('forces');
@@ -664,6 +665,7 @@ export default function SpaceDefensePage() {
 
   useEffect(() => {
     async function fetchData() {
+      setError(null);
       try {
         const [forcesRes, programsRes, contractsRes, eventsRes, alliancesRes, procurementRes, newsRes] = await Promise.all([
           fetch('/api/content/space-defense?section=space-forces'),
@@ -706,6 +708,7 @@ export default function SpaceDefensePage() {
         }
       } catch (error) {
         console.error('Failed to fetch space defense data:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -751,6 +754,12 @@ export default function SpaceDefensePage() {
           accentColor="red"
         />
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
+
+        {error && !loading && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Hero Stats */}
         <HeroStats

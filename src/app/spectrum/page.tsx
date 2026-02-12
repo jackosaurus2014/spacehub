@@ -666,6 +666,9 @@ function SpectrumContent() {
   // Auction status filter
   const [auctionStatusFilter, setAuctionStatusFilter] = useState<string>('');
 
+  // Error state
+  const [error, setError] = useState<string | null>(null);
+
   // ── URL sync helper ──
 
   const updateUrl = useCallback(
@@ -730,6 +733,7 @@ function SpectrumContent() {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch('/api/spectrum');
       const result = await res.json();
@@ -739,6 +743,7 @@ function SpectrumContent() {
       setData(result);
     } catch (err) {
       console.error('Failed to fetch spectrum data:', err);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -852,6 +857,12 @@ function SpectrumContent() {
             Back to Dashboard
           </Link>
         </AnimatedPageHeader>
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Quick Stats -- show allocation stats or auction stats based on active section */}
         <ScrollReveal>

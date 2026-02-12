@@ -748,6 +748,7 @@ function SpaceWeatherTab() {
   const [data, setData] = useState<SolarFlareData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSubTab, setSelectedSubTab] = useState<'overview' | 'forecast' | 'history'>('overview');
+  const [error, setError] = useState<string | null>(null);
 
   // Dynamic content state
   const [earthEvents, setEarthEvents] = useState<EarthEvent[]>([]);
@@ -756,6 +757,7 @@ function SpaceWeatherTab() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setError(null);
       try {
         await fetch('/api/solar-flares/init', { method: 'POST' });
         const res = await fetch('/api/solar-flares');
@@ -763,6 +765,7 @@ function SpaceWeatherTab() {
         setData(result);
       } catch (err) {
         console.error('Failed to fetch solar flare data:', err);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -790,6 +793,7 @@ function SpaceWeatherTab() {
         if (imageryData.data) setSolarImagery(imageryData.data);
       } catch (error) {
         console.error('Failed to fetch dynamic content:', error);
+        setError('Failed to load data.');
       } finally {
         setContentLoading(false);
       }
@@ -820,6 +824,12 @@ function SpaceWeatherTab() {
 
   return (
     <div className="space-y-8">
+      {error && (
+        <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+          <div className="text-red-400 text-sm font-medium">{error}</div>
+        </div>
+      )}
+
       {/* Current Status Banner */}
       {todayForecast && (
         <div className={`rounded-xl p-6 border-2 ${
@@ -1367,6 +1377,7 @@ function DebrisTrackingTab() {
   const [activeSubTab, setActiveSubTab] = useState<'overview' | 'conjunctions' | 'objects'>('overview');
   const [riskFilter, setRiskFilter] = useState<ConjunctionRisk | ''>('');
   const [objectTypeFilter, setObjectTypeFilter] = useState<DebrisObjectType | ''>('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubTabChange = (tab: 'overview' | 'conjunctions' | 'objects') => {
     setActiveSubTab(tab);
@@ -1375,6 +1386,7 @@ function DebrisTrackingTab() {
   };
 
   const fetchData = async () => {
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (riskFilter) params.set('riskLevel', riskFilter);
@@ -1388,6 +1400,7 @@ function DebrisTrackingTab() {
       }
     } catch (error) {
       console.error('Failed to fetch debris monitor data:', error);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -1401,6 +1414,7 @@ function DebrisTrackingTab() {
       await fetchData();
     } catch (error) {
       console.error('Failed to initialize debris data:', error);
+      setError('Failed to load data.');
     } finally {
       setInitializing(false);
     }
@@ -1469,6 +1483,12 @@ function DebrisTrackingTab() {
 
   return (
     <div className="space-y-8">
+      {error && (
+        <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+          <div className="text-red-400 text-sm font-medium">{error}</div>
+        </div>
+      )}
+
       {/* Quick Stats Banner */}
       <ScrollReveal>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -1868,6 +1888,7 @@ function OperationsTab() {
   const [alertLevelFilter, setAlertLevelFilter] = useState<AlertLevel | ''>('');
   const [gradeFilter, setGradeFilter] = useState<ScorecardGrade | ''>('');
   const [severityFilter, setSeverityFilter] = useState<SpectrumSeverity | ''>('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubTabChange = (tab: OpsSubTab) => {
     setActiveSubTab(tab);
@@ -1877,6 +1898,7 @@ function OperationsTab() {
   };
 
   const fetchData = async () => {
+    setError(null);
     try {
       const overviewRes = await fetch('/api/operational-awareness');
       const overviewData = await overviewRes.json();
@@ -1903,6 +1925,7 @@ function OperationsTab() {
 
     } catch (error) {
       console.error('Failed to fetch operational awareness data:', error);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -1916,6 +1939,7 @@ function OperationsTab() {
       await fetchData();
     } catch (error) {
       console.error('Failed to initialize data:', error);
+      setError('Failed to load data.');
     } finally {
       setInitializing(false);
     }
@@ -1977,6 +2001,12 @@ function OperationsTab() {
 
   return (
     <div className="space-y-8">
+      {error && (
+        <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+          <div className="text-red-400 text-sm font-medium">{error}</div>
+        </div>
+      )}
+
       {/* Status Banner */}
       {overview && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

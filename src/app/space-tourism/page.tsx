@@ -204,6 +204,7 @@ function SpaceTourismContent() {
   const [selectedForCompare, setSelectedForCompare] = useState<string[]>([]);
   const [showComparison, setShowComparison] = useState(false);
   const [detailOffering, setDetailOffering] = useState<SpaceTourismOffering | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Filters from URL
   const providerFilter = searchParams.get('provider') || '';
@@ -260,6 +261,7 @@ function SpaceTourismContent() {
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
+      setError(null);
       try {
         const params = new URLSearchParams();
         if (providerFilter) params.set('provider', providerFilter);
@@ -277,6 +279,7 @@ function SpaceTourismContent() {
         }
       } catch (error) {
         console.error('Failed to fetch space tourism data:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -297,6 +300,12 @@ function SpaceTourismContent() {
           icon="🎫"
           accentColor="purple"
         />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {loading ? (
           <div className="flex justify-center py-20">

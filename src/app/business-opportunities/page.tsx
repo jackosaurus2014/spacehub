@@ -302,6 +302,7 @@ function BusinessOpportunitiesContent() {
     byCategory: Record<string, number>;
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [initializing, setInitializing] = useState(false);
   const [selectedType, setSelectedType] = useState<OpportunityType | ''>(
     (searchParams.get('type') as OpportunityType | '') || ''
@@ -330,6 +331,7 @@ function BusinessOpportunitiesContent() {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (selectedType) params.set('type', selectedType);
@@ -353,6 +355,7 @@ function BusinessOpportunitiesContent() {
       }
     } catch (error) {
       console.error('Failed to fetch opportunities:', error);
+      setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
@@ -384,6 +387,12 @@ function BusinessOpportunitiesContent() {
         <div className="mb-8">
           <ContractTicker />
         </div>
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="flex gap-1 mb-6 bg-slate-800/50 p-1 rounded-lg w-fit">

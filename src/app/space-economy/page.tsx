@@ -840,6 +840,7 @@ function WorkforceTrendsTab({ workforceStats, launchCostTrends, salaryBenchmarks
 export default function SpaceEconomyPage() {
   const [activeTab, setActiveTab] = useState<TabId>('market');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
   // Data state for all sections
@@ -859,6 +860,7 @@ export default function SpaceEconomyPage() {
     }
 
     async function fetchAllData() {
+      setError(null);
       try {
         const [
           segmentsRes,
@@ -897,6 +899,7 @@ export default function SpaceEconomyPage() {
         setRefreshedAt(freshest || null);
       } catch (err) {
         console.error('Error fetching space economy data:', err);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -934,6 +937,12 @@ export default function SpaceEconomyPage() {
           accentColor="emerald"
         />
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
+
+        {error && !loading && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="border-b border-slate-700/50 mb-8">

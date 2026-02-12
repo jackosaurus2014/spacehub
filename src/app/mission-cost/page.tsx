@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -620,11 +620,13 @@ function MissionCostContent() {
   }, [payloadMass, orbitType, payloadType, payloadValue, includeInsurance, includeRegulatory, updateUrl]);
 
   // Auto-calculate on mount if we have URL params
+  const hasAutoCalculated = useRef(false);
   useEffect(() => {
-    if (searchParams.get('mass')) {
+    if (!hasAutoCalculated.current && searchParams.get('mass')) {
+      hasAutoCalculated.current = true;
       calculateCost();
     }
-  }, []);
+  }, [calculateCost, searchParams]);
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);

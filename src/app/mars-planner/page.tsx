@@ -480,10 +480,12 @@ export default function MarsPlannerPage() {
   const [COMMERCIAL_OPPORTUNITIES, setCommercialOpportunities] = useState<CommercialOpportunity[]>([]);
   const [ROVER_PHOTOS, setRoverPhotos] = useState<RoverPhoto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
+      setError(null);
       try {
         const [r1, r2, r3, r4, r5, r6, r7, r8] = await Promise.all([
           fetch('/api/content/mars-planner?section=active-missions'),
@@ -509,6 +511,7 @@ export default function MarsPlannerPage() {
         setRefreshedAt(d1.meta?.lastRefreshed || null);
       } catch (error) {
         console.error('Failed to load mars planner data:', error);
+        setError('Failed to load data.');
       } finally {
         setLoading(false);
       }
@@ -548,6 +551,12 @@ export default function MarsPlannerPage() {
         />
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
+
+        {error && (
+          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+            <div className="text-red-400 text-sm font-medium">{error}</div>
+          </div>
+        )}
 
         {/* Hero Stats */}
         <HeroStats activeMissions={ACTIVE_MISSIONS} upcomingMissions={UPCOMING_MISSIONS} />
