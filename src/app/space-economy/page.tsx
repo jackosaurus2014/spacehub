@@ -96,14 +96,81 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
 ];
 
 // ────────────────────────────────────────
-// (Data fetched from /api/content/space-economy)
+// Fallback Data (used when DynamicContent is empty)
 // ────────────────────────────────────────
 
-// (Investment data fetched from API)
+const LAUNCH_COST_FALLBACK: LaunchCostDataPoint[] = [
+  // SpaceX
+  { vehicle: 'Starship (projected)', operator: 'SpaceX', year: 2025, costPerKgLEO: 100, payload: 150000, reusable: true },
+  { vehicle: 'Falcon Heavy', operator: 'SpaceX', year: 2018, costPerKgLEO: 1500, payload: 63800, reusable: true },
+  { vehicle: 'Falcon 9 Block 5', operator: 'SpaceX', year: 2018, costPerKgLEO: 2720, payload: 22800, reusable: true },
+  // Blue Origin
+  { vehicle: 'New Glenn', operator: 'Blue Origin', year: 2025, costPerKgLEO: 1530, payload: 45000, reusable: true },
+  // JAXA
+  { vehicle: 'H3', operator: 'JAXA / MHI', year: 2024, costPerKgLEO: 2300, payload: 22000, reusable: false },
+  // China
+  { vehicle: 'Long March 3B/E', operator: 'CASC (China)', year: 1996, costPerKgLEO: 2540, payload: 11500, reusable: false },
+  { vehicle: 'Long March 8A', operator: 'CASC (China)', year: 2025, costPerKgLEO: 2750, payload: 9800, reusable: false },
+  { vehicle: 'Long March 5', operator: 'CASC (China)', year: 2016, costPerKgLEO: 3000, payload: 25000, reusable: false },
+  // Russia
+  { vehicle: 'Proton-M', operator: 'Roscosmos', year: 2001, costPerKgLEO: 2900, payload: 23000, reusable: false },
+  // Relativity Space
+  { vehicle: 'Terran R (dev)', operator: 'Relativity Space', year: 2026, costPerKgLEO: 3000, payload: 33500, reusable: true },
+  // ULA
+  { vehicle: 'Vulcan Centaur', operator: 'ULA', year: 2024, costPerKgLEO: 4400, payload: 27200, reusable: false },
+  // Rocket Lab
+  { vehicle: 'Neutron (dev)', operator: 'Rocket Lab', year: 2026, costPerKgLEO: 4100, payload: 13000, reusable: true },
+  // Arianespace
+  { vehicle: 'Ariane 6 (A64)', operator: 'Arianespace', year: 2024, costPerKgLEO: 4600, payload: 21600, reusable: false },
+  // Russia
+  { vehicle: 'Angara A5', operator: 'Roscosmos', year: 2014, costPerKgLEO: 3900, payload: 24500, reusable: false },
+  { vehicle: 'Soyuz-2', operator: 'Roscosmos', year: 2004, costPerKgLEO: 5300, payload: 8200, reusable: false },
+  // ISRO
+  { vehicle: 'LVM3 (GSLV Mk III)', operator: 'ISRO', year: 2017, costPerKgLEO: 6900, payload: 10000, reusable: false },
+  { vehicle: 'PSLV', operator: 'ISRO', year: 1993, costPerKgLEO: 8100, payload: 3800, reusable: false },
+  { vehicle: 'SSLV', operator: 'ISRO', year: 2022, costPerKgLEO: 8200, payload: 500, reusable: false },
+  // ULA (retiring)
+  { vehicle: 'Atlas V', operator: 'ULA', year: 2002, costPerKgLEO: 8600, payload: 18850, reusable: false },
+  // China
+  { vehicle: 'Long March 2D', operator: 'CASC (China)', year: 1992, costPerKgLEO: 8570, payload: 3500, reusable: false },
+  // Arianespace
+  { vehicle: 'Ariane 6 (A62)', operator: 'Arianespace', year: 2024, costPerKgLEO: 9700, payload: 10300, reusable: false },
+  // China commercial
+  { vehicle: 'Kuaizhou-1A', operator: 'ExPace (China)', year: 2017, costPerKgLEO: 10000, payload: 300, reusable: false },
+  // Firefly
+  { vehicle: 'Alpha', operator: 'Firefly Aerospace', year: 2023, costPerKgLEO: 14560, payload: 1030, reusable: false },
+  { vehicle: 'Hyperbola-1', operator: 'iSpace (China)', year: 2019, costPerKgLEO: 16700, payload: 300, reusable: false },
+  // Arianespace small
+  { vehicle: 'Vega C', operator: 'Arianespace', year: 2022, costPerKgLEO: 20000, payload: 2300, reusable: false },
+  // Rocket Lab
+  { vehicle: 'Electron', operator: 'Rocket Lab', year: 2017, costPerKgLEO: 25000, payload: 300, reusable: false },
+  // Northrop Grumman
+  { vehicle: 'Minotaur IV', operator: 'Northrop Grumman', year: 2010, costPerKgLEO: 40000, payload: 1735, reusable: false },
+  // Historical
+  { vehicle: 'Space Shuttle', operator: 'NASA (retired)', year: 1981, costPerKgLEO: 54500, payload: 27500, reusable: true },
+  { vehicle: 'Pegasus XL', operator: 'Northrop Grumman', year: 1994, costPerKgLEO: 126300, payload: 443, reusable: false },
+];
 
-// (Government budget data fetched from API)
-
-// (Workforce & trends data fetched from API)
+const SALARY_BENCHMARK_FALLBACK: SalaryBenchmark[] = [
+  { role: 'Space AI/ML Engineer', minSalary: 110000, maxSalary: 250000, median: 151000, growth: 8.5 },
+  { role: 'Space Software Engineer', minSalary: 95000, maxSalary: 237000, median: 132000, growth: 5.5 },
+  { role: 'Launch Operations Engineer', minSalary: 90000, maxSalary: 195000, median: 136000, growth: 5.0 },
+  { role: 'Propulsion Engineer', minSalary: 92000, maxSalary: 200000, median: 134000, growth: 4.5 },
+  { role: 'Avionics Engineer', minSalary: 95000, maxSalary: 210000, median: 139000, growth: 4.0 },
+  { role: 'Spacecraft Integration Engineer', minSalary: 90000, maxSalary: 200000, median: 132000, growth: 4.5 },
+  { role: 'GNC Engineer', minSalary: 90000, maxSalary: 195000, median: 125000, growth: 5.0 },
+  { role: 'Orbital Mechanics Engineer', minSalary: 88000, maxSalary: 180000, median: 130000, growth: 4.5 },
+  { role: 'Program/Project Manager', minSalary: 80000, maxSalary: 283000, median: 129000, growth: 4.0 },
+  { role: 'Satellite Ground Systems Engineer', minSalary: 85000, maxSalary: 195000, median: 127000, growth: 4.5 },
+  { role: 'Systems Engineer', minSalary: 90000, maxSalary: 200000, median: 124000, growth: 4.0 },
+  { role: 'RF/Communications Engineer', minSalary: 87000, maxSalary: 175000, median: 116000, growth: 4.5 },
+  { role: 'Thermal Engineer', minSalary: 85000, maxSalary: 190000, median: 112000, growth: 3.5 },
+  { role: 'Structures/Mechanical Engineer', minSalary: 81000, maxSalary: 165000, median: 103000, growth: 3.2 },
+  { role: 'Space Policy/Regulatory Specialist', minSalary: 70000, maxSalary: 165000, median: 96000, growth: 6.0 },
+  { role: 'Test Engineer', minSalary: 70000, maxSalary: 145000, median: 92000, growth: 3.5 },
+  { role: 'Manufacturing Engineer', minSalary: 65000, maxSalary: 130000, median: 80000, growth: 3.0 },
+  { role: 'Mission Operations Specialist', minSalary: 59000, maxSalary: 128000, median: 77000, growth: 4.0 },
+];
 
 // ────────────────────────────────────────
 // Helper Functions
@@ -611,7 +678,7 @@ function WorkforceTrendsTab({ workforceStats, launchCostTrends, salaryBenchmarks
               {[...salaryBenchmarks].sort((a, b) => b.median - a.median).map((role) => {
                 const rangeMin = role.minSalary;
                 const rangeMax = role.maxSalary;
-                const maxPossible = 220000;
+                const maxPossible = 300000;
                 const leftPct = (rangeMin / maxPossible) * 100;
                 const widthPct = ((rangeMax - rangeMin) / maxPossible) * 100;
                 const medianPct = ((role.median - rangeMin) / (rangeMax - rangeMin)) * 100;
@@ -781,7 +848,8 @@ export default function SpaceEconomyPage() {
   const [annualInvestment, setAnnualInvestment] = useState<AnnualInvestment[]>([]);
   const [governmentBudgets, setGovernmentBudgets] = useState<GovernmentBudget[]>([]);
   const [workforceStats, setWorkforceStats] = useState<WorkforceStat[]>([]);
-  const [launchCostTrends, setLaunchCostTrends] = useState<LaunchCostDataPoint[]>([]);
+  const [launchCostTrends, setLaunchCostTrends] = useState<LaunchCostDataPoint[]>(LAUNCH_COST_FALLBACK);
+  const [salaryBenchmarks, setSalaryBenchmarks] = useState<SalaryBenchmark[]>(SALARY_BENCHMARK_FALLBACK);
 
   useEffect(() => {
     async function fetchSection(section: string) {
@@ -799,6 +867,7 @@ export default function SpaceEconomyPage() {
           budgetsRes,
           workforceRes,
           launchRes,
+          salaryRes,
         ] = await Promise.all([
           fetchSection('market-segments'),
           fetchSection('quarterly-vc'),
@@ -806,6 +875,7 @@ export default function SpaceEconomyPage() {
           fetchSection('government-budgets'),
           fetchSection('workforce-stats'),
           fetchSection('launch-cost-trends'),
+          fetchSection('salary-benchmarks'),
         ]);
 
         setMarketSegments(segmentsRes.data || []);
@@ -813,10 +883,12 @@ export default function SpaceEconomyPage() {
         setAnnualInvestment(investmentRes.data || []);
         setGovernmentBudgets(budgetsRes.data || []);
         setWorkforceStats(workforceRes.data || []);
-        setLaunchCostTrends(launchRes.data || []);
+        // Use DynamicContent if available, otherwise keep fallback data
+        if (launchRes.data && launchRes.data.length > 0) setLaunchCostTrends(launchRes.data);
+        if (salaryRes.data && salaryRes.data.length > 0) setSalaryBenchmarks(salaryRes.data);
 
         // Use the freshest lastRefreshed from any section
-        const allMetas = [segmentsRes, vcRes, investmentRes, budgetsRes, workforceRes, launchRes];
+        const allMetas = [segmentsRes, vcRes, investmentRes, budgetsRes, workforceRes, launchRes, salaryRes];
         const freshest = allMetas
           .map(r => r.meta?.lastRefreshed)
           .filter(Boolean)
@@ -887,7 +959,7 @@ export default function SpaceEconomyPage() {
         {activeTab === 'market' && <MarketOverviewTab marketSegments={marketSegments} />}
         {activeTab === 'investment' && <InvestmentTab quarterlyVC={quarterlyVC} annualInvestment={annualInvestment} />}
         {activeTab === 'government' && <GovernmentBudgetsTab governmentBudgets={governmentBudgets} />}
-        {activeTab === 'workforce' && <WorkforceTrendsTab workforceStats={workforceStats} launchCostTrends={launchCostTrends} />}
+        {activeTab === 'workforce' && <WorkforceTrendsTab workforceStats={workforceStats} launchCostTrends={launchCostTrends} salaryBenchmarks={salaryBenchmarks} />}
 
         {/* Data Sources Footer */}
         <ScrollReveal>

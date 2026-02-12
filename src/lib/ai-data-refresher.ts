@@ -38,7 +38,7 @@ interface AIRefreshResponse {
 // Module-specific keyword configs for fetching relevant news
 const MODULE_NEWS_KEYWORDS: Record<string, string[]> = {
   'space-stations': ['ISS', 'space station', 'Tiangong', 'crew', 'astronaut', 'cosmonaut', 'Axiom', 'Orbital Reef', 'Vast Haven', 'Starlab'],
-  'space-economy': ['space economy', 'space market', 'venture capital', 'space investment', 'space IPO', 'space funding', 'space revenue', 'satellite market'],
+  'space-economy': ['space economy', 'space market', 'venture capital', 'space investment', 'space IPO', 'space funding', 'space revenue', 'satellite market', 'launch cost', 'space salary', 'space workforce', 'launch price'],
   'startups': ['startup', 'funding round', 'Series A', 'Series B', 'seed round', 'space venture', 'space company', 'acquisition'],
   'space-defense': ['Space Force', 'space defense', 'SDA', 'military space', 'space command', 'NRO', 'defense contract', 'USSF'],
   'cislunar': ['Artemis', 'lunar', 'moon mission', 'Gateway', 'CLPS', 'cislunar', 'Lunar Pathfinder', 'SLS', 'Orion'],
@@ -60,13 +60,35 @@ const MODULE_PROMPTS: Record<string, string> = {
 - Commercial stations: Axiom, Vast Haven-1, Orbital Reef, Starlab — latest development status, timeline updates
 - CLD (Commercial LEO Destinations) milestones: any updates to NASA awards or timelines`,
 
-  'space-economy': `Verify and update space economy data:
+  'space-economy': `Verify and update space economy data across these sections:
+
+MARKET SEGMENTS (section: market-segments):
 - Global space economy market size (latest estimate)
-- Segment revenue breakdown (satellite services, manufacturing, launch, ground equipment)
+- Segment revenue breakdown: satellite services, manufacturing, launch, ground equipment
+- Growth rates per segment
+
+QUARTERLY VC (section: quarterly-vc):
 - Recent VC/funding deals in space sector (last quarter)
-- Government space budgets (US, China, ESA, India, Japan)
-- Space workforce statistics
-- Key space stock performance trends (don't include specific prices, just trends)`,
+- Deal counts and total invested per quarter
+
+ANNUAL INVESTMENT (section: annual-investment):
+- Annual VC, debt financing, public offerings totals
+
+GOVERNMENT BUDGETS (section: government-budgets):
+- Space budgets for US (NASA, Space Force, NRO), China, ESA, India, Japan, etc.
+
+WORKFORCE STATS (section: workforce-stats):
+- Space industry employment, hiring trends, unfilled positions, salary growth
+
+LAUNCH COST TRENDS (section: launch-cost-trends):
+- Cost per kg to LEO for ALL major launch vehicles worldwide
+- Each entry needs: vehicle, operator, year, costPerKgLEO (number), payload (kg to LEO), reusable (boolean)
+- Include SpaceX (Falcon 9, Falcon Heavy, Starship), Rocket Lab (Electron, Neutron), ULA (Vulcan, Atlas V), Arianespace (Ariane 6, Vega C), Blue Origin (New Glenn), ISRO (PSLV, LVM3), JAXA (H3), CASC (Long March 2D/3B/5/8), Roscosmos (Soyuz-2, Proton-M, Angara A5), Firefly, Relativity, Northrop Grumman
+
+SALARY BENCHMARKS (section: salary-benchmarks):
+- US space industry salary data by role
+- Each entry needs: role (string), minSalary, maxSalary, median (all numbers in USD), growth (YoY percentage)
+- Include: Software, GNC, Propulsion, Systems, RF/Comms, Avionics, Thermal, Structures, Mission Ops, AI/ML, Manufacturing, Test, Program Manager, Ground Systems, Integration, Policy/Regulatory, Launch Ops, Orbital Mechanics`,
 
   'startups': `Verify and update space startup data:
 - Recently funded space startups (funding rounds, amounts, investors)
