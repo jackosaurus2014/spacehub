@@ -530,7 +530,7 @@ function SpaceMiningContent() {
         const res = await fetch('/api/space-mining/stats');
         if (!res.ok) throw new Error('Failed to fetch stats');
         const data = await res.json();
-        setStats(data);
+        setStats(data.stats || data);
       } catch (err) {
         console.error('Failed to fetch stats:', err);
       }

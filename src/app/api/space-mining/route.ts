@@ -17,9 +17,9 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
     // Parse filter parameters
-    const bodyType = searchParams.get('type') as MiningBodyType | null;
-    const spectralType = searchParams.get('spectral') as SpectralType | null;
-    const trajectoryStatus = searchParams.get('trajectory') as TrajectoryStatus | null;
+    const bodyType = (searchParams.get('bodyType') || searchParams.get('type')) as MiningBodyType | null;
+    const spectralType = (searchParams.get('spectralType') || searchParams.get('spectral')) as SpectralType | null;
+    const trajectoryStatus = (searchParams.get('trajectoryStatus') || searchParams.get('trajectory')) as TrajectoryStatus | null;
     const minValueParam = searchParams.get('minValue');
     const minValue = minValueParam ? parseFloat(minValueParam) : undefined;
     const sortBy = searchParams.get('sortBy') as 'value' | 'deltaV' | 'diameter' | 'name' | null;
