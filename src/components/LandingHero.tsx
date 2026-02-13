@@ -91,7 +91,8 @@ export default function LandingHero() {
             </Link>
             <Link
               href="/pricing"
-              className="btn-secondary text-base py-4 px-10"
+              className="border-2 border-cyan-400 text-base py-4 px-10 rounded-full font-bold uppercase tracking-wide transition-all duration-300 hover:-translate-y-0.5 active:scale-95 bg-[#0a1628] text-[#e0f7ff] hover:bg-cyan-500 hover:text-white hover:border-cyan-500"
+              style={{ textShadow: '0 0 8px rgba(34,211,238,0.4)' }}
             >
               Start Free Trial
             </Link>
