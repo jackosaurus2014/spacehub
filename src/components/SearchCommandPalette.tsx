@@ -188,6 +188,15 @@ const ALL_SEARCH_ITEMS: SearchItem[] = [
     type: 'module',
     category: 'Intelligence',
   },
+  {
+    id: 'company-profiles',
+    label: 'Company Directory',
+    description: 'Space company intelligence profiles',
+    href: '/company-profiles',
+    icon: <ChartIcon />,
+    type: 'module',
+    category: 'Intelligence',
+  },
   // Business
   {
     id: 'business-opportunities',
@@ -298,7 +307,7 @@ const MAX_RECENT_SEARCHES = 5;
 // Server search result types
 interface ServerSearchResults {
   news: Array<{ id: string; title: string; summary: string | null; url: string }>;
-  companies: Array<{ id: string; name: string; description: string | null; country: string | null }>;
+  companies: Array<{ id: string; slug: string; name: string; description: string | null; headquarters: string | null; sector: string | null; ticker: string | null }>;
   events: Array<{ id: string; name: string; description: string | null; type: string }>;
   opportunities: Array<{ id: string; slug: string; title: string; description: string | null }>;
   blogs: Array<{ id: string; title: string; excerpt: string | null; url: string }>;
@@ -375,11 +384,16 @@ export default function SearchCommandPalette() {
         });
 
         data.companies?.forEach((item) => {
+          const desc = [
+            item.sector?.replace(/_/g, ' '),
+            item.headquarters,
+            item.ticker ? `(${item.ticker})` : null,
+          ].filter(Boolean).join(' · ') || item.description?.slice(0, 80) || 'Space company';
           items.push({
             id: `company-${item.id}`,
             label: item.name,
-            description: item.description?.slice(0, 80) || item.country || 'Space company',
-            href: `/market-intel?company=${encodeURIComponent(item.name)}`,
+            description: desc,
+            href: `/company-profiles/${item.slug}`,
             icon: <ChartIcon />,
             type: 'result',
             category: 'Company Results',

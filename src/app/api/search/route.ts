@@ -96,24 +96,43 @@ export async function GET(req: NextRequest) {
 
     if (activeModules.has('companies')) {
       queryKeys.push('companies');
-      // SpaceCompany has no date field for filtering; skip date filter
+      // Query CompanyProfile for richer company intelligence data
       queries.push(
-        prisma.spaceCompany.findMany({
+        (prisma.companyProfile as any).findMany({
           where: {
             OR: [
               { name: containsFilter },
               { description: containsFilter },
+              { ticker: containsFilter },
             ],
           },
           select: {
             id: true,
+            slug: true,
             name: true,
             description: true,
-            country: true,
+            headquarters: true,
             isPublic: true,
             ticker: true,
+            sector: true,
+            tier: true,
+            totalFunding: true,
+            logoUrl: true,
+            dataCompleteness: true,
+            _count: {
+              select: {
+                newsArticles: true,
+                contracts: true,
+                serviceListings: true,
+                satelliteAssets: true,
+                fundingRounds: true,
+                products: true,
+              },
+            },
           },
-          orderBy: sortBy === 'title' ? { name: sortOrder } : { name: 'asc' },
+          orderBy: sortBy === 'title'
+            ? { name: sortOrder }
+            : [{ tier: 'asc' as const }, { name: 'asc' as const }],
           take: limit,
         })
       );
