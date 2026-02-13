@@ -44,7 +44,7 @@ const MODULE_NEWS_KEYWORDS: Record<string, string[]> = {
   'cislunar': ['Artemis', 'lunar', 'moon mission', 'Gateway', 'CLPS', 'cislunar', 'Lunar Pathfinder', 'SLS', 'Orion'],
   'mars-planner': ['Mars', 'Perseverance', 'Curiosity', 'Mars mission', 'Mars launch', 'ExoMars', 'Mars Sample Return'],
   'launch-vehicles': ['Falcon 9', 'Starship', 'New Glenn', 'Vulcan', 'Ariane 6', 'launch vehicle', 'rocket', 'first flight', 'launch success'],
-  'spaceports': ['spaceport', 'launch site', 'launch pad', 'Cape Canaveral', 'Boca Chica', 'launch complex', 'Vandenberg'],
+  'spaceports': ['spaceport', 'launch site', 'launch pad', 'Cape Canaveral', 'Boca Chica', 'launch complex', 'Vandenberg', 'DSN', 'deep space network', 'TDRS', 'relay satellite', 'optical comms', 'LCRD', 'ESTRACK', 'space communications'],
   'space-manufacturing': ['space manufacturing', 'in-space production', 'Varda', 'Redwire', 'space factory', 'microgravity', 'space materials'],
   'compliance': ['FCC space', 'FAA license', 'space law', 'space regulation', 'ITU filing', 'Artemis Accords', 'space treaty', 'spectrum allocation'],
   'talent-board': ['space expert', 'space consultant', 'space advisor', 'chief engineer', 'space workforce', 'space career', 'astronaut selection', 'space appointment', 'space executive'],
@@ -237,12 +237,52 @@ Key vehicles to track:
 - New vehicles approaching first flight: Terran R, New Glenn, Neutron, Ariane 6.2
 For each: id, name, manufacturer, country, status (operational/development/retired), totalLaunches, successfulLaunches, successRate, costPerKg, payloadToLEO, lastFlightDate`,
 
-  'spaceports': `Verify and update spaceport data:
-- Active spaceport launch counts (2024-current year)
+  'spaceports': `Verify and update spaceport and space communications data across all sections:
+
+ACTIVE SPACEPORTS (section: active-spaceports):
+- Launch counts for current year at each major site (Cape Canaveral, Vandenberg, Kennedy, Boca Chica, Mahia, Kourou, Jiuquan, etc.)
 - New spaceports under construction or recently operational
-- Notable facility upgrades or expansions
-- Regulatory approvals for new launch sites
-- Commercial spaceport developments`,
+- Notable facility upgrades, expansions, or regulatory approvals
+
+EMERGING SPACEPORTS (section: emerging-spaceports):
+- Status updates for spaceports in development (SaxaVord, Sutherland, Andøya, Arnhem, etc.)
+- Expected operational dates, first launch targets
+- FAA/regulatory license status
+
+TRAFFIC DATA (section: traffic-data):
+- Annual launch counts by site for recent years
+- Year-over-year growth rates
+
+DSN COMPLEXES (section: dsn-complexes):
+- NASA Deep Space Network: Goldstone, Madrid, Canberra — antenna counts, diameters, current mission support
+- Any new antenna construction or upgrades
+
+RELAY NETWORKS (section: relay-networks):
+- TDRS fleet status: operational vs. retired satellites, remaining lifetime
+- ESA EDRS: current satellites, data relay capacity, commercial customers
+- Any new relay satellite launches or planned replacements
+
+OPTICAL SYSTEMS (section: optical-systems):
+- NASA LCRD: operational status, data rates achieved, missions using it
+- ESA EDRS optical: status and throughput
+- JAXA LUCAS: operational status
+- Any new optical comms demonstrations or records
+
+LUNAR COMMS ELEMENTS (section: lunar-comms-elements):
+- LunaNet architecture: development status, planned nodes
+- ESA Moonlight: mission timeline, commercial partners
+- Commercial lunar relay providers (Crescent Space, etc.)
+
+ESTRACK STATIONS (section: estrack-stations):
+- ESA tracking station network: locations, antenna sizes, current mission support
+- New station construction or antenna upgrades
+
+FREQUENCY ALLOCATIONS (section: frequency-allocations):
+- S-band, X-band, Ka-band, optical — allocation updates, congestion status
+- Any new ITU decisions on space communication bands
+
+COMMS HERO STATS (section: comms-hero-stats):
+- Total ground stations worldwide, countries with DSN access, max deep space data rate, farthest communication contact`,
 
   'space-manufacturing': `Verify and update space manufacturing data across all sections:
 

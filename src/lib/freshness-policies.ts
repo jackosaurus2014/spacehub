@@ -86,10 +86,10 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     keywords: ['Mars', 'Perseverance', 'Curiosity', 'Mars mission', 'Mars launch', 'ExoMars'],
   },
   'spaceports': {
-    ttlHours: 720,
+    ttlHours: 336, // 14 days — spaceport traffic + comms network status change regularly
     refreshPriority: 'moderate',
     refreshSource: 'ai-research',
-    keywords: ['spaceport', 'launch site', 'launch pad', 'Cape Canaveral', 'Boca Chica', 'launch complex'],
+    keywords: ['spaceport', 'launch site', 'launch pad', 'Cape Canaveral', 'Boca Chica', 'launch complex', 'DSN', 'TDRS', 'optical comms', 'LCRD', 'ESTRACK'],
   },
   'space-manufacturing': {
     ttlHours: 336, // 14 days

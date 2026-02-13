@@ -1313,6 +1313,104 @@ async function main() {
     // 20+ active spaceports
   ]);
 
+  await upsertContent('spaceports', 'emerging-spaceports', [
+    { id: 'saxavord', name: 'SaxaVord Spaceport', location: 'Unst, Shetland Islands', country: 'United Kingdom', developer: 'SaxaVord UK', status: 'under-construction', targetDate: '2025', plannedVehicles: ['RFA One', 'HyImpulse SL1', 'ABL Space RS1'] },
+    { id: 'sutherland', name: 'Space Hub Sutherland', location: "A'Mhoine Peninsula, Scotland", country: 'United Kingdom', developer: 'HIE / Orbex', status: 'under-construction', targetDate: '2025-2026', plannedVehicles: ['Orbex Prime'] },
+    { id: 'andoya', name: 'Andoya Spaceport', location: 'Andenes, Norway', country: 'Norway', developer: 'Andoya Space', status: 'under-construction', targetDate: '2025', plannedVehicles: ['Isar Aerospace Spectrum'] },
+    { id: 'spaceport-america', name: 'Spaceport America', location: 'Sierra County, NM, USA', country: 'United States', developer: 'New Mexico Spaceport Authority', status: 'operational-suborbital', targetDate: 'Operational', plannedVehicles: ['Virgin Galactic SpaceShipTwo'] },
+  ]);
+
+  await upsertContent('spaceports', 'traffic-data', [
+    { siteId: 'cape-combined', siteName: 'Cape Canaveral / KSC', country: 'United States', launches2022: 45, launches2023: 72, launches2024: 72, trend: 'up', successRate: 99.2 },
+    { siteId: 'jiuquan', siteName: 'Jiuquan SLC', country: 'China', launches2022: 18, launches2023: 18, launches2024: 22, trend: 'up', successRate: 94.5 },
+    { siteId: 'vandenberg', siteName: 'Vandenberg SFB', country: 'United States', launches2022: 9, launches2023: 15, launches2024: 18, trend: 'up', successRate: 98.0 },
+    { siteId: 'wenchang', siteName: 'Wenchang SLS', country: 'China', launches2022: 6, launches2023: 7, launches2024: 13, trend: 'up', successRate: 97.0 },
+    { siteId: 'xichang', siteName: 'Xichang SLC', country: 'China', launches2022: 12, launches2023: 14, launches2024: 12, trend: 'stable', successRate: 96.5 },
+    { siteId: 'mahia', siteName: 'Mahia Peninsula (LC-1)', country: 'New Zealand', launches2022: 9, launches2023: 10, launches2024: 13, trend: 'up', successRate: 92.5 },
+    { siteId: 'baikonur', siteName: 'Baikonur Cosmodrome', country: 'Kazakhstan', launches2022: 12, launches2023: 11, launches2024: 10, trend: 'down', successRate: 96.0 },
+    { siteId: 'starbase', siteName: 'Starbase (Boca Chica)', country: 'United States', launches2022: 0, launches2023: 2, launches2024: 6, trend: 'up', successRate: 66.7 },
+    { siteId: 'kourou', siteName: 'CSG (Kourou)', country: 'France (EU)', launches2022: 5, launches2023: 3, launches2024: 3, trend: 'down', successRate: 90.0 },
+    { siteId: 'sriharikota', siteName: 'SDSC SHAR', country: 'India', launches2022: 5, launches2023: 7, launches2024: 7, trend: 'up', successRate: 93.0 },
+  ]);
+
+  await upsertContent('spaceports', 'dsn-complexes', [
+    { id: 'goldstone', name: 'Goldstone DSCC', location: 'Mojave Desert, CA, USA', country: 'United States', established: 1958, antennas: [{ designation: 'DSS-14', diameter: '70m', bands: ['S-band', 'X-band'] }, { designation: 'DSS-25', diameter: '34m BWG', bands: ['S/X/Ka-band'] }, { designation: 'DSS-26', diameter: '34m BWG', bands: ['S/X/Ka-band'] }] },
+    { id: 'canberra', name: 'Canberra DSCC', location: 'Tidbinbilla, ACT, Australia', country: 'Australia', established: 1965, antennas: [{ designation: 'DSS-43', diameter: '70m', bands: ['S-band', 'X-band'] }, { designation: 'DSS-35', diameter: '34m BWG', bands: ['S/X/Ka-band'] }, { designation: 'DSS-36', diameter: '34m BWG', bands: ['S/X/Ka-band'] }] },
+    { id: 'madrid', name: 'Madrid DSCC', location: 'Robledo de Chavela, Spain', country: 'Spain', established: 1964, antennas: [{ designation: 'DSS-63', diameter: '70m', bands: ['S-band', 'X-band'] }, { designation: 'DSS-55', diameter: '34m BWG', bands: ['S/X/Ka-band'] }, { designation: 'DSS-56', diameter: '34m BWG', bands: ['S/X/Ka/K-band'] }] },
+  ]);
+
+  await upsertContent('spaceports', 'relay-networks', [
+    { id: 'tdrs', name: 'TDRSS', operator: 'NASA', constellation: '6 active satellites', orbit: 'GEO', status: 'operational', dataRate: '800 Mbps (Ka-band SA)', users: ['ISS', 'Hubble', 'Landsat', 'GPM'] },
+    { id: 'sda-transport', name: 'SDA Transport Layer', operator: 'U.S. Space Force', constellation: 'Tranche 0: 28, Tranche 1: 126', orbit: 'LEO', status: 'deploying', dataRate: '10 Gbps per optical crosslink' },
+    { id: 'starshield', name: 'SpaceX Starshield', operator: 'SpaceX', constellation: 'Classified (50-100+)', orbit: 'LEO', status: 'deploying', dataRate: 'Classified' },
+    { id: 'edrs', name: 'EDRS (SpaceDataHighway)', operator: 'ESA / Airbus', constellation: '2 active nodes', orbit: 'GEO', status: 'operational', dataRate: '1.8 Gbps (optical ISL)' },
+    { id: 'aws-ground', name: 'AWS Ground Station', operator: 'Amazon Web Services', constellation: '12 antenna locations', orbit: 'Ground-based', status: 'operational', dataRate: '800 Mbps (X-band)' },
+    { id: 'azure-orbital', name: 'Azure Orbital Ground Station', operator: 'Microsoft Azure', constellation: '5+ partner sites', orbit: 'Ground-based', status: 'operational', dataRate: '1+ Gbps (Ka-band)' },
+  ]);
+
+  await upsertContent('spaceports', 'optical-systems', [
+    { id: 'lcrd', name: 'LCRD', operator: 'NASA GSFC', status: 'operational', type: 'relay', maxDataRate: '1.2 Gbps', wavelength: '1550 nm', launchDate: 'December 2021' },
+    { id: 'dsoc', name: 'DSOC', operator: 'NASA JPL', status: 'demonstrated', type: 'deep-space', maxDataRate: '267 Mbps', wavelength: '1550 nm', launchDate: 'October 2023' },
+    { id: 'mynaric', name: 'Mynaric CONDOR Mk3', operator: 'Mynaric AG', status: 'commercial', type: 'terminal', maxDataRate: '100 Gbps', wavelength: '1550 nm' },
+    { id: 'caci-sa', name: 'CACI Crossbeam', operator: 'CACI International', status: 'commercial', type: 'terminal', maxDataRate: '100+ Gbps', wavelength: '1550 nm' },
+    { id: 'tesat', name: 'Tesat-Spacecom LCT', operator: 'Tesat-Spacecom (Airbus)', status: 'operational', type: 'terminal', maxDataRate: '1.8 Gbps', wavelength: '1064 nm' },
+    { id: 'spacex-laser', name: 'Starlink Laser ISLs', operator: 'SpaceX', status: 'operational', type: 'terminal', maxDataRate: '~100 Gbps', wavelength: '~1550 nm' },
+  ]);
+
+  await upsertContent('spaceports', 'lunar-comms-elements', [
+    { id: 'lunanet', name: 'LunaNet', agency: 'NASA', status: 'Development', description: "NASA's architecture framework for lunar communications and navigation services using DTN protocol." },
+    { id: 'csns', name: 'LCRNS', agency: 'NASA / ESA', status: 'Planned', description: 'Proposed relay satellite constellation for LunaNet with S-band and Ka-band links.' },
+    { id: 'moonlight', name: 'ESA Moonlight', agency: 'ESA', status: 'Development', description: "ESA's commercial lunar comms constellation — 3-5 relay satellites in ELO." },
+    { id: 'artemis-comms', name: 'Artemis Direct Communications', agency: 'NASA', status: 'Operational', description: 'S-band TT&C and Ka-band via DSN for near-side lunar operations.' },
+    { id: 'gateway-comms', name: 'Lunar Gateway Communications', agency: 'NASA', status: 'Development', description: 'PPE Ka-band relay capability in NRHO for Artemis surface missions.' },
+  ]);
+
+  await upsertContent('spaceports', 'ccsds-protocols', [
+    { name: 'Space Packet Protocol', abbreviation: 'SPP', layer: 'Network / Transport', usedBy: ['ISS', 'Mars rovers', 'JWST', 'Artemis'] },
+    { name: 'TM/TC Space Data Link Protocol', abbreviation: 'TM/TC SDLP', layer: 'Data Link', usedBy: ['All DSN missions', 'ESA ESTRACK', 'JAXA'] },
+    { name: 'Proximity-1 Space Link Protocol', abbreviation: 'Prox-1', layer: 'Data Link / Physical', usedBy: ['MRO', 'Mars Odyssey', 'MAVEN'] },
+    { name: 'Delay/Disruption Tolerant Networking', abbreviation: 'DTN / BP', layer: 'Overlay / Network', usedBy: ['ISS', 'LunaNet (planned)'] },
+    { name: 'CCSDS File Delivery Protocol', abbreviation: 'CFDP', layer: 'Application', usedBy: ['Mars missions', 'Juno', 'New Horizons'] },
+    { name: 'Space Link Extension', abbreviation: 'SLE', layer: 'Cross-Support', usedBy: ['ESA-NASA cross-support', 'JAXA-NASA'] },
+  ]);
+
+  await upsertContent('spaceports', 'frequency-allocations', [
+    { band: 'UHF', range: '390-450 MHz', typicalUse: 'Proximity links, CubeSat TT&C, IoT', maxDataRate: '~256 kbps - 2 Mbps' },
+    { band: 'S-band', range: '2.0-2.3 GHz', typicalUse: 'Spacecraft TT&C, deep space uplink/downlink', maxDataRate: '~2-10 Mbps' },
+    { band: 'X-band', range: '8.0-8.5 GHz', typicalUse: 'Deep space downlink, EO payload data', maxDataRate: '~10-800 Mbps' },
+    { band: 'Ku-band', range: '12-18 GHz', typicalUse: 'TDRS, DTH broadcasting, VSAT, Starlink', maxDataRate: '~50 Mbps - 1 Gbps' },
+    { band: 'Ka-band', range: '26.5-40 GHz', typicalUse: 'High-rate deep space, HTS broadband, LCRD', maxDataRate: '~100 Mbps - 10 Gbps' },
+    { band: 'Optical', range: '~200 THz (1550 nm)', typicalUse: 'LCRD, DSOC, OISL, EDRS laser links', maxDataRate: '~1 Gbps - 100 Gbps' },
+  ]);
+
+  await upsertContent('spaceports', 'latency-by-orbit', [
+    { orbit: 'LEO (550 km)', oneWayLatency: '~3.6 ms', roundTrip: '~7.2 ms', example: 'Starlink, ISS' },
+    { orbit: 'MEO (8,000 km)', oneWayLatency: '~27 ms', roundTrip: '~54 ms', example: 'O3b mPOWER, GPS' },
+    { orbit: 'GEO (35,786 km)', oneWayLatency: '~120 ms', roundTrip: '~240 ms', example: 'TDRS, EDRS, Intelsat' },
+    { orbit: 'Lunar (384,400 km)', oneWayLatency: '~1.28 s', roundTrip: '~2.56 s', example: 'Artemis, Gateway' },
+    { orbit: 'Earth-Sun L2 (1.5M km)', oneWayLatency: '~5 s', roundTrip: '~10 s', example: 'JWST, Euclid' },
+    { orbit: 'Mars (avg. 225M km)', oneWayLatency: '~12.5 min', roundTrip: '~25 min', example: 'Perseverance' },
+    { orbit: 'Jupiter (avg. 778M km)', oneWayLatency: '~43 min', roundTrip: '~86 min', example: 'Juno, Europa Clipper' },
+    { orbit: 'Voyager 1 (~24.5B km)', oneWayLatency: '~22.7 hrs', roundTrip: '~45.4 hrs', example: 'Voyager 1' },
+  ]);
+
+  await upsertContent('spaceports', 'comms-hero-stats', [
+    { label: 'DSN Antennas', value: '13' },
+    { label: 'Relay Satellites', value: '40+' },
+    { label: 'Optical Terminals On-Orbit', value: '9,000+' },
+    { label: 'Max Optical Data Rate', value: '100 Gbps' },
+  ]);
+
+  await upsertContent('spaceports', 'estrack-stations', [
+    { name: 'Malargue', location: 'Argentina', diameter: '35m', bands: 'X/Ka-band', role: 'Deep space' },
+    { name: 'Cebreros', location: 'Spain', diameter: '35m', bands: 'X/Ka-band', role: 'Deep space' },
+    { name: 'New Norcia', location: 'Australia', diameter: '35m', bands: 'S/X/Ka-band', role: 'Deep space' },
+    { name: 'Kourou', location: 'French Guiana', diameter: '15m', bands: 'S-band', role: 'Launch support, LEO' },
+    { name: 'Redu', location: 'Belgium', diameter: '15m', bands: 'S/X-band', role: 'LEO operations' },
+    { name: 'Kiruna', location: 'Sweden', diameter: '15m', bands: 'S/X-band', role: 'Polar LEO support' },
+    { name: 'Santa Maria', location: 'Azores', diameter: '5.5m', bands: 'S-band', role: 'Launch & early orbit' },
+  ]);
+
   // ═══════════════════════════════════════════════════════════════════
   // 13. GROUND STATIONS
   // ═══════════════════════════════════════════════════════════════════
