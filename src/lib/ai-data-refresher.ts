@@ -160,28 +160,82 @@ ALLIANCES (section: alliances):
 - New bilateral space security agreements
 - Schriever Wargame or Global Sentinel exercise outcomes`,
 
-  'cislunar': `Verify and update cislunar/Artemis data:
-- Artemis mission timeline: Artemis II, III, IV, V current target dates and status
-- CLPS missions: which have launched, which are upcoming, any failures
-- Lunar Gateway: module development status, launch dates
-- ISRU (In-Situ Resource Utilization) programs: VIPER, other ice prospecting missions
-- Cislunar infrastructure investments and commercial activities`,
+  'cislunar': `Verify and update cislunar/Artemis data across all sections:
 
-  'mars-planner': `Verify and update Mars exploration data:
-- Active Mars missions: Perseverance, Curiosity, Zhurong, InSight status
-- Upcoming Mars missions: target dates, agencies, objectives
-- Mars launch windows: next optimal windows
-- Mars Sample Return program status
-- SpaceX Starship Mars timeline updates`,
+ARTEMIS MISSIONS (section: artemis-missions):
+- Artemis II, III, IV, V, VI: current target launch dates, crew assignments, mission objectives, status
+- SLS/Orion readiness updates, HLS (Starship/Blue Origin) milestones
+
+CLPS MISSIONS (section: clps-missions):
+- Active CLPS missions: which have launched, landed, or failed
+- Upcoming CLPS deliveries: provider, payload, target date, landing site
+- New CLPS task orders awarded
+
+ISRU PROGRAMS (section: isru-programs):
+- VIPER status (launch date, delays, cancellations)
+- Other ice prospecting and resource utilization programs
+- Commercial ISRU initiatives
+
+INFRASTRUCTURE (section: infrastructure):
+- Lunar surface infrastructure projects: habitats, power systems, rovers, comm relays
+- Commercial lunar lander development updates
+
+INVESTMENTS (section: investments):
+- Artemis program budget and cost updates by component
+- Commercial investment in cislunar activities
+
+GATEWAY MODULES (section: gateway-modules):
+- PPE/HALO: development, integration, launch date
+- I-HAB, ESPRIT, Canadarm3: build progress, delivery timelines
+
+INTERNATIONAL PARTNERS (section: international-partners):
+- ESA, JAXA, CSA, ISRO contributions and timeline updates
+- New Artemis Accords signatories relevant to cislunar`,
+
+  'mars-planner': `Verify and update Mars exploration data across all sections:
+
+ACTIVE MISSIONS (section: active-missions):
+- Perseverance: sol count, location, sample cache status, Ingenuity helicopter status
+- Curiosity: sol count, location, current science campaign
+- Mars orbiters: MRO, MAVEN, TGO, Mars Express, Tianwen-1 orbiter, Hope — operational status
+- Zhurong rover: current status (active/dormant)
+
+UPCOMING MISSIONS (section: upcoming-missions):
+- Mars Sample Return: current architecture, timeline, budget status, any restructuring
+- ExoMars Rosalind Franklin: launch date, landing site
+- Other planned missions: agencies, vehicles, objectives, target launch dates
+
+LAUNCH WINDOWS (section: launch-windows):
+- Next Mars launch windows with dates and delta-v requirements
+- Which missions are targeting each window
+
+COST ESTIMATES (section: cost-estimates):
+- Mars mission cost ranges by type (flyby, orbiter, lander, crewed)
+- MSR cost updates
+
+COMMERCIAL OPPORTUNITIES (section: commercial-opportunities):
+- SpaceX Starship Mars timeline and cargo mission plans
+- Commercial Mars payload opportunities
+- Private Mars mission proposals`,
 
   'launch-vehicles': `Verify and update launch vehicle data:
-- Active launch vehicles: recent launch counts, success rates, status
-- Starship: latest test flights, timeline for operational missions
-- New Glenn: first flight status and results
-- Vulcan Centaur: flight history update
-- Ariane 6: flight count and status
-- New vehicles in development: Neutron, Terran R, etc.
-- Cost per kg to LEO for each vehicle (if updated)`,
+
+VEHICLES (section: vehicles):
+For each vehicle update these fields: totalLaunches, successfulLaunches, successRate, status, lastFlightDate, and any notable changes.
+
+Key vehicles to track:
+- Falcon 9/Heavy: cumulative launch count, landing count, latest mission
+- Starship: test flight count, latest flight results, FAA license status, timeline for operational missions
+- New Glenn: first flight date/results, payload customers
+- Vulcan Centaur: flight count, certification status, NSSL missions
+- Ariane 6: flight count, anomalies, commercial manifest
+- Electron: cumulative launches, Neutron development timeline
+- H3 (JAXA): flight status after initial failure
+- Long March variants: notable missions, new variants
+- PSLV/LVM3 (ISRO): launch cadence
+- Soyuz-2: launch count, sanctions impact
+- New vehicles approaching first flight: Terran R, New Glenn, Neutron, Ariane 6.2
+For each: id, name, manufacturer, country, status (operational/development/retired), totalLaunches, successfulLaunches, successRate, costPerKg, payloadToLEO, lastFlightDate`,
 
   'spaceports': `Verify and update spaceport data:
 - Active spaceport launch counts (2024-current year)
@@ -190,13 +244,28 @@ ALLIANCES (section: alliances):
 - Regulatory approvals for new launch sites
 - Commercial spaceport developments`,
 
-  'space-manufacturing': `Verify and update space manufacturing data:
-- Varda Space Industries: latest missions and pharmaceutical results
-- Redwire: ISS experiments and commercial activities
+  'space-manufacturing': `Verify and update space manufacturing data across all sections:
+
+COMPANIES (section: companies):
+- Varda Space Industries: mission count, reentry capsule results, next mission date
+- Redwire: ISS experiments, revenue, commercial activities
+- Space Forge: development status, ForgeStar missions
+- Flawless Photonics: ZBLAN fiber optic production status
 - Other in-space manufacturing companies and milestones
-- ISS National Lab experiment updates
-- Technology readiness level updates for key programs
-- Market projections for in-space manufacturing`,
+
+PRODUCT CATEGORIES (section: product-categories):
+- Pharmaceuticals, ZBLAN fiber, bioprinted organs, semiconductors, alloys, protein crystals
+- TRL updates for each category
+
+MARKET PROJECTIONS (section: market-projections):
+- In-space manufacturing market size estimates by year (2024-2035)
+- Growth rate updates
+
+IMAGERY PROVIDERS (section: img-providers):
+- Maxar, Planet, Airbus, Capella, ICEYE, BlackSky, Satellogic — constellation updates, resolution improvements, new products
+
+IMAGERY USE CASES (section: img-use-cases):
+- Agriculture, defense, insurance, climate, urban planning — market size and adoption updates`,
 
   'compliance': `Verify and update space regulatory data:
 - New Artemis Accords signatories
@@ -238,16 +307,23 @@ For each event provide: title, description, date, duration in minutes, key speak
 - New entrants: any new companies offering space tourism
 For each offering: provider, vehicle/destination, type (suborbital/orbital/station), price range, status, upcoming missions`,
 
-  'supply-chain': `Verify and update space industry supply chain data:
-- Major component suppliers: reaction wheels, star trackers, solar panels, propulsion systems
-- Supply chain disruptions or shortages affecting the space industry
-- New supplier qualifications or partnerships
+  'supply-chain': `Verify and update space industry supply chain data across all sections:
+
+COMPANIES (section: companies):
+- Major component suppliers across all tiers: prime contractors, subsystem providers, component manufacturers
+- For each: name, tier (1/2/3), components, customers, country, production capacity, lead times, recent developments
+- Update any M&A activity, new facilities, or capacity expansions
+
+RELATIONSHIPS (section: relationships):
+- Key supplier-customer relationships with estimated annual values
+- New partnerships or supply agreements
+- Vertical integration moves
+
+SHORTAGES (section: shortages):
+- Critical material shortages affecting the space industry
 - Radiation-hardened electronics availability and lead times
-- Launch vehicle component suppliers and manufacturing capacity
-- Satellite bus manufacturers and their order backlogs
-- Raw materials critical to space (titanium, carbon fiber, rare earths) — pricing and availability
-- Vertical integration trends (companies bringing manufacturing in-house)
-For each supplier/segment: company name, component type, key customers, production capacity, lead times, recent developments`,
+- Titanium, carbon fiber, rare earth pricing and availability
+- For each: material/component, severity (critical/moderate/low), affected programs, estimated resolution timeline`,
 
   'business-opportunities': `Verify and update space industry business opportunities:
 - Recent NASA contract awards (>$10M): Commercial Crew, CLPS, Artemis, SLS, ISS services

@@ -74,13 +74,13 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     keywords: ['space patent', 'space IP', 'patent filing', 'space technology patent'],
   },
   'launch-vehicles': {
-    ttlHours: 720,
+    ttlHours: 168, // 7 days — launch counts and vehicle statuses change weekly
     refreshPriority: 'moderate',
     refreshSource: 'ai-research',
     keywords: ['Falcon 9', 'Starship', 'New Glenn', 'Vulcan', 'Ariane', 'launch vehicle', 'rocket', 'first flight'],
   },
   'mars-planner': {
-    ttlHours: 720,
+    ttlHours: 336, // 14 days — mission statuses change less frequently
     refreshPriority: 'moderate',
     refreshSource: 'ai-research',
     keywords: ['Mars', 'Perseverance', 'Curiosity', 'Mars mission', 'Mars launch', 'ExoMars'],
@@ -92,19 +92,19 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     keywords: ['spaceport', 'launch site', 'launch pad', 'Cape Canaveral', 'Boca Chica', 'launch complex'],
   },
   'space-manufacturing': {
-    ttlHours: 720,
+    ttlHours: 336, // 14 days
     refreshPriority: 'moderate',
     refreshSource: 'ai-research',
     keywords: ['space manufacturing', 'in-space production', 'Varda', 'Redwire', 'space factory', 'microgravity'],
   },
   'space-tourism': {
-    ttlHours: 720,
+    ttlHours: 168, // 7 days — flight schedules and pricing change frequently
     refreshPriority: 'moderate',
     refreshSource: 'ai-research',
     keywords: ['space tourism', 'Blue Origin', 'Virgin Galactic', 'SpaceX tourism', 'Axiom mission', 'private astronaut'],
   },
   'supply-chain': {
-    ttlHours: 720,
+    ttlHours: 336, // 14 days
     refreshPriority: 'moderate',
     refreshSource: 'ai-research',
     keywords: ['space supply chain', 'space components', 'satellite manufacturing', 'launch supply'],
