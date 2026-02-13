@@ -4,6 +4,11 @@ import sanitizeHtml from 'sanitize-html';
 import { logger } from './logger';
 
 const parser = new Parser({
+  timeout: 15000,
+  headers: {
+    'User-Agent': 'SpaceNexus/1.0 (Space Industry News Aggregator)',
+    Accept: 'application/rss+xml, application/xml, text/xml',
+  },
   customFields: {
     item: ['content:encoded', 'dc:creator', 'media:content'],
   },
@@ -34,7 +39,7 @@ const BLOG_SOURCES = [
     name: 'SpaceNews Opinion',
     slug: 'spacenews-opinion',
     url: 'https://spacenews.com/section/opinion/',
-    feedUrl: 'https://spacenews.com/section/opinion/feed/',
+    feedUrl: 'https://spacenews.com/tag/opinion/feed/',
     type: 'blog',
     authorType: 'consultant',
     description: 'Expert opinions on space industry matters',
@@ -97,15 +102,7 @@ const BLOG_SOURCES = [
   },
 
   // --- Technical Blogs ---
-  {
-    name: 'Parabolic Arc',
-    slug: 'parabolic-arc',
-    url: 'https://parabolicarc.com',
-    feedUrl: 'https://parabolicarc.com/feed/',
-    type: 'blog',
-    authorType: 'journalist',
-    description: 'Space news and commentary',
-  },
+  // Parabolic Arc removed — domain redirects to SpaceNews (absorbed)
   {
     name: 'NASA Blogs',
     slug: 'nasa-blogs',
@@ -283,24 +280,8 @@ const BLOG_SOURCES = [
   },
 
   // --- Space Company Blogs ---
-  {
-    name: 'SpaceX Updates',
-    slug: 'spacex-updates',
-    url: 'https://www.spacex.com',
-    feedUrl: 'https://www.spacex.com/news.xml',
-    type: 'blog',
-    authorType: 'engineer',
-    description: 'Official SpaceX mission updates',
-  },
-  {
-    name: 'Lockheed Martin Space',
-    slug: 'lockheed-martin',
-    url: 'https://news.lockheedmartin.com',
-    feedUrl: 'https://news.lockheedmartin.com/rss',
-    type: 'blog',
-    authorType: 'engineer',
-    description: 'Orion, satellite systems, defense space programs',
-  },
+  // SpaceX Updates removed — no public RSS feed available
+  // Lockheed Martin Space removed — feed format not recognized as RSS
 
   // --- Academic/Research ---
   {
@@ -475,15 +456,13 @@ export async function fetchBlogPosts(): Promise<number> {
 
     try {
       // Per-source timeout: 15 seconds to parse the feed
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 15_000);
-
-      let feed;
-      try {
-        feed = await parser.parseURL(feedUrl);
-      } finally {
-        clearTimeout(timeout);
-      }
+      // Using Promise.race because rss-parser doesn't support AbortController
+      const feed = await Promise.race([
+        parser.parseURL(feedUrl),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`TIMEOUT after 15s for ${sourceName}`)), 15_000)
+        ),
+      ]);
 
       let count = 0;
 
