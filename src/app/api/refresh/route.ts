@@ -331,6 +331,12 @@ export async function POST(request: Request) {
       results.opportunitiesAnalysis = analysisResult;
     }
 
+    if (type === 'patents') {
+      const { fetchAndStorePatents } = await import('@/lib/module-api-fetchers');
+      const patentCount = await fetchAndStorePatents();
+      results.patents = { count: patentCount };
+    }
+
     logger.info(`Data refresh completed (type=${type || 'all'})`, results);
 
     return NextResponse.json({

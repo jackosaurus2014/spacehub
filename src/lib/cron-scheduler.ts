@@ -146,6 +146,12 @@ export function startCronJobs() {
     triggerEndpoint('/api/refresh?type=regulation-explainers', 'regulation-explainers');
   });
 
+  // Patent data refresh — 11:00 AM UTC daily
+  // Fetches USPTO PatentsView data (CPC class B64G — space vehicles)
+  cron.schedule('0 11 * * *', () => {
+    triggerEndpoint('/api/refresh?type=patents', 'patents-refresh');
+  });
+
   // Company digests — 9:00 AM UTC weekly (Mondays)
   // AI summarizes weekly news per company profile
   cron.schedule('0 9 * * 1', () => {
@@ -180,6 +186,7 @@ export function startCronJobs() {
       'watchlist-alerts: 8:00 AM UTC daily',
       'company-digests: 9:00 AM UTC weekly (Mon)',
       'opportunities-analysis: 10:00 AM UTC twice weekly (Wed, Sun)',
+      'patents-refresh: 11:00 AM UTC daily',
       'regulatory-feeds: noon UTC daily',
       'sec-filings: 2:00 PM UTC daily',
     ],

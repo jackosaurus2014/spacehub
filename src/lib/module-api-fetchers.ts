@@ -3353,7 +3353,7 @@ export async function refreshAllExternalAPIs(): Promise<{
   results['neo-objects'] = await fetchAndStoreNeoObjects();
   results['satellite-counts'] = await fetchAndStoreSatelliteCounts();
   results['defense-spending'] = await fetchAndStoreDefenseSpending();
-  results['patents'] = await fetchAndStorePatents();
+  // patents moved to its own daily cron (see cron-scheduler.ts)
 
   // --- v0.7.0 fetchers ---
   results['apod'] = await fetchAndStoreApod();
