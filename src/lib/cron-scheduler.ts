@@ -152,9 +152,9 @@ export function startCronJobs() {
     triggerEndpoint('/api/refresh?type=company-digests', 'company-digests');
   });
 
-  // AI opportunities analysis — 10:00 AM UTC weekly (Wednesdays)
+  // AI opportunities analysis — 10:00 AM UTC twice weekly (Wednesdays and Sundays)
   // AI discovers new space business opportunities from recent trends
-  cron.schedule('0 10 * * 3', () => {
+  cron.schedule('0 10 * * 0,3', () => {
     triggerEndpoint('/api/refresh?type=opportunities-analysis', 'opportunities-analysis');
   });
 
@@ -179,7 +179,7 @@ export function startCronJobs() {
       'realtime-refresh: every 15 minutes',
       'watchlist-alerts: 8:00 AM UTC daily',
       'company-digests: 9:00 AM UTC weekly (Mon)',
-      'opportunities-analysis: 10:00 AM UTC weekly (Wed)',
+      'opportunities-analysis: 10:00 AM UTC twice weekly (Wed, Sun)',
       'regulatory-feeds: noon UTC daily',
       'sec-filings: 2:00 PM UTC daily',
     ],
