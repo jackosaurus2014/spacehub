@@ -7,6 +7,7 @@ import {
   unauthorizedError,
   alreadyExistsError,
   internalError,
+  escapeHtml,
 } from '@/lib/errors';
 import { advertiserRegistrationSchema, validateBody } from '@/lib/validations';
 import { logger } from '@/lib/logger';
@@ -75,10 +76,10 @@ export async function POST(req: NextRequest) {
           subject: `New Advertiser Registration: ${companyName}`,
           html: `
             <h2>New Advertiser Registration</h2>
-            <p><strong>Company:</strong> ${companyName}</p>
-            <p><strong>Contact:</strong> ${contactName}</p>
-            <p><strong>Email:</strong> ${contactEmail}</p>
-            <p><strong>Website:</strong> ${website || 'N/A'}</p>
+            <p><strong>Company:</strong> ${escapeHtml(companyName)}</p>
+            <p><strong>Contact:</strong> ${escapeHtml(contactName)}</p>
+            <p><strong>Email:</strong> ${escapeHtml(contactEmail)}</p>
+            <p><strong>Website:</strong> ${website ? escapeHtml(website) : 'N/A'}</p>
             <p><strong>Status:</strong> Pending Review</p>
             <br/>
             <p>Please review and approve/reject this advertiser in the admin dashboard.</p>

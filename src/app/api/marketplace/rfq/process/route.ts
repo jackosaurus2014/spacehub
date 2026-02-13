@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { internalError, timingSafeEqual } from '@/lib/errors';
+import { internalError, requireCronSecret } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
 // POST: Process RFQ deadlines (cron endpoint)
 export async function POST(request: NextRequest) {
   try {
-    const cronSecret = request.headers.get('x-cron-secret');
-    const expectedSecret = process.env.CRON_SECRET;
-    if (!expectedSecret || !cronSecret || !timingSafeEqual(cronSecret, expectedSecret)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const cronError = requireCronSecret(request);
+    if (cronError) return cronError;
 
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);

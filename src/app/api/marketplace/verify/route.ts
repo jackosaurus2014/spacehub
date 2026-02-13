@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { internalError, timingSafeEqual } from '@/lib/errors';
+import { internalError, requireCronSecret } from '@/lib/errors';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { evaluateVerificationLevel, batchEvaluateVerification } from '@/lib/marketplace/verification-engine';
@@ -49,11 +49,10 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    // Allow cron or admin access
-    const cronSecret = request.headers.get('x-cron-secret');
-    const expectedSecret = process.env.CRON_SECRET;
+    // Allow cron (Authorization: Bearer) or admin session access
     const isAdmin = session?.user && (session.user as any).isAdmin === true;
-    const isCron = !!(expectedSecret && cronSecret && timingSafeEqual(cronSecret, expectedSecret));
+    const cronError = requireCronSecret(request);
+    const isCron = cronError === null;
 
     if (!isAdmin && !isCron) {
       return NextResponse.json({ error: 'Admin or cron access required' }, { status: 403 });

@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import Anthropic from '@anthropic-ai/sdk';
 import { logger } from '@/lib/logger';
-import { internalError } from '@/lib/errors';
+import { internalError, unauthorizedError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,6 +35,11 @@ company-profiles, news, market-intel, business-opportunities, procurement, satel
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return unauthorizedError();
+    }
+
     const body = await req.json();
     const query = body.query?.trim();
 

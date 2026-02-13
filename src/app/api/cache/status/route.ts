@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { internalError } from '@/lib/errors';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { internalError, unauthorizedError } from '@/lib/errors';
 import { apiCache } from '@/lib/api-cache';
 import { logger } from '@/lib/logger';
 
@@ -11,6 +13,11 @@ function formatMemoryMB(bytes: number): string {
 
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || !(session.user as any).isAdmin) {
+      return unauthorizedError();
+    }
+
     const memUsage = process.memoryUsage();
 
     const status: Record<string, unknown> = {

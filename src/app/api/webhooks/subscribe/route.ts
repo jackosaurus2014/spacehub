@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import {
   validationError,
   internalError,
   notFoundError,
+  unauthorizedError,
 } from '@/lib/errors';
 import {
   webhookSubscribeSchema,
@@ -17,11 +20,16 @@ export const dynamic = 'force-dynamic';
 
 /**
  * POST /api/webhooks/subscribe
- * Create a new webhook subscription.
+ * Create a new webhook subscription. Requires admin authentication.
  * Returns the subscription ID and HMAC secret (shown only once).
  */
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || !(session.user as any).isAdmin) {
+      return unauthorizedError();
+    }
+
     const body = await req.json();
 
     const validation = validateBody(webhookSubscribeSchema, body);
@@ -76,10 +84,15 @@ export async function POST(req: NextRequest) {
 
 /**
  * GET /api/webhooks/subscribe
- * List all active webhook subscriptions (secrets are excluded).
+ * List all active webhook subscriptions (secrets are excluded). Requires admin.
  */
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || !(session.user as any).isAdmin) {
+      return unauthorizedError();
+    }
+
     const subscriptions = await prisma.webhookSubscription.findMany({
       where: { isActive: true },
       select: {
@@ -113,10 +126,15 @@ export async function GET() {
 
 /**
  * DELETE /api/webhooks/subscribe
- * Soft-delete a webhook subscription by marking it as inactive.
+ * Soft-delete a webhook subscription by marking it as inactive. Requires admin.
  */
 export async function DELETE(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || !(session.user as any).isAdmin) {
+      return unauthorizedError();
+    }
+
     const body = await req.json();
 
     const validation = validateBody(webhookUnsubscribeSchema, body);

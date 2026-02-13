@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
-import { constrainPagination, internalError, validationError } from '@/lib/errors';
+import { constrainPagination, internalError, unauthorizedError, validationError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -37,6 +39,11 @@ export async function GET(
   { params }: { params: Promise<{ module: string }> }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return unauthorizedError();
+    }
+
     const { module } = await params;
     const { searchParams } = new URL(req.url);
 

