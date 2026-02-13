@@ -223,9 +223,9 @@ body::after {
 }
 
 .btn-secondary {
-  @apply border-2 border-cyan-400 text-cyan-300 font-bold
+  @apply border-2 border-cyan-400 text-cyan-100 font-bold
          py-3 px-8 rounded-full transition-all duration-300
-         bg-slate-900
+         bg-cyan-950
          hover:bg-cyan-500 hover:text-white hover:border-cyan-500
          hover:-translate-y-0.5
          active:scale-95 tracking-wide uppercase text-sm;
