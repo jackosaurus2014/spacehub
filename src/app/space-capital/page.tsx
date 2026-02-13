@@ -744,7 +744,7 @@ function SpaceCapitalInner() {
         const [investorsRes, fundingRes, startupsRes] = await Promise.all([
           fetch('/api/content/space-capital?section=investors'),
           fetch('/api/content/space-capital?section=funding-by-year'),
-          fetch('/api/companies?isPublic=false&sort=totalFunding&limit=20'),
+          fetch('/api/companies?isPublic=false&sort=totalFunding&minFunding=1&limit=50'),
         ]);
 
         const investorsJson = await investorsRes.json();

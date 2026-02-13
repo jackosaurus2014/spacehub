@@ -12,6 +12,8 @@ export async function GET(request: Request) {
     const isPublic = searchParams.get('isPublic');
     const preIPO = searchParams.get('preIPO');
     const focusArea = searchParams.get('focusArea');
+    const minFunding = searchParams.get('minFunding');
+    const foundedAfter = searchParams.get('foundedAfter');
     const limit = constrainPagination(parseInt(searchParams.get('limit') || '50'), 200);
     const offset = constrainOffset(parseInt(searchParams.get('offset') || '0'));
 
@@ -33,6 +35,20 @@ export async function GET(request: Request) {
       where.focusAreas = {
         contains: focusArea,
       };
+    }
+
+    if (minFunding) {
+      const min = parseFloat(minFunding);
+      if (!isNaN(min) && min > 0) {
+        where.totalFunding = { gt: 0 };
+      }
+    }
+
+    if (foundedAfter) {
+      const year = parseInt(foundedAfter);
+      if (!isNaN(year) && year > 1900 && year <= new Date().getFullYear()) {
+        where.founded = { gte: year };
+      }
     }
 
     const sort = searchParams.get('sort');
