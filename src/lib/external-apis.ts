@@ -34,7 +34,7 @@ export const EXTERNAL_APIS = {
     rateLimit: { requests: 100, period: 3600 },
   },
   OPEN_NOTIFY: {
-    baseUrl: 'http://api.open-notify.org',
+    baseUrl: 'https://api.open-notify.org',
     rateLimit: { requests: 12, period: 60 }, // ~1 per 5 seconds
   },
   NASA_NEOWS: {

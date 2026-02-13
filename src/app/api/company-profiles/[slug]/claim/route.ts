@@ -26,7 +26,7 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
     // Find the company profile
     const company = await prisma.companyProfile.findUnique({
       where: { slug: params.slug },
-      select: { id: true, name: true, claimedByUserId: true, slug: true },
+      select: { id: true, name: true, claimedByUserId: true, slug: true, website: true, tier: true },
     });
 
     if (!company) {
@@ -53,6 +53,29 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
       );
     }
 
+    // Domain verification: check if the user's email domain matches the company website
+    let domainMatch = false;
+    if (company.website) {
+      try {
+        const companyDomain = new URL(company.website).hostname.replace(/^www\./, '');
+        const emailDomain = data.contactEmail.split('@')[1]?.toLowerCase();
+        domainMatch = !!emailDomain && emailDomain === companyDomain;
+      } catch {
+        // Invalid website URL, skip domain check
+      }
+    }
+
+    // Tier 1 companies require domain match or admin approval
+    if (company.tier === 1 && !domainMatch) {
+      return NextResponse.json(
+        { error: 'Claiming a Tier 1 company requires a matching company email domain. Please use your official company email address or contact support for manual verification.' },
+        { status: 403 }
+      );
+    }
+
+    // Set verification level based on domain match
+    const verificationLevel = domainMatch ? 'identity' : 'pending';
+
     // Update company profile and user in a transaction
     const [updatedCompany] = await prisma.$transaction([
       prisma.companyProfile.update({
@@ -60,9 +83,9 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
         data: {
           claimedByUserId: session.user.id,
           claimedAt: new Date(),
-          verificationLevel: 'identity',
+          verificationLevel,
           contactEmail: data.contactEmail,
-          marketplaceActive: true,
+          marketplaceActive: domainMatch, // Only auto-activate if domain matches
         },
       }),
       prisma.user.update({
@@ -75,7 +98,13 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
       companyId: company.id,
       companySlug: company.slug,
       userId: session.user.id,
+      domainMatch,
+      verificationLevel,
     });
+
+    const message = domainMatch
+      ? `You have successfully claimed ${company.name}. Your verification level is set to "identity".`
+      : `You have claimed ${company.name}. Your claim is pending admin review since your email domain does not match the company website.`;
 
     return NextResponse.json({
       success: true,
@@ -85,7 +114,7 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
         name: updatedCompany.name,
         verificationLevel: updatedCompany.verificationLevel,
       },
-      message: `You have successfully claimed ${company.name}. Your verification level is set to "identity".`,
+      message,
     }, { status: 200 });
   } catch (error) {
     logger.error('Claim profile error', { error: error instanceof Error ? error.message : String(error) });

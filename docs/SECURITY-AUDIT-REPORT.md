@@ -122,7 +122,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The `authorize()` callback in NextAuth's CredentialsProvider does not check whether the user's email has been verified (`emailVerified` field). A user who registers but never verifies their email can still log in and access all authenticated features.
 - **Impact:** The email verification flow exists but is effectively optional. Users with unverified (potentially spoofed) email addresses can access authenticated features, create RFQs, claim company profiles, create API keys, etc.
 - **Recommendation:** Add a check in `authorize()`: if `!user.emailVerified`, throw an error like "Please verify your email address before signing in." Alternatively, limit unverified users to read-only access.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added `emailVerified` check in `authorize()` callback. Users with unverified emails now receive "Please verify your email address before signing in" error.
 
 #### Finding 2.6: Company Profile Claim Has Weak Verification
 - **Severity:** Medium
@@ -130,7 +130,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** Any authenticated user can claim any unclaimed company profile by providing just a `contactEmail`. The verification level is automatically set to `identity` with no actual identity verification. There is no domain validation (e.g., checking that the user's email domain matches the company's website domain).
 - **Impact:** A malicious user could claim a high-profile company (e.g., SpaceX, Blue Origin) and then create marketplace listings under that company's name, potentially defrauding other users.
 - **Recommendation:** Implement domain-based email verification (require the user's email to match the company's website domain). Add an admin approval step for company claims, especially for Tier 1 companies.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added domain-based email verification. Tier 1 companies now require matching email domain. Non-matching claims set to `pending` verification with `marketplaceActive: false` until admin review.
 
 ---
 
@@ -238,7 +238,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The CSP `script-src` directive includes `'unsafe-inline'` and `'unsafe-eval'`. While these are commonly needed for Next.js applications (React hydration, inline scripts, dynamic imports), they significantly weaken XSS protection. An XSS vulnerability in the application would not be mitigated by CSP.
 - **Impact:** CSP does not provide defense-in-depth against XSS when `unsafe-inline` and `unsafe-eval` are allowed. Any injected script would execute without CSP blocking it.
 - **Recommendation:** Investigate using nonces (`'nonce-...'`) for inline scripts and removing `'unsafe-eval'` if possible. Next.js 14 supports CSP nonces via `next.config.js` `experimental.sri`. This is a longer-term improvement.
-- **Status:** Open
+- **Status:** **PARTIALLY FIXED** (2026-02-13) — Removed `'unsafe-eval'` from production CSP (not required by Next.js in production). `'unsafe-inline'` remains necessary for inline scripts until nonce-based CSP is implemented.
 
 #### Finding 7.2: Security Headers Are Comprehensive
 - **Severity:** Informational (Positive Finding)
@@ -298,7 +298,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The rate limiter uses an in-memory `Map`. If Railway deploys multiple instances, each instance has its own rate limit store, effectively multiplying the allowed rate by the number of instances. On restart, all rate limit state is lost.
 - **Impact:** Rate limits can be circumvented by distributing requests across multiple server instances (if scaled) or by waiting for a deploy/restart to reset the store.
 - **Recommendation:** For a single-instance Railway deployment, this is acceptable. If scaling to multiple instances, consider a Redis-backed rate limiter. Document the single-instance assumption.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added documentation comment noting the single-instance assumption and Redis migration path for multi-instance scaling.
 
 #### Finding 9.2: Rate Limiting Does Not Cover AI Endpoints Specifically
 - **Severity:** Medium
@@ -306,7 +306,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** AI-powered endpoints (`/api/search/ai-intent`, `/api/marketplace/copilot`, `/api/opportunities/moonshots`) that call the Anthropic API are covered only by the general API rate limit (100 req/min). Each request to these endpoints triggers an expensive external API call (Anthropic/Claude).
 - **Impact:** An attacker (or even a legitimate heavy user) could consume significant Anthropic API credits within the general rate limit. At 100 requests per minute, the cost could be substantial over time.
 - **Recommendation:** Add a dedicated rate limit tier for AI endpoints (e.g., 10 req/min or 50 req/hour). The `copilot` route already requires auth, but `ai-intent` does not (see Finding 2.3).
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added dedicated `ai-endpoints` rate limit tier (10 req/min) for `/api/search/ai-intent`, `/api/marketplace/copilot`, `/api/opportunities/moonshots`, and `/api/opportunities/analyze`.
 
 #### Finding 9.3: IP-Based Rate Limiting Can Be Spoofed
 - **Severity:** Medium
@@ -314,7 +314,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The `getClientIp()` function trusts the `x-forwarded-for` header, taking the first IP. On Railway, this should be set correctly by the reverse proxy, but if the application were exposed directly or behind a misconfigured proxy, an attacker could spoof this header to bypass rate limits.
 - **Impact:** If the reverse proxy is not configured to strip/override client-provided `x-forwarded-for` headers, an attacker can use a different spoofed IP on each request to bypass rate limits entirely.
 - **Recommendation:** Verify that Railway's reverse proxy properly sets `x-forwarded-for` and strips client-provided values. Consider using only the rightmost IP in the chain (the one added by the trusted proxy).
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Changed `getClientIp()` to use the rightmost IP in `x-forwarded-for` (the one appended by the trusted reverse proxy) instead of the leftmost (which can be spoofed by clients).
 
 ---
 
@@ -375,7 +375,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The Open Notify API is configured with `http://api.open-notify.org` (plain HTTP, not HTTPS). All other external APIs use HTTPS.
 - **Impact:** Data fetched from this API is transmitted in cleartext and could be intercepted or tampered with via a man-in-the-middle attack. While the data (ISS position) is not sensitive, a MITM attacker could inject malicious data that gets stored in the database.
 - **Recommendation:** Check if Open Notify supports HTTPS. If so, switch to `https://`. If not, consider using an alternative API or documenting the risk.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Switched Open Notify API URL from `http://` to `https://`.
 
 #### Finding 12.2: Potential SSRF in Admin Data Freshness POST
 - **Severity:** Medium
@@ -383,7 +383,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The POST handler constructs a URL from `NEXTAUTH_URL`/`NEXT_PUBLIC_APP_URL` and the user-supplied `module` field, then makes a server-side `fetch()` call to that URL. While `module` is URL-encoded (`encodeURIComponent`), the base URL comes from environment variables. If `NEXTAUTH_URL` is misconfigured (e.g., pointing to an internal network address), an admin could trigger internal requests.
 - **Impact:** Limited since the endpoint requires admin authentication and the URL path is constrained to `/api/refresh?type=`. The `module` value is properly encoded. However, if environment variables are misconfigured to point to internal services, SSRF could be possible.
 - **Recommendation:** Validate the `module` value against a whitelist of known refresh types. This also prevents unnecessary failed API calls.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added `VALID_REFRESH_TYPES` whitelist (21 types). Requests with invalid module values now receive a 400 error with the list of valid types.
 
 #### Finding 12.3: External API Keys Not Leaked in Responses (Good)
 - **Severity:** Informational (Positive Finding)
@@ -432,7 +432,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The build command uses `|| true` after `prisma db push`, meaning the build will proceed even if database schema synchronization fails. In production, this could result in a deployment where the application expects database columns that don't exist.
 - **Impact:** A deployed build might crash at runtime with Prisma errors if schema changes were not applied, potentially causing data corruption or service outages.
 - **Recommendation:** Consider failing the build on `prisma db push` errors, or at minimum logging a prominent warning. Use `prisma migrate deploy` for production migrations instead of `db push`.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Build script now prints a visible warning when `prisma db push` fails instead of silently continuing.
 
 #### Finding 14.2: Timing-Safe Comparison Has a Subtle Length-Leak Mitigation
 - **Severity:** Low

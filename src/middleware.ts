@@ -6,6 +6,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // In-memory sliding-window rate limiter store
 // Key: `${ip}:${route}` -> array of timestamps
+// NOTE: This store is per-instance. On Railway single-instance deployments this
+// is sufficient. If scaling to multiple instances, replace with Redis-backed
+// rate limiting to share state across instances.
 const rateLimitStore = new Map<string, number[]>();
 
 // Cleanup interval tracker
@@ -34,6 +37,15 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   if (pathname.startsWith('/api/auth/verify-email')) {
     return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 req/hour
   }
+  // AI-powered endpoints (expensive external API calls)
+  if (
+    pathname.startsWith('/api/search/ai-intent') ||
+    pathname.startsWith('/api/marketplace/copilot') ||
+    pathname.startsWith('/api/opportunities/moonshots') ||
+    pathname.startsWith('/api/opportunities/analyze')
+  ) {
+    return { maxRequests: 10, windowMs: 60 * 1000 }; // 10 req/minute
+  }
   // All other /api/* routes
   return { maxRequests: 100, windowMs: 60 * 1000 }; // 100 req/minute
 }
@@ -42,10 +54,13 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
  * Get client IP from request headers
  */
 function getClientIp(req: NextRequest): string {
+  // Railway (and most reverse proxies) appends the real client IP as the
+  // rightmost entry in x-forwarded-for. Using the rightmost IP prevents
+  // clients from spoofing their IP by injecting a fake x-forwarded-for header.
   const forwarded = req.headers.get('x-forwarded-for');
   if (forwarded) {
-    // x-forwarded-for can contain multiple IPs; take the first one
-    return forwarded.split(',')[0].trim();
+    const ips = forwarded.split(',').map(ip => ip.trim()).filter(Boolean);
+    return ips[ips.length - 1] || 'unknown';
   }
   const realIp = req.headers.get('x-real-ip');
   if (realIp) {
@@ -106,6 +121,13 @@ function checkRateLimit(
     routeKey = 'auth-reset-password';
   } else if (pathname.startsWith('/api/auth/verify-email')) {
     routeKey = 'auth-verify-email';
+  } else if (
+    pathname.startsWith('/api/search/ai-intent') ||
+    pathname.startsWith('/api/marketplace/copilot') ||
+    pathname.startsWith('/api/opportunities/moonshots') ||
+    pathname.startsWith('/api/opportunities/analyze')
+  ) {
+    routeKey = 'ai-endpoints';
   } else {
     routeKey = 'api-general';
   }

@@ -135,6 +135,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Whitelist valid refresh types to prevent SSRF via crafted module values
+    const VALID_REFRESH_TYPES = [
+      'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather',
+      'ai-research', 'live-streams', 'space-defense', 'realtime',
+      'regulation-explainers', 'company-digests', 'watchlist-alerts',
+      'regulatory-feeds', 'sec-filings', 'compliance-refresh',
+      'space-environment-daily', 'business-opportunities',
+      'opportunities-analysis', 'patents', 'patents-market-intel',
+    ];
+
+    if (!VALID_REFRESH_TYPES.includes(module)) {
+      return NextResponse.json(
+        { success: false, error: `Invalid refresh type "${module}". Valid types: ${VALID_REFRESH_TYPES.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
     logger.info('Admin manual refresh triggered', { module });
 
     // Build the internal refresh URL
