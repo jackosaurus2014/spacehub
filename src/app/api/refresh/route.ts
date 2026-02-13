@@ -337,6 +337,12 @@ export async function POST(request: Request) {
       results.patents = { count: patentCount };
     }
 
+    if (type === 'patents-market-intel') {
+      const { refreshPatentMarketIntelligence } = await import('@/lib/module-api-fetchers');
+      const sectionsUpdated = await refreshPatentMarketIntelligence();
+      results.patentsMarketIntel = { sectionsUpdated };
+    }
+
     logger.info(`Data refresh completed (type=${type || 'all'})`, results);
 
     return NextResponse.json({

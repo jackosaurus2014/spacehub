@@ -152,6 +152,12 @@ export function startCronJobs() {
     triggerEndpoint('/api/refresh?type=patents', 'patents-refresh');
   });
 
+  // Patent market intelligence — 11:30 AM UTC weekly (Saturdays)
+  // Broader aggregate: filings-by-year trends, top holders, tech categories
+  cron.schedule('30 11 * * 6', () => {
+    triggerEndpoint('/api/refresh?type=patents-market-intel', 'patents-market-intel');
+  });
+
   // Company digests — 9:00 AM UTC weekly (Mondays)
   // AI summarizes weekly news per company profile
   cron.schedule('0 9 * * 1', () => {
@@ -187,6 +193,7 @@ export function startCronJobs() {
       'company-digests: 9:00 AM UTC weekly (Mon)',
       'opportunities-analysis: 10:00 AM UTC twice weekly (Wed, Sun)',
       'patents-refresh: 11:00 AM UTC daily',
+      'patents-market-intel: 11:30 AM UTC weekly (Sat)',
       'regulatory-feeds: noon UTC daily',
       'sec-filings: 2:00 PM UTC daily',
     ],
