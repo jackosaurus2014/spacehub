@@ -13,7 +13,11 @@
   "lang": "en-US",
   "dir": "ltr",
   "categories": ["news", "business", "education", "productivity"],
-  "iarc_rating_id": "",
+  "serviceworker": {
+    "src": "/sw.js",
+    "scope": "/",
+    "type": "text/javascript"
+  },
   "icons": [
     {
       "src": "/icons/icon-48x48.png",
@@ -133,6 +137,20 @@
     }
   ],
   "prefer_related_applications": true,
+  "scope_extensions": [
+    { "origin": "*.spacenexus.com" },
+    { "origin": "*.railway.app" }
+  ],
+  "file_handlers": [
+    {
+      "action": "/",
+      "accept": {
+        "text/calendar": [".ics"],
+        "application/json": [".json", ".geojson"],
+        "text/csv": [".csv"]
+      }
+    }
+  ],
   "handle_links": "preferred",
   "launch_handler": {
     "client_mode": "navigate-existing"

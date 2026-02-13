@@ -122,6 +122,11 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <StructuredData />
+        {/* Inline service worker registration for PWA crawlers (PWABuilder, Lighthouse) */}
+        {/* The full SW lifecycle management is in ServiceWorkerRegistration component */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js',{scope:'/'})}
+        `}} />
         {/* PWA Meta Tags for iOS */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
