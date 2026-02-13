@@ -562,12 +562,14 @@ const FALLBACK_MARKET_PROJECTIONS: MarketProjection[] = [
   { year: 2035, low: 30.0, mid: 60.0, high: 120.0 },
 ];
 
-const STATUS_STYLES: Record<ManufacturingCompany['status'], { label: string; color: string; bg: string }> = {
+const STATUS_STYLES: Record<string, { label: string; color: string; bg: string }> = {
   operational: { label: 'Operational', color: 'text-green-400', bg: 'bg-green-900/30' },
+  active: { label: 'Operational', color: 'text-green-400', bg: 'bg-green-900/30' },
   development: { label: 'In Development', color: 'text-yellow-400', bg: 'bg-yellow-900/30' },
   'pre-revenue': { label: 'Pre-Revenue', color: 'text-orange-400', bg: 'bg-orange-900/30' },
   concept: { label: 'Concept', color: 'text-purple-400', bg: 'bg-purple-900/30' },
 };
+const DEFAULT_STATUS_STYLE = { label: 'Unknown', color: 'text-star-400', bg: 'bg-slate-700/30' };
 
 const MFG_TABS: { id: MfgTabId; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: '🏭' },
@@ -736,11 +738,15 @@ const FALLBACK_IMG_HERO_STATS = [
   { label: 'Best SAR GSD', value: '16cm', color: 'text-amber-400' },
 ];
 
-const IMG_STATUS_STYLES: Record<ProviderStatus, { bg: string; text: string; border: string }> = {
+const IMG_STATUS_STYLES: Record<string, { bg: string; text: string; border: string }> = {
   Operational: { bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/40' },
+  active: { bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/40' },
   Deploying: { bg: 'bg-cyan-900/30', text: 'text-cyan-400', border: 'border-cyan-500/40' },
+  deploying: { bg: 'bg-cyan-900/30', text: 'text-cyan-400', border: 'border-cyan-500/40' },
   Development: { bg: 'bg-amber-900/30', text: 'text-amber-400', border: 'border-amber-500/40' },
+  development: { bg: 'bg-amber-900/30', text: 'text-amber-400', border: 'border-amber-500/40' },
 };
+const DEFAULT_IMG_STATUS_STYLE = { bg: 'bg-slate-700/30', text: 'text-star-400', border: 'border-slate-500/40' };
 
 const SENSOR_COLORS: Record<SensorType, string> = {
   Optical: 'text-blue-400 bg-blue-500/10 border-blue-500/30',
@@ -1010,7 +1016,7 @@ function CompaniesTab() {
         >
           <option value="">All Statuses</option>
           {statuses.map((s) => (
-            <option key={s} value={s}>{STATUS_STYLES[s as ManufacturingCompany['status']].label}</option>
+            <option key={s} value={s}>{(STATUS_STYLES[s] || DEFAULT_STATUS_STYLE).label}</option>
           ))}
         </select>
         <select
@@ -1031,7 +1037,7 @@ function CompaniesTab() {
       {/* Company Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {filteredCompanies.map((company) => {
-          const statusStyle = STATUS_STYLES[company.status];
+          const statusStyle = STATUS_STYLES[company.status] || DEFAULT_STATUS_STYLE;
           return (
             <div
               key={company.id}
@@ -1494,7 +1500,7 @@ function ProductsTab() {
 
 function ImgProviderCard({ provider }: { provider: ImageryProvider }) {
   const [expanded, setExpanded] = useState(false);
-  const statusStyle = IMG_STATUS_STYLES[provider.status];
+  const statusStyle = IMG_STATUS_STYLES[provider.status] || DEFAULT_IMG_STATUS_STYLE;
   return (
     <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-cyan-500/30 transition-all group">
       <div className="flex items-start justify-between mb-3">
@@ -1503,7 +1509,7 @@ function ImgProviderCard({ provider }: { provider: ImageryProvider }) {
           <p className="text-star-400 text-sm mt-0.5">{provider.headquarters}</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-          <span className={`text-xs font-bold px-2.5 py-1 rounded border ${SENSOR_COLORS[provider.sensorType]}`}>{provider.sensorType}</span>
+          <span className={`text-xs font-bold px-2.5 py-1 rounded border ${SENSOR_COLORS[provider.sensorType] || 'text-star-400 bg-slate-500/10 border-slate-500/30'}`}>{provider.sensorType}</span>
           <span className={`text-xs font-bold px-2.5 py-1 rounded border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}>{provider.status}</span>
         </div>
       </div>
@@ -1563,7 +1569,7 @@ function ImgComparisonTable({ sensorFilter }: { sensorFilter: string }) {
           <tbody>{filtered.map((p, idx) => (
             <tr key={p.id} className={`border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors ${idx % 2 === 0 ? 'bg-slate-800/30' : ''}`}>
               <td className="py-3 px-4 text-white font-medium whitespace-nowrap">{p.name}</td>
-              <td className="py-3 px-4 whitespace-nowrap"><span className={`text-xs font-medium px-2 py-0.5 rounded border ${SENSOR_COLORS[p.sensorType]}`}>{p.sensorType}</span></td>
+              <td className="py-3 px-4 whitespace-nowrap"><span className={`text-xs font-medium px-2 py-0.5 rounded border ${SENSOR_COLORS[p.sensorType] || 'text-star-400 bg-slate-500/10 border-slate-500/30'}`}>{p.sensorType}</span></td>
               <td className="py-3 px-4 text-cyan-400 font-mono whitespace-nowrap">{p.resolutionM}m</td>
               <td className="py-3 px-4 text-star-300 whitespace-nowrap">{p.revisitHours}h</td>
               <td className="py-3 px-4 text-star-400 max-w-[200px] truncate">{p.spectralBands}</td>
