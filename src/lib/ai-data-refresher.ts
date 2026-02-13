@@ -53,16 +53,34 @@ const MODULE_NEWS_KEYWORDS: Record<string, string[]> = {
   'supply-chain': ['space supply chain', 'satellite components', 'space manufacturing', 'launch supply', 'radiation-hardened', 'space-grade', 'propulsion supplier', 'solar panel manufacturer', 'reaction wheel', 'star tracker'],
   'business-opportunities': ['space contract', 'space RFP', 'NASA award', 'space procurement', 'SAM.gov', 'space grant', 'SBIR', 'space partnership', 'space opportunity', 'commercial crew'],
   'ground-stations': ['ground station', 'satellite ground', 'KSAT', 'AWS Ground Station', 'SSC', 'antenna network', 'ground segment', 'TT&C', 'satellite uplink', 'deep space network'],
+  'space-capital': ['space VC', 'space venture capital', 'space investment fund', 'space funding round', 'space SPAC', 'space IPO', 'Seraphim Capital', 'Space Capital', 'space fund raise', 'space acquisition'],
+  'constellations': ['Starlink', 'OneWeb', 'Kuiper', 'constellation', 'satellite deploy', 'Iridium', 'Telesat', 'SDA Tranche', 'Guowang', 'satellite internet'],
 };
 
 // Module-specific prompt instructions
 const MODULE_PROMPTS: Record<string, string> = {
-  'space-stations': `Verify and update space station data:
+  'space-stations': `Verify and update space station data across all sections:
+
+ACTIVE STATIONS (section: active-stations):
+- ISS status: orbit altitude, speed, any anomalies, expected deorbit timeline
+- Tiangong station: current modules, operational status
+
+CREW (section: crew):
 - Current ISS crew: names, nationalities, mission names, arrival dates, expected return dates
-- ISS status: orbit altitude, speed, any issues
-- Tiangong station: current crew, mission name
-- Commercial stations: Axiom, Vast Haven-1, Orbital Reef, Starlab — latest development status, timeline updates
-- CLD (Commercial LEO Destinations) milestones: any updates to NASA awards or timelines`,
+- Current Tiangong crew: names, mission name
+
+CREW ROTATIONS (section: crew-rotations):
+- Upcoming Crew Dragon, Starliner, Soyuz missions — launch dates, crew assignments, mission names
+- Recently completed rotations
+
+COMMERCIAL STATIONS (section: commercial-stations):
+- Axiom Station: module status, Axiom-4 mission plans, timeline to free-flying station
+- Vast Haven-1: development milestones, launch target, funding status
+- Orbital Reef (Blue Origin/Sierra Space): design progress, NASA CLD award status, timeline
+- Starlab (Voyager/Airbus): development status, launch plans
+
+CLD MILESTONES (section: cld-milestones):
+- NASA Commercial LEO Destinations program: latest awards, deselections, schedule changes, funding updates`,
 
   'space-economy': `Verify and update space economy data across these sections:
 
@@ -250,6 +268,34 @@ For each opportunity: title, agency, value, awardee(s), deadline (if open), cate
 - Ground station capacity and frequency band availability (S, X, Ka, optical)
 - Emerging players and M&A activity in ground segment
 For each network/station: operator, locations, antenna count, supported bands, key customers, recent expansions, service model`,
+
+  'space-capital': `Verify and update space capital/investment data:
+
+INVESTORS (section: investors):
+- Top space-focused VC/PE firms: name, AUM, check size range, stage preference, sector focus, notable portfolio companies
+- Include: Space Capital, Seraphim Capital, Airbus Ventures, a16z, Bessemer Venture Partners, Type One Ventures, Promus Ventures, In-Q-Tel, Lockheed Martin Ventures, Boeing HorizonX
+- Update deal counts and recent investments
+- Flag any new funds launched or fund raises announced
+For each investor: id, name, type (VC/PE/CVC/Government), description, aum, checkSize (min-max), stagePreference, sectorFocus (array), dealCount, portfolio (array of company names), location, foundedYear
+
+FUNDING BY YEAR (section: funding-by-year):
+- Annual total VC investment in space sector (in billions USD)
+- Deal count per year
+- Update current year with latest available data
+For each year: year, amount (billions USD), dealCount`,
+
+  'constellations': `Verify and update satellite constellation data:
+
+CONSTELLATIONS (section: constellations):
+For each constellation (Starlink, OneWeb, Kuiper, Iridium, Telesat Lightspeed, Guowang, Qianfan, SDA Transport/Tracking):
+- activeSatellites: current count of operational satellites
+- authorizedSatellites: total authorized by FCC/ITU
+- status: deploying, operational, planned, or decommissioning
+- Regulatory updates: new FCC/ITU filings, spectrum coordination changes
+- Debris compliance updates: any incidents or policy changes
+- Service area or capability expansions
+- New generation plans or design changes
+For each: id, name, operator, country, activeSatellites, authorizedSatellites, status, altitudeKm, frequencyBands, serviceType, description`,
 };
 
 /**

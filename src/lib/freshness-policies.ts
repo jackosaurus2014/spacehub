@@ -20,7 +20,7 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
   'constellations': {
     ttlHours: 168, // 7 days
     refreshPriority: 'high',
-    refreshSource: 'api', // CelesTrak
+    refreshSource: 'both', // CelesTrak API + AI for regulatory/licensing details
     keywords: ['Starlink', 'OneWeb', 'Kuiper', 'constellation', 'satellite deploy'],
   },
   'space-economy': {
@@ -34,6 +34,12 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     refreshPriority: 'high',
     refreshSource: 'ai-research',
     keywords: ['startup', 'funding round', 'Series A', 'Series B', 'space startup', 'seed round', 'space venture'],
+  },
+  'space-capital': {
+    ttlHours: 168, // 7 days
+    refreshPriority: 'moderate',
+    refreshSource: 'ai-research',
+    keywords: ['space VC', 'space venture capital', 'space investment fund', 'space SPAC', 'space IPO', 'space fund', 'Seraphim', 'Space Capital'],
   },
   'space-defense': {
     ttlHours: 24,

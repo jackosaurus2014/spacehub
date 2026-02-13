@@ -29,7 +29,7 @@ import {
   fetchWhereTheIss,
   fetchSbirGov,
 } from './external-apis';
-import { upsertContent, bulkUpsertContent, logRefresh } from './dynamic-content';
+import { upsertContent, bulkUpsertContent, logRefresh, getContentItem } from './dynamic-content';
 import { logger } from './logger';
 
 // Circuit breakers for new APIs
@@ -328,6 +328,53 @@ export async function fetchAndStoreSatelliteCounts(): Promise<number> {
     }
   }
 
+  // Update the main constellation profiles with fresh satellite counts
+  if (updated > 0) {
+    try {
+      const existing = await getContentItem<Array<{ id: string; activeSatellites: number; [key: string]: unknown }>>('constellations:constellations');
+      if (existing?.data && Array.isArray(existing.data)) {
+        // Map CelesTrak keys to seed profile IDs
+        const keyToId: Record<string, string> = {
+          starlink: 'starlink', oneweb: 'oneweb', planet: 'planet',
+          spire: 'spire', iridium: 'iridium', globalstar: 'globalstar',
+          orbcomm: 'orbcomm', 'gps-ops': 'gps', galileo: 'galileo',
+          beidou: 'beidou', glonass: 'glonass',
+        };
+
+        // Collect fresh counts from what we just fetched
+        const freshCounts: Record<string, number> = {};
+        for (const [key, config] of Object.entries(CONSTELLATION_GROUPS)) {
+          const item = await getContentItem<{ activeSatellites: number }>(`constellations:${key}`);
+          if (item?.data?.activeSatellites) {
+            const profileId = keyToId[key] || key;
+            freshCounts[profileId] = item.data.activeSatellites;
+          }
+        }
+
+        // Merge fresh counts into profiles
+        const updatedProfiles = existing.data.map((profile) => {
+          if (freshCounts[profile.id]) {
+            return { ...profile, activeSatellites: freshCounts[profile.id] };
+          }
+          return profile;
+        });
+
+        await upsertContent(
+          'constellations:constellations',
+          'constellations',
+          'constellations',
+          updatedProfiles,
+          { sourceType: 'api', sourceUrl: 'https://celestrak.org' }
+        );
+        logger.info(`Constellation profiles updated with fresh satellite counts`);
+      }
+    } catch (e) {
+      logger.warn('Failed to update constellation profiles with fresh counts', {
+        error: e instanceof Error ? e.message : String(e),
+      });
+    }
+  }
+
   await logRefresh('constellations', 'api-fetch', updated > 0 ? 'success' : 'failed', {
     itemsUpdated: updated,
     apiCallsMade: updated,
@@ -395,6 +442,24 @@ export async function fetchAndStoreDefenseSpending(): Promise<number> {
           fetchedAt: new Date().toISOString(),
           source: 'USAspending.gov',
         },
+        { sourceType: 'api', sourceUrl: EXTERNAL_APIS.USASPENDING.baseUrl }
+      );
+
+      // Cross-populate to space-economy module for government budgets section
+      const budgetData = results.map((a) => ({
+        agency: a.agency,
+        country: 'United States',
+        budgetBillions: parseFloat((a.totalObligations / 1e9).toFixed(2)),
+        fiscalYear: a.fiscalYear,
+        change: 0,
+        source: 'USAspending.gov',
+      }));
+
+      await upsertContent(
+        'space-economy:government-budgets',
+        'space-economy',
+        'government-budgets',
+        budgetData,
         { sourceType: 'api', sourceUrl: EXTERNAL_APIS.USASPENDING.baseUrl }
       );
     }
