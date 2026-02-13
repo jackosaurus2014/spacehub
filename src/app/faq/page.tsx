@@ -314,7 +314,7 @@ export default function FAQPage() {
                 Contact Support
               </Link>
               <a
-                href="mailto:support@spacenexus.com"
+                href="mailto:support@spacenexus.us"
                 className="btn-secondary"
               >
                 Email Us

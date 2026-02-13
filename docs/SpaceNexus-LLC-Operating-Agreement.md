@@ -33,7 +33,7 @@ The Member may change the principal office at any time upon filing the appropria
 
 **1.6 Business Purpose.** The Company is organized for the following purposes:
 
-(a) To develop, operate, maintain, and monetize a technology platform known as "SpaceNexus" (located at spacenexus.com and related domains), which provides space industry intelligence, data analytics, market research, news aggregation, satellite tracking, regulatory compliance tools, and related information services through web applications, mobile applications, and application programming interfaces (APIs);
+(a) To develop, operate, maintain, and monetize a technology platform known as "SpaceNexus" (located at spacenexus.us and related domains), which provides space industry intelligence, data analytics, market research, news aggregation, satellite tracking, regulatory compliance tools, and related information services through web applications, mobile applications, and application programming interfaces (APIs);
 
 (b) To offer subscription-based software-as-a-service ("SaaS") products, including tiered access plans (Explorer, Professional, and Enterprise), API access, advertising services, and related digital products;
 
@@ -77,7 +77,7 @@ The Member holds one hundred percent (100%) of the membership interest in the Co
 
 **3.2 Intellectual Property Contribution.** The Member has assigned, transferred, and contributed to the Company all right, title, and interest in and to the following intellectual property assets, which shall be and remain the sole property of the Company:
 
-(a) The domain name(s): spacenexus.com, and all related domain names owned or controlled by the Member in connection with the business;
+(a) The domain name(s): spacenexus.us, and all related domain names owned or controlled by the Member in connection with the business;
 
 (b) All source code, software, databases, and technology comprising the SpaceNexus platform, including but not limited to the web application, API endpoints, mobile applications, and related tools;
 
@@ -175,7 +175,7 @@ The Member holds one hundred percent (100%) of the membership interest in the Co
 
 **6.1 Platform Assets.** The following digital and technology assets are the sole property of the Company and shall be treated as Company assets for all purposes under this Agreement:
 
-(a) **Domain Names:** All domain names registered in connection with the Company's business, including spacenexus.com and related domains;
+(a) **Domain Names:** All domain names registered in connection with the Company's business, including spacenexus.us and related domains;
 
 (b) **Source Code and Software:** All proprietary source code, compiled code, scripts, configuration files, and software comprising the SpaceNexus platform, whether stored in version control repositories (e.g., GitHub), cloud services, or local environments;
 
@@ -405,7 +405,7 @@ Pursuant to Article III, the Member's initial contribution to the Company capita
 |---|---|
 | Cash | $______________ |
 | SpaceNexus platform source code and software | $______________ |
-| Domain name: spacenexus.com | $______________ |
+| Domain name: spacenexus.us | $______________ |
 | Brand assets (logo, design files) | $______________ |
 | Customer/subscriber database | $______________ |
 | Other: ________________________________________ | $______________ |
@@ -465,7 +465,7 @@ The following is a record of the Company's critical digital assets and associate
 
 | Asset Category | Service/Provider | Account Identifier | Notes |
 |---|---|---|---|
-| Domain Registration | __________________ | __________________ | Primary: spacenexus.com |
+| Domain Registration | __________________ | __________________ | Primary: spacenexus.us |
 | Web Hosting | Railway | __________________ | Production environment |
 | Source Code | GitHub | jackosaurus2014/spacehub | Private repository |
 | Database | Railway (PostgreSQL) | __________________ | Production database |

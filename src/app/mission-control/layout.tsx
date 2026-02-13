@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Mission Control | SpaceNexus',
     description: 'Track upcoming space missions, rocket launches, crewed expeditions, and satellite deployments from agencies worldwide.',
-    url: 'https://spacenexus.com/mission-control',
+    url: 'https://spacenexus.us/mission-control',
     images: [
       {
         url: '/og-mission-control.png',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     images: ['/og-mission-control.png'],
   },
   alternates: {
-    canonical: 'https://spacenexus.com/mission-control',
+    canonical: 'https://spacenexus.us/mission-control',
   },
 };
 

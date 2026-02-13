@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     authors: ['SpaceNexus'],
   },
   alternates: {
-    canonical: 'https://spacenexus.com/guide/space-launch-cost-comparison',
+    canonical: 'https://spacenexus.us/guide/space-launch-cost-comparison',
   },
 };
 
@@ -80,16 +80,16 @@ function buildStructuredData() {
     headline: 'Space Launch Cost Comparison 2026: Prices by Vehicle & Provider',
     description:
       'Comprehensive comparison of space launch costs across all major vehicles and providers, including cost per kilogram data and pricing trends.',
-    author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.com' },
+    author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
     publisher: {
       '@type': 'Organization',
       name: 'SpaceNexus',
-      logo: { '@type': 'ImageObject', url: 'https://spacenexus.com/logo.png' },
+      logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
     dateModified: '2026-02-08T00:00:00Z',
-    mainEntityOfPage: 'https://spacenexus.com/guide/space-launch-cost-comparison',
-    image: 'https://spacenexus.com/og-image.png',
+    mainEntityOfPage: 'https://spacenexus.us/guide/space-launch-cost-comparison',
+    image: 'https://spacenexus.us/og-image.png',
   };
 
   const faqSchema = {

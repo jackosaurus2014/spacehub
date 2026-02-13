@@ -448,7 +448,7 @@ function PricingPageContent() {
             Have questions? We&apos;re here to help.
           </p>
           <Link
-            href="mailto:support@spacenexus.com"
+            href="mailto:support@spacenexus.us"
             className="text-nebula-300 hover:text-nebula-200 transition-colors"
           >
             Contact Support &rarr;

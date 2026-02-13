@@ -85,7 +85,7 @@ export async function POST(req: Request) {
     const hasHadTrial = user.trialTier !== null || user.trialEndDate !== null;
     const trialPeriodDays = hasHadTrial ? undefined : 14;
 
-    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.com';
+    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 
     // Create Stripe Checkout Session
     const checkoutSession = await getStripe().checkout.sessions.create({

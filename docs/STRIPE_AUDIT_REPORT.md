@@ -49,7 +49,7 @@ All environment variables must be set in `.env` (local dev) and Railway (product
 | `STRIPE_PRICE_PRO_YEARLY` | Price ID for Pro Yearly plan | Stripe Dashboard > Products > Pro > Yearly Price | Yes |
 | `STRIPE_PRICE_ENTERPRISE_MONTHLY` | Price ID for Enterprise Monthly plan | Stripe Dashboard > Products > Enterprise > Monthly Price | Yes |
 | `STRIPE_PRICE_ENTERPRISE_YEARLY` | Price ID for Enterprise Yearly plan | Stripe Dashboard > Products > Enterprise > Yearly Price | Yes |
-| `NEXT_PUBLIC_APP_URL` | App base URL for redirects | Your domain (e.g., `https://spacenexus.com`) | Yes |
+| `NEXT_PUBLIC_APP_URL` | App base URL for redirects | Your domain (e.g., `https://spacenexus.us`) | Yes |
 | `RESEND_API_KEY` | For sending payment emails (optional but recommended) | Resend Dashboard > API Keys | Recommended |
 | `NEWSLETTER_FROM_EMAIL` | Sender email for payment notifications | Your verified Resend domain | Recommended |
 
@@ -374,7 +374,7 @@ This works because `stripeCustomerId` has a `@unique` constraint in the Prisma s
    STRIPE_PRICE_PRO_YEARLY=price_xxx
    STRIPE_PRICE_ENTERPRISE_MONTHLY=price_xxx
    STRIPE_PRICE_ENTERPRISE_YEARLY=price_xxx
-   NEXT_PUBLIC_APP_URL=https://spacenexus.com
+   NEXT_PUBLIC_APP_URL=https://spacenexus.us
    ```
    Also ensure `RESEND_API_KEY` and `NEWSLETTER_FROM_EMAIL` are set for payment notification emails.
 

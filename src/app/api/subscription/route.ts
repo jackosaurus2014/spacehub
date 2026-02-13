@@ -121,7 +121,7 @@ export async function POST(request: Request) {
     // Handle Stripe checkout redirect
     if (body.action === 'create-checkout') {
       const checkoutRes = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.com'}/api/stripe/checkout`,
+        `${process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us'}/api/stripe/checkout`,
         {
           method: 'POST',
           headers: {
@@ -138,7 +138,7 @@ export async function POST(request: Request) {
     // Handle Stripe portal redirect
     if (body.action === 'create-portal') {
       const portalRes = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.com'}/api/stripe/portal`,
+        `${process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us'}/api/stripe/portal`,
         {
           method: 'POST',
           headers: {

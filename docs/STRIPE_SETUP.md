@@ -19,7 +19,7 @@ STRIPE_PRICE_ENTERPRISE_MONTHLY=price_...
 STRIPE_PRICE_ENTERPRISE_YEARLY=price_...
 
 # App URL (used for checkout success/cancel redirects)
-NEXT_PUBLIC_APP_URL=https://spacenexus.com
+NEXT_PUBLIC_APP_URL=https://spacenexus.us
 ```
 
 ## Stripe Dashboard Setup

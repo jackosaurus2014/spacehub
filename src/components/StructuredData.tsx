@@ -3,8 +3,8 @@ export default function StructuredData() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'SpaceNexus',
-    url: 'https://spacenexus.com',
-    logo: 'https://spacenexus.com/logo.png',
+    url: 'https://spacenexus.us',
+    logo: 'https://spacenexus.us/logo.png',
     description:
       'SpaceNexus is a comprehensive space industry intelligence platform providing real-time data on launches, market trends, solar activity, and business opportunities.',
     foundingDate: '2024',
@@ -16,7 +16,7 @@ export default function StructuredData() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      email: 'support@spacenexus.com',
+      email: 'support@spacenexus.us',
       availableLanguage: ['English'],
     },
     address: {
@@ -29,14 +29,14 @@ export default function StructuredData() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'SpaceNexus',
-    url: 'https://spacenexus.com',
+    url: 'https://spacenexus.us',
     description:
       'Your comprehensive gateway to space industry intelligence. Track launches, market data, solar activity, and discover business opportunities.',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://spacenexus.com/news?search={search_term_string}',
+        urlTemplate: 'https://spacenexus.us/news?search={search_term_string}',
       },
       'query-input': 'required name=search_term_string',
     },
@@ -45,7 +45,7 @@ export default function StructuredData() {
       name: 'SpaceNexus',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://spacenexus.com/logo.png',
+        url: 'https://spacenexus.us/logo.png',
       },
     },
   };

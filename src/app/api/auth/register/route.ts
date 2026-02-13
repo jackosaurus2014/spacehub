@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       const { Resend } = await import('resend');
       const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
-        from: process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <noreply@spacenexus.com>',
+        from: process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <noreply@spacenexus.us>',
         to: email,
         subject: 'Verify Your SpaceNexus Account',
         html,

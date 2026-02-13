@@ -94,7 +94,7 @@ export async function GET() {
 
         const summary = escapeICalText(event.name);
         const location = event.location ? escapeICalText(event.location) : '';
-        const uid = `${event.id}@spacenexus.com`;
+        const uid = `${event.id}@spacenexus.us`;
 
         const lines = [
           'BEGIN:VEVENT',

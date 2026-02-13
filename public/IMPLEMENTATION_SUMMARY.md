@@ -110,7 +110,7 @@
    - See `public/AD_SETUP_GUIDE.md` for detailed instructions
 
 4. **Update Domain References**
-   - Search and replace `spacenexus.com` with your actual domain in:
+   - Search and replace `spacenexus.us` with your actual domain in:
      - `src/app/layout.tsx` (canonical URL, OG tags)
      - `src/app/sitemap.ts`
      - `src/app/robots.ts`

@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { logger } from '@/lib/logger';
 import { dispatchWebhook } from '@/lib/webhook-dispatcher';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.com';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 
 /** Maximum push notifications per user per day */
 const DAILY_PUSH_LIMIT = 5;
@@ -261,7 +261,7 @@ async function sendAlertEmail(
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: process.env.EMAIL_FROM || 'SpaceNexus Alerts <alerts@spacenexus.com>',
+        from: process.env.EMAIL_FROM || 'SpaceNexus Alerts <alerts@spacenexus.us>',
         to: user.email,
         subject: title,
         html,
@@ -373,7 +373,7 @@ export async function sendDailyDigest(prisma: PrismaClient): Promise<{
             Authorization: `Bearer ${resendApiKey}`,
           },
           body: JSON.stringify({
-            from: process.env.EMAIL_FROM || 'SpaceNexus Alerts <alerts@spacenexus.com>',
+            from: process.env.EMAIL_FROM || 'SpaceNexus Alerts <alerts@spacenexus.us>',
             to: user.email,
             subject: `SpaceNexus Alert Digest - ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
             html,
@@ -499,7 +499,7 @@ export async function sendWeeklyDigest(prisma: PrismaClient): Promise<{
             Authorization: `Bearer ${resendApiKey}`,
           },
           body: JSON.stringify({
-            from: process.env.EMAIL_FROM || 'SpaceNexus Alerts <alerts@spacenexus.com>',
+            from: process.env.EMAIL_FROM || 'SpaceNexus Alerts <alerts@spacenexus.us>',
             to: user.email,
             subject: `SpaceNexus Weekly Alert Digest - Week of ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`,
             html,

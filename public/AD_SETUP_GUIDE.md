@@ -19,7 +19,7 @@ This guide walks you through setting up ad monetization for the SpaceNexus appli
 
 1. Visit [Google AdSense](https://www.google.com/adsense/start/)
 2. Sign in with your Google account
-3. Enter your website URL: `https://spacenexus.com`
+3. Enter your website URL: `https://spacenexus.us`
 4. Select your country and accept the Terms of Service
 5. Click "Start using AdSense"
 

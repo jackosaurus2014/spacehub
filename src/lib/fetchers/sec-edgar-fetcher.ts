@@ -46,7 +46,7 @@ export async function fetchSECFilings(): Promise<SECFiling[]> {
           `https://efts.sec.gov/LATEST/search-index?q=%22${encodeURIComponent(company.name)}%22&dateRange=custom&startdt=${getThreeMonthsAgo()}&enddt=${getToday()}&forms=${targetForms.join(',')}&from=0&size=5`,
           {
             headers: {
-              'User-Agent': 'SpaceNexus info@spacenexus.com',
+              'User-Agent': 'SpaceNexus info@spacenexus.us',
               'Accept': 'application/json',
             },
             signal: AbortSignal.timeout(10000),
@@ -59,7 +59,7 @@ export async function fetchSECFilings(): Promise<SECFiling[]> {
             `https://data.sec.gov/submissions/CIK${company.cik}.json`,
             {
               headers: {
-                'User-Agent': 'SpaceNexus info@spacenexus.com',
+                'User-Agent': 'SpaceNexus info@spacenexus.us',
                 'Accept': 'application/json',
               },
               signal: AbortSignal.timeout(10000),

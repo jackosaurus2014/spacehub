@@ -38,7 +38,7 @@ interface DigestEmailResult {
   subject: string;
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.com';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 
 // Common styles
 const styles = {

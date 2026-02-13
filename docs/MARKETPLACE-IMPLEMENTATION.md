@@ -192,7 +192,7 @@ The matching engine runs automatically when an RFQ is submitted (and can be re-t
 
 ### 5.4 White-Label Provider Portals
 - Branded storefronts for each verified provider
-- Custom domains (provider.spacenexus.com)
+- Custom domains (provider.spacenexus.us)
 - Self-service portal customization
 
 ### 5.5 International Expansion
@@ -233,7 +233,7 @@ The matching engine runs automatically when an RFQ is submitted (and can be re-t
   - Pro tier ($99/mo): Unlimited listings, priority matching, analytics
   - Enterprise tier (custom): White-label portal, API access, dedicated support
 - [ ] **Explore Space Foundation partnership** for industry credibility
-- [ ] **Set up dedicated email** for marketplace notifications (marketplace@spacenexus.com)
+- [ ] **Set up dedicated email** for marketplace notifications (marketplace@spacenexus.us)
 - [ ] **Legal: Update Terms of Service** for marketplace transactions
 - [ ] **Legal: Review ITAR implications** for cross-border matches
 

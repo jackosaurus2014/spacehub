@@ -539,7 +539,7 @@ Expected results: 200-800 prospects. Save the top 150.
 |------|-------|------|-------|
 | Optimize CEO LinkedIn profile: headline, about, featured section | CEO | 2 hrs | Headline: "CEO, SpaceNexus -- Space Industry Intelligence Platform | Helping space companies make data-driven decisions" |
 | Create/optimize SpaceNexus company page | CEO/Marketing | 2 hrs | Banner image showing platform, complete "About" section, add products |
-| Install LinkedIn Insight Tag on spacenexus.com | Engineering | 30 min | Required for retargeting. Add to all pages |
+| Install LinkedIn Insight Tag on spacenexus.us | Engineering | 30 min | Required for retargeting. Add to all pages |
 | Set up Buffer or Hootsuite scheduling | CEO | 1 hr | Schedule one week of posts in advance |
 | Subscribe to Sales Navigator Core | CEO | 30 min | $99.99/month |
 | Build initial prospect lists (5 searches above) | CEO | 3 hrs | Save top 1,500 leads across all segments |

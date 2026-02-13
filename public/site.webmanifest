@@ -138,7 +138,7 @@
   ],
   "prefer_related_applications": true,
   "scope_extensions": [
-    { "origin": "*.spacenexus.com" },
+    { "origin": "*.spacenexus.us" },
     { "origin": "*.railway.app" }
   ],
   "file_handlers": [

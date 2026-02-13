@@ -179,7 +179,7 @@ Steps:
 
      This creates an `ios/` directory with an Xcode project.
 
-  4. Since our config points to https://spacenexus.com, the app will
+  4. Since our config points to https://spacenexus.us, the app will
      load the live website. This is the simplest approach.
 
   5. Open in Xcode:
@@ -243,12 +243,12 @@ Website: https://www.pwabuilder.com/
 
 Steps:
   1. Go to https://www.pwabuilder.com/
-  2. Enter: https://spacenexus.com
+  2. Enter: https://spacenexus.us
   3. Click "Package for stores" > "iOS"
   4. Configure:
      - Bundle ID: com.spacenexus.app
      - App name: SpaceNexus
-     - URL: https://spacenexus.com
+     - URL: https://spacenexus.us
      - Status bar color: #0f172a
   5. Download the generated Xcode project
   6. Open in Xcode on a Mac
@@ -293,7 +293,7 @@ Basic implementation outline:
           webView.scrollView.contentInsetAdjustmentBehavior = .automatic
           view.addSubview(webView)
 
-          let url = URL(string: "https://spacenexus.com")!
+          let url = URL(string: "https://spacenexus.us")!
           webView.load(URLRequest(url: url))
       }
   }
@@ -345,14 +345,14 @@ Regardless of which option you choose, the Xcode project needs configuration.
   <key>CFBundleVersion</key>
   <string>1</string>
 
-  <!-- Allow loading from spacenexus.com -->
+  <!-- Allow loading from spacenexus.us -->
   <key>NSAppTransportSecurity</key>
   <dict>
     <key>NSAllowsArbitraryLoads</key>
     <false/>
     <key>NSExceptionDomains</key>
     <dict>
-      <key>spacenexus.com</key>
+      <key>spacenexus.us</key>
       <dict>
         <key>NSIncludesSubdomains</key>
         <true/>
@@ -469,13 +469,13 @@ Steps:
   space,rocket,launch,satellite,NASA,SpaceX,orbital,solar,market,aerospace
 
 --- Support URL ---
-  https://spacenexus.com/contact (or create a /support page)
+  https://spacenexus.us/contact (or create a /support page)
 
 --- Marketing URL ---
-  https://spacenexus.com
+  https://spacenexus.us
 
 --- Privacy Policy URL ---
-  https://spacenexus.com/privacy
+  https://spacenexus.us/privacy
 
 ================================================================================
 10. APP REVIEW GUIDELINES
@@ -754,7 +754,7 @@ Review timeline:
 
 --- Updating the App ---
 
-  Since the app loads from https://spacenexus.com:
+  Since the app loads from https://spacenexus.us:
   - Web content updates are automatic (no new build needed)
   - Native wrapper updates require a new build and review
 
@@ -855,10 +855,10 @@ Review timeline:
      }
 
   2. Ensure it is served at:
-     https://spacenexus.com/.well-known/apple-app-site-association
+     https://spacenexus.us/.well-known/apple-app-site-association
 
   3. Add "Associated Domains" capability in Xcode:
-     applinks:spacenexus.com
+     applinks:spacenexus.us
 
 --- "Missing Purpose String" Rejection ---
 

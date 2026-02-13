@@ -27,7 +27,7 @@ import ModuleNavBar from '@/components/ModuleNavBar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://spacenexus.com'),
+  metadataBase: new URL('https://spacenexus.us'),
   title: {
     template: 'SpaceNexus | %s',
     default: 'SpaceNexus - Space Industry Intelligence Platform',
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://spacenexus.com',
+    url: 'https://spacenexus.us',
     siteName: 'SpaceNexus',
     title: 'SpaceNexus - Space Industry Intelligence Platform',
     description: 'Your comprehensive gateway to space industry intelligence. Track launches, market data, solar activity, and discover business opportunities.',
@@ -98,7 +98,7 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   alternates: {
-    canonical: 'https://spacenexus.com',
+    canonical: 'https://spacenexus.us',
   },
 };
 

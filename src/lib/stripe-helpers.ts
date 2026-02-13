@@ -1,6 +1,6 @@
 import { escapeHtml } from '@/lib/errors';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.com';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 
 /**
  * Generate an email warning the user about a failed payment.
@@ -43,7 +43,7 @@ export function generatePaymentFailedEmail(
             </td></tr>
           </table>
           <p style="margin:0;color:#64748b;font-size:13px;line-height:1.5;">
-            If you believe this is an error, please contact our support team at <a href="mailto:support@spacenexus.com" style="color:#06b6d4;">support@spacenexus.com</a>.
+            If you believe this is an error, please contact our support team at <a href="mailto:support@spacenexus.us" style="color:#06b6d4;">support@spacenexus.us</a>.
           </p>
         </td></tr>
       </table>
@@ -52,7 +52,7 @@ export function generatePaymentFailedEmail(
 </body>
 </html>`;
 
-  const text = `Payment Failed\n\nHi ${userName}, we were unable to process your payment of ${formattedAmount} for your SpaceNexus subscription.\n\nPlease update your payment method to avoid any interruption to your service: ${portalUrl}\n\nIf you believe this is an error, please contact support@spacenexus.com.`;
+  const text = `Payment Failed\n\nHi ${userName}, we were unable to process your payment of ${formattedAmount} for your SpaceNexus subscription.\n\nPlease update your payment method to avoid any interruption to your service: ${portalUrl}\n\nIf you believe this is an error, please contact support@spacenexus.us.`;
 
   return { subject, html, text };
 }

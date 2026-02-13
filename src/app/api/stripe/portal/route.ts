@@ -28,7 +28,7 @@ export async function POST() {
       return unauthorizedError('No active subscription found. Please subscribe first.');
     }
 
-    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.com';
+    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 
     // Create Stripe billing portal session
     const portalSession = await getStripe().billingPortal.sessions.create({

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Market Intel | SpaceNexus',
     description: 'Track stock performance, valuations, and funding rounds of leading space companies worldwide.',
-    url: 'https://spacenexus.com/market-intel',
+    url: 'https://spacenexus.us/market-intel',
     images: [
       {
         url: '/og-market-intel.png',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     images: ['/og-market-intel.png'],
   },
   alternates: {
-    canonical: 'https://spacenexus.com/market-intel',
+    canonical: 'https://spacenexus.us/market-intel',
   },
 };
 

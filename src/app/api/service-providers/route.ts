@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
       if (process.env.ADMIN_EMAIL && process.env.RESEND_API_KEY) {
         await resend.emails.send({
-          from: process.env.EMAIL_FROM || 'SpaceNexus <noreply@spacenexus.com>',
+          from: process.env.EMAIL_FROM || 'SpaceNexus <noreply@spacenexus.us>',
           to: process.env.ADMIN_EMAIL,
           subject: `New Service Provider Submission: ${data.businessName}`,
           html: `

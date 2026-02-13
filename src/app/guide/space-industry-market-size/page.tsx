@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     authors: ['SpaceNexus'],
   },
   alternates: {
-    canonical: 'https://spacenexus.com/guide/space-industry-market-size',
+    canonical: 'https://spacenexus.us/guide/space-industry-market-size',
   },
 };
 
@@ -82,16 +82,16 @@ function buildStructuredData() {
     headline: 'Space Industry Market Size 2026: Data, Trends & Forecasts',
     description:
       'Comprehensive analysis of the global space economy market size, sector breakdowns, growth drivers, and forecasts through 2035.',
-    author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.com' },
+    author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
     publisher: {
       '@type': 'Organization',
       name: 'SpaceNexus',
-      logo: { '@type': 'ImageObject', url: 'https://spacenexus.com/logo.png' },
+      logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
     dateModified: '2026-02-08T00:00:00Z',
-    mainEntityOfPage: 'https://spacenexus.com/guide/space-industry-market-size',
-    image: 'https://spacenexus.com/og-image.png',
+    mainEntityOfPage: 'https://spacenexus.us/guide/space-industry-market-size',
+    image: 'https://spacenexus.us/og-image.png',
   };
 
   const faqSchema = {

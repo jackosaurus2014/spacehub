@@ -3,7 +3,7 @@
   "appName": "SpaceNexus",
   "webDir": "out",
   "server": {
-    "url": "https://spacenexus.com",
+    "url": "https://spacenexus.us",
     "cleartext": false
   },
   "ios": {

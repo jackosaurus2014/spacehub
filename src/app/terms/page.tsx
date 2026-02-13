@@ -277,7 +277,7 @@ export default function TermsOfServicePage() {
               </p>
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-6">
                 <p className="text-slate-700 font-medium">SpaceNexus Legal Team</p>
-                <p className="text-slate-400 mt-2">Email: legal@spacenexus.com</p>
+                <p className="text-slate-400 mt-2">Email: legal@spacenexus.us</p>
                 <p className="text-slate-400">Address: 1234 Orbit Drive, Suite 500, Houston, TX 77058</p>
               </div>
             </section>

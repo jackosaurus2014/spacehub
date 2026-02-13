@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://spacenexus.com';
+  const baseUrl = 'https://spacenexus.us';
 
   return {
     rules: [

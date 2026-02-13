@@ -22,7 +22,7 @@ function getResend(): Resend | null {
   return resendClient;
 }
 
-const FROM_EMAIL = process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <newsletter@spacenexus.com>';
+const FROM_EMAIL = process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <newsletter@spacenexus.us>';
 
 /**
  * Stripe webhook handler.

@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     authors: ['SpaceNexus'],
   },
   alternates: {
-    canonical: 'https://spacenexus.com/guide/commercial-space-economy',
+    canonical: 'https://spacenexus.us/guide/commercial-space-economy',
   },
 };
 
@@ -82,16 +82,16 @@ function buildStructuredData() {
     headline: 'Commercial Space Economy Overview: Industries, Revenue & Opportunities',
     description:
       'Comprehensive overview of the commercial space economy including satellite broadband, Earth observation, launch services, and emerging space industries.',
-    author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.com' },
+    author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
     publisher: {
       '@type': 'Organization',
       name: 'SpaceNexus',
-      logo: { '@type': 'ImageObject', url: 'https://spacenexus.com/logo.png' },
+      logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
     dateModified: '2026-02-08T00:00:00Z',
-    mainEntityOfPage: 'https://spacenexus.com/guide/commercial-space-economy',
-    image: 'https://spacenexus.com/og-image.png',
+    mainEntityOfPage: 'https://spacenexus.us/guide/commercial-space-economy',
+    image: 'https://spacenexus.us/og-image.png',
   };
 
   const faqSchema = {

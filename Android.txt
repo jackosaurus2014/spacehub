@@ -65,7 +65,7 @@ Steps:
   5. Complete your developer profile:
      - Developer name: "SpaceNexus" or your company name
      - Email address: contact email for users
-     - Website: https://spacenexus.com
+     - Website: https://spacenexus.us
      - Phone number (for account verification)
   6. Verify your identity (Google may require ID verification)
      - This can take 1-7 days to process
@@ -137,7 +137,7 @@ Steps:
 
   1. Go to https://www.pwabuilder.com/
 
-  2. Enter your URL: https://spacenexus.com
+  2. Enter your URL: https://spacenexus.us
 
   3. PWABuilder will analyze your PWA and score it
      - It checks manifest, service worker, security, etc.
@@ -150,7 +150,7 @@ Steps:
      - App name: SpaceNexus
      - App version: 1.0.0 (match your package.json version)
      - Version code: 1
-     - Host: spacenexus.com
+     - Host: spacenexus.us
      - Start URL: /
      - Theme color: #0f172a
      - Background color: #0f172a
@@ -220,7 +220,7 @@ Steps:
      npx cap init SpaceNexus com.spacenexus.app --web-dir out
 
      Note: capacitor.config.json already exists in this project with the
-     server URL pointing to https://spacenexus.com. This means the app
+     server URL pointing to https://spacenexus.us. This means the app
      will load the live website rather than bundled static files.
 
   3. Add the Android platform:
@@ -295,17 +295,17 @@ Steps:
      }]
 
   3. Ensure this file is served at:
-     https://spacenexus.com/.well-known/assetlinks.json
+     https://spacenexus.us/.well-known/assetlinks.json
 
      In Next.js, create: src/app/.well-known/assetlinks.json/route.ts
 
      Or place the file in: public/.well-known/assetlinks.json
 
   4. Verify the file is accessible:
-     curl https://spacenexus.com/.well-known/assetlinks.json
+     curl https://spacenexus.us/.well-known/assetlinks.json
 
   5. Validate using Google's tool:
-     https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://spacenexus.com&relation=delegate_permission/common.handle_all_urls
+     https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://spacenexus.us&relation=delegate_permission/common.handle_all_urls
 
   IMPORTANT: Without proper Digital Asset Links, your TWA will show the
   Chrome URL bar at the top, making it look like a website rather than an app.
@@ -433,8 +433,8 @@ app listing in Google Play Console.
 
   Contact details:
     - Email: (your support email)
-    - Website: https://spacenexus.com
-    - Privacy policy URL: https://spacenexus.com/privacy
+    - Website: https://spacenexus.us
+    - Privacy policy URL: https://spacenexus.us/privacy
 
 --- Graphics ---
 
@@ -475,7 +475,7 @@ you MUST update the content rating questionnaire.
 [DONE] Privacy policy page exists at /privacy on the website.
 
 Requirements for Google Play:
-  - Must be accessible via a URL (https://spacenexus.com/privacy)
+  - Must be accessible via a URL (https://spacenexus.us/privacy)
   - Must describe what data is collected and how it is used
   - Must mention any third-party services (analytics, auth, APIs)
   - Must include contact information
@@ -581,7 +581,7 @@ Common rejection reasons:
 --- Updating the App ---
 
   Since this is a TWA/PWA, most updates are automatic! When you deploy
-  changes to https://spacenexus.com, users get the update automatically.
+  changes to https://spacenexus.us, users get the update automatically.
 
   You only need to update the Play Store listing when:
   - The manifest changes (new icons, name changes)
@@ -625,12 +625,12 @@ Common rejection reasons:
 --- URL bar showing in TWA ---
   Solution:
   - Verify assetlinks.json is served correctly at:
-    https://spacenexus.com/.well-known/assetlinks.json
+    https://spacenexus.us/.well-known/assetlinks.json
   - Ensure SHA-256 fingerprint matches the SIGNING key (not upload key)
   - Use Google Play Console > Setup > App Signing to get the correct fingerprint
 
   Digital Asset Links validation tool:
-  https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://spacenexus.com&relation=delegate_permission/common.handle_all_urls
+  https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://spacenexus.us&relation=delegate_permission/common.handle_all_urls
 
 --- App crashes on launch ---
   Solution:
@@ -661,7 +661,7 @@ Fastest path to the Play Store:
   2. Take screenshots of your app on mobile viewport
   3. Create Google Play Developer account ($25)
   4. Go to https://www.pwabuilder.com/
-  5. Enter https://spacenexus.com
+  5. Enter https://spacenexus.us
   6. Generate Android package
   7. Download AAB and signing key (SAVE THE KEY!)
   8. Set up Digital Asset Links (assetlinks.json)

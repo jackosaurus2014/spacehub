@@ -22,8 +22,8 @@ function getResend(): Resend | null {
   return resendClient;
 }
 
-const FROM_EMAIL = process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <newsletter@spacenexus.com>';
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@spacenexus.com';
+const FROM_EMAIL = process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <newsletter@spacenexus.us>';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@spacenexus.us';
 
 export async function POST(request: Request) {
   try {

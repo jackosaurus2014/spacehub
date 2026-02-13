@@ -331,10 +331,10 @@ export default function ContactPage() {
                     <div>
                       <p className="text-slate-400 text-sm font-medium">Email</p>
                       <a
-                        href="mailto:support@spacenexus.com"
+                        href="mailto:support@spacenexus.us"
                         className="text-cyan-400 hover:text-cyan-300 transition-colors"
                       >
-                        support@spacenexus.com
+                        support@spacenexus.us
                       </a>
                     </div>
                   </div>

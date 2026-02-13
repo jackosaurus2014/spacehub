@@ -934,7 +934,7 @@ function SpaceTalentHubContent() {
                   Join our network to connect with companies and projects seeking your expertise.
                 </p>
                 <a
-                  href="mailto:talent@spacenexus.com?subject=Expert Network Application"
+                  href="mailto:talent@spacenexus.us?subject=Expert Network Application"
                   className="inline-flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-6 py-2 rounded-lg transition-colors"
                 >
                   Apply to Join Network
@@ -1056,7 +1056,7 @@ function SpaceTalentHubContent() {
                   panel discussions, and technical presentations.
                 </p>
                 <a
-                  href="mailto:webinars@spacenexus.com?subject=Webinar Hosting Inquiry"
+                  href="mailto:webinars@spacenexus.us?subject=Webinar Hosting Inquiry"
                   className="inline-flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white font-medium px-6 py-2 rounded-lg transition-colors"
                 >
                   Propose a Webinar

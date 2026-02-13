@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     authors: ['SpaceNexus'],
   },
   alternates: {
-    canonical: 'https://spacenexus.com/guide/itar-compliance-guide',
+    canonical: 'https://spacenexus.us/guide/itar-compliance-guide',
   },
 };
 
@@ -82,16 +82,16 @@ function buildStructuredData() {
     headline: 'ITAR Compliance Guide for Space Companies',
     description:
       'Complete guide to ITAR compliance for space companies, covering USML categories, DDTC registration, licensing, technical data controls, and penalties.',
-    author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.com' },
+    author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
     publisher: {
       '@type': 'Organization',
       name: 'SpaceNexus',
-      logo: { '@type': 'ImageObject', url: 'https://spacenexus.com/logo.png' },
+      logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
     dateModified: '2026-02-08T00:00:00Z',
-    mainEntityOfPage: 'https://spacenexus.com/guide/itar-compliance-guide',
-    image: 'https://spacenexus.com/og-image.png',
+    mainEntityOfPage: 'https://spacenexus.us/guide/itar-compliance-guide',
+    image: 'https://spacenexus.us/og-image.png',
   };
 
   const faqSchema = {

@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     authors: ['SpaceNexus'],
   },
   alternates: {
-    canonical: 'https://spacenexus.com/guide/how-satellite-tracking-works',
+    canonical: 'https://spacenexus.us/guide/how-satellite-tracking-works',
   },
 };
 
@@ -83,16 +83,16 @@ function buildStructuredData() {
     headline: 'How Satellite Tracking Works: Technology, Methods & Tools',
     description:
       'Comprehensive guide to satellite tracking technology including radar, optical methods, TLE data, orbital mechanics, and modern tracking tools.',
-    author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.com' },
+    author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
     publisher: {
       '@type': 'Organization',
       name: 'SpaceNexus',
-      logo: { '@type': 'ImageObject', url: 'https://spacenexus.com/logo.png' },
+      logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
     dateModified: '2026-02-08T00:00:00Z',
-    mainEntityOfPage: 'https://spacenexus.com/guide/how-satellite-tracking-works',
-    image: 'https://spacenexus.com/og-image.png',
+    mainEntityOfPage: 'https://spacenexus.us/guide/how-satellite-tracking-works',
+    image: 'https://spacenexus.us/og-image.png',
   };
 
   const faqSchema = {

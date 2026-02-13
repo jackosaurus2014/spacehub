@@ -17,7 +17,7 @@ function getResend(): Resend {
   return resendClient;
 }
 
-const FROM_EMAIL = process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <newsletter@spacenexus.com>';
+const FROM_EMAIL = process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <newsletter@spacenexus.us>';
 const BATCH_SIZE = 50; // Resend supports up to 100 per batch, using 50 for safety
 const BATCH_DELAY_MS = 1000; // 1 second delay between batches
 

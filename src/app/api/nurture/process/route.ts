@@ -146,7 +146,7 @@ async function processNurtureStep(
   // Lazy-import Resend to avoid issues when API key is not configured
   const { Resend } = await import('resend');
   const resend = new Resend(process.env.RESEND_API_KEY);
-  const fromEmail = process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <noreply@spacenexus.com>';
+  const fromEmail = process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <noreply@spacenexus.us>';
 
   for (const user of eligibleUsers) {
     try {

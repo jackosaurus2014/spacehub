@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://spacenexus.com';
+  const baseUrl = 'https://spacenexus.us';
 
   const routes = [
     // Homepage

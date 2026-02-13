@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     authors: ['SpaceNexus'],
   },
   alternates: {
-    canonical: 'https://spacenexus.com/guide/space-industry',
+    canonical: 'https://spacenexus.us/guide/space-industry',
   },
 };
 
@@ -104,16 +104,16 @@ function buildStructuredData() {
       'The Complete Guide to the Space Industry in 2026: Markets, Technologies & Opportunities',
     description:
       'Comprehensive guide to the $630B+ space industry covering market size, key companies, government programs, emerging trends, careers, and investment opportunities.',
-    author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.com' },
+    author: { '@type': 'Organization', name: 'SpaceNexus', url: 'https://spacenexus.us' },
     publisher: {
       '@type': 'Organization',
       name: 'SpaceNexus',
-      logo: { '@type': 'ImageObject', url: 'https://spacenexus.com/logo.png' },
+      logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
     },
     datePublished: '2026-02-08T00:00:00Z',
     dateModified: '2026-02-08T00:00:00Z',
-    mainEntityOfPage: 'https://spacenexus.com/guide/space-industry',
-    image: 'https://spacenexus.com/og-image.png',
+    mainEntityOfPage: 'https://spacenexus.us/guide/space-industry',
+    image: 'https://spacenexus.us/og-image.png',
   };
 
   const faqSchema = {

@@ -107,7 +107,7 @@
 
 **Hashtags**: #SpaceEconomy #SpaceIndustry #MarketIntelligence #NewSpace #SpaceNexus
 
-**CTA**: Explore real-time space market data at spacenexus.com/market-intel
+**CTA**: Explore real-time space market data at spacenexus.us/market-intel
 
 ---
 
@@ -139,7 +139,7 @@
 
 **Hashtags**: #SatelliteTracking #SpaceTech #OrbitalMechanics #SpaceOperations #SpaceNexus
 
-**CTA**: Track satellites in real-time at spacenexus.com/satellites
+**CTA**: Track satellites in real-time at spacenexus.us/satellites
 
 ---
 
@@ -174,7 +174,7 @@
 
 **Hashtags**: #SpaceWatchlist #SpaceLaunches #SpaceRegulation #SpaceInvesting #SpaceNexus
 
-**CTA**: Stay ahead of the curve at spacenexus.com/news
+**CTA**: Stay ahead of the curve at spacenexus.us/news
 
 ---
 
@@ -206,7 +206,7 @@
 
 **Hashtags**: #SpaceCareers #SpaceJobs #WorkforceDevelopment #SpaceTalent #SpaceNexus
 
-**CTA**: Explore space industry careers at spacenexus.com/space-talent
+**CTA**: Explore space industry careers at spacenexus.us/space-talent
 
 ---
 
@@ -238,7 +238,7 @@
 
 **Hashtags**: #SpaceLaunch #Starship #RocketLab #SpaceAccess #LaunchFriday
 
-**CTA**: Track every launch in real-time at spacenexus.com/mission-control
+**CTA**: Track every launch in real-time at spacenexus.us/mission-control
 
 ---
 
@@ -261,7 +261,7 @@
 
 **Hashtags**: #SpaceIndustry #SpacePoll #NewSpace #SpaceNexus
 
-**CTA**: See what the industry is tracking at spacenexus.com
+**CTA**: See what the industry is tracking at spacenexus.us
 
 ---
 
@@ -326,7 +326,7 @@
 
 **Hashtags**: #SpaceInvesting #VentureCapital #SpaceFunding #SpaceMarketMonday #SpaceNexus
 
-**CTA**: Track space funding in real-time at spacenexus.com/market-intel
+**CTA**: Track space funding in real-time at spacenexus.us/market-intel
 
 ---
 
@@ -359,7 +359,7 @@
 
 **Hashtags**: #SpaceRegulation #SpectrumManagement #FCC #SpaceCompliance #SpaceNexus
 
-**CTA**: Monitor regulatory filings at spacenexus.com/compliance
+**CTA**: Monitor regulatory filings at spacenexus.us/compliance
 
 ---
 
@@ -389,7 +389,7 @@
 
 **Hashtags**: #SpaceStocks #SpaceInvesting #RKLB #WatchlistWednesday #SpaceNexus
 
-**CTA**: Research space companies at spacenexus.com/market-intel
+**CTA**: Research space companies at spacenexus.us/market-intel
 
 ---
 
@@ -425,7 +425,7 @@
 
 **Hashtags**: #SpaceTalent #SpaceCareers #WorkforceGap #DiversityInSpace #SpaceNexus
 
-**CTA**: Explore space workforce data at spacenexus.com/space-talent
+**CTA**: Explore space workforce data at spacenexus.us/space-talent
 
 ---
 
@@ -455,7 +455,7 @@
 
 **Hashtags**: #LaunchVehicles #MissionPlanning #SpaceAccess #SmallSat #SpaceNexus
 
-**CTA**: Plan your mission at spacenexus.com/mission-control
+**CTA**: Plan your mission at spacenexus.us/mission-control
 
 ---
 
@@ -485,7 +485,7 @@
 
 **Hashtags**: #SpaceDebris #KesslerSyndrome #SpaceSustainability #SpaceEnvironment #SpaceNexus
 
-**CTA**: Monitor space debris at spacenexus.com/space-environment
+**CTA**: Monitor space debris at spacenexus.us/space-environment
 
 ---
 
@@ -517,7 +517,7 @@
 
 **Hashtags**: #SpaceWeekInReview #SpaceNews #SpaceIndustry #SpaceNexus
 
-**CTA**: Get your weekly space intelligence at spacenexus.com/news
+**CTA**: Get your weekly space intelligence at spacenexus.us/news
 
 ---
 
@@ -550,7 +550,7 @@
 
 **Hashtags**: #GovCon #SpaceProcurement #SpaceForce #DefenseSpace #SpaceNexus
 
-**CTA**: Track government space contracts at spacenexus.com/procurement
+**CTA**: Track government space contracts at spacenexus.us/procurement
 
 ---
 
@@ -584,7 +584,7 @@
 
 **Hashtags**: #AIinSpace #SpaceTech #ArtificialIntelligence #ProductivityTools #SpaceNexus
 
-**CTA**: Try AI-powered space intelligence at spacenexus.com
+**CTA**: Try AI-powered space intelligence at spacenexus.us
 
 ---
 
@@ -618,7 +618,7 @@
 
 **Hashtags**: #SpectrumManagement #SatelliteComms #FCC #ITU #SpaceNexus
 
-**CTA**: Track spectrum filings at spacenexus.com/compliance
+**CTA**: Track spectrum filings at spacenexus.us/compliance
 
 ---
 
@@ -653,7 +653,7 @@
 
 **Hashtags**: #SpaceCareers #SystemsThinking #CareerAdvice #SpaceTalent #SpaceNexus
 
-**CTA**: Find systems engineering roles at spacenexus.com/space-talent
+**CTA**: Find systems engineering roles at spacenexus.us/space-talent
 
 ---
 
@@ -690,7 +690,7 @@
 
 **Hashtags**: #LaunchCost #SpaceAccess #Falcon9 #Starship #SpaceNexus
 
-**CTA**: Compare launch vehicles at spacenexus.com/mission-control
+**CTA**: Compare launch vehicles at spacenexus.us/mission-control
 
 ---
 
@@ -720,7 +720,7 @@
 
 **Hashtags**: #SpaceCommunity #SpaceExploration #Mars #SpaceEntrepreneur #SpaceNexus
 
-**CTA**: Dream big, plan with data: spacenexus.com
+**CTA**: Dream big, plan with data: spacenexus.us
 
 ---
 
@@ -757,7 +757,7 @@
 
 **Hashtags**: #SpaceStartups #SpaceIntelligence #Accessibility #SaaS #SpaceNexus
 
-**CTA**: See our pricing at spacenexus.com/pricing
+**CTA**: See our pricing at spacenexus.us/pricing
 
 ---
 
@@ -789,7 +789,7 @@
 
 **Hashtags**: #CislunarEconomy #Artemis #LunarEconomy #SpaceInfrastructure #SpaceNexus
 
-**CTA**: Explore the cislunar ecosystem at spacenexus.com
+**CTA**: Explore the cislunar ecosystem at spacenexus.us
 
 ---
 
@@ -822,7 +822,7 @@
 
 **Hashtags**: #SpaceWeather #SolarStorm #SatelliteOps #SpaceSituationalAwareness #SpaceNexus
 
-**CTA**: Monitor space weather at spacenexus.com/space-environment
+**CTA**: Monitor space weather at spacenexus.us/space-environment
 
 ---
 
@@ -855,7 +855,7 @@
 
 **Hashtags**: #GovCon #SpaceProcurement #SpaceForce #NASA #SpaceNexus
 
-**CTA**: Never miss a contract opportunity at spacenexus.com/procurement
+**CTA**: Never miss a contract opportunity at spacenexus.us/procurement
 
 ---
 
@@ -890,7 +890,7 @@
 
 **Hashtags**: #SpaceSalaries #SpaceCareers #CompensationData #TalentThursday #SpaceNexus
 
-**CTA**: Explore salary data at spacenexus.com/space-talent
+**CTA**: Explore salary data at spacenexus.us/space-talent
 
 ---
 
@@ -914,7 +914,7 @@
 
 **Hashtags**: #LaunchVehicles #SpaceHistory #SpaceTrivia #LaunchFriday #SpaceNexus
 
-**CTA**: Compare modern launch vehicles at spacenexus.com/mission-control
+**CTA**: Compare modern launch vehicles at spacenexus.us/mission-control
 
 ---
 
@@ -942,7 +942,7 @@
 
 **Hashtags**: #SpaceConference #SpaceIndustry #IndustryTrends #NewSpace #SpaceNexus
 
-**CTA**: Stay ahead of industry trends at spacenexus.com/news
+**CTA**: Stay ahead of industry trends at spacenexus.us/news
 
 ---
 
@@ -979,7 +979,7 @@
 
 **Hashtags**: #SpaceNexus #SpaceTech #SaaS #SpaceIntelligence #SpaceIndustry
 
-**CTA**: Start free at spacenexus.com/pricing
+**CTA**: Start free at spacenexus.us/pricing
 
 ---
 
@@ -1014,7 +1014,7 @@
 
 **Hashtags**: #InSpaceManufacturing #Microgravity #SpaceFactory #SpaceEconomy #SpaceNexus
 
-**CTA**: Track space manufacturing companies at spacenexus.com/market-intel
+**CTA**: Track space manufacturing companies at spacenexus.us/market-intel
 
 ---
 
@@ -1049,7 +1049,7 @@
 
 **Hashtags**: #SpaceNexus #SpaceCommunity #LinkedInContent #SpaceIndustry #ThankYou
 
-**CTA**: Join the community at spacenexus.com
+**CTA**: Join the community at spacenexus.us
 
 ---
 
@@ -1108,11 +1108,11 @@
 7. **Conclusion and CTA**
    - The space industry is too important to run on spreadsheets
    - Better data leads to better decisions leads to faster industry growth
-   - Try SpaceNexus free: spacenexus.com
+   - Try SpaceNexus free: spacenexus.us
 
 **Key Data Points**: $546B space economy, $3K-$15K traditional tool costs, 78% startup barrier stat, 4-hour vs. 12-second research comparison, $2B+ cost of bad decisions.
 
-**CTA**: "If you work in the space industry and have ever felt frustrated by the tools available to you, I would love to hear your experience. Comment below or try SpaceNexus free at spacenexus.com."
+**CTA**: "If you work in the space industry and have ever felt frustrated by the tools available to you, I would love to hear your experience. Comment below or try SpaceNexus free at spacenexus.us."
 
 ---
 
@@ -1175,7 +1175,7 @@
 
 **Key Data Points**: 12 space SPACs, 9 below initial valuation, RKLB $1.1B backlog, PL $200M+ ACV, LUNR $700M+ backlog, ASTS 5.5B addressable subscribers.
 
-**CTA**: "Track these companies and hundreds more on SpaceNexus Market Intelligence: spacenexus.com/market-intel. What space stock are you most bullish on? Let me know in the comments."
+**CTA**: "Track these companies and hundreds more on SpaceNexus Market Intelligence: spacenexus.us/market-intel. What space stock are you most bullish on? Let me know in the comments."
 
 ---
 
@@ -1239,7 +1239,7 @@
 
 **Key Data Points**: $60B+ US government space spend, $80B+ global, 34% non-traditional vendor share, $800M SBIR/STTR, $140K average first proposal cost, SpaceX $1.6B COTS.
 
-**CTA**: "Government space contracting is not optional -- it is foundational. Start tracking opportunities today at spacenexus.com/procurement."
+**CTA**: "Government space contracting is not optional -- it is foundational. Start tracking opportunities today at spacenexus.us/procurement."
 
 ---
 
@@ -1302,7 +1302,7 @@
 
 **Key Data Points**: 50,000+ daily conjunction records, 11,500+ active satellites, 4 hours vs. 3 minutes research comparison, $5K consultant cost vs. AI analysis, 45-second regulatory query.
 
-**CTA**: "Experience AI-powered space intelligence at spacenexus.com. Free tier includes AI-assisted queries. What workflow would you most want AI to handle?"
+**CTA**: "Experience AI-powered space intelligence at spacenexus.us. Free tier includes AI-assisted queries. What workflow would you most want AI to handle?"
 
 ---
 
@@ -1372,7 +1372,7 @@
 
 **Key Data Points**: 360,000 US space workforce, 35% aerospace degrees, 8% annual growth, 60% referral hires, $70K-$300K+ salary ranges, 15-25% clearance premium.
 
-**CTA**: "Start your space career journey today. SpaceNexus Talent Hub has job listings, salary data, and workforce analytics at spacenexus.com/space-talent. And if you are already in the industry, share your 'how I got here' story in the comments -- it might inspire the next generation."
+**CTA**: "Start your space career journey today. SpaceNexus Talent Hub has job listings, salary data, and workforce analytics at spacenexus.us/space-talent. And if you are already in the industry, share your 'how I got here' story in the comments -- it might inspire the next generation."
 
 ---
 
@@ -1396,7 +1396,7 @@
 8. **#4 -- SpaceX**: Estimated revenue: ~$15B+. Key products: Falcon 9, Starship, Starlink (the revenue driver).
 9. **#3 -- SES / Intelsat (merged)**: Revenue: ~$4.2B combined. Insight: consolidation is reshaping the GEO operator landscape.
 10. **#2 and #1 -- The Surprise**: #2: Amazon (Project Kuiper, AWS Ground Station, Blue Origin investment): estimated $5B+ space spend. #1: The US Government is technically the largest "space company" at $60B+/yr. Reframe: The biggest spender is not on this list.
-11. **CTA Slide**: "Track revenue, funding, and competitive data for 200+ space companies. Start free at spacenexus.com/market-intel."
+11. **CTA Slide**: "Track revenue, funding, and competitive data for 200+ space companies. Start free at spacenexus.us/market-intel."
 
 ---
 
@@ -1415,7 +1415,7 @@
 7. **National Security Space**: Defense, intelligence, missile warning. Players: Space Force, NRO, Lockheed, Northrop. Budget: ~$38B/yr.
 8. **Emerging Sectors**: In-space manufacturing, debris removal, space tourism, cislunar logistics. Revenue: < $2B/yr but growing fastest.
 9. **The Value Chain**: How it all connects -- launch enables satellite manufacturing, which enables satellite services, which generates data, which creates downstream value.
-10. **CTA Slide**: "Explore every sector of the space industry at spacenexus.com. Free tier available."
+10. **CTA Slide**: "Explore every sector of the space industry at spacenexus.us. Free tier available."
 
 ---
 
@@ -1433,7 +1433,7 @@
 6. **Step 5 -- Read Award Notices**: Even if you missed a competition, studying who won and why builds your competitive intelligence for next time.
 7. **Step 6 -- Track Subcontracting Opportunities**: Prime contractors publish subcontracting plans. Mentor-protege programs create built-in pathways.
 8. **Step 7 -- Use an Intelligence Platform**: Manual tracking does not scale. SpaceNexus aggregates all of this into one dashboard with AI-powered alerts.
-9. **CTA Slide**: "Stop missing opportunities. Track every government space contract at spacenexus.com/procurement."
+9. **CTA Slide**: "Stop missing opportunities. Track every government space contract at spacenexus.us/procurement."
 
 ---
 
@@ -1451,7 +1451,7 @@
 6. **Event 5 -- Bastille Day Event (July 2000)**: X5.7 flare caused ASCA (ASTRO-D) satellite to lose attitude control permanently. Star trackers on multiple satellites were blinded temporarily. Reminder: even "moderate" events can be mission-ending.
 7. **The Carrington Event Context**: The 1859 Carrington Event was 10-100x stronger than anything in the modern satellite era. If it happened today: estimated $1-2 trillion in satellite and ground infrastructure damage. It is a when, not if.
 8. **How to Protect Your Assets**: Monitor space weather continuously. Build redundancy into critical systems. Plan for drag increases in LEO during solar maximum. Have anomaly resolution procedures ready.
-9. **CTA Slide**: "Monitor solar weather, debris, and orbital environment in real-time at spacenexus.com/space-environment."
+9. **CTA Slide**: "Monitor solar weather, debris, and orbital environment in real-time at spacenexus.us/space-environment."
 
 ---
 
@@ -1469,7 +1469,7 @@
 6. **National Security Dimension**: China's lunar program is accelerating (Chang'e 7 and 8 planned for 2026-2028). Cislunar space domain awareness is a growing DoD priority. Space Force has stated cislunar as a strategic interest area.
 7. **Investment Landscape**: Public companies: Intuitive Machines (LUNR), Rocket Lab (RKLB - Photon platform). Private: ispace, Astrobotic, Orbit Fab, Impulse Space, Astroscale. Government: $10B+ committed across NASA, ESA, JAXA.
 8. **Timeline**: 2026-2028: Regular commercial lunar deliveries. 2028-2030: Lunar Gateway operational. 2030-2035: ISRU demonstration, sustained presence. 2035+: Cislunar economy self-sustaining.
-9. **CTA Slide**: "Track every cislunar development -- missions, companies, and investments -- at spacenexus.com."
+9. **CTA Slide**: "Track every cislunar development -- missions, companies, and investments -- at spacenexus.us."
 
 ---
 
@@ -1487,7 +1487,7 @@
 6. **Satellite Tracking**: Old way: CelesTrak + Space-Track + manual TLE updates. SpaceNexus: 10,000+ satellites tracked in real-time with 3D visualization, conjunction alerts, and constellation analytics.
 7. **Market Sizing**: Old way: Buy a $5,000 report from Euroconsult or NSR. SpaceNexus: Dynamic market data updated continuously. Segment breakdowns. Funding round tracking. $9.99/mo.
 8. **Cost Comparison**: Traditional tools: $3,000-$50,000/year (and you need multiple tools). SpaceNexus: Free tier available. Full platform: $29.99/month ($359.88/year).
-9. **CTA Slide**: "See the difference for yourself. Start free at spacenexus.com/pricing."
+9. **CTA Slide**: "See the difference for yourself. Start free at spacenexus.us/pricing."
 
 ---
 
@@ -1505,7 +1505,7 @@
 6. **The SPAC Hangover**: 12 space SPACs in 2021-2022. 9 trading below SPAC valuation by end of 2024. But survivors (RKLB, ASTS, LUNR) are building real businesses. Lesson: valuation =/= value.
 7. **Top Investors**: Founders Fund, Andreessen Horowitz, In-Q-Tel, Bessemer Venture Partners, Space Capital, Seraphim. Corporate VCs: Airbus Ventures, Lockheed Martin Ventures, Boeing HorizonX.
 8. **2026 Predictions**: AI-powered space analytics will attract $2B+ in investment. Cislunar companies will close 5+ Series B rounds. First space-focused growth equity fund ($500M+). M&A to accelerate as public companies acquire startups.
-9. **CTA Slide**: "Track every funding round, investor, and company at spacenexus.com/market-intel."
+9. **CTA Slide**: "Track every funding round, investor, and company at spacenexus.us/market-intel."
 
 ---
 
@@ -1523,7 +1523,7 @@
 6. **ITU Coordination**: International frequency coordination required for all satellite networks. Process: Advance Publication (AP), Coordination Request (CR), Notification. Timeline: 2-7 years. Tip: your FCC filing triggers the ITU process.
 7. **Orbital Debris Mitigation**: FCC 5-year deorbit rule (down from 25 years). NASA Orbital Debris Mitigation Standard Practices. Inter-Agency Space Debris Coordination Committee (IADC) guidelines. Plan your end-of-life strategy at mission design.
 8. **Common Pitfalls**: Starting regulatory work too late (it should be parallel with engineering), underestimating ITAR scope, not budgeting for spectrum coordination fees, ignoring international obligations.
-9. **CTA Slide**: "Track regulatory filings, compliance deadlines, and spectrum allocations at spacenexus.com/compliance."
+9. **CTA Slide**: "Track regulatory filings, compliance deadlines, and spectrum allocations at spacenexus.us/compliance."
 
 ---
 
@@ -1541,7 +1541,7 @@
 6. **The 12 GHz Fight**: MVDDS (terrestrial 5G) vs. NGSO (satellite broadband) in the 12.2-12.7 GHz band. Outcome affects billions in spectrum value. SpaceX, DISH, and RS Access are the key players. Still unresolved.
 7. **Spectrum as a Business Asset**: Companies acquire spectrum rights before building hardware. Boeing filed for V-band NGSO constellation rights in 2017 (still not built). Spectrum rights can be the most valuable asset on a space company's balance sheet.
 8. **Market Trends**: Ka-band is getting crowded (100+ NGSO filings). V-band and Q-band are the next frontier. Optical inter-satellite links reduce spectrum dependency. Direct-to-device (D2D) spectrum sharing is the hottest regulatory topic.
-9. **CTA Slide**: "Monitor spectrum filings, orbital slots, and regulatory developments at spacenexus.com/compliance."
+9. **CTA Slide**: "Monitor spectrum filings, orbital slots, and regulatory developments at spacenexus.us/compliance."
 
 ---
 
@@ -1559,7 +1559,7 @@
 6. **Advanced Alloys & Materials**: Immiscible metals (that separate on Earth) mix uniformly in microgravity. Applications: aerospace alloys, biomedical implants, industrial tooling. Early research shows 3-10x performance improvements in certain alloy properties.
 7. **The Business Case**: Starship reduces launch cost to < $200/kg, making manufacturing round-trips viable. Commercial space stations provide the facility. Automation reduces crew requirements. Return cargo capacity is expanding (Dragon, Dream Chaser, HTV-X).
 8. **Timeline & Market Size**: 2026-2028: Pilot manufacturing on ISS and commercial stations. 2028-2032: First commercial products sold on Earth. 2032-2035: Dedicated manufacturing stations. 2035+: $10B+ annual market. The Varda Space Industries re-entry capsule has already demonstrated the full loop.
-9. **CTA Slide**: "Track in-space manufacturing companies, investments, and milestones at spacenexus.com/market-intel."
+9. **CTA Slide**: "Track in-space manufacturing companies, investments, and milestones at spacenexus.us/market-intel."
 
 ---
 
@@ -1580,7 +1580,7 @@
 | **Disagreement/pushback** | Acknowledge perspective, provide data, stay professional | "Fair counterpoint. The data actually shows [X] -- happy to share the source." |
 | **Generic praise** | Thank, redirect to action | "Thanks! If you have not tried the platform yet, the free tier is a great starting point." |
 | **Competitor mention** | Acknowledge competitor, differentiate on value | "They do good work in [area]. Where we differ is [specific differentiator]." |
-| **Job seeker/career question** | Provide value, link to Talent Hub | "Check out our Talent Hub for salary data and listings: spacenexus.com/space-talent" |
+| **Job seeker/career question** | Provide value, link to Talent Hub | "Check out our Talent Hub for salary data and listings: spacenexus.us/space-talent" |
 | **Troll/spam** | Ignore or hide. Do not engage. | -- |
 
 **Tone in Comments**: Conversational, knowledgeable, helpful. Never defensive. Always end with a question or CTA where natural.
@@ -1740,4 +1740,4 @@
 
 ---
 
-*This content calendar was prepared for SpaceNexus (spacenexus.com). All data points are representative estimates for content purposes and should be verified with current sources before publication. Update statistics monthly to maintain accuracy and credibility.*
+*This content calendar was prepared for SpaceNexus (spacenexus.us). All data points are representative estimates for content purposes and should be verified with current sources before publication. Update statistics monthly to maintain accuracy and credibility.*

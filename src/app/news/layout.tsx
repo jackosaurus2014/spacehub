@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Space News | SpaceNexus',
     description: 'Breaking space industry news on launches, discoveries, and commercial spaceflight.',
-    url: 'https://spacenexus.com/news',
+    url: 'https://spacenexus.us/news',
     images: [
       {
         url: '/og-news.png',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     images: ['/og-news.png'],
   },
   alternates: {
-    canonical: 'https://spacenexus.com/news',
+    canonical: 'https://spacenexus.us/news',
   },
 };
 

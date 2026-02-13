@@ -453,7 +453,7 @@ model Webhook {
    - Satellite tracker embed
 
 2. **Custom Subdomain**
-   - yourcompany.spacenexus.com
+   - yourcompany.spacenexus.us
    - Custom logo and colors
    - White-labeled emails
 

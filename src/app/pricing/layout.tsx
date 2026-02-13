@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Pricing | SpaceNexus',
     description: 'Choose your subscription plan for unlimited space industry intelligence.',
-    url: 'https://spacenexus.com/pricing',
+    url: 'https://spacenexus.us/pricing',
     images: [
       {
         url: '/og-pricing.png',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     images: ['/og-pricing.png'],
   },
   alternates: {
-    canonical: 'https://spacenexus.com/pricing',
+    canonical: 'https://spacenexus.us/pricing',
   },
 };
 

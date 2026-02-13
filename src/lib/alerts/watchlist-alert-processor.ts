@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { logger } from '@/lib/logger';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.com';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 
 /**
  * Process watchlist alerts: check for new news, contracts, and listings
@@ -332,7 +332,7 @@ export async function sendWatchlistDailyDigest(prisma: PrismaClient): Promise<{
             Authorization: `Bearer ${resendApiKey}`,
           },
           body: JSON.stringify({
-            from: process.env.EMAIL_FROM || 'SpaceNexus Alerts <alerts@spacenexus.com>',
+            from: process.env.EMAIL_FROM || 'SpaceNexus Alerts <alerts@spacenexus.us>',
             to: user.email,
             subject: `SpaceNexus Watchlist Update - ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
             html,
