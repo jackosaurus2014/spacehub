@@ -26,19 +26,21 @@ interface AdSlotProps {
   module?: string;
   /** Additional CSS classes */
   className?: string;
+  /** AdSense slot ID for fallback when no custom ad is available */
+  adsenseSlot?: string;
+  /** AdSense format for fallback. Defaults to 'responsive'. */
+  adsenseFormat?: 'horizontal' | 'rectangle' | 'responsive';
 }
 
 /**
- * Universal ad slot component.
+ * Universal ad slot component with hybrid waterfall:
  *
- * - Checks if user is ad-free (Pro/Enterprise) and renders nothing if so
- * - Fetches an ad from /api/ads/serve
- * - Renders NativeAd for native_card format, AdBanner for banner formats
- * - Tracks impressions via IntersectionObserver
- * - Tracks clicks on ad links
- * - Shows "Ad" label for transparency
+ * 1. Check ad-free tier (Pro/Enterprise) → render nothing
+ * 2. Try custom ad from /api/ads/serve → render if found
+ * 3. Fall back to Google AdSense (if configured) → render AdBanner
+ * 4. Neither available → render nothing (no empty containers)
  */
-export default function AdSlot({ position, module, className = '' }: AdSlotProps) {
+export default function AdSlot({ position, module, className = '', adsenseSlot, adsenseFormat = 'responsive' }: AdSlotProps) {
   const { canUseFeature, isLoading: subLoading } = useSubscription();
   const [ad, setAd] = useState<ServedAd | null>(null);
   const [loading, setLoading] = useState(true);
@@ -145,22 +147,22 @@ export default function AdSlot({ position, module, className = '' }: AdSlotProps
     return null;
   }
 
-  // Loading skeleton
+  // While loading subscription or custom ad, show nothing (no layout shift)
   if (loading || subLoading) {
-    return (
-      <div className={`animate-pulse ${className}`}>
-        <div
-          className="rounded-lg bg-slate-800/50 border border-slate-700/30"
-          style={{
-            minHeight: position === 'sidebar' ? '250px' : '90px',
-          }}
-        />
-      </div>
-    );
+    return null;
   }
 
-  // No ad available
+  // No custom ad available — try AdSense fallback
   if (!ad) {
+    if (adsenseSlot) {
+      return (
+        <AdBanner
+          slot={adsenseSlot}
+          format={adsenseFormat}
+          className={className}
+        />
+      );
+    }
     return null;
   }
 
@@ -179,7 +181,7 @@ export default function AdSlot({ position, module, className = '' }: AdSlotProps
     );
   }
 
-  // Render banner format (using custom banner instead of AdSense)
+  // Render banner format (custom ad from database)
   return (
     <div ref={containerRef} className={`relative ${className}`}>
       {/* Ad label */}

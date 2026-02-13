@@ -151,16 +151,14 @@ export default function RootLayout({
           measurementId="GA_MEASUREMENT_ID"
           enabled={false}
         />
-        {/* Google AdSense Script
-            Uncomment the following script tag once your AdSense account is approved
-            and replace ca-pub-XXXXXXXXXXXXXXXXX with your actual publisher ID.
-            See public/AD_SETUP_GUIDE.md for detailed setup instructions.
-        */}
-        {/* <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXXX"
-          crossOrigin="anonymous"
-        /> */}
+        {/* Google AdSense — loaded only when NEXT_PUBLIC_ADSENSE_CLIENT_ID is set */}
+        {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
+            crossOrigin="anonymous"
+          />
+        )}
       </head>
       <body className={inter.className}>
         {/* Skip to content link for accessibility */}

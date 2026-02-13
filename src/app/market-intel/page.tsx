@@ -10,6 +10,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import CompanyRequestDialog from '@/components/ui/CompanyRequestDialog';
+import AdSlot from '@/components/ads/AdSlot';
 
 interface StockData {
   ticker: string;
@@ -667,6 +668,11 @@ function MarketIntelContent() {
               </div>
             )}
 
+            {/* Ad between ETFs and company tables */}
+            <div className="mb-8">
+              <AdSlot position="in_feed" module="market-intel" />
+            </div>
+
             {/* Filters */}
             <div className="card p-4 mb-6">
               <div className="flex flex-wrap gap-4">
@@ -982,6 +988,11 @@ function MarketIntelContent() {
             )}
           </div>
         )}
+
+        {/* Footer Ad */}
+        <div className="mt-8">
+          <AdSlot position="footer" module="market-intel" />
+        </div>
 
         {/* Info Note */}
         <ScrollReveal>

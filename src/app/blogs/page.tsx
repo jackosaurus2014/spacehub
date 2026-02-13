@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { BlogPost, BLOG_TOPICS, AUTHOR_TYPES, BlogTopic, BlogAuthorType } from '@/types';
@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
+import AdSlot from '@/components/ads/AdSlot';
 
 const topicColors: Record<string, string> = {
   space_law: 'bg-purple-500',
@@ -352,10 +353,17 @@ function BlogsContent() {
       ) : (
         <>
           <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {posts.map((post) => (
-              <StaggerItem key={post.id}>
-                <BlogPostCard post={post} />
-              </StaggerItem>
+            {posts.map((post, index) => (
+              <React.Fragment key={post.id}>
+                <StaggerItem>
+                  <BlogPostCard post={post} />
+                </StaggerItem>
+                {(index + 1) % 4 === 0 && index + 1 < posts.length && (
+                  <div className="col-span-1 lg:col-span-2">
+                    <AdSlot position="in_feed" module="blogs-articles" />
+                  </div>
+                )}
+              </React.Fragment>
             ))}
           </StaggerContainer>
 
@@ -380,6 +388,11 @@ function BlogsContent() {
           )}
         </>
       )}
+
+      {/* Footer Ad */}
+      <div className="mt-12">
+        <AdSlot position="footer" module="blogs-articles" />
+      </div>
 
       {/* Info Card */}
       <ScrollReveal>

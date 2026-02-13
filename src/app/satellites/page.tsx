@@ -11,6 +11,7 @@ import SatelliteCard, {
   OrbitType,
   SatelliteStatus,
 } from '@/components/satellites/SatelliteCard';
+import AdSlot from '@/components/ads/AdSlot';
 
 // Types
 interface SatelliteData {
@@ -387,6 +388,11 @@ function SatelliteTrackerContent() {
                 </div>
                 </ScrollReveal>
 
+                {/* Ad between sections */}
+                <div className="my-6">
+                  <AdSlot position="in_feed" module="satellite-tracker" />
+                </div>
+
                 {/* Notable Satellites */}
                 <div>
                   <div className="flex items-center justify-between mb-4">
@@ -407,6 +413,11 @@ function SatelliteTrackerContent() {
                       </StaggerItem>
                     ))}
                   </StaggerContainer>
+                </div>
+
+                {/* Footer Ad */}
+                <div className="my-6">
+                  <AdSlot position="footer" module="satellite-tracker" />
                 </div>
 
                 {/* Data Sources */}

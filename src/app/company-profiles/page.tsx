@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
@@ -8,6 +8,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
+import AdSlot from '@/components/ads/AdSlot';
 
 interface CompanyCard {
   id: string;
@@ -489,7 +490,14 @@ export default function CompanyProfilesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           <AnimatePresence mode="popLayout">
             {companies.map((company, i) => (
-              <CompanyCardComponent key={company.id} company={company} index={i} />
+              <React.Fragment key={company.id}>
+                <CompanyCardComponent company={company} index={i} />
+                {(i + 1) % 9 === 0 && i + 1 < companies.length && (
+                  <div className="col-span-1 md:col-span-2 xl:col-span-3">
+                    <AdSlot position="in_feed" module="company-profiles" />
+                  </div>
+                )}
+              </React.Fragment>
             ))}
           </AnimatePresence>
         </div>
@@ -559,6 +567,11 @@ export default function CompanyProfilesPage() {
           </AnimatePresence>
         </div>
       )}
+
+      {/* Footer Ad */}
+      <div className="mt-8">
+        <AdSlot position="footer" module="company-profiles" />
+      </div>
     </div>
   );
 }

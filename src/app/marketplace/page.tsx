@@ -10,6 +10,7 @@ import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import RFQCard from '@/components/marketplace/RFQCard';
 import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { toast } from '@/lib/toast';
+import AdSlot from '@/components/ads/AdSlot';
 
 interface MarketplaceStats {
   totalListings: number;
@@ -170,6 +171,11 @@ export default function MarketplacePage() {
           </div>
         )}
 
+        {/* Ad between listings and RFQs */}
+        <div>
+          <AdSlot position="in_feed" module="marketplace" />
+        </div>
+
         {/* Recent RFQs */}
         {recentRFQs.length > 0 && (
           <div>
@@ -280,6 +286,11 @@ export default function MarketplacePage() {
               </motion.div>
             ))}
           </div>
+        </div>
+
+        {/* Footer Ad */}
+        <div>
+          <AdSlot position="footer" module="marketplace" />
         </div>
 
         {/* CTA */}

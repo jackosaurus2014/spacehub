@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -24,6 +24,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
+import AdSlot from '@/components/ads/AdSlot';
 
 // ────────────────────────────────────────
 // Types
@@ -905,10 +906,17 @@ function SpaceTalentHubContent() {
                 </div>
               ) : talent.length > 0 ? (
                 <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {talent.map(t => (
-                    <StaggerItem key={t.id}>
-                      <TalentCard talent={t} />
-                    </StaggerItem>
+                  {talent.map((t, index) => (
+                    <React.Fragment key={t.id}>
+                      <StaggerItem>
+                        <TalentCard talent={t} />
+                      </StaggerItem>
+                      {(index + 1) % 6 === 0 && index + 1 < talent.length && (
+                        <div className="col-span-1 md:col-span-2 lg:col-span-3">
+                          <AdSlot position="in_feed" module="space-talent" />
+                        </div>
+                      )}
+                    </React.Fragment>
                   ))}
                 </StaggerContainer>
               ) : (
@@ -1799,6 +1807,11 @@ export default function SpaceTalentHubPage() {
         >
           <SpaceTalentHubContent />
         </Suspense>
+
+        {/* Footer Ad */}
+        <div className="mt-12">
+          <AdSlot position="footer" module="space-talent" />
+        </div>
       </div>
     </div>
   );

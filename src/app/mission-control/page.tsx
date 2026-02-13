@@ -9,6 +9,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import ExportButton from '@/components/ui/ExportButton';
 import MissionStream, { extractYouTubeId } from '@/components/live/MissionStream';
 import PullToRefresh from '@/components/ui/PullToRefresh';
+import AdSlot from '@/components/ads/AdSlot';
 
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
   { value: 'all', label: 'All Events', icon: '🌌' },
@@ -1026,6 +1027,11 @@ function MissionControlContent() {
           </div>
         )}
 
+        {/* Ad between timeline and dynamic content */}
+        <div className="my-8">
+          <AdSlot position="in_feed" module="mission-control" />
+        </div>
+
         {/* ════════════════════════════════════════ */}
         {/* Dynamic Content Sections */}
         {/* ════════════════════════════════════════ */}
@@ -1165,6 +1171,11 @@ function MissionControlContent() {
             )}
           </>
         )}
+
+        {/* Footer Ad */}
+        <div className="mt-8">
+          <AdSlot position="footer" module="mission-control" />
+        </div>
 
         {/* Related Intelligence */}
         {!loading && events.length > 0 && (

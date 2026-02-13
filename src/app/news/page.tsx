@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import NewsCard from '@/components/NewsCard';
 import NewsFilter from '@/components/NewsFilter';
@@ -12,6 +12,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import ArticleLimitBanner from '@/components/ui/ArticleLimitBanner';
 import { useSubscription } from '@/components/SubscriptionProvider';
+import AdSlot from '@/components/ads/AdSlot';
 import { NewsArticle } from '@/types';
 
 function NewsContent() {
@@ -147,12 +148,24 @@ function NewsContent() {
       ) : (
         <>
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map((article) => (
-              <StaggerItem key={article.id}>
-                <NewsCard article={article} />
-              </StaggerItem>
+            {articles.map((article, index) => (
+              <React.Fragment key={article.id}>
+                <StaggerItem>
+                  <NewsCard article={article} />
+                </StaggerItem>
+                {(index + 1) % 6 === 0 && index + 1 < articles.length && (
+                  <div className="col-span-1 md:col-span-2 lg:col-span-3">
+                    <AdSlot position="in_feed" module="news-feed" />
+                  </div>
+                )}
+              </React.Fragment>
             ))}
           </StaggerContainer>
+
+          {/* Footer Ad */}
+          <div className="mt-12">
+            <AdSlot position="footer" module="news-feed" />
+          </div>
 
           {/* Load More */}
           {articles.length < total && (
