@@ -223,12 +223,11 @@ body::after {
 }
 
 .btn-secondary {
-  @apply border border-cyan-400/80 text-white font-semibold
+  @apply border-2 border-cyan-400 text-cyan-300 font-bold
          py-3 px-8 rounded-full transition-all duration-300
-         backdrop-blur-md bg-slate-900/90
-         hover:bg-cyan-600/50 hover:border-cyan-400
+         bg-slate-900
+         hover:bg-cyan-500 hover:text-white hover:border-cyan-500
          hover:-translate-y-0.5
-         drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]
          active:scale-95 tracking-wide uppercase text-sm;
 }
 
