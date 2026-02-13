@@ -607,7 +607,8 @@ const GEOGRAPHIC_DISTRIBUTION = [
 // Helper Functions
 // ────────────────────────────────────────
 
-function formatNumber(n: number): string {
+function formatNumber(n: number | undefined | null): string {
+  if (n == null) return '0';
   return n.toLocaleString();
 }
 
@@ -668,12 +669,12 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
   litigationData: LitigationCase[];
   geoData: any[];
 }) {
-  const latestYear = filingsData[filingsData.length - 1];
-  const prevYear = filingsData[filingsData.length - 2];
-  const growthRate = prevYear ? ((latestYear.total - prevYear.total) / prevYear.total * 100).toFixed(1) : '0';
-  const totalAllTime = filingsData.reduce((sum, y) => sum + y.total, 0);
-  const maxTotal = Math.max(...filingsData.map(f => f.total));
-  const topHolder = [...holdersData].sort((a, b) => b.portfolioSize - a.portfolioSize)[0];
+  const latestYear = filingsData[filingsData.length - 1] || { year: 0, total: 0, us: 0, china: 0, europe: 0, japan: 0, other: 0 };
+  const prevYear = filingsData.length >= 2 ? filingsData[filingsData.length - 2] : null;
+  const growthRate = prevYear && prevYear.total ? ((latestYear.total - prevYear.total) / prevYear.total * 100).toFixed(1) : '0';
+  const totalAllTime = filingsData.reduce((sum, y) => sum + (y.total || 0), 0);
+  const maxTotal = Math.max(...filingsData.map(f => f.total || 0), 1);
+  const topHolder = [...holdersData].sort((a, b) => (b.portfolioSize || 0) - (a.portfolioSize || 0))[0];
   const totalCategories = categoriesData.length;
 
   return (
@@ -1071,7 +1072,7 @@ function CompanyPortfolioCard({ holder }: { holder: PatentHolder }) {
         </div>
         <div className="bg-slate-50/50 rounded-lg p-2.5 text-center">
           <div className="text-slate-900 font-bold text-sm">
-            {(holder.citationCount / holder.portfolioSize).toFixed(1)}
+            {((holder.citationCount || 0) / (holder.portfolioSize || 1)).toFixed(1)}
           </div>
           <div className="text-slate-400 text-xs">Cites/Patent</div>
         </div>
@@ -1133,7 +1134,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
     return result;
   }, [sortBy, categoriesData]);
 
-  const maxPatents = Math.max(...categoriesData.map(c => c.totalPatents));
+  const maxPatents = Math.max(...categoriesData.map(c => c.totalPatents || 0), 1);
 
   return (
     <div className="space-y-8">
