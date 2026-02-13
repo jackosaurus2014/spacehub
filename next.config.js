@@ -110,6 +110,20 @@ const nextConfig = {
           },
         ],
       },
+      // Service worker headers for PWA discoverability
+      {
+        source: '/sw.js',
+        headers: [
+          {
+            key: 'Service-Worker-Allowed',
+            value: '/',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+        ],
+      },
       // Digital Asset Links for Android TWA and Apple universal links
       {
         source: '/.well-known/:path*',
