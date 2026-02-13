@@ -89,7 +89,7 @@ function NetworkCard({ network }: { network: GroundStationNetwork }) {
 
       {/* Frequency Bands */}
       <div className="flex flex-wrap gap-1.5 mb-4">
-        {network.bands.map((band) => (
+        {(network.bands || []).map((band) => (
           <span
             key={band}
             className="px-2 py-0.5 bg-space-700 text-cyan-300 border border-space-600 rounded text-xs font-medium"
@@ -130,7 +130,7 @@ function NetworkCard({ network }: { network: GroundStationNetwork }) {
           <div>
             <div className="text-slate-500 text-xs uppercase tracking-widest mb-2">Key Highlights</div>
             <ul className="space-y-1">
-              {network.highlights.map((h, i) => (
+              {(network.highlights || []).map((h, i) => (
                 <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
                   <span className="text-cyan-400 mt-0.5 flex-shrink-0">-</span>
                   {h}
@@ -179,7 +179,7 @@ function ComparisonTable({ networks }: { networks: GroundStationNetwork[] }) {
               <td className="py-3 px-4 text-cyan-400 whitespace-nowrap">{network.stations}</td>
               <td className="py-3 px-4">
                 <div className="flex flex-wrap gap-1">
-                  {network.bands.map((band) => (
+                  {(network.bands || []).map((band) => (
                     <span key={band} className="px-1.5 py-0.5 bg-space-700 text-cyan-300 rounded text-xs">
                       {band}
                     </span>
@@ -228,7 +228,7 @@ function FrequencyBandCard({ band }: { band: FrequencyBand }) {
       <div className="mb-4">
         <div className="text-slate-500 text-xs uppercase tracking-widest mb-2">Primary Use Cases</div>
         <div className="space-y-1">
-          {band.useCases.map((uc, i) => (
+          {(band.useCases || []).map((uc, i) => (
             <div key={i} className="text-slate-300 text-sm flex items-start gap-2">
               <span className={`mt-0.5 flex-shrink-0 ${band.color}`}>-</span>
               {uc}
@@ -239,7 +239,7 @@ function FrequencyBandCard({ band }: { band: FrequencyBand }) {
 
       {/* Common Users */}
       <div className="flex flex-wrap gap-1.5 mb-4">
-        {band.commonUsers.map((user) => (
+        {(band.commonUsers || []).map((user) => (
           <span key={user} className="px-2 py-0.5 bg-space-700 text-slate-300 border border-space-600 rounded text-xs">
             {user}
           </span>
@@ -251,7 +251,7 @@ function FrequencyBandCard({ band }: { band: FrequencyBand }) {
           <div>
             <div className="text-green-400 text-xs uppercase tracking-widest mb-2">Advantages</div>
             <ul className="space-y-1">
-              {band.advantages.map((adv, i) => (
+              {(band.advantages || []).map((adv, i) => (
                 <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
                   <span className="text-green-400 mt-0.5 flex-shrink-0">+</span>
                   {adv}
@@ -262,7 +262,7 @@ function FrequencyBandCard({ band }: { band: FrequencyBand }) {
           <div>
             <div className="text-red-400 text-xs uppercase tracking-widest mb-2">Limitations</div>
             <ul className="space-y-1">
-              {band.limitations.map((lim, i) => (
+              {(band.limitations || []).map((lim, i) => (
                 <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
                   <span className="text-red-400 mt-0.5 flex-shrink-0">-</span>
                   {lim}
@@ -711,7 +711,7 @@ export default function GroundStationsPage() {
                     </div>
                     <p className="text-slate-400 text-sm mb-4">{factor.description}</p>
                     <div className="space-y-2">
-                      {factor.details.map((detail, i) => (
+                      {(factor.details || []).map((detail, i) => (
                         <div key={i} className="text-slate-300 text-sm flex items-start gap-2 bg-space-800/50 rounded-lg p-3">
                           <span className="text-cyan-400 font-bold text-xs mt-0.5 flex-shrink-0">
                             {String(i + 1).padStart(2, '0')}
