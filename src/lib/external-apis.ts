@@ -3,6 +3,15 @@
 import { createCircuitBreaker } from './circuit-breaker';
 import { logger } from './logger';
 
+// Warn once at runtime if NASA_API_KEY is missing (DEMO_KEY has severe rate limits: 30 req/hr)
+let _nasaKeyWarned = false;
+export function warnIfNasaDemoKey(): void {
+  if (!_nasaKeyWarned && !process.env.NASA_API_KEY) {
+    _nasaKeyWarned = true;
+    logger.warn('NASA_API_KEY is not set — falling back to DEMO_KEY with severe rate limits (30 req/hr, 50 req/day). Set NASA_API_KEY in environment to avoid data staleness.');
+  }
+}
+
 export const EXTERNAL_APIS = {
   NASA_DONKI: {
     baseUrl: 'https://api.nasa.gov/DONKI',

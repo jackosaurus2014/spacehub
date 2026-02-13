@@ -12,6 +12,12 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     const body = await req.json();
+
+    // Honeypot: if the hidden _hp field is filled, it's a bot — return fake success
+    if (body._hp) {
+      return NextResponse.json({ helpRequest: { id: 'ok' } }, { status: 201 });
+    }
+
     const bodyData = { ...body, email: session?.user?.email || body.email };
 
     const validation = validateBody(helpRequestSchema, bodyData);

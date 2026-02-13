@@ -11,16 +11,7 @@ export const dynamic = 'force-dynamic';
 export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { isAdmin: true },
-    });
-
-    if (!user?.isAdmin) {
+    if (!session?.user || !(session.user as any).isAdmin) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 

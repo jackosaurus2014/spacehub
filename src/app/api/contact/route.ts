@@ -89,7 +89,8 @@ export async function GET(req: NextRequest) {
       where.subject = subject;
     }
 
-    if (status) {
+    const VALID_STATUSES = ['new', 'in-progress', 'resolved', 'closed'];
+    if (status && VALID_STATUSES.includes(status)) {
       where.status = status;
     }
 

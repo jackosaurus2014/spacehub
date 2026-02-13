@@ -21,8 +21,17 @@ export async function PATCH(
     const body = await req.json();
     const { status, adminNotes } = body;
 
+    const VALID_STATUSES = ['new', 'under-review', 'in-progress', 'completed', 'rejected', 'deferred'];
     const data: Record<string, string> = {};
-    if (status) data.status = status;
+    if (status) {
+      if (!VALID_STATUSES.includes(status)) {
+        return NextResponse.json(
+          { error: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}` },
+          { status: 400 }
+        );
+      }
+      data.status = status;
+    }
     if (adminNotes !== undefined) data.adminNotes = adminNotes;
 
     const featureRequest = await prisma.featureRequest.update({

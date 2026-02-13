@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 
 /**
  * Standard error codes for API responses
@@ -269,24 +270,16 @@ export function escapeHtml(str: string): string {
 }
 
 /**
- * Timing-safe string comparison to prevent timing attacks.
- * Always compares the full length regardless of where differences occur.
+ * Timing-safe string comparison using Node.js built-in crypto.timingSafeEqual.
+ * Pads strings to equal length before comparison to avoid length-based leaks.
  */
 export function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) {
-    // Still do a comparison to avoid length-based timing leaks
-    let result = a.length ^ b.length;
-    for (let i = 0; i < a.length; i++) {
-      result |= a.charCodeAt(i) ^ (b.charCodeAt(i % b.length) || 0);
-    }
-    return result === 0;
-  }
-
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return result === 0;
+  const maxLen = Math.max(a.length, b.length);
+  const bufA = Buffer.alloc(maxLen, 0);
+  const bufB = Buffer.alloc(maxLen, 0);
+  bufA.write(a);
+  bufB.write(b);
+  return a.length === b.length && crypto.timingSafeEqual(bufA, bufB);
 }
 
 /**

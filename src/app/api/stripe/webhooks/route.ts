@@ -93,8 +93,12 @@ export async function POST(req: Request) {
       eventId: event.id,
       error: error instanceof Error ? error.message : String(error),
     });
-    // Return 200 anyway to prevent Stripe from retrying
-    // (we log the error and can investigate)
+    // Return 500 so Stripe retries (up to ~16 times with exponential backoff).
+    // Transient DB errors will self-heal on retry.
+    return NextResponse.json(
+      { error: 'Webhook processing failed', eventId: event.id },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({ received: true }, { status: 200 });

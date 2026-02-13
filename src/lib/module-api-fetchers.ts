@@ -3598,6 +3598,10 @@ export async function refreshAllExternalAPIs(): Promise<{
   totalUpdated: number;
   results: Record<string, number>;
 }> {
+  // Warn once if NASA API key is missing
+  const { warnIfNasaDemoKey } = await import('./external-apis');
+  warnIfNasaDemoKey();
+
   const results: Record<string, number> = {};
 
   // Run fetchers sequentially to respect rate limits

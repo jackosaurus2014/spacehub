@@ -8,7 +8,9 @@ import { initializeResources } from '@/lib/resources-data';
 import { initializeOpportunities } from '@/lib/opportunities-data';
 import { initializeComplianceData } from '@/lib/compliance-data';
 import { logger } from '@/lib/logger';
-import { requireCronSecret } from '@/lib/errors';
+import { requireCronSecret, unauthorizedError } from '@/lib/errors';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -97,7 +99,16 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  // Check current data status
+  // Require admin auth to prevent leaking database record counts
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || !(session.user as any).isAdmin) {
+      return unauthorizedError();
+    }
+  } catch {
+    return unauthorizedError();
+  }
+
   try {
     const [news, events, blogs, companies, resources, opportunities, compliance] = await Promise.all([
       prisma.newsArticle.count(),

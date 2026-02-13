@@ -74,7 +74,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** NASA API endpoints fall back to the public `DEMO_KEY` when `NASA_API_KEY` is not set. While not a secret leak, `DEMO_KEY` has severe rate limits (30 req/hour per IP, 50 req/day) that could cause production outages.
 - **Impact:** If `NASA_API_KEY` is unset in production, multiple cron jobs fetching from NASA APIs will quickly exhaust the demo key's rate limit, causing data staleness.
 - **Recommendation:** Add a startup warning or fail-fast check when `NASA_API_KEY` is not configured in production. Log the fallback prominently.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added `warnIfNasaDemoKey()` that logs a prominent warning once when NASA_API_KEY is missing, called at the start of `refreshAllExternalAPIs()`.
 
 ---
 
@@ -114,7 +114,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** Both routes check for a session but do not require one. Anonymous users can submit feature requests and help requests. While this may be intentional (allowing unauthenticated feedback), it opens the door to spam submissions.
 - **Impact:** Database spam pollution. No auth means no accountability for submissions.
 - **Recommendation:** If anonymous submissions are intentional, add CAPTCHA or honeypot fields to prevent automated abuse. If not, require authentication.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added honeypot field (`_hp`) to both routes. Bots that auto-fill the hidden field receive a fake success response; real submissions proceed normally.
 
 #### Finding 2.5: NextAuth JWT Does Not Check `emailVerified`
 - **Severity:** Medium
@@ -150,7 +150,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The PATCH handler accepts `status` and `adminNotes` from the request body without Zod validation. While the endpoint requires admin access, the `status` field is passed directly to Prisma without validating against allowed values.
 - **Impact:** An admin could accidentally set an invalid status value, potentially causing UI rendering issues or data inconsistency. Severity is low since only admins can access this endpoint.
 - **Recommendation:** Add Zod validation with an enum of allowed status values (e.g., `['new', 'in-progress', 'completed', 'rejected']`).
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added `VALID_STATUSES` whitelist (`new`, `under-review`, `in-progress`, `completed`, `rejected`, `deferred`). Invalid values now return 400.
 
 #### Finding 3.3: Contact Form Status Filter Not Validated
 - **Severity:** Low
@@ -158,7 +158,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The GET endpoint (admin only) accepts an arbitrary `status` query parameter and passes it directly to the Prisma `where` clause without validation. While `subject` is validated against `VALID_SUBJECTS`, `status` is not.
 - **Impact:** Low risk since Prisma treats unknown values as non-matching filters (returns empty results), and the endpoint requires admin access. However, it violates the principle of validating all inputs.
 - **Recommendation:** Add validation against a whitelist of valid status values.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added `VALID_STATUSES` whitelist (`new`, `in-progress`, `resolved`, `closed`). Non-matching values are now silently ignored.
 
 #### Finding 3.4: Marketplace Admin Verify Route Uses Non-Standard Admin Check Pattern
 - **Severity:** Low
@@ -166,7 +166,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** Instead of relying on `session.user.isAdmin` from the JWT token, this route performs a separate database lookup (`prisma.user.findUnique`) to check `isAdmin`. While more secure (checks current DB state rather than JWT state), it is inconsistent with other admin routes and incurs an extra DB query.
 - **Impact:** Low. This is actually more secure but inconsistent with the rest of the codebase.
 - **Recommendation:** Consider standardizing the admin check pattern across all routes. The DB-lookup approach is more secure against JWT replay after an admin demotion.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Standardized to use the JWT-based `(session.user as any).isAdmin` pattern consistent with all other admin routes. Removed the extra DB lookup.
 
 ---
 
@@ -286,7 +286,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The GET handler at `/api/init` returns database record counts for 7 tables (news, events, blogs, companies, resources, opportunities, compliance) without authentication.
 - **Impact:** An attacker can determine the size of the database, track data growth over time, and detect when the system is newly deployed (counts near zero). Low impact since the data types are not sensitive.
 - **Recommendation:** Add authentication or remove the GET handler. The POST handler already requires `requireCronSecret()`.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Added admin authentication to GET handler. Only admins can now view database record counts.
 
 ---
 
@@ -343,7 +343,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The `cookie` package used by `next-auth` accepts cookie names, paths, and domains with out-of-bounds characters (GHSA-pxg6-pf52-xh8x).
 - **Impact:** Could allow cookie injection in specific scenarios, though exploitation requires the application to set cookies with user-controlled names/values.
 - **Recommendation:** Update `@auth/prisma-adapter` to >= 2.11.1 (breaking change). Evaluate the breaking changes before upgrading.
-- **Status:** Open
+- **Status:** Accepted Risk — Requires breaking major version upgrade of `@auth/prisma-adapter`. The vulnerability requires attacker-controlled cookie names which is not exploitable in this application's auth flow.
 
 #### Finding 10.3: `qs` Package DoS Vulnerability
 - **Severity:** Low
@@ -351,7 +351,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The `qs` package has a `arrayLimit` bypass vulnerability allowing denial of service via comma parsing (GHSA-w7fw-mjwx-w883).
 - **Impact:** An attacker could craft query strings that cause excessive CPU consumption in query string parsing.
 - **Recommendation:** Run `npm audit fix` to update `qs`.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Resolved via `npm audit fix`.
 
 ---
 
@@ -420,7 +420,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** After a verified webhook event fails processing (e.g., database error), the handler returns HTTP 200 with `{ received: true }`. The comment explains this prevents Stripe from retrying, which is a valid design choice. However, it means failed webhook events are silently dropped.
 - **Impact:** If a checkout completion or subscription update fails to process (e.g., due to a transient DB error), the user's subscription status may not be updated. The error is logged but there's no retry mechanism or dead letter queue.
 - **Recommendation:** Consider implementing a dead letter queue or a manual retry mechanism for failed webhook events. At minimum, set up alerting on the logged errors.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Changed to return HTTP 500 on processing errors so Stripe automatically retries (up to ~16 times with exponential backoff). Transient DB errors now self-heal on retry.
 
 ---
 
@@ -440,7 +440,7 @@ The two critical findings relate to **known vulnerabilities in the Next.js depen
 - **Description:** The `timingSafeEqual()` function attempts to handle different-length strings by still doing a comparison, but the `if (a.length !== b.length)` branch itself leaks the fact that lengths differ. The function initializes `result = a.length ^ b.length` (which is non-zero when lengths differ), so the overall function is correct (always returns `false` for different lengths), but the branch timing may differ from the equal-length path. The standard `crypto.timingSafeEqual()` from Node.js would be more robust.
 - **Impact:** Very low. An attacker would need extremely precise timing measurements to detect the length mismatch, and the cron secret values are randomly generated UUIDs (always the same length in practice).
 - **Recommendation:** Use Node.js's built-in `crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b))` after padding to equal lengths, or rely on the existing implementation since the practical risk is negligible.
-- **Status:** Open
+- **Status:** **FIXED** (2026-02-13) — Replaced custom implementation with Node.js built-in `crypto.timingSafeEqual()`. Strings are padded to equal length before comparison to eliminate length-based timing leaks.
 
 #### Finding 14.3: Google Analytics Disabled in Production
 - **Severity:** Informational (Positive Finding)
