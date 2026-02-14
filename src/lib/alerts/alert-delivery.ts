@@ -141,16 +141,41 @@ export async function deliverAlerts(prisma: PrismaClient): Promise<{
               break;
             }
 
-            // Web push is a placeholder - mark as sent for now
-            // In production, integrate with web-push library
+            // Get user's native push tokens
+            const tokens = await (prisma as any).pushToken.findMany({
+              where: { userId: delivery.userId },
+              select: { token: true, platform: true },
+            });
+
+            if (tokens.length === 0) {
+              // No native tokens — mark as sent (in-app fallback handles it)
+              await prisma.alertDelivery.update({
+                where: { id: delivery.id },
+                data: { status: 'sent', sentAt: new Date() },
+              });
+              stats.succeeded++;
+              break;
+            }
+
+            // Send via APNs/FCM
+            const { sendPushToTokens } = await import('@/lib/apns-sender');
+            const pushSent = await sendPushToTokens(tokens, {
+              title: delivery.title,
+              body: delivery.message,
+              data: { url: (delivery.data as any)?.url || '/' },
+            });
+
             await prisma.alertDelivery.update({
               where: { id: delivery.id },
               data: {
-                status: 'sent',
-                sentAt: new Date(),
+                status: pushSent ? 'sent' : 'failed',
+                sentAt: pushSent ? new Date() : undefined,
+                failReason: pushSent ? undefined : 'Push delivery failed',
               },
             });
-            stats.succeeded++;
+
+            if (pushSent) stats.succeeded++;
+            else stats.failed++;
             break;
           }
 

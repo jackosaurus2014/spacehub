@@ -65,6 +65,9 @@ model User {
   // Launch engagement
   launchPollVotes          LaunchPollVote[]
   launchReactions          LaunchReaction[]
+
+  // Native push tokens (iOS/Android)
+  pushTokens               PushToken[]
 }
 
 model PasswordResetToken {
@@ -3456,4 +3459,16 @@ model SavedSearch {
 
   @@index([userId])
   @@index([searchType])
+}
+
+model PushToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  platform  String   // 'ios' or 'android'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

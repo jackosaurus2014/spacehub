@@ -3,8 +3,20 @@
     "apps": [],
     "details": [
       {
-        "appID": "TEAM_ID.com.spacenexus.app",
-        "paths": ["*"]
+        "appIDs": ["TEAM_ID.com.spacenexus.app"],
+        "components": [
+          { "/": "/news/*", "comment": "News articles" },
+          { "/": "/company-profiles/*", "comment": "Company profiles" },
+          { "/": "/marketplace/*", "comment": "Marketplace" },
+          { "/": "/mission-control", "comment": "Mission control" },
+          { "/": "/market-intel", "comment": "Market intelligence" },
+          { "/": "/satellites", "comment": "Satellite tracker" },
+          { "/": "/solar-exploration", "comment": "Solar exploration" },
+          { "/": "/space-environment", "comment": "Space environment" },
+          { "/": "/compliance", "comment": "Regulatory compliance" },
+          { "/": "/space-talent", "comment": "Space talent hub" },
+          { "/": "/*", "comment": "All other pages" }
+        ]
       }
     ]
   },

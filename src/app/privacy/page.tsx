@@ -64,6 +64,17 @@ export default function PrivacyPolicyPage() {
                 <li>Usage patterns and feature interactions</li>
                 <li>Location data (country/region based on IP address)</li>
               </ul>
+
+              <h3 className="text-lg font-medium text-slate-800 mb-3 mt-6">Mobile App Data</h3>
+              <p className="text-slate-400 leading-relaxed mb-4">
+                When you use our mobile application (iOS or Android), we may additionally collect:
+              </p>
+              <ul className="list-disc list-inside text-slate-400 space-y-2 ml-4">
+                <li>Device push notification tokens (for delivering notifications you opt into)</li>
+                <li>Biometric authentication verification results (we do NOT store biometric data — authentication is handled entirely by your device&apos;s secure enclave)</li>
+                <li>Device model and operating system version</li>
+                <li>App usage analytics and crash reports</li>
+              </ul>
             </section>
 
             {/* Use of Data */}
@@ -174,6 +185,15 @@ export default function PrivacyPolicyPage() {
               </ul>
               <p className="text-slate-400 leading-relaxed mt-4">
                 To exercise any of these rights, please contact us using the information provided below.
+              </p>
+
+              <h3 className="text-lg font-medium text-slate-800 mb-3 mt-6">Account Deletion</h3>
+              <p className="text-slate-400 leading-relaxed">
+                You can permanently delete your account and all associated data at any time through the{' '}
+                <a href="/account" className="text-cyan-600 hover:underline">Account Settings</a> page.
+                Account deletion is immediate and irreversible. All your personal data, preferences, saved
+                searches, watchlists, API keys, and other account-related information will be permanently
+                removed from our systems.
               </p>
             </section>
 

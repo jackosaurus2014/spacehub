@@ -1,7 +1,7 @@
 {
   "appId": "com.spacenexus.app",
   "appName": "SpaceNexus",
-  "webDir": "out",
+  "webDir": "public",
   "server": {
     "url": "https://spacenexus.us",
     "cleartext": false
@@ -39,6 +39,13 @@
     "Keyboard": {
       "resize": "body",
       "resizeOnFullScreen": true
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#06b6d4"
     }
   }
 }

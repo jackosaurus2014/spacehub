@@ -1,11 +1,17 @@
 'use client';
 
 import { useEffect } from 'react';
+import { isNativePlatform } from '@/lib/capacitor';
 
 export default function ServiceWorkerRegistration() {
   useEffect(() => {
-    // Only register service worker in production and in browser
     if (typeof window === 'undefined') return;
+
+    // In Capacitor native shell, initialize native features instead of SW
+    if (isNativePlatform()) {
+      initCapacitorFeatures();
+      return;
+    }
 
     // Check if service workers are supported
     if (!('serviceWorker' in navigator)) {
@@ -89,4 +95,43 @@ export default function ServiceWorkerRegistration() {
 
   // This component doesn't render anything
   return null;
+}
+
+async function initCapacitorFeatures() {
+  console.log('[Capacitor] Initializing native features...');
+
+  try {
+    // 1. Initialize native push notifications
+    const { initNativePush } = await import('@/lib/native-push');
+    await initNativePush();
+
+    // 2. Hide splash screen after app loads
+    const { SplashScreen } = await import('@capacitor/splash-screen');
+    await SplashScreen.hide();
+
+    // 3. Listen for app state changes (clear badge when app becomes active)
+    const { App } = await import('@capacitor/app');
+    App.addListener('appStateChange', async ({ isActive }) => {
+      if (isActive) {
+        const { clearBadge } = await import('@/lib/native-badge');
+        await clearBadge();
+      }
+    });
+
+    // 4. Handle deep links / universal links
+    App.addListener('appUrlOpen', ({ url }) => {
+      try {
+        const path = new URL(url).pathname;
+        if (path && typeof window !== 'undefined') {
+          window.location.href = path;
+        }
+      } catch {
+        // Invalid URL
+      }
+    });
+
+    console.log('[Capacitor] Native features initialized');
+  } catch (error) {
+    console.error('[Capacitor] Init error:', error);
+  }
 }
