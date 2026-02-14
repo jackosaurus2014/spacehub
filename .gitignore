@@ -43,3 +43,13 @@ next-env.d.ts
 
 # mcp config (contains API keys)
 .mcp.json
+.nano-banana-config.json
+
+# Android TWA build artifacts
+android-twa/node_modules/
+android-twa/.gradle/
+android-twa/app/build/
+android-twa/build/
+android-twa/*.aab
+android-twa/*.apk
+android-twa/*.keystore

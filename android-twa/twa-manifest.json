@@ -1,0 +1,85 @@
+{
+  "packageId": "com.spacenexus.app",
+  "host": "spacenexus.us",
+  "name": "SpaceNexus - Space Industry Intelligence",
+  "launcherName": "SpaceNexus",
+  "display": "standalone",
+  "themeColor": "#0f172a",
+  "themeColorDark": "#0f172a",
+  "navigationColor": "#0f172a",
+  "navigationColorDark": "#0f172a",
+  "navigationDividerColor": "#0f172a",
+  "navigationDividerColorDark": "#0f172a",
+  "backgroundColor": "#0f172a",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://spacenexus.us/icons/icon-512x512.png",
+  "maskableIconUrl": "https://spacenexus.us/icons/maskable-512x512.png",
+  "shortcuts": [
+    {
+      "name": "Mission Control",
+      "shortName": "Missions",
+      "url": "/mission-control",
+      "chosenIconUrl": "https://spacenexus.us/icons/icon-192x192.png"
+    },
+    {
+      "name": "Market Intel",
+      "shortName": "Markets",
+      "url": "/market-intel",
+      "chosenIconUrl": "https://spacenexus.us/icons/icon-192x192.png"
+    },
+    {
+      "name": "Space News",
+      "shortName": "News",
+      "url": "/news",
+      "chosenIconUrl": "https://spacenexus.us/icons/icon-192x192.png"
+    },
+    {
+      "name": "Space Environment",
+      "shortName": "Weather",
+      "url": "/space-environment",
+      "chosenIconUrl": "https://spacenexus.us/icons/icon-192x192.png"
+    }
+  ],
+  "signingKey": {
+    "path": "./spacenexus.keystore",
+    "alias": "spacenexus"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "splashScreenFadeOutDuration": 300,
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "orientation": "any",
+  "fingerprints": [
+    {
+      "type": "PlayStore"
+    }
+  ],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [1],
+  "playBilling": {
+    "enabled": false
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "features": {},
+  "enableWebShareTarget": true,
+  "webShareTarget": {
+    "action": "/",
+    "method": "GET",
+    "isShareData": false,
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "generatorApp": "bubblewrap-cli",
+  "fallbackType": "customtabs",
+  "serviceAccountJsonFile": "",
+  "minSdkVersion": 19,
+  "appVersion": [1, 0, 0],
+  "isTwa": true
+}
