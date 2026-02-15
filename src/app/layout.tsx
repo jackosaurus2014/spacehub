@@ -127,6 +127,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: `
           if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js',{scope:'/'})}
         `}} />
+        {/* Smart App Banners for native apps */}
+        <meta name="google-play-app" content="app-id=com.spacenexus.app" />
+        <meta name="apple-itunes-app" content="app-id=APPLE_APP_ID" />
         {/* PWA Meta Tags for iOS */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

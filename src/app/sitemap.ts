@@ -63,6 +63,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/guide/itar-compliance-guide`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${baseUrl}/guide/space-launch-cost-comparison`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${baseUrl}/guide/commercial-space-economy`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/guide/space-launch-schedule-2026`, changeFrequency: 'weekly' as const, priority: 0.7 },
+
+    // Marketplace
+    { url: `${baseUrl}/marketplace`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${baseUrl}/marketplace/search`, changeFrequency: 'daily' as const, priority: 0.6 },
+    { url: `${baseUrl}/marketplace/copilot`, changeFrequency: 'weekly' as const, priority: 0.5 },
 
     // Conversion pages
     { url: `${baseUrl}/pricing`, changeFrequency: 'monthly' as const, priority: 0.5 },
@@ -70,6 +76,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/advertise`, changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${baseUrl}/contact`, changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${baseUrl}/faq`, changeFrequency: 'monthly' as const, priority: 0.4 },
+    { url: `${baseUrl}/press`, changeFrequency: 'monthly' as const, priority: 0.4 },
+    { url: `${baseUrl}/account`, changeFrequency: 'monthly' as const, priority: 0.3 },
 
     // Legal pages
     { url: `${baseUrl}/privacy`, changeFrequency: 'monthly' as const, priority: 0.3 },

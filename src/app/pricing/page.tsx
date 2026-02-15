@@ -8,6 +8,14 @@ import { SUBSCRIPTION_PLANS, SubscriptionTier } from '@/types';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import { toast } from '@/lib/toast';
 import PageHeader from '@/components/ui/PageHeader';
+import FAQSchema from '@/components/seo/FAQSchema';
+
+const PRICING_FAQ = [
+  { question: 'Can I cancel anytime?', answer: 'Yes! You can cancel your subscription at any time. You\'ll continue to have access until the end of your billing period.' },
+  { question: 'What payment methods do you accept?', answer: 'We accept all major credit cards, PayPal, and Apple Pay through our secure payment processor, Stripe.' },
+  { question: 'Is there a free trial?', answer: 'Yes! All paid plans include a 14-day free trial. Try any plan with full access before you subscribe — no credit card required.' },
+  { question: 'Do you offer team discounts?', answer: 'Yes! Contact us for Enterprise pricing with team collaboration features and volume discounts.' },
+];
 
 function TrialDaysLeft(trialEndsAt: Date | null): number {
   if (!trialEndsAt) return 0;
@@ -323,6 +331,7 @@ function PricingPageContent() {
 
   return (
     <div className="min-h-screen pb-12">
+      <FAQSchema items={PRICING_FAQ} />
       <div className="container mx-auto px-4">
         <PageHeader
           title="Choose Your Plan"

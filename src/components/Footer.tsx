@@ -114,6 +114,11 @@ export default function Footer() {
                     Contact Us
                   </Link>
                 </li>
+                <li>
+                  <Link href="/press" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                    Press Kit
+                  </Link>
+                </li>
               </ul>
             </div>
 

@@ -6,6 +6,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQAccordion, { FAQItem } from '@/components/support/FAQAccordion';
+import FAQSchema from '@/components/seo/FAQSchema';
 
 const FAQ_CATEGORIES = [
   { id: 'general', label: 'General', icon: '🌐' },
@@ -56,7 +57,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: 'general',
     question: 'Does SpaceNexus have a mobile app?',
     answer:
-      'Currently, SpaceNexus is optimized as a responsive web application that works great on mobile devices. A dedicated mobile app is on our roadmap. Subscribe to our newsletter to be notified when it launches.',
+      'Yes! SpaceNexus is available as a native app on both Android (Google Play) and iOS (App Store), as well as a progressive web app (PWA) that works on any device. The mobile apps include native push notifications, biometric authentication (Face ID / Touch ID), and offline access.',
   },
 
   // Account Questions
@@ -107,7 +108,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: 'account',
     question: 'How do I delete my account?',
     answer:
-      'To delete your account, please contact our support team through the Contact page. We will process your request within 30 days. Please note that account deletion is permanent and cannot be undone.',
+      'You can permanently delete your account and all associated data at any time through the Account Settings page at spacenexus.us/account. Account deletion is immediate and irreversible. All your personal data, preferences, API keys, and other account information will be permanently removed.',
   },
 
   // Data Questions
@@ -218,6 +219,7 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen pb-12">
+      <FAQSchema items={FAQ_ITEMS} />
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
           title="Frequently Asked Questions"

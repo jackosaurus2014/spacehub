@@ -3,6 +3,7 @@ import { ModuleContainer } from '@/components/modules';
 import { getDefaultModulePreferences } from '@/lib/module-preferences';
 import LandingHero from '@/components/LandingHero';
 import LandingValueProp from '@/components/LandingValueProp';
+import TrustSignals from '@/components/TrustSignals';
 import HeroStats from '@/components/HeroStats';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { AdBanner } from '@/components/ads';
@@ -21,6 +22,9 @@ export default async function HomePage() {
 
       {/* Value Proposition Sections */}
       <LandingValueProp />
+
+      {/* Trust Signals & Data Sources */}
+      <TrustSignals />
 
       {/* Live Stats Section */}
       <section className="py-8 relative z-10">
