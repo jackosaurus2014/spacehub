@@ -96,6 +96,18 @@ model NurtureEmailLog {
   @@index([emailType])
 }
 
+model NpsResponse {
+  id        String   @id @default(cuid())
+  userId    String
+  score     Int      // 0-10
+  feedback  String?  // Optional free-text
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([score])
+  @@index([createdAt])
+}
+
 model NewsArticle {
   id          String   @id @default(cuid())
   title       String

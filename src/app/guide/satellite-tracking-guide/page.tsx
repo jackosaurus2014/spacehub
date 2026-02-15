@@ -1,0 +1,599 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import FAQSchema from '@/components/seo/FAQSchema';
+
+export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  title: 'The Complete Satellite Tracking Guide: How to Track Any Object in Orbit | SpaceNexus',
+  description:
+    'Learn how to track satellites, the ISS, and space debris in real time. Covers TLE data, SGP4 propagation, orbit types, tracking sources, and conjunction assessments for beginners and professionals.',
+  keywords: [
+    'satellite tracking guide',
+    'how to track satellites',
+    'ISS tracker',
+    'TLE data explained',
+    'space debris tracking',
+    'satellite orbit types',
+    'conjunction assessment',
+    'space situational awareness',
+  ],
+  openGraph: {
+    title: 'The Complete Satellite Tracking Guide: How to Track Any Object in Orbit',
+    description:
+      'Everything you need to know about tracking satellites, from TLE data and orbital mechanics to real-time tools and collision avoidance.',
+    type: 'article',
+    publishedTime: '2026-02-14T00:00:00Z',
+    authors: ['SpaceNexus'],
+  },
+  alternates: {
+    canonical: 'https://spacenexus.us/guide/satellite-tracking-guide',
+  },
+};
+
+const TOC = [
+  { id: 'what-is-satellite-tracking', label: 'What Is Satellite Tracking' },
+  { id: 'how-it-works', label: 'How Satellite Tracking Works' },
+  { id: 'orbit-types', label: 'Types of Orbits' },
+  { id: 'data-sources', label: 'Key Tracking Data Sources' },
+  { id: 'track-iss', label: 'How to Track the ISS' },
+  { id: 'conjunction-assessments', label: 'Conjunction Assessments' },
+  { id: 'debris-tracking', label: 'Space Debris Tracking' },
+  { id: 'spacenexus-tracker', label: 'Using SpaceNexus Satellite Tracker' },
+  { id: 'faq', label: 'FAQ' },
+];
+
+const ORBIT_TYPES = [
+  {
+    name: 'Low Earth Orbit (LEO)',
+    altitude: '160 - 2,000 km',
+    period: '88 - 127 min',
+    examples: 'ISS, Starlink, Planet Labs',
+    uses: 'Earth observation, broadband, crewed missions',
+  },
+  {
+    name: 'Medium Earth Orbit (MEO)',
+    altitude: '2,000 - 35,786 km',
+    period: '2 - 24 hours',
+    examples: 'GPS, Galileo, O3b mPOWER',
+    uses: 'Navigation, medium-latency communications',
+  },
+  {
+    name: 'Geostationary Orbit (GEO)',
+    altitude: '35,786 km',
+    period: '23 hrs 56 min',
+    examples: 'SES, Intelsat, GOES weather',
+    uses: 'Broadcasting, weather, military comms',
+  },
+  {
+    name: 'Highly Elliptical Orbit (HEO)',
+    altitude: '500 - 40,000 km',
+    period: '12 - 24 hours',
+    examples: 'Molniya, Tundra, SDS',
+    uses: 'High-latitude comms, intelligence',
+  },
+  {
+    name: 'Sun-Synchronous Orbit (SSO)',
+    altitude: '600 - 800 km',
+    period: '96 - 100 min',
+    examples: 'Landsat, Sentinel, WorldView',
+    uses: 'Earth imaging with consistent lighting',
+  },
+];
+
+const DATA_SOURCES = [
+  {
+    name: 'Space-Track.org',
+    operator: 'US Space Force (18th SDS)',
+    data: 'TLE/GP data for 48,000+ objects',
+    access: 'Free (registration required)',
+    update: 'Multiple times daily',
+  },
+  {
+    name: 'CelesTrak',
+    operator: 'Dr. T.S. Kelso',
+    data: 'Curated TLE sets, supplemental data',
+    access: 'Free (public)',
+    update: 'Multiple times daily',
+  },
+  {
+    name: 'LeoLabs',
+    operator: 'LeoLabs Inc.',
+    data: 'Radar-based tracking, debris catalog',
+    access: 'Commercial (free dashboard)',
+    update: 'Near real-time',
+  },
+  {
+    name: 'EU SST',
+    operator: 'European Union',
+    data: 'European space surveillance data',
+    access: 'Free for EU entities',
+    update: 'Daily',
+  },
+  {
+    name: 'ISON',
+    operator: 'International Scientific Optical Network',
+    data: 'Optical observations, GEO focus',
+    access: 'Research community',
+    update: 'Campaign-based',
+  },
+];
+
+const FAQ_ITEMS = [
+  {
+    question: 'How many satellites are currently in orbit?',
+    answer:
+      'As of early 2026, there are approximately 13,000 active satellites in orbit, with over 48,000 total tracked objects including defunct satellites and debris. SpaceX Starlink alone accounts for over 6,500 operational satellites. The number grows weekly as new constellations are deployed.',
+  },
+  {
+    question: 'Can I track satellites with my phone?',
+    answer:
+      'Yes. SpaceNexus provides a mobile-friendly satellite tracker that works in any browser. You can also use dedicated apps, but SpaceNexus offers the advantage of integrating tracking with conjunction alerts, debris monitoring, and orbital management data all in one platform.',
+  },
+  {
+    question: 'What is a TLE and how do I read one?',
+    answer:
+      'A Two-Line Element set (TLE) is a standardized data format that encodes a satellite\'s orbital parameters in two 69-character lines. It includes the inclination, eccentricity, right ascension, argument of perigee, mean anomaly, and mean motion. TLEs are generated by the US Space Force from radar and optical observations and are used with the SGP4 propagation model to predict satellite positions.',
+  },
+  {
+    question: 'How accurate is satellite tracking?',
+    answer:
+      'Accuracy depends on the data source and object. For the US Space Force catalog, position accuracy is typically within 1 km for LEO objects and several kilometers for GEO objects. Commercial providers like LeoLabs offer sub-100-meter accuracy for LEO. TLE-based predictions degrade over time, so frequent updates are essential for precision tracking.',
+  },
+  {
+    question: 'What is a conjunction assessment?',
+    answer:
+      'A conjunction assessment evaluates the probability that two objects in orbit will come dangerously close to each other. The 18th Space Defense Squadron screens all trackable objects and issues Conjunction Data Messages (CDMs) when the probability of collision exceeds a threshold. Satellite operators use these to decide whether to perform a collision avoidance maneuver.',
+  },
+];
+
+export default function SatelliteTrackingGuidePage() {
+  return (
+    <div className="min-h-screen bg-space-900">
+      <div className="container mx-auto px-4 pb-16">
+        {/* Breadcrumbs */}
+        <nav className="pt-6 mb-4" aria-label="Breadcrumb">
+          <ol className="flex items-center gap-2 text-sm text-slate-400">
+            <li><Link href="/" className="hover:text-nebula-400 transition-colors">Home</Link></li>
+            <li>/</li>
+            <li><Link href="/guide/space-industry" className="hover:text-nebula-400 transition-colors">Guides</Link></li>
+            <li>/</li>
+            <li className="text-nebula-400">Satellite Tracking Guide</li>
+          </ol>
+        </nav>
+
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <header className="mb-12">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              The Complete Satellite Tracking Guide: How to Track Any Object in Orbit
+            </h1>
+            <p className="text-lg text-slate-300 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+              From understanding TLE data and orbital mechanics to using real-time tracking tools and
+              interpreting conjunction assessments, this guide covers everything you need to know about
+              monitoring objects in Earth orbit.
+            </p>
+            <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-slate-400">
+              <span>Last updated: February 2026</span>
+              <span>|</span>
+              <span>By SpaceNexus Team</span>
+              <span>|</span>
+              <span>18 min read</span>
+            </div>
+          </header>
+
+          {/* Table of Contents */}
+          <nav className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-6 mb-10">
+            <h2 className="text-lg font-bold text-white mb-3">Table of Contents</h2>
+            <ol className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {TOC.map((item, i) => (
+                <li key={item.id}>
+                  <a
+                    href={`#${item.id}`}
+                    className="text-nebula-400 hover:underline text-sm transition-colors"
+                  >
+                    {i + 1}. {item.label}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+
+          {/* Content */}
+          <article className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-8 space-y-10">
+            {/* What Is Satellite Tracking */}
+            <section id="what-is-satellite-tracking">
+              <h2 className="text-2xl font-bold text-white mb-4">What Is Satellite Tracking and Why It Matters</h2>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                Satellite tracking is the process of determining and predicting the position and velocity
+                of artificial objects orbiting Earth. It encompasses everything from locating the International
+                Space Station for a backyard viewing opportunity to monitoring thousands of pieces of space
+                debris that threaten operational spacecraft.
+              </p>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                As of early 2026, the US Space Force&apos;s 18th Space Defense Squadron tracks over
+                <strong className="text-white"> 48,000 objects</strong> larger than 10 centimeters in orbit.
+                Of these, approximately 13,000 are active satellites, while the remainder consists of defunct
+                spacecraft, spent rocket stages, and debris fragments. With mega-constellations like Starlink,
+                OneWeb, and Amazon Kuiper deploying thousands of new satellites, the orbital environment is
+                growing more congested than ever.
+              </p>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                Satellite tracking matters for several critical reasons. Collision avoidance depends on accurate
+                tracking data: a single collision can generate thousands of debris fragments, triggering a
+                cascading chain of further collisions known as Kessler Syndrome. National security agencies
+                track foreign military satellites and potential threats. Scientists use tracking data for
+                atmospheric research, geodesy, and space weather studies. And the growing commercial space
+                economy relies on tracking for spectrum coordination, insurance underwriting, and regulatory
+                compliance.
+              </p>
+              <p className="text-slate-300 leading-relaxed">
+                Whether you are a hobbyist wanting to spot the ISS from your backyard, an engineer managing
+                a satellite constellation, or a policy analyst studying orbital sustainability, understanding
+                how satellite tracking works is foundational to engaging with the space domain.
+              </p>
+            </section>
+
+            {/* How Satellite Tracking Works */}
+            <section id="how-it-works">
+              <h2 className="text-2xl font-bold text-white mb-4">How Satellite Tracking Works</h2>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                Satellite tracking relies on a combination of ground-based sensors, space-based sensors, and
+                mathematical models to observe, catalog, and predict the trajectories of orbiting objects. The
+                process can be broken down into three key components: observation, cataloging, and propagation.
+              </p>
+
+              <h3 className="text-xl font-bold text-white mb-3 mt-6">Observation: Detecting Objects in Orbit</h3>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                The US Space Surveillance Network (SSN) operates a global network of radar and optical sensors
+                to detect and track orbiting objects. Phased-array radars like the AN/FPS-85 in Florida can
+                simultaneously track hundreds of objects, while the Space Fence on Kwajalein Atoll uses S-band
+                radar to detect objects as small as 5 centimeters in LEO. Optical telescopes at sites like
+                Diego Garcia and Maui observe objects in higher orbits where radar returns are too weak.
+              </p>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                Commercial tracking providers are supplementing government networks. LeoLabs operates phased-array
+                radars in Texas, New Zealand, Costa Rica, and Australia, providing near-real-time tracking of
+                LEO objects. ExoAnalytic Solutions operates a network of over 300 telescopes worldwide for
+                deep-space tracking. These commercial providers offer higher update rates and specialized
+                analytics beyond what government catalogs provide.
+              </p>
+
+              <h3 className="text-xl font-bold text-white mb-3 mt-6">Two-Line Element Sets (TLEs)</h3>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                The standard data format for satellite orbital parameters is the Two-Line Element set (TLE),
+                developed by NORAD in the 1960s. A TLE encodes six Keplerian orbital elements plus drag and
+                timing information in two 69-character lines. The elements include inclination (the tilt of
+                the orbit relative to the equator), eccentricity (how elliptical the orbit is), right ascension
+                of the ascending node (the orientation of the orbital plane), argument of perigee (where in the
+                orbit the satellite is closest to Earth), mean anomaly (where the satellite is in its orbit at
+                the epoch time), and mean motion (how many orbits per day).
+              </p>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                While TLEs remain the most widely used format, the space tracking community is transitioning to
+                newer formats like Orbital Mean-Elements Message (OMM) in XML or JSON, and Orbit Ephemeris
+                Message (OEM) for higher-precision applications.
+              </p>
+
+              <h3 className="text-xl font-bold text-white mb-3 mt-6">SGP4 Propagation</h3>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                Once a TLE is obtained, the Simplified General Perturbations 4 (SGP4) mathematical model is used
+                to predict the satellite&apos;s position at any future or past time. SGP4 accounts for perturbations
+                caused by Earth&apos;s oblateness (the J2 effect), atmospheric drag, solar and lunar gravitational
+                effects, and solar radiation pressure. The model is specifically designed to work with TLE data
+                and is implemented in virtually every satellite tracking application.
+              </p>
+              <p className="text-slate-300 leading-relaxed">
+                TLE accuracy degrades over time because the simplified model cannot perfectly capture all
+                perturbations. For LEO objects, prediction accuracy is typically within 1-2 kilometers over a
+                24-hour period, but errors grow to tens of kilometers over a week. This is why TLEs are updated
+                multiple times daily for high-interest objects.
+              </p>
+            </section>
+
+            {/* Types of Orbits */}
+            <section id="orbit-types">
+              <h2 className="text-2xl font-bold text-white mb-4">Types of Orbits</h2>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                Understanding orbit types is essential for satellite tracking because the orbit determines
+                where and when a satellite is visible, how fast it moves across the sky, and what tracking
+                methods are most effective. Here are the primary orbital regimes:
+              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-700/50">
+                      <th className="py-3 pr-4 text-left text-white font-semibold">Orbit Type</th>
+                      <th className="py-3 pr-4 text-left text-white font-semibold">Altitude</th>
+                      <th className="py-3 pr-4 text-left text-white font-semibold">Period</th>
+                      <th className="py-3 pr-4 text-left text-white font-semibold">Examples</th>
+                      <th className="py-3 text-left text-white font-semibold">Primary Uses</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ORBIT_TYPES.map((orbit) => (
+                      <tr key={orbit.name} className="bg-slate-800/60 border-b border-slate-700/50">
+                        <td className="py-3 pr-4 text-white font-medium">{orbit.name}</td>
+                        <td className="py-3 pr-4 text-slate-300">{orbit.altitude}</td>
+                        <td className="py-3 pr-4 text-slate-300">{orbit.period}</td>
+                        <td className="py-3 pr-4 text-slate-300">{orbit.examples}</td>
+                        <td className="py-3 text-slate-300">{orbit.uses}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-slate-300 leading-relaxed mt-4">
+                LEO is the most congested regime, hosting the majority of active satellites and trackable debris.
+                Objects in LEO complete an orbit roughly every 90 minutes, making them visible from the ground
+                for only a few minutes per pass. GEO satellites appear stationary from the ground, making them
+                easy to point a dish antenna at but harder to distinguish from background stars with optical
+                sensors. MEO and HEO orbits present unique tracking challenges due to their varying altitudes
+                and speeds.
+              </p>
+              <p className="text-slate-300 text-sm mt-4">
+                <Link href="/orbital-slots" className="text-nebula-400 hover:underline">
+                  Explore orbital slot allocations and availability on SpaceNexus &rarr;
+                </Link>
+              </p>
+            </section>
+
+            {/* Data Sources */}
+            <section id="data-sources">
+              <h2 className="text-2xl font-bold text-white mb-4">Key Tracking Data Sources</h2>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                Reliable tracking data is the foundation of space situational awareness. Multiple organizations
+                provide satellite tracking data, each with different coverage, accuracy, and access models:
+              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-700/50">
+                      <th className="py-3 pr-4 text-left text-white font-semibold">Source</th>
+                      <th className="py-3 pr-4 text-left text-white font-semibold">Operator</th>
+                      <th className="py-3 pr-4 text-left text-white font-semibold">Data Provided</th>
+                      <th className="py-3 pr-4 text-left text-white font-semibold">Access</th>
+                      <th className="py-3 text-left text-white font-semibold">Update Freq.</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {DATA_SOURCES.map((source) => (
+                      <tr key={source.name} className="bg-slate-800/60 border-b border-slate-700/50">
+                        <td className="py-3 pr-4 text-white font-medium">{source.name}</td>
+                        <td className="py-3 pr-4 text-slate-300">{source.operator}</td>
+                        <td className="py-3 pr-4 text-slate-300">{source.data}</td>
+                        <td className="py-3 pr-4 text-slate-300">{source.access}</td>
+                        <td className="py-3 text-slate-300">{source.update}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-slate-300 leading-relaxed mt-4">
+                SpaceNexus aggregates data from multiple sources to provide the most comprehensive tracking
+                picture. Our satellite tracker ingests TLE data from Space-Track and CelesTrak, enriches it
+                with metadata from our company intelligence database, and overlays conjunction assessment data
+                to provide a complete operational picture.
+              </p>
+            </section>
+
+            {/* Track the ISS */}
+            <section id="track-iss">
+              <h2 className="text-2xl font-bold text-white mb-4">How to Track the ISS and Other Notable Satellites</h2>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                The International Space Station is the easiest satellite to track because of its size (about
+                the area of a football field) and its low orbit (approximately 420 km altitude). It is often
+                the third-brightest object in the night sky, after the Sun and Moon, reaching a visual
+                magnitude of -5.9 at its brightest.
+              </p>
+
+              <h3 className="text-xl font-bold text-white mb-3 mt-6">Step-by-Step: Track the ISS</h3>
+              <ol className="text-slate-300 space-y-2 mb-4">
+                <li className="flex items-start gap-3">
+                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
+                  <span>Visit the <Link href="/satellites" className="text-nebula-400 hover:underline">SpaceNexus Satellite Tracker</Link> and search for &quot;ISS&quot; (NORAD ID 25544).</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
+                  <span>Enter your location to see upcoming visible passes with azimuth, elevation, and timing data.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
+                  <span>Look for passes that reach at least 40 degrees elevation for the best viewing. The ISS appears as a bright, steady light moving across the sky in 3-5 minutes.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>
+                  <span>Best visibility occurs during twilight (just after sunset or before sunrise) when the sky is dark but the ISS is still illuminated by the Sun.</span>
+                </li>
+              </ol>
+
+              <h3 className="text-xl font-bold text-white mb-3 mt-6">Other Notable Objects to Track</h3>
+              <ul className="text-slate-300 space-y-2">
+                <li className="flex items-start gap-3">
+                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span><strong className="text-white">Tiangong Space Station</strong> &mdash; China&apos;s modular space station orbiting at ~390 km. Visible as a bright, steady moving object.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span><strong className="text-white">Hubble Space Telescope</strong> &mdash; Orbiting at ~540 km, visible as a moderately bright object (magnitude +1 to +2).</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span><strong className="text-white">Starlink Trains</strong> &mdash; Newly deployed Starlink satellites form a visible &quot;train&quot; of lights before dispersing to operational altitude.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span><strong className="text-white">Envisat</strong> &mdash; The largest piece of space debris (8 tons), defunct since 2012, tracked closely due to collision risk.</span>
+                </li>
+              </ul>
+            </section>
+
+            {/* Conjunction Assessments */}
+            <section id="conjunction-assessments">
+              <h2 className="text-2xl font-bold text-white mb-4">Understanding Conjunction Assessments and Collision Avoidance</h2>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                As the orbital environment becomes more congested, conjunction assessments have become a critical
+                part of satellite operations. A conjunction occurs when two objects pass within a defined distance
+                threshold. The 18th Space Defense Squadron at Vandenberg Space Force Base screens all trackable
+                objects against each other and issues Conjunction Data Messages (CDMs) when the probability of
+                collision exceeds a threshold.
+              </p>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                A typical CDM includes the time of closest approach (TCA), the miss distance in radial,
+                in-track, and cross-track directions, and the probability of collision (Pc). Satellite operators
+                generally consider a collision avoidance maneuver when the Pc exceeds 1 in 10,000 (10<sup>-4</sup>),
+                though thresholds vary by operator and mission criticality.
+              </p>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                SpaceX&apos;s Starlink constellation, with over 6,500 satellites, performs thousands of avoidance
+                maneuvers per year using an autonomous collision avoidance system. In 2025, Starlink executed
+                approximately 50,000 maneuvers, highlighting the scale of the traffic management challenge.
+                Operators without maneuvering capability (such as small cubesats) must rely on ground-based
+                conjunction screening and acceptance of residual risk.
+              </p>
+              <p className="text-slate-300 leading-relaxed">
+                The space industry is working toward more sophisticated Space Traffic Management (STM) frameworks.
+                The Commerce Department has been designated as the civil authority for space traffic coordination
+                in the United States, and international bodies like the Inter-Agency Space Debris Coordination
+                Committee (IADC) are developing best practices for responsible space operations.
+              </p>
+              <p className="text-slate-300 text-sm mt-4">
+                <Link href="/space-environment" className="text-nebula-400 hover:underline">
+                  Monitor conjunction events and debris alerts on SpaceNexus &rarr;
+                </Link>
+              </p>
+            </section>
+
+            {/* Debris Tracking */}
+            <section id="debris-tracking">
+              <h2 className="text-2xl font-bold text-white mb-4">Space Debris Tracking Challenges</h2>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                Space debris represents one of the greatest challenges in satellite tracking. While the US
+                Space Force tracks objects larger than 10 cm in LEO (roughly 48,000 objects), there are an
+                estimated <strong className="text-white">130 million fragments</strong> between 1 mm and 10 cm
+                that are too small to track reliably but large enough to damage or destroy a spacecraft. Even
+                a 1-cm object at orbital velocity carries the kinetic energy of a hand grenade.
+              </p>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                Major debris-generating events have dramatically worsened the environment. The 2007 Chinese
+                ASAT test (destroying the Fengyun-1C satellite) created over 3,500 trackable fragments, many
+                of which remain in orbit today. The 2009 Iridium-Cosmos collision added another 2,300 fragments.
+                And the 2021 Russian ASAT test against Cosmos 1408 created 1,500+ fragments that threatened
+                the ISS crew.
+              </p>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                Tracking debris is harder than tracking active satellites because debris objects are often small,
+                tumbling, and unpredictable. They do not transmit signals, so tracking relies entirely on
+                ground-based sensors. Radar is effective for LEO debris, while optical telescopes are used
+                for GEO debris. New technologies like space-based sensors and AI-enhanced tracking algorithms
+                are improving detection capabilities for smaller objects.
+              </p>
+              <p className="text-slate-300 leading-relaxed">
+                Active Debris Removal (ADR) missions are beginning to address the problem. ClearSpace-1, a
+                European Space Agency mission, aims to demonstrate debris capture and deorbiting. Astroscale
+                has tested magnetic capture technology with its ELSA-d mission. These efforts, combined with
+                improved tracking, are essential for ensuring the long-term sustainability of the orbital
+                environment.
+              </p>
+            </section>
+
+            {/* SpaceNexus Tracker */}
+            <section id="spacenexus-tracker">
+              <h2 className="text-2xl font-bold text-white mb-4">How to Use SpaceNexus Satellite Tracker</h2>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                SpaceNexus provides a comprehensive satellite tracking platform that integrates data from
+                multiple sources into a single, intuitive interface. Here is how to get the most out of it:
+              </p>
+              <ol className="text-slate-300 space-y-2 mb-6">
+                <li className="flex items-start gap-3">
+                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
+                  <span><strong className="text-white">Search and filter</strong> &mdash; Find any satellite by name, NORAD ID, or COSPAR designator. Filter by orbit type, country, operator, or constellation.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
+                  <span><strong className="text-white">Real-time visualization</strong> &mdash; View satellite positions on an interactive 3D globe or 2D ground track map with orbital paths projected forward in time.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
+                  <span><strong className="text-white">Constellation view</strong> &mdash; Monitor entire constellations like Starlink, OneWeb, or GPS with our <Link href="/constellations" className="text-nebula-400 hover:underline">Constellation Tracker</Link>.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>
+                  <span><strong className="text-white">Conjunction alerts</strong> &mdash; Get notified when tracked objects have close approaches, with risk assessments and maneuver recommendations.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">5</span>
+                  <span><strong className="text-white">Debris monitoring</strong> &mdash; Track debris clouds from breakup events and their evolution over time via our <Link href="/space-environment" className="text-nebula-400 hover:underline">Space Environment dashboard</Link>.</span>
+                </li>
+              </ol>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link href="/satellites" className="btn-primary text-sm py-2 px-4">
+                  Open Satellite Tracker
+                </Link>
+                <Link href="/constellations" className="btn-secondary text-sm py-2 px-4">
+                  Constellation Tracker
+                </Link>
+                <Link href="/register" className="btn-secondary text-sm py-2 px-4">
+                  Sign Up Free
+                </Link>
+              </div>
+            </section>
+
+            {/* FAQ */}
+            <section id="faq">
+              <h2 className="text-2xl font-bold text-white mb-4">Frequently Asked Questions</h2>
+              <div className="space-y-4">
+                {FAQ_ITEMS.map((faq) => (
+                  <div key={faq.question} className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                    <h3 className="font-semibold text-white text-sm mb-2">{faq.question}</h3>
+                    <p className="text-slate-300 text-sm leading-relaxed">{faq.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Related Content */}
+            <section className="pt-6 border-t border-slate-700/50">
+              <h3 className="text-lg font-bold text-white mb-4">Related Guides</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Link href="/guide/how-satellite-tracking-works" className="text-nebula-400 hover:underline text-sm transition-colors">
+                  How Satellite Tracking Works &rarr;
+                </Link>
+                <Link href="/guide/space-launch-schedule-2026" className="text-nebula-400 hover:underline text-sm transition-colors">
+                  2026 Space Launch Schedule &rarr;
+                </Link>
+                <Link href="/guide/space-regulatory-compliance" className="text-nebula-400 hover:underline text-sm transition-colors">
+                  Space Regulatory Compliance Guide &rarr;
+                </Link>
+                <Link href="/guide/space-industry-market-size" className="text-nebula-400 hover:underline text-sm transition-colors">
+                  Space Industry Market Size &rarr;
+                </Link>
+              </div>
+            </section>
+          </article>
+
+          {/* FAQ Schema */}
+          <FAQSchema items={FAQ_ITEMS} />
+
+          {/* Article Schema */}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'Article',
+                headline: 'The Complete Satellite Tracking Guide: How to Track Any Object in Orbit',
+                description: 'Learn how to track satellites, the ISS, and space debris in real time. Covers TLE data, SGP4 propagation, orbit types, tracking sources, and conjunction assessments.',
+                author: { '@type': 'Organization', name: 'SpaceNexus' },
+                publisher: { '@type': 'Organization', name: 'SpaceNexus', logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' } },
+                datePublished: '2026-02-14T00:00:00Z',
+                dateModified: new Date().toISOString(),
+                mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://spacenexus.us/guide/satellite-tracking-guide' },
+              }),
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}

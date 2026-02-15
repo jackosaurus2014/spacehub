@@ -214,7 +214,223 @@ These can be dropped into any client-component page to add structured data witho
 | Created | `src/app/market-intel/layout.tsx` | Page metadata for /market-intel |
 | Created | `src/app/mission-control/layout.tsx` | Page metadata for /mission-control |
 
-**Total: 10 modified files, 15 new files**
+**Phase 1 Total: 10 modified files, 15 new files**
+
+---
+
+## 7. Original Blog System (`/blog`)
+
+### 7a. Blog Content Data
+
+**File:** `src/lib/blog-content.ts`
+
+Blog content management system with 6 categories and helper functions:
+- Types: `OriginalBlogPost`, `BlogCategory` (analysis, guide, market, technology, policy, building-in-public)
+- 6 initial blog posts authored by SpaceNexus team
+- `getBlogPost(slug)` and `getBlogPosts({ category, limit, offset })` helpers
+
+### 7b. Blog Listing Page (`/blog`)
+
+**File:** `src/app/blog/page.tsx`
+
+Client component with:
+- Category filtering via URL params (`?category=analysis`)
+- Featured post cards (2-column layout)
+- All posts grid (3-column)
+- RSS feed link
+- Suspense boundary for `useSearchParams()`
+
+**File:** `src/app/blog/layout.tsx` — Page metadata with RSS feed `alternates.types`
+
+### 7c. Individual Blog Post Pages (`/blog/[slug]`)
+
+**File:** `src/app/blog/[slug]/page.tsx`
+
+Server component with:
+- `generateStaticParams()` for SSG of all posts
+- `generateMetadata()` with OG article type, published/modified time, author
+- Article JSON-LD structured data (headline, author, publisher, wordCount, articleSection)
+- Breadcrumb navigation
+- Prose-styled content rendering
+- Related posts section (same category)
+- CTA to `/register`
+- ISR with 1-hour revalidation
+
+### 7d. RSS Feed
+
+**File:** `src/app/api/feed/rss/route.ts`
+
+RSS 2.0 feed with `content:encoded` and `atom:link` self-reference. Serves at `/api/feed/rss` with 1-hour cache.
+
+### Blog Posts Created
+
+| # | Title | Category | Reading Time |
+|---|-------|----------|-------------|
+| 1 | Why the Space Industry Needs Its Own Bloomberg Terminal | Analysis | 8 min |
+| 2 | The $1.8 Trillion Space Economy: Where the Money Is Going in 2026 | Market | 10 min |
+| 3 | Space Industry Procurement: How to Win Government Contracts | Guide | 12 min |
+| 4 | Space Startup Funding in 2026: Trends, Data, and What Investors Want | Market | 9 min |
+| 5 | Satellite Tracking Explained: How It Works and Why It Matters | Guide | 11 min |
+| 6 | How to Monitor Space Weather and Why It Matters for Your Business | Technology | 9 min |
+
+---
+
+## 8. Additional Pillar Content Pages
+
+4 new SEO pillar pages, each 2000+ words with Article + FAQPage structured data:
+
+| Page | Target Keyword | Monthly Searches |
+|------|---------------|-----------------|
+| `/guide/satellite-tracking-guide` | satellite tracking guide | ~3,000 |
+| `/guide/space-business-opportunities` | space business opportunities | ~2,000 |
+| `/guide/space-regulatory-compliance` | space regulatory compliance | ~1,500 |
+| `/guide/space-economy-investment` | space economy investment | ~2,500 |
+
+Each includes: table of contents, data tables, FAQ section (5 items), internal links to relevant modules, CTA to register, related guides section.
+
+---
+
+## 9. City-Specific Landing Pages
+
+### Data File
+
+**File:** `src/lib/city-data.ts`
+
+5 major space industry cities with structured data: stats, key facilities, major companies (with profile links), job market data, and "why this city" reasons.
+
+### Dynamic Page
+
+**File:** `src/app/space-industry/[city]/page.tsx`
+
+Server component with `generateStaticParams()` for SSG. Each page includes:
+- City stats grid (4 metrics)
+- Key facilities section with type badges
+- Major companies table with profile links
+- Job market section (avg salary, open positions, top roles)
+- "Why this city" checklist
+- Nearby launch sites (where applicable)
+- FAQ section (5 items) with FAQPage schema
+- Article JSON-LD structured data
+- CTA and cross-links to other cities
+
+**Cities:** Houston, Washington D.C., Los Angeles, Colorado Springs, Cape Canaveral
+
+---
+
+## 10. Welcome Email Drip Sequence
+
+**File:** `src/lib/newsletter/welcome-drip-templates.ts`
+
+6 automated emails over 14 days, each with HTML and plain text versions:
+
+| Day | Template ID | Subject | Purpose |
+|-----|------------|---------|---------|
+| 0 | `welcome` | Welcome to SpaceNexus | 3 things to try first |
+| 1 | `dashboard-walkthrough` | Never miss a launch | Launch dashboard feature tour |
+| 3 | `company-profiles` | 200+ space companies | Company intelligence deep dive |
+| 5 | `power-features` | 3 features most users discover on week 2 | Market Intel, Procurement, Compliance |
+| 10 | `pro-upsell` | Unlock AI insights with Pro | Pro tier feature comparison |
+| 14 | `nps-survey` | How's SpaceNexus working for you? | NPS score collection (0-10 scale) |
+
+### Drip Scheduler
+
+**File:** `src/app/api/drip/process/route.ts`
+
+Cron-triggered endpoint that:
+- Finds users registered in the last 14 days with verified email
+- Checks `NurtureEmailLog` for sent templates
+- Sends next appropriate drip email via Resend
+- Records delivery in `NurtureEmailLog`
+- Protected by `CRON_SECRET` bearer token
+
+---
+
+## 11. In-App Changelog ("What's New")
+
+**File:** `src/lib/changelog.ts`
+
+Changelog data with versioned entries, each containing typed changes (feature/improvement/fix).
+
+**File:** `src/components/ui/ChangelogModal.tsx`
+
+Client component that:
+- Checks `localStorage` for last-seen version on mount
+- Shows modal with new entries if version has changed
+- Color-coded change type badges (New/Improved/Fixed)
+- Dismisses and records current version on close
+
+---
+
+## 12. NPS Survey System
+
+### Client Component
+
+**File:** `src/components/ui/NpsSurvey.tsx`
+
+Non-intrusive bottom-right popup that:
+- Shows after 14 days of use, then quarterly (90-day interval)
+- 0-10 score buttons with color coding (red/amber/green)
+- Contextual feedback prompt based on score
+- Auto-dismisses after submission
+- Stores last-shown timestamp in `localStorage`
+
+### API Route
+
+**File:** `src/app/api/nps/route.ts`
+
+- `POST /api/nps` — Records NPS response (authenticated)
+- `GET /api/nps?score=N` — Email click redirect (pre-fills score)
+- `GET /api/nps` — Admin-only aggregate stats (NPS score, promoters/passives/detractors, recent responses)
+
+### Prisma Model
+
+**Added to `prisma/schema.prisma`:**
+```prisma
+model NpsResponse {
+  id        String   @id @default(cuid())
+  userId    String
+  score     Int      // 0-10
+  feedback  String?
+  createdAt DateTime @default(now())
+  @@index([userId])
+  @@index([score])
+  @@index([createdAt])
+}
+```
+
+### Integration
+
+Both `ChangelogModal` and `NpsSurvey` added to `src/app/layout.tsx` alongside existing global components.
+
+---
+
+## Phase 2 Files Summary
+
+| Action | File | Description |
+|--------|------|-------------|
+| Created | `src/lib/blog-content.ts` | 6 original blog posts with content management |
+| Created | `src/app/blog/page.tsx` | Blog listing page with category filtering |
+| Created | `src/app/blog/layout.tsx` | Blog page metadata with RSS alternate |
+| Created | `src/app/blog/[slug]/page.tsx` | Individual post pages with Article schema |
+| Created | `src/app/api/feed/rss/route.ts` | RSS 2.0 feed endpoint |
+| Created | `src/app/guide/satellite-tracking-guide/page.tsx` | Pillar content (satellite tracking) |
+| Created | `src/app/guide/space-business-opportunities/page.tsx` | Pillar content (business opportunities) |
+| Created | `src/app/guide/space-regulatory-compliance/page.tsx` | Pillar content (regulatory compliance) |
+| Created | `src/app/guide/space-economy-investment/page.tsx` | Pillar content (space economy investment) |
+| Created | `src/lib/city-data.ts` | City-specific data for 5 space industry hubs |
+| Created | `src/app/space-industry/[city]/page.tsx` | City landing pages with FAQSchema |
+| Created | `src/lib/newsletter/welcome-drip-templates.ts` | 6 welcome drip email templates |
+| Created | `src/app/api/drip/process/route.ts` | Drip scheduler API route |
+| Created | `src/lib/changelog.ts` | In-app changelog data |
+| Created | `src/components/ui/ChangelogModal.tsx` | "What's New" modal component |
+| Created | `src/components/ui/NpsSurvey.tsx` | NPS survey popup component |
+| Created | `src/app/api/nps/route.ts` | NPS submission and admin stats API |
+| Modified | `prisma/schema.prisma` | Added NpsResponse model |
+| Modified | `src/app/layout.tsx` | Added ChangelogModal and NpsSurvey |
+| Modified | `src/app/sitemap.ts` | Added blog, city, and guide routes |
+| Modified | `src/components/Footer.tsx` | Added Blog link, renamed Blogs to Industry Feeds |
+
+**Phase 2 Total: 17 new files, 4 modified files**
 
 ---
 
@@ -244,21 +460,22 @@ These can be dropped into any client-component page to add structured data witho
 
 | Priority | Item | Description |
 |----------|------|-------------|
-| P1 | Create `/blog` route for original content | Blog listing page with pagination, category filtering |
-| P1 | Add more pillar content pages | Target: satellite tracking guide, space economy guide, space business opportunities |
-| P1 | Implement RSS feed endpoint | `/api/feed/rss` for blog content syndication |
 | P1 | Create `/pricing` comparison table component | Side-by-side feature comparison (existing page works but could be enhanced) |
+| P1 | Add more original blog posts | Continue publishing 8 posts/month per marketing plan |
 | P2 | Add Event schema to launch dashboard | Schema.org Event markup for upcoming launches |
 | P2 | Implement hreflang tags for en-US, en-GB, en-AU | International SEO targeting |
-| P2 | Create city-specific landing pages | `/space-industry/houston`, `/space-industry/washington-dc` |
 | P2 | Add exit-intent popup for newsletter signup | Trigger on homepage bounce |
 | P2 | Add sticky header CTA on scroll | "Get Started Free" button that appears on scroll |
-| P2 | Add more email templates | Launch-day deal, social proof follow-up, last chance emails |
+| P2 | Google/GitHub OAuth signup | Reduce signup friction |
+| P2 | Referral program system | `/refer` page, tracking, Stripe credit integration |
+| P2 | Re-engagement email campaigns | "We Miss You" for 30+ day inactive users |
 | P3 | Create "State of Space 2026" report page | Gated content with email capture for lead generation |
 | P3 | Build newsletter admin dashboard | For composing and sending weekly "Space Intel Brief" |
 | P3 | Add Organization schema to company profile pages | Dynamic structured data per company |
 | P3 | Implement A/B testing infrastructure | Next.js middleware-based experiment framework |
 | P3 | Replace `APPLE_APP_ID` placeholder | Update apple-itunes-app meta tag when App Store ID is assigned |
+| P3 | Post-cancellation survey | "Why did you cancel?" survey with multiple choice |
+| P3 | Feature voting board / public roadmap | User-facing feature request voting |
 
 ### Monitoring Checklist (Post-Launch)
 
@@ -269,3 +486,5 @@ These can be dropped into any client-component page to add structured data witho
 - [ ] Review Search Console for indexing errors
 - [ ] A/B test screenshot order in Play Store Listing Experiments
 - [ ] Track email open/click rates for launch sequence
+- [ ] Monitor NPS scores via `/api/nps` admin endpoint
+- [ ] Review drip email delivery via `NurtureEmailLog` table

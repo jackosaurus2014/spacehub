@@ -49,6 +49,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Company Intelligence
     { url: `${baseUrl}/company-profiles`, changeFrequency: 'daily' as const, priority: 0.8 },
 
+    // Original blog content
+    { url: `${baseUrl}/blog`, changeFrequency: 'weekly' as const, priority: 0.7 },
+
+    // City-specific landing pages
+    { url: `${baseUrl}/space-industry/houston`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/space-industry/washington-dc`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/space-industry/los-angeles`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/space-industry/colorado-springs`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/space-industry/cape-canaveral`, changeFrequency: 'monthly' as const, priority: 0.6 },
+
     // Content and tools
     { url: `${baseUrl}/blogs`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${baseUrl}/launch`, changeFrequency: 'daily' as const, priority: 0.6 },
@@ -64,6 +74,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/guide/space-launch-cost-comparison`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${baseUrl}/guide/commercial-space-economy`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${baseUrl}/guide/space-launch-schedule-2026`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${baseUrl}/guide/satellite-tracking-guide`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/guide/space-business-opportunities`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/guide/space-regulatory-compliance`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/guide/space-economy-investment`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
     // Marketplace
     { url: `${baseUrl}/marketplace`, changeFrequency: 'daily' as const, priority: 0.7 },

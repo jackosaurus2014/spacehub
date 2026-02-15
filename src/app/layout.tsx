@@ -22,6 +22,8 @@ import PageTracker from '@/components/PageTracker';
 import SwipeModuleNavigation from '@/components/mobile/SwipeModuleNavigation';
 import PageTransitionProvider from '@/components/mobile/PageTransitionProvider';
 import OfflineIndicator from '@/components/ui/OfflineIndicator';
+import ChangelogModal from '@/components/ui/ChangelogModal';
+import NpsSurvey from '@/components/ui/NpsSurvey';
 import ModuleNavBar from '@/components/ModuleNavBar';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -193,6 +195,8 @@ export default function RootLayout({
               <PWAInstallPrompt />
               <ServiceWorkerRegistration />
               <ToastContainer />
+              <ChangelogModal />
+              <NpsSurvey />
               <PageTracker />
               <KeyboardShortcutsModal />
               <SwipeModuleNavigation />

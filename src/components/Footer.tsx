@@ -60,8 +60,13 @@ export default function Footer() {
               <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4">Resources</h4>
               <ul className="space-y-2.5">
                 <li>
+                  <Link href="/blog" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                    Blog
+                  </Link>
+                </li>
+                <li>
                   <Link href="/blogs" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
-                    Blogs
+                    Industry Feeds
                   </Link>
                 </li>
                 <li>
