@@ -146,10 +146,10 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
         <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        {/* Google Analytics 4 — set NEXT_PUBLIC_GA_MEASUREMENT_ID env var to enable */}
+        {/* Google Analytics 4 — respects cookie consent preferences */}
         <GoogleAnalytics
-          measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'GA_MEASUREMENT_ID'}
-          enabled={!!process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}
+          measurementId="G-6N63DLGQMJ"
+          enabled={true}
         />
         {/* Google AdSense — loaded only when NEXT_PUBLIC_ADSENSE_CLIENT_ID is set */}
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
