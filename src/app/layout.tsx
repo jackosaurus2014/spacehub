@@ -146,15 +146,10 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
         <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        {/* Google Analytics 4
-            To enable analytics:
-            1. Replace GA_MEASUREMENT_ID with your actual Measurement ID (G-XXXXXXXXXX)
-            2. Set enabled={true} or use: enabled={process.env.NODE_ENV === 'production'}
-            Analytics respects user cookie consent preferences.
-        */}
+        {/* Google Analytics 4 — set NEXT_PUBLIC_GA_MEASUREMENT_ID env var to enable */}
         <GoogleAnalytics
-          measurementId="GA_MEASUREMENT_ID"
-          enabled={false}
+          measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'GA_MEASUREMENT_ID'}
+          enabled={!!process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}
         />
         {/* Google AdSense — loaded only when NEXT_PUBLIC_ADSENSE_CLIENT_ID is set */}
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (

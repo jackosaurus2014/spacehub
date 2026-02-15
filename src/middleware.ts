@@ -230,55 +230,73 @@ function checkCsrf(req: NextRequest): boolean {
 }
 
 export function middleware(req: NextRequest) {
-  // Run periodic cleanup
-  cleanupExpiredEntries();
+  const hostname = req.headers.get('host') || '';
+
+  // Redirect www → non-www (301 permanent)
+  if (hostname.startsWith('www.')) {
+    const newUrl = req.nextUrl.clone();
+    newUrl.host = hostname.replace(/^www\./, '');
+    return NextResponse.redirect(newUrl, 301);
+  }
 
   const pathname = req.nextUrl.pathname;
 
-  // CSRF check for mutating requests
-  if (!checkCsrf(req)) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: 'FORBIDDEN',
-          message: 'Invalid or missing origin. Cross-site requests are not allowed.',
+  // Rate limiting and CSRF only apply to API routes
+  if (pathname.startsWith('/api/')) {
+    // Run periodic cleanup
+    cleanupExpiredEntries();
+
+    // CSRF check for mutating requests
+    if (!checkCsrf(req)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'FORBIDDEN',
+            message: 'Invalid or missing origin. Cross-site requests are not allowed.',
+          },
         },
-      },
-      { status: 403 }
-    );
+        { status: 403 }
+      );
+    }
+
+    // Rate limiting
+    const clientIp = getClientIp(req);
+    const { allowed, remaining, retryAfterSeconds } = checkRateLimit(clientIp, pathname);
+
+    if (!allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'RATE_LIMITED',
+            message: 'Too many requests. Please try again later.',
+          },
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(retryAfterSeconds),
+            'X-RateLimit-Remaining': '0',
+          },
+        }
+      );
+    }
+
+    // Proceed with the request, adding rate limit headers
+    const response = NextResponse.next();
+    response.headers.set('X-RateLimit-Remaining', String(remaining));
+    return response;
   }
 
-  // Rate limiting
-  const clientIp = getClientIp(req);
-  const { allowed, remaining, retryAfterSeconds } = checkRateLimit(clientIp, pathname);
-
-  if (!allowed) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: 'RATE_LIMITED',
-          message: 'Too many requests. Please try again later.',
-        },
-      },
-      {
-        status: 429,
-        headers: {
-          'Retry-After': String(retryAfterSeconds),
-          'X-RateLimit-Remaining': '0',
-        },
-      }
-    );
-  }
-
-  // Proceed with the request, adding rate limit headers
-  const response = NextResponse.next();
-  response.headers.set('X-RateLimit-Remaining', String(remaining));
-
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/api/:path*'],
+  matcher: [
+    // Match all API routes for rate limiting + CSRF
+    '/api/:path*',
+    // Match all pages for www redirect (exclude static assets)
+    '/((?!_next/static|_next/image|favicon\\.ico|icons|sw\\.js|site\\.webmanifest|robots\\.txt|sitemap\\.xml).*)',
+  ],
 };
