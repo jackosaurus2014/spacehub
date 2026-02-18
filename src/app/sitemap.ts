@@ -58,6 +58,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/space-industry/los-angeles`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${baseUrl}/space-industry/colorado-springs`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${baseUrl}/space-industry/cape-canaveral`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/space-industry/huntsville`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/space-industry/tucson`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/space-industry/seattle`, changeFrequency: 'monthly' as const, priority: 0.6 },
 
     // Content and tools
     { url: `${baseUrl}/blogs`, changeFrequency: 'daily' as const, priority: 0.6 },
@@ -78,6 +81,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/guide/space-business-opportunities`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${baseUrl}/guide/space-regulatory-compliance`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${baseUrl}/guide/space-economy-investment`, changeFrequency: 'monthly' as const, priority: 0.7 },
+
+    // Comparison pages
+    { url: `${baseUrl}/compare`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/compare/bloomberg-terminal`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/compare/quilty-analytics`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${baseUrl}/compare/payload-space`, changeFrequency: 'monthly' as const, priority: 0.6 },
 
     // Marketplace
     { url: `${baseUrl}/marketplace`, changeFrequency: 'daily' as const, priority: 0.7 },

@@ -238,6 +238,138 @@ export const SPACE_CITIES: SpaceCity[] = [
     ],
     nearbyLaunchSites: ['Kennedy Space Center LC-39A/B', 'Cape Canaveral SFS SLC-40/41', 'Blue Origin LC-36'],
   },
+  {
+    slug: 'huntsville',
+    name: 'Huntsville',
+    state: 'Alabama',
+    title: 'Space Industry in Huntsville, AL — Rocket City & Defense Hub',
+    description:
+      'Huntsville is "Rocket City" — home to NASA Marshall Space Flight Center, Redstone Arsenal, and the largest concentration of rocket scientists in the world. 400+ aerospace companies and 40,000+ jobs.',
+    heroText:
+      'Huntsville, Alabama — known worldwide as "Rocket City" — has been at the heart of American rocketry since Wernher von Braun\'s team developed the Saturn V here. Home to NASA\'s Marshall Space Flight Center, the U.S. Army\'s Redstone Arsenal, and Cummings Research Park (the second-largest research park in the U.S.), Huntsville boasts 400+ aerospace and defense companies and the largest concentration of rocket scientists in the world.',
+    stats: [
+      { label: 'Aerospace/Defense Companies', value: '400+' },
+      { label: 'Space Industry Jobs', value: '40,000+' },
+      { label: 'Annual Economic Impact', value: '$8B+' },
+      { label: 'NASA Center', value: 'Marshall Space Flight Center' },
+    ],
+    keyFacilities: [
+      { name: 'NASA Marshall Space Flight Center', type: 'Government', description: 'NASA\'s propulsion center — developed Saturn V, Space Shuttle engines, and SLS. Manages major launch vehicle and science programs' },
+      { name: 'Redstone Arsenal', type: 'Government', description: 'U.S. Army installation housing the Space and Missile Defense Command, Missile Defense Agency, and multiple defense organizations' },
+      { name: 'Cummings Research Park', type: 'Research', description: 'Second-largest research park in the U.S. with 300+ companies and 30,000+ employees focused on defense, space, and technology' },
+      { name: 'ULA Decatur Facility', type: 'Commercial', description: 'United Launch Alliance rocket manufacturing facility producing Atlas V, Delta IV, and Vulcan Centaur stages' },
+      { name: 'U.S. Space & Rocket Center', type: 'Museum', description: 'World\'s largest space museum, home to Space Camp and the Davidson Center with a full Saturn V on display' },
+    ],
+    majorCompanies: [
+      { name: 'Northrop Grumman', slug: 'northrop-grumman', focus: 'Missile defense, propulsion systems' },
+      { name: 'Boeing', slug: 'boeing', focus: 'SLS core stage, defense systems' },
+      { name: 'Lockheed Martin', slug: 'lockheed-martin', focus: 'Missile defense, space systems' },
+      { name: 'Blue Origin', slug: 'blue-origin', focus: 'BE-4 rocket engine facility' },
+      { name: 'Dynetics (Leidos)', slug: 'leidos', focus: 'Space launch systems, defense solutions' },
+      { name: 'Aerojet Rocketdyne', slug: 'aerojet-rocketdyne', focus: 'RS-25 engines, propulsion systems' },
+    ],
+    jobMarket: {
+      avgSalary: '$98,000',
+      openPositions: '3,500+',
+      topRoles: ['Propulsion Engineer', 'Systems Engineer', 'Missile Defense Analyst', 'Program Manager', 'Test Engineer'],
+    },
+    whyThisCity: [
+      'Largest concentration of rocket scientists and engineers in the world',
+      'NASA Marshall Space Flight Center — the birthplace of American rocketry and SLS program lead',
+      'Massive defense presence with Redstone Arsenal, MDA, and Space & Missile Defense Command',
+      'Blue Origin BE-4 engine production facility bringing next-gen propulsion jobs',
+      'Significantly lower cost of living than other major space hubs (DC, LA, Houston)',
+      'University of Alabama in Huntsville — top aerospace and defense engineering programs',
+    ],
+  },
+  {
+    slug: 'tucson',
+    name: 'Tucson',
+    state: 'Arizona',
+    title: 'Space Industry in Tucson, AZ — Missile Defense & Planetary Science',
+    description:
+      'Tucson is a growing space and defense hub. Home to Raytheon Missiles & Defense (RTX), the University of Arizona\'s world-leading Lunar & Planetary Lab, and 150+ aerospace/defense companies.',
+    heroText:
+      'Tucson, Arizona sits at the intersection of missile defense and planetary science. Home to Raytheon Missiles & Defense (now RTX), the University of Arizona\'s world-renowned Lunar & Planetary Laboratory, Davis-Monthan Air Force Base, and innovative companies like World View and Paragon Space Development, Tucson has quietly built a formidable space and defense ecosystem with 150+ companies and proximity to military test ranges across the Southwest.',
+    stats: [
+      { label: 'Aerospace/Defense Companies', value: '150+' },
+      { label: 'Defense & Space Jobs', value: '15,000+' },
+      { label: 'Annual Defense Impact', value: '$4B+' },
+      { label: 'Planetary Science Rank', value: '#1 University' },
+    ],
+    keyFacilities: [
+      { name: 'Raytheon Missiles & Defense HQ', type: 'Commercial', description: 'RTX\'s Missiles & Defense division headquarters — one of the largest missile defense employers in the world, with 13,000+ employees in Tucson' },
+      { name: 'UA Lunar & Planetary Laboratory', type: 'Research', description: 'World-leading planetary science institute — led OSIRIS-REx asteroid sample return mission, Phoenix Mars Lander, and multiple NASA instruments' },
+      { name: 'UA Steward Observatory & Mirror Lab', type: 'Research', description: 'Richard F. Caris Mirror Lab produces the world\'s largest telescope mirrors, including for the Giant Magellan Telescope' },
+      { name: 'Davis-Monthan Air Force Base', type: 'Government', description: 'U.S. Air Force installation supporting combat search and rescue, electronic warfare, and aerospace sustainment operations' },
+      { name: 'Pima Air & Space Museum', type: 'Museum', description: 'One of the largest aerospace museums in the world with 400+ aircraft and spacecraft, adjacent to AMARG boneyard' },
+    ],
+    majorCompanies: [
+      { name: 'Raytheon / RTX', slug: 'raytheon', focus: 'Missiles, missile defense systems, sensors' },
+      { name: 'University of Arizona', slug: 'university-of-arizona', focus: 'Planetary science, optics, space instruments' },
+      { name: 'Paragon Space Development', slug: 'paragon-space', focus: 'Life support, thermal control systems' },
+      { name: 'World View', slug: 'world-view', focus: 'Stratospheric balloon platforms' },
+      { name: 'General Dynamics', slug: 'general-dynamics', focus: 'IT services, defense electronics' },
+      { name: 'Leonardo DRS', slug: 'leonardo-drs', focus: 'Infrared sensors, defense electronics' },
+    ],
+    jobMarket: {
+      avgSalary: '$92,000',
+      openPositions: '1,200+',
+      topRoles: ['Missile Defense Engineer', 'Optics Scientist', 'Planetary Scientist', 'Defense Analyst', 'Systems Engineer'],
+    },
+    whyThisCity: [
+      'Raytheon Missiles & Defense HQ — one of the world\'s largest missile defense operations with 13,000+ local employees',
+      'University of Arizona Lunar & Planetary Lab — #1 ranked planetary science program, led OSIRIS-REx',
+      'UA Steward Observatory Mirror Lab — producing mirrors for the next generation of giant telescopes',
+      'Growing commercial space presence with World View (stratospheric platforms) and Paragon Space Development',
+      'Proximity to White Sands Missile Range, Yuma Proving Ground, and other Southwest military test ranges',
+      'Lower cost of living and warm climate attracting aerospace talent from higher-cost markets',
+    ],
+  },
+  {
+    slug: 'seattle',
+    name: 'Seattle',
+    state: 'Washington',
+    title: 'Space Industry in Seattle, WA — Blue Origin, Kuiper & Tech Innovation',
+    description:
+      'Seattle is a rising space powerhouse. Home to Blue Origin HQ, Amazon Project Kuiper, and 200+ aerospace companies, the region combines deep tech talent with a booming commercial space ecosystem.',
+    heroText:
+      'Seattle and the greater Puget Sound region have a storied aerospace heritage — and are now at the forefront of commercial space. Blue Origin\'s headquarters in Kent, Amazon\'s Project Kuiper satellite constellation, and a thriving startup ecosystem including Spaceflight Industries and BlackSky have transformed the region into a major space hub. With 200+ aerospace companies, 50,000+ aerospace jobs, and an unmatched tech talent pool, Seattle is where software meets space.',
+    stats: [
+      { label: 'Aerospace Companies', value: '200+' },
+      { label: 'Aerospace Jobs', value: '50,000+' },
+      { label: 'Aerospace Economic Impact', value: '$15B+' },
+      { label: 'Major Space HQs', value: 'Blue Origin, Kuiper' },
+    ],
+    keyFacilities: [
+      { name: 'Blue Origin Headquarters', type: 'Commercial', description: 'Kent, WA — headquarters and manufacturing for New Shepard, New Glenn, and Blue Moon lunar lander programs' },
+      { name: 'Amazon Project Kuiper', type: 'Commercial', description: 'Amazon\'s 3,236-satellite broadband constellation program, with offices across the Seattle metro area' },
+      { name: 'Museum of Flight', type: 'Museum', description: 'One of the largest air and space museums in the world, located at Boeing Field with extensive space artifacts' },
+      { name: 'UW Aerospace Engineering', type: 'Research', description: 'University of Washington\'s William E. Boeing Department of Aeronautics & Astronautics — top research and talent pipeline' },
+      { name: 'Spaceflight Industries HQ', type: 'Commercial', description: 'Rideshare launch services and smallsat deployment, pioneering the launch-as-a-service model' },
+    ],
+    majorCompanies: [
+      { name: 'Blue Origin', slug: 'blue-origin', focus: 'Launch vehicles, lunar landers, engines' },
+      { name: 'Amazon / Project Kuiper', slug: 'amazon-kuiper', focus: 'Broadband satellite constellation' },
+      { name: 'Spaceflight Industries', slug: 'spaceflight-industries', focus: 'Rideshare launch services' },
+      { name: 'Aerojet Rocketdyne', slug: 'aerojet-rocketdyne', focus: 'Propulsion systems, AR1 engine' },
+      { name: 'BlackSky', slug: 'blacksky', focus: 'Earth observation, geospatial intelligence' },
+      { name: 'ZeroG Lab', slug: 'zerog-lab', focus: 'Microgravity research and services' },
+    ],
+    jobMarket: {
+      avgSalary: '$125,000',
+      openPositions: '4,000+',
+      topRoles: ['Rocket Propulsion Engineer', 'Satellite Software Engineer', 'Constellation Operations', 'Aerospace Data Scientist', 'Avionics Engineer'],
+    },
+    whyThisCity: [
+      'Blue Origin HQ in Kent — building New Glenn, Blue Moon, and the BE-4 engine powering ULA\'s Vulcan',
+      'Amazon Project Kuiper bringing thousands of satellite engineering jobs to the region',
+      'Massive tech talent pool from Amazon, Microsoft, Google, and Boeing creating strong cross-pollination',
+      'Thriving space startup ecosystem including BlackSky, Spaceflight Industries, and others',
+      'University of Washington Boeing Department of Aeronautics & Astronautics driving research and talent',
+      'Strong venture capital presence and proximity to Silicon Valley investment networks',
+    ],
+  },
 ];
 
 export function getCity(slug: string): SpaceCity | undefined {

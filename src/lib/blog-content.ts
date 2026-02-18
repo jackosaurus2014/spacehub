@@ -513,6 +513,651 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p><a href="/register">Start monitoring space weather for free</a>.</p>
 `,
   },
+  {
+    slug: '5-space-industry-trends-reshaping-market-2026',
+    title: '5 Space Industry Trends Reshaping the Market in 2026',
+    excerpt: 'From mega-constellations to sovereign space programs, five transformative trends are redefining the space economy in 2026. Here\'s what industry professionals need to watch.',
+    category: 'market',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-02-17T00:00:00Z',
+    readingTime: 9,
+    keywords: ['space industry trends 2026', 'mega-constellations', 'in-space servicing', 'space sustainability', 'AI in space', 'sovereign space programs'],
+    content: `
+<p>The space industry is evolving faster than ever. With over 230 orbital launches in 2025 and the commercial space sector generating more than <strong>$630 billion in annual revenue</strong>, the market is being reshaped by a handful of transformative trends that will define the rest of the decade.</p>
+
+<p>Whether you\'re an investor, operator, policy maker, or engineer, understanding these five trends is essential for staying competitive. Let\'s break them down with the latest data from the <a href="/market-intel">SpaceNexus Market Intelligence module</a>.</p>
+
+<h2 id="mega-constellations">1. Mega-Constellations Are Rewriting the Rules</h2>
+
+<p>The era of mega-constellations has arrived, and it\'s transforming every aspect of the space value chain — from manufacturing and launch services to spectrum management and orbital safety.</p>
+
+<ul>
+<li><strong>SpaceX Starlink</strong> has surpassed 7,000 operational satellites, delivering broadband to over 4 million subscribers across 75+ countries</li>
+<li><strong>Amazon Kuiper</strong> began deployment in 2026, aiming for 3,236 satellites with a $10 billion committed investment</li>
+<li><strong>OneWeb (Eutelsat)</strong> completed its 648-satellite constellation and is now focusing on Gen 2 expansion</li>
+<li><strong>Telesat Lightspeed</strong> is targeting enterprise and government customers with a 298-satellite LEO constellation</li>
+</ul>
+
+<p>The downstream effects are massive. Satellite manufacturing has shifted from bespoke, billion-dollar GEO platforms to high-volume production lines turning out multiple spacecraft per day. Launch demand has tripled in five years. And the <a href="/satellites">orbital environment</a> is more congested than ever, driving new requirements for space traffic management.</p>
+
+<table>
+<thead><tr><th>Constellation</th><th>Target Size</th><th>Status (Feb 2026)</th><th>Investment</th></tr></thead>
+<tbody>
+<tr><td>Starlink</td><td>12,000+</td><td>7,000+ deployed</td><td>$10B+</td></tr>
+<tr><td>Kuiper</td><td>3,236</td><td>Early deployment</td><td>$10B</td></tr>
+<tr><td>OneWeb Gen 2</td><td>2,000+</td><td>Gen 1 complete (648)</td><td>$3.4B</td></tr>
+<tr><td>Telesat Lightspeed</td><td>298</td><td>Manufacturing</td><td>$5B</td></tr>
+</tbody>
+</table>
+
+<h2 id="in-space-servicing">2. In-Space Servicing Is Becoming a Real Market</h2>
+
+<p>For decades, satellites were disposable — once launched, they could not be repaired, refueled, or upgraded. That paradigm is changing rapidly.</p>
+
+<p><strong>In-space servicing, assembly, and manufacturing (ISAM)</strong> is emerging as a multi-billion-dollar market segment with serious commercial and defense momentum:</p>
+
+<ul>
+<li><strong>Northrop Grumman\'s MEV-2</strong> has been servicing an Intelsat satellite since 2021, extending its operational life by years</li>
+<li><strong>Orbit Fab</strong> is deploying fuel depots in orbit, creating the infrastructure for satellite refueling</li>
+<li><strong>Astroscale\'s ADRAS-J</strong> successfully demonstrated rendezvous and proximity operations with a piece of debris in 2024</li>
+<li><strong>NASA\'s OSAM-2</strong> (formerly Archinaut) is testing in-space robotic assembly capabilities</li>
+</ul>
+
+<p>The U.S. Space Force has identified ISAM as a critical capability, and the commercial market for life extension alone could exceed <strong>$4 billion annually</strong> by 2030. Operators with $200-500 million GEO satellites would rather pay $20 million for refueling than $300 million for a replacement.</p>
+
+<h2 id="space-sustainability">3. Space Sustainability and Debris Mitigation Are Now Business Imperatives</h2>
+
+<p>With over 36,500 tracked objects and millions of untrackable debris fragments in orbit, <strong>space sustainability</strong> has moved from academic concern to boardroom priority.</p>
+
+<ul>
+<li>The <strong>FCC\'s 5-year deorbit rule</strong> (adopted in 2022) requires LEO satellites to deorbit within 5 years of mission end, down from the previous 25-year guideline</li>
+<li>The <strong>European Space Agency</strong> is funding ClearSpace-1, the first active debris removal mission, targeting a Vega upper stage for capture in 2026</li>
+<li><strong>Space sustainability ratings</strong> are emerging, with the World Economic Forum and ESA developing frameworks to score operators on responsible behavior</li>
+<li><strong>Insurance premiums</strong> are beginning to reflect debris risk, creating financial incentives for responsible operations</li>
+</ul>
+
+<p>Companies that invest in debris mitigation, collision avoidance automation, and responsible design are gaining competitive advantages in licensing, insurance, and customer trust. Track the latest debris data through our <a href="/satellites">Space Operations module</a>.</p>
+
+<h2 id="ai-in-space-ops">4. AI Is Transforming Space Operations</h2>
+
+<p>Artificial intelligence is quietly revolutionizing how satellites are built, operated, and utilized:</p>
+
+<ul>
+<li><strong>Autonomous collision avoidance:</strong> SpaceX\'s Starlink satellites perform thousands of autonomous avoidance maneuvers per week, with AI systems evaluating conjunction data and executing burns without human intervention</li>
+<li><strong>Earth observation analytics:</strong> Companies like Planet and BlackSky use machine learning to extract actionable intelligence from petabytes of satellite imagery — detecting crop health changes, construction activity, and environmental events in near-real-time</li>
+<li><strong>Predictive maintenance:</strong> Satellite operators are using AI models to predict component failures, optimize power budgets, and extend mission lifetimes</li>
+<li><strong>Mission planning:</strong> AI-assisted trajectory optimization is reducing fuel consumption and enabling more complex multi-satellite operations</li>
+<li><strong>Manufacturing quality control:</strong> Computer vision systems inspect satellite components during high-volume production, catching defects earlier in the assembly process</li>
+</ul>
+
+<p>The integration of large language models into operational workflows is an emerging trend. SpaceNexus itself uses AI to categorize news, match procurement opportunities, and power our <a href="/marketplace/copilot">Marketplace Copilot</a>.</p>
+
+<h2 id="sovereign-space-programs">5. Sovereign Space Programs Are Multiplying</h2>
+
+<p>Space is no longer the exclusive domain of a handful of superpowers. Over <strong>80 countries</strong> now have space programs or agencies, and sovereign space capabilities are increasingly viewed as essential national infrastructure.</p>
+
+<ul>
+<li><strong>India\'s ISRO</strong> continues to demonstrate remarkable cost-efficiency, with Chandrayaan-3\'s successful lunar landing in 2023 costing less than many Hollywood movies</li>
+<li><strong>UAE\'s Mohammed Bin Rashid Space Centre</strong> operates the Hope Mars orbiter and is building a domestic satellite industry</li>
+<li><strong>South Korea\'s KARI</strong> achieved indigenous launch capability with the Nuri rocket and is planning a lunar lander</li>
+<li><strong>Japan\'s JAXA and MHI</strong> are developing the H3 rocket and expanding commercial partnerships</li>
+<li><strong>Saudi Arabia, Nigeria, and the Philippines</strong> are all investing in national space capabilities and regulatory frameworks</li>
+</ul>
+
+<p>This proliferation creates new demand for space industry products and services — and new competition. Companies that can navigate diverse regulatory environments and serve international customers are positioned for outsized growth.</p>
+
+<h2 id="staying-ahead">Staying Ahead of the Curve</h2>
+
+<p>These five trends are interconnected. Mega-constellations drive demand for debris mitigation. AI enables the autonomous operations that mega-constellations require. Sovereign programs create new markets for ISAM and sustainability services. Understanding these dynamics as a system — not isolated trends — is what separates leaders from followers in the space economy.</p>
+
+<p>SpaceNexus\'s <a href="/market-intel">Market Intelligence</a> and <a href="/satellites">Space Operations</a> modules give you the data and context to track these trends in real time. From constellation deployment progress to debris density maps, from market sizing to regulatory developments, it\'s all in one place.</p>
+
+<p><a href="/register">Create your free SpaceNexus account</a> and start tracking the trends that matter.</p>
+`,
+  },
+  {
+    slug: 'rise-of-mega-constellations-business-impact',
+    title: 'The Rise of Mega-Constellations: Business Impact and Opportunities',
+    excerpt: 'Starlink, Kuiper, OneWeb, and Telesat are deploying thousands of satellites. Here\'s what mega-constellations mean for the space economy, spectrum management, debris risk, and business opportunities.',
+    category: 'analysis',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-02-17T00:00:00Z',
+    readingTime: 10,
+    keywords: ['mega-constellations', 'Starlink business impact', 'Amazon Kuiper', 'OneWeb', 'Telesat Lightspeed', 'spectrum management', 'satellite broadband'],
+    content: `
+<p>The satellite industry is undergoing its most radical transformation since the geostationary communications revolution of the 1960s. <strong>Mega-constellations</strong> — networks of hundreds to thousands of small satellites operating in coordinated formations — are reshaping the economics of space, the demand for launch services, and the very nature of how we manage orbital space.</p>
+
+<p>This analysis examines the four major mega-constellation programs, their business implications, and the opportunities they create across the space value chain.</p>
+
+<h2 id="the-big-four">The Big Four: Constellation Programs in 2026</h2>
+
+<p>Four mega-constellation programs are driving the majority of global launch demand and spacecraft manufacturing volume:</p>
+
+<p><strong>SpaceX Starlink</strong> is the undisputed leader. With over 7,000 satellites in orbit delivering broadband to 4+ million subscribers, Starlink has proven the commercial viability of LEO broadband. The constellation generates an estimated <strong>$6-8 billion in annual revenue</strong> and has become SpaceX\'s primary revenue driver, surpassing launch services. Starlink\'s V2 Mini satellites (launched on Falcon 9) and the upcoming V3 satellites (designed for Starship) offer increasing capacity per spacecraft.</p>
+
+<p><strong>Amazon Kuiper</strong> represents the most significant new entrant. Amazon committed <strong>$10 billion</strong> to deploy 3,236 satellites, with an FCC deadline requiring half the constellation operational by mid-2026. Amazon\'s competitive advantages include integration with AWS cloud infrastructure, bundling with Amazon Prime services, and enterprise relationships. Kuiper is contracting launches from ULA (Atlas V, Vulcan), Arianespace (Ariane 6), and Blue Origin (New Glenn).</p>
+
+<p><strong>OneWeb (now Eutelsat OneWeb)</strong> completed its first-generation 648-satellite constellation and is planning a Gen 2 expansion with larger, more capable satellites. The Eutelsat merger created a unique hybrid GEO/LEO operator, allowing seamless capacity management across orbit regimes. OneWeb\'s government and enterprise focus differentiates it from Starlink\'s consumer-heavy model.</p>
+
+<p><strong>Telesat Lightspeed</strong> is taking a quality-over-quantity approach with 298 satellites optimized for enterprise and government connectivity. Telesat\'s advanced optical inter-satellite links and patented architecture target premium customers willing to pay for guaranteed performance, low latency, and security features that commercial broadband constellations may not prioritize.</p>
+
+<h2 id="spectrum-challenges">Spectrum Management: The Hidden Battleground</h2>
+
+<p>Radio frequency spectrum is the lifeblood of satellite communications, and mega-constellations are straining the existing regulatory framework. The challenges are significant:</p>
+
+<ul>
+<li><strong>Interference management:</strong> With thousands of satellites transmitting simultaneously, preventing harmful interference with existing GEO satellites and terrestrial systems requires sophisticated coordination. The ITU\'s traditional filing process was designed for individual GEO satellites, not constellations of thousands.</li>
+<li><strong>Ku/Ka-band congestion:</strong> Most mega-constellations operate in Ku-band (12-18 GHz) and Ka-band (26-40 GHz), creating unprecedented demand for limited spectrum resources</li>
+<li><strong>V-band and Q-band:</strong> Next-generation systems are moving to higher frequencies (40-75 GHz) for additional capacity, but these bands face propagation challenges including rain fade</li>
+<li><strong>12 GHz battle:</strong> A regulatory fight in the U.S. over the 12 GHz band — between satellite operators (MVDDS) and Starlink — highlights the intensifying competition for spectrum</li>
+</ul>
+
+<p>Track spectrum allocation and regulatory filings through the <a href="/spectrum">SpaceNexus Spectrum Management module</a>, which aggregates FCC, ITU, and international filings into a searchable interface.</p>
+
+<h2 id="debris-concerns">Orbital Debris: The Sustainability Question</h2>
+
+<p>Mega-constellations have fundamentally changed the debris risk calculus. Consider the numbers:</p>
+
+<table>
+<thead><tr><th>Metric</th><th>Pre-Constellation Era (2018)</th><th>Current (2026)</th><th>Projected (2030)</th></tr></thead>
+<tbody>
+<tr><td>Active satellites</td><td>~2,000</td><td>~12,000</td><td>~50,000+</td></tr>
+<tr><td>Conjunction warnings/day</td><td>~50</td><td>~1,500</td><td>~10,000+</td></tr>
+<tr><td>Avoidance maneuvers/year</td><td>~200</td><td>~50,000+</td><td>~500,000+</td></tr>
+<tr><td>Debris-generating events/year</td><td>~5</td><td>~8-12</td><td>Unknown</td></tr>
+</tbody>
+</table>
+
+<p>SpaceX deserves credit for building collision avoidance into Starlink from the start — satellites autonomously maneuver to avoid conjunctions, and failed satellites are designed to deorbit quickly. However, critics argue that the sheer volume of objects increases systemic risk regardless of individual reliability.</p>
+
+<p>The <strong>economic implications</strong> are real. A major collision event or Kessler-type cascade in a popular orbital band could render that altitude unusable for decades, destroying billions in satellite assets and disrupting global connectivity. This risk is increasingly factored into <strong>space insurance premiums</strong> and investor due diligence.</p>
+
+<p>Monitor real-time conjunction data and debris density maps through our <a href="/constellations">Constellation Tracker</a>.</p>
+
+<h2 id="market-opportunities">Market Opportunities Created by Mega-Constellations</h2>
+
+<p>Beyond the constellation operators themselves, mega-constellations are creating substantial opportunities across the value chain:</p>
+
+<p><strong>Launch services:</strong> Mega-constellations have driven launch demand to historic highs. SpaceX alone launched 130+ Falcon 9 missions in 2025, mostly for Starlink. Amazon\'s Kuiper has booked 83 launches across three providers. This sustained demand justifies investments in reusable launch vehicles and new launch sites.</p>
+
+<p><strong>Ground infrastructure:</strong> Each constellation needs a global network of ground stations (gateways) to connect satellite capacity to terrestrial internet backbones. Companies building and operating ground station networks — including cloud providers like AWS Ground Station — are benefiting from this demand.</p>
+
+<p><strong>User terminals:</strong> The consumer terminal is a critical cost driver. SpaceX initially sold Starlink dishes at a loss and has progressively reduced manufacturing costs. The terminal market — including enterprise, maritime, aviation, and vehicular — represents a multi-billion-dollar manufacturing opportunity.</p>
+
+<p><strong>Space traffic management:</strong> With tens of thousands of active satellites, commercial space traffic management and space domain awareness services are growing rapidly. LeoLabs, ExoAnalytic, and Slingshot Aerospace are building commercial tracking and analytics platforms.</p>
+
+<p><strong>Satellite servicing:</strong> Even low-cost LEO satellites benefit from deorbit services for failed units that can\'t deorbit themselves. Active debris removal and end-of-life services are a natural complement to mega-constellation operations.</p>
+
+<p><strong>Spectrum consulting and coordination:</strong> The complexity of mega-constellation spectrum management creates demand for specialized regulatory consulting, interference analysis, and coordination services.</p>
+
+<h2 id="investment-implications">Investment Implications</h2>
+
+<p>For investors, mega-constellations present both opportunities and risks:</p>
+
+<ul>
+<li><strong>Supply chain plays:</strong> Companies manufacturing components consumed in high volume — reaction wheels, solar cells, antennas, star trackers — benefit from sustained production demand</li>
+<li><strong>Infrastructure picks and shovels:</strong> Ground station operators, spectrum management firms, and space traffic management companies benefit regardless of which constellation wins market share</li>
+<li><strong>Connectivity disruption:</strong> Satellite broadband threatens incumbent terrestrial ISPs in rural and underserved markets but complements them in dense urban areas</li>
+<li><strong>Regulatory risk:</strong> Spectrum disputes, debris regulations, and national security reviews can affect constellation deployment timelines and market access</li>
+</ul>
+
+<h2 id="track-constellations">Track Mega-Constellations with SpaceNexus</h2>
+
+<p>SpaceNexus provides comprehensive mega-constellation tracking through our <a href="/constellations">Constellation Tracker</a> and <a href="/spectrum">Spectrum Management</a> modules. Monitor deployment progress, orbital distribution, spectrum filings, and competitive dynamics across all major programs — updated daily from authoritative sources.</p>
+
+<p><a href="/register">Create your free account</a> and start tracking the mega-constellation revolution.</p>
+`,
+  },
+  {
+    slug: 'space-insurance-billion-dollar-market',
+    title: 'Space Insurance: The Billion-Dollar Market Nobody Talks About',
+    excerpt: 'Launch failures, in-orbit anomalies, and satellite malfunctions — the space insurance industry quietly underwrites billions in risk every year. Here\'s how this essential market works.',
+    category: 'market',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-02-17T00:00:00Z',
+    readingTime: 10,
+    keywords: ['space insurance', 'launch insurance', 'satellite insurance', 'space risk management', 'space underwriting', 'in-orbit insurance'],
+    content: `
+<p>When a <strong>$400 million communications satellite</strong> sits atop a rocket on the launch pad, someone has to underwrite the risk that it might never reach orbit. When that satellite is operating in geostationary orbit, someone has to cover the possibility that a solar panel fails or a thruster malfunctions. That someone is the space insurance industry — a specialized, fascinating, and surprisingly small market that most people in the space sector don\'t fully understand.</p>
+
+<p>The global space insurance market generates approximately <strong>$1.5-2 billion in annual premiums</strong>, covering launch, in-orbit operations, and third-party liability for the world\'s satellite fleet. Despite its modest size relative to the overall insurance industry, space insurance plays a critical role in making commercial space economically viable.</p>
+
+<h2 id="how-space-insurance-works">How Space Insurance Works</h2>
+
+<p>Space insurance covers three distinct phases of a satellite\'s lifecycle:</p>
+
+<p><strong>Pre-launch insurance</strong> covers the satellite during manufacturing, transportation, and integration with the launch vehicle. Damage during shipping, clean room accidents, and pre-launch testing failures all fall under this policy. Premiums are typically 0.5-1.5% of the insured value.</p>
+
+<p><strong>Launch insurance</strong> is the most expensive and most critical coverage. It covers the satellite from ignition through orbit insertion and initial checkout — typically 30-180 days after launch. Launch insurance premiums have historically ranged from <strong>5-20% of the insured value</strong>, depending on the launch vehicle\'s track record, the satellite\'s orbit, and market conditions.</p>
+
+<p><strong>In-orbit insurance</strong> (also called life insurance) covers the satellite during its operational lifetime, typically renewed annually. It covers anomalies, component failures, debris impacts, and space weather damage. Premiums range from 0.5-2% of insured value per year.</p>
+
+<table>
+<thead><tr><th>Coverage Type</th><th>Duration</th><th>Typical Premium Rate</th><th>Key Risks</th></tr></thead>
+<tbody>
+<tr><td>Pre-launch</td><td>Manufacturing to launch</td><td>0.5-1.5%</td><td>Transportation damage, testing failures</td></tr>
+<tr><td>Launch</td><td>Ignition to orbit checkout</td><td>5-20%</td><td>Vehicle failure, separation issues, orbit insertion</td></tr>
+<tr><td>In-orbit (annual)</td><td>1 year, renewable</td><td>0.5-2%</td><td>Component failure, debris, space weather</td></tr>
+<tr><td>Third-party liability</td><td>Mission lifetime</td><td>0.1-0.5%</td><td>Collision damage to other assets</td></tr>
+</tbody>
+</table>
+
+<h2 id="major-underwriters">The Major Underwriters</h2>
+
+<p>Space insurance is concentrated among a relatively small group of specialist underwriters, most based in London and Europe:</p>
+
+<ul>
+<li><strong>Lloyd\'s of London</strong> — The world\'s leading space insurance market, with multiple syndicates writing space risk. Lloyd\'s has insured space missions since the early satellite era.</li>
+<li><strong>AXA XL</strong> — One of the largest single-company space underwriters, with deep technical expertise</li>
+<li><strong>Swiss Re Corporate Solutions</strong> — Major reinsurer and direct writer of space risk</li>
+<li><strong>Munich Re</strong> — Leading reinsurer with a dedicated space team</li>
+<li><strong>SCOR</strong> — French reinsurer with significant space portfolio</li>
+<li><strong>Global Aerospace Underwriting Managers (GAUM)</strong> — Specialist managing agency at Lloyd\'s</li>
+<li><strong>Assure Space (Amtrust)</strong> — U.S.-based space insurance specialist</li>
+</ul>
+
+<p>The total global capacity for a single space insurance risk is approximately <strong>$600-800 million</strong>, meaning the largest satellite programs sometimes need to self-insure or accept coverage gaps.</p>
+
+<h2 id="recent-claims">Notable Claims and Market Events</h2>
+
+<p>The space insurance market is defined by low frequency but high severity — a single loss can represent hundreds of millions of dollars:</p>
+
+<ul>
+<li><strong>Viasat-3 Americas (2023):</strong> A deployment anomaly with the satellite\'s reflector antenna resulted in one of the largest recent space insurance claims, estimated at $400-600 million</li>
+<li><strong>Zuma (2018):</strong> A Northrop Grumman payload worth an estimated $3.5 billion was lost during a SpaceX Falcon 9 launch due to a fairing separation failure. However, classified payloads are typically self-insured by the government.</li>
+<li><strong>Amos-6 (2016):</strong> SpaceX\'s Falcon 9 exploded on the pad during fueling, destroying the $200 million Spacecom satellite. The claim was one of the largest in space insurance history.</li>
+<li><strong>Starlink losses (2022):</strong> SpaceX lost 40 satellites to a geomagnetic storm shortly after deployment, but the satellites\' relatively low individual value meant the total loss was manageable — and SpaceX self-insures Starlink.</li>
+</ul>
+
+<p>The <strong>loss ratio</strong> (claims paid versus premiums collected) for space insurance has been volatile. Some years see losses exceeding 200% of premiums, while others see near-zero claims. This volatility is why the market requires specialized underwriting expertise and strong reinsurance backing.</p>
+
+<h2 id="market-sizing">Market Sizing and Trends</h2>
+
+<p>The space insurance market is at an inflection point driven by several trends:</p>
+
+<p><strong>Mega-constellations are mostly uninsured.</strong> SpaceX does not insure individual Starlink satellites — the economics of low-cost, mass-produced LEO satellites make traditional insurance impractical. When a satellite costs $250,000 to build and $500 to insure per launch (amortized across 60 satellites per Falcon 9), the math favors self-insurance. This trend is removing premium volume from the market even as the total number of satellites increases.</p>
+
+<p><strong>GEO market is shrinking.</strong> The traditional bread-and-butter of space insurance — large, expensive GEO communications satellites — is declining in volume as LEO broadband captures market share. Fewer GEO satellite orders mean fewer high-premium launch insurance policies.</p>
+
+<p><strong>New risk categories are emerging.</strong> In-orbit servicing, active debris removal, space tourism, and commercial space stations create novel risk profiles that don\'t fit neatly into existing underwriting frameworks. Insurers must develop new actuarial models for these activities.</p>
+
+<p><strong>Debris risk is increasing.</strong> As the orbital environment becomes more congested, the probability of debris-related losses increases. Some underwriters are beginning to factor conjunction frequency and debris density into their in-orbit premium calculations.</p>
+
+<table>
+<thead><tr><th>Market Segment</th><th>2020 Premiums</th><th>2025 Premiums (Est.)</th><th>Trend</th></tr></thead>
+<tbody>
+<tr><td>Launch insurance</td><td>$700M</td><td>$500M</td><td>Declining (fewer GEO launches)</td></tr>
+<tr><td>In-orbit insurance</td><td>$600M</td><td>$700M</td><td>Stable to growing</td></tr>
+<tr><td>Third-party liability</td><td>$100M</td><td>$150M</td><td>Growing (regulatory requirements)</td></tr>
+<tr><td>New space activities</td><td>$50M</td><td>$150M</td><td>Rapidly growing</td></tr>
+</tbody>
+</table>
+
+<h2 id="what-operators-need">What Satellite Operators Need to Know</h2>
+
+<p>If you\'re operating or planning to launch a satellite, here are key insurance considerations:</p>
+
+<ul>
+<li><strong>Start early:</strong> Engage insurance brokers during the satellite design phase. Design choices affect insurability and premium rates.</li>
+<li><strong>Track record matters:</strong> Launch vehicle heritage is the single biggest factor in launch insurance pricing. Flying on a vehicle with 50+ consecutive successes versus a vehicle with 5 flights produces dramatically different premiums.</li>
+<li><strong>Redundancy reduces premiums:</strong> Satellites with redundant subsystems (dual processors, backup thrusters, extra solar panel area) receive better rates than single-string designs.</li>
+<li><strong>Disclose everything:</strong> Space insurance is based on utmost good faith. Failing to disclose known technical issues can void coverage entirely.</li>
+<li><strong>Consider parametric insurance:</strong> New insurance products offer automatic payouts based on predefined triggers (e.g., solar panel degradation below a threshold) rather than traditional claims processes.</li>
+</ul>
+
+<h2 id="track-space-insurance">Track Space Insurance with SpaceNexus</h2>
+
+<p>SpaceNexus\'s <a href="/space-insurance">Space Insurance module</a> provides market data, premium benchmarks, and loss event tracking for the space insurance industry. Whether you\'re an operator seeking coverage or an underwriter evaluating risk, our platform aggregates the data you need to make informed decisions.</p>
+
+<p><a href="/register">Create your free account</a> and explore the space insurance market.</p>
+`,
+  },
+  {
+    slug: 'building-spacenexus-idea-to-launch-90-days',
+    title: 'Building SpaceNexus: From Idea to Launch in 90 Days',
+    excerpt: 'How we built a comprehensive space industry intelligence platform in three months. Our tech stack decisions, biggest challenges, lessons learned, and the metrics behind the journey.',
+    category: 'building-in-public',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-02-17T00:00:00Z',
+    readingTime: 11,
+    keywords: ['building in public', 'space startup', 'Next.js app', 'SpaceNexus development', 'startup lessons', 'tech stack decisions'],
+    content: `
+<p>Ninety days. That\'s how long it took to go from "the space industry needs a Bloomberg Terminal" to a live platform with <strong>10 intelligence modules, 50+ data source integrations, 200+ company profiles, and a functioning marketplace</strong>. This is the story of how we built SpaceNexus — the decisions we made, the mistakes we avoided (and the ones we didn\'t), and what we learned along the way.</p>
+
+<p>We\'re sharing this in the spirit of building in public, because we believe transparency about the process helps the entire startup ecosystem. If you\'re building something ambitious, we hope our experience is useful.</p>
+
+<h2 id="tech-stack-decisions">Tech Stack Decisions: Why We Chose What We Chose</h2>
+
+<p>Every technical decision was made through the lens of one question: <strong>what lets a small team move the fastest without accumulating unmanageable technical debt?</strong></p>
+
+<p><strong>Next.js 14 (App Router)</strong> was our framework choice. The App Router\'s server components dramatically simplified our data fetching — most of our modules pull from external APIs, and being able to fetch and render on the server without complex state management libraries was a game-changer. Server Actions reduced the boilerplate for form submissions by 60-70% compared to traditional API routes.</p>
+
+<p><strong>Prisma ORM with PostgreSQL</strong> handles our data layer. Prisma\'s type safety caught dozens of bugs during development that would have been runtime errors with raw SQL. Our schema grew from 5 models to 30+ over the course of development, and Prisma\'s migration system handled that growth smoothly. PostgreSQL on Railway gave us a managed database with zero operational overhead.</p>
+
+<p><strong>Railway</strong> for deployment was a decision we\'re particularly happy with. Push to the dev branch and the app deploys automatically. No Dockerfiles to maintain, no CI/CD pipelines to debug, no infrastructure to manage. For a small team, this operational simplicity is worth its weight in gold. Our deployment takes about 3 minutes from push to live.</p>
+
+<p><strong>TypeScript everywhere.</strong> Not negotiable. In a codebase with 200+ API routes and dozens of data models, type safety isn\'t a luxury — it\'s a survival mechanism. TypeScript caught more bugs during development than our test suite did, and that\'s saying something since we have 80+ tests.</p>
+
+<p><strong>Tailwind CSS</strong> for styling. We evaluated component libraries (Shadcn, MUI, Chakra) and decided that Tailwind\'s utility-first approach gave us the most flexibility with the least overhead. Every component in SpaceNexus is custom-built to our design language.</p>
+
+<table>
+<thead><tr><th>Technology</th><th>Choice</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>Framework</td><td>Next.js 14 (App Router)</td><td>Server components, built-in routing, Vercel ecosystem</td></tr>
+<tr><td>Database</td><td>PostgreSQL + Prisma</td><td>Type safety, migrations, managed hosting</td></tr>
+<tr><td>Deployment</td><td>Railway</td><td>Auto-deploy, managed infra, zero DevOps overhead</td></tr>
+<tr><td>Language</td><td>TypeScript</td><td>Type safety across 200+ API routes</td></tr>
+<tr><td>Styling</td><td>Tailwind CSS</td><td>Utility-first, no component library lock-in</td></tr>
+<tr><td>Validation</td><td>Zod</td><td>Runtime type checking, schema-first API design</td></tr>
+<tr><td>Testing</td><td>Jest</td><td>Mature ecosystem, good Next.js integration</td></tr>
+</tbody>
+</table>
+
+<h2 id="data-integration-challenge">The Biggest Challenge: Data Integration at Scale</h2>
+
+<p>Building the UI was the easy part. The hard part — the part that consumed roughly <strong>60% of our development time</strong> — was integrating 50+ external data sources into a coherent platform.</p>
+
+<p>Here\'s what makes space industry data integration uniquely challenging:</p>
+
+<ul>
+<li><strong>No standards:</strong> NASA APIs return JSON. CelesTrak serves TLE text files. RSS feeds deliver XML. SAM.gov has a REST API with idiosyncratic pagination. Every data source has its own format, authentication method, rate limits, and reliability characteristics.</li>
+<li><strong>Stale data is dangerous:</strong> A satellite position that\'s 6 hours old is useless for collision avoidance. A launch window that\'s changed isn\'t just stale — it\'s wrong. We built a tiered caching system with different TTLs for different data types: 5 minutes for space weather, 1 hour for news, 24 hours for company profiles.</li>
+<li><strong>APIs go down:</strong> Over a 90-day development period, we experienced outages or degraded service from nearly every external API we integrate with. Our circuit breaker pattern (implemented in <code>src/lib/circuit-breaker.ts</code>) prevents cascading failures by falling back to cached data when an upstream service is unavailable.</li>
+<li><strong>Rate limits are real:</strong> NASA\'s DONKI API has generous limits, but SAM.gov throttles aggressively. We implemented per-source rate limiting and request queuing to stay within bounds during our 9 scheduled cron jobs.</li>
+</ul>
+
+<p>The lesson: <strong>data integration is the product.</strong> For a platform like SpaceNexus, the UI is table stakes. The value is in the data pipeline — fetching, normalizing, caching, and presenting data from dozens of sources as if it all came from one place.</p>
+
+<h2 id="by-the-numbers">By the Numbers: 90 Days of Building</h2>
+
+<ul>
+<li><strong>236 total routes</strong> (pages + API endpoints)</li>
+<li><strong>114 files</strong> created in the final major release alone</li>
+<li><strong>50+ external data sources</strong> integrated (NASA, NOAA, SAM.gov, CelesTrak, FCC, RSS feeds, and more)</li>
+<li><strong>200+ company profiles</strong> with financial data, satellite assets, and contract history</li>
+<li><strong>80+ automated tests</strong> covering validation, error handling, and business logic</li>
+<li><strong>30+ Prisma models</strong> in our database schema</li>
+<li><strong>9 cron jobs</strong> running on scheduled intervals for data freshness</li>
+<li><strong>10 major version releases</strong> (v0.1 through v1.0)</li>
+<li><strong>3-minute deployments</strong> via Railway auto-deploy</li>
+</ul>
+
+<h2 id="mistakes-and-lessons">Mistakes We Made (and What We Learned)</h2>
+
+<p><strong>Mistake #1: Starting with too many modules.</strong> Our initial plan had 44 separate modules. That was far too many — it fragmented the user experience and created maintenance overhead. In v0.7.0, we consolidated to 10 main modules with sub-modules and tab-based merges. The lesson: start with fewer, deeper modules and expand based on user demand.</p>
+
+<p><strong>Mistake #2: Underestimating Windows development quirks.</strong> Developing a Node.js application on Windows introduced unexpected challenges — file path separators, case sensitivity differences, and Prisma\'s query engine DLL locking during schema changes. We learned to always test in the deployment environment early.</p>
+
+<p><strong>Mistake #3: Not implementing structured logging from day one.</strong> We started with console.log statements and had to retrofit structured logging (via our custom logger in <code>src/lib/logger.ts</code>) later. Starting with structured logging would have saved debugging time during data integration.</p>
+
+<p><strong>Lesson learned: Security can\'t wait.</strong> We conducted a security audit at v0.9.0 that found critical, high, and medium-severity issues. Fixing them was far more expensive than building security in from the start. CSRF protection, rate limiting, input validation, and HTML sanitization should be in your first commit, not your last.</p>
+
+<h2 id="whats-next">What\'s Next for SpaceNexus</h2>
+
+<p>We\'re just getting started. Our roadmap includes:</p>
+
+<ul>
+<li><strong>AI-powered insights:</strong> Using Claude to analyze cross-module data patterns and generate actionable intelligence</li>
+<li><strong>Commercial API:</strong> Our v1 API product lets developers integrate SpaceNexus data into their own applications</li>
+<li><strong>Marketplace expansion:</strong> Growing our space industry marketplace with more verified providers and AI-assisted procurement matching</li>
+<li><strong>Mobile app:</strong> Native mobile experience with offline capabilities and widget support</li>
+<li><strong>Community features:</strong> Discussion forums, expert Q&A, and collaborative analysis tools</li>
+</ul>
+
+<p>We\'ll continue sharing our journey openly. Follow our <a href="/blog">blog</a> for regular updates on what we\'re building, why we\'re building it, and the data behind our decisions.</p>
+
+<p><a href="/register">Join SpaceNexus for free</a> and be part of the platform the space industry has been waiting for.</p>
+`,
+  },
+  {
+    slug: 'itar-ear-compliance-space-startups',
+    title: 'ITAR and EAR Compliance: What Every Space Startup Needs to Know',
+    excerpt: 'Export controls are one of the most misunderstood — and most consequential — regulatory challenges for space companies. Here\'s a practical guide to ITAR and EAR compliance.',
+    category: 'policy',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-02-17T00:00:00Z',
+    readingTime: 11,
+    keywords: ['ITAR compliance', 'EAR compliance', 'export controls space', 'space startup regulations', 'USML', 'CCL', 'DDTC', 'BIS'],
+    content: `
+<p>If you\'re building, selling, or sharing space technology, there\'s a regulatory framework you absolutely cannot afford to get wrong: <strong>U.S. export controls</strong>. The International Traffic in Arms Regulations (ITAR) and the Export Administration Regulations (EAR) govern what space-related technology, data, and services can be shared with foreign persons — and the penalties for violations can be devastating.</p>
+
+<p>Fines of up to <strong>$1 million per violation</strong> under ITAR, criminal penalties including imprisonment, debarment from government contracting, and reputational damage that can kill a startup. Yet many space companies — especially early-stage startups — don\'t fully understand their obligations until it\'s too late.</p>
+
+<p>This guide provides a practical overview of what space startups need to know. It is not legal advice — consult an export control attorney for your specific situation. But it will help you ask the right questions and avoid the most common mistakes.</p>
+
+<h2 id="itar-vs-ear">ITAR vs. EAR: Understanding the Two Regimes</h2>
+
+<p>The U.S. has two primary export control regimes, administered by different agencies with different rules:</p>
+
+<p><strong>ITAR (International Traffic in Arms Regulations)</strong></p>
+<ul>
+<li>Administered by the <strong>State Department\'s Directorate of Defense Trade Controls (DDTC)</strong></li>
+<li>Governs items on the <strong>U.S. Munitions List (USML)</strong></li>
+<li>Category IV of the USML covers "Launch Vehicles, Guided Missiles, Ballistic Missiles, Rockets, Torpedoes, Bombs, and Mines"</li>
+<li>Category XV covers "Spacecraft and Related Articles"</li>
+<li>ITAR is <strong>strict liability</strong> — intent doesn\'t matter. If you share ITAR-controlled data with a foreign person without authorization, it\'s a violation</li>
+<li>Applies to both physical exports and "deemed exports" (sharing controlled data with foreign nationals inside the U.S.)</li>
+</ul>
+
+<p><strong>EAR (Export Administration Regulations)</strong></p>
+<ul>
+<li>Administered by the <strong>Commerce Department\'s Bureau of Industry and Security (BIS)</strong></li>
+<li>Governs items on the <strong>Commerce Control List (CCL)</strong> and EAR99 items</li>
+<li>Covers dual-use technology — items with both commercial and military applications</li>
+<li>Generally <strong>less restrictive</strong> than ITAR, with more license exceptions available</li>
+<li>Many commercial satellite components and earth observation technologies fall under EAR</li>
+</ul>
+
+<table>
+<thead><tr><th>Aspect</th><th>ITAR</th><th>EAR</th></tr></thead>
+<tbody>
+<tr><td>Agency</td><td>State Dept (DDTC)</td><td>Commerce Dept (BIS)</td></tr>
+<tr><td>Control list</td><td>USML (22 categories)</td><td>CCL (10 categories) + EAR99</td></tr>
+<tr><td>Scope</td><td>Defense articles &amp; services</td><td>Dual-use &amp; commercial items</td></tr>
+<tr><td>Default policy</td><td>Deny (must get license)</td><td>Varies by destination &amp; item</td></tr>
+<tr><td>Civil penalties</td><td>Up to $1M per violation</td><td>Up to $300K per violation</td></tr>
+<tr><td>Criminal penalties</td><td>Up to $1M and 20 years</td><td>Up to $1M and 20 years</td></tr>
+<tr><td>Registration</td><td>Required (DDTC)</td><td>Not required</td></tr>
+</tbody>
+</table>
+
+<h2 id="what-is-controlled">What Space Technology Is Controlled?</h2>
+
+<p>The first step in compliance is determining <strong>classification</strong> — whether your item is on the USML (ITAR) or the CCL (EAR), and which specific category and subcategory applies.</p>
+
+<p>Under ITAR, the following space items are typically controlled:</p>
+<ul>
+<li>Launch vehicles and their components, parts, and accessories</li>
+<li>Spacecraft designed for military or intelligence applications</li>
+<li>Radiation-hardened electronics designed for space</li>
+<li>Certain propulsion systems, guidance systems, and thermal protection systems</li>
+<li>Technical data related to the above (drawings, specifications, software source code)</li>
+</ul>
+
+<p>Under the <strong>2014 export control reform</strong>, many commercial satellite components were moved from the USML to the CCL, making them subject to the less restrictive EAR. This was a significant liberalization for commercial space companies, but critical items remain on the USML.</p>
+
+<p>The key question: <strong>Is your technology "specially designed" for a military or intelligence application?</strong> If yes, it\'s likely ITAR. If it\'s a commercial item with potential dual-use applications, it\'s likely EAR. When in doubt, you can request a formal <strong>commodity jurisdiction (CJ) determination</strong> from DDTC.</p>
+
+<h2 id="common-pitfalls">Common Pitfalls for Space Startups</h2>
+
+<p>Based on enforcement actions and industry experience, these are the most frequent mistakes space startups make:</p>
+
+<p><strong>1. The "deemed export" trap.</strong> Sharing ITAR-controlled technical data with a foreign national employee or contractor — even inside the United States — constitutes a "deemed export" requiring prior authorization. If your engineering team includes non-U.S. citizens, you need a Technology Control Plan (TCP) that governs what information they can access.</p>
+
+<p><strong>2. Conference presentations and papers.</strong> Presenting technical details about controlled technology at conferences — even domestic ones attended by foreign nationals — can constitute an unauthorized export. Review all presentations and publications through your export compliance process.</p>
+
+<p><strong>3. Cloud storage and email.</strong> Storing ITAR-controlled data on cloud servers that may be physically located outside the U.S. (or accessible by foreign administrators) can constitute an export. Ensure your IT infrastructure meets ITAR requirements — not all cloud providers are compliant by default.</p>
+
+<p><strong>4. Fundamental research exemption misunderstanding.</strong> University research that is published openly qualifies for the fundamental research exemption. But the moment research is restricted by contract (e.g., a DoD-funded project with publication restrictions), the exemption no longer applies.</p>
+
+<p><strong>5. Not registering with DDTC.</strong> If you manufacture or export defense articles (including spacecraft components on the USML), you must register with DDTC. Registration is required even if you never actually export — it\'s based on what you manufacture.</p>
+
+<h2 id="getting-started">Getting Started with Compliance</h2>
+
+<p>Here\'s a practical roadmap for space startups:</p>
+
+<ul>
+<li><strong>Step 1: Classify your products.</strong> Determine whether each product, component, and dataset is ITAR-controlled, EAR-controlled, or EAR99 (no license required for most destinations). Engage an export control attorney or consultant for this critical step.</li>
+<li><strong>Step 2: Register with DDTC</strong> if you manufacture or export USML items. Annual registration costs $2,500.</li>
+<li><strong>Step 3: Develop an Export Compliance Management Program (ECMP).</strong> This includes written procedures, training, screening processes, and record-keeping. DDTC and BIS both publish guidance on effective compliance programs.</li>
+<li><strong>Step 4: Screen all parties.</strong> Before any transaction with a foreign person or entity, screen them against the Consolidated Screening List (maintained by the U.S. government) for sanctioned parties, denied persons, and debarred entities.</li>
+<li><strong>Step 5: Train your team.</strong> Everyone in your company — not just engineers — needs to understand export control basics. A sales team member promising technical data to a foreign customer can trigger a violation just as easily as an engineer sharing source code.</li>
+<li><strong>Step 6: Implement technology controls.</strong> Restrict physical and digital access to controlled technology based on personnel authorization. Use access controls, encryption, and secure facilities as appropriate.</li>
+</ul>
+
+<h2 id="resources">Resources and Further Reading</h2>
+
+<p>These authoritative resources can help you navigate export controls:</p>
+
+<ul>
+<li><strong>DDTC website</strong> — Official ITAR guidance, USML text, and licensing information</li>
+<li><strong>BIS website</strong> — EAR regulations, CCL, and license application guidance</li>
+<li><strong>SIA (Satellite Industry Association)</strong> — Publishes export control guides for the satellite industry</li>
+<li><strong>CSIS (Center for Strategic and International Studies)</strong> — Policy analysis on export control reform</li>
+</ul>
+
+<p>For a deeper dive into compliance requirements specific to the space industry, visit our <a href="/compliance">Regulatory &amp; Compliance module</a> and our detailed <a href="/guide/itar-compliance-guide">ITAR Compliance Guide</a>.</p>
+
+<h2 id="stay-compliant">Stay Compliant with SpaceNexus</h2>
+
+<p>SpaceNexus\'s <a href="/compliance">Regulatory &amp; Compliance module</a> tracks export control regulations, licensing requirements, and enforcement actions relevant to space companies. Set up alerts for regulatory changes that affect your products, and access our compliance resources to keep your program current.</p>
+
+<p><a href="/register">Create your free account</a> and start building a compliant space business from day one.</p>
+`,
+  },
+  {
+    slug: 'sam-gov-to-space-government-contracts-guide',
+    title: 'From SAM.gov to Space: A Practical Guide to Government Contracts',
+    excerpt: 'A step-by-step guide to finding and winning space-related government contracts through SAM.gov, SBIR/STTR programs, and agency-specific procurement channels.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-02-17T00:00:00Z',
+    readingTime: 12,
+    keywords: ['SAM.gov guide', 'government contracts space', 'SBIR STTR space', 'NASA procurement', 'Space Force contracts', 'small business space contracts'],
+    content: `
+<p>The U.S. government spends over <strong>$55 billion annually</strong> on space-related activities — and a growing share of that spending goes to commercial companies. From NASA\'s Commercial Crew program to Space Force\'s proliferated LEO architecture, government agencies are actively seeking innovative space companies to partner with. But navigating the federal procurement system can feel like learning a foreign language.</p>
+
+<p>This guide walks you through the process step by step, from registering on SAM.gov to submitting your first proposal. Whether you\'re a startup looking for your first SBIR grant or an established company expanding into government sales, this is your roadmap.</p>
+
+<h2 id="step-1-registration">Step 1: Get Registered on SAM.gov</h2>
+
+<p>The System for Award Management (SAM.gov) is the mandatory gateway to all federal contracting. No SAM registration means no federal contracts — period. Here\'s what you need to do:</p>
+
+<p><strong>Obtain a UEI (Unique Entity Identifier).</strong> The UEI replaced the old DUNS number in April 2022. You\'ll get one automatically when you register on SAM.gov. It\'s free — never pay a third party for SAM registration.</p>
+
+<p><strong>Complete your entity registration.</strong> You\'ll need:</p>
+<ul>
+<li>Your company\'s legal name, address, and EIN (Employer Identification Number)</li>
+<li>Banking information for electronic fund transfer (how you\'ll get paid)</li>
+<li>NAICS codes that describe your business activities</li>
+<li>Product and Service Codes (PSCs) for what you sell</li>
+<li>Your company\'s size standard determination</li>
+</ul>
+
+<p><strong>Key NAICS codes for space companies:</strong></p>
+
+<table>
+<thead><tr><th>NAICS Code</th><th>Description</th><th>Small Business Size Standard</th></tr></thead>
+<tbody>
+<tr><td>336414</td><td>Guided Missile &amp; Space Vehicle Manufacturing</td><td>1,300 employees</td></tr>
+<tr><td>336415</td><td>Space Vehicle Propulsion &amp; Parts Manufacturing</td><td>1,300 employees</td></tr>
+<tr><td>517410</td><td>Satellite Telecommunications</td><td>1,500 employees</td></tr>
+<tr><td>541715</td><td>R&amp;D in Physical, Engineering &amp; Life Sciences</td><td>1,000 employees</td></tr>
+<tr><td>927110</td><td>Space Research &amp; Technology</td><td>N/A (government)</td></tr>
+<tr><td>334511</td><td>Search, Detection, Navigation &amp; Guidance Instruments</td><td>1,250 employees</td></tr>
+</tbody>
+</table>
+
+<p>The registration process takes <strong>2-4 weeks</strong> to complete and must be renewed annually. Start now — you can\'t respond to an opportunity if your registration isn\'t active.</p>
+
+<h2 id="step-2-certifications">Step 2: Get Small Business Certifications</h2>
+
+<p>If your company qualifies as a small business under your primary NAICS code, certifications can be a powerful competitive advantage. The federal government is required to award a percentage of contracts to small businesses, and agencies have specific goals for each certification category:</p>
+
+<ul>
+<li><strong>Small Business (SB):</strong> 23% government-wide goal. Simply being registered as a small business in SAM.gov qualifies you for small business set-aside contracts.</li>
+<li><strong>Small Disadvantaged Business (SDB) / 8(a):</strong> The 8(a) Business Development program provides access to sole-source contracts up to $4.5 million, mentoring, and reduced competition. The application process takes 2-3 months through SBA.</li>
+<li><strong>HUBZone:</strong> Companies headquartered in Historically Underutilized Business Zones receive price evaluation preferences and sole-source authority.</li>
+<li><strong>Women-Owned Small Business (WOSB):</strong> Self-certification for contracts in industries where women are underrepresented. Space manufacturing qualifies.</li>
+<li><strong>Service-Disabled Veteran-Owned (SDVOSB):</strong> Sole-source authority up to $5 million and set-aside preferences.</li>
+</ul>
+
+<p>The <strong>most powerful combination</strong> for space startups is typically 8(a) + SB certification. The 8(a) program\'s sole-source authority allows agencies to award contracts to your company without full competition — a massive advantage for building past performance.</p>
+
+<h2 id="step-3-find-opportunities">Step 3: Find Space Contract Opportunities</h2>
+
+<p>Once registered, you need to systematically find relevant opportunities. Here are the key channels:</p>
+
+<p><strong>SAM.gov Contract Opportunities</strong> (formerly FBO/beta.SAM.gov) is where all federal contracts over $25,000 are posted. Effective search strategies include:</p>
+<ul>
+<li>Search by NAICS code (336414, 517410, etc.)</li>
+<li>Filter by agency: NASA, Department of Defense, NOAA, FAA</li>
+<li>Filter by set-aside type (small business, 8(a), etc.)</li>
+<li>Look for <strong>Sources Sought</strong> and <strong>RFI (Request for Information)</strong> notices — agencies testing the market before issuing a formal solicitation. Responding to these builds relationships and can shape the final RFP.</li>
+<li>Set up saved searches with daily email notifications</li>
+</ul>
+
+<p><strong>SBIR/STTR programs</strong> are the best entry point for technology startups. These programs exist specifically to fund innovative research by small businesses:</p>
+
+<table>
+<thead><tr><th>Phase</th><th>Funding</th><th>Duration</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>Phase I</td><td>$150K-$275K</td><td>6-12 months</td><td>Feasibility study / proof of concept</td></tr>
+<tr><td>Phase II</td><td>$750K-$1.75M</td><td>24 months</td><td>Prototype development &amp; testing</td></tr>
+<tr><td>Phase III</td><td>No set limit</td><td>Varies</td><td>Commercialization (non-SBIR funds)</td></tr>
+</tbody>
+</table>
+
+<p>Key space-relevant SBIR agencies: <strong>NASA</strong> (largest space SBIR budget), <strong>DoD/Air Force/Space Force</strong> (SpaceWERX), <strong>DOE</strong> (space power systems), and <strong>NSF</strong> (space science instrumentation). Check <strong>SBIR.gov</strong> for all open solicitations — new topics are released 2-3 times per year.</p>
+
+<p><strong>Agency-specific programs</strong> offer additional pathways:</p>
+<ul>
+<li><strong>NASA:</strong> NSPIRES (research grants), CLPS (lunar payload delivery), Tipping Point (technology demonstrations up to $30M), and Announcement of Collaborative Opportunity (ACO)</li>
+<li><strong>Space Force / SpaceWERX:</strong> Orbital Prime (ISAM), STRATFI/TACTFI (matching funds up to $30M), and Direct-to-Phase-II SBIR for mature technologies</li>
+<li><strong>DARPA:</strong> Broad Agency Announcements (BAAs) for advanced research. Space-related programs include Blackjack, NOM4D, and others</li>
+<li><strong>NRO:</strong> Commercial Systems Program Office (CSPO) for commercial satellite services and data</li>
+</ul>
+
+<h2 id="step-4-build-relationships">Step 4: Build Relationships Before You Bid</h2>
+
+<p>Government contracting is a relationship business. The companies that win consistently don\'t just respond to posted solicitations — they engage with program offices well before opportunities are announced.</p>
+
+<ul>
+<li><strong>Attend industry days:</strong> Agencies host pre-solicitation conferences and industry days where they discuss upcoming requirements. These are invaluable for understanding what the customer actually wants.</li>
+<li><strong>Request meetings with program managers:</strong> Before a solicitation is posted, you can (and should) request meetings with the technical teams who will evaluate proposals. After posting, communication is restricted.</li>
+<li><strong>Participate in SBIR road tours:</strong> NASA and DoD host events where program managers present upcoming SBIR topics and meet potential offerors.</li>
+<li><strong>Join mentor-protege programs:</strong> Large primes like Lockheed Martin, Northrop Grumman, and L3Harris have formal mentor-protege programs with SBA that pair small businesses with established contractors.</li>
+<li><strong>Leverage GWACs and IDIQs:</strong> Government-Wide Acquisition Contracts and Indefinite Delivery/Indefinite Quantity contracts provide pre-competed vehicles that make it easier for agencies to buy from you once you\'re on contract.</li>
+</ul>
+
+<h2 id="step-5-write-winning-proposals">Step 5: Write Winning Proposals</h2>
+
+<p>Government proposals are evaluated according to published criteria. Your job is to make the evaluator\'s job as easy as possible:</p>
+
+<ul>
+<li><strong>Follow the instructions exactly.</strong> Page limits, font sizes, margin requirements, and section headings must match the solicitation precisely. Non-compliant proposals are eliminated before evaluation.</li>
+<li><strong>Address every evaluation criterion explicitly.</strong> If the solicitation lists Technical Approach, Past Performance, and Cost as evaluation factors, organize your proposal to match. Use the same language the solicitation uses.</li>
+<li><strong>Lead with understanding, not your solution.</strong> Demonstrate that you deeply understand the agency\'s problem before presenting your approach. Evaluators want to know you understand <em>their</em> mission.</li>
+<li><strong>Quantify everything.</strong> Technology Readiness Level (TRL), performance metrics, schedule milestones, cost savings — specific numbers are more credible than qualitative claims.</li>
+<li><strong>Show relevant past performance.</strong> If you don\'t have government past performance, commercial projects, SBIR Phase I results, and academic research count. Frame them in terms of relevance to the solicitation.</li>
+<li><strong>Price to win, not to lose.</strong> Lowball pricing raises red flags about your understanding of the work. Use current GSA labor rates and industry-standard cost models.</li>
+</ul>
+
+<h2 id="track-opportunities">Track Opportunities with SpaceNexus</h2>
+
+<p>SpaceNexus\'s <a href="/procurement">Procurement Intelligence module</a> aggregates space-related contract opportunities from SAM.gov, SBIR.gov, and agency-specific portals. Search by agency, NAICS code, set-aside type, and contract value — and set up alerts so you never miss a relevant opportunity.</p>
+
+<p>Our system automatically identifies space-related opportunities across all federal agencies, saving you hours of manual searching. Combined with our <a href="/company-profiles">company profiles</a> (which include government contract history for 200+ space companies) and <a href="/compliance">regulatory compliance module</a>, SpaceNexus provides the complete picture you need to compete effectively in government space procurement.</p>
+
+<p><a href="/register">Create your free account</a> and start winning space contracts.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {
