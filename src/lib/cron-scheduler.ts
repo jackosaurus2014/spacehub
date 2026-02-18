@@ -170,6 +170,24 @@ export function startCronJobs() {
     triggerEndpoint('/api/refresh?type=opportunities-analysis', 'opportunities-analysis');
   });
 
+  // Module-specific related news — daily at 7:30 AM UTC
+  // Compiles insurance & resource-related news/blog posts from DB
+  cron.schedule('30 7 * * *', () => {
+    triggerEndpoint('/api/refresh?type=module-news', 'module-news-compilation');
+  });
+
+  // Commodity price updates — daily at 8:30 AM UTC
+  // Fetches live metal/commodity prices from Metals.dev API
+  cron.schedule('30 8 * * *', () => {
+    triggerEndpoint('/api/refresh?type=commodity-prices', 'commodity-price-update');
+  });
+
+  // AI market commentary — weekly on Tuesdays at 6:00 AM UTC
+  // Generates insurance + resource exchange weekly analysis
+  cron.schedule('0 6 * * 2', () => {
+    triggerEndpoint('/api/refresh?type=market-commentary', 'market-commentary-generation');
+  });
+
   logger.info('Cron scheduler started', {
     jobs: [
       'news-fetch: every 5 minutes',
@@ -196,6 +214,9 @@ export function startCronJobs() {
       'patents-market-intel: 11:30 AM UTC weekly (Sat)',
       'regulatory-feeds: noon UTC daily',
       'sec-filings: 2:00 PM UTC daily',
+      'module-news-compilation: 7:30 AM UTC daily',
+      'commodity-price-update: 8:30 AM UTC daily',
+      'market-commentary-generation: 6:00 AM UTC weekly (Tue)',
     ],
   });
 }

@@ -505,7 +505,191 @@ function ResourceExchangeContent() {
             </p>
           </div>
         </div></ScrollReveal>
+
+        {/* Dynamic Content: Price Updates, Commentary, Related News */}
+        <DynamicResourceContent />
       </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────
+// Dynamic Content Section
+// ────────────────────────────────────────
+
+interface PriceUpdate {
+  slug: string;
+  name: string;
+  oldPrice: number;
+  newPrice: number;
+  changePercent: number;
+  source: string;
+  commodity: string;
+}
+
+interface DynamicNewsArticle {
+  id: string;
+  title: string;
+  summary: string;
+  source: string;
+  url: string;
+  publishedAt: string;
+}
+
+interface ResourceCommentary {
+  title: string;
+  summary: string;
+  content: string;
+  keyTakeaways: string[];
+  generatedAt: string;
+}
+
+function DynamicResourceContent() {
+  const [priceUpdates, setPriceUpdates] = useState<PriceUpdate[]>([]);
+  const [news, setNews] = useState<DynamicNewsArticle[]>([]);
+  const [commentary, setCommentary] = useState<ResourceCommentary | null>(null);
+  const [showFullCommentary, setShowFullCommentary] = useState(false);
+  const [pricesFetchedAt, setPricesFetchedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchDynamic() {
+      try {
+        const res = await fetch('/api/resources/dynamic');
+        if (res.ok) {
+          const data = await res.json();
+          setPriceUpdates(data.priceUpdates || []);
+          setPricesFetchedAt(data.pricesFetchedAt || null);
+          setNews(data.relatedNews || []);
+          setCommentary(data.marketCommentary || null);
+        }
+      } catch {
+        // Supplementary content — fail silently
+      }
+    }
+    fetchDynamic();
+  }, []);
+
+  if (!commentary && priceUpdates.length === 0 && news.length === 0) return null;
+
+  return (
+    <div className="mt-10 space-y-8">
+      {/* Live Price Updates */}
+      {priceUpdates.length > 0 && (
+        <ScrollReveal>
+          <div className="card p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">📊</span>
+                <h3 className="text-lg font-display font-bold text-slate-900">Live Price Updates</h3>
+              </div>
+              {pricesFetchedAt && (
+                <span className="text-xs text-slate-400">
+                  Updated {new Date(pricesFetchedAt).toLocaleDateString()}
+                </span>
+              )}
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {priceUpdates.map((update) => (
+                <div key={update.slug} className="p-3 rounded-lg border border-slate-200">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium text-slate-900">{update.name}</span>
+                    <span className={`text-xs font-bold ${update.changePercent > 0 ? 'text-green-500' : update.changePercent < 0 ? 'text-red-500' : 'text-slate-400'}`}>
+                      {update.changePercent > 0 ? '+' : ''}{update.changePercent.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-slate-400">
+                    <span>${update.newPrice.toLocaleString()}/kg</span>
+                    <span className="text-slate-300">was ${update.oldPrice.toLocaleString()}</span>
+                  </div>
+                  <div className="text-xs text-slate-300 mt-1">via {update.commodity} ({update.source})</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
+      )}
+
+      {/* AI Market Commentary */}
+      {commentary && (
+        <ScrollReveal>
+          <div className="card p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-2xl">🤖</span>
+              <div>
+                <h3 className="text-lg font-display font-bold text-slate-900">{commentary.title}</h3>
+                <p className="text-xs text-slate-400">
+                  AI-generated analysis · {new Date(commentary.generatedAt).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+            <p className="text-slate-600 text-sm mb-4">{commentary.summary}</p>
+
+            {commentary.keyTakeaways.length > 0 && (
+              <div className="mb-4 p-4 bg-nebula-500/5 rounded-lg border border-nebula-500/20">
+                <h4 className="text-sm font-semibold text-nebula-300 mb-2">Key Takeaways</h4>
+                <ul className="space-y-1">
+                  {commentary.keyTakeaways.map((t, i) => (
+                    <li key={i} className="text-sm text-slate-600 flex items-start gap-2">
+                      <span className="text-nebula-300 mt-0.5">•</span>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {showFullCommentary && (
+              <div className="prose prose-sm max-w-none text-slate-600 mb-4">
+                <div dangerouslySetInnerHTML={{ __html: commentary.content.replace(/\n/g, '<br/>').replace(/## /g, '<strong>').replace(/\n/g, '</strong><br/>') }} />
+              </div>
+            )}
+
+            <button
+              onClick={() => setShowFullCommentary(!showFullCommentary)}
+              className="text-sm text-nebula-300 hover:text-nebula-200 font-medium transition-colors"
+            >
+              {showFullCommentary ? 'Show Less' : 'Read Full Analysis →'}
+            </button>
+          </div>
+        </ScrollReveal>
+      )}
+
+      {/* Related News */}
+      {news.length > 0 && (
+        <ScrollReveal>
+          <div className="card p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">📰</span>
+                <h3 className="text-lg font-display font-bold text-slate-900">Space Resources & Mining News</h3>
+              </div>
+              <span className="text-xs text-slate-400">{news.length} articles</span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {news.slice(0, 6).map((article) => (
+                <a
+                  key={article.id}
+                  href={article.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block p-3 rounded-lg border border-slate-200 hover:border-nebula-500/30 hover:bg-nebula-500/5 transition-all group"
+                >
+                  <h4 className="text-sm font-medium text-slate-900 group-hover:text-nebula-300 line-clamp-2 mb-1">
+                    {article.title}
+                  </h4>
+                  <p className="text-xs text-slate-400 line-clamp-2 mb-2">
+                    {article.summary}
+                  </p>
+                  <div className="flex items-center justify-between text-xs text-slate-400">
+                    <span>{article.source}</span>
+                    <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
+      )}
     </div>
   );
 }

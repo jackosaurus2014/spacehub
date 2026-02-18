@@ -364,6 +364,44 @@ const BLOG_SOURCES = [
     authorType: 'engineer',
     description: 'Microgravity experiments and research results',
   },
+
+  // --- Insurance & Risk Industry ---
+  {
+    name: 'Insurance Journal',
+    slug: 'insurance-journal',
+    url: 'https://www.insurancejournal.com',
+    feedUrl: 'https://www.insurancejournal.com/feed/',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Property/casualty insurance news including space and satellite coverage',
+  },
+  {
+    name: 'Artemis.bm',
+    slug: 'artemis-bm',
+    url: 'https://www.artemis.bm',
+    feedUrl: 'https://www.artemis.bm/feed/',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Catastrophe bonds, insurance-linked securities, and reinsurance capital markets',
+  },
+  {
+    name: 'AXA XL Fast Forward',
+    slug: 'axa-xl-articles',
+    url: 'https://axaxl.com/fast-fast-forward/articles',
+    feedUrl: 'https://axaxl.com/fast-fast-forward/articles/feed/',
+    type: 'blog',
+    authorType: 'consultant',
+    description: 'Risk management insights including space insurance and satellite coverage',
+  },
+  {
+    name: 'Global Reinsurance',
+    slug: 'global-reinsurance',
+    url: 'https://www.globalreinsurance.com',
+    feedUrl: 'https://www.globalreinsurance.com/feed/',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Reinsurance industry news covering aerospace and space markets',
+  },
 ];
 
 const TOPIC_KEYWORDS: Record<string, string[]> = {

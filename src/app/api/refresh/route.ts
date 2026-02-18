@@ -337,6 +337,32 @@ export async function POST(request: Request) {
       results.patents = { count: patentCount };
     }
 
+    if (type === 'module-news') {
+      const { fetchInsuranceRelatedNews, fetchResourceExchangeRelatedNews } = await import('@/lib/fetchers/insurance-resource-news-fetcher');
+      const insuranceNews = await fetchInsuranceRelatedNews();
+      const resourceNews = await fetchResourceExchangeRelatedNews();
+      results.moduleNews = {
+        insurance: insuranceNews,
+        resourceExchange: resourceNews,
+      };
+    }
+
+    if (type === 'commodity-prices') {
+      const { fetchAndUpdateCommodityPrices } = await import('@/lib/fetchers/commodity-pricing-fetcher');
+      const updated = await fetchAndUpdateCommodityPrices();
+      results.commodityPrices = { updated };
+    }
+
+    if (type === 'market-commentary') {
+      const { generateInsuranceCommentary, generateResourceCommentary } = await import('@/lib/fetchers/module-market-commentary');
+      const insuranceOk = await generateInsuranceCommentary();
+      const resourceOk = await generateResourceCommentary();
+      results.marketCommentary = {
+        insurance: insuranceOk ? 'generated' : 'skipped',
+        resourceExchange: resourceOk ? 'generated' : 'skipped',
+      };
+    }
+
     if (type === 'patents-market-intel') {
       const { refreshPatentMarketIntelligence } = await import('@/lib/module-api-fetchers');
       const sectionsUpdated = await refreshPatentMarketIntelligence();
