@@ -53,3 +53,10 @@ android-twa/build/
 android-twa/*.aab
 android-twa/*.apk
 android-twa/*.keystore
+
+# Personal notes and build logs (not part of source)
+/notes/
+nul
+
+# Screenshots (local reference only)
+public/screenshots/
