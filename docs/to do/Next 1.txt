@@ -1,0 +1,202 @@
+TASK: Create "Estimated Orbital System Costs" page in Mission Planning
+STATUS: COMPLETED (February 18, 2026)
+
+═══════════════════════════════════════════════════════════════════
+ORIGINAL REQUEST
+═══════════════════════════════════════════════════════════════════
+
+Create a new page in the Mission Planning section of our website titled "Estimated Orbital System costs."  The purpose of this new module is to estimate the total costs of various types of orbital systems that are now in space and may be sent into space over the next 5-10 years.  The module will also show detailed information about what subsystems, components, hardware and potentially software would need to go into each of those orbital systems.  The idea is that a space entrepreneur could go into this page with the idea of building, launching and operating an orbital system such as a space habitat or space station, and get a pretty accurate estimate of all the items they would need to procure and what the total estimated cost for the venture would be.
+
+In that page, let's create a card for each of the following types of orbital systems:  orbital habitat (small and large), orbital fabrication facility, orbital data center, orbital depot, orbital solar array (small, medium, large - and define small, medium and large by the estimated energy output of the solar array), and any other orbital systems your research uncovers as potentially feasible over the next ten years.  For each of these systems, research and analyze the hardware and components that would be required for these orbital systems.  Then determine a bill of materials for each of these systems based on the items that would go into them.  Finally, estimate the cost to purchase the items and lift them into orbit, as well as the cost to assemble them in space, if any.  Analyze whether any other costs might be relevant for getting these systems into space and operational.  Then provide those total estimated costs for each system on the card.  Allow a user to click on the card to see a detailed breakdown of (1) the estimated cost items going into the total cost, (2) the bill of materials for the orbital system; and (3) the estimated cost to insure such a system, with links back to our insurance tracker page if useful.
+
+═══════════════════════════════════════════════════════════════════
+WORK COMPLETED
+═══════════════════════════════════════════════════════════════════
+
+1. RESEARCH PHASE
+   - Conducted exhaustive research on orbital habitat costs (ISS, Axiom, Vast Haven-1, Orbital Reef, Starlab)
+   - Researched orbital manufacturing platforms (Varda Space, Space Forge, Redwire)
+   - Analyzed orbital data center concepts (Lumen Orbit, OrbitsEdge)
+   - Studied cryogenic propellant depot designs (NASA studies, SpaceX Starship depot)
+   - Investigated space-based solar power (Caltech SSPP, ESA SOLARIS, JAXA SPS2)
+   - Evaluated orbital transfer vehicles (Northrop MEV-1/2, Momentus Vigoride, Impulse Space)
+   - Analyzed free-flying research labs (ESA concepts, Bishop Airlock)
+   - Researched active debris removal (ClearSpace-1, Astroscale ELSA-d, D-Orbit)
+
+2. DATA FILE (src/lib/orbital-costs-data.ts — 949 lines)
+   Created comprehensive data for 11 orbital systems across 6 categories:
+
+   HABITATS:
+   - Orbital Habitat — Small (4 Crew): $648M total, 22t, TRL 7
+   - Orbital Habitat — Large (12 Crew): $2.5B total, 85t, TRL 6
+
+   MANUFACTURING:
+   - Orbital Fabrication Facility: $506M total, 15t, TRL 6
+
+   INFRASTRUCTURE:
+   - Orbital Data Center: $371M total, 8t, TRL 5
+   - Orbital Propellant Depot: $699M total, 35t, TRL 5
+
+   POWER:
+   - Orbital Solar Array — Small (<1 MW): $200M total, 5t, TRL 4
+   - Orbital Solar Array — Medium (1-10 MW): $2.1B total, 50t, TRL 3
+   - Orbital Solar Array — Large (>10 MW): $22.9B total, 800t, TRL 2
+
+   SERVICES:
+   - Space Tug / Orbital Transfer Vehicle: $134M total, 3.5t, TRL 7
+   - Orbital Debris Removal Platform: $133M total, 2.5t, TRL 7
+
+   SCIENCE:
+   - Free-Flying Research Laboratory: $237M total, 6t, TRL 7
+
+   Each system includes:
+   - Full subsystem breakdown (3-7 subsystems per system)
+   - Detailed BOM with individual line items (5-12 items per subsystem)
+   - Supplier information where known
+   - Cost breakdown: procurement, launch, assembly, testing, ops, insurance, regulatory, contingency
+   - Insurance estimates (8.5% launch, 4.4% in-orbit, 1.8% liability)
+   - Annual operating costs
+   - Revenue model notes
+   - Reference programs with real-world cost comparisons
+   - Cross-links to other SpaceNexus modules
+
+3. PAGE (src/app/orbital-costs/page.tsx — 378 lines)
+   - Interactive card grid showing all 11 systems
+   - Filter by category (6 categories) and sort (cost, mass, TRL)
+   - Summary statistics dashboard (systems count, cost range, BOM items, TRL range)
+   - Click-to-expand detail panel with 3 tabs:
+     (1) Cost Breakdown — horizontal bar chart + operating costs + revenue model + references
+     (2) Bill of Materials — expandable subsystem accordion with full line-item table
+     (3) Insurance Estimate — premium breakdown with link to Space Insurance module
+   - Related modules section linking to Mission Cost, Space Insurance, Resource Exchange, Launch Vehicles
+   - Methodology & disclaimers section
+   - Dark theme matching existing SpaceNexus design
+
+4. MODULE REGISTRATION
+   - Added to AVAILABLE_MODULES in src/types/index.ts (7th child of mission-planning)
+   - Added route to src/lib/module-routes.ts (/orbital-costs)
+   - Added to sitemap in src/app/sitemap.ts
+   - Created layout.tsx with SEO metadata
+
+5. API ROUTE (src/app/api/orbital-costs/route.ts)
+   - GET endpoint returning all orbital system summaries
+   - Returns slug, name, variant, category, costs, mass, insurance for each system
+
+6. BUILD VERIFICATION
+   - npm run build passes successfully
+   - Page compiles at 15.1 kB (first load 112 kB total)
+   - All existing tests and pages unaffected
+
+═══════════════════════════════════════════════════════════════════
+FILES CREATED/MODIFIED
+═══════════════════════════════════════════════════════════════════
+
+Created:
+  src/lib/orbital-costs-data.ts         (949 lines) — All 11 system data models
+  src/app/orbital-costs/page.tsx        (378 lines) — Interactive page component
+  src/app/orbital-costs/layout.tsx      (21 lines)  — SEO metadata
+  src/app/api/orbital-costs/route.ts    (28 lines)  — API endpoint
+
+Modified:
+  src/types/index.ts                    — Added orbital-costs to mission-planning subModuleIds
+  src/lib/module-routes.ts              — Added 'orbital-costs': '/orbital-costs'
+  src/app/sitemap.ts                    — Added /orbital-costs entry
+
+═══════════════════════════════════════════════════════════════════
+SUGGESTED FOLLOW-UP WORK
+═══════════════════════════════════════════════════════════════════
+
+1. INTERACTIVE COST CONFIGURATOR
+   Allow users to adjust parameters like launch vehicle choice (Falcon Heavy vs Starship),
+   contingency percentage, insurance rates, and see cost estimates update in real time.
+   The data structure already supports this — just needs a UI slider/input layer.
+
+2. STARSHIP PRICING SCENARIO
+   Add a toggle to show costs with SpaceX Starship at $200/kg to LEO vs current
+   Falcon Heavy at $1,500/kg. This dramatically changes economics for large systems
+   (e.g., 100 MW solar array goes from $1.2B launch to $160M launch).
+
+3. COMPARISON VIEW
+   Side-by-side comparison of 2-3 systems, useful for investors evaluating where
+   to allocate capital (e.g., "Should I fund a fabrication facility or a research lab?").
+
+4. TIMELINE / GANTT VIEW
+   Show the development-to-operational timeline for each system, highlighting
+   parallel vs sequential phases (design, manufacture, test, launch, assembly, ops).
+
+5. PDF EXPORT
+   Allow users to export a system's full cost breakdown and BOM as a PDF report
+   suitable for investor presentations or business plans.
+
+6. DYNAMIC PRICING UPDATES
+   Connect procurement costs to the Resource Exchange module's live commodity
+   pricing data. When aluminum or titanium prices change, automatically update
+   the BOM cost estimates.
+
+7. COMPANY PROFILE CROSS-LINKING
+   Link reference programs and suppliers in the BOM to their CompanyProfile pages
+   (e.g., link "Northrop Grumman" in the habitat BOM to /company-profiles/northrop-grumman).
+
+8. HISTORICAL COST TREND DATA
+   Add a chart showing how orbital system costs have trended over time (ISS era
+   vs commercial era vs projected Starship era), demonstrating the cost reduction curve.
+
+═══════════════════════════════════════════════════════════════════
+IDEAS FOR NEW MODULES / CROSS-MODULE INTEGRATION
+═══════════════════════════════════════════════════════════════════
+
+1. ORBITAL BUSINESS PLAN BUILDER (new module)
+   Combine data from Orbital Costs + Mission Cost Simulator + Space Insurance +
+   Launch Vehicles into an end-to-end business plan generator. User selects their
+   orbital system type, SpaceNexus generates a full financial projection including
+   CapEx, OpEx, revenue scenarios, break-even analysis, and NPV/IRR calculations.
+   This would be a major differentiator — no other platform offers this.
+
+2. SUPPLY CHAIN MAPPER (new module)
+   Using the BOM data from Orbital Costs, create a visual supply chain map showing
+   which companies manufacture which components, where they're located, lead times,
+   and alternative suppliers. Cross-references with Company Profiles and the existing
+   Supply Chain module.
+
+3. ORBITAL ECONOMICS CALCULATOR (enhancement to Space Economy module)
+   Add unit economics analysis: cost per crew-day for habitats, cost per kg of
+   manufactured product for fabrication facilities, cost per kWh for solar power.
+   Connect to Market Intel for market size data.
+
+4. TECHNOLOGY READINESS TRACKER (new module)
+   A dedicated tracker for TRL progression of key space technologies. The orbital
+   costs data already includes TRL levels — extend this with historical TRL
+   progression dates, expected maturation timelines, and funding sources advancing
+   each technology.
+
+5. VENTURE READINESS ASSESSMENT (enhancement to Business Opportunities)
+   A wizard-style tool where a space entrepreneur answers questions about their
+   planned venture, and SpaceNexus provides a readiness score based on technology
+   maturity, market demand, regulatory complexity, capital requirements, and
+   competitive landscape. Uses data from multiple existing modules.
+
+6. IN-SPACE ASSEMBLY PLANNER (new module)
+   For multi-launch systems (large habitat, medium/large solar arrays), provide a
+   mission sequence planner showing how many launches are needed, what goes on
+   each launch, assembly sequence, and estimated total campaign timeline. Links
+   to Launch Windows and Launch Vehicles modules.
+
+7. CROSS-LINK: Orbital Costs → Space Insurance
+   Add a "Cost to Insure" quick-reference on the Space Insurance page showing
+   insurance estimates for each orbital system type, linking back to the full
+   cost breakdown.
+
+8. CROSS-LINK: Orbital Costs → Launch Vehicles
+   On the Launch Vehicles page, add a section showing "What can this vehicle
+   launch?" — mapping vehicle payload capacity to which orbital systems fit
+   in a single launch vs requiring multiple launches.
+
+9. CROSS-LINK: Orbital Costs → Company Profiles
+   Tag company profiles with the orbital system types they're developing or
+   supplying components for. Show "Companies Working On This" section in the
+   orbital costs detail view.
+
+10. CROSS-LINK: Orbital Costs → Procurement Intelligence
+    When SAM.gov procurement opportunities relate to orbital system components
+    (e.g., NASA ECLSS procurement, solar array RFPs), cross-reference them
+    with the relevant orbital system BOM items.

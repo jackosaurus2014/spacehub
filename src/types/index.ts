@@ -308,7 +308,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 4,
     isParent: true,
-    subModuleIds: ['mission-cost', 'space-insurance', 'resource-exchange', 'launch-windows', 'launch-vehicles', 'blueprints'],
+    subModuleIds: ['mission-cost', 'space-insurance', 'resource-exchange', 'launch-windows', 'launch-vehicles', 'blueprints', 'orbital-costs'],
   },
 
   // 6. Space Operations (parent)
@@ -596,6 +596,17 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     section: 'tools',
     defaultEnabled: true,
     defaultPosition: 26,
+    isPremium: true,
+    parentModuleId: 'mission-planning',
+  },
+  {
+    moduleId: 'orbital-costs',
+    name: 'Orbital System Costs',
+    description: 'Estimated costs for orbital habitats, fabrication facilities, depots, solar arrays, and more with detailed BOM',
+    icon: '🏗️',
+    section: 'tools',
+    defaultEnabled: true,
+    defaultPosition: 27,
     isPremium: true,
     parentModuleId: 'mission-planning',
   },

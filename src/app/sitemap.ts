@@ -41,6 +41,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/resource-exchange`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${baseUrl}/space-insurance`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${baseUrl}/blueprints`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${baseUrl}/orbital-costs`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${baseUrl}/procurement`, changeFrequency: 'daily' as const, priority: 0.7 },
 
     // Additional module pages
