@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import {
@@ -481,8 +481,18 @@ export default function OrbitalCostsPage() {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'cost-asc' | 'cost-desc' | 'mass' | 'trl'>('cost-asc');
+  const detailRef = useRef<HTMLDivElement>(null);
 
   const categories = useMemo(() => getAllCategories(), []);
+
+  // Auto-scroll to detail panel when a system is selected
+  useEffect(() => {
+    if (selectedSlug && detailRef.current) {
+      setTimeout(() => {
+        detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
+  }, [selectedSlug]);
 
   const filteredSystems = useMemo(() => {
     let systems = [...ORBITAL_SYSTEMS];
@@ -582,10 +592,12 @@ export default function OrbitalCostsPage() {
 
         {/* Expanded Detail Panel */}
         {selectedSystem && (
-          <SystemDetail
-            system={selectedSystem}
-            onClose={() => setSelectedSlug(null)}
-          />
+          <div ref={detailRef} className="scroll-mt-4">
+            <SystemDetail
+              system={selectedSystem}
+              onClose={() => setSelectedSlug(null)}
+            />
+          </div>
         )}
 
         {/* Methodology Note */}
