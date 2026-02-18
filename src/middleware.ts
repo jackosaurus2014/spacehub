@@ -196,6 +196,13 @@ function checkCsrf(req: NextRequest): boolean {
     return true;
   }
 
+  // Skip CSRF check for cron/internal requests authenticated via Bearer token
+  // (CRON_SECRET is a shared secret — stronger than origin checking)
+  const authHeader = req.headers.get('authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return true;
+  }
+
   const origin = req.headers.get('origin');
   const referer = req.headers.get('referer');
   const host = req.headers.get('host');
