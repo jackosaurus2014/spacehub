@@ -14,6 +14,7 @@ import ArticleLimitBanner from '@/components/ui/ArticleLimitBanner';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import AdSlot from '@/components/ads/AdSlot';
 import ItemListSchema from '@/components/seo/ItemListSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { NewsArticle } from '@/types';
 
 function NewsContent() {
@@ -196,6 +197,10 @@ function NewsContent() {
 export default function NewsPage() {
   return (
     <div className="min-h-screen">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'News' },
+      ]} />
       <ItemListSchema
         name="Space Industry News"
         description="Breaking space industry news covering launches, satellite deployments, space policy, and commercial spaceflight."

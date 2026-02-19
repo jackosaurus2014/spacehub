@@ -12,6 +12,7 @@ import SatelliteCard, {
   SatelliteStatus,
 } from '@/components/satellites/SatelliteCard';
 import AdSlot from '@/components/ads/AdSlot';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 // Types
 interface SatelliteData {
@@ -613,6 +614,11 @@ function SatelliteTrackerContent() {
 // Main Page with Suspense
 export default function SatellitesPage() {
   return (
+    <>
+    <BreadcrumbSchema items={[
+      { name: 'Home', href: '/' },
+      { name: 'Satellite Tracker' },
+    ]} />
     <Suspense
       fallback={
         <div className="min-h-screen flex justify-center py-20">
@@ -622,5 +628,6 @@ export default function SatellitesPage() {
     >
       <SatelliteTrackerContent />
     </Suspense>
+    </>
   );
 }

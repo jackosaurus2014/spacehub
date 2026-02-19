@@ -11,6 +11,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import ExportButton from '@/components/ui/ExportButton';
 import CompanyRequestDialog from '@/components/ui/CompanyRequestDialog';
 import AdSlot from '@/components/ads/AdSlot';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 interface StockData {
   ticker: string;
@@ -1022,6 +1023,11 @@ function MarketIntelContent() {
 
 export default function MarketIntelPage() {
   return (
+    <>
+    <BreadcrumbSchema items={[
+      { name: 'Home', href: '/' },
+      { name: 'Market Intelligence' },
+    ]} />
     <Suspense
       fallback={
         <div className="min-h-screen flex justify-center py-20">
@@ -1031,5 +1037,6 @@ export default function MarketIntelPage() {
     >
       <MarketIntelContent />
     </Suspense>
+    </>
   );
 }

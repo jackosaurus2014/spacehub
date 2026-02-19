@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import OrganizationProfileSchema from '@/components/seo/OrganizationProfileSchema';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -1118,6 +1120,22 @@ export default function CompanyProfileDetailPage() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1400px] mx-auto">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Company Profiles', href: '/company-profiles' },
+        { name: company.name },
+      ]} />
+      <OrganizationProfileSchema
+        name={company.name}
+        description={company.description || `${company.name} - Space industry company profile`}
+        url={`/company-profiles/${company.slug}`}
+        logo={company.logoUrl || undefined}
+        foundingDate={company.foundedYear ? String(company.foundedYear) : undefined}
+        location={company.headquarters || undefined}
+        employeeCount={company.employeeRange || (company.employeeCount ? String(company.employeeCount) : undefined)}
+        industry={company.sector || undefined}
+        parentOrganization={company.parentCompany || undefined}
+      />
       {/* Back button */}
       <Link href="/company-profiles" className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-cyan-400 transition-colors mb-4">
         ← Back to Companies

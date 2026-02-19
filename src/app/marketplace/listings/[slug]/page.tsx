@@ -13,6 +13,8 @@ import RatingDistribution from '@/components/marketplace/RatingDistribution';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { getCategoryIcon, getCategoryLabel, getSubcategoryLabel } from '@/lib/marketplace-types';
+import ServiceSchema from '@/components/seo/ServiceSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 export default function ListingDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -64,6 +66,19 @@ export default function ListingDetailPage({ params }: { params: Promise<{ slug: 
 
   return (
     <div className="min-h-screen">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Marketplace', href: '/marketplace' },
+        { name: listing.title },
+      ]} />
+      <ServiceSchema
+        name={listing.title}
+        description={listing.description || `${listing.title} - Space industry service`}
+        url={`/marketplace/listings/${slug}`}
+        provider={listing.companyName || 'Unknown Provider'}
+        category={getCategoryLabel(listing.category)}
+        price={listing.priceAmount ? String(listing.priceAmount) : undefined}
+      />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Back */}
         <Link href="/marketplace/search" className="text-xs text-cyan-400 hover:text-cyan-300">

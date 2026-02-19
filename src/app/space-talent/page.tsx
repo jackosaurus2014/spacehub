@@ -25,6 +25,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import AdSlot from '@/components/ads/AdSlot';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ItemListSchema from '@/components/seo/ItemListSchema';
 
 // ────────────────────────────────────────
 // Types
@@ -720,6 +722,45 @@ function SpaceTalentHubContent() {
 
   return (
     <>
+      {/* JobPosting structured data for Google for Jobs */}
+      {jobs.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jobs.slice(0, 20).map((job) => ({
+              '@context': 'https://schema.org',
+              '@type': 'JobPosting',
+              title: job.title,
+              hiringOrganization: {
+                '@type': 'Organization',
+                name: job.company,
+              },
+              jobLocation: {
+                '@type': 'Place',
+                address: job.location,
+              },
+              ...(job.remoteOk && { jobLocationType: 'TELECOMMUTE' }),
+              datePosted: new Date(job.postedDate).toISOString(),
+              validThrough: new Date(Date.now() + 60 * 86400000).toISOString(),
+              employmentType: 'FULL_TIME',
+              ...(job.salaryMin && job.salaryMax && {
+                baseSalary: {
+                  '@type': 'MonetaryAmount',
+                  currency: 'USD',
+                  value: {
+                    '@type': 'QuantitativeValue',
+                    minValue: job.salaryMin,
+                    maxValue: job.salaryMax,
+                    unitText: 'YEAR',
+                  },
+                },
+              }),
+              ...(job.sourceUrl && { url: job.sourceUrl }),
+            }))).replace(/</g, '\\u003c'),
+          }}
+        />
+      )}
+
       {error && (
         <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
           <div className="text-red-400 text-sm font-medium">{error}</div>
@@ -1790,6 +1831,20 @@ function SpaceTalentHubContent() {
 export default function SpaceTalentHubPage() {
   return (
     <div className="min-h-screen bg-space-900 py-8">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Space Talent Hub' },
+      ]} />
+      <ItemListSchema
+        name="Space Talent Hub"
+        description="Space industry job listings, expert consultants, salary benchmarks, and workforce analytics"
+        url="/space-talent"
+        items={[
+          { name: 'Space Industry Jobs', url: '/space-talent?tab=workforce', description: 'Browse open positions in the space industry' },
+          { name: 'Expert Consultants', url: '/space-talent?tab=talent', description: 'Connect with space industry consultants and advisors' },
+          { name: 'Salary Benchmarks', url: '/space-talent?tab=workforce', description: 'Space industry salary data by role and seniority' },
+        ]}
+      />
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
           title="Space Talent Hub"
