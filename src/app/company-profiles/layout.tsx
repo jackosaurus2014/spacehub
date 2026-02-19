@@ -8,6 +8,20 @@ export const metadata: Metadata = {
     title: 'SpaceNexus Company Directory - 200+ Space Companies',
     description: 'Comprehensive profiles of 200+ space industry companies with financial data, assets, and competitive analysis.',
     url: 'https://spacenexus.us/company-profiles',
+    images: [
+      {
+        url: '/og-companies.png',
+        width: 1200,
+        height: 630,
+        alt: 'SpaceNexus Company Directory - 200+ Aerospace Company Profiles',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SpaceNexus Company Directory - 200+ Space Companies',
+    description: 'Comprehensive profiles of 200+ space industry companies with financial data, assets, and competitive analysis.',
+    images: ['/og-companies.png'],
   },
   alternates: {
     canonical: 'https://spacenexus.us/company-profiles',

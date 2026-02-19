@@ -13,6 +13,7 @@ import PullToRefresh from '@/components/ui/PullToRefresh';
 import ArticleLimitBanner from '@/components/ui/ArticleLimitBanner';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import AdSlot from '@/components/ads/AdSlot';
+import ItemListSchema from '@/components/seo/ItemListSchema';
 import { NewsArticle } from '@/types';
 
 function NewsContent() {
@@ -195,6 +196,17 @@ function NewsContent() {
 export default function NewsPage() {
   return (
     <div className="min-h-screen">
+      <ItemListSchema
+        name="Space Industry News"
+        description="Breaking space industry news covering launches, satellite deployments, space policy, and commercial spaceflight."
+        url="/news"
+        items={[
+          { name: 'Launch News', url: '/news?category=launches', description: 'Rocket launch coverage and updates' },
+          { name: 'Satellite News', url: '/news?category=satellites', description: 'Satellite deployment and operations news' },
+          { name: 'Space Defense', url: '/news?category=defense', description: 'Space defense and military space news' },
+          { name: 'Space Business', url: '/news?category=business', description: 'Space industry business and financial news' },
+        ]}
+      />
       <div className="container mx-auto px-4">
         <AnimatedPageHeader title="Space News" subtitle="Stay up to date with the latest from the space industry" icon="📰" accentColor="cyan" />
 

@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800&display=swap');
+/* Inter is loaded via next/font/google in layout.tsx — only import Orbitron here */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -172,7 +173,7 @@ body::after {
   }
 }
 
-/* Starfield Background */
+/* Starfield Background — CSS-only, zero JS, no CLS */
 .starfield {
   position: fixed;
   top: 0;
@@ -184,6 +185,40 @@ body::after {
   overflow: hidden;
 }
 
+/* Box-shadow based star layers (3 divs instead of 80) */
+.star-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  background: transparent;
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.star-layer-tiny {
+  animation-duration: 3s;
+  opacity: 0.4;
+}
+
+.star-layer-medium {
+  width: 2px;
+  height: 2px;
+  animation-duration: 3.5s;
+  animation-delay: 0.5s;
+  opacity: 0.6;
+}
+
+.star-layer-bright {
+  width: 3px;
+  height: 3px;
+  animation-duration: 4s;
+  animation-delay: 1s;
+  opacity: 0.8;
+  filter: blur(0.5px);
+}
+
+/* Legacy .star class for backward compatibility */
 .star {
   position: absolute;
   background: white;
@@ -192,8 +227,8 @@ body::after {
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.2; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
 }
 
 /* Glow Effects */

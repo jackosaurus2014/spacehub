@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
 import AdSlot from '@/components/ads/AdSlot';
+import ItemListSchema from '@/components/seo/ItemListSchema';
 
 interface CompanyCard {
   id: string;
@@ -143,7 +144,7 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg flex-shrink-0 border border-slate-600/50">
                   {company.logoUrl ? (
-                    <img src={company.logoUrl} alt={`${company.name} logo`} className="w-7 h-7 rounded object-contain" />
+                    <img src={company.logoUrl} alt={`${company.name} logo`} width={28} height={28} className="w-7 h-7 rounded object-contain" loading="lazy" decoding="async" />
                   ) : (
                     getSectorIcon(company.sector)
                   )}
@@ -332,6 +333,18 @@ export default function CompanyProfilesPage() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
+      <ItemListSchema
+        name="Space Company Directory"
+        description="Comprehensive directory of 200+ space industry companies with financial data, satellite assets, facility locations, and competitive analysis."
+        url="/company-profiles"
+        items={
+          companies.slice(0, 30).map(c => ({
+            name: c.name,
+            url: `/company-profiles/${c.slug}`,
+            description: c.description || `${c.name} - ${c.sector || 'Space'} company${c.headquarters ? ` based in ${c.headquarters}` : ''}`,
+          }))
+        }
+      />
       <AnimatedPageHeader
         title="Space Company Profiles"
         subtitle="Comprehensive intelligence on 100+ space industry companies — financials, leadership, products, contracts, and relationships"
@@ -518,7 +531,7 @@ export default function CompanyProfilesPage() {
                   >
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg flex-shrink-0 border border-slate-600/50">
                       {company.logoUrl ? (
-                        <img src={company.logoUrl} alt={`${company.name} logo`} className="w-7 h-7 rounded object-contain" />
+                        <img src={company.logoUrl} alt={`${company.name} logo`} width={28} height={28} className="w-7 h-7 rounded object-contain" loading="lazy" decoding="async" />
                       ) : (
                         getSectorIcon(company.sector)
                       )}

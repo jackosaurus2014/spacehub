@@ -8,6 +8,20 @@ export const metadata: Metadata = {
     title: 'SpaceNexus Satellite Tracker - 19,000+ Objects',
     description: 'Real-time satellite tracking on an interactive 3D globe with pass predictions and orbital data.',
     url: 'https://spacenexus.us/satellites',
+    images: [
+      {
+        url: '/og-satellites.png',
+        width: 1200,
+        height: 630,
+        alt: 'SpaceNexus Satellite Tracker - Track 19,000+ Objects in Orbit',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SpaceNexus Satellite Tracker - 19,000+ Objects',
+    description: 'Real-time satellite tracking on an interactive 3D globe with pass predictions and orbital data.',
+    images: ['/og-satellites.png'],
   },
   alternates: {
     canonical: 'https://spacenexus.us/satellites',

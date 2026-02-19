@@ -11,6 +11,7 @@ import RFQCard from '@/components/marketplace/RFQCard';
 import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { toast } from '@/lib/toast';
 import AdSlot from '@/components/ads/AdSlot';
+import ItemListSchema from '@/components/seo/ItemListSchema';
 
 interface MarketplaceStats {
   totalListings: number;
@@ -72,6 +73,19 @@ export default function MarketplacePage() {
 
   return (
     <div className="min-h-screen">
+      <ItemListSchema
+        name="Space Industry Marketplace"
+        description="B2B marketplace for space industry products and services including launch slots, satellite components, ground stations, and engineering services."
+        url="/marketplace"
+        items={[
+          { name: 'Launch Services', url: '/marketplace/search?category=launch-services', description: 'Rideshare slots, dedicated launches, and launch vehicle services' },
+          { name: 'Satellite Components', url: '/marketplace/search?category=satellite-components', description: 'Satellite subsystems, sensors, and hardware' },
+          { name: 'Ground Stations', url: '/marketplace/search?category=ground-stations', description: 'Ground station time, antenna networks, and TT&C services' },
+          { name: 'Engineering Services', url: '/marketplace/search?category=engineering', description: 'Aerospace engineering, consulting, and integration services' },
+          { name: 'Data & Analytics', url: '/marketplace/search?category=data-analytics', description: 'Earth observation, space weather, and orbital data services' },
+          { name: 'Insurance', url: '/marketplace/search?category=insurance', description: 'Launch insurance, in-orbit insurance, and liability coverage' },
+        ]}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">

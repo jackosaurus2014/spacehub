@@ -25,6 +25,7 @@ import OfflineIndicator from '@/components/ui/OfflineIndicator';
 import ChangelogModal from '@/components/ui/ChangelogModal';
 import NpsSurvey from '@/components/ui/NpsSurvey';
 import ModuleNavBar from '@/components/ModuleNavBar';
+import WebVitals from '@/components/analytics/WebVitals';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -203,6 +204,7 @@ export default function RootLayout({
               <PageTracker />
               <KeyboardShortcutsModal />
               <SwipeModuleNavigation />
+              <WebVitals />
             </div>
           </SubscriptionProvider>
         </AuthProvider>

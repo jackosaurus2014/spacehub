@@ -87,7 +87,7 @@ export default function MarketplaceCard({ listing, index = 0 }: MarketplaceCardP
             <div className="flex items-center gap-2 mb-3">
               <div className="w-6 h-6 rounded bg-slate-700 flex items-center justify-center text-xs flex-shrink-0">
                 {listing.company.logoUrl ? (
-                  <img src={listing.company.logoUrl} alt={`${listing.company.name} logo`} className="w-5 h-5 rounded object-contain" />
+                  <img src={listing.company.logoUrl} alt={`${listing.company.name} logo`} width={20} height={20} className="w-5 h-5 rounded object-contain" loading="lazy" decoding="async" />
                 ) : (
                   listing.company.name.charAt(0)
                 )}
