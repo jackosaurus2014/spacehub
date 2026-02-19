@@ -83,6 +83,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/guide/space-regulatory-compliance`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${baseUrl}/guide/space-economy-investment`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
+    // Learning Center
+    { url: `${baseUrl}/learn`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/learn/satellite-launch-cost`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/learn/space-industry-market-size`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/learn/how-to-track-satellites`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/learn/space-companies-to-watch`, changeFrequency: 'monthly' as const, priority: 0.7 },
+
     // Comparison pages
     { url: `${baseUrl}/compare`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${baseUrl}/compare/bloomberg-terminal`, changeFrequency: 'monthly' as const, priority: 0.6 },
@@ -93,6 +100,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/marketplace`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${baseUrl}/marketplace/search`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${baseUrl}/marketplace/copilot`, changeFrequency: 'weekly' as const, priority: 0.5 },
+
+    // Learning Center (long-tail SEO landing pages)
+    { url: `${baseUrl}/learn`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${baseUrl}/learn/satellite-launch-cost`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/learn/space-industry-market-size`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/learn/how-to-track-satellites`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${baseUrl}/learn/space-companies-to-watch`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
     // Conversion pages
     { url: `${baseUrl}/pricing`, changeFrequency: 'monthly' as const, priority: 0.5 },
