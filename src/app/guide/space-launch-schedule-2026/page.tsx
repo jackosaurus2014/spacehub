@@ -392,7 +392,7 @@ export default function SpaceLaunchSchedule2026Page() {
                   name: faq.question,
                   acceptedAnswer: { '@type': 'Answer', text: faq.answer },
                 })),
-              }),
+              }).replace(/</g, '\\u003c'),
             }}
           />
 
@@ -410,7 +410,7 @@ export default function SpaceLaunchSchedule2026Page() {
                 datePublished: '2026-02-14T00:00:00Z',
                 dateModified: new Date().toISOString(),
                 mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://spacenexus.us/guide/space-launch-schedule-2026' },
-              }),
+              }).replace(/</g, '\\u003c'),
             }}
           />
         </div>

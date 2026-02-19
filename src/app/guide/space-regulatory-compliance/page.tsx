@@ -570,7 +570,7 @@ export default function SpaceRegulatoryCompliancePage() {
                 datePublished: '2026-02-14T00:00:00Z',
                 dateModified: new Date().toISOString(),
                 mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://spacenexus.us/guide/space-regulatory-compliance' },
-              }),
+              }).replace(/</g, '\\u003c'),
             }}
           />
         </div>

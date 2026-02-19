@@ -244,7 +244,7 @@ export default function SatelliteLaunchCostPage() {
 
   return (
     <div className="min-h-screen pb-12">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
       <FAQSchema items={faqItems} />
 
       <div className="container mx-auto px-4 max-w-4xl">

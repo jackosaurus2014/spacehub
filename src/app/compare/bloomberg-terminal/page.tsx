@@ -344,7 +344,7 @@ export default function BloombergComparisonPage() {
               '@type': 'WebPage',
               '@id': 'https://spacenexus.us/compare/bloomberg-terminal',
             },
-          }),
+          }).replace(/</g, '\\u003c'),
         }}
       />
     </div>

@@ -589,7 +589,7 @@ export default function SatelliteTrackingGuidePage() {
                 datePublished: '2026-02-14T00:00:00Z',
                 dateModified: new Date().toISOString(),
                 mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://spacenexus.us/guide/satellite-tracking-guide' },
-              }),
+              }).replace(/</g, '\\u003c'),
             }}
           />
         </div>

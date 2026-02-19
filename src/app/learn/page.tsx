@@ -116,7 +116,7 @@ export default function LearnPage() {
 
   return (
     <div className="min-h-screen pb-12">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
 
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Breadcrumb */}

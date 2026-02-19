@@ -131,12 +131,6 @@ export default function StructuredData() {
         description: 'API access, SSO, custom dashboards, dedicated support, and team collaboration.',
       },
     ],
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.8',
-      ratingCount: '150',
-      bestRating: '5',
-    },
     featureList: [
       'Real-time launch tracking with countdown timers',
       'Satellite tracking for 19,000+ objects on 3D globe',
@@ -152,43 +146,24 @@ export default function StructuredData() {
     screenshot: 'https://spacenexus.us/og-image.png',
   };
 
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://spacenexus.us',
-      },
-    ],
-  };
-
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(organizationSchema),
+          __html: JSON.stringify(organizationSchema).replace(/</g, '\\u003c'),
         }}
       />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(websiteSchema),
+          __html: JSON.stringify(websiteSchema).replace(/</g, '\\u003c'),
         }}
       />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(softwareApplicationSchema),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbSchema),
+          __html: JSON.stringify(softwareApplicationSchema).replace(/</g, '\\u003c'),
         }}
       />
     </>

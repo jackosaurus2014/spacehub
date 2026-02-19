@@ -356,7 +356,7 @@ export default function PayloadComparisonPage() {
               '@type': 'WebPage',
               '@id': 'https://spacenexus.us/compare/payload-space',
             },
-          }),
+          }).replace(/</g, '\\u003c'),
         }}
       />
     </div>

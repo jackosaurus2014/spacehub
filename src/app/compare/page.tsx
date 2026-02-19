@@ -205,7 +205,7 @@ export default function ComparePage() {
               name: 'SpaceNexus',
               logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/logo.png' },
             },
-          }),
+          }).replace(/</g, '\\u003c'),
         }}
       />
     </div>

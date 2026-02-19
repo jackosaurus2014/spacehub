@@ -366,7 +366,7 @@ export default function QuiltyComparisonPage() {
               '@type': 'WebPage',
               '@id': 'https://spacenexus.us/compare/quilty-analytics',
             },
-          }),
+          }).replace(/</g, '\\u003c'),
         }}
       />
     </div>

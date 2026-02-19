@@ -78,6 +78,12 @@ export default function BlogPostPage({ params }: Props) {
     },
     datePublished: post.publishedAt,
     dateModified: post.updatedAt || post.publishedAt,
+    image: {
+      '@type': 'ImageObject',
+      url: 'https://spacenexus.us/og-image.png',
+      width: 1200,
+      height: 630,
+    },
     mainEntityOfPage: `https://spacenexus.us/blog/${post.slug}`,
     wordCount: post.content.split(/\s+/).length,
     articleSection: categoryLabel,
@@ -88,7 +94,7 @@ export default function BlogPostPage({ params }: Props) {
     <div className="min-h-screen pb-12">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema).replace(/</g, '\\u003c') }}
       />
 
       <article className="container mx-auto px-4 max-w-3xl">
