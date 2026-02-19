@@ -83,7 +83,7 @@ export default function ComparisonModal({
     },
     {
       label: 'Status',
-      getValue: (o: SpaceTourismOffering) => TOURISM_STATUS_LABELS[o.status].label
+      getValue: (o: SpaceTourismOffering) => (TOURISM_STATUS_LABELS[o.status] || { label: o.status || 'Unknown' }).label
     },
   ];
 

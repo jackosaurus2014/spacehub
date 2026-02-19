@@ -15,7 +15,7 @@ export default function TourismCard({
   onToggleCompare,
   onLearnMore,
 }: TourismCardProps) {
-  const statusInfo = TOURISM_STATUS_LABELS[offering.status];
+  const statusInfo = TOURISM_STATUS_LABELS[offering.status] || { label: offering.status || 'Unknown', color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' };
   const experienceInfo = EXPERIENCE_TYPES.find((e) => e.value === offering.experienceType);
 
   return (
