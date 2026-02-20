@@ -31,11 +31,14 @@ function BlogListingContent() {
   const [selectedCategory, setSelectedCategory] = useState<BlogCategory | null>(categoryParam);
 
   const filteredPosts = useMemo(() => {
-    if (!selectedCategory) return BLOG_POSTS;
-    return BLOG_POSTS.filter((p) => p.category === selectedCategory);
+    const posts = selectedCategory
+      ? BLOG_POSTS.filter((p) => p.category === selectedCategory)
+      : [...BLOG_POSTS];
+    return posts.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
   }, [selectedCategory]);
 
-  const featuredPosts = BLOG_POSTS.filter((p) => p.featured);
+  const featuredPosts = BLOG_POSTS.filter((p) => p.featured)
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 
   function handleCategoryChange(cat: BlogCategory | null) {
     setSelectedCategory(cat);
