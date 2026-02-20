@@ -285,18 +285,23 @@ export function timingSafeEqual(a: string, b: string): boolean {
 /**
  * Verify that a request carries a valid CRON_SECRET Bearer token.
  * Returns null if authorized, or a 401 NextResponse if not.
- * When CRON_SECRET is not configured, all requests are rejected to
- * prevent accidental exposure of admin-only endpoints.
+ * When CRON_SECRET is not configured, allows requests from localhost
+ * (internal cron scheduler calls) but rejects external requests.
  * Uses timing-safe comparison to prevent timing attacks.
  */
 export function requireCronSecret(request: Request): NextResponse<ApiErrorResponse> | null {
-  const authHeader = request.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
 
+  // If no secret configured, allow internal (localhost) requests only
   if (!cronSecret) {
+    const host = request.headers.get('host') || '';
+    if (host.startsWith('localhost') || host.startsWith('127.0.0.1')) {
+      return null;
+    }
     return createErrorResponse(ErrorCodes.UNAUTHORIZED, 'Unauthorized', 401);
   }
 
+  const authHeader = request.headers.get('authorization');
   const expectedHeader = `Bearer ${cronSecret}`;
   if (!authHeader || !timingSafeEqual(authHeader, expectedHeader)) {
     return createErrorResponse(ErrorCodes.UNAUTHORIZED, 'Unauthorized', 401);
