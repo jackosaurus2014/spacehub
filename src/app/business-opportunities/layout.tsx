@@ -14,11 +14,13 @@ export const metadata: Metadata = {
     title: 'Space Business Opportunities | SpaceNexus',
     description: 'Discover business opportunities in the space economy with contracts, partnerships, and market strategies.',
     url: 'https://spacenexus.us/business-opportunities',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'SpaceNexus' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Space Business Opportunities | SpaceNexus',
     description: 'Discover business opportunities in the space economy with contracts, partnerships, and market strategies.',
+    images: ['/og-image.png'],
   },
   alternates: {
     canonical: 'https://spacenexus.us/business-opportunities',

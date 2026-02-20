@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     url: 'https://spacenexus.us/pricing',
     images: [
       {
-        url: '/og-pricing.png',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'SpaceNexus Pricing - Subscription Plans',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Pricing | SpaceNexus',
     description: 'Choose your subscription plan for unlimited space industry intelligence.',
-    images: ['/og-pricing.png'],
+    images: ['/og-image.png'],
   },
   alternates: {
     canonical: 'https://spacenexus.us/pricing',

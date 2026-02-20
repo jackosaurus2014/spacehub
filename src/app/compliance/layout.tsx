@@ -16,11 +16,13 @@ export const metadata: Metadata = {
     title: 'Regulatory Compliance Hub | SpaceNexus',
     description: 'Navigate space industry regulations with FCC filings, ITU spectrum, space law, and FAA licensing.',
     url: 'https://spacenexus.us/compliance',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'SpaceNexus' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Regulatory Compliance Hub | SpaceNexus',
     description: 'Navigate space industry regulations with FCC filings, ITU spectrum, space law, and FAA licensing.',
+    images: ['/og-image.png'],
   },
   alternates: {
     canonical: 'https://spacenexus.us/compliance',

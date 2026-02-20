@@ -5,7 +5,7 @@ CREATED: 2026-02-20
 ===============================================================================
 TASK A: REVENUE ACTIVATION (Stripe Tier Gating)
 ===============================================================================
-STATUS: PENDING — User will activate Stripe later today
+STATUS: BLOCKED — Waiting for user to activate Stripe
 PRIORITY: P0 — Critical (monetization)
 
 Subtasks:
@@ -22,11 +22,13 @@ Subtasks:
 - [ ] Test end-to-end payment flow
 
 Notes: User will handle Stripe activation. We prepare the gating logic and UI.
+Existing infrastructure: subscription.ts has canAccessFeature() + canAccessModule(),
+PremiumGate component, SubscriptionProvider context, 4 tiers (free/pro/enterprise/test).
 
 ===============================================================================
 TASK B: PRODUCTION HARDENING
 ===============================================================================
-STATUS: IN PROGRESS
+STATUS: MOSTLY COMPLETE
 PRIORITY: P0 — Critical (quality)
 
 Subtasks:
@@ -37,14 +39,18 @@ Subtasks:
 - [x] Add 10 new pages to sitemap.ts
 - [x] Update marketplace stats tests to match new activeProviders logic
 - [x] Add missing Prisma indexes (FundingOpportunity.createdAt, Investor.status)
+- [x] Increase test coverage — added 72 new tests (509 total, 18 suites):
+      - api-routes-ai-insights.test.ts (33 tests): list, detail, approve, reject endpoints
+      - api-routes-financial.test.ts (39 tests): funding-opportunities GET/POST, investors GET
 - [ ] Run seed scripts (seed-funding-data.ts) + push Prisma schema for new models
-- [ ] Add proper auth gating — deal rooms NextAuth integration, thesis generator tier check (tied to Task A)
-- [ ] Increase test coverage for new API endpoints
+      (BLOCKED — requires Railway DB access after deployment)
+- [ ] Add proper auth gating — deal rooms NextAuth integration, thesis generator tier check
+      (BLOCKED — tied to Task A Stripe activation)
 
 ===============================================================================
 TASK C: DATA PIPELINE ACTIVATION
 ===============================================================================
-STATUS: IN PROGRESS
+STATUS: BLOCKED — Requires Railway env vars / live deployment
 PRIORITY: P1 — High (data quality)
 
 Subtasks:
@@ -54,10 +60,12 @@ Subtasks:
 - [ ] Verify all existing cron jobs are running on Railway
 - [ ] Add monitoring/health check for data freshness
 
+Notes: All code is deployed. Needs env var verification and manual cron trigger on Railway.
+
 ===============================================================================
 TASK D: UX & NAVIGATION POLISH
 ===============================================================================
-STATUS: IN PROGRESS
+STATUS: MOSTLY COMPLETE
 PRIORITY: P1 — High (user experience)
 
 Subtasks:
@@ -66,10 +74,10 @@ Subtasks:
 - [x] Error boundaries — 14 error.tsx files across critical routes
 - [x] Custom 404 page (not-found.tsx) with popular page links
 - [x] PageTracker updated with 12 new page titles
+- [x] Breadcrumb navigation on new pages — BreadcrumbSchema added to all 10 new pages
+- [x] Error boundaries for new features — covered by the 14 error.tsx files above
 - [ ] Add onboarding flow or feature tour for new users
 - [ ] Dashboard/homepage that surfaces tools based on user type (investor vs entrepreneur)
-- [ ] Breadcrumb navigation on new pages
-- [ ] Error boundaries for new features
 
 ===============================================================================
 TASK E: MARKETING & GROWTH
@@ -81,9 +89,11 @@ Subtasks:
 - [x] Update meta descriptions and structured data for new pages (10 layouts, breadcrumbs, root keywords)
 - [x] Landing page value proposition updated for investor/entrepreneur audience
 - [x] Cross-link grid on business-opportunities page to related tools
+- [x] Social sharing optimization — Fixed broken og-pricing.png reference, added explicit
+      OG images + Twitter card images to 6 high-traffic pages (ai-insights, investors,
+      compliance, solar-exploration, business-opportunities, space-talent)
 - [ ] LinkedIn content strategy for new features
 - [ ] Case study / demo content showing platform in action
-- [ ] Social sharing optimization (OG images, Twitter cards)
 
 ===============================================================================
 IMPLEMENTATION LOG
@@ -106,6 +116,8 @@ IMPLEMENTATION LOG
 | 2026-02-20 | Error boundaries          | 14 error.tsx files + custom 404 page         |
 | 2026-02-20 | Page tracking             | Added 12 new pages to PageTracker titles     |
 | 2026-02-20 | Prisma indexes            | Added createdAt + status indexes for queries |
+| 2026-02-20 | Test coverage             | +72 tests (33 AI insights + 39 financial)    |
+| 2026-02-20 | OG/Twitter cards          | Fixed broken pricing ref + 6 page OG images  |
 
 ===============================================================================
 OPEN BUGS FROM NEXT 2 (items 5-6) — ALL RESOLVED
@@ -116,3 +128,19 @@ OPEN BUGS FROM NEXT 2 (items 5-6) — ALL RESOLVED
 
 6. [FIXED] Marketplace 0 active providers — was counting claimed profiles (none exist).
    Changed to count distinct companyIds from active service listings via groupBy.
+
+===============================================================================
+REMAINING WORK SUMMARY
+===============================================================================
+
+BLOCKED (needs user action):
+- Task A: All subtasks — user needs to activate Stripe env vars
+- Task B: Seed scripts — needs Railway DB push after deploy
+- Task B: Auth gating — depends on Task A
+- Task C: All subtasks — needs Railway env var verification
+
+READY TO BUILD (no blockers):
+- Task D: Onboarding flow / feature tour for new users
+- Task D: Persona-based dashboard (investor vs entrepreneur homepage)
+- Task E: LinkedIn content strategy
+- Task E: Case study / demo content

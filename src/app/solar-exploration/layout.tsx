@@ -16,11 +16,13 @@ export const metadata: Metadata = {
     title: 'Solar System Exploration | SpaceNexus',
     description: 'Explore the solar system with interactive 3D visualizations and track active missions.',
     url: 'https://spacenexus.us/solar-exploration',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'SpaceNexus' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Solar System Exploration | SpaceNexus',
     description: 'Explore the solar system with interactive 3D visualizations and track active missions.',
+    images: ['/og-image.png'],
   },
   alternates: {
     canonical: 'https://spacenexus.us/solar-exploration',
