@@ -34,6 +34,7 @@ function NewsContent() {
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const limit = 12;
 
   // Calculate how many articles have been viewed today
@@ -70,6 +71,7 @@ function NewsContent() {
         setArticles((prev) => [...prev, ...(data.articles || [])]);
       }
       setTotal(data.total);
+      setLastUpdated(new Date());
     } catch (error) {
       console.error('Failed to fetch news:', error);
       setError('Failed to load data.');
@@ -119,6 +121,11 @@ function NewsContent() {
             ]}
           />
         </div>
+        {lastUpdated && (
+          <p className="text-xs text-slate-500 mb-4">
+            Last updated: {lastUpdated.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
+          </p>
+        )}
       </div>
 
       {/* Article Limit Banner */}

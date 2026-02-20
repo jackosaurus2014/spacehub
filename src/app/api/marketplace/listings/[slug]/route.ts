@@ -40,6 +40,23 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
       where: { companyId: listing.companyId, status: 'published' },
       orderBy: { createdAt: 'desc' },
       take: 10,
+      select: {
+        id: true,
+        companyId: true,
+        reviewerUserId: true,
+        overallRating: true,
+        qualityRating: true,
+        timelineRating: true,
+        commRating: true,
+        valueRating: true,
+        title: true,
+        content: true,
+        isVerified: true,
+        status: true,
+        providerResponse: true,
+        providerRespondedAt: true,
+        createdAt: true,
+      },
     });
 
     const avgRating = reviews.length > 0

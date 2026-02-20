@@ -57,6 +57,10 @@ function BlogListingContent() {
           subtitle="Original analysis, guides, and insights on the space industry from the SpaceNexus team."
         />
 
+        <p className="text-xs text-slate-500 mb-6">
+          Latest post: {new Date(BLOG_POSTS.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())[0]?.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+        </p>
+
         {/* Featured Posts */}
         {!selectedCategory && featuredPosts.length > 0 && (
           <ScrollReveal>

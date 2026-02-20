@@ -64,6 +64,18 @@ export async function GET(req: NextRequest) {
         orderBy: { createdAt: 'desc' },
         take: limit,
         skip: offset,
+        select: {
+          id: true,
+          userId: true,
+          email: true,
+          subject: true,
+          details: true,
+          status: true,
+          adminResponse: true,
+          respondedAt: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       }),
       prisma.helpRequest.count({ where }),
     ]);

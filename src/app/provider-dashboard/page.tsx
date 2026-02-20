@@ -304,12 +304,29 @@ function DashboardContent() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-16">
-                <div className="text-4xl mb-3">📦</div>
-                <p className="text-sm text-slate-400 mb-4">You haven't created any listings yet.</p>
-                <button className="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors">
-                  Create Your First Listing
-                </button>
+              <div className="text-center py-20">
+                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/20 flex items-center justify-center mb-6">
+                  <svg className="w-10 h-10 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">No listings yet</h3>
+                <p className="text-sm text-slate-400 max-w-md mx-auto mb-6">
+                  List your space products and services to reach qualified buyers in the space industry marketplace.
+                  Showcase your capabilities and start receiving inquiries.
+                </p>
+                <div className="flex flex-wrap justify-center gap-3">
+                  <Link href="/marketplace">
+                    <button className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-semibold transition-colors">
+                      Go to Marketplace
+                    </button>
+                  </Link>
+                  <Link href="/marketplace/search?tab=rfqs">
+                    <button className="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors">
+                      Browse Open RFQs
+                    </button>
+                  </Link>
+                </div>
               </div>
             )}
           </div>
