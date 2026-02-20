@@ -52,6 +52,26 @@ export default function Footer() {
                     Solar Exploration
                   </Link>
                 </li>
+                <li>
+                  <Link href="/company-profiles" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                    Company Directory
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/marketplace" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                    Marketplace
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/satellites" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                    Satellite Tracker
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/space-talent" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                    Space Talent Hub
+                  </Link>
+                </li>
               </ul>
             </div>
 
@@ -82,6 +102,21 @@ export default function Footer() {
                 <li>
                   <Link href="/business-opportunities" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
                     Business Opportunities
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/learn" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                    Learning Center
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/launch" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                    Launch Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/developer" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                    Developer API
                   </Link>
                 </li>
               </ul>

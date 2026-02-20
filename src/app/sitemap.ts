@@ -1,6 +1,9 @@
 import { MetadataRoute } from 'next';
+import prisma from '@/lib/db';
+import { BLOG_POSTS } from '@/lib/blog-content';
+import { logger } from '@/lib/logger';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://spacenexus.us';
 
   const routes = [
@@ -120,8 +123,52 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/register`, changeFrequency: 'monthly' as const, priority: 0.3 },
   ];
 
-  return routes.map(route => ({
+  const staticRoutes: MetadataRoute.Sitemap = routes.map(route => ({
     ...route,
     lastModified: new Date(),
   }));
+
+  // Blog posts from static content
+  const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.map(post => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(post.publishedAt),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }));
+
+  // Dynamic routes from database
+  let companyRoutes: MetadataRoute.Sitemap = [];
+  let listingRoutes: MetadataRoute.Sitemap = [];
+
+  try {
+    const [companyProfiles, serviceListings] = await Promise.all([
+      prisma.companyProfile.findMany({
+        select: { slug: true, updatedAt: true },
+      }),
+      prisma.serviceListing.findMany({
+        where: { status: 'active' },
+        select: { slug: true, updatedAt: true },
+      }),
+    ]);
+
+    companyRoutes = companyProfiles.map(profile => ({
+      url: `${baseUrl}/company-profiles/${profile.slug}`,
+      lastModified: profile.updatedAt,
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    }));
+
+    listingRoutes = serviceListings.map(listing => ({
+      url: `${baseUrl}/marketplace/listings/${listing.slug}`,
+      lastModified: listing.updatedAt,
+      changeFrequency: 'weekly' as const,
+      priority: 0.5,
+    }));
+  } catch (error) {
+    logger.error('Sitemap: Failed to fetch dynamic routes from database', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  return [...staticRoutes, ...blogRoutes, ...companyRoutes, ...listingRoutes];
 }
