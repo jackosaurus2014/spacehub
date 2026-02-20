@@ -45,6 +45,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       modifiedTime: post.updatedAt || post.publishedAt,
       authors: [post.author],
       url: `https://spacenexus.us/blog/${post.slug}`,
+      images: [{
+        url: `https://spacenexus.us/blog/${post.slug}/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: post.title,
+      }],
     },
     alternates: {
       canonical: `https://spacenexus.us/blog/${post.slug}`,
