@@ -24,7 +24,7 @@ interface InsightsResponse {
   totalPages: number;
 }
 
-type Category = 'all' | 'regulatory' | 'market' | 'technology' | 'geopolitical';
+type Category = 'all' | 'regulatory' | 'market' | 'technology' | 'geopolitical' | 'forecast';
 
 const CATEGORIES: { value: Category; label: string }[] = [
   { value: 'all', label: 'All' },
@@ -32,6 +32,7 @@ const CATEGORIES: { value: Category; label: string }[] = [
   { value: 'market', label: 'Market' },
   { value: 'technology', label: 'Technology' },
   { value: 'geopolitical', label: 'Geopolitical' },
+  { value: 'forecast', label: 'Forecast' },
 ];
 
 const CATEGORY_COLORS: Record<string, { badge: string; text: string }> = {
@@ -51,6 +52,10 @@ const CATEGORY_COLORS: Record<string, { badge: string; text: string }> = {
     badge: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
     text: 'text-purple-400',
   },
+  forecast: {
+    badge: 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
+    text: 'text-rose-400',
+  },
 };
 
 const CATEGORY_TAB_ACTIVE: Record<string, string> = {
@@ -59,6 +64,7 @@ const CATEGORY_TAB_ACTIVE: Record<string, string> = {
   market: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50',
   technology: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/50',
   geopolitical: 'bg-purple-500/20 text-purple-300 border-purple-400/50',
+  forecast: 'bg-rose-500/20 text-rose-300 border-rose-400/50',
 };
 
 function formatDate(dateString: string): string {

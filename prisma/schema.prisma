@@ -1363,20 +1363,24 @@ model DailyDigest {
 // ============================================================
 
 model AIInsight {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  summary     String   @db.Text
-  content     String   @db.Text
-  category    String // regulatory, market, technology, geopolitical
-  sources     String   @db.Text // JSON array of source URLs/titles
-  generatedAt DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  summary       String   @db.Text
+  content       String   @db.Text
+  category      String // regulatory, market, technology, geopolitical
+  sources       String   @db.Text // JSON array of source URLs/titles
+  status        String   @default("published") // pending_review, published, rejected
+  factCheckNote String?  @db.Text // AI fact-check results
+  reviewToken   String?  @unique // Secure token for email approve/reject links
+  generatedAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([generatedAt])
   @@index([category])
   @@index([slug])
+  @@index([status])
 }
 
 // Company Addition Request

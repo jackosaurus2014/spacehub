@@ -12,8 +12,9 @@ export async function GET(
   try {
     const { slug } = params;
 
-    const insight = await prisma.aIInsight.findUnique({
-      where: { slug },
+    // status is a new schema field — cast for Prisma client compat
+    const insight = await (prisma.aIInsight as any).findFirst({
+      where: { slug, status: 'published' },
     });
 
     if (!insight) {

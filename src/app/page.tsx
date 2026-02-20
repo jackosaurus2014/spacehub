@@ -36,7 +36,9 @@ export default async function HomePage() {
   const contentCards: ContentCard[] = [];
 
   try {
-    const recentInsights = await prisma.aIInsight.findMany({
+    // status is a new schema field — cast for Prisma client compat
+    const recentInsights = await (prisma.aIInsight as any).findMany({
+      where: { status: 'published' },
       select: { slug: true, title: true, summary: true, category: true, generatedAt: true },
       orderBy: { generatedAt: 'desc' },
       take: 4,

@@ -1026,3 +1026,141 @@ export function generateVerificationUpgradeEmail(companyName: string, newLevel: 
   const text = `Congratulations! ${companyName} is now ${levelLabel} on SpaceNexus Marketplace.\nCriteria: ${criteria}`;
   return { html, text, subject };
 }
+
+// ============================================================
+// AI Insights Editorial Review Email Template
+// ============================================================
+
+interface EditorialReviewArticle {
+  title: string;
+  slug: string;
+  summary: string;
+  category: string;
+  contentPreview: string;
+  factCheckNote: string | null;
+  reviewToken: string;
+}
+
+export function generateEditorialReviewEmail(articles: EditorialReviewArticle[]): { html: string; text: string; subject: string } {
+  const subject = `[SpaceNexus] ${articles.length} AI Insight${articles.length !== 1 ? 's' : ''} ready for review`;
+  const categoryColors: Record<string, string> = {
+    regulatory: '#f59e0b',
+    market: '#10b981',
+    technology: '#06b6d4',
+    geopolitical: '#a78bfa',
+  };
+
+  let articlesHtml = '';
+  let articlesPlain = '';
+
+  articles.forEach((article, index) => {
+    const catColor = categoryColors[article.category] || '#06b6d4';
+    const approveUrl = `${APP_URL}/api/ai-insights/${article.slug}/approve?token=${article.reviewToken}`;
+    const rejectUrl = `${APP_URL}/api/ai-insights/${article.slug}/reject?token=${article.reviewToken}`;
+    const previewUrl = `${APP_URL}/api/ai-insights/${article.slug}/preview?token=${article.reviewToken}`;
+
+    articlesHtml += `
+      <tr>
+        <td style="padding:${index === 0 ? '30' : '20'}px 40px 20px 40px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;border-radius:8px;overflow:hidden;">
+            <tr><td style="padding:20px;">
+              <span style="display:inline-block;padding:3px 10px;background-color:${catColor}22;color:${catColor};font-size:11px;font-weight:600;text-transform:uppercase;border-radius:4px;border:1px solid ${catColor}44;">
+                ${escapeHtml(article.category)}
+              </span>
+              <h2 style="margin:12px 0 8px 0;color:#f1f5f9;font-size:18px;font-weight:600;line-height:1.3;">
+                ${escapeHtml(article.title)}
+              </h2>
+              <p style="margin:0 0 12px 0;color:#94a3b8;font-size:14px;line-height:1.6;">
+                ${escapeHtml(article.summary)}
+              </p>
+              <p style="margin:0 0 16px 0;color:#64748b;font-size:13px;line-height:1.5;border-left:3px solid #334155;padding-left:12px;">
+                ${escapeHtml(article.contentPreview)}...
+              </p>
+              ${article.factCheckNote ? `
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px 0;">
+                <tr><td style="padding:12px;background-color:#1e293b;border-radius:6px;border-left:3px solid #f59e0b;">
+                  <p style="margin:0 0 4px 0;color:#f59e0b;font-size:11px;font-weight:600;text-transform:uppercase;">Fact-Check Notes</p>
+                  <p style="margin:0;color:#94a3b8;font-size:13px;line-height:1.5;">${escapeHtml(article.factCheckNote)}</p>
+                </td></tr>
+              </table>
+              ` : ''}
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding-right:8px;">
+                    <a href="${escapeHtml(approveUrl)}" style="display:inline-block;padding:10px 24px;background-color:#22c55e;color:#fff;border-radius:6px;font-weight:600;font-size:13px;text-decoration:none;">
+                      Approve & Publish
+                    </a>
+                  </td>
+                  <td style="padding-right:8px;">
+                    <a href="${escapeHtml(previewUrl)}" style="display:inline-block;padding:10px 24px;background-color:#334155;color:#f1f5f9;border-radius:6px;font-weight:600;font-size:13px;text-decoration:none;">
+                      Preview
+                    </a>
+                  </td>
+                  <td>
+                    <a href="${escapeHtml(rejectUrl)}" style="display:inline-block;padding:10px 24px;background-color:#dc2626;color:#fff;border-radius:6px;font-weight:600;font-size:13px;text-decoration:none;">
+                      Reject
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+          </table>
+        </td>
+      </tr>`;
+
+    articlesPlain += `
+---
+[${article.category.toUpperCase()}] ${article.title}
+
+${article.summary}
+
+Preview: ${article.contentPreview}...
+${article.factCheckNote ? `\nFact-Check Notes: ${article.factCheckNote}` : ''}
+
+Approve: ${approveUrl}
+Preview: ${previewUrl}
+Reject: ${rejectUrl}
+`;
+  });
+
+  const content = `
+    <tr><td style="padding:32px 40px;text-align:center;border-bottom:1px solid #334155;">
+      <h1 style="margin:0;color:#06b6d4;font-size:24px;">SpaceNexus</h1>
+    </td></tr>
+    <tr><td style="padding:30px 40px 10px 40px;">
+      <h2 style="margin:0 0 8px 0;color:#f1f5f9;font-size:20px;">AI Insights Ready for Review</h2>
+      <p style="margin:0;color:#94a3b8;font-size:14px;line-height:1.6;">
+        ${articles.length} new AI-generated article${articles.length !== 1 ? 's' : ''} ${articles.length !== 1 ? 'are' : 'is'} pending your approval before publishing on SpaceNexus.
+      </p>
+    </td></tr>
+    ${articlesHtml}
+    <tr><td style="padding:20px 40px 30px 40px;">
+      <p style="margin:0;color:#64748b;font-size:12px;text-align:center;">
+        Articles will not appear on SpaceNexus until approved. You can also manage pending articles in the
+        <a href="${APP_URL}/admin" style="color:#06b6d4;">admin dashboard</a>.
+      </p>
+    </td></tr>`;
+
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#0f172a;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;">
+    <tr><td align="center" style="padding:40px 20px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#1e293b;border-radius:12px;overflow:hidden;">
+        ${content}
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  const text = `AI INSIGHTS READY FOR REVIEW
+${articles.length} new article${articles.length !== 1 ? 's' : ''} pending your approval.
+${articlesPlain}
+---
+SpaceNexus - Articles will not appear until approved.
+Manage in admin: ${APP_URL}/admin`;
+
+  return { html, text, subject };
+}

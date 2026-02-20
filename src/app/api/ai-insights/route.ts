@@ -13,7 +13,8 @@ export async function GET(req: NextRequest) {
     const limit = constrainPagination(parseInt(searchParams.get('limit') || '10', 10));
     const category = searchParams.get('category');
 
-    const where: Record<string, unknown> = {};
+    // status is a new schema field — use any cast for Prisma client compat
+    const where: Record<string, unknown> = { status: 'published' } as any;
     if (category) {
       where.category = category;
     }

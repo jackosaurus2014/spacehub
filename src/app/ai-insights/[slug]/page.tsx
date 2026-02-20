@@ -38,6 +38,9 @@ const CATEGORY_COLORS: Record<string, { badge: string }> = {
   geopolitical: {
     badge: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
   },
+  forecast: {
+    badge: 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
+  },
 };
 
 function formatDate(dateString: string): string {
