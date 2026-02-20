@@ -19,23 +19,62 @@ export default async function HomePage() {
   // Get default module configuration for SSR
   const modules = await getDefaultModulePreferences();
 
-  // Fetch latest AI insights and blog posts for the "Latest from SpaceNexus" section
-  let recentInsights: { slug: string; title: string; summary: string; category: string; generatedAt: Date }[] = [];
+  // Fetch latest content for the "Latest from SpaceNexus" section
+  // Merge AI insights + blog posts into one chronologically-sorted list
+  interface ContentCard {
+    slug: string;
+    href: string;
+    title: string;
+    summary: string;
+    category: string;
+    date: Date;
+    type: 'ai-insight' | 'blog';
+    author?: string;
+    readingTime?: number;
+  }
+
+  const contentCards: ContentCard[] = [];
+
   try {
-    recentInsights = await prisma.aIInsight.findMany({
+    const recentInsights = await prisma.aIInsight.findMany({
       select: { slug: true, title: true, summary: true, category: true, generatedAt: true },
       orderBy: { generatedAt: 'desc' },
-      take: 2,
+      take: 4,
     });
+    for (const insight of recentInsights) {
+      contentCards.push({
+        slug: insight.slug,
+        href: `/ai-insights/${insight.slug}`,
+        title: insight.title,
+        summary: insight.summary,
+        category: insight.category,
+        date: insight.generatedAt,
+        type: 'ai-insight',
+      });
+    }
   } catch (error) {
     logger.error('Homepage: Failed to fetch recent AI insights', {
       error: error instanceof Error ? error.message : String(error),
     });
   }
 
-  const recentBlogPosts = [...BLOG_POSTS]
-    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
-    .slice(0, 2);
+  for (const post of BLOG_POSTS) {
+    contentCards.push({
+      slug: post.slug,
+      href: `/blog/${post.slug}`,
+      title: post.title,
+      summary: post.excerpt,
+      category: post.category,
+      date: new Date(post.publishedAt),
+      type: 'blog',
+      author: post.author,
+      readingTime: post.readingTime,
+    });
+  }
+
+  // Sort all cards by date descending (most recent first) and take top 4
+  contentCards.sort((a, b) => b.date.getTime() - a.date.getTime());
+  const topContent = contentCards.slice(0, 4);
 
   const CATEGORY_COLORS: Record<string, string> = {
     regulatory: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
@@ -53,21 +92,8 @@ export default async function HomePage() {
       {/* Hero Section with Video Background */}
       <LandingHero />
 
-      {/* Value Proposition Sections */}
-      <LandingValueProp />
-
-      {/* Trust Signals & Data Sources */}
-      <TrustSignals />
-
-      {/* Live Stats Section */}
-      <section className="py-8 relative z-10">
-        <div className="container mx-auto px-4">
-          <HeroStats />
-        </div>
-      </section>
-
-      {/* Latest from SpaceNexus — Original Content Showcase */}
-      {(recentInsights.length > 0 || recentBlogPosts.length > 0) && (
+      {/* Latest from SpaceNexus — Original Content Showcase (above value prop) */}
+      {topContent.length > 0 && (
         <section className="section-spacer-sm relative z-10">
           <div className="container mx-auto px-4">
             <div className="mb-8 text-center">
@@ -81,56 +107,34 @@ export default async function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-              {/* AI Insights */}
-              {recentInsights.map((insight) => (
+              {topContent.map((card) => (
                 <Link
-                  key={insight.slug}
-                  href={`/ai-insights/${insight.slug}`}
+                  key={card.slug}
+                  href={card.href}
                   className="group relative card p-6 rounded-2xl border border-slate-700/50 hover:border-cyan-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10"
                 >
                   <div className="flex items-center gap-2 mb-3">
-                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${CATEGORY_COLORS[insight.category] || 'bg-slate-500/20 text-slate-400 border-slate-500/30'}`}>
-                      {insight.category}
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${CATEGORY_COLORS[card.category] || 'bg-slate-500/20 text-slate-400 border-slate-500/30'}`}>
+                      {card.category}
                     </span>
-                    <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/25">
-                      AI Analysis
-                    </span>
+                    {card.type === 'ai-insight' ? (
+                      <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/25">
+                        AI Analysis
+                      </span>
+                    ) : card.readingTime ? (
+                      <span className="text-xs text-slate-500">{card.readingTime} min read</span>
+                    ) : null}
                   </div>
                   <h3 className="text-lg font-semibold text-white group-hover:text-cyan-300 transition-colors line-clamp-2 mb-2">
-                    {insight.title}
+                    {card.title}
                   </h3>
                   <p className="text-sm text-slate-400 line-clamp-3 mb-3">
-                    {insight.summary}
-                  </p>
-                  <time className="text-xs text-slate-500">
-                    {new Date(insight.generatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </time>
-                </Link>
-              ))}
-
-              {/* Blog Posts */}
-              {recentBlogPosts.map((post) => (
-                <Link
-                  key={post.slug}
-                  href={`/blog/${post.slug}`}
-                  className="group relative card p-6 rounded-2xl border border-slate-700/50 hover:border-cyan-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10"
-                >
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${CATEGORY_COLORS[post.category] || 'bg-slate-500/20 text-slate-400 border-slate-500/30'}`}>
-                      {post.category}
-                    </span>
-                    <span className="text-xs text-slate-500">{post.readingTime} min read</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white group-hover:text-cyan-300 transition-colors line-clamp-2 mb-2">
-                    {post.title}
-                  </h3>
-                  <p className="text-sm text-slate-400 line-clamp-3 mb-3">
-                    {post.excerpt}
+                    {card.summary}
                   </p>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-500">{post.author}</span>
-                    <time className="text-xs text-slate-500">
-                      {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {card.author && <span className="text-xs text-slate-500">{card.author}</span>}
+                    <time className="text-xs text-slate-500 ml-auto">
+                      {card.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </time>
                   </div>
                 </Link>
@@ -161,6 +165,19 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Value Proposition Sections */}
+      <LandingValueProp />
+
+      {/* Trust Signals & Data Sources */}
+      <TrustSignals />
+
+      {/* Live Stats Section */}
+      <section className="py-8 relative z-10">
+        <div className="container mx-auto px-4">
+          <HeroStats />
+        </div>
+      </section>
 
       {/* Modular Content Area */}
       <section className="section-spacer-sm">

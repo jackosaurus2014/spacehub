@@ -77,6 +77,7 @@ const CRITICAL_JOBS = new Set([
   'external-api-refresh',
   'space-weather-refresh',
   'daily-refresh',
+  'ai-insights',
 ]);
 
 // ---------------------------------------------------------------------------
