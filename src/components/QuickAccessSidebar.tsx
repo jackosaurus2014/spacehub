@@ -426,6 +426,65 @@ export default function QuickAccessSidebar() {
             </span>
           </Link>
           <Link
+            href="/deal-rooms"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+              pathname?.startsWith('/deal-rooms')
+                ? 'bg-cyan-500/20 text-cyan-300'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+            }`}
+          >
+            <span className="text-lg flex-shrink-0 w-6 text-center">
+              <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </span>
+            <span
+              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              }`}
+            >
+              Deal Room
+            </span>
+          </Link>
+          <Link
+            href="/funding-opportunities"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+              pathname?.startsWith('/funding-opportunities')
+                ? 'bg-cyan-500/20 text-cyan-300'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+            }`}
+          >
+            <span className="text-lg flex-shrink-0 w-6 text-center">💰</span>
+            <span
+              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              }`}
+            >
+              Funding
+            </span>
+          </Link>
+          <Link
+            href="/customer-discovery"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+              pathname?.startsWith('/customer-discovery')
+                ? 'bg-cyan-500/20 text-cyan-300'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+            }`}
+          >
+            <span className="text-lg flex-shrink-0 w-6 text-center">
+              <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </span>
+            <span
+              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              }`}
+            >
+              Customers
+            </span>
+          </Link>
+          <Link
             href="/my-watchlists"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname === '/my-watchlists'
@@ -433,7 +492,7 @@ export default function QuickAccessSidebar() {
                 : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
             }`}
           >
-            <span className="text-lg flex-shrink-0 w-6 text-center">★</span>
+            <span className="text-lg flex-shrink-0 w-6 text-center">&#x2605;</span>
             <span
               className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
                 isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'

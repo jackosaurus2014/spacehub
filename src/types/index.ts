@@ -282,7 +282,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 2,
     isParent: true,
-    subModuleIds: ['market-intel', 'space-economy', 'space-capital', 'company-profiles'],
+    subModuleIds: ['market-intel', 'space-economy', 'space-capital', 'company-profiles', 'funding-tracker', 'investor-directory'],
   },
 
   // 4. Business Opportunities (parent)
@@ -295,7 +295,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 3,
     isParent: true,
-    subModuleIds: ['business-opportunities', 'supply-chain', 'space-mining', 'patent-tracker', 'manufacturing-imagery', 'procurement-intelligence'],
+    subModuleIds: ['business-opportunities', 'supply-chain', 'space-mining', 'patent-tracker', 'manufacturing-imagery', 'procurement-intelligence', 'funding-opportunities'],
   },
 
   // 5. Mission Planning (parent, absorbs Blueprints)
@@ -463,6 +463,28 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     isPremium: true,
     parentModuleId: 'space-market-intelligence',
   },
+  {
+    moduleId: 'funding-tracker',
+    name: 'Funding Tracker',
+    description: 'Track venture capital, M&A, SPACs, and IPO activity across the space industry with real-time deal data',
+    icon: '💰',
+    section: 'intelligence',
+    defaultEnabled: true,
+    defaultPosition: 17,
+    isPremium: true,
+    parentModuleId: 'space-market-intelligence',
+  },
+  {
+    moduleId: 'investor-directory',
+    name: 'Investor Directory',
+    description: 'Comprehensive directory of VCs, PE firms, corporate investors, and accelerators active in space',
+    icon: '🏦',
+    section: 'intelligence',
+    defaultEnabled: true,
+    defaultPosition: 18,
+    isPremium: true,
+    parentModuleId: 'space-market-intelligence',
+  },
 
   // --- Business Opportunities children ---
   {
@@ -529,6 +551,16 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 21,
     isPremium: true,
+    parentModuleId: 'business-opportunities-group',
+  },
+  {
+    moduleId: 'funding-opportunities',
+    name: 'Funding Opportunities',
+    description: 'Grants, contracts, SBIR/STTR awards, and state incentives for space companies',
+    icon: '💰',
+    section: 'business',
+    defaultEnabled: true,
+    defaultPosition: 22,
     parentModuleId: 'business-opportunities-group',
   },
 

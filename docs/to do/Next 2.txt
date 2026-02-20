@@ -1,10 +1,63 @@
-1.  Incorporate all of the components, hardware and systems you identified in the BOMs for the orbital systems cost estimator into our Resource Exchange module.
+DONE 1.  Incorporate all of the components, hardware and systems you identified in the BOMs for the orbital systems cost estimator into our Resource Exchange module.
 
-2.  For the Blueprints module, when I click on a blueprint card, the text for the specifications descriptions, (e.g. Thrust (Sea Level)) are very hard to read against the white background on the pop up card.  The actual specifications are black on the white background and easy to ready but we need to make the spec description (e.g. Throttle Range, Engine Mass) much darker.
+DONE 2.  For the Blueprints module, when I click on a blueprint card, the text for the specifications descriptions, (e.g. Thrust (Sea Level)) are very hard to read against the white background on the pop up card.  The actual specifications are black on the white background and easy to ready but we need to make the spec description (e.g. Throttle Range, Engine Mass) much darker.
 
-3.  For a couple of our new AI-generated SpaceNexus Team blogs, the formatting in the blog is messy. It doesn't look like a well-formatted blog or article.  Specifically, the "5 space industry trends..." and "The Rise of Mega Constellations..." are excellent content but need to be well formatted to resemble a professional blog article.  Let's make sure our future blogs/articles that are AI-generated are also well formatted.
+DONE 3.  For a couple of our new AI-generated SpaceNexus Team blogs, the formatting in the blog is messy. It doesn't look like a well-formatted blog or article.  Specifically, the "5 space industry trends..." and "The Rise of Mega Constellations..." are excellent content but need to be well formatted to resemble a professional blog article.  Let's make sure our future blogs/articles that are AI-generated are also well formatted.
 
-4.  On the land page, our "Explore the Platform" button needs to have the text in the button centered vertically within the button.  Right now it's slightly offset toward the top of the button.  Let me know if you need a screenshot.  
+DONE 4.  On the land page, our "Explore the Platform" button needs to have the text in the button centered vertically within the button.  Right now it's slightly offset toward the top of the button.  Let me know if you need a screenshot.  
+
+5.  When I click on the Recent Listings and the Open RFQs in the marketplace module, it gives me the following respective errors. 
+
+Recent Listings error:
+
+Failed to load resource: net::ERR_BLOCKED_BY_CLIENTUnderstand this error
+layout-98abb396f898e645.js:1 [PWA] Service worker registered successfully: https://spacenexus.us/
+layout-98abb396f898e645.js:1 News data is stale, refreshing in background...
+site.webmanifest:1 Manifest: scope_extensions entry ignored, required properties 'type' and 'origin' are missing.Understand this warning
+site.webmanifest:1 Manifest: scope_extensions entry ignored, required properties 'type' and 'origin' are missing.Understand this warning
+/marketplace:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+layout-98abb396f898e645.js:1 News refresh complete: Object
+2117-03b54a6860ee98c8.js:1 Error: Minified React error #438; visit https://react.dev/errors/438?args[]=%5Bobject%20Object%5D for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at Object.rO [as use] (fd9d1056-1a81cbacfa769916.js:1:41868)
+    at t.use (2117-03b54a6860ee98c8.js:2:31260)
+    at v (page-45c9bc7c05de2d5e.js:1:6692)
+    at rE (fd9d1056-1a81cbacfa769916.js:1:40344)
+    at iZ (fd9d1056-1a81cbacfa769916.js:1:117029)
+    at ia (fd9d1056-1a81cbacfa769916.js:1:95165)
+    at fd9d1056-1a81cbacfa769916.js:1:94987
+    at il (fd9d1056-1a81cbacfa769916.js:1:94994)
+    at oJ (fd9d1056-1a81cbacfa769916.js:1:92350)
+    at oZ (fd9d1056-1a81cbacfa769916.js:1:91769)
+window.console.error @ 2117-03b54a6860ee98c8.js:1Understand this error
+marketplace-exactearth-ais:1 Manifest: scope_extensions entry ignored, required properties 'type' and 'origin' are missing.Understand this warning
+marketplace-exactearth-ais:1 Manifest: scope_extensions entry ignored, required properties 'type' and 'origin' are missing.
+
+Open RFQ error:
+
+Failed to load resource: net::ERR_BLOCKED_BY_CLIENTUnderstand this error
+layout-98abb396f898e645.js:1 [PWA] Service worker registered successfully: https://spacenexus.us/
+site.webmanifest:1 Manifest: scope_extensions entry ignored, required properties 'type' and 'origin' are missing.Understand this warning
+site.webmanifest:1 Manifest: scope_extensions entry ignored, required properties 'type' and 'origin' are missing.Understand this warning
+/marketplace:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+layout-98abb396f898e645.js:1 News data is stale, refreshing in background...
+site.webmanifest:1 Manifest: scope_extensions entry ignored, required properties 'type' and 'origin' are missing.Understand this warning
+site.webmanifest:1 Manifest: scope_extensions entry ignored, required properties 'type' and 'origin' are missing.Understand this warning
+cmlh3y1jo002pfa9lgdzns1v9:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+2117-03b54a6860ee98c8.js:1 Error: Minified React error #438; visit https://react.dev/errors/438?args[]=%5Bobject%20Object%5D for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at Object.rO [as use] (fd9d1056-1a81cbacfa769916.js:1:41868)
+    at t.use (2117-03b54a6860ee98c8.js:2:31260)
+    at h (page-9b1035d34865cf2e.js:1:8214)
+    at rE (fd9d1056-1a81cbacfa769916.js:1:40344)
+    at iZ (fd9d1056-1a81cbacfa769916.js:1:117029)
+    at ia (fd9d1056-1a81cbacfa769916.js:1:95165)
+    at fd9d1056-1a81cbacfa769916.js:1:94987
+    at il (fd9d1056-1a81cbacfa769916.js:1:94994)
+    at oJ (fd9d1056-1a81cbacfa769916.js:1:92350)
+    at oZ (fd9d1056-1a81cbacfa769916.js:1:91769)
+window.console.error @ 2117-03b54a6860ee98c8.js:1Understand this error
+layout-98abb396f898e645.js:1 News refresh complete: {success: true, message: 'Fetched and saved 521 articles', source: 'live', timestamp: '2026-02-20T17:10:45.582Z'}
+
+6.  The Space Industry Marketplace module shows 0 active providers in the header cards.
 
 
 

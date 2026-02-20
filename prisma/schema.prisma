@@ -2741,6 +2741,49 @@ model GovernmentContractAward {
 }
 
 // ============================================================
+// Funding Opportunity Aggregator
+// ============================================================
+
+model FundingOpportunity {
+  id                 String   @id @default(cuid())
+  externalId         String?  @unique // Dedup key: "sbir-12345", "sam-ABC", "grants-XYZ"
+  title              String
+  description        String?  @db.Text
+  agency             String   // "NASA", "DARPA", "NSF", "Space Force", "ESA", "FAA"
+  program            String?  // "SBIR Phase I", "STTR Phase II", "ROSES", "BAA"
+  fundingType        String   // "grant", "contract", "cooperative_agreement", "sbir", "sttr", "prize"
+  amountMin          Float?   // Minimum award in USD
+  amountMax          Float?   // Maximum award in USD
+  totalBudget        Float?   // Total program budget
+  deadline           DateTime?
+  openDate           DateTime?
+  status             String   @default("open") // "open", "closed", "upcoming", "rolling"
+  eligibility        String[] // ["small_business", "university", "nonprofit", "any"]
+  setAside           String?  // "8a", "hubzone", "wosb", "sdvosb", "none"
+  categories         String[] // ["propulsion", "earth_observation", "communications", "launch", "in_space", "defense", "lunar", "debris"]
+  applicationUrl     String?
+  sourceUrl          String?
+  source             String   // "sbir.gov", "sam.gov", "grants.gov", "nasa.gov", "manual"
+  contactName        String?
+  contactEmail       String?
+  naicsCode          String?
+  solicitationNumber String?
+  stateIncentive     Boolean  @default(false) // Is this a state/regional incentive?
+  state              String?  // For state-level incentives
+  recurring          Boolean  @default(false) // Does this open periodically?
+  lastUpdated        DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([status])
+  @@index([agency])
+  @@index([fundingType])
+  @@index([deadline])
+  @@index([source])
+  @@index([stateIncentive])
+}
+
+// ============================================================
 // Company Intelligence - Extended Models
 // ============================================================
 
@@ -3483,4 +3526,102 @@ model PushToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model Investor {
+  id               String   @id @default(cuid())
+  name             String   @unique
+  type             String   // "vc", "pe", "corporate", "angel", "government", "family_office", "accelerator"
+  description      String?  @db.Text
+  website          String?
+  logoUrl          String?
+  headquarters     String?
+  foundedYear      Int?
+  aum              Float?   // Assets under management in USD
+  fundSize         Float?   // Current fund size
+  investmentStage  String[] // ["pre_seed", "seed", "series_a", "series_b", "growth", "late_stage"]
+  sectorFocus      String[] // ["launch", "satellite", "earth_observation", "defense", "in_space", "ground_segment"]
+  portfolioCount   Int?     // Known space portfolio companies
+  notableDeals     String[] // Notable space investments as text descriptions
+  linkedinUrl      String?
+  status           String   @default("active") // "active", "inactive", "new_fund"
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([type])
+  @@index([name])
+}
+
+// ── Deal Room (Space Industry Deal Room) ──
+
+model DealRoom {
+  id            String          @id @default(cuid())
+  name          String
+  description   String?         @db.Text
+  companySlug   String?         // Link to CompanyProfile
+  status        String          @default("active") // "active", "archived", "closed"
+  createdBy     String          // User ID or email who created the room
+  accessCode    String?         @unique // Optional invite code
+  ndaRequired   Boolean         @default(false)
+  ndaText       String?         @db.Text
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  members       DealRoomMember[]
+  documents     DealRoomDocument[]
+  activities    DealRoomActivity[]
+
+  @@index([createdBy])
+  @@index([status])
+  @@index([companySlug])
+}
+
+model DealRoomMember {
+  id            String    @id @default(cuid())
+  dealRoomId    String
+  dealRoom      DealRoom  @relation(fields: [dealRoomId], references: [id], onDelete: Cascade)
+  userId        String?   // Null for invited-but-not-joined
+  email         String
+  role          String    @default("viewer") // "owner", "admin", "viewer"
+  ndaAcceptedAt DateTime?
+  invitedAt     DateTime  @default(now())
+  joinedAt      DateTime?
+  lastAccessAt  DateTime?
+
+  @@unique([dealRoomId, email])
+  @@index([dealRoomId])
+  @@index([userId])
+  @@index([email])
+}
+
+model DealRoomDocument {
+  id            String    @id @default(cuid())
+  dealRoomId    String
+  dealRoom      DealRoom  @relation(fields: [dealRoomId], references: [id], onDelete: Cascade)
+  name          String
+  category      String    @default("general") // "pitch_deck", "financials", "technical", "legal", "team", "general"
+  fileType      String    // "pdf", "pptx", "xlsx", "docx", "png", "jpg"
+  fileSize      Int       // Bytes
+  uploadedBy    String    // User ID or email
+  description   String?
+  version       Int       @default(1)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([dealRoomId])
+  @@index([category])
+}
+
+model DealRoomActivity {
+  id            String    @id @default(cuid())
+  dealRoomId    String
+  dealRoom      DealRoom  @relation(fields: [dealRoomId], references: [id], onDelete: Cascade)
+  userId        String?
+  userEmail     String?
+  action        String    // "viewed_document", "uploaded_document", "joined_room", "accepted_nda", "invited_member", "downloaded_document", "created_room"
+  details       String?   // Document name, member email, etc.
+  createdAt     DateTime  @default(now())
+
+  @@index([dealRoomId])
+  @@index([createdAt])
 }

@@ -23,6 +23,9 @@ export const MODULE_ROUTES: Record<string, string> = {
   'space-economy': '/space-economy',
   'space-capital': '/space-capital',
   'company-profiles': '/company-profiles',
+  'market-sizing': '/market-sizing',
+  'funding-tracker': '/funding-tracker',
+  'investor-directory': '/investors',
 
   // ── Business Opportunities children ──
   'business-opportunities': '/business-opportunities',
@@ -31,6 +34,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   'patent-tracker': '/patents',
   'manufacturing-imagery': '/space-manufacturing',
   'procurement-intelligence': '/procurement',
+  'funding-opportunities': '/funding-opportunities',
 
   // ── Mission Planning children ──
   'mission-cost': '/mission-cost',
@@ -52,6 +56,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   // ── Regulatory & Compliance children ──
   'regulatory-hub': '/compliance',
   'spectrum-management': '/spectrum',
+  'regulatory-risk': '/regulatory-risk',
 
   // ── Solar System Expansion children ──
   'solar-exploration': '/solar-exploration',
@@ -63,6 +68,17 @@ export const MODULE_ROUTES: Record<string, string> = {
   'marketplace': '/marketplace',
   'procurement-copilot': '/marketplace/copilot',
   'provider-dashboard': '/provider-dashboard',
+
+  // ── Customer Discovery ──
+  'customer-discovery': '/customer-discovery',
+
+  // ── Business Planning Tools ──
+  'business-models': '/business-models',
+  'space-events': '/space-events',
+  'investment-thesis': '/investment-thesis',
+
+  // ── Deal Room ──
+  'deal-rooms': '/deal-rooms',
 
   // ── Legacy backward-compat aliases ──
   // (These also have redirects in next.config.js for direct URL access)
