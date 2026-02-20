@@ -1740,4 +1740,341 @@
 
 ---
 
+## 6. New Feature Launch Posts (Investor & Entrepreneur Suite)
+
+---
+
+### Post 1 (Monday) -- Space Market Monday
+
+**Type**: Product Showcase
+
+**Copy**:
+
+> Every year, over $2 billion in SBIR, STTR, NASA, and NOAA grants fund space technology -- and most startups never find them.
+>
+> The problem is not a lack of funding. It is a lack of visibility. Grant opportunities are scattered across SAM.gov, SBIR.gov, NASA NSPIRES, and individual agency portals. By the time you find a relevant solicitation, the deadline is next week.
+>
+> We built the SpaceNexus Grant Aggregator to fix this.
+>
+> One dashboard. Every space-relevant grant. Updated daily.
+>
+> What it covers:
+>
+> -- SBIR Phase I, II, and III awards across DoD, NASA, and NOAA
+> -- NASA-specific funding opportunities (ROSES, NSPIRES, Tipping Point)
+> -- NOAA climate and Earth observation grants
+> -- State-level space technology incentives
+> -- International grant programs (ESA, UKSA, CSA)
+>
+> Filter by technology area, award size, deadline, and eligibility. Get alerts when new grants match your profile.
+>
+> The companies that win grants are the ones that find them first. Stop searching. Start applying.
+
+**Visual**: Screenshot of the SpaceNexus Grant Aggregator dashboard showing a filterable grant list with columns for agency, program, award ceiling, and deadline, plus a sidebar with saved search alerts.
+
+**Hashtags**: #SBIR #SpaceGrants #SpaceStartups #SpaceFunding #SpaceNexus
+
+**CTA**: Find your next grant at spacenexus.us -- try the Grant Aggregator free.
+
+---
+
+### Post 2 (Tuesday) -- Tech Tuesday
+
+**Type**: Product Showcase
+
+**Copy**:
+
+> In 2025, space companies raised $12.8 billion in private funding. But if you wanted to track those rounds in real-time, your options were limited: pay $15,000/year for a Pitchbook license, or manually check Crunchbase and press releases every day.
+>
+> Neither approach works for a startup founder or emerging fund manager who needs to move fast.
+>
+> SpaceNexus Funding Tracker gives you real-time visibility into every space industry funding round:
+>
+> -- Series A through IPO, updated within hours of announcement
+> -- Investor profiles and portfolio mapping (who is backing whom)
+> -- Historical funding data for 400+ space companies
+> -- Round size, valuation (when available), and lead investor details
+> -- Trend analysis by sector, stage, and geography
+>
+> Whether you are raising capital and need to identify active space investors, or you are an investor tracking deal flow, this is the dashboard that was missing from the space ecosystem.
+>
+> Real-time funding intelligence should not cost more than a Series A legal bill.
+
+**Visual**: Screenshot of the Funding Tracker showing a real-time feed of recent rounds with company logos, round sizes, investor names, and a funding trend chart by quarter.
+
+**Hashtags**: #VentureCapital #SpaceFunding #SpaceInvesting #StartupFunding #SpaceNexus
+
+**CTA**: Track every space funding round at spacenexus.us -- start free today.
+
+---
+
+### Post 3 (Wednesday) -- Watchlist Wednesday
+
+**Type**: Product Showcase
+
+**Copy**:
+
+> Most space startups fail not because of technology -- but because they target the wrong market.
+>
+> They build a product, then go looking for customers. The successful ones do it the other way around: they map the market first, identify underserved segments, and build for validated demand.
+>
+> That is exactly what SpaceNexus Customer Discovery is designed to do.
+>
+> The tool helps early-stage space companies:
+>
+> -- Map the competitive landscape for any space market segment
+> -- Identify potential customers by industry vertical, company size, and technology needs
+> -- Analyze procurement patterns to see who is actually buying (not just talking)
+> -- Find partnership and channel opportunities in adjacent markets
+> -- Validate demand signals from government RFIs, contract awards, and industry surveys
+>
+> Think of it as a market intelligence co-pilot for founders. You bring the technology. We bring the market map.
+>
+> Founders who do customer discovery before building product are 3x more likely to achieve product-market fit. That is not our stat -- it is from Startup Genome's research. We just built the tool to make it easier.
+
+**Visual**: Screenshot of the Customer Discovery tool showing a market map visualization with company clusters, segment labels, and connection lines indicating procurement relationships.
+
+**Hashtags**: #CustomerDiscovery #SpaceStartups #ProductMarketFit #MarketIntelligence #SpaceNexus
+
+**CTA**: Map your market before you build -- try Customer Discovery at spacenexus.us.
+
+---
+
+### Post 4 (Thursday) -- Talent Thursday
+
+**Type**: Thought Leadership
+
+**Copy**:
+
+> "What is your TAM?"
+>
+> Every space startup founder has heard this question from investors. And most get it wrong.
+>
+> The typical approach: Google "space industry market size," find a report that says "$1.8 trillion by 2035," and put that on slide 7. Investors see right through it.
+>
+> Real market sizing requires three layers of analysis:
+>
+> -- TAM (Total Addressable Market): The entire revenue opportunity if you had 100% market share
+> -- SAM (Serviceable Addressable Market): The portion you can actually reach with your product and go-to-market
+> -- SOM (Serviceable Obtainable Market): The realistic share you can capture in the next 3-5 years
+>
+> SpaceNexus Market Sizing tool provides data-driven TAM/SAM/SOM analysis for every major space market segment. Powered by real procurement data, funding trends, and company financials -- not analyst estimates from 2-year-old PDFs.
+>
+> The output: a defensible market sizing slide backed by verifiable data sources. The kind that makes investors lean forward instead of checking their phone.
+>
+> Your market size claim is only as good as the data behind it.
+
+**Visual**: Example TAM/SAM/SOM funnel graphic generated by the tool, showing a specific space segment (e.g., Earth Observation Analytics) with dollar values at each tier and source citations.
+
+**Hashtags**: #MarketSizing #TAM #SpaceStartups #InvestorReady #SpaceNexus
+
+**CTA**: Build your data-driven market sizing at spacenexus.us -- free for early-stage founders.
+
+---
+
+### Post 5 (Friday) -- Launch Friday
+
+**Type**: Product Showcase
+
+**Copy**:
+
+> Writing an investment thesis for a space company used to take 40-60 hours of research.
+>
+> You would need to analyze the company's technology, map the competitive landscape, assess the regulatory environment, evaluate the management team, size the market, model unit economics, and identify key risks. That is before you even start writing.
+>
+> SpaceNexus AI Investment Thesis Generator compresses that process from weeks to hours.
+>
+> Here is how it works:
+>
+> -- Input a company name or describe an investment opportunity
+> -- The AI pulls from SpaceNexus's proprietary database of 400+ company profiles, funding rounds, regulatory filings, and market data
+> -- It generates a structured investment thesis covering: market opportunity, competitive positioning, technology assessment, regulatory risk, financial projections, and key milestones
+> -- Every claim is sourced. Every data point is linked to verifiable information
+>
+> This is not a generic ChatGPT prompt. It is a purpose-built tool trained on space industry data, powered by Anthropic's Claude, and integrated with the deepest space market intelligence database available.
+>
+> The output is a starting point, not a final product. But it is a starting point that saves you 30+ hours.
+
+**Visual**: Side-by-side showing a sample AI-generated investment thesis document with sections highlighted (Market Opportunity, Competitive Landscape, Risk Assessment) alongside the SpaceNexus data sources panel.
+
+**Hashtags**: #InvestmentThesis #SpaceInvesting #AITools #DueDiligence #SpaceNexus
+
+**CTA**: Generate your first investment thesis at spacenexus.us -- try it free with any space company.
+
+---
+
+### Post 6 (Saturday) -- Weekend Insight
+
+**Type**: Product Showcase
+
+**Copy**:
+
+> Due diligence in space deals has a document problem.
+>
+> Investors and acquisition teams exchange sensitive materials -- cap tables, financial models, IP documentation, customer contracts, regulatory filings -- via email attachments, shared Google Drives, and sometimes even USB drives at in-person meetings.
+>
+> None of these methods provide proper access controls, audit trails, or expiration policies. In an industry where ITAR compliance is not optional, this is a real risk.
+>
+> SpaceNexus Deal Rooms provide secure, purpose-built document sharing for space industry transactions:
+>
+> -- Granular access controls (view-only, download, time-limited access)
+> -- Full audit trail (who viewed what, when, and for how long)
+> -- Watermarked documents with viewer-specific identifiers
+> -- Automatic expiration after a configurable period
+> -- Organized folder structure by due diligence category (financial, legal, technical, regulatory)
+>
+> Whether you are raising a Series B, running an M&A process, or sharing technical data with a potential prime contractor, Deal Rooms give you the control and visibility that email never will.
+>
+> Secure document sharing should be standard practice, not a luxury.
+
+**Visual**: Screenshot of the Deal Rooms interface showing a folder structure (Financial, Legal, Technical, Regulatory), an access permissions panel, and an activity log showing recent document views.
+
+**Hashtags**: #DueDiligence #DealRoom #SpaceInvesting #SecureSharing #SpaceNexus
+
+**CTA**: Set up your first Deal Room at spacenexus.us -- secure document sharing starts free.
+
+---
+
+### Post 7 (Sunday) -- Weekend Insight
+
+**Type**: Thought Leadership
+
+**Copy**:
+
+> Space is the only industry where companies regularly pitch $500M business plans without a clear unit economics model.
+>
+> "We will launch 300 satellites and sell data subscriptions." Great. But what is your cost per satellite? What is the average revenue per user? What is customer acquisition cost? What are your ground segment operating expenses per satellite per month? What is your churn rate assumption and how does it affect lifetime value?
+>
+> Investors are asking these questions. Founders need to have answers.
+>
+> SpaceNexus Unit Economics Calculator helps space companies model the financials of their business from first principles:
+>
+> -- Satellite manufacturing and launch cost modeling (per unit, at scale)
+> -- Ground segment CAPEX and OPEX estimation
+> -- Revenue modeling by customer segment (government, commercial, consumer)
+> -- Customer acquisition cost and lifetime value analysis
+> -- Break-even analysis across different scale scenarios
+> -- Sensitivity analysis on key assumptions (launch cost changes, churn rates, pricing)
+>
+> The tool uses real benchmark data from SpaceNexus's database of 400+ space companies, so your assumptions are grounded in industry reality -- not guesswork.
+>
+> The best pitch decks do not just show a big TAM number. They show a believable path to unit economics that work.
+
+**Visual**: Screenshot of the Unit Economics Calculator showing an interactive model with input sliders (satellite cost, launch cost, ground segment OPEX), output metrics (CAC, LTV, LTV/CAC ratio, months to break-even), and a chart projecting cash flow over 5 years.
+
+**Hashtags**: #UnitEconomics #SpaceStartups #FinancialModeling #SpaceBusiness #SpaceNexus
+
+**CTA**: Model your space business economics at spacenexus.us -- Unit Economics Calculator is free to try.
+
+---
+
+### Post 8 (Monday) -- Space Market Monday
+
+**Type**: Product Showcase
+
+**Copy**:
+
+> Regulatory risk is the silent killer of space ventures.
+>
+> Consider this: In the last 3 years, at least 5 space companies have had their business plans materially disrupted by regulatory decisions they did not see coming. Spectrum denials. Launch license delays. ITAR violations. Export control changes. Debris mitigation rule updates that invalidated mission architectures.
+>
+> The problem is not that these risks are unforeseeable. It is that most companies do not have a systematic way to assess and monitor them.
+>
+> SpaceNexus Regulatory Risk Scoring provides a quantified compliance assessment for space companies:
+>
+> -- Spectrum risk: How congested is your target band? How many competing filings exist?
+> -- Launch risk: What is the current FAA licensing timeline for your vehicle class? Any pending rule changes?
+> -- ITAR/export risk: Does your supply chain have international exposure? Are your technology areas under review?
+> -- Debris compliance: Does your mission design meet the FCC 5-year rule and NASA best practices?
+> -- Orbital risk: Are you in a congested orbital regime? What is your conjunction probability profile?
+>
+> Each risk factor is scored, weighted, and combined into an overall regulatory risk rating. The scoring updates dynamically as new filings, rules, and decisions are published.
+>
+> You cannot eliminate regulatory risk. But you can measure it, monitor it, and manage it.
+
+**Visual**: Screenshot of the Regulatory Risk Scoring dashboard showing a company's risk profile with color-coded scores across 5 categories (spectrum, launch, export, debris, orbital), an overall risk rating, and a trend chart showing score changes over time.
+
+**Hashtags**: #RegulatoryRisk #SpaceCompliance #RiskManagement #SpaceRegulation #SpaceNexus
+
+**CTA**: Assess your regulatory risk profile at spacenexus.us -- Regulatory Risk Scoring is available now.
+
+---
+
+### Post 9 (Tuesday) -- Tech Tuesday
+
+**Type**: Product Showcase
+
+**Copy**:
+
+> We asked 200 SpaceNexus users one question: "What is the first thing you want to see when you log in?"
+>
+> The answers were wildly different depending on who was asking.
+>
+> -- A VC partner wanted funding rounds and company valuations front and center
+> -- A satellite operator wanted conjunction alerts and space weather
+> -- A startup founder wanted grant deadlines and customer discovery tools
+> -- A government BD lead wanted procurement opportunities and contract awards
+> -- A regulatory consultant wanted FCC filings and spectrum auction updates
+>
+> One platform. Five completely different needs. The old approach (show everyone the same dashboard) does not work.
+>
+> So we built persona-based onboarding for SpaceNexus.
+>
+> When you sign up, you tell us who you are and what you care about. The platform configures itself around your workflow:
+>
+> -- Investors get the Funding Tracker, AI Thesis Generator, and Deal Rooms front and center
+> -- Founders get Grant Aggregator, Customer Discovery, Market Sizing, and Unit Economics
+> -- Operators get Satellite Tracker, Space Environment, and Mission Planning
+> -- BD professionals get Procurement Intelligence, Company Profiles, and Marketplace
+> -- Analysts get Market Intelligence, News, and Regulatory modules
+>
+> Same platform. Personalized experience. Zero configuration required after onboarding.
+>
+> Your intelligence platform should adapt to you -- not the other way around.
+
+**Visual**: Side-by-side showing 3 different personalized dashboards (Investor view, Founder view, Operator view) with different module arrangements and highlighted features, connected by a central onboarding flow diagram.
+
+**Hashtags**: #ProductDesign #Personalization #UserExperience #SpaceTech #SpaceNexus
+
+**CTA**: Experience personalized space intelligence at spacenexus.us -- set up your profile in 60 seconds.
+
+---
+
+### Post 10 (Wednesday) -- Watchlist Wednesday
+
+**Type**: Thought Leadership
+
+**Copy**:
+
+> Today we are launching the SpaceNexus Investor and Entrepreneur Suite -- a purpose-built toolkit for the people funding and building the future of space.
+>
+> Here is the reality: the space industry has world-class engineering tools. Mission planning software. Orbital mechanics simulators. RF propagation models. But when it comes to the business side -- raising capital, sizing markets, tracking grants, modeling unit economics, assessing risk -- the tools are almost nonexistent. Founders use spreadsheets. Investors use PDFs and gut instinct.
+>
+> That gap costs the industry billions in misallocated capital and failed ventures every year.
+>
+> The Investor and Entrepreneur Suite includes 8 new tools, all integrated into the SpaceNexus platform:
+>
+> -- Grant Aggregator: SBIR, NASA, NOAA, and international grants in one searchable dashboard
+> -- Funding Tracker: Real-time funding round tracking for 400+ space companies
+> -- Customer Discovery: Market mapping and demand validation for early-stage startups
+> -- Market Sizing (TAM/SAM/SOM): Data-driven market sizing backed by real procurement and revenue data
+> -- AI Investment Thesis Generator: AI-powered thesis creation with sourced data points
+> -- Deal Rooms: Secure document sharing with access controls and audit trails
+> -- Unit Economics Calculator: First-principles financial modeling for space businesses
+> -- Regulatory Risk Scoring: Quantified compliance assessment across 5 risk dimensions
+>
+> Combined with persona-based onboarding that configures the platform around your specific role, this is the most comprehensive business intelligence toolkit available for the space industry.
+>
+> We priced it so that a pre-seed founder has access to the same quality of intelligence as a Tier 1 VC. Because the best ideas in space should win on merit, not on who can afford the most expensive research tools.
+>
+> The Investor and Entrepreneur Suite is live today. Free tier available.
+
+**Visual**: Hero graphic showing all 8 new tools arranged in a clean grid layout with icons and brief labels, under the "Investor and Entrepreneur Suite" banner with the SpaceNexus logo. Include a pricing badge showing "Free tier available."
+
+**Hashtags**: #SpaceInvesting #SpaceStartups #SpaceIntelligence #NewSpace #SpaceNexus
+
+**CTA**: Explore the full Investor and Entrepreneur Suite at spacenexus.us -- start free today.
+
+---
+
 *This content calendar was prepared for SpaceNexus (spacenexus.us). All data points are representative estimates for content purposes and should be verified with current sources before publication. Update statistics monthly to maintain accuracy and credibility.*

@@ -8,6 +8,7 @@ import TrustSignals from '@/components/TrustSignals';
 import HeroStats from '@/components/HeroStats';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { AdBanner } from '@/components/ads';
+import PersonaDashboard from '@/components/PersonaDashboard';
 import prisma from '@/lib/db';
 import { BLOG_POSTS } from '@/lib/blog-content';
 import { logger } from '@/lib/logger';
@@ -167,6 +168,9 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Persona-Based Quick Access Dashboard */}
+      <PersonaDashboard />
 
       {/* Value Proposition Sections */}
       <LandingValueProp />

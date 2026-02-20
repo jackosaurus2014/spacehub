@@ -25,6 +25,7 @@ import PageTransitionProvider from '@/components/mobile/PageTransitionProvider';
 import OfflineIndicator from '@/components/ui/OfflineIndicator';
 const ChangelogModal = dynamic(() => import('@/components/ui/ChangelogModal'), { ssr: false });
 const NpsSurvey = dynamic(() => import('@/components/ui/NpsSurvey'), { ssr: false });
+const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), { ssr: false });
 import ModuleNavBar from '@/components/ModuleNavBar';
 import WebVitals from '@/components/analytics/WebVitals';
 
@@ -205,6 +206,7 @@ export default function RootLayout({
               <ToastContainer />
               <ChangelogModal />
               <NpsSurvey />
+              <OnboardingTour />
               <PageTracker />
               <KeyboardShortcutsModal />
               <SwipeModuleNavigation />

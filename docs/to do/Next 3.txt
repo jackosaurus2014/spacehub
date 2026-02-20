@@ -65,7 +65,7 @@ Notes: All code is deployed. Needs env var verification and manual cron trigger 
 ===============================================================================
 TASK D: UX & NAVIGATION POLISH
 ===============================================================================
-STATUS: MOSTLY COMPLETE
+STATUS: COMPLETE
 PRIORITY: P1 — High (user experience)
 
 Subtasks:
@@ -76,13 +76,20 @@ Subtasks:
 - [x] PageTracker updated with 12 new page titles
 - [x] Breadcrumb navigation on new pages — BreadcrumbSchema added to all 10 new pages
 - [x] Error boundaries for new features — covered by the 14 error.tsx files above
-- [ ] Add onboarding flow or feature tour for new users
-- [ ] Dashboard/homepage that surfaces tools based on user type (investor vs entrepreneur)
+- [x] Add onboarding flow or feature tour for new users
+      — OnboardingTour component (4-step: persona selection + 3 feature highlights)
+      — Persona selection (investor, entrepreneur, mission planner, executive, supply chain, legal)
+      — localStorage persistence, keyboard nav, skip option, auto-show on first visit
+- [x] Dashboard/homepage that surfaces tools based on user type (investor vs entrepreneur)
+      — PersonaDashboard component with 6 persona-specific quick-link grids
+      — Shows on homepage between content cards and value prop sections
+      — "Change your role" link to re-trigger onboarding
+      — Listens for persona-changed events for real-time updates
 
 ===============================================================================
 TASK E: MARKETING & GROWTH
 ===============================================================================
-STATUS: IN PROGRESS
+STATUS: COMPLETE
 PRIORITY: P2 — Medium (growth)
 
 Subtasks:
@@ -92,8 +99,15 @@ Subtasks:
 - [x] Social sharing optimization — Fixed broken og-pricing.png reference, added explicit
       OG images + Twitter card images to 6 high-traffic pages (ai-insights, investors,
       compliance, solar-exploration, business-opportunities, space-talent)
-- [ ] LinkedIn content strategy for new features
-- [ ] Case study / demo content showing platform in action
+- [x] LinkedIn content strategy for new features
+      — Added 10 new feature launch posts to LINKEDIN_CONTENT_CALENDAR.md
+      — Covers Grant Aggregator, Funding Tracker, Customer Discovery, Market Sizing,
+        AI Thesis Generator, Deal Rooms, Unit Economics, Regulatory Risk, Onboarding, Suite launch
+- [x] Case study / demo content showing platform in action
+      — Added Case Study 4: Space Startup Founder (entrepreneur persona)
+      — Shows $5M seed round raised in 60 days using Grant Aggregator, Funding Tracker,
+        Customer Discovery, Market Sizing, Deal Rooms, and Regulatory Risk tools
+      — Updated distribution strategy for 4 case studies
 
 ===============================================================================
 IMPLEMENTATION LOG
@@ -118,6 +132,10 @@ IMPLEMENTATION LOG
 | 2026-02-20 | Prisma indexes            | Added createdAt + status indexes for queries |
 | 2026-02-20 | Test coverage             | +72 tests (33 AI insights + 39 financial)    |
 | 2026-02-20 | OG/Twitter cards          | Fixed broken pricing ref + 6 page OG images  |
+| 2026-02-20 | Onboarding tour           | 4-step welcome flow with 6 persona types      |
+| 2026-02-20 | Persona dashboard         | 6 curated quick-link grids on landing page     |
+| 2026-02-20 | LinkedIn posts            | 10 new feature launch posts for entrepreneur suite |
+| 2026-02-20 | Case study #4             | Startup founder case study (Grant/Funding/TAM) |
 
 ===============================================================================
 OPEN BUGS FROM NEXT 2 (items 5-6) — ALL RESOLVED
@@ -140,7 +158,10 @@ BLOCKED (needs user action):
 - Task C: All subtasks — needs Railway env var verification
 
 READY TO BUILD (no blockers):
-- Task D: Onboarding flow / feature tour for new users
-- Task D: Persona-based dashboard (investor vs entrepreneur homepage)
-- Task E: LinkedIn content strategy
-- Task E: Case study / demo content
+(none — all non-blocked tasks complete)
+
+COMPLETED THIS SESSION:
+- Task D: Onboarding flow / feature tour for new users ✓
+- Task D: Persona-based dashboard (investor vs entrepreneur homepage) ✓
+- Task E: LinkedIn content strategy for new features ✓
+- Task E: Case study / demo content showing platform in action ✓
