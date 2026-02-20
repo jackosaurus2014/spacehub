@@ -245,25 +245,25 @@ function BlueprintCard({ blueprint, onClick }: { blueprint: Blueprint; onClick: 
           <>
             {specs.thrustVacuum && (
               <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                <span className="text-xs text-slate-400 block">Thrust (Vacuum)</span>
+                <span className="text-xs text-slate-600 block">Thrust (Vacuum)</span>
                 <span className="text-sm font-semibold text-slate-900">{formatNumber(specs.thrustVacuum)} kN</span>
               </div>
             )}
             {specs.ispVacuum && (
               <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                <span className="text-xs text-slate-400 block">Isp (Vacuum)</span>
+                <span className="text-xs text-slate-600 block">Isp (Vacuum)</span>
                 <span className="text-sm font-semibold text-slate-900">{formatNumber(specs.ispVacuum)} s</span>
               </div>
             )}
             {specs.cycleType && (
               <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                <span className="text-xs text-slate-400 block">Cycle Type</span>
+                <span className="text-xs text-slate-600 block">Cycle Type</span>
                 <span className="text-sm font-semibold text-slate-900 truncate block">{specs.cycleType}</span>
               </div>
             )}
             {blueprint.propellantType && (
               <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                <span className="text-xs text-slate-400 block">Propellant</span>
+                <span className="text-xs text-slate-600 block">Propellant</span>
                 <span className="text-sm font-semibold text-slate-900 truncate block">{blueprint.propellantType}</span>
               </div>
             )}
@@ -273,25 +273,25 @@ function BlueprintCard({ blueprint, onClick }: { blueprint: Blueprint; onClick: 
           <>
             {specs.power && (
               <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                <span className="text-xs text-slate-400 block">Power</span>
+                <span className="text-xs text-slate-600 block">Power</span>
                 <span className="text-sm font-semibold text-slate-900">{formatNumber(specs.power)} W</span>
               </div>
             )}
             {specs.designLife && (
               <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                <span className="text-xs text-slate-400 block">Design Life</span>
+                <span className="text-xs text-slate-600 block">Design Life</span>
                 <span className="text-sm font-semibold text-slate-900">{specs.designLife} years</span>
               </div>
             )}
             {specs.dryMass && (
               <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                <span className="text-xs text-slate-400 block">Dry Mass</span>
+                <span className="text-xs text-slate-600 block">Dry Mass</span>
                 <span className="text-sm font-semibold text-slate-900">{formatNumber(specs.dryMass)} kg</span>
               </div>
             )}
             {specs.maxPayloadMass && (
               <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                <span className="text-xs text-slate-400 block">Max Payload</span>
+                <span className="text-xs text-slate-600 block">Max Payload</span>
                 <span className="text-sm font-semibold text-slate-900">{formatNumber(specs.maxPayloadMass)} kg</span>
               </div>
             )}
@@ -301,25 +301,25 @@ function BlueprintCard({ blueprint, onClick }: { blueprint: Blueprint; onClick: 
           <>
             {specs.payloadCapacity && (
               <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                <span className="text-xs text-slate-400 block">Payload Capacity</span>
+                <span className="text-xs text-slate-600 block">Payload Capacity</span>
                 <span className="text-sm font-semibold text-slate-900">{formatNumber(specs.payloadCapacity)} kg</span>
               </div>
             )}
             {specs.landingMass && (
               <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                <span className="text-xs text-slate-400 block">Landing Mass</span>
+                <span className="text-xs text-slate-600 block">Landing Mass</span>
                 <span className="text-sm font-semibold text-slate-900">{formatNumber(specs.landingMass)} kg</span>
               </div>
             )}
             {blueprint.propellantType && (
               <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                <span className="text-xs text-slate-400 block">Propellant</span>
+                <span className="text-xs text-slate-600 block">Propellant</span>
                 <span className="text-sm font-semibold text-slate-900 truncate block">{blueprint.propellantType}</span>
               </div>
             )}
             {specs.landingAccuracy && (
               <div className="bg-slate-50 px-3 py-2 rounded-lg">
-                <span className="text-xs text-slate-400 block">Landing Accuracy</span>
+                <span className="text-xs text-slate-600 block">Landing Accuracy</span>
                 <span className="text-sm font-semibold text-slate-900">{specs.landingAccuracy}</span>
               </div>
             )}
@@ -426,67 +426,67 @@ function BlueprintDetailModal({
                   <>
                     {specs.thrust && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Thrust (Sea Level)</span>
+                        <span className="text-xs text-slate-600 block mb-1">Thrust (Sea Level)</span>
                         <span className="text-lg font-bold text-slate-900">{formatNumber(specs.thrust)} kN</span>
                       </div>
                     )}
                     {specs.thrustVacuum && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Thrust (Vacuum)</span>
+                        <span className="text-xs text-slate-600 block mb-1">Thrust (Vacuum)</span>
                         <span className="text-lg font-bold text-slate-900">{formatNumber(specs.thrustVacuum)} kN</span>
                       </div>
                     )}
                     {specs.isp && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Isp (Sea Level)</span>
+                        <span className="text-xs text-slate-600 block mb-1">Isp (Sea Level)</span>
                         <span className="text-lg font-bold text-slate-900">{specs.isp} s</span>
                       </div>
                     )}
                     {specs.ispVacuum && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Isp (Vacuum)</span>
+                        <span className="text-xs text-slate-600 block mb-1">Isp (Vacuum)</span>
                         <span className="text-lg font-bold text-slate-900">{specs.ispVacuum} s</span>
                       </div>
                     )}
                     {specs.cycleType && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Engine Cycle</span>
+                        <span className="text-xs text-slate-600 block mb-1">Engine Cycle</span>
                         <span className="text-lg font-bold text-slate-900">{specs.cycleType}</span>
                       </div>
                     )}
                     {specs.chamberPressure && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Chamber Pressure</span>
+                        <span className="text-xs text-slate-600 block mb-1">Chamber Pressure</span>
                         <span className="text-lg font-bold text-slate-900">{specs.chamberPressure} bar</span>
                       </div>
                     )}
                     {specs.throttleRange && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Throttle Range</span>
+                        <span className="text-xs text-slate-600 block mb-1">Throttle Range</span>
                         <span className="text-lg font-bold text-slate-900">{specs.throttleRange}</span>
                       </div>
                     )}
                     {specs.mass && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Engine Mass</span>
+                        <span className="text-xs text-slate-600 block mb-1">Engine Mass</span>
                         <span className="text-lg font-bold text-slate-900">{formatNumber(specs.mass)} kg</span>
                       </div>
                     )}
                     {specs.nozzleRatio && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Nozzle Expansion Ratio</span>
+                        <span className="text-xs text-slate-600 block mb-1">Nozzle Expansion Ratio</span>
                         <span className="text-lg font-bold text-slate-900">{specs.nozzleRatio}:1</span>
                       </div>
                     )}
                     {specs.gimbalRange !== undefined && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Gimbal Range</span>
+                        <span className="text-xs text-slate-600 block mb-1">Gimbal Range</span>
                         <span className="text-lg font-bold text-slate-900">{specs.gimbalRange} deg</span>
                       </div>
                     )}
                     {specs.restartCapability !== undefined && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Restart Capable</span>
+                        <span className="text-xs text-slate-600 block mb-1">Restart Capable</span>
                         <span className="text-lg font-bold text-slate-900">{specs.restartCapability ? 'Yes' : 'No'}</span>
                       </div>
                     )}
@@ -497,43 +497,43 @@ function BlueprintDetailModal({
                   <>
                     {specs.power && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Power Output</span>
+                        <span className="text-xs text-slate-600 block mb-1">Power Output</span>
                         <span className="text-lg font-bold text-slate-900">{formatNumber(specs.power)} W</span>
                       </div>
                     )}
                     {specs.designLife && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Design Life</span>
+                        <span className="text-xs text-slate-600 block mb-1">Design Life</span>
                         <span className="text-lg font-bold text-slate-900">{specs.designLife} years</span>
                       </div>
                     )}
                     {specs.dryMass && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Dry Mass</span>
+                        <span className="text-xs text-slate-600 block mb-1">Dry Mass</span>
                         <span className="text-lg font-bold text-slate-900">{formatNumber(specs.dryMass)} kg</span>
                       </div>
                     )}
                     {specs.maxPayloadMass && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Max Payload Mass</span>
+                        <span className="text-xs text-slate-600 block mb-1">Max Payload Mass</span>
                         <span className="text-lg font-bold text-slate-900">{formatNumber(specs.maxPayloadMass)} kg</span>
                       </div>
                     )}
                     {specs.propulsion && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Propulsion</span>
+                        <span className="text-xs text-slate-600 block mb-1">Propulsion</span>
                         <span className="text-lg font-bold text-slate-900">{specs.propulsion}</span>
                       </div>
                     )}
                     {specs.attitude && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Attitude Control</span>
+                        <span className="text-xs text-slate-600 block mb-1">Attitude Control</span>
                         <span className="text-lg font-bold text-slate-900">{specs.attitude}</span>
                       </div>
                     )}
                     {specs.dimensions && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Dimensions</span>
+                        <span className="text-xs text-slate-600 block mb-1">Dimensions</span>
                         <span className="text-lg font-bold text-slate-900">{specs.dimensions}</span>
                       </div>
                     )}
@@ -544,43 +544,43 @@ function BlueprintDetailModal({
                   <>
                     {specs.landingMass && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Landing Mass</span>
+                        <span className="text-xs text-slate-600 block mb-1">Landing Mass</span>
                         <span className="text-lg font-bold text-slate-900">{formatNumber(specs.landingMass)} kg</span>
                       </div>
                     )}
                     {specs.payloadCapacity && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Payload Capacity</span>
+                        <span className="text-xs text-slate-600 block mb-1">Payload Capacity</span>
                         <span className="text-lg font-bold text-slate-900">{formatNumber(specs.payloadCapacity)} kg</span>
                       </div>
                     )}
                     {specs.height && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Height</span>
+                        <span className="text-xs text-slate-600 block mb-1">Height</span>
                         <span className="text-lg font-bold text-slate-900">{specs.height} m</span>
                       </div>
                     )}
                     {specs.diameter && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Diameter</span>
+                        <span className="text-xs text-slate-600 block mb-1">Diameter</span>
                         <span className="text-lg font-bold text-slate-900">{specs.diameter} m</span>
                       </div>
                     )}
                     {specs.propulsion && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Propulsion</span>
+                        <span className="text-xs text-slate-600 block mb-1">Propulsion</span>
                         <span className="text-lg font-bold text-slate-900">{specs.propulsion}</span>
                       </div>
                     )}
                     {specs.landingAccuracy && (
                       <div className="bg-slate-50 p-4 rounded-lg">
-                        <span className="text-xs text-slate-500 block mb-1">Landing Accuracy</span>
+                        <span className="text-xs text-slate-600 block mb-1">Landing Accuracy</span>
                         <span className="text-lg font-bold text-slate-900">{specs.landingAccuracy}</span>
                       </div>
                     )}
                     {specs.surfaceOperations && (
                       <div className="bg-slate-50 p-4 rounded-lg col-span-2">
-                        <span className="text-xs text-slate-500 block mb-1">Surface Operations</span>
+                        <span className="text-xs text-slate-600 block mb-1">Surface Operations</span>
                         <span className="text-lg font-bold text-slate-900">{specs.surfaceOperations}</span>
                       </div>
                     )}
@@ -589,7 +589,7 @@ function BlueprintDetailModal({
 
                 {blueprint.propellantType && (
                   <div className="bg-slate-50 p-4 rounded-lg">
-                    <span className="text-xs text-slate-500 block mb-1">Propellant</span>
+                    <span className="text-xs text-slate-600 block mb-1">Propellant</span>
                     <span className="text-lg font-bold text-slate-900">{blueprint.propellantType}</span>
                   </div>
                 )}
@@ -666,19 +666,19 @@ function StatsCards({ stats }: { stats: BlueprintStats }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       <div className="card p-4">
-        <span className="text-xs text-slate-500 block mb-1">Total Blueprints</span>
+        <span className="text-xs text-slate-600 block mb-1">Total Blueprints</span>
         <span className="text-2xl font-bold text-slate-900">{stats.total}</span>
       </div>
       <div className="card p-4">
-        <span className="text-xs text-slate-500 block mb-1">Rocket Engines</span>
+        <span className="text-xs text-slate-600 block mb-1">Rocket Engines</span>
         <span className="text-2xl font-bold text-nebula-600">{stats.byCategory['engine'] || 0}</span>
       </div>
       <div className="card p-4">
-        <span className="text-xs text-slate-500 block mb-1">Satellite Buses</span>
+        <span className="text-xs text-slate-600 block mb-1">Satellite Buses</span>
         <span className="text-2xl font-bold text-rocket-600">{stats.byCategory['satellite_bus'] || 0}</span>
       </div>
       <div className="card p-4">
-        <span className="text-xs text-slate-500 block mb-1">Total Missions</span>
+        <span className="text-xs text-slate-600 block mb-1">Total Missions</span>
         <span className="text-2xl font-bold text-green-600">{formatNumber(stats.totalMissionsFlown)}</span>
       </div>
     </div>

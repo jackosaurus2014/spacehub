@@ -207,6 +207,16 @@ For each of the 2 most significant developments:
 4. Assign exactly one category: regulatory, market, technology, or geopolitical
 5. List the source URLs that informed this analysis
 
+Format the article content using proper Markdown:
+- Use ## for main section headers and ### for sub-sections
+- Use bullet lists (- item) for key points and enumerations
+- Use numbered lists (1. item) for sequential steps or rankings
+- Use **bold** for key terms, company names, and important figures
+- Use > for key takeaways or notable quotes
+- End the article with a ## Key Takeaways section containing 3-5 bullet points summarizing the main insights
+- Use --- to separate major sections when appropriate
+- Keep paragraphs focused and concise (3-5 sentences each)
+
 The analysis should be professional, data-driven, and provide actionable intelligence. Avoid speculation without basis. Reference specific entities and facts from the source material.
 
 Respond with valid JSON in this exact format (no markdown code fences):

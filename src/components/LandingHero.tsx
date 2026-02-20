@@ -85,7 +85,7 @@ export default function LandingHero() {
           >
             <Link
               href="/mission-control"
-              className="btn-primary text-base py-4 px-10 shadow-lg shadow-nebula-500/30"
+              className="btn-primary text-base py-4 px-10 shadow-lg shadow-nebula-500/30 inline-flex items-center justify-center"
             >
               Explore the Platform
             </Link>

@@ -95,6 +95,140 @@ function SkeletonDetail() {
   );
 }
 
+function markdownToHtml(markdown: string): string {
+  const lines = markdown.split('\n');
+  const htmlParts: string[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    // Empty line — skip (paragraph separation handled by grouping)
+    if (trimmed === '') {
+      i++;
+      continue;
+    }
+
+    // Horizontal rule
+    if (/^(-{3,}|\*{3,})$/.test(trimmed)) {
+      htmlParts.push('<hr />');
+      i++;
+      continue;
+    }
+
+    // Heading ##
+    if (trimmed.startsWith('## ')) {
+      const text = inlineFormat(trimmed.slice(3));
+      htmlParts.push(`<h2>${text}</h2>`);
+      i++;
+      continue;
+    }
+
+    // Heading ###
+    if (trimmed.startsWith('### ')) {
+      const text = inlineFormat(trimmed.slice(4));
+      htmlParts.push(`<h3>${text}</h3>`);
+      i++;
+      continue;
+    }
+
+    // Blockquote
+    if (trimmed.startsWith('> ')) {
+      const quoteLines: string[] = [];
+      while (i < lines.length && lines[i].trim().startsWith('> ')) {
+        quoteLines.push(inlineFormat(lines[i].trim().slice(2)));
+        i++;
+      }
+      htmlParts.push(`<blockquote><p>${quoteLines.join(' ')}</p></blockquote>`);
+      continue;
+    }
+
+    // Unordered list (- item or * item, but not ---, ***)
+    if (/^[-*] /.test(trimmed) && !/^[-*]{3,}$/.test(trimmed)) {
+      const items: string[] = [];
+      while (i < lines.length) {
+        const cur = lines[i].trim();
+        if (/^[-*] /.test(cur)) {
+          items.push(`<li>${inlineFormat(cur.slice(2))}</li>`);
+          i++;
+        } else if (cur === '') {
+          // Check if next non-empty line is still a list item
+          let peek = i + 1;
+          while (peek < lines.length && lines[peek].trim() === '') peek++;
+          if (peek < lines.length && /^[-*] /.test(lines[peek].trim())) {
+            i = peek;
+          } else {
+            break;
+          }
+        } else {
+          break;
+        }
+      }
+      htmlParts.push(`<ul>${items.join('')}</ul>`);
+      continue;
+    }
+
+    // Ordered list (1. item)
+    if (/^\d+\. /.test(trimmed)) {
+      const items: string[] = [];
+      while (i < lines.length) {
+        const cur = lines[i].trim();
+        if (/^\d+\. /.test(cur)) {
+          items.push(`<li>${inlineFormat(cur.replace(/^\d+\. /, ''))}</li>`);
+          i++;
+        } else if (cur === '') {
+          let peek = i + 1;
+          while (peek < lines.length && lines[peek].trim() === '') peek++;
+          if (peek < lines.length && /^\d+\. /.test(lines[peek].trim())) {
+            i = peek;
+          } else {
+            break;
+          }
+        } else {
+          break;
+        }
+      }
+      htmlParts.push(`<ol>${items.join('')}</ol>`);
+      continue;
+    }
+
+    // Regular paragraph — collect consecutive non-empty, non-special lines
+    const paraLines: string[] = [];
+    while (i < lines.length) {
+      const cur = lines[i].trim();
+      if (
+        cur === '' ||
+        cur.startsWith('## ') ||
+        cur.startsWith('### ') ||
+        cur.startsWith('> ') ||
+        /^[-*] /.test(cur) ||
+        /^\d+\. /.test(cur) ||
+        /^(-{3,}|\*{3,})$/.test(cur)
+      ) {
+        break;
+      }
+      paraLines.push(cur);
+      i++;
+    }
+    if (paraLines.length > 0) {
+      htmlParts.push(`<p>${inlineFormat(paraLines.join(' '))}</p>`);
+    }
+  }
+
+  return htmlParts.join('\n');
+}
+
+function inlineFormat(text: string): string {
+  // Bold: **text**
+  let result = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Italic: *text* (but not inside <strong> tags — use negative lookbehind/ahead for *)
+  result = result.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
+  // Links: [text](url)
+  result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+  return result;
+}
+
 export default function AIInsightDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
@@ -183,7 +317,6 @@ export default function AIInsightDetailPage() {
   }
 
   const colors = CATEGORY_COLORS[insight.category] || CATEGORY_COLORS.technology;
-  const contentBlocks = insight.content.split('\n\n').filter((p) => p.trim().length > 0);
   const sources = parseSources(insight.sources);
 
   return (
@@ -258,39 +391,12 @@ export default function AIInsightDetailPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="space-y-4 mb-12"
+              className="mb-12"
             >
-              {contentBlocks.map((block, index) => {
-                const trimmed = block.trim();
-                // Render markdown headers
-                if (trimmed.startsWith('## ')) {
-                  return (
-                    <h2 key={index} className="text-xl font-bold text-slate-100 mt-6 mb-2">
-                      {trimmed.replace(/^## /, '')}
-                    </h2>
-                  );
-                }
-                if (trimmed.startsWith('### ')) {
-                  return (
-                    <h3 key={index} className="text-lg font-semibold text-slate-200 mt-4 mb-1">
-                      {trimmed.replace(/^### /, '')}
-                    </h3>
-                  );
-                }
-                // Render bold text within paragraphs
-                const parts = trimmed.split(/\*\*(.*?)\*\*/g);
-                return (
-                  <p key={index} className="text-slate-300 leading-relaxed text-base">
-                    {parts.map((part, i) =>
-                      i % 2 === 1 ? (
-                        <strong key={i} className="text-slate-100 font-semibold">{part}</strong>
-                      ) : (
-                        part
-                      )
-                    )}
-                  </p>
-                );
-              })}
+              <div
+                className="prose prose-invert prose-slate max-w-none prose-headings:text-white prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3 prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-300 prose-strong:text-white prose-a:text-cyan-400 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-cyan-500/40 prose-blockquote:text-slate-400 prose-hr:border-slate-700"
+                dangerouslySetInnerHTML={{ __html: markdownToHtml(insight.content) }}
+              />
             </motion.div>
 
             {/* Sources Section */}

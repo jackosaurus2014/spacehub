@@ -1109,7 +1109,13 @@ export type ResourceCategory =
   | 'fuel'
   | 'life_support'
   | 'electronics'
-  | 'exotic';
+  | 'exotic'
+  | 'structure'
+  | 'thermal'
+  | 'propulsion'
+  | 'avionics'
+  | 'communications'
+  | 'subsystem';
 
 export type ResourceAvailability =
   | 'abundant'
@@ -1153,13 +1159,19 @@ export interface LaunchProvider {
   updatedAt: Date;
 }
 
-export const RESOURCE_CATEGORIES: { value: ResourceCategory; label: string; icon: string }[] = [
+export const RESOURCE_CATEGORIES: { value: ResourceCategory; label: string; icon: string; description?: string }[] = [
   { value: 'raw_material', label: 'Raw Materials', icon: '🪨' },
   { value: 'composite', label: 'Composites', icon: '🧬' },
   { value: 'fuel', label: 'Propellants & Fuels', icon: '⛽' },
   { value: 'life_support', label: 'Life Support', icon: '💧' },
   { value: 'electronics', label: 'Electronics', icon: '💻' },
   { value: 'exotic', label: 'Exotic Materials', icon: '💎' },
+  { value: 'structure', label: 'Structural Components', icon: '🏗️', description: 'Primary structures, pressure vessels, truss segments, and MMOD shielding' },
+  { value: 'thermal', label: 'Thermal Systems', icon: '🌡️', description: 'Radiators, heat exchangers, MLI blankets, and thermal control hardware' },
+  { value: 'propulsion', label: 'Propulsion Hardware', icon: '🚀', description: 'Thrusters, engines, propellant tanks, and propulsion subsystems' },
+  { value: 'avionics', label: 'Avionics & GNC', icon: '🖥️', description: 'Flight computers, star trackers, IMUs, reaction wheels, and navigation sensors' },
+  { value: 'communications', label: 'Communications Equipment', icon: '📡', description: 'Transponders, transmitters, antennas, and optical terminals' },
+  { value: 'subsystem', label: 'Integrated Subsystems', icon: '⚙️', description: 'Docking mechanisms, robotic arms, ECLSS, airlocks, and life support racks' },
 ];
 
 export const AVAILABILITY_INFO: Record<ResourceAvailability, { label: string; color: string }> = {

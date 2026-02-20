@@ -1,0 +1,10 @@
+1.  Incorporate all of the components, hardware and systems you identified in the BOMs for the orbital systems cost estimator into our Resource Exchange module.
+
+2.  For the Blueprints module, when I click on a blueprint card, the text for the specifications descriptions, (e.g. Thrust (Sea Level)) are very hard to read against the white background on the pop up card.  The actual specifications are black on the white background and easy to ready but we need to make the spec description (e.g. Throttle Range, Engine Mass) much darker.
+
+3.  For a couple of our new AI-generated SpaceNexus Team blogs, the formatting in the blog is messy. It doesn't look like a well-formatted blog or article.  Specifically, the "5 space industry trends..." and "The Rise of Mega Constellations..." are excellent content but need to be well formatted to resemble a professional blog article.  Let's make sure our future blogs/articles that are AI-generated are also well formatted.
+
+4.  On the land page, our "Explore the Platform" button needs to have the text in the button centered vertically within the button.  Right now it's slightly offset toward the top of the button.  Let me know if you need a screenshot.  
+
+
+
