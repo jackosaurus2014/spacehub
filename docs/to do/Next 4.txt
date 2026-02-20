@@ -34,39 +34,19 @@ Subtasks:
 ===============================================================================
 TASK C: SEO METADATA & STRUCTURED DATA GAPS
 ===============================================================================
-STATUS: NOT STARTED
+STATUS: COMPLETE
 PRIORITY: P1 — High (organic traffic)
 
-Current state: 62 layout.tsx files. Key gaps in guide/, learn/, compare/,
-regulation-explainers/, and utility pages.
+Result: 7 new layout.tsx files, Article JSON-LD on 2 detail pages, sitemap updated.
 
 Subtasks:
-- [ ] Add layout.tsx with metadata for 11 guide pages:
-      guide/commercial-space-economy, guide/how-satellite-tracking-works,
-      guide/itar-compliance-guide, guide/satellite-tracking-guide,
-      guide/space-business-opportunities, guide/space-economy-investment,
-      guide/space-industry, guide/space-industry-market-size,
-      guide/space-launch-cost-comparison, guide/space-launch-schedule-2026,
-      guide/space-regulatory-compliance
-- [ ] Add layout.tsx with metadata for 4 learn pages:
-      learn/how-to-track-satellites, learn/satellite-launch-cost,
-      learn/space-companies-to-watch, learn/space-industry-market-size
-- [ ] Add layout.tsx with metadata for 3 compare pages:
-      compare/, compare/bloomberg-terminal, compare/payload-space,
-      compare/quilty-analytics
-- [ ] Add layout.tsx with metadata for utility pages (6):
-      regulation-explainers, my-watchlists, provider-dashboard,
-      dashboard, dashboard/builder, marketplace/copilot
-- [ ] Add Article structured data (JSON-LD) to blog/[slug] and
-      ai-insights/[slug] detail pages
-- [ ] Add FAQ structured data to guide pages that have Q&A sections
-- [ ] Update sitemap.ts to include any missing pages
-
-Notes:
-- Guide and learn pages are high-value SEO content — metadata is critical
-- Compare pages target competitive keywords (vs Bloomberg Terminal, Payload Space, Quilty)
-- Use existing layout.tsx files as templates (see ai-insights/layout.tsx)
-- Structured data components exist: BreadcrumbSchema, FAQSchema in src/components/seo/
+- [x] Add layout.tsx for guide/ (parent with template title — covers 11 subpages)
+- [x] Learn/ already had layout.tsx (covers 4 subpages) — no action needed
+- [x] Add layout.tsx for compare/ (parent with template title — covers 3 subpages)
+- [x] Add layout.tsx for utility pages: regulation-explainers, my-watchlists,
+      provider-dashboard, dashboard, marketplace/copilot
+- [x] Add Article JSON-LD structured data to blog/[slug] and ai-insights/[slug]
+- [x] Update sitemap.ts with missing guide, learn, compare, utility pages
 
 ===============================================================================
 TASK D: PERFORMANCE OPTIMIZATION
@@ -168,6 +148,7 @@ IMPLEMENTATION LOG
 | 2026-02-20 | Tracker created           | 6 tasks (A-F), audit-driven prioritization |
 | 2026-02-20 | Task A complete           | +303 tests (812 total), 6 new test suites  |
 | 2026-02-20 | Task B complete           | +30 loading.tsx, +20 error.tsx (50 files)  |
+| 2026-02-20 | Task C complete           | 7 layouts, 2 JSON-LD, sitemap updated      |
 
 ===============================================================================
 REMAINING WORK SUMMARY

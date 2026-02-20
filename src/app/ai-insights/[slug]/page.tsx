@@ -332,6 +332,35 @@ export default function AIInsightDetailPage() {
               { name: 'AI Insights', href: '/ai-insights' },
               { name: insight.title },
             ]} />
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'Article',
+                headline: insight.title,
+                author: {
+                  '@type': 'Organization',
+                  name: 'SpaceNexus AI',
+                },
+                datePublished: insight.generatedAt,
+                publisher: {
+                  '@type': 'Organization',
+                  name: 'SpaceNexus',
+                  url: 'https://spacenexus.us',
+                  logo: {
+                    '@type': 'ImageObject',
+                    url: 'https://spacenexus.us/spacenexus-logo.png',
+                  },
+                },
+                description: insight.summary || insight.content.substring(0, 160),
+                articleSection: insight.category,
+                mainEntityOfPage: {
+                  '@type': 'WebPage',
+                  '@id': `https://spacenexus.us/ai-insights/${slug}`,
+                },
+                inLanguage: 'en-US',
+              }).replace(/</g, '\\u003c') }}
+            />
             {/* Breadcrumb Navigation */}
             <nav className="flex items-center gap-2 text-sm text-slate-500 mb-8">
               <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>

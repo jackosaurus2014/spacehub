@@ -84,9 +84,8 @@ export default function BlogPostPage({ params }: Props) {
     headline: post.title,
     description: post.excerpt,
     author: {
-      '@type': 'Organization',
-      name: 'SpaceNexus',
-      url: 'https://spacenexus.us',
+      '@type': 'Person',
+      name: post.author,
     },
     publisher: {
       '@type': 'Organization',

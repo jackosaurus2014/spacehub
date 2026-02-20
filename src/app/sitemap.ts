@@ -106,10 +106,14 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/live`, changeFrequency: 'hourly' as const, priority: 0.6 },
     { url: `${BASE_URL}/ai-insights`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${BASE_URL}/search`, changeFrequency: 'weekly' as const, priority: 0.5 },
-    { url: `${BASE_URL}/dashboard`, changeFrequency: 'daily' as const, priority: 0.5 },
+    { url: `${BASE_URL}/dashboard`, changeFrequency: 'weekly' as const, priority: 0.4 },
+    { url: `${BASE_URL}/dashboard/builder`, changeFrequency: 'weekly' as const, priority: 0.4 },
     { url: `${BASE_URL}/alerts`, changeFrequency: 'daily' as const, priority: 0.5 },
+    { url: `${BASE_URL}/my-watchlists`, changeFrequency: 'weekly' as const, priority: 0.4 },
+    { url: `${BASE_URL}/provider-dashboard`, changeFrequency: 'weekly' as const, priority: 0.4 },
 
     // Guides
+    { url: `${BASE_URL}/guide`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/guide/space-industry`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/guide/space-industry-market-size`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/guide/how-satellite-tracking-works`, changeFrequency: 'monthly' as const, priority: 0.6 },
@@ -129,6 +133,9 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/learn/how-to-track-satellites`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/learn/space-companies-to-watch`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
+    // Regulation explainers index
+    { url: `${BASE_URL}/regulation-explainers`, changeFrequency: 'monthly' as const, priority: 0.7 },
+
     // Comparison pages
     { url: `${BASE_URL}/compare`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/compare/bloomberg-terminal`, changeFrequency: 'monthly' as const, priority: 0.6 },
@@ -138,7 +145,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // Marketplace
     { url: `${BASE_URL}/marketplace`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/marketplace/search`, changeFrequency: 'daily' as const, priority: 0.6 },
-    { url: `${BASE_URL}/marketplace/copilot`, changeFrequency: 'weekly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/marketplace/copilot`, changeFrequency: 'weekly' as const, priority: 0.6 },
 
     // Conversion pages
     { url: `${BASE_URL}/pricing`, changeFrequency: 'monthly' as const, priority: 0.5 },
