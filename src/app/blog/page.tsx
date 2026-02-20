@@ -158,6 +158,28 @@ function BlogListingContent() {
           </div>
         )}
 
+        {/* Explore Our Tools */}
+        <div className="mt-12 mb-8">
+          <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Explore Our Tools</h3>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { label: 'Satellite Tracker', href: '/satellites' },
+              { label: 'Market Intelligence', href: '/market-intel' },
+              { label: 'Company Directory', href: '/company-profiles' },
+              { label: 'Marketplace', href: '/marketplace' },
+              { label: 'Launch Dashboard', href: '/launch' },
+            ].map((tool) => (
+              <Link
+                key={tool.href}
+                href={tool.href}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-nebula-500/50 transition-all"
+              >
+                {tool.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
         {/* RSS Feed Link */}
         <div className="mt-12 text-center">
           <a

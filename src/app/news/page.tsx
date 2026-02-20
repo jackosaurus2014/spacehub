@@ -13,6 +13,8 @@ import PullToRefresh from '@/components/ui/PullToRefresh';
 import ArticleLimitBanner from '@/components/ui/ArticleLimitBanner';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import AdSlot from '@/components/ads/AdSlot';
+import Link from 'next/link';
+import { BLOG_POSTS } from '@/lib/blog-content';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { NewsArticle } from '@/types';
@@ -223,6 +225,29 @@ export default function NewsPage() {
         }>
           <NewsContent />
         </Suspense>
+
+        {/* From Our Blog */}
+        <div className="mt-16 pb-12">
+          <h2 className="text-lg font-semibold text-white mb-6">SpaceNexus Analysis</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {BLOG_POSTS.filter(p => p.featured).slice(0, 3).map(post => (
+              <Link
+                key={post.slug}
+                href={`/blog/${post.slug}`}
+                className="group block bg-slate-800/40 border border-slate-700/50 rounded-lg p-5 hover:border-nebula-500/50 transition-all"
+              >
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-nebula-500/20 text-nebula-300 border border-nebula-500/30">
+                  Blog
+                </span>
+                <h3 className="text-sm font-semibold text-white group-hover:text-nebula-400 transition-colors mt-3 mb-2 line-clamp-2">
+                  {post.title}
+                </h3>
+                <p className="text-xs text-slate-400 line-clamp-2">{post.excerpt}</p>
+                <span className="text-xs text-slate-500 mt-2 block">{post.readingTime} min read</span>
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

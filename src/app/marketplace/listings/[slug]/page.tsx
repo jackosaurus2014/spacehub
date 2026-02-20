@@ -270,6 +270,19 @@ export default function ListingDetailPage({ params }: { params: Promise<{ slug: 
               </button>
             </div>
 
+            {/* Company News Link */}
+            {listing.company?.slug && (
+              <div className="card p-4">
+                <Link
+                  href={`/company-profiles/${listing.company.slug}?tab=news`}
+                  className="flex items-center justify-between text-sm text-slate-400 hover:text-cyan-400 transition-colors"
+                >
+                  <span>News about {listing.company.name}</span>
+                  <span>&rarr;</span>
+                </Link>
+              </div>
+            )}
+
             {/* Quick Details */}
             <div className="card p-5 space-y-3">
               <h3 className="text-xs text-slate-500 uppercase tracking-wider">Details</h3>

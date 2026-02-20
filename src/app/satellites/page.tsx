@@ -447,6 +447,22 @@ function SatelliteTrackerContent() {
                   </div>
                 </div>
                 </ScrollReveal>
+
+                {/* Related Tools */}
+                <div className="mt-6 flex flex-wrap items-center gap-3">
+                  <span className="text-xs text-slate-500 uppercase tracking-wider">Related:</span>
+                  <Link href="/space-environment" className="text-xs text-slate-400 hover:text-nebula-400 transition-colors">
+                    Space Weather &amp; Debris &rarr;
+                  </Link>
+                  <span className="text-slate-300">|</span>
+                  <Link href="/constellations" className="text-xs text-slate-400 hover:text-nebula-400 transition-colors">
+                    Constellation Tracker &rarr;
+                  </Link>
+                  <span className="text-slate-300">|</span>
+                  <Link href="/blog/satellite-tracking-explained-beginners-guide" className="text-xs text-slate-400 hover:text-nebula-400 transition-colors">
+                    Guide: How Satellite Tracking Works &rarr;
+                  </Link>
+                </div>
               </div>
             )}
 

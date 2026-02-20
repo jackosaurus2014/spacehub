@@ -6,6 +6,21 @@ import FAQSchema from '@/components/seo/FAQSchema';
 
 export const revalidate = 3600;
 
+const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
+  'why-space-industry-needs-bloomberg-terminal': { tool: 'Mission Control', path: '/mission-control' },
+  'space-economy-2026-where-money-is-going': { tool: 'Market Intelligence', path: '/market-intel' },
+  'how-to-win-government-space-contracts': { tool: 'Procurement Intelligence', path: '/procurement' },
+  'space-startup-funding-trends-2026': { tool: 'Space Capital Tracker', path: '/space-capital' },
+  'satellite-tracking-explained-beginners-guide': { tool: 'Satellite Tracker', path: '/satellites' },
+  'space-weather-monitoring-business-impact': { tool: 'Space Environment Monitor', path: '/space-environment' },
+  '5-space-industry-trends-reshaping-market-2026': { tool: 'Market Intelligence', path: '/market-intel' },
+  'rise-of-mega-constellations-business-impact': { tool: 'Constellation Tracker', path: '/constellations' },
+  'space-insurance-billion-dollar-market': { tool: 'Space Insurance', path: '/space-insurance' },
+  'building-spacenexus-idea-to-launch-90-days': { tool: 'Mission Control', path: '/mission-control' },
+  'itar-ear-compliance-space-startups': { tool: 'Compliance Hub', path: '/compliance' },
+  'sam-gov-to-space-government-contracts-guide': { tool: 'Procurement Intelligence', path: '/procurement' },
+};
+
 interface Props {
   params: { slug: string };
 }
@@ -146,8 +161,23 @@ export default function BlogPostPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
+        {/* Topic-Aware CTA */}
+        {BLOG_CTA_MAP[post.slug] && (
+          <div className="mt-12 p-5 bg-nebula-500/10 border border-nebula-500/30 rounded-xl flex items-center justify-between gap-4">
+            <p className="text-sm text-slate-300">
+              Explore this topic with our <span className="text-white font-medium">{BLOG_CTA_MAP[post.slug].tool}</span>
+            </p>
+            <Link
+              href={BLOG_CTA_MAP[post.slug].path}
+              className="text-sm font-medium text-nebula-400 hover:text-nebula-300 transition-colors whitespace-nowrap"
+            >
+              Try {BLOG_CTA_MAP[post.slug].tool} &rarr;
+            </Link>
+          </div>
+        )}
+
         {/* CTA */}
-        <div className="mt-12 p-6 bg-slate-800/60 border border-slate-700/50 rounded-xl text-center">
+        <div className="mt-4 p-6 bg-slate-800/60 border border-slate-700/50 rounded-xl text-center">
           <h3 className="text-lg font-bold text-white mb-2">
             Get space industry intelligence delivered
           </h3>

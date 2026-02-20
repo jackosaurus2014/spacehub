@@ -210,6 +210,9 @@ function MarketplaceActions({ companySlug, companyId, companyName }: { companySl
       <Link href={`/marketplace/search?category=&companyId=${companyId}`} className="text-xs px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors">
         View Service Listings
       </Link>
+      <Link href={`/space-talent?tab=jobs&search=${encodeURIComponent(companyName)}`} className="text-xs px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors">
+        Jobs at {companyName}
+      </Link>
       <WatchButton companyProfileId={companyId} companyName={companyName} size="md" />
       {!claimed && !showClaimForm && (
         <button
@@ -895,46 +898,53 @@ function NewsTab({ companySlug, companyName }: { companySlug: string; companyNam
   };
 
   return (
-    <SectionCard title={`Related News (${total})`}>
-      <div className="space-y-3">
-        {articles.map((article, i) => (
-          <motion.a
-            key={article.id}
-            href={article.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.03 }}
-            className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
-          >
-            {article.imageUrl && (
-              <img src={article.imageUrl} alt={article.title} className="w-16 h-12 rounded object-cover flex-shrink-0" />
-            )}
-            <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-medium text-white group-hover:text-cyan-400 transition-colors line-clamp-1">
-                {article.title}
-              </h4>
-              {article.summary && (
-                <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{article.summary}</p>
+    <>
+      <SectionCard title={`Related News (${total})`}>
+        <div className="space-y-3">
+          {articles.map((article, i) => (
+            <motion.a
+              key={article.id}
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.03 }}
+              className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
+            >
+              {article.imageUrl && (
+                <img src={article.imageUrl} alt={article.title} className="w-16 h-12 rounded object-cover flex-shrink-0" />
               )}
-              <div className="flex items-center gap-2 mt-1">
-                <span className={`text-[10px] px-1.5 py-0.5 rounded ${categoryColors[article.category] || 'bg-slate-500/20 text-slate-300'}`}>
-                  {article.category}
-                </span>
-                <span className="text-[10px] text-slate-500">{article.source}</span>
-                <span className="text-[10px] text-slate-500">
-                  {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                </span>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-medium text-white group-hover:text-cyan-400 transition-colors line-clamp-1">
+                  {article.title}
+                </h4>
+                {article.summary && (
+                  <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{article.summary}</p>
+                )}
+                <div className="flex items-center gap-2 mt-1">
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded ${categoryColors[article.category] || 'bg-slate-500/20 text-slate-300'}`}>
+                    {article.category}
+                  </span>
+                  <span className="text-[10px] text-slate-500">{article.source}</span>
+                  <span className="text-[10px] text-slate-500">
+                    {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
               </div>
-            </div>
-            <svg className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          </motion.a>
-        ))}
+              <svg className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </motion.a>
+          ))}
+        </div>
+      </SectionCard>
+      <div className="mt-4 text-center">
+        <Link href="/news" className="text-sm text-slate-400 hover:text-cyan-400 transition-colors">
+          See all space news on SpaceNexus &rarr;
+        </Link>
       </div>
-    </SectionCard>
+    </>
   );
 }
 
