@@ -1,0 +1,208 @@
+PROJECT TRACKER: Next 4 — Quality, Performance, Testing, SEO, Polish
+STATUS: In Progress
+CREATED: 2026-02-20
+
+===============================================================================
+TASK A: TEST COVERAGE EXPANSION
+===============================================================================
+STATUS: COMPLETE
+PRIORITY: P0 — Critical (quality/reliability)
+
+Result: 812 tests across 24 suites (+303 tests, +6 suites). Exceeds 750+ target.
+
+Subtasks:
+- [x] Auth system tests — 44 tests (register, forgot-password, reset-password, verify-email)
+- [x] Company profiles API tests — 44 tests (directory, detail, claim, request)
+- [x] Deal rooms API tests — 75 tests (CRUD room, join, members, documents, activity, NDA)
+- [x] Newsletter/email route tests — 43 tests (subscribe, verify, unsubscribe, status, resend)
+- [x] Procurement route tests — 62 tests (opportunities, SBIR, budget, stats, congressional)
+- [x] Webhook route tests — 35 tests (subscribe, unsubscribe, dispatch, delivery tracking)
+
+===============================================================================
+TASK B: LOADING & ERROR BOUNDARY COVERAGE
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P1 — High (user experience)
+
+Current state: 16 loading.tsx, 14 error.tsx across 111 pages.
+Target: loading.tsx + error.tsx for all major module pages.
+
+Subtasks:
+- [ ] Add loading.tsx skeleton files for 20 module pages missing them:
+      ai-insights, blogs, blueprints, business-opportunities, cislunar,
+      compliance, constellations, ground-stations, launch, launch-vehicles,
+      launch-windows, mars-planner, mission-control, mission-cost,
+      orbital-costs, orbital-slots, patents, procurement, resource-exchange,
+      solar-exploration
+- [ ] Add error.tsx boundary files for 20 module pages missing them:
+      ai-insights, blueprints, business-opportunities, cislunar, compliance,
+      constellations, ground-stations, launch, launch-vehicles, launch-windows,
+      mars-planner, mission-control, mission-cost, orbital-costs, orbital-slots,
+      patents, procurement, resource-exchange, solar-exploration, space-environment
+- [ ] Add loading.tsx for secondary pages (10):
+      space-capital, space-defense, space-economy, space-environment,
+      space-insurance, space-manufacturing, space-mining, spaceports,
+      spectrum, supply-chain
+
+Notes:
+- Loading skeletons should match the page layout (header + content grid pattern)
+- Error boundaries use the existing pattern: "use client", error/reset props,
+  retry button, link to homepage
+- Can be batch-created with agents (groups of 10)
+
+===============================================================================
+TASK C: SEO METADATA & STRUCTURED DATA GAPS
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P1 — High (organic traffic)
+
+Current state: 62 layout.tsx files. Key gaps in guide/, learn/, compare/,
+regulation-explainers/, and utility pages.
+
+Subtasks:
+- [ ] Add layout.tsx with metadata for 11 guide pages:
+      guide/commercial-space-economy, guide/how-satellite-tracking-works,
+      guide/itar-compliance-guide, guide/satellite-tracking-guide,
+      guide/space-business-opportunities, guide/space-economy-investment,
+      guide/space-industry, guide/space-industry-market-size,
+      guide/space-launch-cost-comparison, guide/space-launch-schedule-2026,
+      guide/space-regulatory-compliance
+- [ ] Add layout.tsx with metadata for 4 learn pages:
+      learn/how-to-track-satellites, learn/satellite-launch-cost,
+      learn/space-companies-to-watch, learn/space-industry-market-size
+- [ ] Add layout.tsx with metadata for 3 compare pages:
+      compare/, compare/bloomberg-terminal, compare/payload-space,
+      compare/quilty-analytics
+- [ ] Add layout.tsx with metadata for utility pages (6):
+      regulation-explainers, my-watchlists, provider-dashboard,
+      dashboard, dashboard/builder, marketplace/copilot
+- [ ] Add Article structured data (JSON-LD) to blog/[slug] and
+      ai-insights/[slug] detail pages
+- [ ] Add FAQ structured data to guide pages that have Q&A sections
+- [ ] Update sitemap.ts to include any missing pages
+
+Notes:
+- Guide and learn pages are high-value SEO content — metadata is critical
+- Compare pages target competitive keywords (vs Bloomberg Terminal, Payload Space, Quilty)
+- Use existing layout.tsx files as templates (see ai-insights/layout.tsx)
+- Structured data components exist: BreadcrumbSchema, FAQSchema in src/components/seo/
+
+===============================================================================
+TASK D: PERFORMANCE OPTIMIZATION
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P2 — Medium (speed/UX)
+
+Subtasks:
+- [ ] Audit bundle sizes with ANALYZE=true npm run analyze
+      — Identify top 5 largest chunks and optimization opportunities
+- [ ] Add dynamic imports for heavy client components not yet wrapped:
+      — Three.js components (TrajectoryVisualization, PlanetaryScene, etc.)
+      — Chart-heavy pages (recharts imports)
+      — Map components (if any use leaflet/mapbox)
+- [ ] Image optimization audit:
+      — Ensure all images use next/image with proper width/height/priority
+      — Check for oversized images in public/ that should be optimized
+      — Add blur placeholders for above-fold images
+- [ ] API response optimization:
+      — Add .select() to any Prisma queries returning full models unnecessarily
+      — Check for redundant API calls on page load (multiple fetches for same data)
+- [ ] Core Web Vitals baseline:
+      — Measure LCP, FID, CLS on top 10 pages using WebVitals component data
+      — Document baseline metrics for future comparison
+
+Notes:
+- WebVitals component already exists in layout.tsx
+- Bundle analyzer configured in next.config.js (ANALYZE=true)
+- next/image already used in most places
+
+===============================================================================
+TASK E: UX POLISH & BUG FIXES
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P2 — Medium (quality)
+
+Subtasks:
+- [ ] Fix blog post date sorting in all locations (DONE — committed 6611bf7, 7baecd7)
+- [ ] Audit all client-side data tables for consistent sorting behavior
+- [ ] Add "last updated" timestamps to data-heavy pages (news, blogs, market-intel)
+      — Shows users how fresh the data is
+- [ ] Add empty state illustrations to pages with no data yet:
+      — my-watchlists (no watchlists created)
+      — deal-rooms (no rooms created)
+      — alerts (no alerts configured)
+      — provider-dashboard (no listings)
+- [ ] Improve mobile responsiveness on complex pages:
+      — space-events calendar view
+      — orbital-costs BOM tables
+      — marketplace search filters
+- [ ] Add keyboard shortcut hints to frequently used actions:
+      — Ctrl+K already opens search
+      — ? already opens shortcuts modal
+      — Add visible hints on hover for module nav arrows
+- [ ] Standardize toast notification messages across the app
+      — Consistent success/error language
+      — Ensure all form submissions show feedback
+
+Notes:
+- Sorting fix already committed this session
+- Focus on polish items that improve perceived quality
+
+===============================================================================
+TASK F: CARRIED OVER FROM NEXT 3 (BLOCKED)
+===============================================================================
+STATUS: BLOCKED — Needs user action
+PRIORITY: P0 — Critical
+
+These items carry forward from Next 3 and remain blocked:
+
+From Task A (Revenue Activation):
+- [ ] Wire up tier gating in subscription.ts for premium features
+- [ ] Build/update pricing page with new investor/entrepreneur tools
+- [ ] Activate Stripe checkout flows
+- [ ] Add upgrade prompts (soft upsell)
+- [ ] Test end-to-end payment flow
+      STATUS: BLOCKED — Waiting for Stripe env var activation
+
+From Task B (Production Hardening):
+- [ ] Run seed scripts (seed-funding-data.ts) for new models
+      STATUS: BLOCKED — Requires Railway DB push after deploy
+- [ ] Add auth gating for deal rooms + thesis generator
+      STATUS: BLOCKED — Depends on Stripe activation
+
+From Task C (Data Pipeline Activation):
+- [ ] Run cron jobs for Grants.gov, SAM.gov, SBIR.gov data
+- [ ] Activate SEC EDGAR integration
+- [ ] Connect RSS feeds for funding round detection
+- [ ] Verify cron jobs running on Railway
+- [ ] Add data freshness monitoring
+      STATUS: BLOCKED — Requires Railway env var verification
+
+===============================================================================
+IMPLEMENTATION LOG
+===============================================================================
+
+| Date       | Action                    | Details                                    |
+|------------|---------------------------|--------------------------------------------|
+| 2026-02-20 | Tracker created           | 6 tasks (A-F), audit-driven prioritization |
+| 2026-02-20 | Task A complete           | +303 tests (812 total), 6 new test suites  |
+
+===============================================================================
+REMAINING WORK SUMMARY
+===============================================================================
+
+READY TO BUILD (no blockers):
+- Task B: Loading & error boundary coverage (40+ new files)
+- Task C: SEO metadata gaps (24 layout.tsx files + structured data)
+- Task D: Performance optimization (bundle analysis, dynamic imports)
+- Task E: UX polish & bug fixes (empty states, mobile, timestamps)
+
+BLOCKED (needs user action):
+- Task F: All carried-over items from Next 3 (Stripe, Railway, data pipelines)
+
+ESTIMATED FILE COUNTS:
+- Task A: ~6 new test files (~400 new tests)
+- Task B: ~50 new loading.tsx + error.tsx files
+- Task C: ~28 new layout.tsx files + 2-3 structured data components
+- Task D: ~10 file modifications
+- Task E: ~15 file modifications
