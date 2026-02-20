@@ -19,6 +19,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Mission Control', href: '/mission-control', description: 'Upcoming launches and events' },
   { label: 'News & Categories', href: '/news', description: 'Latest space industry updates' },
   { label: 'Blogs & Articles', href: '/blogs', description: 'Expert industry insights' },
+  { label: 'SpaceNexus Blog', href: '/blog', description: 'Guides, analysis & market reports' },
   { label: 'Space Defense', href: '/space-defense', description: 'Military space & national security' },
   { label: 'AI Insights', href: '/ai-insights', description: 'AI-powered industry analysis' },
   { label: 'Solar Exploration', href: '/solar-exploration', description: '3D planetary visualization' },
