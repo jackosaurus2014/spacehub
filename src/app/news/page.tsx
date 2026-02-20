@@ -230,7 +230,7 @@ export default function NewsPage() {
         <div className="mt-16 pb-12">
           <h2 className="text-lg font-semibold text-white mb-6">SpaceNexus Analysis</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {BLOG_POSTS.filter(p => p.featured).slice(0, 3).map(post => (
+            {BLOG_POSTS.filter(p => p.featured).sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()).slice(0, 3).map(post => (
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
