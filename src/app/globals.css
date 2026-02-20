@@ -1,5 +1,4 @@
-/* Inter is loaded via next/font/google in layout.tsx — only import Orbitron here */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&display=swap');
+/* Both Inter and Orbitron are loaded via next/font/google in layout.tsx */
 
 @tailwind base;
 @tailwind components;

@@ -1146,10 +1146,14 @@ export default function CompanyProfileDetailPage() {
         industry={company.sector || undefined}
         parentOrganization={company.parentCompany || undefined}
       />
-      {/* Back button */}
-      <Link href="/company-profiles" className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-cyan-400 transition-colors mb-4">
-        ← Back to Companies
-      </Link>
+      {/* Breadcrumb Navigation */}
+      <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
+        <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
+        <span>/</span>
+        <Link href="/company-profiles" className="hover:text-slate-300 transition-colors">Company Profiles</Link>
+        <span>/</span>
+        <span className="text-slate-400 truncate">{company.name}</span>
+      </nav>
 
       {/* Hero Header */}
       <motion.div

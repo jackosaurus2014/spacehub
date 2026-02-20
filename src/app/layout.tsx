@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Orbitron } from 'next/font/google';
 import './globals.css';
 import Navigation from '@/components/Navigation';
 import Starfield from '@/components/Starfield';
@@ -29,6 +29,7 @@ import ModuleNavBar from '@/components/ModuleNavBar';
 import WebVitals from '@/components/analytics/WebVitals';
 
 const inter = Inter({ subsets: ['latin'] });
+const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://spacenexus.us'),
@@ -170,7 +171,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} ${orbitron.variable}`}>
         {/* Skip to content link for accessibility */}
         <a
           href="#main-content"

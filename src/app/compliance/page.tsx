@@ -28,6 +28,7 @@ import {
   type ExpertSource,
   type TreatyObligation,
 } from '@/lib/regulatory-hub-data';
+import FAQSchema from '@/components/seo/FAQSchema';
 
 // ############################################################################
 // SPACE LAW - Types, Status Configs, and Data
@@ -1656,6 +1657,12 @@ function RegulatoryHubContent() {
 
 export default function RegulatoryHubPage() {
   return (
+    <>
+    <FAQSchema items={[
+      { question: 'What space regulations does SpaceNexus track?', answer: 'SpaceNexus tracks ITAR/EAR export controls, FCC spectrum licensing, FAA launch licenses, NOAA remote sensing permits, international treaties including the Outer Space Treaty, and national space laws from over 20 countries.' },
+      { question: 'Is SpaceNexus compliance information considered legal advice?', answer: 'No. SpaceNexus provides regulatory information for awareness and research purposes only. Always consult qualified legal counsel for compliance decisions specific to your organization.' },
+      { question: 'What are ITAR and EAR in the space industry?', answer: 'ITAR (International Traffic in Arms Regulations) controls defense articles including many spacecraft and components. EAR (Export Administration Regulations) covers dual-use commercial items. Both regulate what space technology can be exported and to whom.' },
+    ]} />
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
@@ -1682,5 +1689,6 @@ export default function RegulatoryHubPage() {
         </PremiumGate>
       </div>
     </div>
+    </>
   );
 }

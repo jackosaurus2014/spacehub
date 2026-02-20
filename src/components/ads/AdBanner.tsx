@@ -64,7 +64,7 @@ export default function AdBanner({ slot, format = 'responsive', className = '' }
 
   // Real AdSense ad unit
   return (
-    <div ref={adRef} className={`ad-container ${className}`}>
+    <div ref={adRef} className={`ad-container ${className}`} style={adStyle}>
       <ins
         className="adsbygoogle"
         style={{ display: 'block', ...adStyle }}

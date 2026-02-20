@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Link from 'next/link';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 const IMPACT_COLORS: Record<string, string> = {
   critical: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -65,14 +66,19 @@ export default function RegulationExplainerDetailPage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back link */}
-        <Link
-          href="/regulation-explainers"
-          className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-cyan-400 mb-6 transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-          Back to Regulation Explainers
-        </Link>
+        <BreadcrumbSchema items={[
+          { name: 'Home', href: '/' },
+          { name: 'Compliance', href: '/compliance' },
+          { name: explainer.title },
+        ]} />
+        {/* Breadcrumb Navigation */}
+        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
+          <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
+          <span>/</span>
+          <Link href="/compliance" className="hover:text-slate-300 transition-colors">Compliance</Link>
+          <span>/</span>
+          <span className="text-slate-400 truncate">{explainer.title}</span>
+        </nav>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

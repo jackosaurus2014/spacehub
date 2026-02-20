@@ -12,6 +12,7 @@ import ClarificationThread from '@/components/marketplace/ClarificationThread';
 import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { getCategoryIcon, getCategoryLabel, formatPrice, RFQ_STATUSES } from '@/lib/marketplace-types';
 import { toast } from '@/lib/toast';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 export default function RFQDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -84,10 +85,19 @@ export default function RFQDetailPage({ params }: { params: Promise<{ id: string
   return (
     <div className="min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Back */}
-        <Link href="/marketplace/search?tab=rfqs" className="text-xs text-cyan-400 hover:text-cyan-300">
-          ← Back to RFQs
-        </Link>
+        <BreadcrumbSchema items={[
+          { name: 'Home', href: '/' },
+          { name: 'Marketplace', href: '/marketplace' },
+          { name: rfqData?.title || 'RFQ' },
+        ]} />
+        {/* Breadcrumb Navigation */}
+        <nav className="flex items-center gap-2 text-sm text-slate-500">
+          <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
+          <span>/</span>
+          <Link href="/marketplace" className="hover:text-slate-300 transition-colors">Marketplace</Link>
+          <span>/</span>
+          <span className="text-slate-400 truncate">{rfqData?.title || 'RFQ'}</span>
+        </nav>
 
         {/* Header */}
         <div>

@@ -46,7 +46,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['Orbitron', 'sans-serif'],
+        display: ['var(--font-orbitron)', 'sans-serif'],
         body: ['Inter', 'sans-serif'],
       },
       fontSize: {

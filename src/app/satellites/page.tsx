@@ -13,6 +13,7 @@ import SatelliteCard, {
 } from '@/components/satellites/SatelliteCard';
 import AdSlot from '@/components/ads/AdSlot';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import FAQSchema from '@/components/seo/FAQSchema';
 
 // Types
 interface SatelliteData {
@@ -634,6 +635,12 @@ export default function SatellitesPage() {
     <BreadcrumbSchema items={[
       { name: 'Home', href: '/' },
       { name: 'Satellite Tracker' },
+    ]} />
+    <FAQSchema items={[
+      { question: 'How accurate is SpaceNexus satellite tracking?', answer: 'SpaceNexus uses NORAD Two-Line Element (TLE) data updated multiple times per day, providing positional accuracy within a few kilometers for most active satellites in LEO, MEO, and GEO orbits.' },
+      { question: 'Can I track the International Space Station in real-time?', answer: 'Yes. The ISS position card on our Satellite Tracker page shows its current latitude, longitude, altitude, and velocity, updated every few seconds using live orbital data.' },
+      { question: 'How many satellites are currently in orbit?', answer: 'As of 2026, there are over 10,000 active satellites in orbit, with the majority in Low Earth Orbit (LEO). SpaceNexus tracks satellites across LEO, MEO, GEO, HEO, SSO, and Polar orbits.' },
+      { question: 'What is the difference between LEO, MEO, and GEO orbits?', answer: 'LEO (Low Earth Orbit) is 160-2,000 km altitude, used for imaging and broadband. MEO (Medium Earth Orbit) is 2,000-35,786 km, used for navigation like GPS. GEO (Geostationary Orbit) is approximately 35,786 km, used for communications and weather satellites.' },
     ]} />
     <Suspense
       fallback={

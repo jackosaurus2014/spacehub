@@ -12,6 +12,7 @@ import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { toast } from '@/lib/toast';
 import AdSlot from '@/components/ads/AdSlot';
 import ItemListSchema from '@/components/seo/ItemListSchema';
+import FAQSchema from '@/components/seo/FAQSchema';
 
 interface MarketplaceStats {
   totalListings: number;
@@ -86,6 +87,11 @@ export default function MarketplacePage() {
           { name: 'Insurance', url: '/marketplace/search?category=insurance', description: 'Launch insurance, in-orbit insurance, and liability coverage' },
         ]}
       />
+      <FAQSchema items={[
+        { question: 'How do I list services on the SpaceNexus marketplace?', answer: 'Service providers can create listings through the Provider Dashboard. Listings include company details, service descriptions, pricing, certifications, and verification badges. Basic listings are free.' },
+        { question: 'What types of space services are listed?', answer: 'The marketplace covers 10 categories including Launch Services, Satellite Manufacturing, Ground Station Services, Space Insurance, Mission Operations, Testing and Qualification, Consulting, Data and Analytics, Components and Materials, and Workforce and Recruitment.' },
+        { question: 'How does the RFQ process work?', answer: 'Submit a Request for Quote describing your needs, budget range, and timeline. Our AI-powered matching system identifies qualified providers based on capabilities, certifications, and past performance. Providers can submit proposals with pricing and technical details.' },
+      ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">

@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
 import LaunchDayDashboard from '@/components/launch/LaunchDayDashboard';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 interface LaunchPageProps {
   params: Promise<{ eventId: string }>;
@@ -65,5 +67,23 @@ export default async function LaunchPage({ params }: LaunchPageProps) {
     windowEnd: event.windowEnd?.toISOString() ?? null,
   };
 
-  return <LaunchDayDashboard event={serializedEvent} />;
+  return (
+    <>
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Launch Schedule', href: '/mission-control' },
+        { name: event.name },
+      ]} />
+      <div className="max-w-[1400px] mx-auto px-4 pt-4">
+        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
+          <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
+          <span>/</span>
+          <Link href="/mission-control" className="hover:text-slate-300 transition-colors">Launch Schedule</Link>
+          <span>/</span>
+          <span className="text-slate-400 truncate">{event.name}</span>
+        </nav>
+      </div>
+      <LaunchDayDashboard event={serializedEvent} />
+    </>
+  );
 }

@@ -10,6 +10,7 @@ import WatchButton from '@/components/watchlist/WatchButton';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
 import AdSlot from '@/components/ads/AdSlot';
 import ItemListSchema from '@/components/seo/ItemListSchema';
+import FAQSchema from '@/components/seo/FAQSchema';
 
 interface CompanyCard {
   id: string;
@@ -345,6 +346,11 @@ export default function CompanyProfilesPage() {
           }))
         }
       />
+      <FAQSchema items={[
+        { question: 'How many space companies does SpaceNexus track?', answer: 'SpaceNexus profiles over 100 space and aerospace companies across launch, satellite, defense, infrastructure, ground segment, manufacturing, and analytics sectors, from publicly traded primes to venture-backed startups.' },
+        { question: 'How are space companies ranked on SpaceNexus?', answer: 'Companies are organized by tier: Tier 1 (industry leaders with $1B+ revenue or market cap), Tier 2 (established players with significant market presence), and Tier 3 (emerging companies and startups).' },
+        { question: 'How do I claim a company profile?', answer: 'Verified company representatives can claim their profile by clicking the Claim This Profile button on the company detail page and submitting a request with a company email address. Our team reviews claims within 48 hours.' },
+      ]} />
       <AnimatedPageHeader
         title="Space Company Profiles"
         subtitle="Comprehensive intelligence on 100+ space industry companies — financials, leadership, products, contracts, and relationships"

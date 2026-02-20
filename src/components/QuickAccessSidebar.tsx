@@ -367,6 +367,48 @@ export default function QuickAccessSidebar() {
         {/* Bottom Section */}
         <div className="p-2 border-t border-slate-700/50 space-y-0.5">
           <Link
+            href="/blog"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+              pathname?.startsWith('/blog')
+                ? 'bg-cyan-500/20 text-cyan-300'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+            }`}
+          >
+            <span className="text-lg flex-shrink-0 w-6 text-center">
+              <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+              </svg>
+            </span>
+            <span
+              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              }`}
+            >
+              SpaceNexus Blog
+            </span>
+          </Link>
+          <Link
+            href="/ai-insights"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+              pathname?.startsWith('/ai-insights')
+                ? 'bg-cyan-500/20 text-cyan-300'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+            }`}
+          >
+            <span className="text-lg flex-shrink-0 w-6 text-center">
+              <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </span>
+            <span
+              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              }`}
+            >
+              AI Insights
+            </span>
+          </Link>
+          <Link
             href="/marketplace"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/marketplace') || pathname?.startsWith('/provider-dashboard')

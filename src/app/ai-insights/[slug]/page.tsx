@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import GlassCard from '@/components/ui/GlassCard';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 interface Insight {
   id: string;
@@ -190,22 +191,19 @@ export default function AIInsightDetailPage() {
       <div className="container mx-auto px-4 py-8">
         <ScrollReveal>
           <div className="max-w-3xl mx-auto">
-            {/* Back Link */}
-            <Link
-              href="/ai-insights"
-              className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-cyan-400 transition-colors mb-8"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
-              Back to AI Insights
-            </Link>
+            <BreadcrumbSchema items={[
+              { name: 'Home', href: '/' },
+              { name: 'AI Insights', href: '/ai-insights' },
+              { name: insight.title },
+            ]} />
+            {/* Breadcrumb Navigation */}
+            <nav className="flex items-center gap-2 text-sm text-slate-500 mb-8">
+              <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
+              <span>/</span>
+              <Link href="/ai-insights" className="hover:text-slate-300 transition-colors">AI Insights</Link>
+              <span>/</span>
+              <span className="text-slate-400 truncate">{insight.title}</span>
+            </nav>
 
             {/* Category Badge */}
             <span

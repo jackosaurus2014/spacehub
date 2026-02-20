@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import FAQSchema from '@/components/seo/FAQSchema';
 
 // ────────────────────────────────────────
 // Types
@@ -966,6 +967,12 @@ function MissionCostContent() {
 
 export default function MissionCostPage() {
   return (
+    <>
+    <FAQSchema items={[
+      { question: 'How accurate are SpaceNexus launch cost estimates?', answer: 'Our estimates are based on publicly available pricing, industry reports, and historical mission data. Actual costs vary by mission complexity, insurance requirements, and regulatory fees. Estimates typically fall within 15-25% of final costs for standard missions.' },
+      { question: 'What factors affect satellite launch costs?', answer: 'Key factors include payload mass, target orbit (LEO is cheapest, GEO and beyond are most expensive), launch vehicle selection, rideshare vs. dedicated launch, insurance requirements, and regulatory compliance costs.' },
+      { question: 'What is the cheapest way to launch a satellite?', answer: 'Rideshare launches on SpaceX Falcon 9 start around $275,000 for small satellites under 200 kg to LEO. Dedicated small-sat launches on Rocket Lab Electron start around $7.5 million. Costs continue to decrease as launch frequency increases.' },
+    ]} />
     <Suspense
       fallback={
         <div className="min-h-screen">
@@ -984,5 +991,6 @@ export default function MissionCostPage() {
     >
       <MissionCostContent />
     </Suspense>
+    </>
   );
 }
