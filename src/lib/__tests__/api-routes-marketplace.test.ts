@@ -763,12 +763,15 @@ describe('GET /api/marketplace/stats', () => {
       .mockResolvedValueOnce(30)   // totalRFQs
       .mockResolvedValueOnce(15);  // openRFQs (where: { status: 'open' })
     (mockPrisma.proposal.count as jest.Mock).mockResolvedValue(100);
-    (mockPrisma.companyProfile.count as jest.Mock).mockResolvedValue(25);
+    (mockPrisma.serviceListing.groupBy as jest.Mock)
+      // First call: activeProviders (groupBy companyId)
+      .mockResolvedValueOnce(Array.from({ length: 25 }, (_, i) => ({ companyId: `company-${i}` })))
+      // Second call: category breakdown (groupBy category)
+      .mockResolvedValueOnce([
+        { category: 'launch', _count: { id: 20 } },
+        { category: 'satellite', _count: { id: 15 } },
+      ]);
     (mockPrisma.providerReview.count as jest.Mock).mockResolvedValue(60);
-    (mockPrisma.serviceListing.groupBy as jest.Mock).mockResolvedValue([
-      { category: 'launch', _count: { id: 20 } },
-      { category: 'satellite', _count: { id: 15 } },
-    ]);
 
     const res = await statsGET();
     const body = await res.json();
@@ -795,9 +798,10 @@ describe('GET /api/marketplace/stats', () => {
       .mockResolvedValueOnce(0)
       .mockResolvedValueOnce(0);
     (mockPrisma.proposal.count as jest.Mock).mockResolvedValue(0);
-    (mockPrisma.companyProfile.count as jest.Mock).mockResolvedValue(0);
+    (mockPrisma.serviceListing.groupBy as jest.Mock)
+      .mockResolvedValueOnce([])   // activeProviders (no companies)
+      .mockResolvedValueOnce([]);  // category breakdown (no categories)
     (mockPrisma.providerReview.count as jest.Mock).mockResolvedValue(0);
-    (mockPrisma.serviceListing.groupBy as jest.Mock).mockResolvedValue([]);
 
     const res = await statsGET();
     const body = await res.json();
@@ -809,6 +813,10 @@ describe('GET /api/marketplace/stats', () => {
 
   it('returns 500 when prisma throws', async () => {
     (mockPrisma.serviceListing.count as jest.Mock).mockRejectedValue(new Error('DB error'));
+    (mockPrisma.serviceListing.groupBy as jest.Mock).mockResolvedValue([]);
+    (mockPrisma.rFQ.count as jest.Mock).mockResolvedValue(0);
+    (mockPrisma.proposal.count as jest.Mock).mockResolvedValue(0);
+    (mockPrisma.providerReview.count as jest.Mock).mockResolvedValue(0);
 
     const res = await statsGET();
     const body = await res.json();
@@ -817,7 +825,7 @@ describe('GET /api/marketplace/stats', () => {
     expect(body.error).toBe('Failed to fetch marketplace stats');
   });
 
-  it('queries claimed profiles for activeProviders', async () => {
+  it('counts distinct companies with active listings for activeProviders', async () => {
     (mockPrisma.serviceListing.count as jest.Mock)
       .mockResolvedValueOnce(10)
       .mockResolvedValueOnce(8);
@@ -825,15 +833,18 @@ describe('GET /api/marketplace/stats', () => {
       .mockResolvedValueOnce(5)
       .mockResolvedValueOnce(3);
     (mockPrisma.proposal.count as jest.Mock).mockResolvedValue(20);
-    (mockPrisma.companyProfile.count as jest.Mock).mockResolvedValue(7);
+    (mockPrisma.serviceListing.groupBy as jest.Mock)
+      .mockResolvedValueOnce([{ companyId: 'a' }, { companyId: 'b' }, { companyId: 'c' }])
+      .mockResolvedValueOnce([]);
     (mockPrisma.providerReview.count as jest.Mock).mockResolvedValue(12);
-    (mockPrisma.serviceListing.groupBy as jest.Mock).mockResolvedValue([]);
 
-    await statsGET();
+    const res = await statsGET();
+    const body = await res.json();
 
-    expect(mockPrisma.companyProfile.count).toHaveBeenCalledWith({
-      where: { claimedByUserId: { not: null } },
-    });
+    expect(body.activeProviders).toBe(3);
+    expect(mockPrisma.serviceListing.groupBy).toHaveBeenCalledWith(
+      expect.objectContaining({ by: ['companyId'], where: { status: 'active' } })
+    );
   });
 
   it('queries published reviews for totalReviews', async () => {
@@ -844,9 +855,10 @@ describe('GET /api/marketplace/stats', () => {
       .mockResolvedValueOnce(5)
       .mockResolvedValueOnce(3);
     (mockPrisma.proposal.count as jest.Mock).mockResolvedValue(20);
-    (mockPrisma.companyProfile.count as jest.Mock).mockResolvedValue(7);
+    (mockPrisma.serviceListing.groupBy as jest.Mock)
+      .mockResolvedValueOnce([{ companyId: 'a' }])  // activeProviders
+      .mockResolvedValueOnce([]);                     // category breakdown
     (mockPrisma.providerReview.count as jest.Mock).mockResolvedValue(12);
-    (mockPrisma.serviceListing.groupBy as jest.Mock).mockResolvedValue([]);
 
     await statsGET();
 

@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ moduleId: string }> }
+  { params }: { params: { moduleId: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -20,7 +20,7 @@ export async function PATCH(
       );
     }
 
-    const { moduleId } = await params;
+    const { moduleId } = params;
     const body = await req.json();
     const { enabled, position, settings } = body;
 

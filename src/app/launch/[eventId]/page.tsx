@@ -6,11 +6,11 @@ import LaunchDayDashboard from '@/components/launch/LaunchDayDashboard';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 interface LaunchPageProps {
-  params: Promise<{ eventId: string }>;
+  params: { eventId: string };
 }
 
 export async function generateMetadata({ params }: LaunchPageProps): Promise<Metadata> {
-  const { eventId } = await params;
+  const { eventId } = params;
 
   const event = await prisma.spaceEvent.findUnique({
     where: { id: eventId },
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: LaunchPageProps): Promise<Met
 }
 
 export default async function LaunchPage({ params }: LaunchPageProps) {
-  const { eventId } = await params;
+  const { eventId } = params;
 
   const event = await prisma.spaceEvent.findUnique({
     where: { id: eventId },

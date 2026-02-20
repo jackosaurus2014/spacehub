@@ -622,6 +622,35 @@ function BusinessOpportunitiesContent() {
                 </div>
               </div>
             </ScrollReveal>
+
+            {/* Investor & Entrepreneur Tools */}
+            <ScrollReveal>
+              <div className="mt-8">
+                <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Related Tools</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {[
+                    { href: '/funding-opportunities', icon: '💰', label: 'Grants & Funding', desc: 'SBIR/STTR, NASA grants' },
+                    { href: '/market-sizing', icon: '📊', label: 'Market Sizing', desc: 'TAM/SAM/SOM analysis' },
+                    { href: '/investors', icon: '🏦', label: 'Investor Hub', desc: 'Due diligence & deal flow' },
+                    { href: '/business-models', icon: '📋', label: 'Business Models', desc: 'Unit economics tools' },
+                    { href: '/customer-discovery', icon: '🎯', label: 'Customer Discovery', desc: 'Buyer personas & segments' },
+                    { href: '/regulatory-risk', icon: '⚖️', label: 'Regulatory Risk', desc: 'Jurisdiction scoring' },
+                  ].map((tool) => (
+                    <Link
+                      key={tool.href}
+                      href={tool.href}
+                      className="card p-3 flex items-center gap-3 hover:border-cyan-500/30 transition-colors"
+                    >
+                      <span className="text-xl">{tool.icon}</span>
+                      <div>
+                        <div className="text-sm font-medium text-white">{tool.label}</div>
+                        <div className="text-xs text-slate-500">{tool.desc}</div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </ScrollReveal>
           </>
         )}
       </div>

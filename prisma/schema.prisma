@@ -2781,6 +2781,7 @@ model FundingOpportunity {
   @@index([deadline])
   @@index([source])
   @@index([stateIncentive])
+  @@index([createdAt])
 }
 
 // ============================================================
@@ -3550,6 +3551,7 @@ model Investor {
 
   @@index([type])
   @@index([name])
+  @@index([status])
 }
 
 // ── Deal Room (Space Industry Deal Room) ──

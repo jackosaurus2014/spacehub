@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 // ────────────────────────────────────────
 // Types
@@ -1095,6 +1096,10 @@ export default function DealRoomsPage() {
   // ────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Deal Rooms' },
+      ]} />
       <NdaModal />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

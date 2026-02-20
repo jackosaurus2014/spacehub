@@ -22,10 +22,10 @@ const RATE_LIMIT_WINDOW_MS = 5000; // 1 message per 5 seconds
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ eventId: string }> }
+  { params }: { params: { eventId: string } }
 ) {
   try {
-    const { eventId } = await params;
+    const { eventId } = params;
 
     const event = await prisma.spaceEvent.findUnique({
       where: { id: eventId },
@@ -79,10 +79,10 @@ export async function GET(
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ eventId: string }> }
+  { params }: { params: { eventId: string } }
 ) {
   try {
-    const { eventId } = await params;
+    const { eventId } = params;
 
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

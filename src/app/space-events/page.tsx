@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import {
   SPACE_EVENTS,
   EVENT_TYPES,
@@ -552,6 +553,10 @@ export default function SpaceEventsPage() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Space Events' },
+      ]} />
       <AnimatedPageHeader
         title="Space Industry Events & Conferences"
         subtitle={`${upcomingCount} upcoming events across the global space industry`}

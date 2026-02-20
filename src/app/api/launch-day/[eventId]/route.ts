@@ -9,10 +9,10 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ eventId: string }> }
+  { params }: { params: { eventId: string } }
 ) {
   try {
-    const { eventId } = await params;
+    const { eventId } = params;
 
     const event = await prisma.spaceEvent.findUnique({
       where: { id: eventId },

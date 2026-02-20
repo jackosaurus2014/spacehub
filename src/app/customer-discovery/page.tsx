@@ -6,6 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import {
   CUSTOMER_SEGMENTS,
   PROCUREMENT_CATEGORIES,
@@ -196,6 +197,10 @@ export default function CustomerDiscoveryPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Customer Discovery' },
+      ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <AnimatedPageHeader

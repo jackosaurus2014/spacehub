@@ -12,7 +12,7 @@ export async function GET() {
       totalRFQs,
       openRFQs,
       totalProposals,
-      claimedProfiles,
+      activeProviderCount,
       totalReviews,
     ] = await Promise.all([
       prisma.serviceListing.count(),
@@ -20,7 +20,10 @@ export async function GET() {
       prisma.rFQ.count(),
       prisma.rFQ.count({ where: { status: 'open' } }),
       prisma.proposal.count(),
-      prisma.companyProfile.count({ where: { claimedByUserId: { not: null } } }),
+      prisma.serviceListing.groupBy({
+        by: ['companyId'],
+        where: { status: 'active' },
+      }).then((groups: any[]) => groups.length),
       prisma.providerReview.count({ where: { status: 'published' } }),
     ]);
 
@@ -42,7 +45,7 @@ export async function GET() {
       totalRFQs,
       openRFQs,
       totalProposals,
-      activeProviders: claimedProfiles,
+      activeProviders: activeProviderCount,
       totalReviews,
       categories,
     });

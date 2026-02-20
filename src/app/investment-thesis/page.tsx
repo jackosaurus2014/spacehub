@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 // ============================================================================
 // TYPES
@@ -376,6 +377,10 @@ export default function InvestmentThesisPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pt-24 pb-16 px-4">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Investment Thesis' },
+      ]} />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <AnimatedPageHeader

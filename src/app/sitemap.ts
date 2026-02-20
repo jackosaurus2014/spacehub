@@ -72,6 +72,18 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/procurement`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/space-tourism`, changeFrequency: 'weekly' as const, priority: 0.7 },
 
+    // Investor & Entrepreneur tools
+    { url: `${BASE_URL}/investors`, changeFrequency: 'daily' as const, priority: 0.8 },
+    { url: `${BASE_URL}/market-sizing`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/funding-opportunities`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/funding-tracker`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/customer-discovery`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/regulatory-risk`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/business-models`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/space-events`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/investment-thesis`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/deal-rooms`, changeFrequency: 'weekly' as const, priority: 0.6 },
+
     // Company Intelligence directory
     { url: `${BASE_URL}/company-profiles`, changeFrequency: 'daily' as const, priority: 0.8 },
 

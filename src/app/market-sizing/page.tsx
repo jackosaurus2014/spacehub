@@ -7,6 +7,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { LineChart } from '@/components/charts';
 import { DonutChart } from '@/components/charts';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import {
   REGIONAL_BREAKDOWN,
   type MarketSegment,
@@ -776,6 +777,10 @@ export default function MarketSizingPage() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Market Sizing' },
+      ]} />
       <AnimatedPageHeader
         title="Space Industry Market Intelligence"
         subtitle="Comprehensive market sizing, TAM analysis, and growth projections across every major space industry vertical"

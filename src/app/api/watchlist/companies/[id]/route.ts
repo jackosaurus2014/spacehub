@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -21,7 +21,7 @@ export async function PUT(
       return unauthorizedError('You must be logged in');
     }
 
-    const { id } = await params;
+    const { id } = params;
 
     // Ownership check
     const existing = await (prisma as any).companyWatchlistItem.findUnique({
@@ -64,7 +64,7 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -72,7 +72,7 @@ export async function DELETE(
       return unauthorizedError('You must be logged in');
     }
 
-    const { id } = await params;
+    const { id } = params;
 
     // Ownership check
     const existing = await (prisma as any).companyWatchlistItem.findUnique({

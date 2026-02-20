@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
@@ -14,8 +14,8 @@ import { getCategoryIcon, getCategoryLabel, formatPrice, RFQ_STATUSES } from '@/
 import { toast } from '@/lib/toast';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
-export default function RFQDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function RFQDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const [rfq, setRfq] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

@@ -1,0 +1,118 @@
+PROJECT TRACKER: Next 3 — Production Hardening, Revenue, Data Pipelines, UX, Marketing
+STATUS: In Progress
+CREATED: 2026-02-20
+
+===============================================================================
+TASK A: REVENUE ACTIVATION (Stripe Tier Gating)
+===============================================================================
+STATUS: PENDING — User will activate Stripe later today
+PRIORITY: P0 — Critical (monetization)
+
+Subtasks:
+- [ ] Wire up tier gating in subscription.ts for premium features:
+      - Investment Thesis Generator = Enterprise only
+      - Deal Rooms = Pro+ (Free: 1 room/5 docs/3 viewers, Pro: 5 rooms/unlimited, Enterprise: unlimited)
+      - Funding Tracker = Pro+ (basic view free, full filters/export Pro)
+      - Customer Discovery export = Pro+
+      - AI Copilot = Enterprise
+      - Market Sizing drill-down = Pro+
+- [ ] Build/update pricing page showcasing new investor/entrepreneur tools
+- [ ] Activate Stripe checkout flows for premium features
+- [ ] Add upgrade prompts on gated features (soft upsell)
+- [ ] Test end-to-end payment flow
+
+Notes: User will handle Stripe activation. We prepare the gating logic and UI.
+
+===============================================================================
+TASK B: PRODUCTION HARDENING
+===============================================================================
+STATUS: IN PROGRESS
+PRIORITY: P0 — Critical (quality)
+
+Subtasks:
+- [x] Fix marketplace bugs from Next 2.txt items 5-6 (React error #438, 0 active providers)
+- [x] Fix Promise<params> typing across 13 API route files (Next.js 14 compat)
+- [x] Add layout.tsx with SEO metadata/OG tags for all 10 new pages
+- [x] Add loading.tsx skeleton files for all 10 new pages
+- [x] Add 10 new pages to sitemap.ts
+- [x] Update marketplace stats tests to match new activeProviders logic
+- [x] Add missing Prisma indexes (FundingOpportunity.createdAt, Investor.status)
+- [ ] Run seed scripts (seed-funding-data.ts) + push Prisma schema for new models
+- [ ] Add proper auth gating — deal rooms NextAuth integration, thesis generator tier check (tied to Task A)
+- [ ] Increase test coverage for new API endpoints
+
+===============================================================================
+TASK C: DATA PIPELINE ACTIVATION
+===============================================================================
+STATUS: IN PROGRESS
+PRIORITY: P1 — High (data quality)
+
+Subtasks:
+- [ ] Run cron jobs to populate real grant/funding data from Grants.gov, SAM.gov, SBIR.gov
+- [ ] Activate SEC EDGAR integration for live public company filings
+- [ ] Connect RSS feeds for automated funding round detection
+- [ ] Verify all existing cron jobs are running on Railway
+- [ ] Add monitoring/health check for data freshness
+
+===============================================================================
+TASK D: UX & NAVIGATION POLISH
+===============================================================================
+STATUS: IN PROGRESS
+PRIORITY: P1 — High (user experience)
+
+Subtasks:
+- [x] Improve navigation taxonomy — added 10 new pages to main nav dropdowns
+- [x] Loading states for new features — 10 loading.tsx skeleton files
+- [x] Error boundaries — 14 error.tsx files across critical routes
+- [x] Custom 404 page (not-found.tsx) with popular page links
+- [x] PageTracker updated with 12 new page titles
+- [ ] Add onboarding flow or feature tour for new users
+- [ ] Dashboard/homepage that surfaces tools based on user type (investor vs entrepreneur)
+- [ ] Breadcrumb navigation on new pages
+- [ ] Error boundaries for new features
+
+===============================================================================
+TASK E: MARKETING & GROWTH
+===============================================================================
+STATUS: IN PROGRESS
+PRIORITY: P2 — Medium (growth)
+
+Subtasks:
+- [x] Update meta descriptions and structured data for new pages (10 layouts, breadcrumbs, root keywords)
+- [x] Landing page value proposition updated for investor/entrepreneur audience
+- [x] Cross-link grid on business-opportunities page to related tools
+- [ ] LinkedIn content strategy for new features
+- [ ] Case study / demo content showing platform in action
+- [ ] Social sharing optimization (OG images, Twitter cards)
+
+===============================================================================
+IMPLEMENTATION LOG
+===============================================================================
+
+| Date       | Action                    | Details                                    |
+|------------|---------------------------|--------------------------------------------|
+| 2026-02-20 | Tracker created           | 5 tasks (A-E), research phase starting     |
+| 2026-02-20 | Bug fixes                 | Fixed React #438 (use(params)), 0 providers |
+| 2026-02-20 | Promise<params> fix       | Fixed 15 files with incorrect Next.js typing |
+| 2026-02-20 | SEO: layouts              | Created layout.tsx for 10 new pages         |
+| 2026-02-20 | SEO: loading skeletons    | Created loading.tsx for 10 new pages        |
+| 2026-02-20 | SEO: sitemap              | Added 10 new pages to sitemap.ts            |
+| 2026-02-20 | Test fixes                | Updated marketplace stats tests (437 pass)  |
+| 2026-02-20 | Navigation                | Added 10 new pages to main nav dropdowns    |
+| 2026-02-20 | SEO: breadcrumbs          | Added BreadcrumbSchema to 10 new pages      |
+| 2026-02-20 | SEO: root metadata        | Updated homepage keywords for investors      |
+| 2026-02-20 | Landing page              | Updated value prop, audiences, stats         |
+| 2026-02-20 | Cross-links               | Related tools grid on business-opportunities |
+| 2026-02-20 | Error boundaries          | 14 error.tsx files + custom 404 page         |
+| 2026-02-20 | Page tracking             | Added 12 new pages to PageTracker titles     |
+| 2026-02-20 | Prisma indexes            | Added createdAt + status indexes for queries |
+
+===============================================================================
+OPEN BUGS FROM NEXT 2 (items 5-6) — ALL RESOLVED
+===============================================================================
+
+5. [FIXED] Marketplace listings/rfq pages — React error #438 caused by use(params)
+   with Promise<> typing (Next.js 15 pattern on Next.js 14). Removed use() + Promise<>.
+
+6. [FIXED] Marketplace 0 active providers — was counting claimed profiles (none exist).
+   Changed to count distinct companyIds from active service listings via groupBy.

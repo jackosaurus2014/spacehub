@@ -36,7 +36,7 @@ function toCSV(data: Record<string, unknown>[]): string {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ module: string }> }
+  { params }: { params: { module: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -44,7 +44,7 @@ export async function GET(
       return unauthorizedError();
     }
 
-    const { module } = await params;
+    const { module } = params;
     const { searchParams } = new URL(req.url);
 
     // Validate module name against whitelist

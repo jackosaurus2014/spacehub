@@ -14,7 +14,7 @@ const VALUE_PILLARS = [
     icon: '\u{1F6E0}\uFE0F',
     title: 'Interactive Tools',
     description:
-      'Satellite trackers, launch vehicle comparators, mission cost calculators, and compliance wizards \u2014 not just articles to read.',
+      'Satellite trackers, mission cost calculators, market sizing analysis, AI investment thesis generators, and deal rooms \u2014 not just articles to read.',
   },
   {
     icon: '\u{1F4B0}',
@@ -29,7 +29,13 @@ const AUDIENCES = [
     icon: '\u{1F680}',
     title: 'Entrepreneurs & Founders',
     description:
-      'Track VC flows, monitor competitors, compare launch vehicles, and identify supply chain partners.',
+      'Find grants and SBIR funding, build business models, discover customers, and track regulatory risks.',
+  },
+  {
+    icon: '\u{1F4B8}',
+    title: 'Investors & VCs',
+    description:
+      'AI-powered investment theses, market sizing analysis, live funding tracker, and secure deal rooms.',
   },
   {
     icon: '\u{1F4CA}',
@@ -55,17 +61,11 @@ const AUDIENCES = [
     description:
       'Track space treaties, monitor FCC/FAA/ITU filings, navigate ITAR/EAR export controls.',
   },
-  {
-    icon: '\u{1F31F}',
-    title: 'Space Enthusiasts',
-    description:
-      'Explore asteroid data, solar system missions, space weather, debris tracking, and more.',
-  },
 ];
 
 const STATS = [
-  { value: 10, suffix: '+', label: 'Integrated Modules' },
-  { value: 40, suffix: '+', label: 'Data Sources' },
+  { value: 30, suffix: '+', label: 'Integrated Modules' },
+  { value: 100, suffix: '+', label: 'Data Sources' },
   { value: 24, suffix: '/7', label: 'Real-Time Updates' },
   { value: 0, suffix: '', label: 'Starting Price', prefix: '$' },
 ];

@@ -32,7 +32,11 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Market Intel', href: '/market-intel', description: 'Companies and stock tracking' },
   { label: 'Space Economy', href: '/space-economy', description: 'Market size, investment & budgets' },
   { label: 'Space Capital', href: '/space-capital', description: 'VC investors, startups & matchmaking' },
+  { label: 'Investor Hub', href: '/investors', description: 'Due diligence tools & deal flow' },
+  { label: 'Market Sizing (TAM)', href: '/market-sizing', description: 'Interactive market size analysis' },
+  { label: 'Funding Tracker', href: '/funding-tracker', description: 'Live funding rounds & M&A deals' },
   { label: 'Regulatory Hub', href: '/compliance', description: 'Compliance, space law & filings' },
+  { label: 'Regulatory Risk', href: '/regulatory-risk', description: 'Jurisdiction risk scoring & alerts' },
   { label: 'Regulation Explainers', href: '/regulation-explainers', description: 'AI plain-English regulation summaries' },
   { label: 'Spectrum Management', href: '/spectrum', description: 'Allocations, auctions & filings' },
   { label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },
@@ -40,7 +44,11 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
 
 const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
+  { label: 'Funding Opportunities', href: '/funding-opportunities', description: 'Grants, SBIR/STTR & government funding' },
+  { label: 'Business Model Tools', href: '/business-models', description: 'Unit economics & revenue modeling' },
+  { label: 'Customer Discovery', href: '/customer-discovery', description: 'Market segments & buyer personas' },
   { label: 'Space Talent Hub', href: '/space-talent', description: 'Jobs, experts & workforce analytics' },
+  { label: 'Space Events', href: '/space-events', description: 'Conferences, demos & networking' },
   { label: 'Global Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain & shortage alerts' },
   { label: 'Space Mining', href: '/space-mining', description: 'Asteroid and planetary mining intelligence' },
   { label: 'Space Insurance', href: '/space-insurance', description: 'Risk calculator and market data' },
@@ -60,6 +68,8 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Launch Windows', href: '/launch-windows', description: 'Optimal launch timing' },
   { label: 'Space Environment', href: '/space-environment', description: 'Weather, debris & operations' },
   { label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
+  { label: 'Investment Thesis AI', href: '/investment-thesis', description: 'AI-generated investment theses' },
+  { label: 'Deal Rooms', href: '/deal-rooms', description: 'Secure document sharing for deals' },
   { label: 'My Watchlists', href: '/my-watchlists', description: 'Watched companies & saved searches' },
   { label: 'Dashboard', href: '/dashboard', description: 'Your personalized hub' },
 ];

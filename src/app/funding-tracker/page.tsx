@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 // ────────────────────────────────────────
 // Types
@@ -218,6 +219,10 @@ export default function FundingTrackerPage() {
 
   return (
     <div className="min-h-screen bg-slate-900">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Funding Tracker' },
+      ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Startup & Funding Tracker"
