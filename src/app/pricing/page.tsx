@@ -201,7 +201,7 @@ function PricingPageContent() {
   const { data: session } = useSession();
   const { tier, isTrialing, trialEndsAt, refreshSubscription } = useSubscription();
   const searchParams = useSearchParams();
-  const [isYearly, setIsYearly] = useState(true);
+  const [isYearly, setIsYearly] = useState(false);
   const [isStartingTrial, setIsStartingTrial] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
