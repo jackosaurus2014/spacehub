@@ -3631,3 +3631,19 @@ model DealRoomActivity {
   @@index([dealRoomId])
   @@index([createdAt])
 }
+
+// ============================================================
+// Weekly Intelligence Brief
+// ============================================================
+
+model WeeklyIntelligenceBrief {
+  id             String   @id @default(cuid())
+  weekStart      DateTime
+  weekEnd        DateTime
+  content        Json
+  htmlContent    String?  @db.Text
+  sentAt         DateTime?
+  recipientCount Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

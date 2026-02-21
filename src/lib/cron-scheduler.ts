@@ -64,6 +64,7 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 14 * * *',    path: '/api/refresh?type=sec-filings',       label: 'sec-filings',                maxStaleMinutes: 1560 },
 
   // Weekly / twice-weekly
+  { schedule: '0 10 * * 5',    path: '/api/newsletter/intelligence-brief?action=generate', label: 'weekly-intelligence-brief', maxStaleMinutes: 11520 },
   { schedule: '30 11 * * 6',   path: '/api/refresh?type=patents-market-intel',    label: 'patents-market-intel',       maxStaleMinutes: 11520 },
   { schedule: '0 9 * * 1',     path: '/api/refresh?type=company-digests',         label: 'company-digests',            maxStaleMinutes: 11520 },
   { schedule: '0 10 * * 0,3',  path: '/api/refresh?type=opportunities-analysis',  label: 'opportunities-analysis',     maxStaleMinutes: 7200 },

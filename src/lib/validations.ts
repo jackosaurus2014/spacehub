@@ -1560,3 +1560,40 @@ export const launchReactionSchema = z.object({
 export type LaunchPollData = z.infer<typeof launchPollSchema>;
 export type LaunchPollVoteData = z.infer<typeof launchPollVoteSchema>;
 export type LaunchReactionData = z.infer<typeof launchReactionSchema>;
+
+// ============================================================
+// Contract Awards Schemas
+// ============================================================
+
+export const awardsQuerySchema = z.object({
+  search: z
+    .string()
+    .max(200, 'Search query is too long')
+    .optional()
+    .transform((val) => val?.trim()),
+  agency: z
+    .string()
+    .max(100, 'Agency name is too long')
+    .optional()
+    .transform((val) => val?.trim()),
+  dateRange: z.coerce
+    .number()
+    .min(1, 'Date range must be at least 1 day')
+    .max(365, 'Date range cannot exceed 365 days')
+    .default(90),
+  minAmount: z.coerce
+    .number()
+    .min(0, 'Minimum amount cannot be negative')
+    .default(0),
+  page: z.coerce
+    .number()
+    .min(1, 'Page must be at least 1')
+    .default(1),
+  limit: z.coerce
+    .number()
+    .min(1, 'Limit must be at least 1')
+    .max(100, 'Limit cannot exceed 100')
+    .default(20),
+});
+
+export type AwardsQueryParams = z.infer<typeof awardsQuerySchema>;

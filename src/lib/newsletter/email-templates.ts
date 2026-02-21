@@ -1,7 +1,7 @@
 // Email templates for newsletter system
 // Dark-themed, inline CSS, table-based for Outlook compatibility, 600px max width
 
-function escapeHtml(str: string): string {
+export function escapeHtml(str: string): string {
   return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -38,10 +38,10 @@ interface DigestEmailResult {
   subject: string;
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
+export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 
 // Common styles
-const styles = {
+export const styles = {
   bgDark: '#0a0a1a',
   bgCard: '#12122a',
   bgCardHover: '#1a1a3a',
@@ -53,7 +53,7 @@ const styles = {
   borderColor: '#2a2a4a',
 };
 
-function getBaseEmailStyles(): string {
+export function getBaseEmailStyles(): string {
   return `
     body, table, td, div, p, span, a { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
     body { margin: 0; padding: 0; background-color: ${styles.bgDark}; color: ${styles.textWhite}; }
@@ -64,7 +64,7 @@ function getBaseEmailStyles(): string {
   `;
 }
 
-function wrapInEmailTemplate(content: string, preheader: string = ''): string {
+export function wrapInEmailTemplate(content: string, preheader: string = ''): string {
   return `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
@@ -99,7 +99,7 @@ function wrapInEmailTemplate(content: string, preheader: string = ''): string {
 </html>`;
 }
 
-function getHeader(title?: string): string {
+export function getHeader(title?: string): string {
   return `
     <tr>
       <td align="center" style="padding: 30px 20px; background: linear-gradient(135deg, ${styles.bgCard} 0%, ${styles.bgDark} 100%); border-radius: 12px 12px 0 0;">
@@ -109,7 +109,7 @@ function getHeader(title?: string): string {
     </tr>`;
 }
 
-function getFooter(unsubscribeUrl: string): string {
+export function getFooter(unsubscribeUrl: string): string {
   return `
     <tr>
       <td style="padding: 30px 20px; background-color: ${styles.bgCard}; border-radius: 0 0 12px 12px; border-top: 1px solid ${styles.borderColor};">
