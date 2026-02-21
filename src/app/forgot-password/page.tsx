@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { toast } from '@/lib/toast';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -27,8 +28,11 @@ export default function ForgotPasswordPage() {
       }
 
       setSubmitted(true);
+      toast.success('If an account exists, a reset link has been sent.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      const msg = err instanceof Error ? err.message : 'Something went wrong';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -39,7 +43,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <div className="card p-8 glow-border">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-display font-bold text-slate-900">
+            <h1 className="text-2xl font-display font-bold text-white">
               Reset Password
             </h1>
             <p className="text-slate-400 mt-2">
@@ -54,7 +58,7 @@ export default function ForgotPasswordPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="text-lg font-semibold text-slate-900 mb-2">Check Your Email</h2>
+              <h2 className="text-lg font-semibold text-white mb-2">Check Your Email</h2>
               <p className="text-slate-400 mb-6">
                 If an account with that email exists, we&apos;ve sent a password reset link. Check your inbox and spam folder.
               </p>

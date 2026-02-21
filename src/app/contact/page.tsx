@@ -5,6 +5,7 @@ import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import { toast } from '@/lib/toast';
 
 type SubjectType = 'general' | 'technical' | 'billing' | 'partnership';
 
@@ -121,6 +122,7 @@ export default function ContactPage() {
       }
 
       setStatus('success');
+      toast.success('Message sent! We will get back to you soon.');
       setFormData({
         name: '',
         email: '',
@@ -130,7 +132,9 @@ export default function ContactPage() {
       setTouched({});
     } catch (error) {
       setStatus('error');
-      setErrorMessage(error instanceof Error ? error.message : 'An unexpected error occurred');
+      const msg = error instanceof Error ? error.message : 'An unexpected error occurred';
+      setErrorMessage(msg);
+      toast.error(msg);
     }
   };
 
@@ -184,7 +188,7 @@ export default function ContactPage() {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-3">Message Sent!</h2>
+              <h2 className="text-2xl font-bold text-white mb-3">Message Sent!</h2>
               <p className="text-slate-400 mb-6">
                 Thank you for reaching out. We&apos;ll get back to you as soon as possible.
               </p>
@@ -310,7 +314,7 @@ export default function ContactPage() {
               </form>
 
               <div className="mt-8 pt-8 border-t border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Other Ways to Reach Us</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">Other Ways to Reach Us</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0">

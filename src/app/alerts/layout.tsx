@@ -9,6 +9,11 @@ export const metadata: Metadata = {
     'conjunction alert',
     'solar storm alert',
     'space notifications',
+    'saved searches',
+    'space industry alerts',
+    'contract award notifications',
+    'funding round alerts',
+    'regulatory filing alerts',
   ],
   openGraph: {
     title: 'Smart Alert System | SpaceNexus',

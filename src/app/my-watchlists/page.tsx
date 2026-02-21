@@ -289,7 +289,7 @@ function WatchlistsContent() {
                       <Link href={`/company-profiles/${item.companyProfile.slug}`} className="flex items-center gap-3 group">
                         <div className="w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center text-sm flex-shrink-0">
                           {item.companyProfile.logoUrl ? (
-                            <img src={item.companyProfile.logoUrl} alt={`${item.companyProfile.name} logo`} className="w-8 h-8 rounded-lg object-contain" />
+                            <img src={item.companyProfile.logoUrl} alt={`${item.companyProfile.name} logo`} width={32} height={32} className="w-8 h-8 rounded-lg object-contain" loading="lazy" decoding="async" />
                           ) : (
                             item.companyProfile.name.charAt(0)
                           )}
@@ -521,7 +521,7 @@ function WatchlistsContent() {
                           <Link href={`/company-profiles/${digest.companyProfile.slug}`} className="flex items-center gap-2 group">
                             <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-xs flex-shrink-0">
                               {digest.companyProfile.logoUrl ? (
-                                <img src={digest.companyProfile.logoUrl} alt={`${digest.companyProfile.name} logo`} className="w-6 h-6 rounded-lg object-contain" />
+                                <img src={digest.companyProfile.logoUrl} alt={`${digest.companyProfile.name} logo`} width={24} height={24} className="w-6 h-6 rounded-lg object-contain" loading="lazy" decoding="async" />
                               ) : (
                                 digest.companyProfile.name.charAt(0)
                               )}

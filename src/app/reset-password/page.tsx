@@ -4,6 +4,7 @@ import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { toast } from '@/lib/toast';
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -60,9 +61,12 @@ function ResetPasswordForm() {
       }
 
       setSuccess(true);
+      toast.success('Password reset successfully! Redirecting to login...');
       setTimeout(() => router.push('/login'), 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      const msg = err instanceof Error ? err.message : 'Something went wrong';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

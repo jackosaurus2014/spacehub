@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { toast } from '@/lib/toast';
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -49,12 +50,15 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError(result.error);
+        toast.error('Invalid email or password');
       } else {
+        toast.success('Welcome back!');
         router.push('/dashboard');
         router.refresh();
       }
     } catch {
       setError('An error occurred. Please try again.');
+      toast.error('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -72,7 +76,7 @@ export default function LoginPage() {
               height={160}
               className="mx-auto w-full max-w-xs h-auto rounded-lg mb-4"
             />
-            <h1 className="text-2xl font-display font-bold text-slate-900">
+            <h1 className="text-2xl font-display font-bold text-white">
               Welcome Back
             </h1>
             <p className="text-slate-400 mt-2">

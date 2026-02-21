@@ -232,7 +232,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-lg bg-slate-700 flex items-center justify-center text-lg flex-shrink-0">
                     {listing.company.logoUrl ? (
-                      <img src={listing.company.logoUrl} alt={`${listing.company.name} logo`} className="w-10 h-10 rounded-lg object-contain" />
+                      <img src={listing.company.logoUrl} alt={`${listing.company.name} logo`} width={40} height={40} className="w-10 h-10 rounded-lg object-contain" loading="lazy" decoding="async" />
                     ) : (
                       listing.company.name.charAt(0)
                     )}

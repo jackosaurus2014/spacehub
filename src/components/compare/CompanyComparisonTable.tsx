@@ -525,7 +525,11 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                         <img
                           src={company.logoUrl}
                           alt={company.name}
+                          width={20}
+                          height={20}
                           className="w-5 h-5 rounded object-contain"
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : (
                         getSectorIcon(company.sector)
@@ -614,7 +618,11 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                             <img
                               src={company.logoUrl}
                               alt={company.name}
+                              width={28}
+                              height={28}
                               className="w-7 h-7 rounded object-contain"
+                              loading="lazy"
+                              decoding="async"
                             />
                           ) : (
                             getSectorIcon(company.sector)

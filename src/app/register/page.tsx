@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import LegalDisclaimerModal from '@/components/LegalDisclaimerModal';
+import { toast } from '@/lib/toast';
 
 function getPasswordStrength(password: string): { score: number; label: string; color: string } {
   if (!password) return { score: 0, label: '', color: '' };
@@ -98,12 +99,15 @@ export default function RegisterPage() {
 
       if (!res.ok) {
         setError(data.error || 'Registration failed');
+        toast.error(data.error || 'Registration failed');
         return;
       }
 
+      toast.success('Account created! Please check your email to verify.');
       router.push('/login?registered=true');
     } catch {
       setError('An error occurred. Please try again.');
+      toast.error('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }

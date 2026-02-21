@@ -461,7 +461,7 @@ export default function CompanyProfilesPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between mt-3 text-xs text-slate-500">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-3 gap-2 text-xs text-slate-500">
             <div className="flex items-center gap-3">
               <span>{total} companies found</span>
               <SaveSearchButton
@@ -471,12 +471,12 @@ export default function CompanyProfilesPage() {
               />
             </div>
             {stats && stats.sectors.length > 0 && (
-              <div className="flex gap-2">
+              <div className="flex gap-2 overflow-x-auto max-w-full pb-1 scrollbar-hide">
                 {stats.sectors.slice(0, 5).map(s => (
                   <button
                     key={s.sector}
                     onClick={() => setSector(s.sector || '')}
-                    className="px-2 py-0.5 rounded bg-slate-800/50 hover:bg-slate-700/50 transition-colors"
+                    className="px-2 py-0.5 rounded bg-slate-800/50 hover:bg-slate-700/50 transition-colors whitespace-nowrap flex-shrink-0"
                   >
                     {getSectorIcon(s.sector)} {s.sector} ({s.count})
                   </button>

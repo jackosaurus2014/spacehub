@@ -29,7 +29,7 @@ const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), {
 import ModuleNavBar from '@/components/ModuleNavBar';
 import WebVitals from '@/components/analytics/WebVitals';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'swap' });
 
 export const metadata: Metadata = {

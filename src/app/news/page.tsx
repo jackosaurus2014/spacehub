@@ -103,7 +103,7 @@ function NewsContent() {
     <PullToRefresh onRefresh={handleRefresh}>
       {/* Filters */}
       <div className="mb-8">
-        <div className="flex items-center justify-between gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
           <NewsFilter
             selectedCategory={selectedCategory}
             onCategoryChange={handleCategoryChange}

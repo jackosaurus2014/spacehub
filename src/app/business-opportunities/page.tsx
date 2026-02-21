@@ -21,6 +21,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import { ContractTicker, ContractsList } from '@/components/contracts';
+import { toast } from '@/lib/toast';
 
 function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
   const [interested, setInterested] = useState(false);
@@ -54,12 +55,13 @@ function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
         setInterested(true);
         setCount(c => c + 1);
         setShowForm(false);
+        toast.success('Interest expressed successfully!');
       } else {
         const err = await res.json();
-        alert(err.error || 'Failed to express interest');
+        toast.error(err.error || 'Failed to express interest');
       }
     } catch {
-      alert('Please sign in to express interest');
+      toast.error('Failed to express interest. Please sign in and try again.');
     } finally {
       setSubmitting(false);
     }

@@ -210,8 +210,8 @@ export default async function HomePage() {
           <Suspense fallback={
             <div className="relative card p-10 md:p-16 text-center rounded-3xl glow-border overflow-hidden">
               <div className="animate-pulse">
-                <div className="h-8 bg-slate-200 rounded w-3/4 mx-auto mb-4"></div>
-                <div className="h-4 bg-slate-200 rounded w-2/3 mx-auto mb-8"></div>
+                <div className="h-8 bg-slate-700/50 rounded w-3/4 mx-auto mb-4"></div>
+                <div className="h-4 bg-slate-700/50 rounded w-2/3 mx-auto mb-8"></div>
                 <div className="h-12 bg-nebula-600/50 rounded-xl w-48 mx-auto"></div>
               </div>
             </div>

@@ -431,14 +431,18 @@ export default function DeveloperPortalPage() {
                   Create Account
                 </Link>
               )}
-              <a
-                href="/api/v1/openapi.json"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/developer/docs"
                 className="px-6 py-3 border border-slate-600 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 rounded-lg transition-colors"
               >
-                OpenAPI Spec
-              </a>
+                API Docs
+              </Link>
+              <Link
+                href="/developer/explorer"
+                className="px-6 py-3 border border-slate-600 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 rounded-lg transition-colors"
+              >
+                API Explorer
+              </Link>
             </div>
           </div>
         </div>
@@ -876,21 +880,35 @@ export default function DeveloperPortalPage() {
               </div>
             </section>
 
-            {/* OpenAPI Spec Link */}
+            {/* Full Docs + Explorer Links */}
             <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 text-center">
               <h3 className="text-lg font-semibold mb-2">Full API Reference</h3>
               <p className="text-slate-400 mb-4">
-                View the complete OpenAPI 3.0 specification for detailed schema definitions,
-                request parameters, and response formats.
+                View the complete API documentation with detailed schemas, code examples in 3 languages,
+                and an interactive API explorer to test endpoints live.
               </p>
-              <a
-                href="/api/v1/openapi.json"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold rounded-lg transition-colors"
-              >
-                View OpenAPI Spec
-              </a>
+              <div className="flex items-center justify-center gap-4 flex-wrap">
+                <Link
+                  href="/developer/docs"
+                  className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold rounded-lg transition-colors"
+                >
+                  Full API Docs
+                </Link>
+                <Link
+                  href="/developer/explorer"
+                  className="inline-block px-6 py-3 border border-slate-600 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 font-semibold rounded-lg transition-colors"
+                >
+                  API Explorer
+                </Link>
+                <a
+                  href="/api/v1/openapi.json"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-6 py-3 border border-slate-600 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 font-semibold rounded-lg transition-colors"
+                >
+                  OpenAPI Spec
+                </a>
+              </div>
             </section>
           </div>
         )}
