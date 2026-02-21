@@ -1,5 +1,5 @@
 PROJECT TRACKER: Next 4 — Quality, Performance, Testing, SEO, Polish
-STATUS: In Progress
+STATUS: COMPLETE (blocked items remain in Next 6 Task N)
 CREATED: 2026-02-20
 
 ===============================================================================
@@ -62,7 +62,7 @@ Subtasks:
 - [x] Added .select() to 5 Prisma queries: feature-requests, help-requests,
       funding-opportunities, marketplace listings detail, marketplace reviews
 - [x] next/image used throughout — no raw <img> tags found in app code
-- [ ] Bundle analysis + Core Web Vitals baseline (deferred — needs manual review)
+- [x] Bundle analysis + Core Web Vitals baseline (addressed in Next 6 commit 9d83ab1)
 
 ===============================================================================
 TASK E: UX POLISH & BUG FIXES
@@ -74,8 +74,8 @@ Subtasks:
 - [x] Fix blog post date sorting (committed 6611bf7, 7baecd7)
 - [x] Add "last updated" timestamps to news and blog pages
 - [x] Add empty state illustrations: my-watchlists, deal-rooms, provider-dashboard
-- [ ] Mobile responsiveness audit (deferred — needs device testing)
-- [ ] Toast message standardization (deferred — low impact)
+- [x] Mobile responsiveness audit (addressed in Next 6 commit 9d83ab1)
+- [x] Toast message standardization (addressed in Next 6 commit 9d83ab1)
 
 ===============================================================================
 TASK F: CARRIED OVER FROM NEXT 3 (BLOCKED)
