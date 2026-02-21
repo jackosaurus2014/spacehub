@@ -97,7 +97,12 @@ Respond with valid JSON (no markdown code fences):
   "corrections": ["List of specific corrections needed, if any"]
 }
 
-If the article is well-sourced and accurate, return "pass" with an empty corrections array. Only flag genuine accuracy concerns, not stylistic preferences.`,
+IMPORTANT GUIDELINES:
+- Return "pass" for well-sourced, accurate articles (empty corrections array)
+- Return "minor_issues" for small inaccuracies or missing context that don't undermine the analysis
+- ONLY return "major_issues" for clear factual errors (wrong company names, fabricated statistics, incorrect dates) — NOT for analysis, opinions, forecasts, or forward-looking predictions
+- Analysis and forecast articles inherently contain projections — this is expected and should NOT be flagged as major issues
+- Stylistic preferences, tone concerns, or "could be more nuanced" feedback should be "pass" or "minor_issues" at most`,
         },
       ],
     });
