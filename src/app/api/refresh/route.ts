@@ -188,7 +188,7 @@ export async function POST(request: Request) {
   if (authError) return authError;
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'space-defense', 'live-streams', 'realtime', 'regulatory-feeds', 'sec-filings', 'compliance-refresh', 'space-environment-daily', 'business-opportunities', or null (all)
+  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'space-defense', 'live-streams', 'realtime', 'regulatory-feeds', 'sec-filings', 'compliance-refresh', 'federal-register', 'space-environment-daily', 'business-opportunities', or null (all)
 
   const results: Record<string, unknown> = {};
 
@@ -292,12 +292,18 @@ export async function POST(request: Request) {
     if (type === 'regulatory-feeds') {
       const { fetchAndStoreFAALicenses } = await import('@/lib/fetchers/faa-license-fetcher');
       const { fetchAndStoreFCCFilings } = await import('@/lib/fetchers/fcc-space-filings-fetcher');
+      const { fetchAndStoreFederalRegister } = await import('@/lib/fetchers/federal-register-fetcher');
+      const { fetchAndStoreITUFilings } = await import('@/lib/fetchers/itu-filings-fetcher');
       const faaCount = await fetchAndStoreFAALicenses();
       const fccCount = await fetchAndStoreFCCFilings();
+      const fedRegResult = await fetchAndStoreFederalRegister();
+      const ituResult = await fetchAndStoreITUFilings();
       results.regulatoryFeeds = {
         faaLicenses: faaCount,
         fccFilings: fccCount,
-        totalUpdated: faaCount + fccCount,
+        federalRegister: fedRegResult,
+        ituFilings: ituResult,
+        totalUpdated: faaCount + fccCount + fedRegResult.stored + ituResult.seeded + ituResult.notices,
       };
     }
 
@@ -307,10 +313,38 @@ export async function POST(request: Request) {
       results.secFilings = { count: secCount };
     }
 
+    if (type === 'federal-register') {
+      const { fetchAndStoreFederalRegister } = await import('@/lib/fetchers/federal-register-fetcher');
+      const fedRegResult = await fetchAndStoreFederalRegister();
+      results.federalRegister = fedRegResult;
+    }
+
     if (type === 'compliance-refresh') {
       const { refreshComplianceData } = await import('@/lib/fetchers/compliance-fetcher');
+      const { fetchAndStoreFAALicenses } = await import('@/lib/fetchers/faa-license-fetcher');
+      const { fetchAndStoreFCCFilings } = await import('@/lib/fetchers/fcc-space-filings-fetcher');
+      const { fetchAndStoreSECFilings } = await import('@/lib/fetchers/sec-edgar-fetcher');
+      const { fetchAndStoreFederalRegister } = await import('@/lib/fetchers/federal-register-fetcher');
+      const { fetchAndStoreITUFilings } = await import('@/lib/fetchers/itu-filings-fetcher');
+
+      // Run the compliance-fetcher orchestrator (legal RSS, ITU via FedReg, export control)
       const complianceResult = await refreshComplianceData();
-      results.complianceRefresh = complianceResult;
+
+      // Also run dedicated fetchers that store in DynamicContent
+      const fccCount = await fetchAndStoreFCCFilings();
+      const faaCount = await fetchAndStoreFAALicenses();
+      const secCount = await fetchAndStoreSECFilings();
+      const fedRegResult = await fetchAndStoreFederalRegister();
+      const ituResult = await fetchAndStoreITUFilings();
+
+      results.complianceRefresh = {
+        ...complianceResult,
+        fccFilings: fccCount,
+        faaLicenses: faaCount,
+        secFilings: secCount,
+        federalRegister: fedRegResult,
+        ituFilings: ituResult,
+      };
     }
 
     if (type === 'space-environment-daily') {

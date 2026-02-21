@@ -1,0 +1,16 @@
+Exhaustively research and analyze these tasks.  Plan out the best order and path for completing these tasks based on what they each involve.  Spin up agent teams if helpful to engage in the required research and analysis work.  Track all of your progress on these tasks in this document and update this document when you've completed a task or if you have any thoughts or creative ideas for our website with respect to each action item (or new action items).
+
+1.  In our shortages tab of the supply chain module, you've identified many medium, high and critical resource and material shortages.  However, our shortages and risk analysis tabs say that there are 0 affectd products and 0 companies impacted which suggests that the shortages shouldn't be having any impact at all.  Can you research and analyze whether any of these shortages are actually impacting companies and identify any such impacts?  Also, can we add non-radiation hardened GPUs/TPUs and memory to this shortages list because my understanding is that it could be very hard for data centers in space to source the required GPUs/TPUs/memory they need to support those data centers.  Do an exhaustive research and analysis on these items and any other shortages that might be relevant for any of the space-based orbital systems we identified in the orbital system cost module and reflect those here in the supply chain module, including the companies, shortages, and risk analysis tabs as applicable.  Let's make this the preeminent web source for companies to understand where supply chain risks exist for starting up new businesses in orbital space as well as on the moon or mars.  Be sure we don't remove any existing functionality from our module.
+
+2. We need to greatly expand our regulatory hub to make it best in class among our competitors.  We should really stand out here because I can add content here as a lawyer as well.  For the policy tracker, let's include any export controls policies, laws and regulations, including proposed legislation, enacted legislation, and federal register entries (including pre-publication federal register) related to space operations, space hardware and space technologies.  This should include US, UK, EU, and other international laws addressing space.  The regulatory hub also should include any FCC or other agency supply chain controls that could impact space operations and businesses.
+
+3.  For our Regulatory hub, let's make sure we are refreshing the data in those tabs daily, including FCC filings, FAA licnses, ITU filings, SEC & FInancial reports, and federal register entries that are relevant to the material on our site.
+
+4.  Our bid Protests & Claims tab in the regulatory hub is empty right now.  Same with the Legal Proceedings (space law cases and legal proceedings).  Can you identify sources for us to use to seed and populate these modules?  If we need to obtain any APIs to support the modules throughout our regulatory hub, please identify those.
+
+5.  Review our site and identify any modules or tabs in our modules that do not have any information or that are not automatically refreshing at least daily.  Identify the seeds or resources we can use to populate those modules and implement those where possible.  If any require my involvement, let me know here.
+
+
+
+
+

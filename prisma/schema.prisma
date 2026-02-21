@@ -1414,7 +1414,7 @@ model OrbitalService {
   providerWebsite String?
 
   // Service classification
-  category    String // earth_observation, in_orbit_computing, hosted_payload, space_solar, communications, sensor_service
+  category    String // earth_observation, in_orbit_computing, hosted_payload, space_solar, communications, sensor_service, in_orbit_servicing
   serviceType String // Specific type within category
   serviceName String
   description String

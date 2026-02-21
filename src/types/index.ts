@@ -1998,7 +1998,8 @@ export type OrbitalServiceCategory =
   | 'hosted_payload'
   | 'space_solar'
   | 'communications'
-  | 'sensor_service';
+  | 'sensor_service'
+  | 'in_orbit_servicing';
 
 export type OrbitalServiceStatus = 'active' | 'beta' | 'planned' | 'retired';
 export type OrbitalServiceAvailability = 'available' | 'limited' | 'waitlist' | 'coming_soon';
@@ -2082,6 +2083,7 @@ export const ORBITAL_SERVICE_CATEGORIES: { value: OrbitalServiceCategory; label:
   { value: 'space_solar', label: 'Space Solar Power', icon: '☀️', description: 'Power beaming and orbital energy' },
   { value: 'communications', label: 'Communications', icon: '📡', description: 'Data relay, ground stations, bandwidth' },
   { value: 'sensor_service', label: 'Sensor-as-a-Service', icon: '📊', description: 'Weather, AIS, RF monitoring' },
+  { value: 'in_orbit_servicing', label: 'In-Orbit Servicing', icon: '🔧', description: 'Life extension, debris removal, refueling, inspection' },
 ];
 
 export const ORBITAL_PRICING_MODELS: { value: OrbitalPricingModel; label: string; unit: string }[] = [
@@ -2130,6 +2132,13 @@ export const ORBITAL_SERVICE_TYPES: { value: string; label: string; icon: string
   { value: 'rf_monitoring', label: 'RF Monitoring', icon: '📻', category: 'sensor_service' },
   { value: 'ais_tracking', label: 'AIS Tracking', icon: '🚢', category: 'sensor_service' },
   { value: 'emissions_monitoring', label: 'Emissions Monitoring', icon: '🏭', category: 'sensor_service' },
+  // In-Orbit Servicing
+  { value: 'life_extension', label: 'Life Extension', icon: '🔋', category: 'in_orbit_servicing' },
+  { value: 'debris_removal', label: 'Debris Removal', icon: '🧹', category: 'in_orbit_servicing' },
+  { value: 'in_space_refueling', label: 'In-Space Refueling', icon: '⛽', category: 'in_orbit_servicing' },
+  { value: 'orbital_transfer', label: 'Orbital Transfer', icon: '🔄', category: 'in_orbit_servicing' },
+  { value: 'inspection_proximity', label: 'Inspection & Proximity Ops', icon: '🔍', category: 'in_orbit_servicing' },
+  { value: 'in_space_assembly', label: 'In-Space Assembly', icon: '🏗️', category: 'in_orbit_servicing' },
 ];
 
 export const ORBITAL_CONTRACT_TYPES: { value: OrbitalContractType; label: string }[] = [
@@ -2259,6 +2268,12 @@ export const SUPPLY_CHAIN_PRODUCT_CATEGORIES: { value: string; label: string; ic
   { value: 'power', label: 'Power Systems', icon: '⚡' },
   { value: 'sensors', label: 'Sensors & Optics', icon: '👁️' },
   { value: 'software', label: 'Software & Systems', icon: '💾' },
+  { value: 'computing', label: 'Space Computing & GPUs', icon: '🖥️' },
+  { value: 'optical', label: 'Optical & Laser Systems', icon: '🔭' },
+  { value: 'life_support', label: 'Life Support (ECLSS)', icon: '🫁' },
+  { value: 'cryogenic', label: 'Cryogenic Systems', icon: '🧊' },
+  { value: 'robotics', label: 'Robotics & Mechanisms', icon: '🦾' },
+  { value: 'communications', label: 'Communications', icon: '📶' },
 ];
 
 // ============================================================

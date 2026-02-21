@@ -1,0 +1,688 @@
+PROJECT TRACKER: Next 6 — Remaining Action Items from Competitive Research
+STATUS: Not Started
+CREATED: 2026-02-21
+SOURCE: docs/COMPETITIVE-RESEARCH-AND-STRATEGY.md, docs/research/*.md
+
+===============================================================================
+COMPLETED IN THIS SESSION (for reference)
+===============================================================================
+
+- [x] Contract Award Feed (USASpending.gov API) — /procurement/awards
+- [x] Company A vs B Comparison page — /compare/companies
+- [x] Weekly Intelligence Brief email — /api/newsletter/intelligence-brief
+
+These were the top 3 quick wins. The items below are EVERYTHING remaining.
+
+===============================================================================
+TASK A: EXECUTIVE MOVE TRACKER
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P0 — Immediate (Quick Win #4 from roadmap)
+ESTIMATED EFFORT: Medium (1 session)
+REVENUE IMPACT: Daily check-in habit — drives engagement + Pro retention
+
+Why: Executive moves (C-suite, VP changes) are the #1 "water cooler" topic in the
+space industry. Payload Space's newsletter thrives on this. No competitor has a
+dedicated, searchable tracker. This creates a daily check-in habit.
+
+What to Build:
+- New page at /executive-moves (or /talent-moves)
+- Track C-suite and VP-level job changes across space companies
+- Data model: ExecutiveMove { person, fromCompany, fromTitle, toCompany, toTitle,
+  date, source, companySlug? }
+- Link moves to CompanyProfile records when possible
+- Filter by: date range, company, role level, move type (hired/departed/promoted)
+- "Notable moves this week" highlight section at top
+- Company profile pages get a new "Leadership Changes" section
+
+Data Sources:
+- Manual curation initially (admin UI or seed script)
+- Future: LinkedIn API (if partnership), press release parsing, news article NER
+- RSS feeds from SpaceNews, Payload, NASASpaceFlight often announce moves
+- Could add AI extraction from existing news articles (CompanyEvent model already
+  has 'leadership_change' eventType — extend this)
+
+Existing Infrastructure:
+- CompanyEvent model (prisma/schema.prisma) already has eventType + companyProfileId
+- CompanyProfile has keyPeople Json field (could parse for baseline data)
+- News tagging system (tagRecentArticlesWithCompanies in news-fetcher.ts) could
+  flag leadership-related articles
+
+Files to Create:
+- src/app/executive-moves/page.tsx — UI page with search/filters/timeline
+- src/app/executive-moves/layout.tsx — SEO metadata
+- src/app/executive-moves/loading.tsx — Skeleton
+- src/app/api/executive-moves/route.ts — GET endpoint (query CompanyEvent where
+  eventType = 'leadership_change') + POST for admin submission
+- src/lib/executive-moves-data.ts — Seed data (50+ notable recent moves)
+
+Files to Modify:
+- prisma/schema.prisma — may need ExecutiveMove model or extend CompanyEvent
+- src/app/company-profiles/[slug]/page.tsx — add "Leadership Changes" tab/section
+
+===============================================================================
+TASK B: SAVED SEARCHES & ALERT RULES
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P0 — Immediate (Quick Win #5 from roadmap, creates lock-in)
+ESTIMATED EFFORT: Medium-Large (1-2 sessions)
+REVENUE IMPACT: Pro conversion driver — switching cost moat
+
+Why: This is a LOCK-IN feature. Once users invest time configuring custom alerts
+(e.g., "notify me when NASA awards a contract > $10M to any company in my
+watchlist"), they won't switch to a competitor. Bloomberg's alerting is one of its
+stickiest features.
+
+What to Build:
+- SavedSearch model: query params, name, frequency (realtime/daily/weekly), userId
+- AlertRule model: condition (field, operator, value), action (email/in-app/webhook),
+  userId, enabled
+- /alerts page — manage saved searches and alert rules
+- Alert rule builder UI — pick data type (news, contracts, company events, launches),
+  set conditions, choose notification method
+- Alert delivery integration with existing alert system (src/lib/alerts/)
+
+Existing Infrastructure:
+- src/lib/alerts/ already has processor.ts, delivery.ts, templates.ts
+- src/app/api/alerts/ already has route handlers
+- Smart alert system infrastructure from v0.9.0
+- Webhook dispatcher at src/lib/webhook-dispatcher.ts
+- Newsletter email templates for styled notifications
+
+Files to Create:
+- src/app/alerts/page.tsx — Alert management dashboard
+- src/app/alerts/layout.tsx, loading.tsx
+- src/app/api/alerts/saved-searches/route.ts — CRUD for saved searches
+- src/components/alerts/AlertRuleBuilder.tsx — condition builder UI
+
+Files to Modify:
+- prisma/schema.prisma — SavedSearch and AlertRule models
+- src/lib/alerts/processor.ts — integrate saved search matching
+- src/lib/cron-scheduler.ts — add alert digest cron job
+
+===============================================================================
+TASK C: DEAL FLOW DATABASE
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P1 — Short Term (Roadmap #6)
+ESTIMATED EFFORT: Large (2-3 sessions)
+REVENUE IMPACT: Very High — investors and BD teams will subscribe for this
+
+Why: Every investor, BD professional, and journalist in space needs a database of
+funding rounds, M&A deals, and major contract wins. Crunchbase charges $10K+/yr for
+this. PitchBook charges $25K+/yr. We can build a focused space-only version that's
+better for our niche at 1/100th the price.
+
+What to Build:
+- DealFlow model: type (funding_round, acquisition, ipo, spac, contract_win),
+  amount, date, parties (investor/acquirer/target), stage, source, verified
+- /deals page — searchable, filterable deal timeline
+- Deal detail pages with linked company profiles
+- Weekly/monthly deal volume charts (recharts)
+- Deal type breakdown (pie chart by type, bar chart by quarter)
+- "This Week in Space Deals" auto-generated summary (AI)
+
+Data Sources:
+- Manual curation + admin submission initially
+- SEC EDGAR filings (IPOs, SPACs, 8-K material events) — free API
+- Press releases from company profiles
+- News article AI extraction (funding amounts often mentioned)
+- USASpending.gov for contract wins (already integrated!)
+- Space Capital quarterly reports (manual input of their published data)
+
+Existing Infrastructure:
+- FundingRound model in prisma/schema.prisma (on CompanyProfile)
+- CompanyEvent model with eventType including 'funding', 'acquisition'
+- src/lib/procurement/usaspending.ts — contract data already flowing
+- Investment thesis generator at src/app/investment-thesis/page.tsx
+- Funding tracker at src/app/funding-tracker/page.tsx
+
+Files to Create:
+- src/app/deals/page.tsx — Main deal flow page
+- src/app/deals/[id]/page.tsx — Deal detail page
+- src/app/deals/layout.tsx, loading.tsx
+- src/app/api/deals/route.ts — GET (list/search) + POST (admin create)
+- src/app/api/deals/[id]/route.ts — GET detail
+- src/lib/deal-flow-data.ts — Seed data (100+ historical space deals)
+- scripts/seed-deal-flow.ts — Database seeder
+
+Files to Modify:
+- prisma/schema.prisma — DealFlow model + relations to CompanyProfile
+- src/app/company-profiles/[slug]/page.tsx — "Deal History" section
+- src/lib/cron-scheduler.ts — weekly deal summary generation
+
+===============================================================================
+TASK D: DATA SOURCE INTEGRATIONS (Tier 1 — Free APIs)
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P1 — Short Term (Roadmap #14, from Section 4 of strategy doc)
+ESTIMATED EFFORT: Large (2-3 sessions, parallelizable)
+REVENUE IMPACT: Critical — enriches company profiles, creates proprietary data moat
+
+Why: 6 free government APIs can immediately enrich our 101 company profiles with
+financial data, patent portfolios, and government registrations. This data compound
+over time and becomes irreplaceable — the longer we collect, the more valuable it
+becomes. This is how Crunchbase built a $100M+ business.
+
+### D1: SEC EDGAR Integration
+What: Fetch 10-K/10-Q XBRL financials for ~20 public space companies
+API: https://efts.sec.gov/LATEST/ — Free, 10 req/sec, User-Agent header only
+Data: Revenue, net income, total assets, cash flow, quarterly/annual
+New model: CompanyFinancials { revenue, netIncome, totalAssets, cashFlow, period,
+  filingDate, source, companyProfileId }
+Files: src/lib/data-enrichment/sec-edgar.ts, src/app/api/enrichment/sec/route.ts
+Impact: Financial tab on company profiles becomes real data instead of estimates
+
+### D2: USPTO PatentsView Integration
+What: Fetch patent data by assignee for space companies
+API: https://api.patentsview.org/patents/query — Free API key
+Data: Patent number, title, abstract, grant date, CPC codes, citations
+CPC codes for space: B64G (cosmonautics), H04B7/185 (satellite comms)
+New model: CompanyPatent { patentNumber, title, abstract, grantDate, cpcCodes,
+  citationCount, companyProfileId }
+Files: src/lib/data-enrichment/uspto.ts, src/app/api/enrichment/patents/route.ts
+Impact: "Patent Portfolio" section on company profiles, innovation scoring
+
+### D3: GitHub API Integration
+What: Track open-source activity for space companies with public repos
+API: https://api.github.com — Free, 5K req/hr with token
+Data: Repo count, stars, contributors, languages, last commit date
+Orgs to track: spacex, nasa, esa, blueorigin, rocketlabusa, etc.
+New model: CompanyGitHub { orgName, publicRepos, totalStars, totalForks,
+  topLanguages, lastActivityDate, companyProfileId }
+Files: src/lib/data-enrichment/github.ts, src/app/api/enrichment/github/route.ts
+Impact: "Engineering Activity" section, tech stack insights
+
+### D4: Extend SAM.gov Integration
+What: Expand existing SAM.gov integration for deeper company enrichment
+API: Already partially integrated at src/lib/procurement/sam-gov.ts
+Data: Business classifications, socioeconomic status, past performance
+Files: Modify src/lib/procurement/sam-gov.ts to fetch entity details
+Impact: Government readiness scoring, set-aside eligibility on profiles
+
+### D5: NASA SBIR/STTR Extension
+What: Expand existing SBIR fetcher for historical company data
+API: Already integrated at src/lib/procurement/sbir-fetcher.ts
+Data: All historical awards per company, phase progression tracking
+Files: Modify src/lib/procurement/sbir-fetcher.ts
+Impact: "Innovation Pipeline" section on profiles, R&D investment tracking
+
+### D6: FCC ULS Spectrum License Data
+What: Parse FCC license data for satellite operators
+API: https://www.fcc.gov/uls/transactions — Free bulk download
+Data: Call signs, frequencies, orbital slots, license status, dates
+New model: CompanyLicense { callSign, serviceType, frequency, orbitalSlot, status,
+  grantDate, expirationDate, companyProfileId }
+Files: src/lib/data-enrichment/fcc-uls.ts, src/app/api/enrichment/fcc/route.ts
+Impact: Spectrum tab on company profiles, regulatory compliance status
+
+Proposed Prisma Architecture (from strategy doc Section 4):
+  CompanyProfile
+    |-- CompanyFinancials (SEC EDGAR)
+    |-- CompanyPatent (USPTO)
+    |-- CompanyGitHub (GitHub API)
+    |-- CompanyLicense (FCC ULS)
+    |-- CompanySBIR (extend existing)
+    |-- CompanyContract (from USASpending — already built!)
+
+API Keys Needed:
+- SEC EDGAR: User-Agent header only (no key)
+- USPTO PatentsView: Free API key registration
+- GitHub: Free personal access token (GITHUB_TOKEN env var)
+- FCC ULS: None (bulk download)
+- SAM.gov: Already have key
+- SBIR.gov: Already integrated
+
+===============================================================================
+TASK E: SPONSORED COMPANY PROFILES
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P1 — Short Term (Roadmap #7)
+ESTIMATED EFFORT: Medium (1 session)
+REVENUE IMPACT: Direct revenue — $200-500/mo per sponsor (target: 10-20 sponsors)
+
+Why: With 101 company profiles already built, offering companies a "Sponsored" or
+"Verified" tier is the easiest revenue diversification. Companies pay to enhance
+their profile with additional content, priority placement, analytics, and a
+verified badge. ThomasNet (now Xometry) built $540M on this model.
+
+What to Build:
+- CompanyProfile.sponsorTier field: 'basic' (free), 'verified' ($200/mo),
+  'premium' ($500/mo)
+- Verified badge on profile cards and detail pages
+- Premium features: custom banner, featured products showcase, lead capture form,
+  profile analytics dashboard, priority search placement
+- Self-service sponsorship signup flow (Stripe checkout)
+- Admin approval workflow
+
+Files to Create:
+- src/app/company-profiles/sponsor/page.tsx — Sponsorship info/pricing page
+- src/app/api/company-profiles/sponsor/route.ts — Sponsorship checkout
+- src/components/company/SponsorBadge.tsx — Verified/Premium badge component
+- src/components/company/ProfileAnalytics.tsx — Analytics for sponsors
+
+Files to Modify:
+- prisma/schema.prisma — add sponsorTier, sponsorSince, sponsorFeatures to
+  CompanyProfile
+- src/app/company-profiles/page.tsx — priority sorting for sponsors
+- src/app/company-profiles/[slug]/page.tsx — sponsor enhancements
+- src/lib/stripe.ts — new Stripe products/prices for sponsorship tiers
+
+===============================================================================
+TASK F: LAUNCH COST CALCULATOR TOOL
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P1 — Short Term (Roadmap #8)
+ESTIMATED EFFORT: Small (1 session)
+REVENUE IMPACT: Medium — SEO magnet, referenced constantly in the industry
+
+Why: "How much does it cost to launch X kg to Y orbit?" is the most frequently
+asked question in space business. A polished interactive calculator would rank #1
+for "space launch cost" (high-volume search term). BryceTech publishes static PDFs
+with this data. We can make it interactive.
+
+What to Build:
+- /launch-cost-calculator page — interactive tool
+- Inputs: payload mass (kg), orbit (LEO/GTO/GEO/TLI/Mars), vehicle constraints
+- Output: Ranked list of compatible launch vehicles with cost estimates
+- Visual comparison chart (bar chart of $/kg across vehicles)
+- Cost breakdown: launch service + insurance + integration + licensing
+- "Request Quote" CTA linking to marketplace RFQ
+
+Existing Infrastructure:
+- src/lib/mission-cost-data.ts — already has launch vehicle data with per-kg costs
+- src/app/launch-vehicles/page.tsx — vehicle specs with cost data populated
+- src/app/mission-cost/page.tsx — mission cost estimation tools
+- src/lib/orbital-costs-data.ts — detailed cost models
+
+Files to Create:
+- src/app/launch-cost-calculator/page.tsx — interactive calculator
+- src/app/launch-cost-calculator/layout.tsx — SEO metadata (target: "space launch
+  cost calculator", "how much does it cost to launch a satellite")
+- src/app/launch-cost-calculator/loading.tsx
+
+Files to Modify:
+- src/lib/mission-cost-data.ts — ensure all vehicles have complete cost data
+
+===============================================================================
+TASK G: REGULATORY DEADLINE CALENDAR
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P1 — Short Term (Roadmap #9)
+ESTIMATED EFFORT: Medium (1 session)
+REVENUE IMPACT: Medium — compliance teams will pay for this
+
+Why: FCC comment deadlines, ITU coordination milestones, FAA license renewals,
+NOAA permit windows — missing a regulatory deadline can cost millions. No
+competitor has a comprehensive space regulatory calendar. Compliance professionals
+will pay $20-50/mo just for this.
+
+What to Build:
+- /regulatory-calendar page — visual calendar (monthly/weekly/agenda views)
+- Deadline types: FCC filing, ITU coordination, FAA license, NOAA permit, ITAR,
+  export control, congressional hearing, treaty milestone
+- Color-coded by agency/type
+- Email reminders (7-day and 1-day before deadline)
+- Filter by agency, deadline type, relevance
+- .ics calendar export (already have this pattern from events)
+- Integration with existing alert system for notifications
+
+Existing Infrastructure:
+- src/lib/regulatory-hub-data.ts — rich regulatory types (PolicyChange,
+  LicenseRequirement, TreatyInfo, etc.)
+- src/app/compliance/page.tsx — regulatory hub with treaties and filings tabs
+- Calendar .ics export already built (v0.4.2)
+- Alert system at src/lib/alerts/
+
+Files to Create:
+- src/app/regulatory-calendar/page.tsx — calendar view
+- src/app/regulatory-calendar/layout.tsx, loading.tsx
+- src/app/api/regulatory-calendar/route.ts — GET deadlines + POST admin create
+- src/lib/regulatory-calendar-data.ts — seed data (100+ known deadlines for 2026)
+
+Files to Modify:
+- src/lib/cron-scheduler.ts — add deadline reminder cron
+
+===============================================================================
+TASK H: ENHANCED API DOCUMENTATION & TIERS
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P1 — Short Term (Roadmap #10)
+ESTIMATED EFFORT: Medium (1 session)
+REVENUE IMPACT: $99-999/mo per API customer
+
+Why: The commercial API (v1 endpoints) was built in v0.9.0 but the documentation
+is minimal. Fintech companies, defense contractors, and data platforms will pay
+$99-999/mo for programmatic access to our data. Proper documentation with
+Swagger/OpenAPI spec, code examples, and a sandbox will convert API leads.
+
+What to Build:
+- Enhanced /developer page with full API documentation
+- OpenAPI/Swagger spec for all v1 endpoints
+- Interactive API explorer ("Try it" buttons)
+- Code examples in Python, JavaScript, cURL
+- Rate limit tiers: Free (100 req/day), Pro (10K req/day), Enterprise (100K req/day)
+- API key management dashboard improvements
+- Usage analytics for API customers
+
+Existing Infrastructure:
+- src/app/api/v1/ — existing v1 endpoints
+- src/app/developer/page.tsx — basic developer portal
+- src/lib/api-keys.ts — API key generation/validation
+- src/lib/api-auth-middleware.ts — API auth middleware
+
+Files to Create:
+- src/app/developer/docs/page.tsx — full API documentation
+- src/app/developer/docs/[endpoint]/page.tsx — per-endpoint docs
+- src/app/developer/explorer/page.tsx — interactive API explorer
+- src/lib/openapi-spec.ts — OpenAPI 3.0 specification
+
+Files to Modify:
+- src/app/developer/page.tsx — redesign as proper dev portal
+- src/lib/api-auth-middleware.ts — add tier-based rate limits
+
+===============================================================================
+TASK I: SUPPLY CHAIN RELATIONSHIP MAP
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P2 — Medium Term (Roadmap #12)
+ESTIMATED EFFORT: Large (2-3 sessions)
+REVENUE IMPACT: Very High — enterprise value, unique and defensible
+
+Why: "Who supplies whom?" is one of the most valuable questions in aerospace. A
+visual graph showing supplier-customer relationships across the space industry
+would be unique — no competitor has this. Defense BD teams and prime contractors
+would pay enterprise rates for this visibility.
+
+What to Build:
+- /supply-chain-map page — interactive force-directed graph visualization
+- Nodes = companies (sized by revenue/employee count)
+- Edges = supply relationships (colored by type: component, service, integration)
+- Click node to see company detail + all relationships
+- Filter by: sector, relationship type, tier level
+- "Degrees of separation" between two companies
+- Relationship types: supplier, customer, partner, investor, competitor
+
+Data Sources:
+- Existing CompanyProfile.keyPartners, competitors fields
+- Marketplace transaction data (buyer-seller relationships)
+- News article analysis (partnership announcements)
+- Manual curation from industry knowledge
+
+Existing Infrastructure:
+- src/app/supply-chain/page.tsx — supply chain module (basic)
+- src/lib/infrastructure-data.ts — some relationship data
+- CompanyProfile model with keyPartners, competitors, tags
+
+Files to Create:
+- src/app/supply-chain-map/page.tsx — interactive graph (use d3-force or similar)
+- src/app/api/supply-chain/relationships/route.ts — relationship data endpoint
+- src/lib/supply-chain-graph.ts — graph data model and algorithms
+
+Files to Modify:
+- prisma/schema.prisma — SupplyRelationship model (companyA, companyB, type,
+  description, verified, source)
+
+===============================================================================
+TASK J: "SPACE SCORE" COMPANY RATING (0-1000)
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P2 — Medium Term (Roadmap #15)
+ESTIMATED EFFORT: Medium (1 session)
+REVENUE IMPACT: Brand asset + differentiation — like CB Insights' Mosaic Score
+
+Why: CB Insights built their brand around the "Mosaic Score" for private companies.
+SpaceFund has a 0-9 "Reality Rating." We can create the "Space Score" (0-1000) that
+becomes THE industry standard for evaluating space companies. This is a permanent
+brand asset once adopted.
+
+What to Build:
+- Composite score (0-1000) for each CompanyProfile based on:
+  - Innovation (patents, SBIR awards, R&D spend) — 200 pts
+  - Financial Health (revenue growth, funding, runway) — 200 pts
+  - Market Position (contracts won, market share, partnerships) — 200 pts
+  - Operational Capacity (satellites, facilities, employees) — 200 pts
+  - Growth Trajectory (hiring velocity, deal flow, media mentions) — 200 pts
+- Score breakdown visualization (radar/spider chart)
+- Historical score tracking (monthly snapshots)
+- Leaderboard page: Top 100 Space Companies by Space Score
+- Badge on all company profile cards and detail pages
+- Methodology page explaining the scoring (transparency builds trust)
+
+Existing Infrastructure:
+- CompanyScore model in prisma/schema.prisma (already has technology,
+  market_position, financial_health, growth fields)
+- src/app/company-profiles/page.tsx — can add score column/badge
+- Recharts for visualizations
+
+Files to Create:
+- src/lib/space-score.ts — scoring algorithm
+- src/app/space-score/page.tsx — leaderboard + methodology
+- src/app/api/space-score/route.ts — GET scores, POST recalculate
+- src/components/company/SpaceScoreBadge.tsx — visual badge (0-1000)
+- scripts/calculate-space-scores.ts — batch calculation script
+
+Files to Modify:
+- prisma/schema.prisma — add compositeScore field to CompanyProfile
+- src/app/company-profiles/page.tsx — show score badge
+- src/app/company-profiles/[slug]/page.tsx — score breakdown section
+
+===============================================================================
+TASK K: CONFERENCE/EVENT CALENDAR
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P2 — Medium Term (Quick Win from Section 6)
+ESTIMATED EFFORT: Small-Medium (1 session)
+REVENUE IMPACT: Medium — engagement driver, "nobody has comprehensive" per research
+
+Why: The strategy doc noted "nobody has a comprehensive conference/event calendar"
+for the space industry. SATShow, Space Symposium, IAC, SmallSat, NewSpace — there
+are 50+ events per year. A curated, searchable calendar with registration links,
+speaker lists, and networking features is an easy win.
+
+What to Build:
+- /events-calendar page — monthly/list calendar of space industry events
+- Event types: conference, webinar, launch, regulatory hearing, trade show
+- Event details: name, dates, location, website, registration link, speakers,
+  exhibitors, estimated attendance
+- Filter by: type, location, date range, free/paid
+- .ics export for individual events (already have this pattern)
+- "Add to Calendar" buttons (Google Calendar, Outlook, Apple)
+- "Who's attending?" social feature (future: networking)
+
+Existing Infrastructure:
+- src/app/space-events/page.tsx — already exists with event data!
+- Calendar .ics export from v0.4.2
+
+Files to Create/Modify:
+- Extend src/app/space-events/page.tsx with calendar view
+- Add src/lib/space-events-data.ts with 50+ events for 2026-2027
+- Add monthly calendar visualization component
+
+===============================================================================
+TASK L: REVENUE DIVERSIFICATION — CUSTOM REPORTS
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P2 — Medium Term (Roadmap #13, Revenue Section 7)
+ESTIMATED EFFORT: Medium (1 session)
+REVENUE IMPACT: $500-5,000 per report
+
+Why: Quilty charges $5K-$25K for custom research reports. BryceTech gives away
+PDF reports to sell consulting. We can auto-generate data-rich reports using
+Claude + our aggregated data, then offer them at $500-$5,000 (10x cheaper than
+Quilty). Topics: "State of [Sector]", "Company Deep Dive", "Market Entry Analysis".
+
+What to Build:
+- /reports page — catalog of available reports (free samples + paid)
+- AI-generated report builder: pick topic/company/sector, choose depth
+- PDF export with SpaceNexus branding
+- Report types:
+  - Sector Overview ($500): market size, key players, trends, forecasts
+  - Company Deep Dive ($1,000): full profile + financial analysis + competitors
+  - Competitive Analysis ($2,000): head-to-head comparison of 3-5 companies
+  - Market Entry Brief ($5,000): regulatory requirements, TAM, competitive
+    landscape, recommended strategy
+- Stripe checkout for paid reports
+
+Existing Infrastructure:
+- Anthropic SDK for AI generation
+- CompanyProfile data for company deep dives
+- Deal flow + contract data for market analysis
+- src/lib/chart-export.ts — chart-to-image for report embedding
+
+Files to Create:
+- src/app/reports/page.tsx — report catalog
+- src/app/api/reports/generate/route.ts — report generation endpoint
+- src/lib/report-generator.ts — AI report builder
+- src/lib/report-templates.ts — report type templates and prompts
+
+===============================================================================
+TASK M: PROFESSIONAL MESSAGING / COMMUNITY
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P3 — Long Term (Roadmap #11, #17)
+ESTIMATED EFFORT: Very Large (4-6 sessions)
+REVENUE IMPACT: Strongest long-term moat — Bloomberg's messaging is its #1 moat
+
+Why: The strategy doc identified community/messaging as the ULTIMATE moat.
+Bloomberg Terminal's most unassailable feature is its messaging network — 325K
+professionals who can't switch because their entire contact network is there.
+In a ~15,000-person space industry, if SpaceNexus becomes where professionals
+maintain relationships, switching costs become insurmountable.
+
+What to Build (Phased):
+Phase 1: Follow/Connect features
+- Follow companies and topics for personalized feeds
+- "People also viewed" signals on company profiles
+- Professional directory with public profiles
+
+Phase 2: Direct Messaging
+- 1:1 messaging between verified professionals
+- Message threads linked to companies/deals
+- Read receipts and typing indicators
+- Mobile push notifications
+
+Phase 3: Industry Forums
+- Topic-based discussion boards (propulsion, regulation, funding, etc.)
+- Company-specific discussion threads
+- Expert Q&A format
+
+Phase 4: Networking Features
+- "Who's attending [event]?" matching
+- Introduction requests through mutual connections
+- Virtual meetup scheduling
+
+Existing Infrastructure:
+- Deal rooms (src/app/deal-rooms/) already have messaging-like features
+- User model with authentication
+- WebSocket potential via Next.js server actions
+
+===============================================================================
+TASK N: CARRIED OVER FROM NEXT 3/4 (STILL BLOCKED)
+===============================================================================
+STATUS: BLOCKED — Needs user action
+PRIORITY: P0 — Critical
+
+These items carry forward from Next 3 and Next 4:
+
+Revenue Activation (Stripe):
+- [ ] Switch Stripe from test to live mode (ACTION NEEDED TODAY Feb 21)
+- [ ] Re-create 2 products + 4 prices in live mode
+- [ ] Set up webhook endpoint in live mode
+- [ ] Swap 6 Railway env vars from sk_test_ to sk_live_ keys
+- [ ] Wire up tier gating in subscription.ts for premium features
+- [ ] Build/update pricing page with new investor/entrepreneur tools
+- [ ] Activate Stripe checkout flows
+- [ ] Add upgrade prompts (soft upsell)
+- [ ] Test end-to-end payment flow
+
+Production Hardening:
+- [ ] Run seed scripts (seed-funding-data.ts) for new models
+- [ ] Add auth gating for deal rooms + thesis generator
+
+Data Pipeline Activation:
+- [ ] Verify cron jobs running on Railway
+- [ ] Activate SEC EDGAR integration (see Task D1)
+- [ ] Connect RSS feeds for funding round detection
+- [ ] Add data freshness monitoring
+
+Quality (deferred from Next 4):
+- [ ] Bundle analysis + Core Web Vitals baseline (needs manual review)
+- [ ] Mobile responsiveness audit (needs device testing)
+- [ ] Toast message standardization
+
+===============================================================================
+TASK O: ADDITIONAL SEO & MARKETING
+===============================================================================
+STATUS: NOT STARTED
+PRIORITY: P2 — Ongoing
+ESTIMATED EFFORT: Small per item
+
+From the competitive research, these SEO/marketing items remain:
+
+Content:
+- [ ] Ecosystem/value chain visual maps (Seraphim-style) — viral on social media
+- [ ] "State of Space [Year]" annual report — pillar content + lead magnet
+- [ ] Salary/rate benchmarking page — high-search-volume keyword opportunity
+- [ ] Downloadable data exports expanded (all tables, not just current pages)
+
+Partnerships:
+- [ ] Dealroom.co-style government ecosystem dashboards for space agencies
+- [ ] University/academic program partnerships (future customer pipeline)
+- [ ] Data licensing partnerships with financial terminals
+
+Events:
+- [ ] Virtual events/webinars ($5K-25K/event from sponsors)
+- [ ] Recruitment advertising integration ($500-2K/posting)
+
+===============================================================================
+PRIORITIZED IMPLEMENTATION ORDER
+===============================================================================
+
+IMMEDIATE (This Week — Quick Wins):
+1. Task A: Executive Move Tracker — daily check-in habit
+2. Task B: Saved Searches & Alert Rules — lock-in feature
+3. Task N: Stripe Live Mode — revenue activation (USER ACTION)
+
+SHORT TERM (This Month):
+4. Task C: Deal Flow Database — highest revenue potential
+5. Task E: Sponsored Company Profiles — direct revenue
+6. Task F: Launch Cost Calculator — SEO magnet
+7. Task G: Regulatory Deadline Calendar — compliance retention
+8. Task H: Enhanced API Docs — developer revenue
+
+MEDIUM TERM (Next Quarter):
+9.  Task D: Data Source Integrations (6 APIs) — proprietary data moat
+10. Task I: Supply Chain Relationship Map — enterprise value
+11. Task J: Space Score Rating — brand asset
+12. Task K: Conference/Event Calendar — engagement
+13. Task L: Custom Intelligence Reports — revenue diversification
+
+LONG TERM (6-12 Months):
+14. Task M: Professional Messaging/Community — ultimate moat
+15. Task O: Additional SEO & Marketing — ongoing
+
+===============================================================================
+ESTIMATED TOTAL SCOPE
+===============================================================================
+
+| Priority | Tasks | New Files | Sessions |
+|----------|-------|-----------|----------|
+| Immediate | A, B | ~15 | 2-3 |
+| Short Term | C, E, F, G, H | ~30 | 5-7 |
+| Medium Term | D, I, J, K, L | ~35 | 8-12 |
+| Long Term | M, O | ~25+ | 6-10+ |
+| TOTAL | 15 tasks | ~105 files | 21-32 sessions |
+
+Revenue projection if all built (from strategy doc):
+- Year 1: $170K-$660K
+- Year 2: $710K-$2.4M
+
+===============================================================================
+IMPLEMENTATION LOG
+===============================================================================
+
+| Date       | Action                    | Details                                    |
+|------------|---------------------------|--------------------------------------------|
+| 2026-02-21 | Tracker created           | 15 tasks (A-O), from competitive research  |
+| 2026-02-21 | 3 quick wins shipped      | Contract awards, comparison, intel brief    |
