@@ -17,6 +17,13 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
   hasAlerts: boolean;
   hasAPIAccess: boolean;
   adFree: boolean;
+  hasDealFlow: boolean;
+  hasIntelReports: boolean;
+  hasSupplyChainMap: boolean;
+  hasExecutiveMoves: boolean;
+  hasRegulatoryCalendar: boolean;
+  hasSpaceScore: boolean;
+  hasSalaryData: boolean;
 }> = {
   free: {
     maxDailyArticles: 25,
@@ -27,6 +34,13 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
     hasAlerts: false,
     hasAPIAccess: false,
     adFree: false,
+    hasDealFlow: false,
+    hasIntelReports: false,
+    hasSupplyChainMap: false,
+    hasExecutiveMoves: true, // free teaser (limited)
+    hasRegulatoryCalendar: false,
+    hasSpaceScore: true, // free teaser (top 10 only)
+    hasSalaryData: true, // free SEO page
   },
   pro: {
     maxDailyArticles: -1, // unlimited
@@ -37,6 +51,13 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
     hasAlerts: true,
     hasAPIAccess: false,
     adFree: true,
+    hasDealFlow: true,
+    hasIntelReports: false,
+    hasSupplyChainMap: true,
+    hasExecutiveMoves: true,
+    hasRegulatoryCalendar: true,
+    hasSpaceScore: true,
+    hasSalaryData: true,
   },
   enterprise: {
     maxDailyArticles: -1,
@@ -47,6 +68,13 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
     hasAlerts: true,
     hasAPIAccess: true,
     adFree: true,
+    hasDealFlow: true,
+    hasIntelReports: true,
+    hasSupplyChainMap: true,
+    hasExecutiveMoves: true,
+    hasRegulatoryCalendar: true,
+    hasSpaceScore: true,
+    hasSalaryData: true,
   },
   test: {
     maxDailyArticles: -1,
@@ -57,6 +85,13 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
     hasAlerts: true,
     hasAPIAccess: true,
     adFree: true,
+    hasDealFlow: true,
+    hasIntelReports: true,
+    hasSupplyChainMap: true,
+    hasExecutiveMoves: true,
+    hasRegulatoryCalendar: true,
+    hasSpaceScore: true,
+    hasSalaryData: true,
   },
 };
 
@@ -79,6 +114,10 @@ const PREMIUM_MODULES: Record<string, SubscriptionTier> = {
   'supply-chain': 'pro',
   'space-capital': 'pro',
   'space-economy': 'pro',
+  'deal-flow': 'pro',
+  'supply-chain-map': 'pro',
+  'regulatory-calendar': 'pro',
+  'executive-moves': 'pro',
   // Enterprise tier — organizational & compliance tools
   'business-opportunities': 'enterprise',
   'spectrum-tracker': 'enterprise',
@@ -86,6 +125,8 @@ const PREMIUM_MODULES: Record<string, SubscriptionTier> = {
   'compliance': 'enterprise',
   'orbital-services': 'enterprise',
   'patent-tracker': 'enterprise',
+  'intel-reports': 'enterprise',
+  'api-docs': 'enterprise',
 };
 
 const TIER_ORDER: SubscriptionTier[] = ['free', 'pro', 'enterprise', 'test'];

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import PremiumGate from '@/components/PremiumGate';
 import { toast } from '@/lib/toast';
 
 // ---------------------------------------------------------------------------
@@ -1293,14 +1294,16 @@ function ReportsPageInner() {
 
 export default function ReportsPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="w-10 h-10 border-3 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" />
-        </div>
-      }
-    >
-      <ReportsPageInner />
-    </Suspense>
+    <PremiumGate requiredTier="enterprise" context="intel-reports" showPreview={true}>
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="w-10 h-10 border-3 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" />
+          </div>
+        }
+      >
+        <ReportsPageInner />
+      </Suspense>
+    </PremiumGate>
   );
 }

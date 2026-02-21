@@ -18,7 +18,12 @@ export type UpgradeContext =
   | 'alerts'
   | 'ai-insights'
   | 'api-access'
-  | 'export';
+  | 'export'
+  | 'deal-flow'
+  | 'intel-reports'
+  | 'supply-chain-map'
+  | 'regulatory-calendar'
+  | 'executive-moves';
 
 interface ContextualMessage {
   icon: string;
@@ -159,6 +164,66 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
       'CSV data export',
       'PNG chart export',
       'Scheduled reports',
+    ],
+  },
+  'deal-flow': {
+    icon: '\u{1F4B0}',
+    title: 'Deal Flow Database',
+    description:
+      'Access 100+ historical space industry deals — funding rounds, M&A, IPOs, and contract wins. Track deal flow in real-time.',
+    requiredTier: 'pro',
+    highlights: [
+      '113 historical space deals',
+      'Funding round tracking',
+      'M&A and contract alerts',
+    ],
+  },
+  'intel-reports': {
+    icon: '\u{1F4D1}',
+    title: 'Custom Intelligence Reports',
+    description:
+      'Generate AI-powered research reports on any space industry topic, company, or sector. Professional-grade analysis in minutes.',
+    requiredTier: 'enterprise',
+    highlights: [
+      'AI-generated sector reports',
+      'Company deep dives',
+      'Competitive analysis',
+    ],
+  },
+  'supply-chain-map': {
+    icon: '\u{1F5FA}\u{FE0F}',
+    title: 'Supply Chain Relationship Map',
+    description:
+      'Visualize supplier-customer relationships across 80+ space companies. Find hidden connections and supply chain risks.',
+    requiredTier: 'pro',
+    highlights: [
+      '82 companies mapped',
+      '163 supply relationships',
+      'Path finder between companies',
+    ],
+  },
+  'regulatory-calendar': {
+    icon: '\u{1F4C5}',
+    title: 'Regulatory Deadline Calendar',
+    description:
+      'Never miss an FCC filing, FAA license renewal, or ITU coordination deadline. 105 space regulatory deadlines tracked.',
+    requiredTier: 'pro',
+    highlights: [
+      '105 regulatory deadlines',
+      '.ics calendar export',
+      'Agency-specific filtering',
+    ],
+  },
+  'executive-moves': {
+    icon: '\u{1F464}',
+    title: 'Executive Move Tracker',
+    description:
+      'Track C-suite and VP-level leadership changes across the space industry. Stay ahead of hiring trends and talent movement.',
+    requiredTier: 'pro',
+    highlights: [
+      '55+ tracked executive moves',
+      'Company-linked profiles',
+      'Real-time move alerts',
     ],
   },
 };

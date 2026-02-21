@@ -95,6 +95,43 @@ export default async function HomePage() {
       {/* Hero Section with Video Background */}
       <LandingHero />
 
+      {/* Coming Soon — Mobile App Banner */}
+      <section className="relative z-10 py-4">
+        <div className="container mx-auto px-4">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-800/90 via-slate-800/80 to-slate-800/90 border border-cyan-500/20 backdrop-blur-sm">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-cyan-500/5" />
+            <div className="relative flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 py-4 px-6">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-400" />
+                </span>
+                <span className="text-sm font-semibold text-cyan-300 uppercase tracking-wider">Coming Soon</span>
+              </div>
+              <p className="text-sm text-slate-300 text-center sm:text-left">
+                SpaceNexus is coming to the <span className="font-semibold text-white">App Store</span> and <span className="font-semibold text-white">Google Play</span> &mdash; space intelligence in your pocket.
+              </p>
+              <div className="flex items-center gap-3">
+                {/* Apple App Store badge */}
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-700/60 border border-slate-600/40 text-slate-400">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+                  </svg>
+                  <span className="text-xs font-medium">iOS</span>
+                </div>
+                {/* Google Play badge */}
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-700/60 border border-slate-600/40 text-slate-400">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.4 13.194l2.3-2.3v-.002l-2.3-2.3 2.298-2.084zM5.864 2.658L16.8 8.99l-2.302 2.302L5.864 2.658z" />
+                  </svg>
+                  <span className="text-xs font-medium">Android</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Latest from SpaceNexus — Original Content Showcase (above value prop) */}
       {topContent.length > 0 && (
         <section className="section-spacer-sm relative z-10">

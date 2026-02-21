@@ -8,6 +8,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import AdSlot from '@/components/ads/AdSlot';
+import PremiumGate from '@/components/PremiumGate';
 
 // ────────────────────────────────────────
 // Types
@@ -847,12 +848,14 @@ function DealsPageContent() {
 
 export default function DealsPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-slate-900 flex justify-center items-center">
-        <LoadingSpinner />
-      </div>
-    }>
-      <DealsPageContent />
-    </Suspense>
+    <PremiumGate requiredTier="pro" context="deal-flow" showPreview={true}>
+      <Suspense fallback={
+        <div className="min-h-screen bg-slate-900 flex justify-center items-center">
+          <LoadingSpinner />
+        </div>
+      }>
+        <DealsPageContent />
+      </Suspense>
+    </PremiumGate>
   );
 }

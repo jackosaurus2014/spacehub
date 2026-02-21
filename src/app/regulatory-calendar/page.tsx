@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import PremiumGate from '@/components/PremiumGate';
 import {
   REGULATORY_DEADLINES,
   AGENCY_COLORS,
@@ -635,6 +636,7 @@ export default function RegulatoryCalendarPage() {
           </Link>
         </AnimatedPageHeader>
 
+        <PremiumGate requiredTier="pro" context="regulatory-calendar" showPreview={true}>
         {/* Stats */}
         <StatsBar />
 
@@ -782,6 +784,8 @@ export default function RegulatoryCalendarPage() {
             onClose={() => setSelectedDeadline(null)}
           />
         )}
+
+        </PremiumGate>
 
         {/* Footer disclaimer */}
         <div className="mt-12 text-center text-xs text-slate-500">

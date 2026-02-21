@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import PremiumGate from '@/components/PremiumGate';
 import {
   GRAPH_NODES,
   GRAPH_EDGES,
@@ -1424,15 +1425,17 @@ export default function SupplyChainMapPage() {
           </div>
         </AnimatedPageHeader>
 
-        <Suspense
-          fallback={
-            <div className="flex justify-center py-20">
-              <LoadingSpinner size="lg" />
-            </div>
-          }
-        >
-          <SupplyChainMapContent />
-        </Suspense>
+        <PremiumGate requiredTier="pro" context="supply-chain-map" showPreview={true}>
+          <Suspense
+            fallback={
+              <div className="flex justify-center py-20">
+                <LoadingSpinner size="lg" />
+              </div>
+            }
+          >
+            <SupplyChainMapContent />
+          </Suspense>
+        </PremiumGate>
       </div>
     </div>
   );

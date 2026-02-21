@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import PremiumGate from '@/components/PremiumGate';
 
 interface ExecutiveMove {
   id: string;
@@ -629,12 +630,14 @@ function ExecutiveMovesContent() {
 
 export default function ExecutiveMovesPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    }>
-      <ExecutiveMovesContent />
-    </Suspense>
+    <PremiumGate requiredTier="pro" context="executive-moves" showPreview={true}>
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <LoadingSpinner />
+        </div>
+      }>
+        <ExecutiveMovesContent />
+      </Suspense>
+    </PremiumGate>
   );
 }
