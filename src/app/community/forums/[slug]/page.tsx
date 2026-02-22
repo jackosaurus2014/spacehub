@@ -82,19 +82,39 @@ export default function ForumCategoryPage() {
       });
 
       if (res.ok) {
-        const data = await res.json();
+        const json = await res.json();
+        const thread = json.data || json.thread || json;
         toast.success('Thread created successfully');
         setShowNewThread(false);
         setNewTitle('');
         setNewContent('');
         setNewTags([]);
         // Add new thread to the top of the list
-        if (data.thread) {
-          setThreads((prev) => [data.thread, ...prev]);
+        if (thread.id) {
+          setThreads((prev) => [{
+            id: thread.id,
+            title: thread.title,
+            authorName: thread.author?.name || 'You',
+            authorId: thread.author?.id || '',
+            category: category?.name || slug,
+            replyCount: 0,
+            viewCount: 0,
+            isPinned: false,
+            isLocked: false,
+            lastActivityAt: thread.createdAt,
+            createdAt: thread.createdAt,
+            tags: thread.tags || [],
+            acceptedPostId: null,
+            upvoteCount: 0,
+            downvoteCount: 0,
+          }, ...prev]);
         }
       } else {
-        const data = await res.json();
-        toast.error(data.error || 'Failed to create thread');
+        const errData = await res.json().catch(() => ({}));
+        const errMsg = typeof errData.error === 'string'
+          ? errData.error
+          : errData.error?.message || 'Failed to create thread';
+        toast.error(errMsg);
       }
     } catch {
       toast.error('Network error. Please try again.');

@@ -22,10 +22,10 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string; threadId: string } }
+  { params }: { params: Promise<{ slug: string; threadId: string }> }
 ) {
   try {
-    const { slug, threadId } = params;
+    const { slug, threadId } = await params;
 
     // Verify category exists
     const category = await (prisma as any).forumCategory.findUnique({
@@ -155,7 +155,7 @@ export async function GET(
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { slug: string; threadId: string } }
+  { params }: { params: Promise<{ slug: string; threadId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -178,7 +178,7 @@ export async function POST(
       );
     }
 
-    const { slug, threadId } = params;
+    const { slug, threadId } = await params;
 
     // Verify category exists
     const category = await (prisma as any).forumCategory.findUnique({
@@ -297,7 +297,7 @@ export async function POST(
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { slug: string; threadId: string } }
+  { params }: { params: Promise<{ slug: string; threadId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -305,7 +305,7 @@ export async function PATCH(
       return unauthorizedError();
     }
 
-    const { slug, threadId } = params;
+    const { slug, threadId } = await params;
 
     const body = await req.json();
     const validation = validateBody(editContentSchema, body);
@@ -398,7 +398,7 @@ export async function PATCH(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { slug: string; threadId: string } }
+  { params }: { params: Promise<{ slug: string; threadId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -406,7 +406,7 @@ export async function DELETE(
       return unauthorizedError();
     }
 
-    const { slug, threadId } = params;
+    const { slug, threadId } = await params;
 
     // Verify category exists
     const category = await (prisma as any).forumCategory.findUnique({

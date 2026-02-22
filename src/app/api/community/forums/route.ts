@@ -42,7 +42,14 @@ export async function GET() {
       icon: cat.icon,
       sortOrder: cat.sortOrder,
       threadCount: cat._count.threads,
-      latestThread: cat.threads[0] || null,
+      latestThread: cat.threads[0]
+        ? {
+            id: cat.threads[0].id,
+            title: cat.threads[0].title,
+            authorName: cat.threads[0].author?.name || 'Unknown',
+            createdAt: cat.threads[0].createdAt,
+          }
+        : null,
     }));
 
     return NextResponse.json({

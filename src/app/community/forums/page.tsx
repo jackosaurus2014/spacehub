@@ -118,9 +118,10 @@ export default function ForumsPage() {
       try {
         const res = await fetch('/api/community/forums');
         if (res.ok) {
-          const data = await res.json();
-          if (data.categories && data.categories.length > 0) {
-            setCategories(data.categories);
+          const json = await res.json();
+          const cats = json.data?.categories || json.categories || [];
+          if (cats.length > 0) {
+            setCategories(cats);
           }
         }
       } catch {

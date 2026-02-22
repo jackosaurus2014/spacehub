@@ -20,10 +20,10 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const { searchParams } = new URL(req.url);
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
     const limit = constrainPagination(
@@ -120,7 +120,7 @@ export async function GET(
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -143,7 +143,7 @@ export async function POST(
       );
     }
 
-    const { slug } = params;
+    const { slug } = await params;
 
     // Find the category
     const category = await (prisma as any).forumCategory.findUnique({
