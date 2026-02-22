@@ -139,6 +139,16 @@ export default function Footer() {
                     Cookie Policy
                   </Link>
                 </li>
+                <li>
+                  <Link href="/community/guidelines" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                    Community Guidelines
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/legal/dmca" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                    DMCA Policy
+                  </Link>
+                </li>
               </ul>
 
               {/* Support Links */}

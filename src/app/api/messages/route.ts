@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { checkUserBanStatus, isUserBlocked } from '@/lib/moderation';
 import {
   unauthorizedError,
   validationError,
@@ -131,6 +132,21 @@ export async function POST(req: NextRequest) {
       return unauthorizedError();
     }
 
+    // Check if user is banned or muted
+    const banStatus = await checkUserBanStatus(session.user.id);
+    if (banStatus.isBanned) {
+      return NextResponse.json(
+        { error: 'Your account has been suspended' },
+        { status: 403 }
+      );
+    }
+    if (banStatus.isMuted) {
+      return NextResponse.json(
+        { error: 'Your account has been temporarily muted' },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const { recipientId, content } = body;
 
@@ -148,6 +164,15 @@ export async function POST(req: NextRequest) {
 
     if (recipientId === session.user.id) {
       return validationError('You cannot message yourself');
+    }
+
+    // Check if recipient has blocked the sender
+    const blocked = await isUserBlocked(recipientId, session.user.id);
+    if (blocked) {
+      return NextResponse.json(
+        { error: 'Unable to message this user' },
+        { status: 403 }
+      );
     }
 
     // Verify recipient exists

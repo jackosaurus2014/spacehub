@@ -16,6 +16,15 @@ declare global {
 }
 
 /**
+ * Check if Global Privacy Control (GPC) signal is set
+ * https://globalprivacycontrol.org/
+ */
+export function isGPCEnabled(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return !!(navigator as any).globalPrivacyControl;
+}
+
+/**
  * Get the current consent status from localStorage
  * @returns 'granted' | 'denied' | null (null means no decision made yet)
  */

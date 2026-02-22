@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import ReportButton from './ReportButton';
 
 export interface ThreadData {
   id: string;
@@ -94,6 +95,9 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
                   {thread.viewCount}
                 </span>
                 <span className="ml-auto flex-shrink-0">{timeAgo(thread.lastActivityAt)}</span>
+                <span className="flex-shrink-0" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                  <ReportButton contentType="thread" contentId={thread.id} size="sm" />
+                </span>
               </div>
             </div>
           </div>

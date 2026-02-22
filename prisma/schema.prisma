@@ -32,6 +32,14 @@ model User {
   // Admin
   isAdmin Boolean @default(false)
 
+  // Moderation
+  isBanned    Boolean   @default(false)
+  bannedAt    DateTime?
+  bannedUntil DateTime? // null = permanent
+  banReason   String?
+  isMuted     Boolean   @default(false)
+  mutedUntil  DateTime?
+
   // Email verification & password reset
   emailVerified     Boolean @default(false)
   verificationToken String? @unique
@@ -78,6 +86,11 @@ model User {
   sentMessages             DirectMessage[]
   forumThreads             ForumThread[]
   forumPosts               ForumPost[]
+
+  // Moderation
+  reportsMade              ContentReport[] @relation("reportsMade")
+  blocksGiven              UserBlock[]     @relation("blocksGiven")
+  blocksReceived           UserBlock[]     @relation("blocksReceived")
 }
 
 model PasswordResetToken {
@@ -3800,4 +3813,57 @@ model ForumPost {
 
   @@index([threadId, createdAt])
   @@index([authorId])
+}
+
+// ============================================================
+// Community: Content Reporting & Moderation
+// ============================================================
+
+model ContentReport {
+  id          String   @id @default(cuid())
+  reporterId  String
+  reporter    User     @relation("reportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
+  contentType String   // 'thread', 'post', 'message', 'profile'
+  contentId   String
+  reason      String   // 'spam', 'harassment', 'itar_violation', 'copyright', 'inappropriate', 'hate_speech', 'other'
+  description String?  @db.Text
+  status      String   @default("pending") // 'pending', 'reviewed', 'actioned', 'dismissed'
+  reviewedBy  String?
+  reviewNote  String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([contentType, contentId])
+  @@index([status])
+  @@index([reporterId])
+  @@index([createdAt])
+}
+
+model UserBlock {
+  id        String   @id @default(cuid())
+  blockerId String
+  blocker   User     @relation("blocksGiven", fields: [blockerId], references: [id], onDelete: Cascade)
+  blockedId String
+  blocked   User     @relation("blocksReceived", fields: [blockedId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
+}
+
+model ModerationAction {
+  id           String   @id @default(cuid())
+  moderatorId  String
+  targetUserId String
+  action       String   // 'warn', 'mute', 'unmute', 'ban', 'unban', 'delete_content'
+  reason       String?  @db.Text
+  contentType  String?
+  contentId    String?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  @@index([targetUserId])
+  @@index([moderatorId])
+  @@index([createdAt])
 }

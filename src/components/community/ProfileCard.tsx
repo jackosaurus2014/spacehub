@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import ReportButton from './ReportButton';
+import BlockButton from './BlockButton';
 
 interface ProfileData {
   id: string;
@@ -158,6 +160,10 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
                 </svg>
               </a>
             )}
+            <div className="ml-auto flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+              <ReportButton contentType="profile" contentId={profile.id} size="sm" />
+              <BlockButton targetUserId={profile.userId} targetUserName={profile.user.name || undefined} size="sm" />
+            </div>
           </div>
         </div>
       </motion.div>

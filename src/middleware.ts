@@ -37,6 +37,16 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   if (pathname.startsWith('/api/auth/verify-email')) {
     return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 req/hour
   }
+  // Community rate limits
+  if (pathname.startsWith('/api/community/forums')) {
+    return { maxRequests: 20, windowMs: 60 * 60 * 1000 }; // 20 forum actions/hour
+  }
+  if (pathname.startsWith('/api/community/reports')) {
+    return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 reports/hour
+  }
+  if (pathname.startsWith('/api/messages')) {
+    return { maxRequests: 50, windowMs: 60 * 60 * 1000 }; // 50 messages/hour
+  }
   // AI-powered endpoints (expensive external API calls)
   if (
     pathname.startsWith('/api/search/ai-intent') ||
@@ -121,6 +131,12 @@ function checkRateLimit(
     routeKey = 'auth-reset-password';
   } else if (pathname.startsWith('/api/auth/verify-email')) {
     routeKey = 'auth-verify-email';
+  } else if (pathname.startsWith('/api/community/forums')) {
+    routeKey = 'community-forums';
+  } else if (pathname.startsWith('/api/community/reports')) {
+    routeKey = 'community-reports';
+  } else if (pathname.startsWith('/api/messages')) {
+    routeKey = 'messages';
   } else if (
     pathname.startsWith('/api/search/ai-intent') ||
     pathname.startsWith('/api/marketplace/copilot') ||

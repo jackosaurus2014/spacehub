@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { checkUserBanStatus } from '@/lib/moderation';
 import {
   unauthorizedError,
   validationError,
@@ -119,6 +120,21 @@ export async function POST(
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return unauthorizedError();
+    }
+
+    // Check if user is banned or muted
+    const banStatus = await checkUserBanStatus(session.user.id);
+    if (banStatus.isBanned) {
+      return NextResponse.json(
+        { error: 'Your account has been suspended' + (banStatus.banReason ? `: ${banStatus.banReason}` : '') },
+        { status: 403 }
+      );
+    }
+    if (banStatus.isMuted) {
+      return NextResponse.json(
+        { error: 'Your account has been temporarily muted. You cannot create new content at this time.' },
+        { status: 403 }
+      );
     }
 
     const { slug } = params;

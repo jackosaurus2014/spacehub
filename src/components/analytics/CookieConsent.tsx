@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getConsentStatus, setConsentStatus } from '@/lib/analytics';
+import { getConsentStatus, setConsentStatus, isGPCEnabled } from '@/lib/analytics';
 
 /**
  * Cookie Consent Banner Component
@@ -20,6 +20,12 @@ export default function CookieConsent() {
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
+    // Respect Global Privacy Control signal
+    if (isGPCEnabled()) {
+      setConsentStatus(false);
+      return; // Don't show banner, GPC has opted out
+    }
+
     // Check if user has already made a choice
     const consentStatus = getConsentStatus();
 

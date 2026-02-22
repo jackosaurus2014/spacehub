@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ITARWarningBanner from '@/components/community/ITARWarningBanner';
 
 interface ForumCategory {
   id: string;
@@ -140,6 +141,8 @@ export default function ForumsPage() {
           icon={<span>{"💬"}</span>}
           breadcrumb="Community"
         />
+
+        <ITARWarningBanner />
 
         {loading ? (
           <div className="flex justify-center py-16">

@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ReportButton from '@/components/community/ReportButton';
+import BlockButton from '@/components/community/BlockButton';
 import { toast } from '@/lib/toast';
 
 interface ForumPost {
@@ -230,6 +232,10 @@ export default function ThreadDetailPage() {
               </svg>
               {thread.viewCount} views
             </span>
+            <div className="ml-auto flex items-center gap-1">
+              <ReportButton contentType="thread" contentId={thread.id} size="sm" />
+              <BlockButton targetUserId={thread.authorId} targetUserName={thread.authorName} size="sm" />
+            </div>
           </div>
         </motion.div>
 
@@ -255,6 +261,10 @@ export default function ThreadDetailPage() {
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-sm font-medium text-slate-200">{reply.authorName}</span>
                       <span className="text-xs text-slate-500">{timeAgo(reply.createdAt)}</span>
+                      <div className="ml-auto flex items-center gap-1">
+                        <ReportButton contentType="post" contentId={reply.id} size="sm" />
+                        <BlockButton targetUserId={reply.authorId} targetUserName={reply.authorName} size="sm" />
+                      </div>
                     </div>
                     <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">{reply.content}</p>
                   </div>

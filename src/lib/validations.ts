@@ -1615,3 +1615,39 @@ export const leadCaptureSchema = z.object({
   message: z.string().min(10).max(2000),
   phone: z.string().max(30).optional(),
 });
+
+// ============================================================
+// Community Moderation Schemas
+// ============================================================
+
+export const REPORT_REASONS = [
+  'spam', 'harassment', 'itar_violation', 'copyright',
+  'inappropriate', 'hate_speech', 'doxxing', 'impersonation', 'other',
+] as const;
+export type ReportReason = (typeof REPORT_REASONS)[number];
+
+export const REPORT_CONTENT_TYPES = ['thread', 'post', 'message', 'profile'] as const;
+export type ReportContentType = (typeof REPORT_CONTENT_TYPES)[number];
+
+export const MODERATION_ACTIONS = ['warn', 'mute', 'unmute', 'ban', 'unban', 'delete_content'] as const;
+export type ModerationActionType = (typeof MODERATION_ACTIONS)[number];
+
+export const contentReportSchema = z.object({
+  contentType: z.enum(REPORT_CONTENT_TYPES),
+  contentId: z.string().min(1),
+  reason: z.enum(REPORT_REASONS),
+  description: z.string().max(2000).optional().transform((val) => val?.trim() || undefined),
+});
+
+export const moderationActionSchema = z.object({
+  action: z.enum(MODERATION_ACTIONS),
+  reason: z.string().min(5).max(2000).transform((val) => val.trim()),
+  duration: z.number().int().min(1).max(525600).optional().nullable(),
+  contentType: z.string().max(50).optional(),
+  contentId: z.string().max(100).optional(),
+});
+
+export const editContentSchema = z.object({
+  content: z.string().min(1).max(10000).transform((val) => val.trim()),
+  title: z.string().min(1).max(200).transform((val) => val.trim()).optional(),
+});

@@ -4,7 +4,7 @@ import PageHeader from '@/components/ui/PageHeader';
 export const revalidate = 86400; // ISR: revalidate every 24 hours
 
 export default function PrivacyPolicyPage() {
-  const lastUpdated = 'February 5, 2026';
+  const lastUpdated = 'February 21, 2026';
 
   return (
     <div className="min-h-screen bg-space-900">
@@ -75,6 +75,19 @@ export default function PrivacyPolicyPage() {
                 <li>Device model and operating system version</li>
                 <li>App usage analytics and crash reports</li>
               </ul>
+
+              <h3 className="text-lg font-medium text-slate-800 mb-3 mt-6">Community Data</h3>
+              <p className="text-slate-400 leading-relaxed mb-4">
+                When you use our community features, we collect:
+              </p>
+              <ul className="list-disc list-inside text-slate-400 space-y-2 ml-4">
+                <li>Forum posts, threads, and replies you create</li>
+                <li>Direct messages you send and receive</li>
+                <li>Your professional profile information (headline, bio, expertise, location)</li>
+                <li>Users you follow and companies you follow</li>
+                <li>Content reports you submit</li>
+                <li>Your moderation history (warnings, mutes, bans)</li>
+              </ul>
             </section>
 
             {/* Use of Data */}
@@ -93,6 +106,14 @@ export default function PrivacyPolicyPage() {
                 <li>Processing transactions and managing your account</li>
                 <li>Detecting, preventing, and addressing technical issues and fraud</li>
                 <li>Complying with legal obligations</li>
+                <li>Moderating community content for compliance with our{' '}
+                  <Link href="/community/guidelines" className="text-nebula-300 hover:text-nebula-200 underline">
+                    Community Guidelines
+                  </Link>
+                </li>
+                <li>Processing content reports and enforcing platform rules</li>
+                <li>Facilitating direct messaging between registered users</li>
+                <li>Providing professional networking and directory features</li>
               </ul>
             </section>
 
@@ -185,6 +206,29 @@ export default function PrivacyPolicyPage() {
               </ul>
               <p className="text-slate-400 leading-relaxed mt-4">
                 To exercise any of these rights, please contact us using the information provided below.
+                You can also export all of your data at any time from your{' '}
+                <Link href="/account" className="text-nebula-300 hover:text-nebula-200 underline">
+                  Account Settings
+                </Link>{' '}page.
+              </p>
+
+              <h3 className="text-lg font-medium text-slate-800 mb-3 mt-6">Global Privacy Control (GPC)</h3>
+              <p className="text-slate-400 leading-relaxed mb-4">
+                We respect the Global Privacy Control (GPC) signal. When we detect a GPC signal from your
+                browser, we treat it as a valid opt-out request for the sale or sharing of your personal
+                information, consistent with applicable state privacy laws including the CCPA, VCDPA, CPA,
+                and CTDPA.
+              </p>
+              <p className="text-slate-400 leading-relaxed">
+                You can learn more about GPC at{' '}
+                <a
+                  href="https://globalprivacycontrol.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-nebula-300 hover:text-nebula-200 underline"
+                >
+                  globalprivacycontrol.org
+                </a>.
               </p>
 
               <h3 className="text-lg font-medium text-slate-800 mb-3 mt-6">Account Deletion</h3>
@@ -200,10 +244,22 @@ export default function PrivacyPolicyPage() {
             {/* Data Retention */}
             <section>
               <h2 className="text-xl font-semibold text-slate-900 mb-4">Data Retention</h2>
-              <p className="text-slate-400 leading-relaxed">
-                We retain your personal information only for as long as necessary to fulfill the purposes
-                for which it was collected, including to satisfy any legal, accounting, or reporting
-                requirements. When we no longer need your information, we will securely delete or anonymize it.
+              <p className="text-slate-400 leading-relaxed mb-4">
+                We retain different types of data for different periods, depending on the purpose for which
+                it was collected and our legal obligations:
+              </p>
+              <ul className="list-disc list-inside text-slate-400 space-y-2 ml-4">
+                <li><strong>Account data:</strong> Retained until you delete your account</li>
+                <li><strong>Forum posts and threads:</strong> Retained until deleted by you or removed by a moderator</li>
+                <li><strong>Direct messages:</strong> Retained for 3 years after last conversation activity, or until account deletion (whichever comes first)</li>
+                <li><strong>Professional profile:</strong> Retained until you delete it or delete your account</li>
+                <li><strong>Content reports:</strong> Retained for 2 years after resolution</li>
+                <li><strong>Moderation logs:</strong> Retained for 5 years for legal compliance purposes</li>
+                <li><strong>Session and access logs:</strong> 90 days</li>
+                <li><strong>Newsletter subscription data:</strong> Until you unsubscribe</li>
+              </ul>
+              <p className="text-slate-400 leading-relaxed mt-4">
+                When we no longer need your information, we will securely delete or anonymize it.
               </p>
             </section>
 
@@ -268,6 +324,18 @@ export default function PrivacyPolicyPage() {
                   className="text-nebula-300 hover:text-nebula-200 underline"
                 >
                   Cookie Policy
+                </Link>
+                <Link
+                  href="/community/guidelines"
+                  className="text-nebula-300 hover:text-nebula-200 underline"
+                >
+                  Community Guidelines
+                </Link>
+                <Link
+                  href="/legal/dmca"
+                  className="text-nebula-300 hover:text-nebula-200 underline"
+                >
+                  DMCA Policy
                 </Link>
               </div>
             </section>

@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ThreadCard, { ThreadData } from '@/components/community/ThreadCard';
+import ITARWarningBanner from '@/components/community/ITARWarningBanner';
 import { toast } from '@/lib/toast';
 
 interface CategoryInfo {
@@ -122,6 +123,8 @@ export default function ForumCategoryPage() {
             New Thread
           </button>
         </div>
+
+        <ITARWarningBanner />
 
         {/* New thread form */}
         {showNewThread && (
