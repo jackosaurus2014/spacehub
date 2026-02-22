@@ -191,25 +191,6 @@ function WatchlistsContent() {
     }
   };
 
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center"><LoadingSpinner /></div>;
-  }
-
-  if (notAuthed) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-3">
-          <div className="text-4xl">🔒</div>
-          <h2 className="text-lg font-semibold text-white">Sign in Required</h2>
-          <p className="text-sm text-slate-400">Please sign in to manage your watchlists and saved searches.</p>
-          <Link href="/login" className="text-cyan-400 hover:text-cyan-300 text-sm font-medium">
-            Sign In →
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   useEffect(() => {
     if (tab === 'digests' && digests.length === 0 && !digestsLoading) {
       setDigestsLoading(true);
@@ -234,6 +215,25 @@ function WatchlistsContent() {
       }
     }
   }, [tab, watchlist, digests.length, digestsLoading]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center"><LoadingSpinner /></div>;
+  }
+
+  if (notAuthed) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="text-4xl">🔒</div>
+          <h2 className="text-lg font-semibold text-white">Sign in Required</h2>
+          <p className="text-sm text-slate-400">Please sign in to manage your watchlists and saved searches.</p>
+          <Link href="/login" className="text-cyan-400 hover:text-cyan-300 text-sm font-medium">
+            Sign In →
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const tabs = [
     { key: 'companies', label: `Watched Companies (${watchlist.length})` },

@@ -69,6 +69,18 @@ export default function DashboardBuilderPage() {
   const isAuthenticated = status === 'authenticated';
   const useLocalStorage = !isAuthenticated || tier === 'free';
 
+  const loadLocalLayouts = useCallback(() => {
+    const localLayouts = getLocalLayouts();
+    setLayouts(localLayouts);
+
+    const defaultLayout = getDefaultLocalLayout();
+    if (defaultLayout) {
+      setActiveLayoutId(defaultLayout.id);
+      setActiveWidgets(mapToWidgetData(defaultLayout.widgets));
+      originalWidgetsRef.current = JSON.stringify(defaultLayout.widgets);
+    }
+  }, []);
+
   // Load layouts on mount
   useEffect(() => {
     const loadLayouts = async () => {
@@ -112,19 +124,7 @@ export default function DashboardBuilderPage() {
     if (status !== 'loading') {
       loadLayouts();
     }
-  }, [status, isAuthenticated]);
-
-  const loadLocalLayouts = useCallback(() => {
-    const localLayouts = getLocalLayouts();
-    setLayouts(localLayouts);
-
-    const defaultLayout = getDefaultLocalLayout();
-    if (defaultLayout) {
-      setActiveLayoutId(defaultLayout.id);
-      setActiveWidgets(mapToWidgetData(defaultLayout.widgets));
-      originalWidgetsRef.current = JSON.stringify(defaultLayout.widgets);
-    }
-  }, []);
+  }, [status, isAuthenticated, loadLocalLayouts]);
 
   // Map API/local widgets to WidgetData format
   function mapToWidgetData(widgets: (ApiWidget | LocalLayout['widgets'][0])[]): WidgetData[] {

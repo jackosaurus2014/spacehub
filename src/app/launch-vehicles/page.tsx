@@ -974,22 +974,6 @@ export default function LaunchVehiclesPage() {
   const countries = useMemo(() => Array.from(new Set(ACTIVE_VEHICLES.map(v => v.country))).sort(), [ACTIVE_VEHICLES]);
   const manufacturers = useMemo(() => Array.from(new Set(ACTIVE_VEHICLES.map(v => v.manufacturer))).sort(), [ACTIVE_VEHICLES]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const filteredVehicles = useMemo(() => {
     let result = [...ACTIVE_VEHICLES];
 
@@ -1044,16 +1028,6 @@ export default function LaunchVehiclesPage() {
     [compareSelection, ACTIVE_VEHICLES]
   );
 
-  const toggleCompare = (vehicle: LaunchVehicle) => {
-    setCompareSelection(prev => {
-      if (prev.includes(vehicle.id)) {
-        return prev.filter(id => id !== vehicle.id);
-      }
-      if (prev.length >= 4) return prev;
-      return [...prev, vehicle.id];
-    });
-  };
-
   // Reliability-sorted vehicles
   const reliabilityRanked = useMemo(() => {
     return [...ACTIVE_VEHICLES]
@@ -1070,6 +1044,32 @@ export default function LaunchVehiclesPage() {
       .filter(v => v.costPerKgLeo !== null)
       .sort((a, b) => (a.costPerKgLeo ?? Infinity) - (b.costPerKgLeo ?? Infinity));
   }, [ACTIVE_VEHICLES]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const toggleCompare = (vehicle: LaunchVehicle) => {
+    setCompareSelection(prev => {
+      if (prev.includes(vehicle.id)) {
+        return prev.filter(id => id !== vehicle.id);
+      }
+      if (prev.length >= 4) return prev;
+      return [...prev, vehicle.id];
+    });
+  };
 
   // Stats
   const totalOperational = ACTIVE_VEHICLES.filter(v => v.status === 'Operational').length;

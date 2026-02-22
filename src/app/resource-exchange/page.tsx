@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -196,11 +196,7 @@ function ResourceExchangeContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [selectedCategory, selectedProvider, destination, router, pathname]);
 
-  useEffect(() => {
-    fetchData();
-  }, [selectedCategory]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -238,7 +234,12 @@ function ResourceExchangeContent() {
     } finally {
       setLoading(false);
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleInitialize = async () => {
     setInitializing(true);

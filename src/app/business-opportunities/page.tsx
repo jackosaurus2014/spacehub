@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -328,11 +328,7 @@ function BusinessOpportunitiesContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [activeTab, selectedType, selectedCategory, selectedAudience, router, pathname]);
 
-  useEffect(() => {
-    fetchData();
-  }, [selectedType, selectedCategory, selectedAudience]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -362,7 +358,11 @@ function BusinessOpportunitiesContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedType, selectedCategory, selectedAudience]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleInitialize = async () => {
     setInitializing(true);

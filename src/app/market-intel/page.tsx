@@ -264,53 +264,6 @@ function MarketIntelContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [selectedCountry, selectedType, selectedFocus, router, pathname]);
 
-  useEffect(() => {
-    fetchData();
-  }, [selectedCountry, selectedType, selectedFocus]);
-
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const params = new URLSearchParams();
-      params.set('limit', '200');
-      if (selectedCountry) params.set('country', selectedCountry);
-      if (selectedType) params.set('isPublic', selectedType === 'public' ? 'true' : 'false');
-      if (selectedFocus) params.set('focusArea', selectedFocus);
-
-      const [companiesRes, statsRes] = await Promise.all([
-        fetch(`/api/companies?${params}`),
-        fetch('/api/companies/stats'),
-      ]);
-
-      const companiesData = await companiesRes.json();
-      const statsData = await statsRes.json();
-
-      if (companiesData.companies) {
-        setCompanies(companiesData.companies);
-
-        // Fetch stock data for public companies
-        const publicCompanies = companiesData.companies.filter(
-          (c: SpaceCompany) => c.isPublic && c.ticker
-        );
-        if (publicCompanies.length > 0) {
-          fetchStockData(publicCompanies);
-        }
-      }
-      if (statsData.total !== undefined) {
-        setStats(statsData);
-      }
-
-      // Fetch ETF data
-      fetchEtfData();
-    } catch (error) {
-      console.error('Failed to fetch market data:', error);
-      setError('Failed to load data.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const fetchStockData = useCallback(async (publicCompanies: SpaceCompany[]) => {
     const tickers = publicCompanies.map((c) => c.ticker).join(',');
     try {
@@ -373,6 +326,53 @@ function MarketIntelContent() {
       setError('Failed to load data.');
     }
   }, []);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      params.set('limit', '200');
+      if (selectedCountry) params.set('country', selectedCountry);
+      if (selectedType) params.set('isPublic', selectedType === 'public' ? 'true' : 'false');
+      if (selectedFocus) params.set('focusArea', selectedFocus);
+
+      const [companiesRes, statsRes] = await Promise.all([
+        fetch(`/api/companies?${params}`),
+        fetch('/api/companies/stats'),
+      ]);
+
+      const companiesData = await companiesRes.json();
+      const statsData = await statsRes.json();
+
+      if (companiesData.companies) {
+        setCompanies(companiesData.companies);
+
+        // Fetch stock data for public companies
+        const publicCompanies = companiesData.companies.filter(
+          (c: SpaceCompany) => c.isPublic && c.ticker
+        );
+        if (publicCompanies.length > 0) {
+          fetchStockData(publicCompanies);
+        }
+      }
+      if (statsData.total !== undefined) {
+        setStats(statsData);
+      }
+
+      // Fetch ETF data
+      fetchEtfData();
+    } catch (error) {
+      console.error('Failed to fetch market data:', error);
+      setError('Failed to load data.');
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedCountry, selectedType, selectedFocus, fetchStockData, fetchEtfData]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleInitialize = async () => {
     setInitializing(true);

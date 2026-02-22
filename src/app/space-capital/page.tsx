@@ -446,6 +446,9 @@ function StartupsTab({ startups }: { startups: StartupCompany[] }) {
 // Tab 4: Matchmaker
 // ────────────────────────────────────────
 
+const MATRIX_STAGES = ['Pre-seed/Seed', 'Series A', 'Series B', 'Series C+'];
+const MATRIX_SECTORS = ['Launch', 'Earth Observation', 'Communications', 'Defense', 'In-Space Services', 'Satellites'];
+
 function MatchmakerTab({ investors, startups }: { investors: Investor[]; startups: StartupCompany[] }) {
   const [mode, setMode] = useState<'startup' | 'investor'>('startup');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -487,14 +490,11 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
   }, [mode, selectedInvestorData, startups]);
 
   // Matrix data for the visual grid
-  const matrixStages = ['Pre-seed/Seed', 'Series A', 'Series B', 'Series C+'];
-  const matrixSectors = ['Launch', 'Earth Observation', 'Communications', 'Defense', 'In-Space Services', 'Satellites'];
-
   const matrixData = useMemo(() => {
     const data: Record<string, Record<string, number>> = {};
-    matrixStages.forEach(stage => {
+    MATRIX_STAGES.forEach(stage => {
       data[stage] = {};
-      matrixSectors.forEach(sector => {
+      MATRIX_SECTORS.forEach(sector => {
         data[stage][sector] = investors.filter(inv =>
           inv.stagePreference.some(s => s.toLowerCase().includes(stage.split('/')[0].toLowerCase().trim())) &&
           inv.sectorFocus.some(sf => sf.toLowerCase().includes(sector.toLowerCase()))
@@ -667,16 +667,16 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
             <thead>
               <tr>
                 <th className="text-left py-2 px-3 text-slate-400 font-medium text-xs"></th>
-                {matrixSectors.map(sector => (
+                {MATRIX_SECTORS.map(sector => (
                   <th key={sector} className="py-2 px-3 text-slate-400 font-medium text-xs text-center">{sector}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {matrixStages.map(stage => (
+              {MATRIX_STAGES.map(stage => (
                 <tr key={stage}>
                   <td className="py-2 px-3 text-slate-300 font-medium text-xs whitespace-nowrap">{stage}</td>
-                  {matrixSectors.map(sector => {
+                  {MATRIX_SECTORS.map(sector => {
                     const count = matrixData[stage]?.[sector] || 0;
                     const intensity = count / maxDensity;
                     return (
