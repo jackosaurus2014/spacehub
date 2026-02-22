@@ -80,6 +80,14 @@ interface CompanyDetail {
   sponsorTier: string | null;
   sponsorTagline: string | null;
   sponsorBanner: string | null;
+  completenessBreakdown?: {
+    total: number;
+    basicInfo: number;
+    financialData: number;
+    productsOperations: number;
+    businessIntelligence: number;
+    externalData: number;
+  };
   fundingRounds: FundingRound[]; revenueEstimates: RevenueEstimate[];
   products: Product[]; keyPersonnel: Person[];
   acquisitions: Acquisition[]; partnerships: Partnership[];
@@ -1107,6 +1115,7 @@ export default function CompanyProfileDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const [showCompletenessDetails, setShowCompletenessDetails] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -1323,25 +1332,92 @@ export default function CompanyProfileDetailPage() {
 
           {/* Data Completeness Bar */}
           <div className="mt-4 pt-4 border-t border-slate-700/30">
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-500">Profile Completeness</span>
-              <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${company.dataCompleteness}%` }}
-                  transition={{ duration: 1, ease: 'easeOut' }}
-                  className={`h-full rounded-full ${
-                    company.dataCompleteness >= 75 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' :
-                    company.dataCompleteness >= 50 ? 'bg-gradient-to-r from-amber-500 to-amber-400' :
-                    'bg-gradient-to-r from-red-500 to-red-400'
-                  }`}
-                />
-              </div>
-              <span className={`text-xs font-semibold ${
-                company.dataCompleteness >= 75 ? 'text-emerald-400' :
-                company.dataCompleteness >= 50 ? 'text-amber-400' : 'text-red-400'
-              }`}>{company.dataCompleteness}%</span>
-            </div>
+            {(() => {
+              const overallScore = company.completenessBreakdown?.total ?? company.dataCompleteness;
+              return (
+                <>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-500">Profile Completeness</span>
+                    <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${overallScore}%` }}
+                        transition={{ duration: 1, ease: 'easeOut' }}
+                        className={`h-full rounded-full ${
+                          overallScore >= 75 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' :
+                          overallScore >= 50 ? 'bg-gradient-to-r from-amber-500 to-amber-400' :
+                          'bg-gradient-to-r from-red-500 to-red-400'
+                        }`}
+                      />
+                    </div>
+                    <span className={`text-xs font-semibold ${
+                      overallScore >= 75 ? 'text-emerald-400' :
+                      overallScore >= 50 ? 'text-amber-400' : 'text-red-400'
+                    }`}>{overallScore}%</span>
+                  </div>
+                  {company.completenessBreakdown && (
+                    <>
+                      <button
+                        onClick={() => setShowCompletenessDetails(prev => !prev)}
+                        className="mt-1.5 text-[11px] text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+                      >
+                        {showCompletenessDetails ? '▾ Hide details' : '▸ Details'}
+                      </button>
+                      <AnimatePresence>
+                        {showCompletenessDetails && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: 'easeInOut' }}
+                            className="overflow-hidden"
+                          >
+                            <div className="mt-2 space-y-2 pl-1">
+                              {([
+                                { label: 'Basic Info', key: 'basicInfo' as const, max: 30 },
+                                { label: 'Financial', key: 'financialData' as const, max: 25 },
+                                { label: 'Products & Ops', key: 'productsOperations' as const, max: 20 },
+                                { label: 'Business Intel', key: 'businessIntelligence' as const, max: 15 },
+                                { label: 'External Data', key: 'externalData' as const, max: 10 },
+                              ] as const).map(({ label, key, max }) => {
+                                const value = company.completenessBreakdown![key];
+                                const pct = max > 0 ? (value / max) * 100 : 0;
+                                const barColor = pct > 75
+                                  ? 'bg-emerald-500'
+                                  : pct > 50
+                                    ? 'bg-amber-500'
+                                    : 'bg-red-500';
+                                const textColor = pct > 75
+                                  ? 'text-emerald-400'
+                                  : pct > 50
+                                    ? 'text-amber-400'
+                                    : 'text-red-400';
+                                return (
+                                  <div key={key} className="flex items-center gap-2">
+                                    <span className="text-[11px] text-slate-400 w-24 shrink-0">{label}</span>
+                                    <div className="flex-1 h-1 bg-slate-800 rounded-full overflow-hidden">
+                                      <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${pct}%` }}
+                                        transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
+                                        className={`h-full rounded-full ${barColor}`}
+                                      />
+                                    </div>
+                                    <span className={`text-[11px] font-medium w-12 text-right shrink-0 ${textColor}`}>
+                                      {value}/{max}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </>
+                  )}
+                </>
+              );
+            })()}
           </div>
 
           {/* Marketplace Actions */}

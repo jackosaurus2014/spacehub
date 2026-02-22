@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { notFoundError } from '@/lib/errors';
+import { calculateCompletenessBreakdown } from '@/lib/company-completeness';
+import type { CompanyForScoring } from '@/lib/company-completeness';
 
 export const dynamic = 'force-dynamic';
 
@@ -202,6 +204,57 @@ export async function GET(
     ).length;
     const totalFundingRounds = (company.fundingRounds || []).length;
 
+    // Compute live completeness breakdown from already-loaded data.
+    // Build a synthetic _count from relation array lengths to avoid an extra DB query.
+    let completenessBreakdown = null;
+    try {
+      const companyForScoring: CompanyForScoring = {
+        name: company.name,
+        slug: company.slug,
+        description: company.description,
+        longDescription: company.longDescription,
+        ceo: company.ceo,
+        headquarters: company.headquarters,
+        country: company.country,
+        website: company.website,
+        foundedYear: company.foundedYear,
+        employeeCount: company.employeeCount,
+        employeeRange: company.employeeRange,
+        sector: company.sector,
+        tags: company.tags,
+        linkedinUrl: company.linkedinUrl,
+        twitterUrl: company.twitterUrl,
+        totalFunding: company.totalFunding,
+        marketCap: company.marketCap,
+        revenueEstimate: company.revenueEstimate,
+        ticker: company.ticker,
+        exchange: company.exchange,
+        isPublic: company.isPublic,
+        _count: {
+          fundingRounds: (company.fundingRounds || []).length,
+          revenueEstimates: (company.revenueEstimates || []).length,
+          products: (company.products || []).length,
+          keyPersonnel: (company.keyPersonnel || []).length,
+          facilities: (company.facilities || []).length,
+          satelliteAssets: (company.satelliteAssets || []).length,
+          contracts: (company.contracts || []).length,
+          events: (company.events || []).length,
+          partnerships: (company.partnerships || []).length,
+          acquisitions: (company.acquisitions || []).length,
+          scores: (company.scores || []).length,
+          secFilings: (company.secFilings || []).length,
+          competitorOf: (company.competitorOf || []).length,
+          newsArticles: (company.newsArticles || []).length,
+        },
+      };
+      completenessBreakdown = calculateCompletenessBreakdown(companyForScoring);
+    } catch (scoringErr) {
+      logger.warn('Failed to compute completeness breakdown', {
+        error: scoringErr instanceof Error ? scoringErr.message : String(scoringErr),
+        slug,
+      });
+    }
+
     return NextResponse.json({
       ...company,
       summary: {
@@ -215,6 +268,7 @@ export async function GET(
         totalEvents: (company.events || []).length,
         competitors: (company.competitorOf || []).map((c: { competitor: unknown }) => c.competitor),
       },
+      completenessBreakdown,
     });
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);
