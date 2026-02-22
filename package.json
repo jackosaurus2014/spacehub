@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "prisma db push || echo '⚠️  WARNING: prisma db push failed — schema may be out of sync' && next build",
+    "build": "prisma db push || (sleep 3 && prisma db push) || echo 'WARNING: prisma db push failed — schema may be out of sync' && next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
