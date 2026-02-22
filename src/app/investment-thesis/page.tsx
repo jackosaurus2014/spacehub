@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import PremiumGate from '@/components/PremiumGate';
 
 // ============================================================================
 // TYPES
@@ -376,11 +377,12 @@ export default function InvestmentThesisPage() {
   const confConfig = thesis ? CONFIDENCE_CONFIG[thesis.confidenceLevel] || CONFIDENCE_CONFIG.medium : null;
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pt-24 pb-16 px-4">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Investment Thesis' },
-      ]} />
+    <PremiumGate requiredTier="enterprise" context="investment-thesis" showPreview={true}>
+      <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pt-24 pb-16 px-4">
+        <BreadcrumbSchema items={[
+          { name: 'Home', href: '/' },
+          { name: 'Investment Thesis' },
+        ]} />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <AnimatedPageHeader
@@ -1015,6 +1017,7 @@ export default function InvestmentThesisPage() {
           }
         }
       `}</style>
-    </main>
+      </main>
+    </PremiumGate>
   );
 }

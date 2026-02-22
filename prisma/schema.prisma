@@ -68,6 +68,16 @@ model User {
 
   // Native push tokens (iOS/Android)
   pushTokens               PushToken[]
+
+  // Community
+  professionalProfile      ProfessionalProfile?
+  following                UserFollow[]         @relation("following")
+  followers                UserFollow[]         @relation("followers")
+  companyFollows           CompanyFollow[]
+  conversations            ConversationParticipant[]
+  sentMessages             DirectMessage[]
+  forumThreads             ForumThread[]
+  forumPosts               ForumPost[]
 }
 
 model PasswordResetToken {
@@ -2522,6 +2532,16 @@ model CompanyProfile {
   contactEmail          String?   // For marketplace inquiries
   marketplaceActive     Boolean   @default(false)
 
+  // Sponsorship
+  sponsorTier         String?     // 'verified' | 'premium' (null = basic/free)
+  sponsorSince        DateTime?
+  sponsorExpires      DateTime?
+  sponsorStatus       String?     @default("active") // active, expired, cancelled
+  sponsorStripeSubId  String?     // Stripe subscription ID
+  sponsorBanner       String?     // Banner image URL (premium only)
+  sponsorTagline      String?     @db.Text // Custom tagline (premium only)
+  sponsorAnalytics    Json?       // { views, clicks, leads, lastUpdated }
+
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
@@ -2560,6 +2580,7 @@ model CompanyProfile {
   @@index([claimedByUserId])
   @@index([verificationLevel])
   @@index([marketplaceActive])
+  @@index([sponsorTier])
 }
 
 model FundingRound {
@@ -3646,4 +3667,137 @@ model WeeklyIntelligenceBrief {
   recipientCount Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+// ============================================================
+// Community: Professional Directory & Follow System
+// ============================================================
+
+model ProfessionalProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  headline    String?  // "VP Engineering at SpaceX"
+  bio         String?  @db.Text
+  expertise   String[] // ["propulsion", "launch-ops", "mission-planning"]
+  location    String?
+  linkedinUrl String?
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isPublic])
+}
+
+model UserFollow {
+  id          String   @id @default(cuid())
+  followerId  String
+  follower    User     @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User     @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model CompanyFollow {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, companyId])
+  @@index([userId])
+  @@index([companyId])
+}
+
+// ============================================================
+// Community: Direct Messaging
+// ============================================================
+
+model Conversation {
+  id            String                    @id @default(cuid())
+  participants  ConversationParticipant[]
+  messages      DirectMessage[]
+  lastMessageAt DateTime?
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+}
+
+model ConversationParticipant {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastReadAt     DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+}
+
+model DirectMessage {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  content        String       @db.Text
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+// ============================================================
+// Community: Industry Forums
+// ============================================================
+
+model ForumCategory {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  name        String
+  description String?
+  icon        String?
+  threads     ForumThread[]
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+
+  @@index([sortOrder])
+}
+
+model ForumThread {
+  id         String        @id @default(cuid())
+  categoryId String
+  category   ForumCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title      String
+  content    String        @db.Text
+  posts      ForumPost[]
+  isPinned   Boolean       @default(false)
+  isLocked   Boolean       @default(false)
+  viewCount  Int           @default(0)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([categoryId, createdAt])
+  @@index([authorId])
+}
+
+model ForumPost {
+  id        String      @id @default(cuid())
+  threadId  String
+  thread    ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content   String      @db.Text
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([threadId, createdAt])
+  @@index([authorId])
 }

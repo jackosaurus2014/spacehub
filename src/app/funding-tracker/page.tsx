@@ -6,6 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import PremiumGate from '@/components/PremiumGate';
 
 // ────────────────────────────────────────
 // Types
@@ -139,7 +140,7 @@ function formatDate(dateStr: string): string {
 // Main Page Component
 // ────────────────────────────────────────
 
-export default function FundingTrackerPage() {
+function FundingTrackerPageInner() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [rounds, setRounds] = useState<FundingRound[]>([]);
   const [loading, setLoading] = useState(true);
@@ -731,5 +732,13 @@ export default function FundingTrackerPage() {
         </ScrollReveal>
       </div>
     </div>
+  );
+}
+
+export default function FundingTrackerPage() {
+  return (
+    <PremiumGate requiredTier="pro" context="funding-tracker" showPreview={true}>
+      <FundingTrackerPageInner />
+    </PremiumGate>
   );
 }

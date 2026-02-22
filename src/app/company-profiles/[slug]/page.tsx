@@ -9,6 +9,9 @@ import WatchButton from '@/components/watchlist/WatchButton';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import OrganizationProfileSchema from '@/components/seo/OrganizationProfileSchema';
 import { toast } from '@/lib/toast';
+import SponsorBadge from '@/components/company/SponsorBadge';
+import SponsorBanner from '@/components/company/SponsorBanner';
+import LeadCaptureForm from '@/components/company/LeadCaptureForm';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -74,6 +77,9 @@ interface CompanyDetail {
   lastFundingRound: string | null; valuation: number | null;
   revenueEstimate: number | null; ownershipType: string | null;
   parentCompany: string | null; dataCompleteness: number;
+  sponsorTier: string | null;
+  sponsorTagline: string | null;
+  sponsorBanner: string | null;
   fundingRounds: FundingRound[]; revenueEstimates: RevenueEstimate[];
   products: Product[]; keyPersonnel: Person[];
   acquisitions: Acquisition[]; partnerships: Partnership[];
@@ -274,6 +280,7 @@ const TABS = [
   { id: 'news', label: 'News', icon: '📰' },
   { id: 'digest', label: 'Weekly Digest', icon: '📊' },
   { id: 'relationships', label: 'Relationships', icon: '🔗' },
+  { id: 'contact', label: 'Contact', icon: '✉️' },
 ] as const;
 
 type TabId = typeof TABS[number]['id'];
@@ -1119,7 +1126,16 @@ export default function CompanyProfileDetailPage() {
       try {
         const res = await fetch(`/api/company-profiles/${params.slug}`);
         if (!res.ok) throw new Error('Not found');
-        setCompany(await res.json());
+        const data = await res.json();
+        setCompany(data);
+        // Track view for sponsored profiles
+        if (data.sponsorTier) {
+          fetch(`/api/company-profiles/${params.slug}/analytics`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ event: 'view' }),
+          }).catch(() => {}); // fire and forget
+        }
       } catch {
         router.push('/company-profiles');
       } finally {
@@ -1176,6 +1192,16 @@ export default function CompanyProfileDetailPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-cyan-500/5" />
 
         <div className="relative z-10">
+          {company.sponsorTier === 'premium' && company.sponsorBanner && (
+            <div className="-mx-6 -mt-6 mb-6">
+              <SponsorBanner
+                companyName={company.name}
+                companySlug={company.slug}
+                tagline={company.sponsorTagline || undefined}
+                bannerUrl={company.sponsorBanner}
+              />
+            </div>
+          )}
           <div className="flex flex-col lg:flex-row lg:items-start gap-6">
             {/* Logo + Name */}
             <div className="flex items-start gap-4 flex-1">
@@ -1203,6 +1229,9 @@ export default function CompanyProfileDetailPage() {
                     company.status === 'pre-revenue' ? 'bg-blue-500/20 text-blue-400' :
                     'bg-slate-600/20 text-slate-400'
                   }`}>{company.status.toUpperCase()}</span>
+                  {company.sponsorTier && (
+                    <SponsorBadge tier={company.sponsorTier as 'verified' | 'premium'} />
+                  )}
                 </div>
                 <p className="text-slate-400 mt-1 max-w-2xl line-clamp-2">{company.description}</p>
                 <div className="flex items-center gap-4 mt-3 flex-wrap">
@@ -1337,6 +1366,20 @@ export default function CompanyProfileDetailPage() {
           {activeTab === 'news' && <NewsTab companySlug={company.slug} companyName={company.name} />}
           {activeTab === 'digest' && <DigestTab companyId={company.id} companyName={company.name} />}
           {activeTab === 'relationships' && <RelationshipsTab company={company} />}
+          {activeTab === 'contact' && company.sponsorTier && (
+            <SectionCard title={`Contact ${company.name}`}>
+              <LeadCaptureForm companySlug={company.slug} companyName={company.name} />
+            </SectionCard>
+          )}
+          {activeTab === 'contact' && !company.sponsorTier && (
+            <div className="text-center py-16">
+              <div className="text-4xl mb-3">✉️</div>
+              <p className="text-slate-400 text-sm">Direct contact is available for verified and premium sponsors.</p>
+              <Link href="/company-profiles/sponsor" className="text-cyan-400 hover:text-cyan-300 text-sm mt-2 inline-block">
+                Learn about sponsorship →
+              </Link>
+            </div>
+          )}
         </motion.div>
       </AnimatePresence>
     </div>

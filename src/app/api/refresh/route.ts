@@ -21,8 +21,7 @@ import { initializeBlueprintData } from '@/lib/blueprint-data';
 import { initializeGovernmentContracts } from '@/lib/government-contracts-data';
 import { initializeOrbitalServices } from '@/lib/orbital-services-data';
 import { initializeRegulatoryHubData } from '@/lib/regulatory-hub-data';
-import { generateDailyDigest } from '@/lib/newsletter/digest-generator';
-import { sendDailyDigest } from '@/lib/newsletter/email-service';
+// Newsletter sending moved to dedicated /api/newsletter/send-digest endpoint (Mon/Thu schedule)
 import { refreshAllExternalAPIs, fetchAndStoreEnhancedSpaceWeather, fetchAndStoreDonkiEnhanced } from '@/lib/module-api-fetchers';
 import { refreshAllAIResearchedModules } from '@/lib/ai-data-refresher';
 import { getAllModuleFreshness } from '@/lib/dynamic-content';
@@ -116,68 +115,9 @@ async function refreshDaily(): Promise<Record<string, string>> {
   await initializeRegulatoryHubData();
   results.regulatoryHub = 'Refreshed';
 
-  // Generate and send newsletter digest
-  try {
-    const digestResult = await generateDailyDigest();
-    if (digestResult.success) {
-      results.newsletterDigest = `Generated with ${digestResult.newsCount} articles`;
-
-      // Get verified subscribers and send
-      const subscribers = await prisma.newsletterSubscriber.findMany({
-        where: {
-          verified: true,
-          unsubscribedAt: null,
-        },
-        select: {
-          email: true,
-          unsubscribeToken: true,
-        },
-      });
-
-      if (subscribers.length > 0 && digestResult.digestId) {
-        const digest = await prisma.dailyDigest.findUnique({
-          where: { id: digestResult.digestId },
-        });
-
-        if (digest) {
-          await prisma.dailyDigest.update({
-            where: { id: digest.id },
-            data: {
-              status: 'sending',
-              sendStartedAt: new Date(),
-            },
-          });
-
-          const sendResult = await sendDailyDigest(
-            subscribers,
-            digest.htmlContent,
-            digest.plainContent,
-            digest.subject
-          );
-
-          await prisma.dailyDigest.update({
-            where: { id: digest.id },
-            data: {
-              status: sendResult.success ? 'sent' : 'failed',
-              sendCompletedAt: new Date(),
-              recipientCount: sendResult.sentCount,
-              failureCount: sendResult.failedCount,
-              errorLog: sendResult.errors.length > 0 ? sendResult.errors.join('\n') : null,
-            },
-          });
-
-          results.newsletterSend = `Sent to ${sendResult.sentCount}/${subscribers.length} subscribers`;
-        }
-      } else {
-        results.newsletterSend = 'No subscribers to send to';
-      }
-    } else {
-      results.newsletterDigest = digestResult.error || 'Generation failed';
-    }
-  } catch (error) {
-    logger.error('Newsletter error in refresh', { error: error instanceof Error ? error.message : String(error) });
-    results.newsletterDigest = `Error: ${String(error)}`;
-  }
+  // Newsletter digest is now sent on its own schedule (Mon/Thu) via /api/newsletter/send-digest
+  // Daily refresh only handles data seeding — no newsletter sending here
+  results.newsletterNote = 'Newsletter sends on Mon/Thu schedule via dedicated endpoint';
 
   return results;
 }

@@ -1597,3 +1597,21 @@ export const awardsQuerySchema = z.object({
 });
 
 export type AwardsQueryParams = z.infer<typeof awardsQuerySchema>;
+
+// Sponsor checkout
+export const sponsorCheckoutSchema = z.object({
+  companySlug: z.string().min(1),
+  sponsorTier: z.enum(['verified', 'premium']),
+  billingCycle: z.enum(['monthly', 'yearly']),
+  successUrl: z.string().url().optional(),
+  cancelUrl: z.string().url().optional(),
+});
+
+// Lead capture form
+export const leadCaptureSchema = z.object({
+  name: z.string().min(1).max(100),
+  email: z.string().email(),
+  company: z.string().max(100).optional(),
+  message: z.string().min(10).max(2000),
+  phone: z.string().max(30).optional(),
+});

@@ -23,7 +23,11 @@ export type UpgradeContext =
   | 'intel-reports'
   | 'supply-chain-map'
   | 'regulatory-calendar'
-  | 'executive-moves';
+  | 'executive-moves'
+  | 'investment-thesis'
+  | 'deal-rooms'
+  | 'funding-tracker'
+  | 'customer-discovery';
 
 interface ContextualMessage {
   icon: string;
@@ -224,6 +228,54 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
       '55+ tracked executive moves',
       'Company-linked profiles',
       'Real-time move alerts',
+    ],
+  },
+  'investment-thesis': {
+    icon: '\u{1F4C8}',
+    title: 'AI Investment Thesis Generator',
+    description:
+      'Generate comprehensive, AI-powered investment theses for any space company. Get bull/bear cases, risk scoring, competitive analysis, and actionable recommendations.',
+    requiredTier: 'enterprise',
+    highlights: [
+      'AI-powered company analysis',
+      'Risk scoring & mitigation',
+      'Comparable transaction analysis',
+    ],
+  },
+  'deal-rooms': {
+    icon: '\u{1F512}',
+    title: 'Secure Deal Rooms',
+    description:
+      'Create private, NDA-protected deal rooms for investors and startups. Share confidential documents with full audit trails and member management.',
+    requiredTier: 'enterprise',
+    highlights: [
+      'NDA workflow & tracking',
+      'Secure document sharing',
+      'Full activity audit trail',
+    ],
+  },
+  'funding-tracker': {
+    icon: '\u{1F4B0}',
+    title: 'Funding Round Tracker',
+    description:
+      'Track venture capital, M&A, and IPO activity across the space industry. Monitor 50+ investors and analyze funding trends by sector and stage.',
+    requiredTier: 'pro',
+    highlights: [
+      '50+ space investors tracked',
+      'Funding round & valuation data',
+      'Sector & stage analysis',
+    ],
+  },
+  'customer-discovery': {
+    icon: '\u{1F50E}',
+    title: 'Customer Discovery Engine',
+    description:
+      'Find your space industry customers by cross-referencing procurement categories, tech needs, and government agency budgets. Match your product to buyers.',
+    requiredTier: 'enterprise',
+    highlights: [
+      'Procurement category matching',
+      'Government agency mapping',
+      'Customer segment analysis',
     ],
   },
 };

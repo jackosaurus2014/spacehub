@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import AlertRuleBuilder from '@/components/alerts/AlertRuleBuilder';
+import PremiumGate from '@/components/PremiumGate';
 import { toast } from '@/lib/toast';
 
 // ============================================================
@@ -1181,17 +1182,19 @@ function AlertsPageInner() {
 
 export default function AlertsPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4" />
-            <p className="text-slate-400">Loading alerts...</p>
+    <PremiumGate requiredTier="pro" context="alerts" showPreview={true}>
+      <Suspense
+        fallback={
+          <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4" />
+              <p className="text-slate-400">Loading alerts...</p>
+            </div>
           </div>
-        </div>
-      }
-    >
-      <AlertsPageInner />
-    </Suspense>
+        }
+      >
+        <AlertsPageInner />
+      </Suspense>
+    </PremiumGate>
   );
 }

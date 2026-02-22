@@ -71,7 +71,9 @@ async function factCheckArticle(
       messages: [
         {
           role: 'user',
-          content: `You are a fact-checker for a space industry intelligence platform. Review the following article for factual accuracy.
+          content: `You are a fact-checker for a space industry intelligence platform. Today's date is ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}. Review the following article for factual accuracy.
+
+CRITICAL CONTEXT: The current date is ${new Date().toISOString().split('T')[0]}. Any references to dates in ${new Date().getFullYear()} or earlier are NOT "in the future" — they are current or past events. Do NOT flag current-year dates as future predictions.
 
 ## Article Title
 ${title}
@@ -100,9 +102,11 @@ Respond with valid JSON (no markdown code fences):
 IMPORTANT GUIDELINES:
 - Return "pass" for well-sourced, accurate articles (empty corrections array)
 - Return "minor_issues" for small inaccuracies or missing context that don't undermine the analysis
-- ONLY return "major_issues" for clear factual errors (wrong company names, fabricated statistics, incorrect dates) — NOT for analysis, opinions, forecasts, or forward-looking predictions
+- ONLY return "major_issues" for clear, unambiguous factual errors (wrong company names, fabricated statistics, completely wrong dates) — NOT for analysis, opinions, forecasts, or forward-looking predictions
 - Analysis and forecast articles inherently contain projections — this is expected and should NOT be flagged as major issues
-- Stylistic preferences, tone concerns, or "could be more nuanced" feedback should be "pass" or "minor_issues" at most`,
+- References to the current year (${new Date().getFullYear()}) and current month are NOT future predictions — they are current events
+- Stylistic preferences, tone concerns, or "could be more nuanced" feedback should be "pass" or "minor_issues" at most
+- When in doubt, err on the side of "pass" or "minor_issues" — the original article was written using verified, real-time data sources`,
         },
       ],
     });
@@ -424,23 +428,22 @@ Respond with valid JSON in this exact format (no markdown code fences):
         insight.sources || []
       );
 
-      // If major issues found, require manual review; otherwise auto-publish
+      // ALL articles require manual admin review before publishing
       const finalContent = insight.content;
       let factCheckNote: string | null = null;
-      const needsManualReview = factCheck.overallVerdict === 'major_issues';
 
       if (factCheck.overallVerdict === 'major_issues') {
         factCheckNote = `MAJOR ISSUES: ${factCheck.notes}\nCorrections needed: ${factCheck.corrections.join('; ')}`;
-        logger.warn('AI insight has major fact-check issues — requires manual review', { slug, notes: factCheck.notes });
+        logger.warn('AI insight has major fact-check issues', { slug, notes: factCheck.notes });
       } else if (factCheck.overallVerdict === 'minor_issues') {
         factCheckNote = `Minor notes: ${factCheck.notes}${factCheck.corrections.length > 0 ? `\nSuggestions: ${factCheck.corrections.join('; ')}` : ''}`;
       } else {
         factCheckNote = factCheck.notes || 'Passed fact-check';
       }
 
-      // Only generate review token for articles needing manual review
-      const reviewToken = needsManualReview ? crypto.randomUUID() : null;
-      const publishStatus = needsManualReview ? 'pending_review' : 'published';
+      // Always generate review token — all articles need admin approval
+      const reviewToken = crypto.randomUUID();
+      const publishStatus = 'pending_review';
 
       try {
         // status, factCheckNote, reviewToken are new schema fields — cast for Prisma client compat
@@ -488,13 +491,10 @@ Respond with valid JSON in this exact format (no markdown code fences):
       }
     }
 
-    // Send editorial review email only for articles needing manual review
-    const needsReview = upsertedInsights.filter((i) => i.status === 'pending_review');
-    const autoPublished = upsertedInsights.filter((i) => i.status === 'published');
-
-    if (needsReview.length > 0) {
+    // ALL articles require admin approval — send review email for all generated insights
+    if (upsertedInsights.length > 0) {
       await sendReviewEmail(
-        needsReview.map((i) => ({
+        upsertedInsights.map((i) => ({
           title: i.title,
           slug: i.slug,
           summary: parsed.insights.find((p) => generateSlug(p.title) === i.slug)?.summary || '',
@@ -506,10 +506,9 @@ Respond with valid JSON in this exact format (no markdown code fences):
       );
     }
 
-    logger.info('AI insights generated', {
+    logger.info('AI insights generated — all pending admin approval', {
       total: upsertedInsights.length,
-      autoPublished: autoPublished.length,
-      pendingReview: needsReview.length,
+      pendingReview: upsertedInsights.length,
       categories: upsertedInsights.map((i) => i.category),
       factCheckResults: upsertedInsights.map((i) => ({
         slug: i.slug,
@@ -520,11 +519,9 @@ Respond with valid JSON in this exact format (no markdown code fences):
     return NextResponse.json({
       success: true,
       count: upsertedInsights.length,
-      autoPublished: autoPublished.length,
-      pendingReview: needsReview.length,
-      message: autoPublished.length > 0
-        ? `${autoPublished.length} insight(s) auto-published, ${needsReview.length} need review`
-        : 'Insights generated and sent for editorial review',
+      autoPublished: 0,
+      pendingReview: upsertedInsights.length,
+      message: `${upsertedInsights.length} insight(s) generated and sent for admin approval at ${process.env.ADMIN_EMAIL || 'ADMIN_EMAIL not set'}`,
       insights: upsertedInsights.map((i) => ({
         id: i.id,
         title: i.title,

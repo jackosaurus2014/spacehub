@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
 import AdSlot from '@/components/ads/AdSlot';
+import SponsorBadge from '@/components/company/SponsorBadge';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 
@@ -32,6 +33,8 @@ interface CompanyCard {
   subsector: string | null;
   tags: string[];
   tier: number;
+  sponsorTier: string | null;
+  sponsorTagline: string | null;
   totalFunding: number | null;
   lastFundingRound: string | null;
   valuation: number | null;
@@ -131,7 +134,10 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
           whileHover={{ y: -6, scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          className="card p-5 h-full group cursor-pointer relative overflow-hidden"
+          className={`card p-5 h-full group cursor-pointer relative overflow-hidden ${
+            company.sponsorTier === 'premium' ? 'ring-1 ring-amber-500/30' :
+            company.sponsorTier === 'verified' ? 'ring-1 ring-blue-500/20' : ''
+          }`}
         >
           {/* Animated gradient border on hover */}
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -167,6 +173,7 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
               <div className="flex items-center gap-2">
                 <WatchButton companyProfileId={company.id} companyName={company.name} size="sm" />
                 {getTierBadge(company.tier)}
+                {company.sponsorTier && <SponsorBadge tier={company.sponsorTier as 'verified' | 'premium'} />}
               </div>
             </div>
 
@@ -174,6 +181,10 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
             <p className="text-xs text-slate-400 line-clamp-2 mb-3 leading-relaxed">
               {company.description || 'No description available.'}
             </p>
+
+            {company.sponsorTagline && (
+              <p className="text-xs text-cyan-300/80 italic mb-2">{company.sponsorTagline}</p>
+            )}
 
             {/* Key Metrics Row */}
             <div className="grid grid-cols-2 gap-2 mb-3">
@@ -551,6 +562,7 @@ export default function CompanyProfilesPage() {
                           <span className="text-xs font-mono text-cyan-400">{company.ticker}</span>
                         )}
                         {getTierBadge(company.tier)}
+                        {company.sponsorTier && <SponsorBadge tier={company.sponsorTier as 'verified' | 'premium'} />}
                       </div>
                       <div className="text-xs text-slate-400 truncate">
                         {company.headquarters} {company.sector && `· ${company.sector}`}

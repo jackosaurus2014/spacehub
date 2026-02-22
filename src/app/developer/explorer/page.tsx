@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { toast } from '@/lib/toast';
+import PremiumGate from '@/components/PremiumGate';
 import {
   API_CATEGORIES,
   ALL_ENDPOINTS,
@@ -100,7 +101,7 @@ function StatusBadge({ code }: { code: number | null }) {
 // Main Page
 // ============================================================
 
-export default function ApiExplorerPage() {
+function ApiExplorerPageInner() {
   // State
   const [selectedEndpoint, setSelectedEndpoint] = useState<OpenAPIEndpoint>(ALL_ENDPOINTS[0]);
   const [paramValues, setParamValues] = useState<Record<string, string>>({});
@@ -688,5 +689,13 @@ export default function ApiExplorerPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ApiExplorerPage() {
+  return (
+    <PremiumGate requiredTier="enterprise" context="api-access" showPreview={true}>
+      <ApiExplorerPageInner />
+    </PremiumGate>
   );
 }

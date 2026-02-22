@@ -29,6 +29,10 @@ export function getPriceIds() {
     pro_yearly: process.env.STRIPE_PRICE_PRO_YEARLY || '',
     enterprise_monthly: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY || '',
     enterprise_yearly: process.env.STRIPE_PRICE_ENTERPRISE_YEARLY || '',
+    sponsor_verified_monthly: process.env.STRIPE_PRICE_SPONSOR_VERIFIED_MONTHLY || '',
+    sponsor_verified_yearly: process.env.STRIPE_PRICE_SPONSOR_VERIFIED_YEARLY || '',
+    sponsor_premium_monthly: process.env.STRIPE_PRICE_SPONSOR_PREMIUM_MONTHLY || '',
+    sponsor_premium_yearly: process.env.STRIPE_PRICE_SPONSOR_PREMIUM_YEARLY || '',
   };
 }
 
@@ -43,6 +47,17 @@ export function priceIdToTier(priceId: string): 'pro' | 'enterprise' | null {
   }
   if (priceId === prices.enterprise_monthly || priceId === prices.enterprise_yearly) {
     return 'enterprise';
+  }
+  return null;
+}
+
+export function priceIdToSponsorTier(priceId: string): 'verified' | 'premium' | null {
+  const prices = getPriceIds();
+  if (priceId === prices.sponsor_verified_monthly || priceId === prices.sponsor_verified_yearly) {
+    return 'verified';
+  }
+  if (priceId === prices.sponsor_premium_monthly || priceId === prices.sponsor_premium_yearly) {
+    return 'premium';
   }
   return null;
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { getStripe, priceIdToTier, mapSubscriptionStatus } from '@/lib/stripe';
+import { getStripe, priceIdToTier, priceIdToSponsorTier, mapSubscriptionStatus } from '@/lib/stripe';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { generatePaymentFailedEmail, generateSubscriptionConfirmEmail } from '@/lib/stripe-helpers';
@@ -112,6 +112,51 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId;
   const customerId = session.customer as string;
   const subscriptionId = session.subscription as string;
+
+  // Check if this is a company sponsorship checkout (has companySlug instead of userId)
+  const companySlug = session.metadata?.companySlug;
+
+  if (!userId && companySlug) {
+    // --- Sponsorship checkout flow ---
+    if (!subscriptionId) {
+      logger.warn('Sponsorship checkout.session.completed missing subscription ID', {
+        sessionId: session.id,
+        companySlug,
+      });
+      return;
+    }
+
+    const sponsorSub = await getStripe().subscriptions.retrieve(subscriptionId);
+    const sponsorPriceId = sponsorSub.items.data[0]?.price?.id;
+    const sponsorTier = sponsorPriceId ? priceIdToSponsorTier(sponsorPriceId) : null;
+
+    if (!sponsorTier) {
+      logger.error('Could not determine sponsor tier from checkout session', {
+        sessionId: session.id,
+        priceId: sponsorPriceId,
+        companySlug,
+      });
+      return;
+    }
+
+    await (prisma.companyProfile as any).update({
+      where: { slug: companySlug },
+      data: {
+        sponsorTier,
+        sponsorSince: new Date(),
+        sponsorStatus: 'active',
+        sponsorStripeSubId: subscriptionId,
+      },
+    });
+
+    logger.info('Company sponsorship activated via checkout', {
+      companySlug,
+      sponsorTier,
+      subscriptionId,
+      status: sponsorSub.status,
+    });
+    return;
+  }
 
   if (!userId) {
     logger.warn('checkout.session.completed missing userId in metadata', {
@@ -225,6 +270,46 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   }
 
   if (!user) {
+    // Check if this subscription belongs to a company sponsorship
+    const sponsoredCompany = await (prisma.companyProfile as any).findFirst({
+      where: { sponsorStripeSubId: subscription.id },
+      select: { id: true, slug: true, sponsorTier: true },
+    });
+
+    if (sponsoredCompany) {
+      const sponsorPriceId = subscription.items.data[0]?.price?.id;
+      const newSponsorTier = sponsorPriceId ? priceIdToSponsorTier(sponsorPriceId) : null;
+      const sponsorStatus = mapSubscriptionStatus(subscription.status);
+
+      const sponsorUpdateData: Record<string, unknown> = {
+        sponsorStatus: sponsorStatus === 'active' ? 'active' : sponsorStatus === 'past_due' ? 'past_due' : 'expired',
+      };
+
+      if (newSponsorTier) {
+        sponsorUpdateData.sponsorTier = newSponsorTier;
+      }
+
+      if (subscription.cancel_at) {
+        sponsorUpdateData.sponsorExpires = new Date(subscription.cancel_at * 1000);
+      } else if (subscription.current_period_end) {
+        sponsorUpdateData.sponsorExpires = new Date(subscription.current_period_end * 1000);
+      }
+
+      await (prisma.companyProfile as any).update({
+        where: { id: sponsoredCompany.id },
+        data: sponsorUpdateData,
+      });
+
+      logger.info('Company sponsorship updated', {
+        companySlug: sponsoredCompany.slug,
+        previousTier: sponsoredCompany.sponsorTier,
+        newTier: newSponsorTier || sponsoredCompany.sponsorTier,
+        status: sponsorStatus,
+        subscriptionId: subscription.id,
+      });
+      return;
+    }
+
     logger.warn('customer.subscription.updated: user not found', {
       customerId,
       userId,
@@ -291,6 +376,29 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   }
 
   if (!user) {
+    // Check if this subscription belongs to a company sponsorship
+    const sponsoredCompany = await (prisma.companyProfile as any).findFirst({
+      where: { sponsorStripeSubId: subscription.id },
+      select: { id: true, slug: true },
+    });
+
+    if (sponsoredCompany) {
+      await (prisma.companyProfile as any).update({
+        where: { id: sponsoredCompany.id },
+        data: {
+          sponsorTier: null,
+          sponsorStatus: 'expired',
+          sponsorStripeSubId: null,
+        },
+      });
+
+      logger.info('Company sponsorship deleted, marked as expired', {
+        companySlug: sponsoredCompany.slug,
+        subscriptionId: subscription.id,
+      });
+      return;
+    }
+
     logger.warn('customer.subscription.deleted: user not found', {
       customerId,
       subscriptionId: subscription.id,

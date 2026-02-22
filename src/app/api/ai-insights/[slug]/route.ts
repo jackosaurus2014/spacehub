@@ -7,10 +7,10 @@ import { logger } from '@/lib/logger';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     // status is a new schema field — cast for Prisma client compat
     const insight = await (prisma.aIInsight as any).findFirst({

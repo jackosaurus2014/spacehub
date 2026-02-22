@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { toast } from '@/lib/toast';
+import PremiumGate from '@/components/PremiumGate';
 import {
   API_CATEGORIES,
   ALL_ENDPOINTS,
@@ -365,7 +366,7 @@ function Sidebar({
 // Main Page
 // ============================================================
 
-export default function ApiDocsPage() {
+function ApiDocsPageInner() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSection, setActiveSection] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -758,5 +759,13 @@ export default function ApiDocsPage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function ApiDocsPage() {
+  return (
+    <PremiumGate requiredTier="enterprise" context="api-access" showPreview={true}>
+      <ApiDocsPageInner />
+    </PremiumGate>
   );
 }

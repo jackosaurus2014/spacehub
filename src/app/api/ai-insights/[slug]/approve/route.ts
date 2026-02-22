@@ -8,10 +8,10 @@ import { logger } from '@/lib/logger';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const token = request.nextUrl.searchParams.get('token');
 
     // Authorize via review token OR admin session

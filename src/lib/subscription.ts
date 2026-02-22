@@ -127,6 +127,10 @@ const PREMIUM_MODULES: Record<string, SubscriptionTier> = {
   'patent-tracker': 'enterprise',
   'intel-reports': 'enterprise',
   'api-docs': 'enterprise',
+  'investment-thesis': 'enterprise',
+  'deal-rooms': 'enterprise',
+  'funding-tracker': 'pro',
+  'customer-discovery': 'enterprise',
 };
 
 const TIER_ORDER: SubscriptionTier[] = ['free', 'pro', 'enterprise', 'test'];

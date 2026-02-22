@@ -44,8 +44,10 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 */4 * * *',   path: '/api/refresh?type=blogs',             label: 'blogs-fetch',                maxStaleMinutes: 360 },
   { schedule: '0 */4 * * *',   path: '/api/refresh?type=external-apis',     label: 'external-api-refresh',       maxStaleMinutes: 360 },
 
-  // Daily
+  // Daily (data refresh only — newsletter sends every 3 days)
   { schedule: '0 0 * * *',     path: '/api/refresh?type=daily',             label: 'daily-refresh',              maxStaleMinutes: 1560 },
+  // Newsletter digest — every 3 days (Mon/Thu at 8am UTC)
+  { schedule: '0 8 * * 1,4',   path: '/api/newsletter/send-digest',         label: 'newsletter-digest',          maxStaleMinutes: 5760 },
   { schedule: '0 1 * * *',     path: '/api/ai-insights/generate',           label: 'ai-insights',                maxStaleMinutes: 1560 },
   { schedule: '0 2 * * *',     path: '/api/refresh?type=ai-research',       label: 'ai-data-research',           maxStaleMinutes: 1560 },
   { schedule: '0 3 * * *',     path: '/api/refresh/cleanup',                label: 'staleness-cleanup',          maxStaleMinutes: 1560 },

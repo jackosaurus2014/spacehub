@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import PremiumGate from '@/components/PremiumGate';
 
 // ────────────────────────────────────────
 // Types
@@ -160,7 +161,7 @@ function timeAgo(dateStr: string): string {
 // Component
 // ────────────────────────────────────────
 
-export default function DealRoomsPage() {
+function DealRoomsPageInner() {
   // Auth state (simplified - uses email)
   const [userEmail, setUserEmail] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -1421,5 +1422,13 @@ export default function DealRoomsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DealRoomsPage() {
+  return (
+    <PremiumGate requiredTier="enterprise" context="deal-rooms" showPreview={true}>
+      <DealRoomsPageInner />
+    </PremiumGate>
   );
 }

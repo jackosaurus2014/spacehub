@@ -5,25 +5,20 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { requireCronSecret, unauthorizedError } from '@/lib/errors';
+import { unauthorizedError } from '@/lib/errors';
 
 /**
  * POST /api/ai-insights/bulk-publish
  *
  * Publishes all AI insights currently in "pending_review" status.
- * Requires admin session or CRON_SECRET bearer token.
+ * Requires admin session ONLY — no CRON_SECRET to prevent automated bypass of human review.
  */
 export async function POST(request: NextRequest) {
   try {
-    // Authorize via CRON_SECRET or admin session
-    let authorized = requireCronSecret(request) === null;
-    if (!authorized) {
-      const session = await getServerSession(authOptions);
-      if (session?.user?.isAdmin) authorized = true;
-    }
-
-    if (!authorized) {
-      return unauthorizedError('Admin session or CRON_SECRET required');
+    // Admin session required — no CRON_SECRET bypass for publishing
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.isAdmin) {
+      return unauthorizedError('Admin session required to bulk-publish');
     }
 
     // Find all pending_review insights
