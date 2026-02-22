@@ -330,7 +330,9 @@ describe('GET /api/company-profiles', () => {
     const body = await res.json();
 
     expect(res.status).toBe(500);
-    expect(body.error).toBe('Failed to fetch company profiles');
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe('INTERNAL_ERROR');
+    expect(body.error.message).toBe('Failed to fetch company profiles');
   });
 });
 
@@ -412,7 +414,9 @@ describe('GET /api/company-profiles/[slug]', () => {
     const body = await res.json();
 
     expect(res.status).toBe(404);
-    expect(body.error).toBe('Company not found');
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe('NOT_FOUND');
+    expect(body.error.message).toBe('Company profile not found');
   });
 
   it('handles company with empty related arrays', async () => {
@@ -447,7 +451,9 @@ describe('GET /api/company-profiles/[slug]', () => {
     const body = await res.json();
 
     expect(res.status).toBe(500);
-    expect(body.error).toBe('Failed to fetch company profile');
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe('INTERNAL_ERROR');
+    expect(body.error.message).toContain('Failed to fetch company profile');
   });
 });
 
