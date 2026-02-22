@@ -1651,3 +1651,36 @@ export const editContentSchema = z.object({
   content: z.string().min(1).max(10000).transform((val) => val.trim()),
   title: z.string().min(1).max(200).transform((val) => val.trim()).optional(),
 });
+
+// ============================================================
+// Community: Voting & Engagement
+// ============================================================
+
+export const voteSchema = z.object({
+  value: z.number().int().refine((val) => val === 1 || val === -1, {
+    message: 'Vote value must be 1 (upvote) or -1 (downvote)',
+  }),
+});
+
+export const FORUM_TAGS = [
+  'discussion',
+  'question',
+  'announcement',
+  'technical',
+  'business',
+  'regulatory',
+  'itar',
+  'launch',
+  'satellite',
+  'funding',
+  'career',
+  'news',
+] as const;
+
+export const threadTagsSchema = z.object({
+  tags: z.array(z.enum(FORUM_TAGS)).max(5, 'Maximum 5 tags per thread'),
+});
+
+export const acceptAnswerSchema = z.object({
+  postId: z.string().min(1, 'Post ID is required'),
+});

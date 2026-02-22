@@ -30,7 +30,7 @@ export async function GET(
       parseInt(searchParams.get('limit') || '20', 10),
       50
     );
-    const sort = searchParams.get('sort') || 'newest'; // newest | popular
+    const sort = searchParams.get('sort') || 'newest'; // newest | popular | top
     const skip = (page - 1) * limit;
 
     // Find the category
@@ -48,6 +48,8 @@ export async function GET(
     const orderBy: any[] = [{ isPinned: 'desc' }];
     if (sort === 'popular') {
       orderBy.push({ viewCount: 'desc' });
+    } else if (sort === 'top') {
+      orderBy.push({ upvoteCount: 'desc' });
     } else {
       orderBy.push({ createdAt: 'desc' });
     }
@@ -72,7 +74,7 @@ export async function GET(
       (prisma as any).forumThread.count({ where }),
     ]);
 
-    // Transform to include postCount
+    // Transform to include postCount, tags, vote counts
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const threadsData = threads.map((t: any) => ({
       id: t.id,
@@ -83,6 +85,10 @@ export async function GET(
       isLocked: t.isLocked,
       viewCount: t.viewCount,
       postCount: t._count.posts,
+      tags: t.tags || [],
+      acceptedPostId: t.acceptedPostId || null,
+      upvoteCount: t.upvoteCount || 0,
+      downvoteCount: t.downvoteCount || 0,
       createdAt: t.createdAt,
       updatedAt: t.updatedAt,
     }));
@@ -150,7 +156,7 @@ export async function POST(
     }
 
     const body = await req.json();
-    const { title, content } = body;
+    const { title, content, tags } = body;
 
     if (!title || typeof title !== 'string' || title.trim().length === 0) {
       return validationError('Thread title is required');
@@ -168,13 +174,17 @@ export async function POST(
       return validationError('Thread content must be 10000 characters or less');
     }
 
+    // Validate tags if provided (max 5, must be from allowed list)
+    const validTags = Array.isArray(tags) ? tags.filter((t: string) => typeof t === 'string').slice(0, 5) : [];
+
     const thread = await (prisma as any).forumThread.create({
       data: {
         categoryId: category.id,
         authorId: session.user.id,
         title: title.trim(),
         content: content.trim(),
-      },
+        tags: validTags,
+      } as any,
       include: {
         author: {
           select: { id: true, name: true },
@@ -191,6 +201,11 @@ export async function POST(
       authorId: session.user.id,
     });
 
+    // Auto-subscribe the thread author
+    (prisma as any).threadSubscription
+      .create({ data: { userId: session.user.id, threadId: thread.id } })
+      .catch(() => {});
+
     return NextResponse.json(
       {
         success: true,
@@ -203,6 +218,10 @@ export async function POST(
           isLocked: thread.isLocked,
           viewCount: thread.viewCount,
           postCount: thread._count.posts,
+          tags: thread.tags || [],
+          acceptedPostId: null,
+          upvoteCount: 0,
+          downvoteCount: 0,
           createdAt: thread.createdAt,
           updatedAt: thread.updatedAt,
         },

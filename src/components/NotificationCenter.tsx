@@ -103,7 +103,7 @@ export default function NotificationCenter() {
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Load notifications on mount — merge localStorage + server-side watchlist alerts
+  // Load notifications on mount — merge localStorage + server-side watchlist alerts + community notifications
   useEffect(() => {
     const loadNotifications = async () => {
       const localNotifs = getNotifications();
@@ -129,8 +129,29 @@ export default function NotificationCenter() {
         // Not authenticated or fetch failed — ignore
       }
 
-      // Merge: server alerts first, then local, deduplicated by id
-      const merged = [...serverNotifs, ...localNotifs];
+      // Fetch community notifications (if authenticated)
+      let communityNotifs: Notification[] = [];
+      try {
+        const res = await fetch('/api/notifications?limit=20');
+        if (res.ok) {
+          const data = await res.json();
+          communityNotifs = (data.notifications || []).map((n: any) => ({
+            id: `community_${n.id}`,
+            type: (n.type === 'reply' || n.type === 'mention' ? 'news' : n.type === 'vote' || n.type === 'accepted_answer' ? 'price_alert' : n.type === 'follow' ? 'watchlist' : 'system') as NotificationType,
+            title: n.title,
+            message: n.message,
+            timestamp: n.createdAt,
+            read: n.read,
+            link: n.linkUrl || undefined,
+            metadata: { communityNotifId: n.id, communityType: n.type },
+          }));
+        }
+      } catch {
+        // Not authenticated or fetch failed — ignore
+      }
+
+      // Merge: community + server alerts + local, deduplicated by id
+      const merged = [...communityNotifs, ...serverNotifs, ...localNotifs];
       // Sort by timestamp descending
       merged.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       // Keep max 50
@@ -142,6 +163,9 @@ export default function NotificationCenter() {
 
     loadNotifications();
 
+    // Poll for new community notifications every 30 seconds
+    const pollInterval = setInterval(loadNotifications, 30000);
+
     // Listen for storage changes (for cross-tab sync)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'spacenexus_notifications') {
@@ -150,7 +174,10 @@ export default function NotificationCenter() {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(pollInterval);
+    };
   }, []);
 
   // Close dropdown when clicking outside
@@ -166,6 +193,22 @@ export default function NotificationCenter() {
   }, []);
 
   const handleMarkAsRead = (notificationId: string) => {
+    // Handle community notifications (server-side)
+    if (notificationId.startsWith('community_')) {
+      const realId = notificationId.replace('community_', '');
+      fetch(`/api/notifications/${realId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ read: true }),
+      }).catch(() => {});
+      // Update local state
+      const allUpdated = notifications.map(n =>
+        n.id === notificationId ? { ...n, read: true } : n
+      );
+      setNotifications(allUpdated);
+      setUnreadCount(allUpdated.filter(n => !n.read).length);
+      return;
+    }
     const updated = markAsRead(notificationId);
     setNotifications(updated);
     setUnreadCount(updated.filter(n => !n.read).length);
@@ -175,6 +218,8 @@ export default function NotificationCenter() {
     const updated = markAllAsRead();
     // Also mark server-side watchlist alerts as read
     fetch('/api/alerts/watchlist', { method: 'PUT' }).catch(() => {});
+    // Also mark community notifications as read
+    fetch('/api/notifications/read-all', { method: 'POST' }).catch(() => {});
     // Update all notifications including server-side ones
     const allUpdated = notifications.map(n => ({ ...n, read: true }));
     setNotifications(allUpdated);
@@ -278,11 +323,11 @@ export default function NotificationCenter() {
           {/* Footer */}
           <div className="border-t border-slate-700/50 px-4 py-2">
             <Link
-              href="/dashboard"
+              href="/notifications"
               onClick={() => setIsOpen(false)}
               className="block text-center text-xs text-cyan-400 hover:text-cyan-300 transition-colors font-medium py-1"
             >
-              Notification Settings
+              View All Notifications
             </Link>
           </div>
         </div>

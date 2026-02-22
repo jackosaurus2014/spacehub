@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { checkUserBanStatus } from '@/lib/moderation';
+import { notifyThreadSubscribers, createNotification } from '@/lib/notifications-server';
 import {
   unauthorizedError,
   validationError,
@@ -35,6 +36,10 @@ export async function GET(
     if (!category) {
       return notFoundError('Forum category');
     }
+
+    // Check if user is logged in (for vote/subscription data)
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
 
     // Fetch thread with posts
     const thread = await (prisma as any).forumThread.findUnique({
@@ -74,6 +79,37 @@ export async function GET(
         });
       });
 
+    // Get user's vote on the thread and subscription status
+    let userThreadVote: number | null = null;
+    let isSubscribed = false;
+    const userPostVotes: Record<string, number> = {};
+
+    if (userId) {
+      try {
+        const [threadVote, subscription, postVotes] = await Promise.all([
+          (prisma as any).threadVote.findUnique({
+            where: { threadId_userId: { threadId, userId } },
+            select: { value: true },
+          }),
+          (prisma as any).threadSubscription.findUnique({
+            where: { userId_threadId: { userId, threadId } },
+            select: { id: true },
+          }),
+          (prisma as any).postVote.findMany({
+            where: { userId, postId: { in: thread.posts.map((p: any) => p.id) } },
+            select: { postId: true, value: true },
+          }),
+        ]);
+        userThreadVote = threadVote?.value ?? null;
+        isSubscribed = !!subscription;
+        for (const pv of postVotes) {
+          userPostVotes[pv.postId] = pv.value;
+        }
+      } catch {
+        // Models may not exist yet
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: {
@@ -86,10 +122,22 @@ export async function GET(
           isLocked: thread.isLocked,
           viewCount: thread.viewCount,
           postCount: thread._count.posts,
+          tags: thread.tags || [],
+          acceptedPostId: thread.acceptedPostId || null,
+          upvoteCount: thread.upvoteCount || 0,
+          downvoteCount: thread.downvoteCount || 0,
+          userVote: userThreadVote,
+          isSubscribed,
           createdAt: thread.createdAt,
           updatedAt: thread.updatedAt,
         },
-        posts: thread.posts,
+        posts: thread.posts.map((p: any) => ({
+          ...p,
+          upvoteCount: p.upvoteCount || 0,
+          downvoteCount: p.downvoteCount || 0,
+          isAccepted: p.isAccepted || false,
+          userVote: userPostVotes[p.id] ?? null,
+        })),
         category,
       },
     });
@@ -167,7 +215,7 @@ export async function POST(
       return validationError('Reply content must be 10000 characters or less');
     }
 
-    // Create the post and update thread's updatedAt in a transaction
+    // Create the post, update thread's updatedAt, and auto-subscribe the replier
     const [post] = await (prisma as any).$transaction([
       (prisma as any).forumPost.create({
         data: {
@@ -186,6 +234,44 @@ export async function POST(
         data: { updatedAt: new Date() },
       }),
     ]);
+
+    // Auto-subscribe the replier to the thread (fire and forget)
+    (prisma as any).threadSubscription
+      .upsert({
+        where: { userId_threadId: { userId: session.user.id, threadId } },
+        create: { userId: session.user.id, threadId },
+        update: {},
+      })
+      .catch(() => {});
+
+    // Notify thread subscribers about the new reply (fire and forget)
+    const threadForNotify = await (prisma as any).forumThread.findUnique({
+      where: { id: threadId },
+      select: { title: true, categoryId: true, category: { select: { slug: true } } },
+    });
+    if (threadForNotify) {
+      notifyThreadSubscribers(
+        threadId,
+        threadForNotify.title,
+        session.user.id,
+        session.user.name || 'Someone',
+        threadForNotify.category?.slug || slug
+      ).catch(() => {});
+    }
+
+    // Notify thread author if they're not the replier
+    if (thread.authorId && thread.authorId !== session.user.id) {
+      createNotification({
+        userId: thread.authorId,
+        type: 'reply',
+        title: 'New reply to your thread',
+        message: `${session.user.name || 'Someone'} replied to your thread`,
+        relatedUserId: session.user.id,
+        relatedContentType: 'thread',
+        relatedContentId: threadId,
+        linkUrl: `/community/forums/${slug}/${threadId}`,
+      }).catch(() => {});
+    }
 
     logger.info('Forum post created', {
       postId: post.id,

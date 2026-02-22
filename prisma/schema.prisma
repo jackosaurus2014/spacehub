@@ -91,6 +91,12 @@ model User {
   reportsMade              ContentReport[] @relation("reportsMade")
   blocksGiven              UserBlock[]     @relation("blocksGiven")
   blocksReceived           UserBlock[]     @relation("blocksReceived")
+
+  // Voting & Notifications
+  postVotes                PostVote[]
+  threadVotes              ThreadVote[]
+  notifications            Notification[]
+  threadSubscriptions      ThreadSubscription[]
 }
 
 model PasswordResetToken {
@@ -3783,33 +3789,43 @@ model ForumCategory {
 }
 
 model ForumThread {
-  id         String        @id @default(cuid())
-  categoryId String
-  category   ForumCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  authorId   String
-  author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  title      String
-  content    String        @db.Text
-  posts      ForumPost[]
-  isPinned   Boolean       @default(false)
-  isLocked   Boolean       @default(false)
-  viewCount  Int           @default(0)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+  id             String        @id @default(cuid())
+  categoryId     String
+  category       ForumCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  authorId       String
+  author         User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title          String
+  content        String        @db.Text
+  posts          ForumPost[]
+  isPinned       Boolean       @default(false)
+  isLocked       Boolean       @default(false)
+  viewCount      Int           @default(0)
+  tags           String[]
+  acceptedPostId String?
+  upvoteCount    Int           @default(0)
+  downvoteCount  Int           @default(0)
+  votes          ThreadVote[]
+  subscriptions  ThreadSubscription[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   @@index([categoryId, createdAt])
   @@index([authorId])
 }
 
 model ForumPost {
-  id        String      @id @default(cuid())
-  threadId  String
-  thread    ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  authorId  String
-  author    User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  content   String      @db.Text
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id            String      @id @default(cuid())
+  threadId      String
+  thread        ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorId      String
+  author        User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content       String      @db.Text
+  upvoteCount   Int         @default(0)
+  downvoteCount Int         @default(0)
+  isAccepted    Boolean     @default(false)
+  votes         PostVote[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   @@index([threadId, createdAt])
   @@index([authorId])
@@ -3866,4 +3882,74 @@ model ModerationAction {
   @@index([targetUserId])
   @@index([moderatorId])
   @@index([createdAt])
+}
+
+// ============================================================
+// Community: Voting
+// ============================================================
+
+model PostVote {
+  id        String    @id @default(cuid())
+  postId    String
+  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  value     Int       // 1 (upvote) or -1 (downvote)
+  createdAt DateTime  @default(now())
+
+  @@unique([postId, userId])
+  @@index([postId])
+  @@index([userId])
+}
+
+model ThreadVote {
+  id        String      @id @default(cuid())
+  threadId  String
+  thread    ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  value     Int         // 1 (upvote) or -1 (downvote)
+  createdAt DateTime    @default(now())
+
+  @@unique([threadId, userId])
+  @@index([threadId])
+  @@index([userId])
+}
+
+// ============================================================
+// Community: Notifications
+// ============================================================
+
+model Notification {
+  id                 String   @id @default(cuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type               String   // 'reply', 'mention', 'follow', 'vote', 'accepted_answer', 'moderation'
+  title              String
+  message            String
+  relatedUserId      String?
+  relatedContentType String?
+  relatedContentId   String?
+  linkUrl            String?
+  read               Boolean  @default(false)
+  createdAt          DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
+}
+
+// ============================================================
+// Community: Thread Subscriptions
+// ============================================================
+
+model ThreadSubscription {
+  id        String      @id @default(cuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  threadId  String
+  thread    ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+
+  @@unique([userId, threadId])
+  @@index([threadId])
 }

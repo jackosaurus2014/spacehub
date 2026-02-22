@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { createNotification } from '@/lib/notifications-server';
 import {
   unauthorizedError,
   validationError,
@@ -115,6 +116,16 @@ export async function POST(req: NextRequest) {
         followerId: session.user.id,
         followingId: targetUserId,
       });
+
+      // Notify the followed user (fire and forget)
+      createNotification({
+        userId: targetUserId,
+        type: 'follow',
+        title: 'New follower',
+        message: `${session.user.name || 'Someone'} started following you`,
+        relatedUserId: session.user.id,
+        linkUrl: '/community/directory',
+      }).catch(() => {});
 
       return NextResponse.json(
         { success: true, data: { type: 'user', targetUserId } },

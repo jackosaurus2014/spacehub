@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ThreadCard, { ThreadData } from '@/components/community/ThreadCard';
 import ITARWarningBanner from '@/components/community/ITARWarningBanner';
+import ThreadTags from '@/components/community/ThreadTags';
 import { toast } from '@/lib/toast';
+import { FORUM_TAGS } from '@/lib/validations';
 
 interface CategoryInfo {
   id: string;
@@ -27,16 +28,36 @@ export default function ForumCategoryPage() {
   const [showNewThread, setShowNewThread] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newContent, setNewContent] = useState('');
+  const [newTags, setNewTags] = useState<string[]>([]);
   const [creating, setCreating] = useState(false);
+  const [sortBy, setSortBy] = useState('newest');
 
   useEffect(() => {
     const fetchThreads = async () => {
       try {
         const res = await fetch(`/api/community/forums/${slug}`);
         if (res.ok) {
-          const data = await res.json();
+          const json = await res.json();
+          const data = json.data || json;
           setCategory(data.category || { id: slug, slug, name: slug.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()), description: '' });
-          setThreads(data.threads || []);
+          const threadsList = (data.threads || []).map((t: any) => ({
+            id: t.id,
+            title: t.title,
+            authorName: t.author?.name || 'Unknown',
+            authorId: t.author?.id || '',
+            category: data.category?.name || slug,
+            replyCount: t.postCount || 0,
+            viewCount: t.viewCount || 0,
+            isPinned: t.isPinned || false,
+            isLocked: t.isLocked || false,
+            lastActivityAt: t.updatedAt || t.createdAt,
+            createdAt: t.createdAt,
+            tags: t.tags || [],
+            acceptedPostId: t.acceptedPostId || null,
+            upvoteCount: t.upvoteCount || 0,
+            downvoteCount: t.downvoteCount || 0,
+          }));
+          setThreads(threadsList);
         }
       } catch {
         // fallback
@@ -57,7 +78,7 @@ export default function ForumCategoryPage() {
       const res = await fetch(`/api/community/forums/${slug}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: newTitle.trim(), content: newContent.trim() }),
+        body: JSON.stringify({ title: newTitle.trim(), content: newContent.trim(), tags: newTags }),
       });
 
       if (res.ok) {
@@ -66,6 +87,7 @@ export default function ForumCategoryPage() {
         setShowNewThread(false);
         setNewTitle('');
         setNewContent('');
+        setNewTags([]);
         // Add new thread to the top of the list
         if (data.thread) {
           setThreads((prev) => [data.thread, ...prev]);
@@ -81,10 +103,18 @@ export default function ForumCategoryPage() {
     }
   };
 
-  // Sort: pinned first, then by newest
+  // Sort: pinned first, then by selected sort
   const sortedThreads = [...threads].sort((a, b) => {
     if (a.isPinned && !b.isPinned) return -1;
     if (!a.isPinned && b.isPinned) return 1;
+    if (sortBy === 'top') {
+      const aScore = (a.upvoteCount || 0) - (a.downvoteCount || 0);
+      const bScore = (b.upvoteCount || 0) - (b.downvoteCount || 0);
+      return bScore - aScore;
+    }
+    if (sortBy === 'popular') {
+      return (b.viewCount || 0) - (a.viewCount || 0);
+    }
     return new Date(b.lastActivityAt).getTime() - new Date(a.lastActivityAt).getTime();
   });
 
@@ -149,7 +179,7 @@ export default function ForumCategoryPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Content</label>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Content <span className="text-slate-500 font-normal">(Markdown supported)</span></label>
                 <textarea
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
@@ -158,6 +188,10 @@ export default function ForumCategoryPage() {
                   className="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 resize-none"
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Tags <span className="text-slate-500 font-normal">(optional, max 5)</span></label>
+                <ThreadTags tags={newTags} editable onChange={setNewTags} />
               </div>
               <div className="flex gap-3">
                 <button
@@ -176,7 +210,7 @@ export default function ForumCategoryPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setShowNewThread(false); setNewTitle(''); setNewContent(''); }}
+                  onClick={() => { setShowNewThread(false); setNewTitle(''); setNewContent(''); setNewTags([]); }}
                   className="px-5 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors"
                 >
                   Cancel
@@ -209,6 +243,22 @@ export default function ForumCategoryPage() {
             >
               Start a Thread
             </button>
+          </div>
+        )}
+
+        {/* Sort dropdown */}
+        {!loading && sortedThreads.length > 0 && (
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xs text-slate-500">Sort by:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="text-xs bg-slate-800 border border-slate-700 rounded px-2 py-1 text-slate-300 focus:outline-none focus:border-cyan-500/50"
+            >
+              <option value="newest">Newest</option>
+              <option value="popular">Most Viewed</option>
+              <option value="top">Top Voted</option>
+            </select>
           </div>
         )}
 

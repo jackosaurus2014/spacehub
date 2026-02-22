@@ -1,14 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ReportButton from '@/components/community/ReportButton';
 import BlockButton from '@/components/community/BlockButton';
+import VoteButton from '@/components/community/VoteButton';
+import AcceptedAnswerBadge from '@/components/community/AcceptedAnswerBadge';
+import SubscribeButton from '@/components/community/SubscribeButton';
+import ThreadTags from '@/components/community/ThreadTags';
+import MarkdownContent from '@/components/community/MarkdownContent';
 import { toast } from '@/lib/toast';
+import { useSession } from 'next-auth/react';
 
 interface ForumPost {
   id: string;
@@ -17,6 +22,10 @@ interface ForumPost {
   authorName: string;
   createdAt: string;
   updatedAt: string;
+  upvoteCount: number;
+  downvoteCount: number;
+  isAccepted: boolean;
+  userVote: number | null;
 }
 
 interface ThreadDetail {
@@ -33,6 +42,12 @@ interface ThreadDetail {
   isPinned: boolean;
   isLocked: boolean;
   createdAt: string;
+  tags: string[];
+  acceptedPostId: string | null;
+  upvoteCount: number;
+  downvoteCount: number;
+  userVote: number | null;
+  isSubscribed: boolean;
 }
 
 function getInitials(name: string): string {
@@ -71,21 +86,60 @@ export default function ThreadDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
   const threadId = params.threadId as string;
+  const { data: session } = useSession();
 
   const [thread, setThread] = useState<ThreadDetail | null>(null);
   const [replies, setReplies] = useState<ForumPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [replyContent, setReplyContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [acceptedPostId, setAcceptedPostId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchThread = async () => {
       try {
         const res = await fetch(`/api/community/forums/${slug}/${threadId}`);
         if (res.ok) {
-          const data = await res.json();
-          setThread(data.thread || null);
-          setReplies(data.replies || []);
+          const json = await res.json();
+          const data = json.data || json;
+          const t = data.thread;
+          if (t) {
+            setThread({
+              id: t.id,
+              title: t.title,
+              content: t.content,
+              authorId: t.author?.id || '',
+              authorName: t.author?.name || 'Unknown',
+              category: data.category?.name || slug,
+              categorySlug: data.category?.slug || slug,
+              categoryName: data.category?.name || slug,
+              replyCount: t.postCount || 0,
+              viewCount: t.viewCount || 0,
+              isPinned: t.isPinned || false,
+              isLocked: t.isLocked || false,
+              createdAt: t.createdAt,
+              tags: t.tags || [],
+              acceptedPostId: t.acceptedPostId || null,
+              upvoteCount: t.upvoteCount || 0,
+              downvoteCount: t.downvoteCount || 0,
+              userVote: t.userVote ?? null,
+              isSubscribed: t.isSubscribed || false,
+            });
+            setAcceptedPostId(t.acceptedPostId || null);
+          }
+          const posts = (data.posts || []).map((p: any) => ({
+            id: p.id,
+            content: p.content,
+            authorId: p.author?.id || p.authorId || '',
+            authorName: p.author?.name || p.authorName || 'Unknown',
+            createdAt: p.createdAt,
+            updatedAt: p.updatedAt,
+            upvoteCount: p.upvoteCount || 0,
+            downvoteCount: p.downvoteCount || 0,
+            isAccepted: p.isAccepted || false,
+            userVote: p.userVote ?? null,
+          }));
+          setReplies(posts);
         }
       } catch {
         // silently fail
@@ -95,6 +149,16 @@ export default function ThreadDetailPage() {
     };
     fetchThread();
   }, [slug, threadId]);
+
+  const handleAcceptAnswer = useCallback((postId: string) => {
+    setAcceptedPostId((prev) => prev === postId ? null : postId);
+    setReplies((prev) =>
+      prev.map((r) => ({
+        ...r,
+        isAccepted: r.id === postId ? !r.isAccepted : false,
+      }))
+    );
+  }, []);
 
   const handleReply = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,59 +246,96 @@ export default function ThreadDetailPage() {
           transition={{ duration: 0.4 }}
           className="card p-6 mb-6"
         >
-          <div className="flex items-center gap-2 mb-3">
-            {thread.isPinned && (
-              <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/15 text-amber-400 rounded font-medium">
-                Pinned
-              </span>
-            )}
-            {thread.isLocked && (
-              <span className="text-[10px] px-1.5 py-0.5 bg-slate-600/30 text-slate-400 rounded font-medium flex items-center gap-0.5">
-                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                Locked
-              </span>
-            )}
-            <span className="text-[10px] px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded">
-              {thread.category}
-            </span>
-          </div>
-
-          <h1 className="text-xl md:text-2xl font-bold text-slate-100 mb-4">{thread.title}</h1>
-
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-bold text-cyan-300">
-              {getInitials(thread.authorName)}
+          <div className="flex gap-4">
+            {/* Vote column */}
+            <div className="flex-shrink-0">
+              <VoteButton
+                contentType="thread"
+                contentId={thread.id}
+                initialUpvotes={thread.upvoteCount}
+                initialDownvotes={thread.downvoteCount}
+                initialUserVote={thread.userVote}
+                slug={slug}
+                threadId={thread.id}
+              />
             </div>
-            <div>
-              <p className="text-sm font-medium text-slate-200">{thread.authorName}</p>
-              <p className="text-xs text-slate-500">{formatDate(thread.createdAt)}</p>
-            </div>
-          </div>
 
-          <div className="prose prose-invert prose-sm max-w-none">
-            <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">{thread.content}</p>
-          </div>
+            {/* Thread content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
+                {thread.isPinned && (
+                  <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/15 text-amber-400 rounded font-medium">
+                    Pinned
+                  </span>
+                )}
+                {thread.isLocked && (
+                  <span className="text-[10px] px-1.5 py-0.5 bg-slate-600/30 text-slate-400 rounded font-medium flex items-center gap-0.5">
+                    <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    Locked
+                  </span>
+                )}
+                <span className="text-[10px] px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded">
+                  {thread.category}
+                </span>
+                {thread.acceptedPostId && (
+                  <span className="text-[10px] px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded font-medium flex items-center gap-0.5">
+                    <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Answered
+                  </span>
+                )}
+              </div>
 
-          {/* Stats */}
-          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-700/50 text-xs text-slate-500">
-            <span className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              {thread.replyCount} {thread.replyCount === 1 ? 'reply' : 'replies'}
-            </span>
-            <span className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              {thread.viewCount} views
-            </span>
-            <div className="ml-auto flex items-center gap-1">
-              <ReportButton contentType="thread" contentId={thread.id} size="sm" />
-              <BlockButton targetUserId={thread.authorId} targetUserName={thread.authorName} size="sm" />
+              <h1 className="text-xl md:text-2xl font-bold text-slate-100 mb-2">{thread.title}</h1>
+
+              {/* Tags */}
+              {thread.tags && thread.tags.length > 0 && (
+                <div className="mb-3">
+                  <ThreadTags tags={thread.tags} />
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-bold text-cyan-300">
+                  {getInitials(thread.authorName)}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-200">{thread.authorName}</p>
+                  <p className="text-xs text-slate-500">{formatDate(thread.createdAt)}</p>
+                </div>
+              </div>
+
+              {/* Markdown content */}
+              <MarkdownContent content={thread.content} />
+
+              {/* Stats + Actions */}
+              <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-700/50 text-xs text-slate-500">
+                <span className="flex items-center gap-1">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  {thread.replyCount} {thread.replyCount === 1 ? 'reply' : 'replies'}
+                </span>
+                <span className="flex items-center gap-1">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  {thread.viewCount} views
+                </span>
+                <div className="ml-auto flex items-center gap-2">
+                  <SubscribeButton
+                    slug={slug}
+                    threadId={thread.id}
+                    initialSubscribed={thread.isSubscribed}
+                  />
+                  <ReportButton contentType="thread" contentId={thread.id} size="sm" />
+                  <BlockButton targetUserId={thread.authorId} targetUserName={thread.authorName} size="sm" />
+                </div>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -251,22 +352,51 @@ export default function ThreadDetailPage() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.03, duration: 0.3 }}
-                className="card p-5"
+                className={`card p-5 ${reply.isAccepted ? 'border-l-2 border-l-green-500/60' : ''}`}
               >
                 <div className="flex items-start gap-3">
+                  {/* Vote column */}
+                  <div className="flex-shrink-0">
+                    <VoteButton
+                      contentType="post"
+                      contentId={reply.id}
+                      initialUpvotes={reply.upvoteCount}
+                      initialDownvotes={reply.downvoteCount}
+                      initialUserVote={reply.userVote}
+                      slug={slug}
+                      threadId={threadId}
+                      size="sm"
+                    />
+                  </div>
                   <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-400 flex-shrink-0">
                     {getInitials(reply.authorName)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className="text-sm font-medium text-slate-200">{reply.authorName}</span>
                       <span className="text-xs text-slate-500">{timeAgo(reply.createdAt)}</span>
+                      {reply.isAccepted && (
+                        <span className="text-[10px] px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded font-medium flex items-center gap-0.5">
+                          <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          Accepted Answer
+                        </span>
+                      )}
                       <div className="ml-auto flex items-center gap-1">
+                        <AcceptedAnswerBadge
+                          isAccepted={reply.isAccepted}
+                          isThreadAuthor={session?.user?.id === thread.authorId}
+                          postId={reply.id}
+                          slug={slug}
+                          threadId={threadId}
+                          onAccept={handleAcceptAnswer}
+                        />
                         <ReportButton contentType="post" contentId={reply.id} size="sm" />
                         <BlockButton targetUserId={reply.authorId} targetUserName={reply.authorName} size="sm" />
                       </div>
                     </div>
-                    <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">{reply.content}</p>
+                    <MarkdownContent content={reply.content} className="text-sm" />
                   </div>
                 </div>
               </motion.div>
@@ -294,11 +424,12 @@ export default function ThreadDetailPage() {
               <textarea
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
-                placeholder="Share your thoughts..."
+                placeholder="Share your thoughts... (Markdown supported)"
                 rows={4}
-                className="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 resize-none mb-3"
+                className="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 resize-none mb-1"
                 required
               />
+              <p className="text-[10px] text-slate-500 mb-3">Supports **bold**, *italic*, `code`, [links](url), and more Markdown formatting</p>
               <div className="flex justify-end">
                 <button
                   type="submit"

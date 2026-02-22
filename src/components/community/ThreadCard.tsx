@@ -16,6 +16,10 @@ export interface ThreadData {
   isLocked: boolean;
   lastActivityAt: string;
   createdAt: string;
+  tags?: string[];
+  acceptedPostId?: string | null;
+  upvoteCount?: number;
+  downvoteCount?: number;
 }
 
 interface ThreadCardProps {
@@ -51,9 +55,29 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
           }`}
         >
           <div className="flex items-start gap-3">
+            {/* Vote score */}
+            {(thread.upvoteCount !== undefined || thread.downvoteCount !== undefined) && (
+              <div className="flex flex-col items-center flex-shrink-0 pt-1 w-10">
+                <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                </svg>
+                <span className={`text-xs font-bold ${
+                  ((thread.upvoteCount || 0) - (thread.downvoteCount || 0)) > 0
+                    ? 'text-green-400'
+                    : ((thread.upvoteCount || 0) - (thread.downvoteCount || 0)) < 0
+                    ? 'text-red-400'
+                    : 'text-slate-500'
+                }`}>
+                  {(thread.upvoteCount || 0) - (thread.downvoteCount || 0)}
+                </span>
+                <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            )}
             {/* Main content */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
                 {/* Indicators */}
                 {thread.isPinned && (
                   <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/15 text-amber-400 rounded font-medium flex-shrink-0">
@@ -71,6 +95,19 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
                 <span className="text-[10px] px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded flex-shrink-0">
                   {thread.category}
                 </span>
+                {thread.acceptedPostId && (
+                  <span className="text-[10px] px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded font-medium flex-shrink-0 flex items-center gap-0.5">
+                    <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Answered
+                  </span>
+                )}
+                {thread.tags && thread.tags.length > 0 && thread.tags.slice(0, 3).map((tag: string) => (
+                  <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-purple-500/10 text-purple-400 rounded flex-shrink-0">
+                    {tag}
+                  </span>
+                ))}
               </div>
 
               {/* Title */}
