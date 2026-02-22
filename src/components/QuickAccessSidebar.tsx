@@ -140,7 +140,7 @@ export default function QuickAccessSidebar() {
       {/* Sidebar - hidden on mobile */}
       <aside
         className={`fixed left-0 top-[72px] h-[calc(100vh-72px)] z-[45] hidden lg:flex flex-col transition-all duration-300 ${
-          isExpanded ? 'w-72' : 'w-16'
+          isExpanded ? 'w-80' : 'w-16'
         }`}
         style={{
           background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 50%, rgba(15, 23, 42, 0.98) 100%)',
@@ -211,8 +211,8 @@ export default function QuickAccessSidebar() {
 
                           {/* Name (only when expanded) */}
                           <span
-                            className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 flex-1 ${
-                              isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+                            className={`text-sm font-medium leading-tight transition-all duration-300 flex-1 min-w-0 ${
+                              isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden whitespace-nowrap'
                             }`}
                           >
                             {module.name}
@@ -249,8 +249,8 @@ export default function QuickAccessSidebar() {
 
                           {/* Name (only when expanded) */}
                           <span
-                            className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                              isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+                            className={`text-sm font-medium leading-tight transition-all duration-300 flex-1 min-w-0 ${
+                              isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden whitespace-nowrap'
                             }`}
                           >
                             {module.name}
@@ -344,7 +344,7 @@ export default function QuickAccessSidebar() {
                               <span className="text-sm flex-shrink-0 w-5 text-center" role="img" aria-label={child.name}>
                                 {child.icon}
                               </span>
-                              <span className="whitespace-nowrap overflow-hidden text-ellipsis">
+                              <span className="leading-tight min-w-0">
                                 {child.name}
                               </span>
                               {child.isPremium && (
@@ -380,8 +380,8 @@ export default function QuickAccessSidebar() {
               </svg>
             </span>
             <span
-              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              className={`text-sm font-medium leading-tight transition-all duration-300 ${
+                isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden whitespace-nowrap'
               }`}
             >
               SpaceNexus Blog
@@ -401,8 +401,8 @@ export default function QuickAccessSidebar() {
               </svg>
             </span>
             <span
-              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              className={`text-sm font-medium leading-tight transition-all duration-300 ${
+                isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden whitespace-nowrap'
               }`}
             >
               AI Insights
@@ -418,8 +418,8 @@ export default function QuickAccessSidebar() {
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">🏪</span>
             <span
-              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              className={`text-sm font-medium leading-tight transition-all duration-300 ${
+                isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden whitespace-nowrap'
               }`}
             >
               Marketplace
@@ -439,8 +439,8 @@ export default function QuickAccessSidebar() {
               </svg>
             </span>
             <span
-              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              className={`text-sm font-medium leading-tight transition-all duration-300 ${
+                isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden whitespace-nowrap'
               }`}
             >
               Deal Room
@@ -456,8 +456,8 @@ export default function QuickAccessSidebar() {
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">💰</span>
             <span
-              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              className={`text-sm font-medium leading-tight transition-all duration-300 ${
+                isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden whitespace-nowrap'
               }`}
             >
               Funding
@@ -477,8 +477,8 @@ export default function QuickAccessSidebar() {
               </svg>
             </span>
             <span
-              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              className={`text-sm font-medium leading-tight transition-all duration-300 ${
+                isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden whitespace-nowrap'
               }`}
             >
               Customers
@@ -494,8 +494,8 @@ export default function QuickAccessSidebar() {
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">&#x2605;</span>
             <span
-              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              className={`text-sm font-medium leading-tight transition-all duration-300 ${
+                isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden whitespace-nowrap'
               }`}
             >
               Watchlists
@@ -515,8 +515,8 @@ export default function QuickAccessSidebar() {
               </svg>
             </span>
             <span
-              className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                isExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
+              className={`text-sm font-medium leading-tight transition-all duration-300 ${
+                isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden whitespace-nowrap'
               }`}
             >
               Dashboard
