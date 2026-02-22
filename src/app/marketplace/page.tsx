@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
@@ -30,34 +30,40 @@ export default function MarketplacePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadData() {
-      setError(null);
-      try {
-        const [statsRes, listingsRes, rfqRes] = await Promise.all([
-          fetch('/api/marketplace/stats'),
-          fetch('/api/marketplace/listings?limit=4&sort=newest'),
-          fetch('/api/marketplace/rfq?limit=4&status=open'),
-        ]);
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [statsRes, listingsRes, rfqRes] = await Promise.all([
+        fetch('/api/marketplace/stats'),
+        fetch('/api/marketplace/listings?limit=4&sort=newest'),
+        fetch('/api/marketplace/rfq?limit=4&status=open'),
+      ]);
 
-        if (statsRes.ok) setStats(await statsRes.json());
-        if (listingsRes.ok) {
-          const data = await listingsRes.json();
-          setFeaturedListings(data.listings || []);
-        }
-        if (rfqRes.ok) {
-          const data = await rfqRes.json();
-          setRecentRFQs(data.rfqs || []);
-        }
-      } catch (err) {
-        console.error('Failed to load marketplace data', err);
-        setError('Failed to load data.');
-      } finally {
-        setLoading(false);
+      if (statsRes.ok) setStats(await statsRes.json());
+      if (listingsRes.ok) {
+        const data = await listingsRes.json();
+        setFeaturedListings(data.listings || []);
       }
+      if (rfqRes.ok) {
+        const data = await rfqRes.json();
+        setRecentRFQs(data.rfqs || []);
+      }
+
+      if (!statsRes.ok && !listingsRes.ok && !rfqRes.ok) {
+        setError('Failed to load marketplace data. Please try again.');
+      }
+    } catch (err) {
+      console.error('Failed to load marketplace data', err);
+      setError('Failed to load marketplace data. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    loadData();
   }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const categoryCounts: Record<string, number> = {};
   stats?.categories?.forEach((c: any) => {
@@ -93,9 +99,15 @@ export default function MarketplacePage() {
         { question: 'How does the RFQ process work?', answer: 'Submit a Request for Quote describing your needs, budget range, and timeline. Our AI-powered matching system identifies qualified providers based on capabilities, certifications, and past performance. Providers can submit proposals with pricing and technical details.' },
       ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-        {error && (
-          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
-            <div className="text-red-400 text-sm font-medium">{error}</div>
+        {error && !loading && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center">
+            <p className="text-red-400 mb-2">{error}</p>
+            <button
+              onClick={loadData}
+              className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors text-sm"
+            >
+              Try Again
+            </button>
           </div>
         )}
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -80,22 +80,25 @@ function SolarExplorationContent() {
   const [error, setError] = useState<string | null>(null);
 
   // Fetch exoplanet data from DynamicContent system
-  useEffect(() => {
-    async function fetchExoplanets() {
-      try {
-        const res = await fetch('/api/content/solar-exploration?section=exoplanets');
-        if (!res.ok) throw new Error('Failed to fetch exoplanets');
-        const json = await res.json();
-        setExoplanets(json.data || []);
-      } catch (err) {
-        console.error('Failed to fetch exoplanets:', err);
-        setError('Failed to load data.');
-      } finally {
-        setExoplanetsLoading(false);
-      }
+  const fetchExoplanets = useCallback(async () => {
+    setExoplanetsLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/content/solar-exploration?section=exoplanets');
+      if (!res.ok) throw new Error('Failed to fetch exoplanets');
+      const json = await res.json();
+      setExoplanets(json.data || []);
+    } catch (err) {
+      console.error('Failed to fetch exoplanets:', err);
+      setError('Failed to load data. Please try again.');
+    } finally {
+      setExoplanetsLoading(false);
     }
-    fetchExoplanets();
   }, []);
+
+  useEffect(() => {
+    fetchExoplanets();
+  }, [fetchExoplanets]);
 
   // Sync filters to URL
   useEffect(() => {
@@ -107,42 +110,43 @@ function SolarExplorationContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [selectedBodySlug, statusFilter, typeFilter, router, pathname]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setError(null);
-      try {
-        // Initialize data first
-        await fetch('/api/solar-exploration/init', { method: 'POST' });
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Initialize data first
+      await fetch('/api/solar-exploration/init', { method: 'POST' });
 
-        // Fetch bodies and stats in parallel
-        const [bodiesRes, statsRes] = await Promise.all([
-          fetch('/api/solar-exploration'),
-          fetch('/api/solar-exploration/stats'),
-        ]);
+      // Fetch bodies and stats in parallel
+      const [bodiesRes, statsRes] = await Promise.all([
+        fetch('/api/solar-exploration'),
+        fetch('/api/solar-exploration/stats'),
+      ]);
 
-        const bodiesData = await bodiesRes.json();
-        const statsData = await statsRes.json();
+      const bodiesData = await bodiesRes.json();
+      const statsData = await statsRes.json();
 
-        if (bodiesData.bodies) {
-          setBodies(bodiesData.bodies);
-          if (!bodyParam && bodiesData.bodies.length > 0) {
-            setSelectedBodySlug(bodiesData.bodies[0].slug);
-          }
+      if (bodiesData.bodies) {
+        setBodies(bodiesData.bodies);
+        if (!bodyParam && bodiesData.bodies.length > 0) {
+          setSelectedBodySlug(bodiesData.bodies[0].slug);
         }
-
-        if (statsData.stats) {
-          setStats(statsData.stats);
-        }
-      } catch (err) {
-        console.error('Failed to fetch data:', err);
-        setError('Failed to load data.');
-      } finally {
-        setLoading(false);
       }
-    };
 
-    fetchData();
+      if (statsData.stats) {
+        setStats(statsData.stats);
+      }
+    } catch (err) {
+      console.error('Failed to fetch data:', err);
+      setError('Failed to load data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }, [bodyParam]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const selectedBody = bodies.find((b) => b.slug === selectedBodySlug);
 
@@ -183,9 +187,15 @@ function SolarExplorationContent() {
       <div className="container mx-auto px-4">
         <AnimatedPageHeader title="Solar System Exploration" subtitle="Interactive 3D visualization of planetary bodies with rover and lander locations" icon="🌌" accentColor="purple" />
 
-        {error && (
-          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
-            <div className="text-red-400 text-sm font-medium">{error}</div>
+        {error && !loading && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center mb-6">
+            <p className="text-red-400 mb-2">{error}</p>
+            <button
+              onClick={() => { fetchData(); fetchExoplanets(); }}
+              className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors text-sm"
+            >
+              Try Again
+            </button>
           </div>
         )}
 

@@ -17,6 +17,7 @@ function SearchContent() {
   const [listings, setListings] = useState<any[]>([]);
   const [rfqs, setRfqs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
 
@@ -33,6 +34,7 @@ function SearchContent() {
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (category) params.set('category', category);
@@ -49,9 +51,12 @@ function SearchContent() {
         const data = await res.json();
         setListings(data.listings || []);
         setTotal(data.total || 0);
+      } else {
+        setError('Failed to load listings. Please try again.');
       }
     } catch (err) {
       console.error('Failed to fetch listings', err);
+      setError('Failed to load listings. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -59,6 +64,7 @@ function SearchContent() {
 
   const fetchRFQs = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (category) params.set('category', category);
@@ -71,9 +77,12 @@ function SearchContent() {
         const data = await res.json();
         setRfqs(data.rfqs || []);
         setTotal(data.total || 0);
+      } else {
+        setError('Failed to load RFQs. Please try again.');
       }
     } catch (err) {
       console.error('Failed to fetch RFQs', err);
+      setError('Failed to load RFQs. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -248,6 +257,18 @@ function SearchContent() {
                 </div>
               </div>
             </div>
+
+            {error && !loading && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center">
+                <p className="text-red-400 mb-2">{error}</p>
+                <button
+                  onClick={() => tab === 'listings' ? fetchListings() : fetchRFQs()}
+                  className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors text-sm"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
 
             {loading ? (
               <div className="flex justify-center py-20"><LoadingSpinner /></div>
