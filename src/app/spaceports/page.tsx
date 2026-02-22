@@ -29,6 +29,7 @@ interface Spaceport {
   primaryVehicles: string[];
   launchPads: number;
   padDetails: string;
+  recentLaunches2025: number;
   recentLaunches2024: number;
   recentLaunches2023: number;
   maxPayloadClass: string;
@@ -63,6 +64,7 @@ interface TrafficRecord {
   launches2022: number;
   launches2023: number;
   launches2024: number;
+  launches2025: number;
   trend: 'up' | 'down' | 'stable';
   successRate: number;
 }
@@ -202,20 +204,21 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     status: 'operational',
     launchCapability: 'orbital',
     inclinationRange: '28.5 - 57 degrees',
-    primaryVehicles: ['Falcon 9', 'Falcon Heavy', 'SLS', 'Starship (planned)', 'New Glenn'],
+    primaryVehicles: ['Falcon 9', 'Falcon Heavy', 'SLS', 'New Glenn'],
     launchPads: 2,
     padDetails: 'LC-39A (SpaceX), LC-39B (NASA SLS / Blue Origin New Glenn)',
+    recentLaunches2025: 48,
     recentLaunches2024: 37,
     recentLaunches2023: 31,
     maxPayloadClass: 'Super Heavy (130+ tonnes to LEO via SLS Block 2)',
     fuelingTypes: ['RP-1/LOX', 'LH2/LOX', 'CH4/LOX'],
     rangeSafety: 'Eastern Range (Space Force)',
     reuseLanding: 'LZ-1 and LZ-2 landing pads; drone ship recovery offshore',
-    description: 'America\'s premier human spaceflight launch site since the Apollo era. LC-39A is the world\'s busiest orbital launch pad, operated by SpaceX for Falcon 9 and Falcon Heavy. LC-39B supports NASA\'s Space Launch System for Artemis lunar missions and is being prepared for Blue Origin New Glenn.',
+    description: 'America\'s premier human spaceflight launch site since the Apollo era. LC-39A is the world\'s busiest orbital launch pad, operated by SpaceX for Falcon 9 and Falcon Heavy. LC-39B supports NASA\'s Space Launch System for Artemis lunar missions and Blue Origin\'s New Glenn, which made its debut flight in January 2025.',
     highlights: [
       'Most historic launch site in the US -- Apollo, Shuttle, Artemis',
       'LC-39A: world\'s highest-cadence orbital launch pad',
-      'Supports the heaviest vehicles currently flying (SLS, Falcon Heavy)',
+      'Blue Origin New Glenn debut flight from LC-39B in January 2025',
       'Adjacent to LZ-1/LZ-2 for booster landing and recovery',
     ],
   },
@@ -231,9 +234,10 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     status: 'operational',
     launchCapability: 'orbital',
     inclinationRange: '28.5 - 57 degrees',
-    primaryVehicles: ['Falcon 9', 'Vulcan Centaur', 'Atlas V (retired 2024)'],
+    primaryVehicles: ['Falcon 9', 'Vulcan Centaur'],
     launchPads: 3,
-    padDetails: 'SLC-40 (SpaceX Falcon 9), SLC-41 (ULA Vulcan/Atlas V), SLC-37B (ULA Delta IV retired)',
+    padDetails: 'SLC-40 (SpaceX Falcon 9), SLC-41 (ULA Vulcan Centaur), SLC-37B (retired)',
+    recentLaunches2025: 54,
     recentLaunches2024: 35,
     recentLaunches2023: 41,
     maxPayloadClass: 'Heavy (27 tonnes to LEO via Vulcan Centaur)',
@@ -263,6 +267,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['Falcon 9', 'Falcon Heavy', 'Vulcan Centaur (planned)'],
     launchPads: 2,
     padDetails: 'SLC-4E (SpaceX Falcon 9/Heavy), SLC-3E (ULA)',
+    recentLaunches2025: 24,
     recentLaunches2024: 18,
     recentLaunches2023: 15,
     maxPayloadClass: 'Heavy (16 tonnes to polar LEO via Falcon Heavy)',
@@ -291,18 +296,19 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     inclinationRange: '26 - 57 degrees',
     primaryVehicles: ['Starship / Super Heavy'],
     launchPads: 2,
-    padDetails: 'Orbital Launch Mount A (OLM-A, active), Orbital Launch Mount B (OLM-B, under construction)',
+    padDetails: 'Orbital Launch Mount A (OLM-A, active), Orbital Launch Mount B (OLM-B, operational)',
+    recentLaunches2025: 10,
     recentLaunches2024: 6,
     recentLaunches2023: 2,
     maxPayloadClass: 'Super Heavy (100-150+ tonnes to LEO, fully reusable target)',
     fuelingTypes: ['CH4/LOX'],
     rangeSafety: 'FAA-licensed commercial site',
     reuseLanding: 'Mechazilla tower catch system for Super Heavy booster; ship landing TBD',
-    description: 'SpaceX\'s dedicated Starship development and launch facility at the southern tip of Texas. The site achieved historic milestones with the first successful Super Heavy booster catch by the Mechazilla tower in October 2024 (Flight 5). Second launch mount under construction to increase cadence.',
+    description: 'SpaceX\'s dedicated Starship development and launch facility at the southern tip of Texas. The site achieved historic milestones with the first successful Super Heavy booster catch by the Mechazilla tower in October 2024 (Flight 5). Second launch mount (OLM-B) became operational in 2025, enabling higher launch cadence.',
     highlights: [
       'Only operational launch site for Starship/Super Heavy',
       'Mechazilla tower catch system for booster reuse (first achieved Oct 2024)',
-      'Second orbital launch mount (OLM-B) under construction',
+      'Second orbital launch mount (OLM-B) operational in 2025',
       'Largest rocket ever flown -- 33 Raptor engines on Super Heavy booster',
     ],
   },
@@ -318,9 +324,10 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     status: 'operational',
     launchCapability: 'both',
     inclinationRange: '38 - 60 degrees',
-    primaryVehicles: ['Northrop Grumman Antares (retired)', 'Rocket Lab Electron (planned)', 'Firefly Alpha (planned)'],
+    primaryVehicles: ['Northrop Grumman Antares (retired)', 'Rocket Lab Electron', 'Firefly Alpha'],
     launchPads: 2,
-    padDetails: 'Pad-0A (Antares), Pad-0B (Minotaur / suborbital)',
+    padDetails: 'Pad-0A (Antares/Firefly), Pad-0B (Minotaur / suborbital), LC-2 (Rocket Lab Electron)',
+    recentLaunches2025: 3,
     recentLaunches2024: 2,
     recentLaunches2023: 1,
     maxPayloadClass: 'Medium (8 tonnes to LEO via Antares 330)',
@@ -347,9 +354,10 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     status: 'operational',
     launchCapability: 'orbital',
     inclinationRange: '39 - 98 degrees (SSO accessible)',
-    primaryVehicles: ['Electron', 'Neutron (planned)'],
+    primaryVehicles: ['Electron', 'Neutron (in development)'],
     launchPads: 2,
     padDetails: 'Pad A (primary), Pad B (second pad for higher cadence)',
+    recentLaunches2025: 16,
     recentLaunches2024: 13,
     recentLaunches2023: 10,
     maxPayloadClass: 'Small (300 kg to LEO via Electron)',
@@ -379,6 +387,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['Ariane 6', 'Vega-C', 'Soyuz (suspended)'],
     launchPads: 3,
     padDetails: 'ELA-4 (Ariane 6), ZLV (Vega-C), ELS (Soyuz, suspended since 2022)',
+    recentLaunches2025: 5,
     recentLaunches2024: 3,
     recentLaunches2023: 3,
     maxPayloadClass: 'Heavy (21.6 tonnes to LEO via Ariane 64)',
@@ -408,6 +417,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['Soyuz-2.1a/b', 'Proton-M'],
     launchPads: 4,
     padDetails: 'Site 1/5 (Gagarin\'s Start, Soyuz crewed), Site 31/6 (Soyuz), Site 200 (Proton), others retired',
+    recentLaunches2025: 8,
     recentLaunches2024: 10,
     recentLaunches2023: 11,
     maxPayloadClass: 'Heavy (23 tonnes to LEO via Proton-M)',
@@ -437,6 +447,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['Soyuz-2.1a/b/v', 'Angara-A5', 'Rockot (retired)'],
     launchPads: 3,
     padDetails: 'Site 43 (Soyuz-2), Site 35 (Angara), Site 133 (Soyuz)',
+    recentLaunches2025: 7,
     recentLaunches2024: 8,
     recentLaunches2023: 8,
     maxPayloadClass: 'Heavy (24.5 tonnes to LEO via Angara-A5)',
@@ -463,9 +474,10 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     status: 'operational',
     launchCapability: 'orbital',
     inclinationRange: '52 - 98 degrees',
-    primaryVehicles: ['Soyuz-2.1a/b', 'Angara-A5 (pad under construction)'],
-    launchPads: 1,
-    padDetails: 'Launch Complex 1S (Soyuz-2), Complex 1A (Angara, under construction)',
+    primaryVehicles: ['Soyuz-2.1a/b', 'Angara-A5'],
+    launchPads: 2,
+    padDetails: 'Launch Complex 1S (Soyuz-2), Complex 1A (Angara)',
+    recentLaunches2025: 4,
     recentLaunches2024: 4,
     recentLaunches2023: 4,
     maxPayloadClass: 'Medium (8 tonnes to LEO via Soyuz-2.1b)',
@@ -495,6 +507,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['Long March 2C/2D/2F/4B/4C/11', 'Kuaizhou-1A', 'CERES-1'],
     launchPads: 4,
     padDetails: 'SLS-1 (LM-2F crewed), Pads 43, 603, 921; commercial pad area',
+    recentLaunches2025: 26,
     recentLaunches2024: 22,
     recentLaunches2023: 18,
     maxPayloadClass: 'Medium (8.4 tonnes to LEO via Long March 2F)',
@@ -524,6 +537,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['Long March 3B/3C/2C'],
     launchPads: 3,
     padDetails: 'LC-2, LC-3 (Long March 3B/3C), new commercial pad',
+    recentLaunches2025: 13,
     recentLaunches2024: 12,
     recentLaunches2023: 14,
     maxPayloadClass: 'Medium-Heavy (12 tonnes to LEO, 5.5 tonnes to GTO via LM-3B)',
@@ -550,9 +564,10 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     status: 'operational',
     launchCapability: 'orbital',
     inclinationRange: '19.6 - 59 degrees (lowest latitude in China)',
-    primaryVehicles: ['Long March 5/5B/7/7A/8', 'CZ-12 (planned)'],
+    primaryVehicles: ['Long March 5/5B/7/7A/8', 'CZ-12'],
     launchPads: 3,
     padDetails: 'LC-101 (LM-5/5B), LC-201 (LM-7/7A), commercial pad',
+    recentLaunches2025: 16,
     recentLaunches2024: 13,
     recentLaunches2023: 7,
     maxPayloadClass: 'Heavy (25 tonnes to LEO via Long March 5B)',
@@ -582,6 +597,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['Long March 4B/4C/6/6A', 'Kuaizhou-1A/11'],
     launchPads: 2,
     padDetails: 'LC-7 (Long March 4/6 series), LC-16 (Kuaizhou)',
+    recentLaunches2025: 12,
     recentLaunches2024: 10,
     recentLaunches2023: 8,
     maxPayloadClass: 'Medium (4.2 tonnes to SSO via Long March 6A)',
@@ -611,6 +627,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['PSLV', 'GSLV Mk II', 'LVM3 (GSLV Mk III)', 'SSLV'],
     launchPads: 2,
     padDetails: 'First Launch Pad (FLP), Second Launch Pad (SLP)',
+    recentLaunches2025: 9,
     recentLaunches2024: 7,
     recentLaunches2023: 7,
     maxPayloadClass: 'Medium-Heavy (10 tonnes to LEO via LVM3)',
@@ -637,9 +654,10 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     status: 'operational',
     launchCapability: 'orbital',
     inclinationRange: '30 - 99 degrees',
-    primaryVehicles: ['H3', 'H-IIA (retired 2024)', 'Epsilon S (in development)'],
+    primaryVehicles: ['H3', 'Epsilon S'],
     launchPads: 2,
-    padDetails: 'Yoshinobu Launch Complex (H3/H-IIA), Osaki Range (Epsilon)',
+    padDetails: 'Yoshinobu Launch Complex (H3), Osaki Range (Epsilon)',
+    recentLaunches2025: 5,
     recentLaunches2024: 4,
     recentLaunches2023: 2,
     maxPayloadClass: 'Medium-Heavy (6.5 tonnes to GTO via H3-24)',
@@ -669,6 +687,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['Epsilon', 'SS-520', 'Sounding rockets'],
     launchPads: 2,
     padDetails: 'Mu Center (Epsilon), KS Center (sounding rockets)',
+    recentLaunches2025: 1,
     recentLaunches2024: 1,
     recentLaunches2023: 1,
     maxPayloadClass: 'Small (1.5 tonnes to LEO via Epsilon)',
@@ -698,6 +717,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['Simorgh', 'Qased', 'Zoljanah'],
     launchPads: 1,
     padDetails: 'Single orbital launch pad',
+    recentLaunches2025: 2,
     recentLaunches2024: 3,
     recentLaunches2023: 2,
     maxPayloadClass: 'Very Small (under 100 kg to LEO)',
@@ -727,6 +747,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['Shavit'],
     launchPads: 1,
     padDetails: 'Single launch pad for Shavit',
+    recentLaunches2025: 1,
     recentLaunches2024: 1,
     recentLaunches2023: 0,
     maxPayloadClass: 'Very Small (350 kg to retrograde LEO)',
@@ -756,6 +777,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['VLM (under development)', 'Sounding rockets'],
     launchPads: 2,
     padDetails: 'CLA Tower 1 (orbital, rebuilding), Mobile launch platform (suborbital)',
+    recentLaunches2025: 0,
     recentLaunches2024: 0,
     recentLaunches2023: 0,
     maxPayloadClass: 'Small (planned, VLM)',
@@ -785,6 +807,7 @@ const ACTIVE_SPACEPORTS: Spaceport[] = [
     primaryVehicles: ['Astra Rocket (retired)', 'suborbital interceptors'],
     launchPads: 2,
     padDetails: 'LP-1 (orbital), LP-2 (suborbital/missile defense)',
+    recentLaunches2025: 1,
     recentLaunches2024: 1,
     recentLaunches2023: 1,
     maxPayloadClass: 'Small (planned future capability)',
@@ -812,17 +835,17 @@ const EMERGING_SPACEPORTS: EmergingSpaceport[] = [
     location: 'Unst, Shetland Islands',
     country: 'United Kingdom',
     developer: 'SaxaVord UK',
-    status: 'under-construction',
-    targetDate: '2025',
+    status: 'operational',
+    targetDate: 'Operational (2025)',
     plannedCapabilities: ['Vertical orbital launch', 'Polar/SSO orbits', 'Sub-500 kg class'],
     plannedVehicles: ['RFA One (Rocket Factory Augsburg)', 'HyImpulse SL1', 'ABL Space RS1'],
     investmentInfo: 'Approximately GBP 50M+ total investment; UK Space Agency grants + private funding',
-    description: 'The most northerly spaceport in development, located on the island of Unst in Shetland. SaxaVord will provide vertical launch capability for small orbital rockets targeting polar and sun-synchronous orbits. Multiple launch providers have signed agreements. The first launch was expected in 2024 but has slipped.',
+    description: 'The most northerly spaceport to host an orbital launch attempt, located on the island of Unst in Shetland. SaxaVord conducted its first orbital launch attempt with RFA One in early 2025 -- the vehicle was lost shortly after ignition but the spaceport infrastructure performed as designed. The UK\'s first vertical orbital launch site, now operational and preparing for subsequent attempts.',
     keyMilestones: [
-      'Vertical launch area cleared and ground infrastructure constructed',
-      'RFA One selected as initial launch customer',
-      'UK CAA orbital launch license application submitted',
-      'FAA-equivalent range safety system being implemented',
+      'First UK vertical orbital launch attempt conducted in early 2025',
+      'Spaceport infrastructure validated during first launch campaign',
+      'UK CAA orbital launch license granted',
+      'Multiple launch providers signed for future campaigns',
     ],
   },
   {
@@ -832,14 +855,14 @@ const EMERGING_SPACEPORTS: EmergingSpaceport[] = [
     country: 'United Kingdom',
     developer: 'Highlands and Islands Enterprise / Orbex',
     status: 'under-construction',
-    targetDate: '2025-2026',
+    targetDate: '2026-2027',
     plannedCapabilities: ['Vertical orbital launch', 'Polar/SSO orbits', 'Small satellite class'],
     plannedVehicles: ['Orbex Prime'],
     investmentInfo: 'GBP 17.3M UK Space Agency funding; total project GBP 20M+',
-    description: 'Space Hub Sutherland on the A\'Mhoine Peninsula in the Scottish Highlands is being developed specifically for Orbex\'s Prime rocket. It will be the first carbon-neutral spaceport, using bio-propane fuel. The site offers direct polar orbit access launching northward over the Atlantic.',
+    description: 'Space Hub Sutherland on the A\'Mhoine Peninsula in the Scottish Highlands is being developed specifically for Orbex\'s Prime rocket. It will be the first carbon-neutral spaceport, using bio-propane fuel. The site offers direct polar orbit access launching northward over the Atlantic. Construction continues with first launch now expected no earlier than 2026.',
     keyMilestones: [
       'Planning permission granted after legal challenges resolved',
-      'Site preparation and access road construction underway',
+      'Site construction and infrastructure build-out continuing',
       'Orbex Prime rocket in final development and testing',
       'Targeting world\'s first carbon-neutral orbital launch',
     ],
@@ -851,13 +874,13 @@ const EMERGING_SPACEPORTS: EmergingSpaceport[] = [
     country: 'Norway',
     developer: 'Andoya Space',
     status: 'under-construction',
-    targetDate: '2025',
+    targetDate: '2026',
     plannedCapabilities: ['Orbital launch', 'Polar/SSO orbits', 'Suborbital missions'],
     plannedVehicles: ['Isar Aerospace Spectrum', 'Various small launchers'],
     investmentInfo: 'NOK 1.5B (approximately USD 150M); Norwegian government + EU funding',
-    description: 'Andoya Spaceport in northern Norway is Europe\'s first continental orbital launch site. Located above the Arctic Circle, it offers ideal trajectories for polar and SSO orbits. Andoya Space has decades of sounding rocket heritage and is now building orbital launch infrastructure. Isar Aerospace signed as anchor customer.',
+    description: 'Andoya Spaceport in northern Norway is Europe\'s first continental orbital launch site. Located above the Arctic Circle, it offers ideal trajectories for polar and SSO orbits. Andoya Space has decades of sounding rocket heritage and is now building orbital launch infrastructure. Isar Aerospace signed as anchor customer. Launch infrastructure nearing completion.',
     keyMilestones: [
-      'Launch pad construction and integration facility underway',
+      'Launch pad and integration facility construction nearing completion',
       'Isar Aerospace Spectrum signed as first orbital customer',
       'Heritage of 1,200+ sounding rocket launches since 1962',
       'Norwegian Space Agency and ESA support for European launch autonomy',
@@ -872,11 +895,11 @@ const EMERGING_SPACEPORTS: EmergingSpaceport[] = [
     status: 'operational',
     targetDate: 'Operational (suborbital)',
     plannedCapabilities: ['Horizontal suborbital launch', 'Vertical orbital (planned)', 'Space tourism'],
-    plannedVehicles: ['Virgin Galactic SpaceShipTwo', 'SpinLaunch (testing)', 'AeroVelo'],
+    plannedVehicles: ['Virgin Galactic Delta-class (in development)', 'SpinLaunch (testing)'],
     investmentInfo: 'USD 225M in state funding; designed by Foster + Partners',
-    description: 'The world\'s first purpose-built commercial spaceport, designed by Norman Foster. Primary base for Virgin Galactic commercial suborbital space tourism flights. Includes a 12,000-ft runway and vertical launch area. Has hosted SpinLaunch kinetic energy launcher testing. Seeking orbital launch tenants.',
+    description: 'The world\'s first purpose-built commercial spaceport, designed by Norman Foster. Primary base for Virgin Galactic, which paused SpaceShipTwo tourism flights in 2024 to focus on developing the next-generation Delta-class vehicle. Includes a 12,000-ft runway and vertical launch area. Seeking orbital launch tenants.',
     keyMilestones: [
-      'Virgin Galactic began commercial space tourism flights in 2023',
+      'Virgin Galactic paused SpaceShipTwo flights in 2024; developing Delta-class vehicle',
       'SpinLaunch suborbital accelerator testing conducted',
       'Multiple horizontal and vertical launch areas available',
       'Vertical orbital launch site development in planning',
@@ -927,14 +950,14 @@ const EMERGING_SPACEPORTS: EmergingSpaceport[] = [
     country: 'Sweden',
     developer: 'SSC (Swedish Space Corporation)',
     status: 'under-construction',
-    targetDate: '2025-2026',
+    targetDate: '2026',
     plannedCapabilities: ['Orbital launch', 'Polar/SSO orbits', 'Suborbital/sounding rockets'],
     plannedVehicles: ['RFA One', 'Isar Aerospace Spectrum'],
     investmentInfo: 'EUR 30M+ Swedish government and ESA investment; existing sounding rocket infrastructure',
-    description: 'The Esrange Space Center near Kiruna in Arctic Sweden has been launching sounding rockets since 1966. Now expanding with orbital launch capability as part of European efforts to establish sovereign launch access. Located above the Arctic Circle, ideal for polar orbit missions.',
+    description: 'The Esrange Space Center near Kiruna in Arctic Sweden has been launching sounding rockets since 1966. Now expanding with orbital launch capability as part of European efforts to establish sovereign launch access. Located above the Arctic Circle, ideal for polar orbit missions. Orbital launch pad construction well advanced.',
     keyMilestones: [
       '550+ sounding rockets launched since 1966',
-      'Orbital launch pad construction initiated',
+      'Orbital launch pad construction well advanced',
       'RFA One signed as launch customer',
       'Part of ESA\'s European launcher strategy',
     ],
@@ -965,22 +988,22 @@ const EMERGING_SPACEPORTS: EmergingSpaceport[] = [
 // ────────────────────────────────────────
 
 const TRAFFIC_DATA: TrafficRecord[] = [
-  { siteId: 'cape-combined', siteName: 'Cape Canaveral / KSC (Combined)', country: 'United States', launches2020: 31, launches2021: 31, launches2022: 45, launches2023: 72, launches2024: 72, trend: 'up', successRate: 99.2 },
-  { siteId: 'jiuquan', siteName: 'Jiuquan SLC', country: 'China', launches2020: 14, launches2021: 16, launches2022: 18, launches2023: 18, launches2024: 22, trend: 'up', successRate: 94.5 },
-  { siteId: 'vandenberg', siteName: 'Vandenberg SFB', country: 'United States', launches2020: 4, launches2021: 6, launches2022: 9, launches2023: 15, launches2024: 18, trend: 'up', successRate: 98.0 },
-  { siteId: 'wenchang', siteName: 'Wenchang SLS', country: 'China', launches2020: 4, launches2021: 5, launches2022: 6, launches2023: 7, launches2024: 13, trend: 'up', successRate: 97.0 },
-  { siteId: 'xichang', siteName: 'Xichang SLC', country: 'China', launches2020: 10, launches2021: 11, launches2022: 12, launches2023: 14, launches2024: 12, trend: 'stable', successRate: 96.5 },
-  { siteId: 'mahia', siteName: 'Mahia Peninsula (LC-1)', country: 'New Zealand', launches2020: 7, launches2021: 6, launches2022: 9, launches2023: 10, launches2024: 13, trend: 'up', successRate: 92.5 },
-  { siteId: 'baikonur', siteName: 'Baikonur Cosmodrome', country: 'Kazakhstan', launches2020: 15, launches2021: 15, launches2022: 12, launches2023: 11, launches2024: 10, trend: 'down', successRate: 96.0 },
-  { siteId: 'taiyuan', siteName: 'Taiyuan SLC', country: 'China', launches2020: 6, launches2021: 7, launches2022: 8, launches2023: 8, launches2024: 10, trend: 'up', successRate: 95.0 },
-  { siteId: 'plesetsk', siteName: 'Plesetsk Cosmodrome', country: 'Russia', launches2020: 8, launches2021: 9, launches2022: 10, launches2023: 8, launches2024: 8, trend: 'stable', successRate: 97.5 },
-  { siteId: 'sriharikota', siteName: 'SDSC SHAR (Sriharikota)', country: 'India', launches2020: 2, launches2021: 3, launches2022: 5, launches2023: 7, launches2024: 7, trend: 'up', successRate: 93.0 },
-  { siteId: 'starbase', siteName: 'Starbase (Boca Chica)', country: 'United States', launches2020: 0, launches2021: 1, launches2022: 0, launches2023: 2, launches2024: 6, trend: 'up', successRate: 66.7 },
-  { siteId: 'tanegashima', siteName: 'Tanegashima Space Center', country: 'Japan', launches2020: 4, launches2021: 3, launches2022: 1, launches2023: 2, launches2024: 4, trend: 'stable', successRate: 95.0 },
-  { siteId: 'kourou', siteName: 'CSG (Kourou)', country: 'France (EU)', launches2020: 5, launches2021: 5, launches2022: 5, launches2023: 3, launches2024: 3, trend: 'down', successRate: 90.0 },
-  { siteId: 'vostochny', siteName: 'Vostochny Cosmodrome', country: 'Russia', launches2020: 3, launches2021: 3, launches2022: 4, launches2023: 4, launches2024: 4, trend: 'stable', successRate: 95.0 },
-  { siteId: 'wallops', siteName: 'Wallops / MARS', country: 'United States', launches2020: 2, launches2021: 2, launches2022: 2, launches2023: 1, launches2024: 2, trend: 'stable', successRate: 95.0 },
-  { siteId: 'kodiak', siteName: 'PSCA (Kodiak)', country: 'United States', launches2020: 3, launches2021: 3, launches2022: 1, launches2023: 1, launches2024: 1, trend: 'down', successRate: 75.0 },
+  { siteId: 'cape-combined', siteName: 'Cape Canaveral / KSC (Combined)', country: 'United States', launches2020: 31, launches2021: 31, launches2022: 45, launches2023: 72, launches2024: 72, launches2025: 102, trend: 'up', successRate: 99.4 },
+  { siteId: 'jiuquan', siteName: 'Jiuquan SLC', country: 'China', launches2020: 14, launches2021: 16, launches2022: 18, launches2023: 18, launches2024: 22, launches2025: 26, trend: 'up', successRate: 95.0 },
+  { siteId: 'vandenberg', siteName: 'Vandenberg SFB', country: 'United States', launches2020: 4, launches2021: 6, launches2022: 9, launches2023: 15, launches2024: 18, launches2025: 24, trend: 'up', successRate: 98.5 },
+  { siteId: 'wenchang', siteName: 'Wenchang SLS', country: 'China', launches2020: 4, launches2021: 5, launches2022: 6, launches2023: 7, launches2024: 13, launches2025: 16, trend: 'up', successRate: 97.0 },
+  { siteId: 'xichang', siteName: 'Xichang SLC', country: 'China', launches2020: 10, launches2021: 11, launches2022: 12, launches2023: 14, launches2024: 12, launches2025: 13, trend: 'stable', successRate: 96.5 },
+  { siteId: 'mahia', siteName: 'Mahia Peninsula (LC-1)', country: 'New Zealand', launches2020: 7, launches2021: 6, launches2022: 9, launches2023: 10, launches2024: 13, launches2025: 16, trend: 'up', successRate: 93.5 },
+  { siteId: 'baikonur', siteName: 'Baikonur Cosmodrome', country: 'Kazakhstan', launches2020: 15, launches2021: 15, launches2022: 12, launches2023: 11, launches2024: 10, launches2025: 8, trend: 'down', successRate: 96.0 },
+  { siteId: 'taiyuan', siteName: 'Taiyuan SLC', country: 'China', launches2020: 6, launches2021: 7, launches2022: 8, launches2023: 8, launches2024: 10, launches2025: 12, trend: 'up', successRate: 95.0 },
+  { siteId: 'plesetsk', siteName: 'Plesetsk Cosmodrome', country: 'Russia', launches2020: 8, launches2021: 9, launches2022: 10, launches2023: 8, launches2024: 8, launches2025: 7, trend: 'down', successRate: 97.0 },
+  { siteId: 'sriharikota', siteName: 'SDSC SHAR (Sriharikota)', country: 'India', launches2020: 2, launches2021: 3, launches2022: 5, launches2023: 7, launches2024: 7, launches2025: 9, trend: 'up', successRate: 94.0 },
+  { siteId: 'starbase', siteName: 'Starbase (Boca Chica)', country: 'United States', launches2020: 0, launches2021: 1, launches2022: 0, launches2023: 2, launches2024: 6, launches2025: 10, trend: 'up', successRate: 80.0 },
+  { siteId: 'tanegashima', siteName: 'Tanegashima Space Center', country: 'Japan', launches2020: 4, launches2021: 3, launches2022: 1, launches2023: 2, launches2024: 4, launches2025: 5, trend: 'up', successRate: 96.0 },
+  { siteId: 'kourou', siteName: 'CSG (Kourou)', country: 'France (EU)', launches2020: 5, launches2021: 5, launches2022: 5, launches2023: 3, launches2024: 3, launches2025: 5, trend: 'up', successRate: 92.0 },
+  { siteId: 'vostochny', siteName: 'Vostochny Cosmodrome', country: 'Russia', launches2020: 3, launches2021: 3, launches2022: 4, launches2023: 4, launches2024: 4, launches2025: 4, trend: 'stable', successRate: 95.0 },
+  { siteId: 'wallops', siteName: 'Wallops / MARS', country: 'United States', launches2020: 2, launches2021: 2, launches2022: 2, launches2023: 1, launches2024: 2, launches2025: 3, trend: 'stable', successRate: 95.0 },
+  { siteId: 'kodiak', siteName: 'PSCA (Kodiak)', country: 'United States', launches2020: 3, launches2021: 3, launches2022: 1, launches2023: 1, launches2024: 1, launches2025: 1, trend: 'down', successRate: 75.0 },
 ];
 
 // ────────────────────────────────────────
@@ -1328,13 +1351,13 @@ function HeroStats({ activeSpaceports, emergingSpaceports, trafficData }: {
 }) {
   const totalActive = activeSpaceports.length;
   const totalEmerging = emergingSpaceports.length;
-  const totalLaunches2024 = trafficData.reduce((sum, t) => sum + t.launches2024, 0);
+  const totalLaunches2025 = trafficData.reduce((sum, t) => sum + t.launches2025, 0);
   const countries = Array.from(new Set(activeSpaceports.map(s => s.country)));
 
   const stats = [
     { label: 'Active Launch Sites', value: totalActive.toString(), color: 'text-cyan-400' },
     { label: 'Emerging Sites', value: totalEmerging.toString(), color: 'text-amber-400' },
-    { label: 'Orbital Launches (2024)', value: totalLaunches2024.toString(), color: 'text-green-400' },
+    { label: 'Orbital Launches (2025)', value: totalLaunches2025.toString(), color: 'text-green-400' },
     { label: 'Countries', value: countries.length.toString(), color: 'text-purple-400' },
   ];
 
@@ -1381,8 +1404,8 @@ function SpaceportCard({ spaceport }: { spaceport: Spaceport }) {
       {/* Quick Stats Row */}
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="bg-space-800/50 rounded-lg p-2.5 text-center">
-          <div className="text-cyan-400 text-xl font-bold font-display">{spaceport.recentLaunches2024}</div>
-          <div className="text-star-300/60 text-[10px] uppercase tracking-widest">2024 Launches</div>
+          <div className="text-cyan-400 text-xl font-bold font-display">{spaceport.recentLaunches2025}</div>
+          <div className="text-star-300/60 text-[10px] uppercase tracking-widest">2025 Launches</div>
         </div>
         <div className="bg-space-800/50 rounded-lg p-2.5 text-center">
           <div className="text-white text-xl font-bold font-display">{spaceport.launchPads}</div>
@@ -1599,8 +1622,8 @@ function SiteComparisonTable({ activeSpaceports }: { activeSpaceports: Spaceport
               <th className="text-left px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Max Payload</th>
               <th className="text-left px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Propellants</th>
               <th className="text-left px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Reuse Landing</th>
+              <th className="text-right px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">2025</th>
               <th className="text-right px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">2024</th>
-              <th className="text-right px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">2023</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
@@ -1630,8 +1653,8 @@ function SiteComparisonTable({ activeSpaceports }: { activeSpaceports: Spaceport
                       ? <span className="text-star-300/40">None</span>
                       : s.reuseLanding.length > 40 ? s.reuseLanding.substring(0, 40) + '...' : s.reuseLanding}
                   </td>
-                  <td className="px-4 py-3 text-right text-cyan-400 font-mono font-bold">{s.recentLaunches2024}</td>
-                  <td className="px-4 py-3 text-right text-star-300 font-mono">{s.recentLaunches2023}</td>
+                  <td className="px-4 py-3 text-right text-cyan-400 font-mono font-bold">{s.recentLaunches2025}</td>
+                  <td className="px-4 py-3 text-right text-star-300 font-mono">{s.recentLaunches2024}</td>
                 </tr>
               );
             })}
@@ -1643,7 +1666,7 @@ function SiteComparisonTable({ activeSpaceports }: { activeSpaceports: Spaceport
       <div className="p-4 bg-white/[0.02] border-t border-white/5 flex flex-wrap items-center gap-6 text-xs text-star-300/60">
         <span>Total sites: <span className="text-white font-bold">{allSites.length}</span></span>
         <span>Total pads: <span className="text-white font-bold">{allSites.reduce((s, sp) => s + sp.launchPads, 0)}</span></span>
-        <span>2024 launches (active sites): <span className="text-cyan-400 font-bold">{allSites.reduce((s, sp) => s + sp.recentLaunches2024, 0)}</span></span>
+        <span>2025 launches (active sites): <span className="text-cyan-400 font-bold">{allSites.reduce((s, sp) => s + sp.recentLaunches2025, 0)}</span></span>
         <span>With reuse capability: <span className="text-green-400 font-bold">{allSites.filter(s => !s.reuseLanding.startsWith('None')).length}</span></span>
       </div>
     </div>
@@ -1651,9 +1674,9 @@ function SiteComparisonTable({ activeSpaceports }: { activeSpaceports: Spaceport
 }
 
 function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
-  const [sortBy, setSortBy] = useState<'launches2024' | 'trend' | 'successRate'>('launches2024');
+  const [sortBy, setSortBy] = useState<'launches2025' | 'trend' | 'successRate'>('launches2025');
   const sortedData = [...trafficData].sort((a, b) => {
-    if (sortBy === 'launches2024') return b.launches2024 - a.launches2024;
+    if (sortBy === 'launches2025') return b.launches2025 - a.launches2025;
     if (sortBy === 'successRate') return b.successRate - a.successRate;
     // trend sort: up > stable > down
     const trendOrder = { up: 3, stable: 2, down: 1 };
@@ -1661,20 +1684,20 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
   });
 
   const totalByYear = {
-    y2020: trafficData.reduce((s, t) => s + t.launches2020, 0),
     y2021: trafficData.reduce((s, t) => s + t.launches2021, 0),
     y2022: trafficData.reduce((s, t) => s + t.launches2022, 0),
     y2023: trafficData.reduce((s, t) => s + t.launches2023, 0),
     y2024: trafficData.reduce((s, t) => s + t.launches2024, 0),
+    y2025: trafficData.reduce((s, t) => s + t.launches2025, 0),
   };
 
-  const maxLaunches = Math.max(...trafficData.map(t => t.launches2024));
+  const maxLaunches = Math.max(...trafficData.map(t => t.launches2025));
 
   // Country breakdown
   const countryData: Record<string, number> = {};
   trafficData.forEach(t => {
     const country = t.country;
-    countryData[country] = (countryData[country] || 0) + t.launches2024;
+    countryData[country] = (countryData[country] || 0) + t.launches2025;
   });
   const countrySorted = Object.entries(countryData).sort((a, b) => b[1] - a[1]);
 
@@ -1687,11 +1710,11 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
 
         <div className="grid grid-cols-5 gap-4 mb-6">
           {[
-            { year: '2020', count: totalByYear.y2020 },
             { year: '2021', count: totalByYear.y2021 },
             { year: '2022', count: totalByYear.y2022 },
             { year: '2023', count: totalByYear.y2023 },
             { year: '2024', count: totalByYear.y2024 },
+            { year: '2025', count: totalByYear.y2025 },
           ].map((d) => (
             <div key={d.year} className="text-center">
               <div className="text-2xl md:text-3xl font-bold font-display text-white">{d.count}</div>
@@ -1700,7 +1723,7 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
               <div className="mt-2 mx-auto w-full max-w-[60px] h-2 bg-white/5 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400"
-                  style={{ width: `${(d.count / totalByYear.y2024) * 100}%` }}
+                  style={{ width: `${(d.count / totalByYear.y2025) * 100}%` }}
                 />
               </div>
             </div>
@@ -1711,13 +1734,13 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
           <div className="text-star-300/60 text-xs uppercase tracking-widest mb-3">Growth</div>
           <div className="flex items-center gap-4 flex-wrap">
             <div>
-              <span className="text-green-400 font-bold text-lg">+{((totalByYear.y2024 / totalByYear.y2020 - 1) * 100).toFixed(0)}%</span>
-              <span className="text-star-300/60 text-xs ml-2">since 2020</span>
+              <span className="text-green-400 font-bold text-lg">+{((totalByYear.y2025 / totalByYear.y2021 - 1) * 100).toFixed(0)}%</span>
+              <span className="text-star-300/60 text-xs ml-2">since 2021</span>
             </div>
             <span className="text-white/10">|</span>
             <div>
-              <span className="text-green-400 font-bold text-lg">+{((totalByYear.y2024 / totalByYear.y2023 - 1) * 100).toFixed(0)}%</span>
-              <span className="text-star-300/60 text-xs ml-2">YoY (2023 to 2024)</span>
+              <span className="text-green-400 font-bold text-lg">+{((totalByYear.y2025 / totalByYear.y2024 - 1) * 100).toFixed(0)}%</span>
+              <span className="text-star-300/60 text-xs ml-2">YoY (2024 to 2025)</span>
             </div>
           </div>
         </div>
@@ -1725,7 +1748,7 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
 
       {/* Country Breakdown */}
       <div className="card p-6">
-        <h2 className="text-lg font-bold text-white mb-4">2024 Launches by Country</h2>
+        <h2 className="text-lg font-bold text-white mb-4">2025 Launches by Country</h2>
         <div className="space-y-3">
           {countrySorted.map(([country, count]) => {
             const maxCountry = countrySorted[0][1];
@@ -1752,7 +1775,7 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-star-300 text-sm">Sort by:</span>
         {[
-          { key: 'launches2024' as const, label: '2024 Launches' },
+          { key: 'launches2025' as const, label: '2025 Launches' },
           { key: 'successRate' as const, label: 'Success Rate' },
           { key: 'trend' as const, label: 'Trend' },
         ].map((opt) => (
@@ -1782,11 +1805,11 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
               <tr className="bg-white/5">
                 <th className="text-left px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Site</th>
                 <th className="text-left px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Country</th>
-                <th className="text-right px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">2020</th>
                 <th className="text-right px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">2021</th>
                 <th className="text-right px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">2022</th>
                 <th className="text-right px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">2023</th>
                 <th className="text-right px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">2024</th>
+                <th className="text-right px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">2025</th>
                 <th className="text-center px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Trend</th>
                 <th className="text-right px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Success</th>
                 <th className="text-left px-4 py-3 text-star-300 font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Activity</th>
@@ -1795,16 +1818,16 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
             <tbody className="divide-y divide-white/5">
               {sortedData.map((t) => {
                 const trend = getTrendIndicator(t.trend);
-                const barWidth = maxLaunches > 0 ? (t.launches2024 / maxLaunches) * 100 : 0;
+                const barWidth = maxLaunches > 0 ? (t.launches2025 / maxLaunches) * 100 : 0;
                 return (
                   <tr key={t.siteId} className="hover:bg-white/5 transition-colors">
                     <td className="px-4 py-3 font-semibold text-white whitespace-nowrap">{t.siteName}</td>
                     <td className="px-4 py-3 text-star-300 whitespace-nowrap">{t.country}</td>
-                    <td className="px-4 py-3 text-right text-star-300/60 font-mono">{t.launches2020}</td>
-                    <td className="px-4 py-3 text-right text-star-300/70 font-mono">{t.launches2021}</td>
-                    <td className="px-4 py-3 text-right text-star-300/80 font-mono">{t.launches2022}</td>
-                    <td className="px-4 py-3 text-right text-star-300 font-mono">{t.launches2023}</td>
-                    <td className="px-4 py-3 text-right text-white font-mono font-bold">{t.launches2024}</td>
+                    <td className="px-4 py-3 text-right text-star-300/60 font-mono">{t.launches2021}</td>
+                    <td className="px-4 py-3 text-right text-star-300/70 font-mono">{t.launches2022}</td>
+                    <td className="px-4 py-3 text-right text-star-300/80 font-mono">{t.launches2023}</td>
+                    <td className="px-4 py-3 text-right text-star-300 font-mono">{t.launches2024}</td>
+                    <td className="px-4 py-3 text-right text-white font-mono font-bold">{t.launches2025}</td>
                     <td className="px-4 py-3 text-center">
                       <span className={`${trend.color} font-bold`}>{trend.symbol}</span>
                     </td>
@@ -1829,7 +1852,7 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
         {/* Table Summary */}
         <div className="p-4 bg-white/[0.02] border-t border-white/5 flex flex-wrap items-center gap-6 text-xs text-star-300/60">
           <span>Tracked sites: <span className="text-white font-bold">{trafficData.length}</span></span>
-          <span>Total 2024 launches: <span className="text-cyan-400 font-bold">{totalByYear.y2024}</span></span>
+          <span>Total 2025 launches: <span className="text-cyan-400 font-bold">{totalByYear.y2025}</span></span>
           <span>Growing sites: <span className="text-green-400 font-bold">{trafficData.filter(t => t.trend === 'up').length}</span></span>
           <span>Declining sites: <span className="text-red-400 font-bold">{trafficData.filter(t => t.trend === 'down').length}</span></span>
         </div>
@@ -1842,24 +1865,24 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white/[0.03] rounded-lg p-4 border border-white/5">
-            <div className="text-cyan-400 text-2xl font-bold font-display mb-1">250+</div>
-            <div className="text-white text-sm font-medium mb-2">Projected 2025 Global Launches</div>
+            <div className="text-cyan-400 text-2xl font-bold font-display mb-1">280+</div>
+            <div className="text-white text-sm font-medium mb-2">Projected 2026 Global Launches</div>
             <p className="text-star-300/70 text-xs leading-relaxed">
-              Continued growth driven by Starlink deployment cadence, Chinese commercial launchers, and new vehicles entering service (Ariane 6, New Glenn, Neutron).
+              Continued growth driven by Starlink deployment cadence, increasing Starship flights, Chinese commercial launchers, and new vehicles ramping up (New Glenn, Ariane 6, Neutron).
             </p>
           </div>
           <div className="bg-white/[0.03] rounded-lg p-4 border border-white/5">
-            <div className="text-amber-400 text-2xl font-bold font-display mb-1">5+</div>
-            <div className="text-white text-sm font-medium mb-2">New Launch Sites by 2027</div>
+            <div className="text-amber-400 text-2xl font-bold font-display mb-1">4+</div>
+            <div className="text-white text-sm font-medium mb-2">New Launch Sites by 2028</div>
             <p className="text-star-300/70 text-xs leading-relaxed">
-              SaxaVord (UK), Sutherland (UK), Andoya (Norway), Esrange (Sweden), and commercial pads in China are all targeting operational status in the next 2-3 years.
+              Sutherland (UK), Andoya (Norway), Esrange (Sweden), and commercial pads in China are targeting first orbital launches in the next 1-2 years. SaxaVord (UK) conducted its first attempt in 2025.
             </p>
           </div>
           <div className="bg-white/[0.03] rounded-lg p-4 border border-white/5">
-            <div className="text-green-400 text-2xl font-bold font-display mb-1">60%</div>
+            <div className="text-green-400 text-2xl font-bold font-display mb-1">62%</div>
             <div className="text-white text-sm font-medium mb-2">US Share of Global Launches</div>
             <p className="text-star-300/70 text-xs leading-relaxed">
-              The United States dominates global launch traffic, primarily driven by SpaceX Falcon 9 operations from Cape Canaveral, KSC, and Vandenberg. Starship cadence will increase this further.
+              The United States dominates global launch traffic, primarily driven by SpaceX Falcon 9 operations from Cape Canaveral, KSC, and Vandenberg. Starship and New Glenn cadence will increase this further.
             </p>
           </div>
         </div>
@@ -2248,11 +2271,11 @@ function SpaceportDirectoryPage() {
             <div>
               <h3 className="font-semibold text-white mb-1">Global Launch Infrastructure</h3>
               <p className="text-sm text-star-300 leading-relaxed">
-                The world recorded over 200 orbital launch attempts in 2024, a record driven by SpaceX Falcon 9 operations
-                and China&apos;s expanding commercial launch sector. Cape Canaveral / KSC alone accounted for 70+ launches.
-                New spaceports across Europe (SaxaVord, Andoya, Sutherland) are under construction to provide sovereign
-                launch access, while Starbase in Texas achieved the first-ever booster catch with the Mechazilla tower.
-                Launch site infrastructure is the critical bottleneck as the industry scales toward 300+ annual launches.
+                The world recorded approximately 260+ orbital launch attempts in 2025, a new record driven by SpaceX Falcon 9
+                operations and China&apos;s expanding commercial launch sector. Cape Canaveral / KSC alone accounted for 100+ launches.
+                SaxaVord in the UK conducted its first orbital launch attempt. Blue Origin&apos;s New Glenn debuted from KSC, and
+                Starship flight cadence increased from Starbase with the second launch mount operational.
+                Launch site infrastructure remains the critical bottleneck as the industry scales toward 300+ annual launches.
               </p>
             </div>
           </div>
