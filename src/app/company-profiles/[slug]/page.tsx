@@ -147,27 +147,13 @@ function getScoreBarColor(score: number): string {
 
 // ─── Marketplace Actions ─────────────────────────────────────────────────────
 
-function MarketplaceActions({ companySlug, companyId, companyName }: { companySlug: string; companyId: string; companyName: string }) {
+function MarketplaceActions({ companySlug, companyId, companyName, verificationLevel, contactEmail: initialContactEmail }: { companySlug: string; companyId: string; companyName: string; verificationLevel?: string | null; contactEmail?: string | null }) {
   const [claiming, setClaiming] = useState(false);
-  const [claimed, setClaimed] = useState(false);
+  const [claimed, setClaimed] = useState(!!verificationLevel);
   const [claimEmail, setClaimEmail] = useState('');
   const [showClaimForm, setShowClaimForm] = useState(false);
-  const [verLevel, setVerLevel] = useState<string | null>(null);
-  const [contactEmail, setContactEmail] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Check claim status
-    fetch(`/api/company-profiles/${companySlug}`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.verificationLevel) {
-          setClaimed(true);
-          setVerLevel(data.verificationLevel);
-          setContactEmail(data.contactEmail);
-        }
-      })
-      .catch(() => {});
-  }, [companySlug]);
+  const [verLevel, setVerLevel] = useState<string | null>(verificationLevel || null);
+  const [contactEmail, setContactEmail] = useState<string | null>(initialContactEmail || null);
 
   const handleClaim = async () => {
     if (!claimEmail) return;
@@ -1359,7 +1345,7 @@ export default function CompanyProfileDetailPage() {
           </div>
 
           {/* Marketplace Actions */}
-          <MarketplaceActions companySlug={params.slug as string} companyId={company.id} companyName={company.name} />
+          <MarketplaceActions companySlug={params.slug as string} companyId={company.id} companyName={company.name} verificationLevel={(company as any).verificationLevel} contactEmail={(company as any).contactEmail} />
         </div>
       </motion.div>
 

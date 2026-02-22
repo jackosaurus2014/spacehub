@@ -95,10 +95,24 @@ export async function GET(
       },
     });
   } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    const errName = error instanceof Error ? error.constructor.name : 'Unknown';
     logger.error('Failed to fetch company profile', {
-      error: error instanceof Error ? error.message : String(error),
+      error: errMsg,
+      errorType: errName,
       stack: error instanceof Error ? error.stack : undefined,
     });
-    return internalError('Failed to fetch company profile');
+
+    // Include diagnostic info so production errors are actionable
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: `Failed to fetch company profile: [${errName}] ${errMsg.slice(0, 300)}`,
+        },
+      },
+      { status: 500 }
+    );
   }
 }
