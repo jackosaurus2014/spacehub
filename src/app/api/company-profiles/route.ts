@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { internalError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -126,10 +127,9 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    logger.error('Failed to fetch company profiles', { error });
-    return NextResponse.json(
-      { error: 'Failed to fetch company profiles' },
-      { status: 500 }
-    );
+    logger.error('Failed to fetch company profiles', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return internalError('Failed to fetch company profiles');
   }
 }

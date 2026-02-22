@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { notFoundError, internalError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,10 +68,7 @@ export async function GET(
     });
 
     if (!company) {
-      return NextResponse.json(
-        { error: 'Company not found' },
-        { status: 404 }
-      );
+      return notFoundError('Company profile');
     }
 
     // Calculate summary stats
@@ -97,10 +95,10 @@ export async function GET(
       },
     });
   } catch (error) {
-    logger.error('Failed to fetch company profile', { error });
-    return NextResponse.json(
-      { error: 'Failed to fetch company profile' },
-      { status: 500 }
-    );
+    logger.error('Failed to fetch company profile', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return internalError('Failed to fetch company profile');
   }
 }

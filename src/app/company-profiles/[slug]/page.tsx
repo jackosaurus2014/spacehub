@@ -1129,7 +1129,11 @@ export default function CompanyProfileDetailPage() {
         const res = await fetch(`/api/company-profiles/${params.slug}`);
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error || `HTTP ${res.status}`);
+          // Handle both { error: "string" } and { error: { code, message } } formats
+          const errMsg = typeof errData.error === 'string'
+            ? errData.error
+            : errData.error?.message || errData.message || `HTTP ${res.status}`;
+          throw new Error(errMsg);
         }
         const data = await res.json();
         setCompany(data);
