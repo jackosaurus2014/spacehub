@@ -4,7 +4,7 @@ buildCommand = "npx prisma generate && npm run build"
 nixpacksConfigPath = "nixpacks.toml"
 
 [deploy]
-startCommand = "npx prisma db push --accept-data-loss && npm start"
+startCommand = "(npx prisma db push --accept-data-loss || echo 'WARNING: prisma db push failed') && npm start"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
