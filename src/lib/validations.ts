@@ -1465,7 +1465,7 @@ export const marketplaceSearchSchema = z.object({
   certifications: z.string().optional().transform((val) => val?.split(',').filter(Boolean)),
   verificationLevel: z.string().max(50).optional(),
   sort: z.enum(['relevance', 'price_asc', 'price_desc', 'rating', 'newest']).optional().default('relevance'),
-  limit: z.string().optional().transform((val) => Math.min(Math.max(1, parseInt(val || '20', 10) || 20), 100)),
+  limit: z.string().optional().transform((val) => Math.min(Math.max(1, parseInt(val || '20', 10) || 20), 50)),
   offset: z.string().optional().transform((val) => Math.max(0, parseInt(val || '0', 10) || 0)),
 });
 

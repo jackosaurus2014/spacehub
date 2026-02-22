@@ -310,33 +310,52 @@ export default function CompanyProfilesPage() {
   const [sortOrder, setSortOrder] = useState('asc');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [total, setTotal] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const PAGE_SIZE = 24;
+
+  const buildParams = useCallback((offset = 0) => {
+    const params = new URLSearchParams();
+    if (search) params.set('search', search);
+    if (sector) params.set('sector', sector);
+    if (tier) params.set('tier', tier);
+    if (statusFilter) params.set('status', statusFilter);
+    params.set('sortBy', sortBy);
+    params.set('sortOrder', sortOrder);
+    params.set('limit', String(PAGE_SIZE));
+    params.set('offset', String(offset));
+    return params;
+  }, [search, sector, tier, statusFilter, sortBy, sortOrder]);
 
   const fetchCompanies = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      if (search) params.set('search', search);
-      if (sector) params.set('sector', sector);
-      if (tier) params.set('tier', tier);
-      if (statusFilter) params.set('status', statusFilter);
-      params.set('sortBy', sortBy);
-      params.set('sortOrder', sortOrder);
-      params.set('limit', '100');
-
-      const res = await fetch(`/api/company-profiles?${params}`);
+      const res = await fetch(`/api/company-profiles?${buildParams(0)}`);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
       setCompanies(data.companies || []);
       setTotal(data.total);
       setStats(data.stats);
     } catch {
-      console.error('Failed to load companies');
       setError('Failed to load data.');
     } finally {
       setLoading(false);
     }
-  }, [search, sector, tier, statusFilter, sortBy, sortOrder]);
+  }, [buildParams]);
+
+  const loadMore = useCallback(async () => {
+    setLoadingMore(true);
+    try {
+      const res = await fetch(`/api/company-profiles?${buildParams(companies.length)}`);
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data = await res.json();
+      setCompanies(prev => [...prev, ...(data.companies || [])]);
+    } catch {
+      // silent — user can retry
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [buildParams, companies.length]);
 
   useEffect(() => {
     const debounce = setTimeout(fetchCompanies, 300);
@@ -596,6 +615,31 @@ export default function CompanyProfilesPage() {
               </motion.div>
             ))}
           </AnimatePresence>
+        </div>
+      )}
+
+      {/* Load More */}
+      {!loading && companies.length < total && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={loadMore}
+            disabled={loadingMore}
+            className="px-8 py-3 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-600/50 hover:border-cyan-500/30 text-slate-300 hover:text-cyan-300 rounded-xl transition-all duration-200 font-medium text-sm flex items-center gap-2 disabled:opacity-50"
+          >
+            {loadingMore ? (
+              <>
+                <LoadingSpinner size="sm" />
+                Loading...
+              </>
+            ) : (
+              <>
+                Show More Companies
+                <span className="text-xs text-slate-500">
+                  ({companies.length} of {total})
+                </span>
+              </>
+            )}
+          </button>
         </div>
       )}
 

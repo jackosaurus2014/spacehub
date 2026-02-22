@@ -57,6 +57,10 @@ android-twa/*.keystore
 # Personal notes and build logs (not part of source)
 /notes/
 nul
+build-*.txt
+build_output.txt
+build.log
 
 # Screenshots (local reference only)
+public/Screenshot*.png
 public/screenshots/

@@ -113,21 +113,23 @@ IMPORTANT GUIDELINES:
 
     const textBlock = response.content.find((block) => block.type === 'text');
     if (!textBlock || textBlock.type !== 'text') {
-      return { overallVerdict: 'pass', notes: 'Fact-check returned no response', corrections: [] };
+      logger.warn('Fact-check returned no text block, flagging for review', { title });
+      return { overallVerdict: 'major_issues', notes: 'Fact-check returned no response — requires manual review', corrections: [] };
     }
 
     const jsonMatch = textBlock.text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      return { overallVerdict: 'pass', notes: 'Could not parse fact-check response', corrections: [] };
+      logger.warn('Fact-check response could not be parsed, flagging for review', { title });
+      return { overallVerdict: 'major_issues', notes: 'Could not parse fact-check response — requires manual review', corrections: [] };
     }
 
     return JSON.parse(jsonMatch[0]) as FactCheckResult;
   } catch (error) {
-    logger.warn('Fact-check failed, proceeding with article', {
+    logger.warn('Fact-check failed, flagging article for manual review', {
       title,
       error: error instanceof Error ? error.message : String(error),
     });
-    return { overallVerdict: 'pass', notes: 'Fact-check service unavailable', corrections: [] };
+    return { overallVerdict: 'major_issues', notes: 'Fact-check service unavailable — requires manual review', corrections: [] };
   }
 }
 
