@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { calculateCompleteness, COMPLETENESS_SCALAR_SELECT, COMPLETENESS_COUNT_SELECT } from '../src/lib/company-completeness';
 
 const prisma = new PrismaClient();
 
@@ -205,34 +206,16 @@ async function enrichCompany(data: EnrichmentData) {
     }
   }
 
-  // Recalculate data completeness
-  const counts = await (prisma.companyProfile as any).findUnique({
+  // Recalculate data completeness using centralized scoring (src/lib/company-completeness.ts)
+  const enriched = await (prisma.companyProfile as any).findUnique({
     where: { id: profile.id },
     select: {
-      description: true, longDescription: true, totalFunding: true, marketCap: true,
-      revenueEstimate: true, ceo: true,
-      _count: {
-        select: {
-          fundingRounds: true, products: true, keyPersonnel: true,
-          events: true, contracts: true, facilities: true,
-        },
-      },
+      ...COMPLETENESS_SCALAR_SELECT,
+      _count: { select: COMPLETENESS_COUNT_SELECT },
     },
   });
-  if (counts) {
-    let completeness = 20;
-    if (counts.description) completeness += 5;
-    if (counts.longDescription) completeness += 5;
-    if (counts.totalFunding || counts.marketCap) completeness += 10;
-    if (counts.revenueEstimate) completeness += 5;
-    if (counts.ceo) completeness += 5;
-    if (counts._count.fundingRounds > 0) completeness += 10;
-    if (counts._count.products > 0) completeness += 10;
-    if (counts._count.keyPersonnel > 0) completeness += 10;
-    if (counts._count.events > 0) completeness += 5;
-    if (counts._count.contracts > 0) completeness += 5;
-    if (counts._count.facilities > 0) completeness += 5;
-    completeness = Math.min(completeness, 100);
+  if (enriched) {
+    const completeness = calculateCompleteness(enriched);
     await prisma.companyProfile.update({ where: { id: profile.id }, data: { dataCompleteness: completeness } });
   }
 

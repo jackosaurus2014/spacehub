@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { calculateCompleteness } from '../src/lib/company-completeness';
 const prisma = new PrismaClient();
 
 function slugify(name: string): string {
@@ -177,21 +178,27 @@ async function seedCompanyProfile(data: CompanyData) {
     },
   });
 
-  // Calculate data completeness
-  let completeness = 20; // base for having basic info
-  if (data.description) completeness += 5;
-  if (data.longDescription) completeness += 5;
-  if (data.totalFunding || data.marketCap) completeness += 10;
-  if (data.revenueEstimate) completeness += 5;
-  if (data.ceo) completeness += 5;
-  if ((data.fundingRounds?.length ?? 0) > 0) completeness += 10;
-  if ((data.products?.length ?? 0) > 0) completeness += 10;
-  if ((data.keyPersonnel?.length ?? 0) > 0) completeness += 10;
-  if ((data.events?.length ?? 0) > 0) completeness += 5;
-  if ((data.contracts?.length ?? 0) > 0) completeness += 5;
-  if ((data.facilities?.length ?? 0) > 0) completeness += 5;
-  if ((data.revenueEstimates?.length ?? 0) > 0) completeness += 5;
-  completeness = Math.min(completeness, 100);
+  // Calculate data completeness using centralized scoring (src/lib/company-completeness.ts).
+  // After seeding, run POST /api/company-profiles/recalculate for accurate DB-aware scores.
+  const completeness = calculateCompleteness({
+    ...data,
+    _count: {
+      fundingRounds: data.fundingRounds?.length ?? 0,
+      revenueEstimates: data.revenueEstimates?.length ?? 0,
+      products: data.products?.length ?? 0,
+      keyPersonnel: data.keyPersonnel?.length ?? 0,
+      facilities: data.facilities?.length ?? 0,
+      satelliteAssets: 0,
+      contracts: data.contracts?.length ?? 0,
+      events: data.events?.length ?? 0,
+      partnerships: 0,
+      acquisitions: 0,
+      scores: data.scores?.length ?? 0,
+      secFilings: 0,
+      competitorOf: 0,
+      newsArticles: 0,
+    },
+  });
 
   // Seed related data
   if (data.fundingRounds) {
