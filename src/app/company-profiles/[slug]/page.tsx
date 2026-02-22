@@ -1119,13 +1119,18 @@ export default function CompanyProfileDetailPage() {
   const router = useRouter();
   const [company, setCompany] = useState<CompanyDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>('overview');
 
   useEffect(() => {
     async function load() {
       try {
+        setError(null);
         const res = await fetch(`/api/company-profiles/${params.slug}`);
-        if (!res.ok) throw new Error('Not found');
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || `HTTP ${res.status}`);
+        }
         const data = await res.json();
         setCompany(data);
         // Track view for sponsored profiles
@@ -1136,14 +1141,15 @@ export default function CompanyProfileDetailPage() {
             body: JSON.stringify({ event: 'view' }),
           }).catch(() => {}); // fire and forget
         }
-      } catch {
-        router.push('/company-profiles');
+      } catch (err) {
+        console.error('Company profile load error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load company profile');
       } finally {
         setLoading(false);
       }
     }
     if (params.slug) load();
-  }, [params.slug, router]);
+  }, [params.slug]);
 
   if (loading) {
     return (
@@ -1153,7 +1159,38 @@ export default function CompanyProfileDetailPage() {
     );
   }
 
-  if (!company) return null;
+  if (error || !company) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <div className="text-5xl mb-4">🏢</div>
+          <h2 className="text-xl font-bold text-white mb-2">Failed to load data</h2>
+          <p className="text-sm text-slate-400 mb-2">
+            Could not load this company profile.
+          </p>
+          {error && (
+            <p className="text-xs text-red-400/80 mb-6 font-mono bg-red-500/10 rounded px-3 py-2">
+              {error}
+            </p>
+          )}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => { setLoading(true); setError(null); setCompany(null); window.location.reload(); }}
+              className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm rounded-lg font-medium transition-colors"
+            >
+              Try Again
+            </button>
+            <Link
+              href="/company-profiles"
+              className="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg font-medium transition-colors"
+            >
+              Company Directory
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1400px] mx-auto">
