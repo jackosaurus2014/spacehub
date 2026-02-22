@@ -6,8 +6,12 @@ import {
   getSolarFlareStats,
 } from '@/lib/solar-flare-data';
 import { logger } from '@/lib/logger';
+import { apiCache, CacheTTL } from '@/lib/api-cache';
+import { FALLBACK_SOLAR_ACTIVITY } from '@/lib/fallback-space-weather';
 
 export const dynamic = 'force-dynamic';
+
+const CACHE_KEY = 'solar-flares-dashboard';
 
 export async function GET(request: NextRequest) {
   try {
@@ -44,17 +48,34 @@ export async function GET(request: NextRequest) {
       getSolarFlareStats(),
     ]);
 
-    return NextResponse.json({
-      flares,
-      forecasts,
-      activity,
-      stats,
-    });
+    const data = { flares, forecasts, activity, stats };
+
+    // Cache full dashboard payload for fallback use
+    apiCache.set(CACHE_KEY, data, CacheTTL.DEFAULT);
+
+    return NextResponse.json(data);
   } catch (error) {
-    logger.error('Failed to fetch solar flare data', { error: error instanceof Error ? error.message : String(error) });
-    return NextResponse.json(
-      { error: 'Failed to fetch solar flare data' },
-      { status: 500 }
-    );
+    logger.error('Failed to fetch solar flare data', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+
+    // Try stale cache first
+    const stale = apiCache.getStale<Record<string, unknown>>(CACHE_KEY);
+    if (stale) {
+      logger.info('Serving stale cached solar flare data', {
+        ageMs: Date.now() - stale.storedAt,
+      });
+      return NextResponse.json({
+        ...stale.value,
+        _meta: { source: 'cache', isStale: true, age: Date.now() - stale.storedAt },
+      });
+    }
+
+    // Fall back to static quiet-conditions baseline
+    logger.warn('No cached solar flare data available, serving static fallback');
+    return NextResponse.json({
+      ...FALLBACK_SOLAR_ACTIVITY,
+      _meta: { source: 'fallback', isFallback: true },
+    });
   }
 }
