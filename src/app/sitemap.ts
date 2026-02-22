@@ -106,11 +106,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/live`, changeFrequency: 'hourly' as const, priority: 0.6 },
     { url: `${BASE_URL}/ai-insights`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${BASE_URL}/search`, changeFrequency: 'weekly' as const, priority: 0.5 },
-    { url: `${BASE_URL}/dashboard`, changeFrequency: 'weekly' as const, priority: 0.4 },
-    { url: `${BASE_URL}/dashboard/builder`, changeFrequency: 'weekly' as const, priority: 0.4 },
     { url: `${BASE_URL}/alerts`, changeFrequency: 'daily' as const, priority: 0.5 },
-    { url: `${BASE_URL}/my-watchlists`, changeFrequency: 'weekly' as const, priority: 0.4 },
-    { url: `${BASE_URL}/provider-dashboard`, changeFrequency: 'weekly' as const, priority: 0.4 },
 
     // Guides
     { url: `${BASE_URL}/guide`, changeFrequency: 'monthly' as const, priority: 0.7 },
@@ -154,16 +150,11 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/contact`, changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${BASE_URL}/faq`, changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${BASE_URL}/press`, changeFrequency: 'monthly' as const, priority: 0.4 },
-    { url: `${BASE_URL}/account`, changeFrequency: 'monthly' as const, priority: 0.3 },
 
     // Legal pages
     { url: `${BASE_URL}/privacy`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/terms`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/cookies`, changeFrequency: 'monthly' as const, priority: 0.3 },
-
-    // Auth pages
-    { url: `${BASE_URL}/login`, changeFrequency: 'monthly' as const, priority: 0.3 },
-    { url: `${BASE_URL}/register`, changeFrequency: 'monthly' as const, priority: 0.3 },
   ];
 
   return routes.map(route => ({
