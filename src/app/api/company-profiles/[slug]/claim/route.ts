@@ -8,8 +8,9 @@ import { authOptions } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: NextRequest, { params }: { params: { slug: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
+    const { slug } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
 
     // Find the company profile
     const company = await prisma.companyProfile.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       select: { id: true, name: true, claimedByUserId: true, slug: true, website: true, tier: true },
     });
 
