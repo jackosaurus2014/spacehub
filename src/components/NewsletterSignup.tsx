@@ -107,6 +107,7 @@ export default function NewsletterSignup({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email"
+            aria-label="Email address"
             className="w-full px-3 py-2 text-sm bg-white/80 border border-slate-300 rounded-lg text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
             required
             disabled={status === 'loading'}
@@ -185,6 +186,7 @@ export default function NewsletterSignup({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name (optional)"
+                aria-label="Your name"
                 className="flex-1 px-4 py-3 bg-white/80 border border-slate-300 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
                 disabled={status === 'loading'}
               />
@@ -193,6 +195,7 @@ export default function NewsletterSignup({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
+                aria-label="Email address"
                 className="flex-1 px-4 py-3 bg-white/80 border border-slate-300 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
                 required
                 disabled={status === 'loading'}

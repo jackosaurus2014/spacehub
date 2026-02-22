@@ -665,6 +665,7 @@ export default function SearchCommandPalette() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search modules, pages, content..."
+            aria-label="Search modules, pages, and content"
             className="flex-1 py-4 bg-transparent text-slate-100 placeholder-slate-400 text-lg focus:outline-none"
           />
           {isSearching && (
