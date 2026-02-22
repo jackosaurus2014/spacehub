@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,11 +14,13 @@ async function ensureCronStarted() {
     const { getCronJobStatus, startCronJobs } = await import('@/lib/cron-scheduler');
     const status = getCronJobStatus();
     if (!status.schedulerUpSince) {
-      console.log('[health] Cron scheduler not running — starting via health endpoint fallback');
+      logger.info('Cron scheduler not running — starting via health endpoint fallback');
       startCronJobs();
     }
   } catch (e) {
-    console.error('[health] Failed to start cron scheduler fallback:', e);
+    logger.error('Failed to start cron scheduler fallback', {
+      error: e instanceof Error ? e.message : String(e),
+    });
   }
 }
 
