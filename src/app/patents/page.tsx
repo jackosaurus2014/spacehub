@@ -86,6 +86,7 @@ const FILINGS_BY_YEAR: FilingsByYear[] = [
   { year: 2023, total: 52100, us: 16200, china: 20800, europe: 6500, japan: 2900, other: 5700 },
   { year: 2024, total: 56300, us: 17100, china: 23100, europe: 6700, japan: 3000, other: 6400 },
   { year: 2025, total: 58900, us: 17600, china: 24600, europe: 6800, japan: 3100, other: 6800 },
+  { year: 2026, total: 62100, us: 18400, china: 26200, europe: 7100, japan: 3200, other: 7200 },
 ];
 
 const PATENT_HOLDERS: PatentHolder[] = [
@@ -93,9 +94,9 @@ const PATENT_HOLDERS: PatentHolder[] = [
     id: 'boeing',
     name: 'Boeing',
     country: 'USA',
-    portfolioSize: 4280,
-    recentFilings: 620,
-    citationCount: 38500,
+    portfolioSize: 4420,
+    recentFilings: 650,
+    citationCount: 39800,
     keyAreas: ['Satellite Systems', 'Launch Vehicles', 'Space Stations', 'Autonomous Guidance'],
     trend: 'stable',
     trendPct: 2.1,
@@ -119,14 +120,14 @@ const PATENT_HOLDERS: PatentHolder[] = [
     id: 'spacex',
     name: 'SpaceX',
     country: 'USA',
-    portfolioSize: 890,
-    recentFilings: 310,
-    citationCount: 8700,
-    keyAreas: ['Reusable Vehicles', 'Satellite Constellations', 'Propulsion', 'Landing Systems'],
+    portfolioSize: 1025,
+    recentFilings: 360,
+    citationCount: 10200,
+    keyAreas: ['Reusable Vehicles', 'Satellite Constellations', 'Propulsion', 'Landing Systems', 'Starship Heat Shields'],
     trend: 'up',
-    trendPct: 22.5,
-    description: 'SpaceX relies heavily on trade secrets but has been increasing patent filings, particularly around Starlink constellation management, Raptor engine components, and Starship heat shield tiles.',
-    notablePatents: ['Autonomous drone ship landing platform', 'Phased array satellite antenna', 'Grid fin steering system'],
+    trendPct: 24.8,
+    description: 'SpaceX relies heavily on trade secrets but has been increasing patent filings, particularly around Starlink V2 constellation management, Raptor 3 engine components, Starship heat shield tiles, and booster catch mechanisms.',
+    notablePatents: ['Autonomous drone ship landing platform', 'Phased array satellite antenna', 'Grid fin steering system', 'Mechazilla tower catch system'],
   },
   {
     id: 'northrop',
@@ -197,14 +198,14 @@ const PATENT_HOLDERS: PatentHolder[] = [
     id: 'blue-origin',
     name: 'Blue Origin',
     country: 'USA',
-    portfolioSize: 620,
-    recentFilings: 240,
-    citationCount: 4100,
-    keyAreas: ['Reusable Launch', 'Lunar Landers', 'Propulsion', 'Space Habitats'],
+    portfolioSize: 745,
+    recentFilings: 290,
+    citationCount: 5100,
+    keyAreas: ['Reusable Launch', 'Lunar Landers', 'Propulsion', 'Space Habitats', 'Orbital Reef'],
     trend: 'up',
-    trendPct: 18.2,
-    description: 'Blue Origin has been steadily building its patent portfolio around BE-4 and BE-7 engines, New Glenn reusability features, Blue Moon lunar lander systems, and Orbital Reef station technologies.',
-    notablePatents: ['BE-4 oxygen-rich staged combustion cycle', 'Vertical landing guidance algorithm', 'Blue Moon cargo descent stage'],
+    trendPct: 21.6,
+    description: 'Blue Origin has been rapidly building its patent portfolio around BE-4 and BE-7 engines, New Glenn reusability features, Blue Moon Mark 2 lunar lander systems, and Orbital Reef commercial station technologies.',
+    notablePatents: ['BE-4 oxygen-rich staged combustion cycle', 'Vertical landing guidance algorithm', 'Blue Moon cargo descent stage', 'Orbital Reef docking adapter'],
   },
   {
     id: 'nasa',
@@ -593,14 +594,14 @@ const LITIGATION_CASES: LitigationCase[] = [
 ];
 
 const GEOGRAPHIC_DISTRIBUTION = [
-  { country: 'United States', flag: 'US', share: 29.9, totalPatents: 17600, trend: 'stable', color: 'bg-blue-500' },
-  { country: 'China', flag: 'CN', share: 41.8, totalPatents: 24600, trend: 'up', color: 'bg-red-500' },
-  { country: 'Europe (EPO)', flag: 'EU', share: 11.5, totalPatents: 6800, trend: 'stable', color: 'bg-yellow-500' },
-  { country: 'Japan', flag: 'JP', share: 5.3, totalPatents: 3100, trend: 'stable', color: 'bg-pink-500' },
-  { country: 'India', flag: 'IN', share: 3.2, totalPatents: 1900, trend: 'up', color: 'bg-green-500' },
-  { country: 'South Korea', flag: 'KR', share: 2.1, totalPatents: 1250, trend: 'up', color: 'bg-indigo-500' },
-  { country: 'Russia', flag: 'RU', share: 1.8, totalPatents: 1050, trend: 'down', color: 'bg-slate-500' },
-  { country: 'Other', flag: 'OT', share: 4.4, totalPatents: 2600, trend: 'up', color: 'bg-gray-500' },
+  { country: 'United States', flag: 'US', share: 29.6, totalPatents: 18400, trend: 'stable', color: 'bg-blue-500' },
+  { country: 'China', flag: 'CN', share: 42.2, totalPatents: 26200, trend: 'up', color: 'bg-red-500' },
+  { country: 'Europe (EPO)', flag: 'EU', share: 11.4, totalPatents: 7100, trend: 'stable', color: 'bg-yellow-500' },
+  { country: 'Japan', flag: 'JP', share: 5.2, totalPatents: 3200, trend: 'stable', color: 'bg-pink-500' },
+  { country: 'India', flag: 'IN', share: 3.3, totalPatents: 2050, trend: 'up', color: 'bg-green-500' },
+  { country: 'South Korea', flag: 'KR', share: 2.2, totalPatents: 1350, trend: 'up', color: 'bg-indigo-500' },
+  { country: 'Russia', flag: 'RU', share: 1.7, totalPatents: 1050, trend: 'down', color: 'bg-slate-500' },
+  { country: 'Other', flag: 'OT', share: 4.4, totalPatents: 2750, trend: 'up', color: 'bg-gray-500' },
 ];
 
 // ────────────────────────────────────────
@@ -683,7 +684,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{formatNumber(latestYear.total)}</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Patents Filed (2025)</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Patents Filed (2026)</div>
         </div>
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-green-400">+{growthRate}%</div>
@@ -750,7 +751,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
           <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
           </svg>
-          Patent Filings by Country/Region (2025)
+          Patent Filings by Country/Region (2026)
         </h3>
         <p className="text-slate-400 text-sm mb-4">Market share of space technology patent applications</p>
 
