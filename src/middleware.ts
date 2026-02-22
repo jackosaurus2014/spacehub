@@ -57,7 +57,7 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
     return { maxRequests: 10, windowMs: 60 * 1000 }; // 10 req/minute
   }
   // All other /api/* routes
-  return { maxRequests: 100, windowMs: 60 * 1000 }; // 100 req/minute
+  return { maxRequests: 200, windowMs: 60 * 1000 }; // 200 req/minute
 }
 
 /**
@@ -266,6 +266,11 @@ export function middleware(req: NextRequest) {
 
   // Rate limiting and CSRF only apply to API routes
   if (pathname.startsWith('/api/')) {
+    // Skip rate limiting for healthcheck (Railway pings this frequently)
+    if (pathname === '/api/health') {
+      return NextResponse.next();
+    }
+
     // Run periodic cleanup
     cleanupExpiredEntries();
 
