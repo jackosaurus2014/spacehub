@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -108,27 +108,30 @@ export default function InvestorsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchInvestors() {
-      try {
-        const params = new URLSearchParams();
-        if (typeFilter) params.set('type', typeFilter);
-        if (sectorFilter) params.set('sectorFocus', sectorFilter);
-        params.set('limit', '200');
+  const fetchInvestors = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (typeFilter) params.set('type', typeFilter);
+      if (sectorFilter) params.set('sectorFocus', sectorFilter);
+      params.set('limit', '200');
 
-        const res = await fetch(`/api/investors?${params.toString()}`);
-        if (!res.ok) throw new Error('Failed to fetch investors');
-        const data = await res.json();
-        setInvestors(data.investors || []);
-      } catch (err) {
-        setError('Failed to load investor data');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+      const res = await fetch(`/api/investors?${params.toString()}`);
+      if (!res.ok) throw new Error('Failed to fetch investors');
+      const data = await res.json();
+      setInvestors(data.investors || []);
+    } catch (err) {
+      setError('Failed to load investor data');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-    fetchInvestors();
   }, [typeFilter, sectorFilter]);
+
+  useEffect(() => {
+    fetchInvestors();
+  }, [fetchInvestors]);
 
   // Client-side search filter
   const filtered = useMemo(() => {
@@ -182,7 +185,13 @@ export default function InvestorsPage() {
 
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
-            <div className="text-red-400 text-sm font-medium">{error}</div>
+            <div className="text-red-400 text-sm font-medium mb-3">{error}</div>
+            <button
+              onClick={fetchInvestors}
+              className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors"
+            >
+              Try Again
+            </button>
           </div>
         )}
 

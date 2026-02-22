@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -755,52 +755,53 @@ function SpaceWeatherTab() {
   const [solarImagery, setSolarImagery] = useState<SolarImagery[]>([]);
   const [contentLoading, setContentLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setError(null);
-      try {
-        await fetch('/api/solar-flares/init', { method: 'POST' });
-        const res = await fetch('/api/solar-flares');
-        const result = await res.json();
-        setData(result);
-      } catch (err) {
-        console.error('Failed to fetch solar flare data:', err);
-        setError('Failed to load data.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+  const fetchWeatherData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await fetch('/api/solar-flares/init', { method: 'POST' });
+      const res = await fetch('/api/solar-flares');
+      const result = await res.json();
+      setData(result);
+    } catch (err) {
+      console.error('Failed to fetch solar flare data:', err);
+      setError('Failed to load data.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  const fetchContent = useCallback(async () => {
+    setContentLoading(true);
+    try {
+      const [eventsRes, imageryRes] = await Promise.all([
+        fetch('/api/content/space-environment?section=earth-events'),
+        fetch('/api/content/space-environment?section=solar-imagery'),
+      ]);
+
+      const [eventsData, imageryData] = await Promise.all([
+        eventsRes.json(),
+        imageryRes.json(),
+      ]);
+
+      if (eventsData.data) setEarthEvents(eventsData.data);
+      if (imageryData.data) setSolarImagery(imageryData.data);
+    } catch (error) {
+      console.error('Failed to fetch dynamic content:', error);
+      setError('Failed to load data.');
+    } finally {
+      setContentLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchWeatherData();
+  }, [fetchWeatherData]);
 
   // Fetch dynamic content sections
   useEffect(() => {
-    const fetchContent = async () => {
-      setContentLoading(true);
-      try {
-        const [eventsRes, imageryRes] = await Promise.all([
-          fetch('/api/content/space-environment?section=earth-events'),
-          fetch('/api/content/space-environment?section=solar-imagery'),
-        ]);
-
-        const [eventsData, imageryData] = await Promise.all([
-          eventsRes.json(),
-          imageryRes.json(),
-        ]);
-
-        if (eventsData.data) setEarthEvents(eventsData.data);
-        if (imageryData.data) setSolarImagery(imageryData.data);
-      } catch (error) {
-        console.error('Failed to fetch dynamic content:', error);
-        setError('Failed to load data.');
-      } finally {
-        setContentLoading(false);
-      }
-    };
-
     fetchContent();
-  }, []);
+  }, [fetchContent]);
 
   if (loading) {
     return <SkeletonPage statCards={5} statGridCols="grid-cols-2 md:grid-cols-5" contentCards={2} />;
@@ -810,7 +811,13 @@ function SpaceWeatherTab() {
     return (
       <div className="text-center py-20">
         <span className="text-5xl block mb-4">&#9888;&#65039;</span>
-        <p className="text-slate-400">Failed to load solar activity data</p>
+        <p className="text-slate-400 mb-4">Failed to load solar activity data</p>
+        <button
+          onClick={fetchWeatherData}
+          className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
@@ -826,7 +833,13 @@ function SpaceWeatherTab() {
     <div className="space-y-8">
       {error && (
         <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
-          <div className="text-red-400 text-sm font-medium">{error}</div>
+          <div className="text-red-400 text-sm font-medium mb-3">{error}</div>
+          <button
+            onClick={fetchWeatherData}
+            className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors"
+          >
+            Try Again
+          </button>
         </div>
       )}
 
@@ -1485,7 +1498,13 @@ function DebrisTrackingTab() {
     <div className="space-y-8">
       {error && (
         <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
-          <div className="text-red-400 text-sm font-medium">{error}</div>
+          <div className="text-red-400 text-sm font-medium mb-3">{error}</div>
+          <button
+            onClick={fetchData}
+            className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors"
+          >
+            Try Again
+          </button>
         </div>
       )}
 
@@ -2003,7 +2022,13 @@ function OperationsTab() {
     <div className="space-y-8">
       {error && (
         <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
-          <div className="text-red-400 text-sm font-medium">{error}</div>
+          <div className="text-red-400 text-sm font-medium mb-3">{error}</div>
+          <button
+            onClick={fetchData}
+            className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors"
+          >
+            Try Again
+          </button>
         </div>
       )}
 

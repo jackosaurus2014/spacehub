@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, Suspense } from 'react';
+import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -737,41 +737,43 @@ function SpaceCapitalInner() {
     router.replace(url, { scroll: false });
   };
 
-  useEffect(() => {
-    async function fetchData() {
-      setError(null);
-      try {
-        const [investorsRes, fundingRes, startupsRes] = await Promise.all([
-          fetch('/api/content/space-capital?section=investors'),
-          fetch('/api/content/space-capital?section=funding-by-year'),
-          fetch('/api/companies?isPublic=false&sort=totalFunding&minFunding=1&limit=50'),
-        ]);
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [investorsRes, fundingRes, startupsRes] = await Promise.all([
+        fetch('/api/content/space-capital?section=investors'),
+        fetch('/api/content/space-capital?section=funding-by-year'),
+        fetch('/api/companies?isPublic=false&sort=totalFunding&minFunding=1&limit=50'),
+      ]);
 
-        const investorsJson = await investorsRes.json();
-        const fundingJson = await fundingRes.json();
-        const startupsJson = await startupsRes.json();
+      const investorsJson = await investorsRes.json();
+      const fundingJson = await fundingRes.json();
+      const startupsJson = await startupsRes.json();
 
-        if (investorsJson.data) setInvestors(investorsJson.data);
-        if (fundingJson.data) setFundingByYear(fundingJson.data);
-        if (startupsJson.companies) {
-          setStartups(startupsJson.companies);
-        } else if (startupsJson.data) {
-          setStartups(startupsJson.data);
-        } else if (Array.isArray(startupsJson)) {
-          setStartups(startupsJson);
-        }
-
-        const timestamps = [investorsJson.meta?.lastRefreshed, fundingJson.meta?.lastRefreshed].filter(Boolean);
-        if (timestamps.length > 0) setRefreshedAt(timestamps.sort().reverse()[0]);
-      } catch (error) {
-        console.error('Failed to fetch space capital data:', error);
-        setError('Failed to load data.');
-      } finally {
-        setLoading(false);
+      if (investorsJson.data) setInvestors(investorsJson.data);
+      if (fundingJson.data) setFundingByYear(fundingJson.data);
+      if (startupsJson.companies) {
+        setStartups(startupsJson.companies);
+      } else if (startupsJson.data) {
+        setStartups(startupsJson.data);
+      } else if (Array.isArray(startupsJson)) {
+        setStartups(startupsJson);
       }
+
+      const timestamps = [investorsJson.meta?.lastRefreshed, fundingJson.meta?.lastRefreshed].filter(Boolean);
+      if (timestamps.length > 0) setRefreshedAt(timestamps.sort().reverse()[0]);
+    } catch (error) {
+      console.error('Failed to fetch space capital data:', error);
+      setError('Failed to load data.');
+    } finally {
+      setLoading(false);
     }
-    fetchData();
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   if (loading) {
     return (
@@ -802,7 +804,13 @@ function SpaceCapitalInner() {
 
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
-            <div className="text-red-400 text-sm font-medium">{error}</div>
+            <div className="text-red-400 text-sm font-medium mb-3">{error}</div>
+            <button
+              onClick={fetchData}
+              className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors"
+            >
+              Try Again
+            </button>
           </div>
         )}
 
