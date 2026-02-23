@@ -39,7 +39,7 @@ export async function PATCH(
     const { content } = validation.data;
 
     // Verify category exists
-    const category = await (prisma as any).forumCategory.findUnique({
+    const category = await prisma.forumCategory.findUnique({
       where: { slug },
       select: { id: true },
     });
@@ -49,7 +49,7 @@ export async function PATCH(
     }
 
     // Find the post and verify it belongs to this thread
-    const post = await (prisma as any).forumPost.findUnique({
+    const post = await prisma.forumPost.findUnique({
       where: { id: postId },
       select: { id: true, threadId: true, authorId: true },
     });
@@ -59,7 +59,7 @@ export async function PATCH(
     }
 
     // Verify the thread belongs to this category
-    const thread = await (prisma as any).forumThread.findUnique({
+    const thread = await prisma.forumThread.findUnique({
       where: { id: threadId },
       select: { id: true, categoryId: true },
     });
@@ -74,7 +74,7 @@ export async function PATCH(
     }
 
     // Update the post
-    const updatedPost = await (prisma as any).forumPost.update({
+    const updatedPost = await prisma.forumPost.update({
       where: { id: postId },
       data: { content },
       include: {
@@ -120,7 +120,7 @@ export async function DELETE(
     const { slug, threadId, postId } = await params;
 
     // Verify category exists
-    const category = await (prisma as any).forumCategory.findUnique({
+    const category = await prisma.forumCategory.findUnique({
       where: { slug },
       select: { id: true },
     });
@@ -130,7 +130,7 @@ export async function DELETE(
     }
 
     // Find the post
-    const post = await (prisma as any).forumPost.findUnique({
+    const post = await prisma.forumPost.findUnique({
       where: { id: postId },
       select: { id: true, threadId: true, authorId: true },
     });
@@ -140,7 +140,7 @@ export async function DELETE(
     }
 
     // Verify the thread belongs to this category
-    const thread = await (prisma as any).forumThread.findUnique({
+    const thread = await prisma.forumThread.findUnique({
       where: { id: threadId },
       select: { id: true, categoryId: true },
     });
@@ -156,7 +156,7 @@ export async function DELETE(
 
     // If admin deleting someone else's post, log moderation action
     if (session.user.isAdmin && post.authorId !== session.user.id) {
-      await (prisma as any).moderationAction.create({
+      await prisma.moderationAction.create({
         data: {
           moderatorId: session.user.id,
           targetUserId: post.authorId,
@@ -169,7 +169,7 @@ export async function DELETE(
     }
 
     // Delete the post
-    await (prisma as any).forumPost.delete({
+    await prisma.forumPost.delete({
       where: { id: postId },
     });
 

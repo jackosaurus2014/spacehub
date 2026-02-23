@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     const { token, platform } = validation.data!;
 
-    await (prisma as any).pushToken.upsert({
+    await prisma.pushToken.upsert({
       where: { token },
       update: { userId: session.user.id, platform, updatedAt: new Date() },
       create: { token, userId: session.user.id, platform },

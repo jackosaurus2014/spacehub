@@ -60,7 +60,7 @@ export async function generateCompanyDigests(): Promise<{
   }
 
   // Check existing digests for this period to avoid duplicates
-  const existingDigests = await (prisma as any).companyDigest.findMany({
+  const existingDigests = await prisma.companyDigest.findMany({
     where: {
       periodStart: { gte: sevenDaysAgo },
       companyProfileId: { in: eligibleCompanies.map((c) => c.id) },
@@ -148,7 +148,7 @@ Respond with valid JSON (no markdown code fences):
         if (!company) continue;
 
         try {
-          const result = await (prisma as any).companyDigest.upsert({
+          const result = await prisma.companyDigest.upsert({
             where: {
               companyProfileId_periodStart_periodEnd: {
                 companyProfileId: company.id,
@@ -207,7 +207,7 @@ Respond with valid JSON (no markdown code fences):
     if (companies.length < 3) continue;
 
     // Check if sector digest already exists
-    const existingSector = await (prisma as any).companyDigest.findFirst({
+    const existingSector = await prisma.companyDigest.findFirst({
       where: {
         sector,
         companyProfileId: null,
@@ -266,7 +266,7 @@ Respond with JSON (no markdown code fences):
 
       const parsed = JSON.parse(jsonMatch[0]);
 
-      const result = await (prisma as any).companyDigest.create({
+      const result = await prisma.companyDigest.create({
         data: {
           companyProfileId: null,
           sector,

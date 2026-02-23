@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     const { accessCode } = validation.data;
 
-    const room = await (prisma as any).dealRoom.findUnique({
+    const room = await prisma.dealRoom.findUnique({
       where: { accessCode },
       include: { members: true },
     });
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add as viewer
-    await (prisma as any).dealRoomMember.create({
+    await prisma.dealRoomMember.create({
       data: {
         dealRoomId: room.id,
         email: userEmail,
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    await (prisma as any).dealRoomActivity.create({
+    await prisma.dealRoomActivity.create({
       data: {
         dealRoomId: room.id,
         userId: userId || null,

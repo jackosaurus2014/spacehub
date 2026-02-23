@@ -43,7 +43,7 @@ export async function POST(
     const userId = session.user.id;
 
     // Verify thread exists and user is the thread author
-    const thread = await (prisma as any).forumThread.findUnique({
+    const thread = await prisma.forumThread.findUnique({
       where: { id: threadId },
       select: { id: true, authorId: true, acceptedPostId: true },
     });
@@ -57,7 +57,7 @@ export async function POST(
     }
 
     // Verify post exists and belongs to this thread
-    const post = await (prisma as any).forumPost.findUnique({
+    const post = await prisma.forumPost.findUnique({
       where: { id: postId },
       select: { id: true, threadId: true, authorId: true },
     });
@@ -74,12 +74,12 @@ export async function POST(
 
     if (thread.acceptedPostId === postId) {
       // Toggle off: unaccept the currently accepted post
-      await (prisma as any).forumPost.updateMany({
+      await prisma.forumPost.updateMany({
         where: { threadId, isAccepted: true },
         data: { isAccepted: false },
       });
 
-      await (prisma as any).forumThread.update({
+      await prisma.forumThread.update({
         where: { id: threadId },
         data: { acceptedPostId: null } as any,
       });
@@ -99,7 +99,7 @@ export async function POST(
     } else {
       // If there was a previously accepted post, revoke its reputation
       if (thread.acceptedPostId) {
-        const prevAcceptedPost = await (prisma as any).forumPost.findUnique({
+        const prevAcceptedPost = await prisma.forumPost.findUnique({
           where: { id: thread.acceptedPostId },
           select: { authorId: true },
         });
@@ -109,19 +109,19 @@ export async function POST(
       }
 
       // Clear any previously accepted post
-      await (prisma as any).forumPost.updateMany({
+      await prisma.forumPost.updateMany({
         where: { threadId, isAccepted: true },
         data: { isAccepted: false },
       });
 
       // Mark the new post as accepted
-      await (prisma as any).forumPost.update({
+      await prisma.forumPost.update({
         where: { id: postId },
         data: { isAccepted: true } as any,
       });
 
       // Update thread with accepted post reference
-      await (prisma as any).forumThread.update({
+      await prisma.forumThread.update({
         where: { id: threadId },
         data: { acceptedPostId: postId } as any,
       });

@@ -40,7 +40,7 @@ export async function POST(
     const userId = session.user.id;
 
     // Verify post exists and belongs to the thread
-    const post = await (prisma as any).forumPost.findUnique({
+    const post = await prisma.forumPost.findUnique({
       where: { id: postId },
       select: { id: true, threadId: true, authorId: true },
     });
@@ -54,7 +54,7 @@ export async function POST(
     }
 
     // Check for existing vote
-    const existingVote = await (prisma as any).postVote.findUnique({
+    const existingVote = await prisma.postVote.findUnique({
       where: {
         postId_userId: {
           postId,
@@ -68,7 +68,7 @@ export async function POST(
     if (existingVote) {
       if (existingVote.value === value) {
         // Same vote value -- toggle off (remove vote)
-        await (prisma as any).postVote.delete({
+        await prisma.postVote.delete({
           where: {
             postId_userId: {
               postId,
@@ -79,7 +79,7 @@ export async function POST(
         userVote = null;
       } else {
         // Different vote value -- update
-        await (prisma as any).postVote.update({
+        await prisma.postVote.update({
           where: {
             postId_userId: {
               postId,
@@ -91,7 +91,7 @@ export async function POST(
       }
     } else {
       // No existing vote -- create
-      await (prisma as any).postVote.create({
+      await prisma.postVote.create({
         data: {
           postId,
           userId,
@@ -101,16 +101,16 @@ export async function POST(
     }
 
     // Recalculate vote counts
-    const upvoteCount = await (prisma as any).postVote.count({
+    const upvoteCount = await prisma.postVote.count({
       where: { postId, value: 1 },
     });
 
-    const downvoteCount = await (prisma as any).postVote.count({
+    const downvoteCount = await prisma.postVote.count({
       where: { postId, value: -1 },
     });
 
     // Update post with new counts
-    await (prisma as any).forumPost.update({
+    await prisma.forumPost.update({
       where: { id: postId },
       data: { upvoteCount, downvoteCount } as any,
     });

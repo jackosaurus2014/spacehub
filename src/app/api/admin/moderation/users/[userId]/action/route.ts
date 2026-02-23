@@ -61,7 +61,7 @@ export async function POST(
 
     switch (action) {
       case 'warn': {
-        moderationAction = await (prisma as any).moderationAction.create({
+        moderationAction = await prisma.moderationAction.create({
           data: {
             moderatorId: session.user.id,
             targetUserId: userId,
@@ -84,7 +84,7 @@ export async function POST(
             mutedUntil: new Date(Date.now() + duration * 60000),
           } as any,
         });
-        moderationAction = await (prisma as any).moderationAction.create({
+        moderationAction = await prisma.moderationAction.create({
           data: {
             moderatorId: session.user.id,
             targetUserId: userId,
@@ -104,7 +104,7 @@ export async function POST(
             mutedUntil: null,
           } as any,
         });
-        moderationAction = await (prisma as any).moderationAction.create({
+        moderationAction = await prisma.moderationAction.create({
           data: {
             moderatorId: session.user.id,
             targetUserId: userId,
@@ -125,7 +125,7 @@ export async function POST(
             banReason: reason,
           } as any,
         });
-        moderationAction = await (prisma as any).moderationAction.create({
+        moderationAction = await prisma.moderationAction.create({
           data: {
             moderatorId: session.user.id,
             targetUserId: userId,
@@ -147,7 +147,7 @@ export async function POST(
             banReason: null,
           } as any,
         });
-        moderationAction = await (prisma as any).moderationAction.create({
+        moderationAction = await prisma.moderationAction.create({
           data: {
             moderatorId: session.user.id,
             targetUserId: userId,
@@ -166,17 +166,17 @@ export async function POST(
         // Delete the specified content based on type
         switch (contentType) {
           case 'thread':
-            await (prisma as any).forumThread.delete({
+            await prisma.forumThread.delete({
               where: { id: contentId },
             });
             break;
           case 'post':
-            await (prisma as any).forumPost.delete({
+            await prisma.forumPost.delete({
               where: { id: contentId },
             });
             break;
           case 'message':
-            await (prisma as any).directMessage.delete({
+            await prisma.directMessage.delete({
               where: { id: contentId },
             });
             break;
@@ -184,7 +184,7 @@ export async function POST(
             return validationError(`Unsupported content type: ${contentType}`);
         }
 
-        moderationAction = await (prisma as any).moderationAction.create({
+        moderationAction = await prisma.moderationAction.create({
           data: {
             moderatorId: session.user.id,
             targetUserId: userId,
@@ -271,7 +271,7 @@ export async function GET(
       return notFoundError('User');
     }
 
-    const actions = await (prisma as any).moderationAction.findMany({
+    const actions = await prisma.moderationAction.findMany({
       where: { targetUserId: userId },
       orderBy: { createdAt: 'desc' },
     });

@@ -45,7 +45,7 @@ export async function generateForumDigestEmail(): Promise<ForumDigestResult> {
   const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
   // 1. Get threads from the last 7 days and calculate trending scores
-  const recentThreads = await (prisma as any).forumThread.findMany({
+  const recentThreads = await prisma.forumThread.findMany({
     where: {
       createdAt: { gte: oneWeekAgo },
     },
@@ -93,7 +93,7 @@ export async function generateForumDigestEmail(): Promise<ForumDigestResult> {
   // 2. Get weekly stats
   const newThreadCount = recentThreads.length;
 
-  const totalPostCount = await (prisma as any).forumPost.count({
+  const totalPostCount = await prisma.forumPost.count({
     where: {
       createdAt: { gte: oneWeekAgo },
     },
@@ -104,7 +104,7 @@ export async function generateForumDigestEmail(): Promise<ForumDigestResult> {
   let topContributor: TopContributor | null = null;
   try {
     // Find users who received the most upvotes on posts/threads created this week
-    const topPosters = await (prisma as any).forumPost.groupBy({
+    const topPosters = await prisma.forumPost.groupBy({
       by: ['authorId'],
       where: {
         createdAt: { gte: oneWeekAgo },

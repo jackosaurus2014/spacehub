@@ -19,7 +19,7 @@ export async function POST(
   const userEmail = session.user.email;
 
   try {
-    const membership = await (prisma as any).dealRoomMember.findFirst({
+    const membership = await prisma.dealRoomMember.findFirst({
       where: { dealRoomId: id, email: userEmail },
     });
 
@@ -31,7 +31,7 @@ export async function POST(
       return NextResponse.json({ message: 'NDA already accepted' });
     }
 
-    await (prisma as any).dealRoomMember.update({
+    await prisma.dealRoomMember.update({
       where: { id: membership.id },
       data: {
         ndaAcceptedAt: new Date(),
@@ -39,7 +39,7 @@ export async function POST(
       },
     });
 
-    await (prisma as any).dealRoomActivity.create({
+    await prisma.dealRoomActivity.create({
       data: {
         dealRoomId: id,
         userEmail,

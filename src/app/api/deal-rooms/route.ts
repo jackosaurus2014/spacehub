@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   const userEmail = session.user.email;
 
   try {
-    const memberships = await (prisma as any).dealRoomMember.findMany({
+    const memberships = await prisma.dealRoomMember.findMany({
       where: { email: userEmail },
       include: {
         dealRoom: {
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     const accessCode = crypto.randomBytes(6).toString('hex');
 
-    const room = await (prisma as any).dealRoom.create({
+    const room = await prisma.dealRoom.create({
       data: {
         name,
         description: description || null,
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Log activity
-    await (prisma as any).dealRoomActivity.create({
+    await prisma.dealRoomActivity.create({
       data: {
         dealRoomId: room.id,
         userId: userId || null,

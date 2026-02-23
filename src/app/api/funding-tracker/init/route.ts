@@ -899,7 +899,7 @@ export async function POST(request: Request) {
     let investorCount = 0;
     for (const inv of SPACE_INVESTORS) {
       try {
-        await (prisma as any).investor.upsert({
+        await prisma.investor.upsert({
           where: { name: inv.name },
           update: {
             type: inv.type,

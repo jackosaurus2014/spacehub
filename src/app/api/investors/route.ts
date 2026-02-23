@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
         break;
     }
 
-    const investors = await (prisma as any).investor.findMany({
+    const investors = await prisma.investor.findMany({
       where: where as any,
       orderBy: orderBy as any,
       take: limit,

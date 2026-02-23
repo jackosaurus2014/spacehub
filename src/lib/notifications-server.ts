@@ -22,7 +22,7 @@ export async function createNotification(params: CreateNotificationParams) {
       return null;
     }
 
-    const notification = await (prisma as any).notification.create({
+    const notification = await prisma.notification.create({
       data: {
         userId: params.userId,
         type: params.type,
@@ -57,7 +57,7 @@ export async function notifyThreadSubscribers(
   categorySlug: string
 ) {
   try {
-    const subscriptions = await (prisma as any).threadSubscription.findMany({
+    const subscriptions = await prisma.threadSubscription.findMany({
       where: {
         threadId,
         userId: { not: replyAuthorId },
@@ -78,7 +78,7 @@ export async function notifyThreadSubscribers(
       linkUrl: `/community/forums/${categorySlug}/${threadId}`,
     }));
 
-    await (prisma as any).notification.createMany({
+    await prisma.notification.createMany({
       data: notifications,
     });
 
@@ -99,7 +99,7 @@ export async function notifyThreadSubscribers(
  */
 export async function getUnreadNotificationCount(userId: string): Promise<number> {
   try {
-    const count = await (prisma as any).notification.count({
+    const count = await prisma.notification.count({
       where: { userId, read: false },
     });
     return count;

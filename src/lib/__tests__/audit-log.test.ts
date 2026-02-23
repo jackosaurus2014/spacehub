@@ -39,7 +39,7 @@ import { logAuditAction } from '@/lib/audit-log';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const mockAuditLogCreate = (prisma as any).auditLog.create as jest.Mock;
+const mockAuditLogCreate = prisma.auditLog.create as jest.Mock;
 const mockLoggerError = logger.error as jest.Mock;
 
 // ── Tests ────────────────────────────────────────────────────────────────────

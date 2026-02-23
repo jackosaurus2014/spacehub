@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET() {
   try {
-    const categories = await (prisma as any).forumCategory.findMany({
+    const categories = await prisma.forumCategory.findMany({
       orderBy: { sortOrder: 'asc' },
       include: {
         _count: {

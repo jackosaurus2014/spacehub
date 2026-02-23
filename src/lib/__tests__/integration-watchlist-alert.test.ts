@@ -31,7 +31,7 @@ function createMockPrisma() {
     alertDelivery: {
       create: jest.fn().mockResolvedValue({ id: 'delivery-1' }),
     },
-    // Models accessed via (prisma as any)
+    // Models accessed via prisma delegates
     companyWatchlistItem: {
       findMany: jest.fn().mockResolvedValue([]),
     },
@@ -71,10 +71,10 @@ function makeContract(overrides: Record<string, unknown> = {}) {
   return {
     id: 'contract-1',
     title: 'Satellite Constellation Contract',
-    awardAmount: 250_000_000,
+    value: 250_000_000,
     agency: 'NASA',
-    companyProfileId: 'company-1',
-    companyProfile: { id: 'company-1', name: 'SpaceX', slug: 'spacex' },
+    companyId: 'company-1',
+    company: { id: 'company-1', name: 'SpaceX', slug: 'spacex' },
     ...overrides,
   };
 }
@@ -82,10 +82,10 @@ function makeContract(overrides: Record<string, unknown> = {}) {
 function makeListing(overrides: Record<string, unknown> = {}) {
   return {
     id: 'listing-1',
-    title: 'Launch Service Package',
+    name: 'Launch Service Package',
     category: 'Launch Services',
-    companyProfileId: 'company-1',
-    companyProfile: { id: 'company-1', name: 'SpaceX', slug: 'spacex' },
+    companyId: 'company-1',
+    company: { id: 'company-1', name: 'SpaceX', slug: 'spacex' },
     ...overrides,
   };
 }
@@ -305,8 +305,8 @@ describe('processWatchlistAlerts — integration', () => {
       expect(inAppCall.data.data.link).toBe('/company-profiles/spacex?tab=contracts');
     });
 
-    it('formats undisclosed amount correctly when awardAmount is null', async () => {
-      const contract = makeContract({ awardAmount: null });
+    it('formats undisclosed amount correctly when value is null', async () => {
+      const contract = makeContract({ value: null });
       mockPrisma.governmentContractAward.findMany.mockResolvedValue([contract]);
       mockPrisma.companyWatchlistItem.findMany.mockResolvedValue([
         { userId: 'user-1' },
@@ -319,15 +319,13 @@ describe('processWatchlistAlerts — integration', () => {
       expect(inAppCall.data.title).toBe('SpaceX: New undisclosed amount Contract');
     });
 
-    it('skips contracts with no companyProfile', async () => {
-      const contract = makeContract({ companyProfile: null });
+    it('skips contracts with no company', async () => {
+      const contract = makeContract({ company: null });
       mockPrisma.governmentContractAward.findMany.mockResolvedValue([contract]);
 
       const result = await processWatchlistAlerts(mockPrisma);
 
       expect(result.contractAlerts).toBe(0);
-      // companyWatchlistItem.findMany should not be called for contracts path
-      // (it may still be called for news path, but no contract watchers queried)
     });
   });
 
@@ -365,8 +363,8 @@ describe('processWatchlistAlerts — integration', () => {
       expect(inAppCall.data.data.link).toBe('/marketplace/listings/listing-1');
     });
 
-    it('skips listings with no companyProfile', async () => {
-      const listing = makeListing({ companyProfile: null });
+    it('skips listings with no company', async () => {
+      const listing = makeListing({ company: null });
       mockPrisma.serviceListing.findMany.mockResolvedValue([listing]);
 
       const result = await processWatchlistAlerts(mockPrisma);
@@ -430,20 +428,19 @@ describe('processWatchlistAlerts — integration', () => {
       jest.restoreAllMocks();
     });
 
-    it('queries contracts with awardDate >= 24h ago and non-null companyProfileId', async () => {
+    it('queries contracts with awardDate >= 24h ago and non-null companyId', async () => {
       await processWatchlistAlerts(mockPrisma);
 
       const contractQuery = mockPrisma.governmentContractAward.findMany.mock.calls[0][0];
       expect(contractQuery.where.awardDate.gte).toBeInstanceOf(Date);
-      expect(contractQuery.where.companyProfileId).toEqual({ not: null });
+      expect(contractQuery.where.companyId).toEqual({ not: null });
     });
 
-    it('queries listings with createdAt >= 24h ago and non-null companyProfileId', async () => {
+    it('queries listings with createdAt >= 24h ago', async () => {
       await processWatchlistAlerts(mockPrisma);
 
       const listingQuery = mockPrisma.serviceListing.findMany.mock.calls[0][0];
       expect(listingQuery.where.createdAt.gte).toBeInstanceOf(Date);
-      expect(listingQuery.where.companyProfileId).toEqual({ not: null });
     });
   });
 });

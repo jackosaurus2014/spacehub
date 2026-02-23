@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    await (prisma as any).npsResponse.create({
+    await prisma.npsResponse.create({
       data: {
         userId: user.id,
         score: validation.data.score,
@@ -90,7 +90,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const responses = await (prisma as any).npsResponse.findMany({
+  const responses = await prisma.npsResponse.findMany({
     orderBy: { createdAt: 'desc' },
     take: 100,
     select: {

@@ -66,7 +66,6 @@ function makeNotification(overrides: Record<string, unknown> = {}) {
     title: 'New reply to your thread',
     message: 'Someone replied to your thread',
     read: false,
-    readAt: null,
     linkUrl: '/community/forums/general/thread-1',
     createdAt: new Date('2026-02-20T10:00:00Z'),
     updatedAt: new Date('2026-02-20T10:00:00Z'),
@@ -302,7 +301,6 @@ describe('PATCH /api/notifications', () => {
       },
       data: {
         read: true,
-        readAt: expect.any(Date),
       },
     });
   });
@@ -443,7 +441,6 @@ describe('PATCH /api/notifications/[id]', () => {
       },
       data: {
         read: true,
-        readAt: expect.any(Date),
       },
     });
   });
@@ -534,7 +531,6 @@ describe('POST /api/notifications/read-all', () => {
       },
       data: {
         read: true,
-        readAt: expect.any(Date),
       },
     });
   });

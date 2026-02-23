@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     }
 
     const [digests, total] = await Promise.all([
-      (prisma as any).companyDigest.findMany({
+      prisma.companyDigest.findMany({
         where,
         orderBy: { periodEnd: 'desc' },
         take: limit,
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
           },
         },
       }),
-      (prisma as any).companyDigest.count({ where }),
+      prisma.companyDigest.count({ where }),
     ]);
 
     // Parse JSON fields

@@ -43,7 +43,7 @@ export async function GET(request: Request) {
       where.searchType = searchType;
     }
 
-    const user = await (prisma as any).user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { subscriptionTier: true, trialTier: true, trialEndDate: true },
     });
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
     const tier = getEffectiveTier(user || { subscriptionTier: null, trialTier: null, trialEndDate: null });
     const limit = getSavedSearchLimit(tier);
 
-    const savedSearches = await (prisma as any).savedSearch.findMany({
+    const savedSearches = await prisma.savedSearch.findMany({
       where,
       orderBy: { updatedAt: 'desc' },
     });
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
       return unauthorizedError('You must be logged in to save searches');
     }
 
-    const user = await (prisma as any).user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { subscriptionTier: true, trialTier: true, trialEndDate: true },
     });
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
     const limit = getSavedSearchLimit(tier);
 
     // Check count limit
-    const currentCount = await (prisma as any).savedSearch.count({
+    const currentCount = await prisma.savedSearch.count({
       where: { userId: session.user.id },
     });
 
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
       return validationError('Invalid search data', validation.errors);
     }
 
-    const savedSearch = await (prisma as any).savedSearch.create({
+    const savedSearch = await prisma.savedSearch.create({
       data: {
         userId: session.user.id,
         name: validation.data.name,

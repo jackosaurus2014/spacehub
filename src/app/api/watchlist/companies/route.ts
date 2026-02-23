@@ -35,7 +35,7 @@ export async function GET(request: Request) {
       return unauthorizedError('You must be logged in to view your watchlist');
     }
 
-    const user = await (prisma as any).user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { subscriptionTier: true, trialTier: true, trialEndDate: true },
     });
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
     const tier = getEffectiveTier(user || { subscriptionTier: null, trialTier: null, trialEndDate: null });
     const limit = getWatchlistLimit(tier);
 
-    const items = await (prisma as any).companyWatchlistItem.findMany({
+    const items = await prisma.companyWatchlistItem.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: 'desc' },
       include: {
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
       return unauthorizedError('You must be logged in to watch companies');
     }
 
-    const user = await (prisma as any).user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { subscriptionTier: true, trialTier: true, trialEndDate: true },
     });
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
     const limit = getWatchlistLimit(tier);
 
     // Check count limit
-    const currentCount = await (prisma as any).companyWatchlistItem.count({
+    const currentCount = await prisma.companyWatchlistItem.count({
       where: { userId: session.user.id },
     });
 
@@ -112,7 +112,7 @@ export async function POST(request: Request) {
     }
 
     // Verify company exists
-    const company = await (prisma as any).companyProfile.findUnique({
+    const company = await prisma.companyProfile.findUnique({
       where: { id: validation.data.companyProfileId },
       select: { id: true, name: true },
     });
@@ -121,7 +121,7 @@ export async function POST(request: Request) {
     }
 
     // Check for existing watch (dedup)
-    const existing = await (prisma as any).companyWatchlistItem.findUnique({
+    const existing = await prisma.companyWatchlistItem.findUnique({
       where: {
         userId_companyProfileId: {
           userId: session.user.id,
@@ -133,7 +133,7 @@ export async function POST(request: Request) {
       return createSuccessResponse({ item: existing, alreadyWatching: true });
     }
 
-    const item = await (prisma as any).companyWatchlistItem.create({
+    const item = await prisma.companyWatchlistItem.create({
       data: {
         userId: session.user.id,
         companyProfileId: validation.data.companyProfileId,

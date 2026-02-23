@@ -394,7 +394,7 @@ export async function POST(request: NextRequest) {
     const categoryMap: Record<string, string> = {};
 
     for (const cat of FORUM_CATEGORIES) {
-      const result = await (prisma as any).forumCategory.upsert({
+      const result = await prisma.forumCategory.upsert({
         where: { slug: cat.slug },
         update: {
           name: cat.name,
@@ -417,21 +417,22 @@ export async function POST(request: NextRequest) {
     logger.info(`Upserted ${categoriesCreated} forum categories`);
 
     // Step 2: Find or create system user
-    let author = await (prisma as any).user.findUnique({
+    let author = await prisma.user.findUnique({
       where: { email: 'system@spacenexus.io' },
     });
 
     if (!author) {
-      author = await (prisma as any).user.findFirst({
+      author = await prisma.user.findFirst({
         where: { isAdmin: true },
       });
     }
 
     if (!author) {
-      author = await (prisma as any).user.create({
+      author = await prisma.user.create({
         data: {
           name: 'SpaceNexus Team',
           email: 'system@spacenexus.io',
+          password: '',
         },
       });
       logger.info('Created system user for forum seeding');
@@ -448,7 +449,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Check if category already has threads
-      const existingCount = await (prisma as any).forumThread.count({
+      const existingCount = await prisma.forumThread.count({
         where: { categoryId },
       });
 
@@ -460,7 +461,7 @@ export async function POST(request: NextRequest) {
       for (const thread of threads) {
         try {
           // Check for duplicate by title
-          const existing = await (prisma as any).forumThread.findFirst({
+          const existing = await prisma.forumThread.findFirst({
             where: { title: thread.title },
           });
 
@@ -469,7 +470,7 @@ export async function POST(request: NextRequest) {
             continue;
           }
 
-          await (prisma as any).forumThread.create({
+          await prisma.forumThread.create({
             data: {
               categoryId,
               authorId,

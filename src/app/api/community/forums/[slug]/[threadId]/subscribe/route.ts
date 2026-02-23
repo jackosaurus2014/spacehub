@@ -28,7 +28,7 @@ export async function POST(
     const { threadId } = await params;
 
     // Verify thread exists
-    const thread = await (prisma as any).forumThread.findUnique({
+    const thread = await prisma.forumThread.findUnique({
       where: { id: threadId },
       select: { id: true, title: true },
     });
@@ -38,7 +38,7 @@ export async function POST(
     }
 
     // Upsert subscription (userId+threadId unique)
-    await (prisma as any).threadSubscription.upsert({
+    await prisma.threadSubscription.upsert({
       where: {
         userId_threadId: {
           userId: session.user.id,
@@ -82,7 +82,7 @@ export async function DELETE(
 
     const { threadId } = await params;
 
-    await (prisma as any).threadSubscription.deleteMany({
+    await prisma.threadSubscription.deleteMany({
       where: {
         userId: session.user.id,
         threadId,
@@ -119,7 +119,7 @@ export async function GET(
 
     const { threadId } = await params;
 
-    const subscription = await (prisma as any).threadSubscription.findUnique({
+    const subscription = await prisma.threadSubscription.findUnique({
       where: {
         userId_threadId: {
           userId: session.user.id,

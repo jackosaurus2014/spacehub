@@ -31,7 +31,7 @@ export async function POST(
     const { inviteeEmail, role: memberRole } = validation.data;
 
     // Check if inviter has permission (owner or admin)
-    const inviter = await (prisma as any).dealRoomMember.findFirst({
+    const inviter = await prisma.dealRoomMember.findFirst({
       where: { dealRoomId: id, email: userEmail, role: { in: ['owner', 'admin'] } },
     });
 
@@ -40,7 +40,7 @@ export async function POST(
     }
 
     // Check if already a member
-    const existing = await (prisma as any).dealRoomMember.findUnique({
+    const existing = await prisma.dealRoomMember.findUnique({
       where: { dealRoomId_email: { dealRoomId: id, email: inviteeEmail.trim().toLowerCase() } },
     });
 
@@ -48,7 +48,7 @@ export async function POST(
       return NextResponse.json({ error: 'This person is already a member of this room' }, { status: 409 });
     }
 
-    const member = await (prisma as any).dealRoomMember.create({
+    const member = await prisma.dealRoomMember.create({
       data: {
         dealRoomId: id,
         email: inviteeEmail.trim().toLowerCase(),
@@ -57,7 +57,7 @@ export async function POST(
     });
 
     // Log activity
-    await (prisma as any).dealRoomActivity.create({
+    await prisma.dealRoomActivity.create({
       data: {
         dealRoomId: id,
         userEmail,
@@ -95,7 +95,7 @@ export async function DELETE(
 
   try {
     // Check if requester has permission (owner or admin), or is removing themselves
-    const requester = await (prisma as any).dealRoomMember.findFirst({
+    const requester = await prisma.dealRoomMember.findFirst({
       where: { dealRoomId: id, email: userEmail },
     });
 
@@ -111,7 +111,7 @@ export async function DELETE(
     }
 
     // Cannot remove the owner
-    const targetMember = await (prisma as any).dealRoomMember.findFirst({
+    const targetMember = await prisma.dealRoomMember.findFirst({
       where: { dealRoomId: id, email: memberEmail },
     });
 
@@ -123,12 +123,12 @@ export async function DELETE(
       return NextResponse.json({ error: 'Cannot remove the room owner' }, { status: 400 });
     }
 
-    await (prisma as any).dealRoomMember.delete({
+    await prisma.dealRoomMember.delete({
       where: { id: targetMember.id },
     });
 
     // Log activity
-    await (prisma as any).dealRoomActivity.create({
+    await prisma.dealRoomActivity.create({
       data: {
         dealRoomId: id,
         userEmail,

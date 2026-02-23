@@ -42,7 +42,7 @@ export async function PATCH(
     }
 
     // Verify report exists
-    const existingReport = await (prisma as any).contentReport.findUnique({
+    const existingReport = await prisma.contentReport.findUnique({
       where: { id },
     });
 
@@ -51,7 +51,7 @@ export async function PATCH(
     }
 
     // Update the report
-    const updatedReport = await (prisma as any).contentReport.update({
+    const updatedReport = await prisma.contentReport.update({
       where: { id },
       data: {
         status,
@@ -67,7 +67,7 @@ export async function PATCH(
 
     // If actioned, create a ModerationAction record
     if (status === 'actioned') {
-      await (prisma as any).moderationAction.create({
+      await prisma.moderationAction.create({
         data: {
           moderatorId: session.user.id,
           targetUserId: existingReport.reporterId,

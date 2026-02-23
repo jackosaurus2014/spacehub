@@ -21,14 +21,13 @@ export async function POST(req: NextRequest) {
       return unauthorizedError();
     }
 
-    const result = await (prisma as any).notification.updateMany({
+    const result = await prisma.notification.updateMany({
       where: {
         userId: session.user.id,
         read: false,
       },
       data: {
         read: true,
-        readAt: new Date(),
       },
     });
 

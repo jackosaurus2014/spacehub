@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
     }
 
     const [reports, total] = await Promise.all([
-      (prisma as any).contentReport.findMany({
+      prisma.contentReport.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
           },
         },
       }),
-      (prisma as any).contentReport.count({ where }),
+      prisma.contentReport.count({ where }),
     ]);
 
     return NextResponse.json({

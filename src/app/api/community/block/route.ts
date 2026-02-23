@@ -23,7 +23,7 @@ export async function GET() {
       return unauthorizedError();
     }
 
-    const blocks = await (prisma as any).userBlock.findMany({
+    const blocks = await prisma.userBlock.findMany({
       where: { blockerId: session.user.id },
       select: { blockedId: true },
     });
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create block (upsert to handle duplicates gracefully)
-    await (prisma as any).userBlock.upsert({
+    await prisma.userBlock.upsert({
       where: {
         blockerId_blockedId: {
           blockerId: session.user.id,
@@ -123,7 +123,7 @@ export async function DELETE(req: NextRequest) {
       return validationError('targetUserId is required');
     }
 
-    await (prisma as any).userBlock.deleteMany({
+    await prisma.userBlock.deleteMany({
       where: {
         blockerId: session.user.id,
         blockedId: targetUserId,

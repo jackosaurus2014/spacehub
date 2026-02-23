@@ -24,7 +24,7 @@ export async function PUT(
     const { id } = params;
 
     // Ownership check
-    const existing = await (prisma as any).companyWatchlistItem.findUnique({
+    const existing = await prisma.companyWatchlistItem.findUnique({
       where: { id },
     });
     if (!existing) {
@@ -48,7 +48,7 @@ export async function PUT(
       updateData.notes = typeof body.notes === 'string' ? body.notes.trim() || null : null;
     }
 
-    const updated = await (prisma as any).companyWatchlistItem.update({
+    const updated = await prisma.companyWatchlistItem.update({
       where: { id },
       data: updateData,
     });
@@ -75,7 +75,7 @@ export async function DELETE(
     const { id } = params;
 
     // Ownership check
-    const existing = await (prisma as any).companyWatchlistItem.findUnique({
+    const existing = await prisma.companyWatchlistItem.findUnique({
       where: { id },
     });
     if (!existing) {
@@ -85,7 +85,7 @@ export async function DELETE(
       return unauthorizedError('Not authorized to delete this item');
     }
 
-    await (prisma as any).companyWatchlistItem.delete({
+    await prisma.companyWatchlistItem.delete({
       where: { id },
     });
 

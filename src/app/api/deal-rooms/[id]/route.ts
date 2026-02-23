@@ -21,7 +21,7 @@ export async function GET(
   const userEmail = session.user.email;
 
   try {
-    const room = await (prisma as any).dealRoom.findUnique({
+    const room = await prisma.dealRoom.findUnique({
       where: { id },
       include: {
         members: {
@@ -51,7 +51,7 @@ export async function GET(
     }
 
     // Update last access time
-    await (prisma as any).dealRoomMember.update({
+    await prisma.dealRoomMember.update({
       where: { id: membership.id },
       data: { lastAccessAt: new Date() },
     });
@@ -88,7 +88,7 @@ export async function PUT(
     }
 
     // Check if user is owner or admin
-    const membership = await (prisma as any).dealRoomMember.findFirst({
+    const membership = await prisma.dealRoomMember.findFirst({
       where: { dealRoomId: id, email: userEmail, role: { in: ['owner', 'admin'] } },
     });
 
@@ -105,7 +105,7 @@ export async function PUT(
     if (ndaText !== undefined) updateData.ndaText = ndaText?.trim() || null;
     if (status !== undefined) updateData.status = status;
 
-    const updatedRoom = await (prisma as any).dealRoom.update({
+    const updatedRoom = await prisma.dealRoom.update({
       where: { id },
       data: updateData,
       include: {
@@ -116,7 +116,7 @@ export async function PUT(
     });
 
     // Log activity
-    await (prisma as any).dealRoomActivity.create({
+    await prisma.dealRoomActivity.create({
       data: {
         dealRoomId: id,
         userEmail,
@@ -148,7 +148,7 @@ export async function DELETE(
 
   try {
     // Only owners can archive
-    const membership = await (prisma as any).dealRoomMember.findFirst({
+    const membership = await prisma.dealRoomMember.findFirst({
       where: { dealRoomId: id, email: userEmail, role: 'owner' },
     });
 
@@ -156,12 +156,12 @@ export async function DELETE(
       return NextResponse.json({ error: 'Only owners can archive a room' }, { status: 403 });
     }
 
-    await (prisma as any).dealRoom.update({
+    await prisma.dealRoom.update({
       where: { id },
       data: { status: 'archived' },
     });
 
-    await (prisma as any).dealRoomActivity.create({
+    await prisma.dealRoomActivity.create({
       data: {
         dealRoomId: id,
         userEmail,

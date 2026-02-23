@@ -142,7 +142,7 @@ export async function deliverAlerts(prisma: PrismaClient): Promise<{
             }
 
             // Get user's native push tokens
-            const tokens = await (prisma as any).pushToken.findMany({
+            const tokens = await prisma.pushToken.findMany({
               where: { userId: delivery.userId },
               select: { token: true, platform: true },
             });

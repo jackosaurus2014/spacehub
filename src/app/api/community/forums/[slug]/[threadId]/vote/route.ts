@@ -40,7 +40,7 @@ export async function POST(
     const userId = session.user.id;
 
     // Verify thread exists
-    const thread = await (prisma as any).forumThread.findUnique({
+    const thread = await prisma.forumThread.findUnique({
       where: { id: threadId },
       select: { id: true, authorId: true },
     });
@@ -50,7 +50,7 @@ export async function POST(
     }
 
     // Check for existing vote
-    const existingVote = await (prisma as any).threadVote.findUnique({
+    const existingVote = await prisma.threadVote.findUnique({
       where: {
         threadId_userId: {
           threadId,
@@ -64,7 +64,7 @@ export async function POST(
     if (existingVote) {
       if (existingVote.value === value) {
         // Same vote value -- toggle off (remove vote)
-        await (prisma as any).threadVote.delete({
+        await prisma.threadVote.delete({
           where: {
             threadId_userId: {
               threadId,
@@ -75,7 +75,7 @@ export async function POST(
         userVote = null;
       } else {
         // Different vote value -- update
-        await (prisma as any).threadVote.update({
+        await prisma.threadVote.update({
           where: {
             threadId_userId: {
               threadId,
@@ -87,7 +87,7 @@ export async function POST(
       }
     } else {
       // No existing vote -- create
-      await (prisma as any).threadVote.create({
+      await prisma.threadVote.create({
         data: {
           threadId,
           userId,
@@ -97,16 +97,16 @@ export async function POST(
     }
 
     // Recalculate vote counts
-    const upvoteCount = await (prisma as any).threadVote.count({
+    const upvoteCount = await prisma.threadVote.count({
       where: { threadId, value: 1 },
     });
 
-    const downvoteCount = await (prisma as any).threadVote.count({
+    const downvoteCount = await prisma.threadVote.count({
       where: { threadId, value: -1 },
     });
 
     // Update thread with new counts
-    await (prisma as any).forumThread.update({
+    await prisma.forumThread.update({
       where: { id: threadId },
       data: { upvoteCount, downvoteCount } as any,
     });

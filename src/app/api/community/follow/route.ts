@@ -27,17 +27,17 @@ export async function GET() {
 
     const [followingCount, followersCount, following, companyFollows] =
       await Promise.all([
-        (prisma as any).userFollow.count({
+        prisma.userFollow.count({
           where: { followerId: userId },
         }),
-        (prisma as any).userFollow.count({
+        prisma.userFollow.count({
           where: { followingId: userId },
         }),
-        (prisma as any).userFollow.findMany({
+        prisma.userFollow.findMany({
           where: { followerId: userId },
           select: { followingId: true },
         }),
-        (prisma as any).companyFollow.findMany({
+        prisma.companyFollow.findMany({
           where: { userId },
           select: { companyId: true },
         }),
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Create follow (ignore if already exists)
-      await (prisma as any).userFollow.upsert({
+      await prisma.userFollow.upsert({
         where: {
           followerId_followingId: {
             followerId: session.user.id,
@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Company follow
-    await (prisma as any).companyFollow.upsert({
+    await prisma.companyFollow.upsert({
       where: {
         userId_companyId: {
           userId: session.user.id,
@@ -184,7 +184,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     if (targetUserId) {
-      await (prisma as any).userFollow.deleteMany({
+      await prisma.userFollow.deleteMany({
         where: {
           followerId: session.user.id,
           followingId: targetUserId,
@@ -203,7 +203,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Company unfollow
-    await (prisma as any).companyFollow.deleteMany({
+    await prisma.companyFollow.deleteMany({
       where: {
         userId: session.user.id,
         companyId,

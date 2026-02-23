@@ -22,7 +22,7 @@ export async function GET(
 
   try {
     // Verify membership
-    const membership = await (prisma as any).dealRoomMember.findFirst({
+    const membership = await prisma.dealRoomMember.findFirst({
       where: { dealRoomId: id, email: userEmail },
     });
 
@@ -30,13 +30,13 @@ export async function GET(
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    const activities = await (prisma as any).dealRoomActivity.findMany({
+    const activities = await prisma.dealRoomActivity.findMany({
       where: { dealRoomId: id },
       orderBy: { createdAt: 'desc' },
       take: limit,
     });
 
-    const total = await (prisma as any).dealRoomActivity.count({
+    const total = await prisma.dealRoomActivity.count({
       where: { dealRoomId: id },
     });
 

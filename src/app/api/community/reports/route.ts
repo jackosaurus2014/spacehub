@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     const reporterId = session.user.id;
 
     // Prevent duplicate reports (same user, same content, non-dismissed)
-    const existingReport = await (prisma as any).contentReport.findFirst({
+    const existingReport = await prisma.contentReport.findFirst({
       where: {
         reporterId,
         contentType,
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     switch (contentType) {
       case 'thread': {
-        const thread = await (prisma as any).forumThread.findUnique({
+        const thread = await prisma.forumThread.findUnique({
           where: { id: contentId },
           select: { id: true },
         });
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
         break;
       }
       case 'post': {
-        const post = await (prisma as any).forumPost.findUnique({
+        const post = await prisma.forumPost.findUnique({
           where: { id: contentId },
           select: { id: true },
         });
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
         break;
       }
       case 'message': {
-        const message = await (prisma as any).directMessage.findUnique({
+        const message = await prisma.directMessage.findUnique({
           where: { id: contentId },
           select: { id: true },
         });
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
         break;
       }
       case 'profile': {
-        const profile = await (prisma as any).professionalProfile.findUnique({
+        const profile = await prisma.professionalProfile.findUnique({
           where: { id: contentId },
           select: { id: true },
         });
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create the report
-    const report = await (prisma as any).contentReport.create({
+    const report = await prisma.contentReport.create({
       data: {
         reporterId,
         contentType,

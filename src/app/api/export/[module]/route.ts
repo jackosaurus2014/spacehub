@@ -68,7 +68,7 @@ export async function GET(
     const rawLimit = parseInt(searchParams.get('limit') || '100', 10) || 100;
     const limit = constrainPagination(rawLimit, 1000);
 
-    // Fetch data from the corresponding Prisma model
+    // Fetch data from the corresponding Prisma model (dynamic access requires cast)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const model = (prisma as any)[modelName];
     const data = await model.findMany({

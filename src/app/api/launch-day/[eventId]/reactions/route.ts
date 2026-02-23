@@ -19,7 +19,7 @@ export async function GET(
     const thirtySecondsAgo = new Date(Date.now() - 30000);
 
     // Get counts per emoji in the last 30 seconds
-    const recentReactions = await (prisma as any).launchReaction.groupBy({
+    const recentReactions = await prisma.launchReaction.groupBy({
       by: ['emoji'],
       where: {
         eventId: params.eventId,
@@ -35,7 +35,7 @@ export async function GET(
     }
 
     // Also get total all-time counts
-    const totalReactions = await (prisma as any).launchReaction.groupBy({
+    const totalReactions = await prisma.launchReaction.groupBy({
       by: ['emoji'],
       where: { eventId: params.eventId },
       _count: { emoji: true },
@@ -81,7 +81,7 @@ export async function POST(
 
     // Rate limit: check last reaction from this user
     const twoSecondsAgo = new Date(Date.now() - 2000);
-    const recentFromUser = await (prisma as any).launchReaction.findFirst({
+    const recentFromUser = await prisma.launchReaction.findFirst({
       where: {
         eventId: params.eventId,
         userId,
@@ -93,7 +93,7 @@ export async function POST(
       return NextResponse.json({ error: 'Too fast! Wait a moment.' }, { status: 429 });
     }
 
-    await (prisma as any).launchReaction.create({
+    await prisma.launchReaction.create({
       data: {
         eventId: params.eventId,
         userId,

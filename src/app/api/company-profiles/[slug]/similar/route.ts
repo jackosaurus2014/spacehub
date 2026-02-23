@@ -15,7 +15,7 @@ export async function GET(
 
     // First, look up the company ID from the slug
     const { default: prisma } = await import('@/lib/db');
-    const company = await (prisma as any).companyProfile.findUnique({
+    const company = await prisma.companyProfile.findUnique({
       where: { slug },
       select: { id: true },
     });

@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
     }
 
     const [profiles, total] = await Promise.all([
-      (prisma as any).professionalProfile.findMany({
+      prisma.professionalProfile.findMany({
         where,
         include: {
           user: {
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
         skip,
         take: limit,
       }),
-      (prisma as any).professionalProfile.count({ where }),
+      prisma.professionalProfile.count({ where }),
     ]);
 
     return NextResponse.json({
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const profile = await (prisma as any).professionalProfile.upsert({
+    const profile = await prisma.professionalProfile.upsert({
       where: { userId: session.user.id },
       create: {
         userId: session.user.id,

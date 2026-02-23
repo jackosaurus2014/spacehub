@@ -7,7 +7,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const insight = await (prisma as any).aIInsight.findUnique({
+  const insight = await prisma.aIInsight.findUnique({
     where: { slug },
     select: { title: true, summary: true, category: true },
   });

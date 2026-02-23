@@ -14,7 +14,7 @@ export async function GET(
   { params }: { params: { eventId: string } }
 ) {
   try {
-    const polls = await (prisma as any).launchPoll.findMany({
+    const polls = await prisma.launchPoll.findMany({
       where: {
         eventId: params.eventId,
         isActive: true,
@@ -58,7 +58,7 @@ export async function POST(
     }
     const { question, options } = validation.data;
 
-    const poll = await (prisma as any).launchPoll.create({
+    const poll = await prisma.launchPoll.create({
       data: {
         eventId: params.eventId,
         question,

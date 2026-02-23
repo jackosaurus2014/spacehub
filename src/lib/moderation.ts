@@ -59,7 +59,7 @@ export async function isUserBlocked(
   blockerId: string,
   blockedId: string
 ): Promise<boolean> {
-  const block = await (prisma as any).userBlock.findUnique({
+  const block = await prisma.userBlock.findUnique({
     where: {
       blockerId_blockedId: { blockerId, blockedId },
     },
@@ -68,7 +68,7 @@ export async function isUserBlocked(
 }
 
 export async function getBlockedUserIds(userId: string): Promise<string[]> {
-  const blocks = await (prisma as any).userBlock.findMany({
+  const blocks = await prisma.userBlock.findMany({
     where: { blockerId: userId },
     select: { blockedId: true },
   });

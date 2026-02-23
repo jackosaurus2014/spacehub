@@ -42,13 +42,13 @@ export async function GET(req: NextRequest) {
 
     // Fetch actions with moderator and target user info
     const [actions, total] = await Promise.all([
-      (prisma as any).moderationAction.findMany({
+      prisma.moderationAction.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      (prisma as any).moderationAction.count({ where }),
+      prisma.moderationAction.count({ where }),
     ]);
 
     // Gather unique user IDs for moderators and targets

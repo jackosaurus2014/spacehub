@@ -34,7 +34,7 @@ export async function GET(
     const skip = (page - 1) * limit;
 
     // Find the category
-    const category = await (prisma as any).forumCategory.findUnique({
+    const category = await prisma.forumCategory.findUnique({
       where: { slug },
       select: { id: true, slug: true, name: true, description: true, icon: true },
     });
@@ -57,7 +57,7 @@ export async function GET(
     const where = { categoryId: category.id };
 
     const [threads, total] = await Promise.all([
-      (prisma as any).forumThread.findMany({
+      prisma.forumThread.findMany({
         where,
         include: {
           author: {
@@ -71,7 +71,7 @@ export async function GET(
         skip,
         take: limit,
       }),
-      (prisma as any).forumThread.count({ where }),
+      prisma.forumThread.count({ where }),
     ]);
 
     // Transform to include postCount, tags, vote counts
@@ -146,7 +146,7 @@ export async function POST(
     const { slug } = await params;
 
     // Find the category
-    const category = await (prisma as any).forumCategory.findUnique({
+    const category = await prisma.forumCategory.findUnique({
       where: { slug },
       select: { id: true },
     });
@@ -177,7 +177,7 @@ export async function POST(
     // Validate tags if provided (max 5, must be from allowed list)
     const validTags = Array.isArray(tags) ? tags.filter((t: string) => typeof t === 'string').slice(0, 5) : [];
 
-    const thread = await (prisma as any).forumThread.create({
+    const thread = await prisma.forumThread.create({
       data: {
         categoryId: category.id,
         authorId: session.user.id,
@@ -202,7 +202,7 @@ export async function POST(
     });
 
     // Auto-subscribe the thread author
-    (prisma as any).threadSubscription
+    prisma.threadSubscription
       .create({ data: { userId: session.user.id, threadId: thread.id } })
       .catch(() => {});
 

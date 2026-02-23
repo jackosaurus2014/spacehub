@@ -12,7 +12,7 @@ export async function GET(
   try {
     const { slug } = params;
 
-    const explainer = await (prisma as any).regulationExplainer.findUnique({
+    const explainer = await prisma.regulationExplainer.findUnique({
       where: { slug },
     });
 
@@ -21,7 +21,7 @@ export async function GET(
     }
 
     // Increment view count (fire-and-forget)
-    (prisma as any).regulationExplainer.update({
+    prisma.regulationExplainer.update({
       where: { slug },
       data: { viewCount: { increment: 1 } },
     }).catch(() => {});

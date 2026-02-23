@@ -37,7 +37,7 @@ export async function findSimilarCompanies(
 ): Promise<SimilarCompany[]> {
   try {
     // 1. Get the target company
-    const target = await (prisma as any).companyProfile.findUnique({
+    const target = await prisma.companyProfile.findUnique({
       where: { id: companyId },
       select: {
         id: true,
@@ -74,7 +74,7 @@ export async function findSimilarCompanies(
     );
 
     // Also find reverse mappings (where this company is the competitor)
-    const reverseCompetitors = await (prisma as any).competitiveMapping.findMany({
+    const reverseCompetitors = await prisma.competitiveMapping.findMany({
       where: { competitorId: companyId },
       select: { companyId: true },
     });
@@ -83,7 +83,7 @@ export async function findSimilarCompanies(
     }
 
     // 2. Query candidate companies: same sector OR overlapping tags OR competitor
-    const candidates = await (prisma as any).companyProfile.findMany({
+    const candidates = await prisma.companyProfile.findMany({
       where: {
         id: { not: companyId },
         status: { not: 'defunct' },

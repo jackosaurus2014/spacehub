@@ -26,7 +26,7 @@ export async function GET() {
     const userId = session.user.id;
 
     // Find all conversations the user participates in
-    const participations = await (prisma as any).conversationParticipant.findMany({
+    const participations = await prisma.conversationParticipant.findMany({
       where: { userId },
       select: { conversationId: true, lastReadAt: true },
     });
@@ -49,7 +49,7 @@ export async function GET() {
     );
 
     // Fetch conversations with last message and other participant info
-    const conversations = await (prisma as any).conversation.findMany({
+    const conversations = await prisma.conversation.findMany({
       where: { id: { in: conversationIds } },
       include: {
         participants: {
@@ -78,14 +78,14 @@ export async function GET() {
       conversations.map(async (conv: any) => {
         const lastRead = lastReadMap.get(conv.id) as Date | null;
         const unreadCount = lastRead
-          ? await (prisma as any).directMessage.count({
+          ? await prisma.directMessage.count({
               where: {
                 conversationId: conv.id,
                 senderId: { not: userId },
                 createdAt: { gt: lastRead },
               },
             })
-          : await (prisma as any).directMessage.count({
+          : await prisma.directMessage.count({
               where: {
                 conversationId: conv.id,
                 senderId: { not: userId },
@@ -188,7 +188,7 @@ export async function POST(req: NextRequest) {
     const userId = session.user.id;
 
     // Find existing conversation between these two users
-    const existingParticipation = await (prisma as any).conversationParticipant.findMany({
+    const existingParticipation = await prisma.conversationParticipant.findMany({
       where: { userId },
       select: { conversationId: true },
     });
@@ -201,7 +201,7 @@ export async function POST(req: NextRequest) {
       );
 
       // Check if the recipient is also in any of these conversations
-      const sharedParticipation = await (prisma as any).conversationParticipant.findFirst({
+      const sharedParticipation = await prisma.conversationParticipant.findFirst({
         where: {
           userId: recipientId,
           conversationId: { in: convIds },
@@ -218,7 +218,7 @@ export async function POST(req: NextRequest) {
 
     // If no existing conversation, create one
     if (!conversationId) {
-      const conversation = await (prisma as any).conversation.create({
+      const conversation = await prisma.conversation.create({
         data: {
           lastMessageAt: now,
           participants: {
@@ -232,14 +232,14 @@ export async function POST(req: NextRequest) {
       conversationId = conversation.id;
     } else {
       // Update lastMessageAt on existing conversation
-      await (prisma as any).conversation.update({
+      await prisma.conversation.update({
         where: { id: conversationId },
         data: { lastMessageAt: now },
       });
     }
 
     // Create the message
-    const message = await (prisma as any).directMessage.create({
+    const message = await prisma.directMessage.create({
       data: {
         conversationId,
         senderId: userId,
@@ -253,7 +253,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Update sender's lastReadAt to now
-    await (prisma as any).conversationParticipant.updateMany({
+    await prisma.conversationParticipant.updateMany({
       where: {
         conversationId,
         userId,

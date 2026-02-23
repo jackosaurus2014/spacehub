@@ -15,7 +15,7 @@ export async function logAuditAction(params: {
   ipAddress?: string;
 }): Promise<void> {
   try {
-    await (prisma as any).auditLog.create({
+    await prisma.auditLog.create({
       data: {
         adminId: params.adminId,
         action: params.action,

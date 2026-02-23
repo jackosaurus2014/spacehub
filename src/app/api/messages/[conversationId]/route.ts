@@ -31,7 +31,7 @@ export async function GET(
     const userId = session.user.id;
 
     // Verify the user is a participant
-    const participant = await (prisma as any).conversationParticipant.findUnique({
+    const participant = await prisma.conversationParticipant.findUnique({
       where: {
         conversationId_userId: {
           conversationId,
@@ -55,7 +55,7 @@ export async function GET(
 
     // Fetch messages with sender info
     const [messages, total] = await Promise.all([
-      (prisma as any).directMessage.findMany({
+      prisma.directMessage.findMany({
         where: { conversationId },
         include: {
           sender: {
@@ -66,14 +66,14 @@ export async function GET(
         skip,
         take: limit,
       }),
-      (prisma as any).directMessage.count({
+      prisma.directMessage.count({
         where: { conversationId },
       }),
     ]);
 
     // Auto-mark conversation as read
     const now = new Date();
-    await (prisma as any).conversationParticipant.update({
+    await prisma.conversationParticipant.update({
       where: {
         conversationId_userId: {
           conversationId,
@@ -121,7 +121,7 @@ export async function POST(
     const userId = session.user.id;
 
     // Verify conversation exists
-    const conversation = await (prisma as any).conversation.findUnique({
+    const conversation = await prisma.conversation.findUnique({
       where: { id: conversationId },
       select: { id: true },
     });
@@ -131,7 +131,7 @@ export async function POST(
     }
 
     // Verify user is a participant
-    const participant = await (prisma as any).conversationParticipant.findUnique({
+    const participant = await prisma.conversationParticipant.findUnique({
       where: {
         conversationId_userId: {
           conversationId,
@@ -146,7 +146,7 @@ export async function POST(
 
     // Update lastReadAt
     const now = new Date();
-    await (prisma as any).conversationParticipant.update({
+    await prisma.conversationParticipant.update({
       where: {
         conversationId_userId: {
           conversationId,

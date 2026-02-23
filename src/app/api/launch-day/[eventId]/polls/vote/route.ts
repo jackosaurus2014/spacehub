@@ -28,7 +28,7 @@ export async function POST(
     const { pollId, optionIndex: option } = validation.data;
 
     // Verify poll exists and is active
-    const poll = await (prisma as any).launchPoll.findUnique({
+    const poll = await prisma.launchPoll.findUnique({
       where: { id: pollId },
     });
 
@@ -47,7 +47,7 @@ export async function POST(
 
     // Create vote (unique constraint prevents double voting)
     try {
-      await (prisma as any).launchPollVote.create({
+      await prisma.launchPollVote.create({
         data: {
           pollId,
           userId,
@@ -66,7 +66,7 @@ export async function POST(
     const optionKey = String(option);
     currentVotes[optionKey] = (currentVotes[optionKey] || 0) + 1;
 
-    await (prisma as any).launchPoll.update({
+    await prisma.launchPoll.update({
       where: { id: pollId },
       data: { votes: currentVotes as any },
     });

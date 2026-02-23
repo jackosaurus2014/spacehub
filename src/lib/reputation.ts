@@ -116,17 +116,17 @@ export async function updateReputation(
 export async function recalculateReputation(userId: string): Promise<number> {
   try {
     // Count threads created by the user
-    const threadCount = await (prisma as any).forumThread.count({
+    const threadCount = await prisma.forumThread.count({
       where: { authorId: userId },
     });
 
     // Count posts created by the user
-    const postCount = await (prisma as any).forumPost.count({
+    const postCount = await prisma.forumPost.count({
       where: { authorId: userId },
     });
 
     // Count upvotes received on threads authored by the user
-    const threadUpvotes = await (prisma as any).threadVote.count({
+    const threadUpvotes = await prisma.threadVote.count({
       where: {
         value: 1,
         thread: { authorId: userId },
@@ -134,7 +134,7 @@ export async function recalculateReputation(userId: string): Promise<number> {
     });
 
     // Count downvotes received on threads authored by the user
-    const threadDownvotes = await (prisma as any).threadVote.count({
+    const threadDownvotes = await prisma.threadVote.count({
       where: {
         value: -1,
         thread: { authorId: userId },
@@ -142,7 +142,7 @@ export async function recalculateReputation(userId: string): Promise<number> {
     });
 
     // Count upvotes received on posts authored by the user
-    const postUpvotes = await (prisma as any).postVote.count({
+    const postUpvotes = await prisma.postVote.count({
       where: {
         value: 1,
         post: { authorId: userId },
@@ -150,7 +150,7 @@ export async function recalculateReputation(userId: string): Promise<number> {
     });
 
     // Count downvotes received on posts authored by the user
-    const postDownvotes = await (prisma as any).postVote.count({
+    const postDownvotes = await prisma.postVote.count({
       where: {
         value: -1,
         post: { authorId: userId },
@@ -158,7 +158,7 @@ export async function recalculateReputation(userId: string): Promise<number> {
     });
 
     // Count accepted answers (posts by this user that are accepted)
-    const acceptedAnswers = await (prisma as any).forumPost.count({
+    const acceptedAnswers = await prisma.forumPost.count({
       where: {
         authorId: userId,
         isAccepted: true,

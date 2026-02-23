@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
 
     let professionalProfile = null;
     try {
-      professionalProfile = await (prisma as any).professionalProfile.findUnique({
+      professionalProfile = await prisma.professionalProfile.findUnique({
         where: { userId },
       });
     } catch {
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
 
     let forumThreads = null;
     try {
-      forumThreads = await (prisma as any).forumThread.findMany({
+      forumThreads = await prisma.forumThread.findMany({
         where: { authorId: userId },
         include: {
           posts: {
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
 
     let forumPosts = null;
     try {
-      forumPosts = await (prisma as any).forumPost.findMany({
+      forumPosts = await prisma.forumPost.findMany({
         where: { authorId: userId },
         select: {
           id: true,
@@ -91,7 +91,7 @@ export async function GET(req: NextRequest) {
 
     let directMessages = null;
     try {
-      directMessages = await (prisma as any).directMessage.findMany({
+      directMessages = await prisma.directMessage.findMany({
         where: { senderId: userId },
         select: {
           id: true,
@@ -107,7 +107,7 @@ export async function GET(req: NextRequest) {
 
     let conversations = null;
     try {
-      const participations = await (prisma as any).conversationParticipant.findMany({
+      const participations = await prisma.conversationParticipant.findMany({
         where: { userId },
         select: {
           conversationId: true,
@@ -122,7 +122,7 @@ export async function GET(req: NextRequest) {
 
     let following = null;
     try {
-      following = await (prisma as any).userFollow.findMany({
+      following = await prisma.userFollow.findMany({
         where: { followerId: userId },
         include: {
           following: {
@@ -137,7 +137,7 @@ export async function GET(req: NextRequest) {
 
     let followers = null;
     try {
-      followers = await (prisma as any).userFollow.findMany({
+      followers = await prisma.userFollow.findMany({
         where: { followingId: userId },
         include: {
           follower: {
@@ -152,7 +152,7 @@ export async function GET(req: NextRequest) {
 
     let companyFollows = null;
     try {
-      companyFollows = await (prisma as any).companyFollow.findMany({
+      companyFollows = await prisma.companyFollow.findMany({
         where: { userId },
         orderBy: { createdAt: 'desc' },
       });
@@ -162,7 +162,7 @@ export async function GET(req: NextRequest) {
 
     let alertRules = null;
     try {
-      alertRules = await (prisma as any).alertRule.findMany({
+      alertRules = await prisma.alertRule.findMany({
         where: { userId },
         orderBy: { createdAt: 'desc' },
       });
@@ -172,7 +172,7 @@ export async function GET(req: NextRequest) {
 
     let savedSearches = null;
     try {
-      savedSearches = await (prisma as any).savedSearch.findMany({
+      savedSearches = await prisma.savedSearch.findMany({
         where: { userId },
         orderBy: { createdAt: 'desc' },
       });
@@ -182,7 +182,7 @@ export async function GET(req: NextRequest) {
 
     let companyWatchlistItems = null;
     try {
-      companyWatchlistItems = await (prisma as any).companyWatchlistItem.findMany({
+      companyWatchlistItems = await prisma.companyWatchlistItem.findMany({
         where: { userId },
         orderBy: { createdAt: 'desc' },
       });

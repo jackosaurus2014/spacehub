@@ -25,7 +25,7 @@ export async function GET(request: Request) {
       return validationError('companyProfileId is required');
     }
 
-    const item = await (prisma as any).companyWatchlistItem.findUnique({
+    const item = await prisma.companyWatchlistItem.findUnique({
       where: {
         userId_companyProfileId: {
           userId: session.user.id,

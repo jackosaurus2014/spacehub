@@ -38,12 +38,12 @@ export async function GET(req: NextRequest) {
 
     // Fetch notifications and unread count in parallel
     const [notifications, unreadCount] = await Promise.all([
-      (prisma as any).notification.findMany({
+      prisma.notification.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         take: limit,
       }),
-      (prisma as any).notification.count({
+      prisma.notification.count({
         where: {
           userId: session.user.id,
           read: false,
@@ -85,14 +85,13 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Update only notifications belonging to the current user
-    const result = await (prisma as any).notification.updateMany({
+    const result = await prisma.notification.updateMany({
       where: {
         id: { in: ids },
         userId: session.user.id,
       },
       data: {
         read: true,
-        readAt: new Date(),
       },
     });
 

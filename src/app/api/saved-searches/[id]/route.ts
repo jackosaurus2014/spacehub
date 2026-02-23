@@ -24,7 +24,7 @@ export async function PUT(
     const { id } = params;
 
     // Ownership check
-    const existing = await (prisma as any).savedSearch.findUnique({
+    const existing = await prisma.savedSearch.findUnique({
       where: { id },
     });
     if (!existing) {
@@ -50,7 +50,7 @@ export async function PUT(
       updateData.query = typeof body.query === 'string' ? body.query.trim() || null : null;
     }
 
-    const updated = await (prisma as any).savedSearch.update({
+    const updated = await prisma.savedSearch.update({
       where: { id },
       data: updateData,
     });
@@ -77,7 +77,7 @@ export async function DELETE(
     const { id } = params;
 
     // Ownership check
-    const existing = await (prisma as any).savedSearch.findUnique({
+    const existing = await prisma.savedSearch.findUnique({
       where: { id },
     });
     if (!existing) {
@@ -87,7 +87,7 @@ export async function DELETE(
       return unauthorizedError('Not authorized to delete this search');
     }
 
-    await (prisma as any).savedSearch.delete({
+    await prisma.savedSearch.delete({
       where: { id },
     });
 

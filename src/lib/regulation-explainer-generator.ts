@@ -81,7 +81,7 @@ export async function generateRegulationExplainers(): Promise<{
   const existingSlugs = new Set<string>();
   const existingDockets = new Set<string>();
 
-  const existing = await (prisma as any).regulationExplainer.findMany({
+  const existing = await prisma.regulationExplainer.findMany({
     select: { slug: true, regulationDocketNumber: true },
   });
   for (const e of existing) {
@@ -207,7 +207,7 @@ Respond with valid JSON (no markdown code fences):
     const impactLevel = validImpactLevels.has(explainer.impactLevel) ? explainer.impactLevel : 'medium';
 
     try {
-      const result = await (prisma as any).regulationExplainer.upsert({
+      const result = await prisma.regulationExplainer.upsert({
         where: { slug },
         create: {
           slug,

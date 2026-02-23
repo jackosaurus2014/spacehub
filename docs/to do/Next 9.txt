@@ -1,0 +1,145 @@
+SPACENEXUS — NEXT 9: PRODUCTION HARDENING & TYPE SAFETY
+========================================================
+Generated 2026-02-23 after Next 8 platform audit completion (26/28 tasks).
+
+Platform state: 437 routes, 153 Prisma models, 88 pages, 1,401 tests passing.
+Focus: Type safety, data quality, console cleanup, dependency upgrades.
+
+=============================================================
+TIER 1 — PRISMA TYPE SAFETY (262 casts across 63 files)
+=============================================================
+
+1.  REMOVE (prisma as any) FROM API ROUTES (~45 files, ~180 casts)
+    Replace (prisma as any).modelName → prisma.modelName in all src/app/api/**/*.ts
+    Prisma types confirmed present in node_modules/.prisma/client/index.d.ts.
+STATUS:
+
+2.  REMOVE (prisma as any) FROM LIB FILES (~18 files, ~80 casts)
+    Files: alerts/*.ts, reputation.ts, moderation.ts, notifications-server.ts,
+    similar-companies.ts, forum-digest.ts, report-generator.ts, audit-log.ts,
+    company-digest-generator.ts, regulation-explainer-generator.ts, layout files.
+STATUS:
+
+3.  REMOVE (prisma as any) FROM TEST FILES (2 files, 2 casts)
+    Trivial cleanup.
+STATUS:
+
+
+=============================================================
+TIER 2 — SEED DYNAMICCONTENT FOR MOCK APIs
+=============================================================
+
+4.  SEED SPACE-TOURISM DATA
+    Add space-tourism offerings to seed-dynamic-content.ts.
+    Key: space-tourism:offerings
+STATUS:
+
+5.  SEED SUPPLY-CHAIN DATA
+    Add companies, relationships, shortages to seed-dynamic-content.ts.
+    Keys: supply-chain:companies, supply-chain:relationships, supply-chain:shortages
+STATUS:
+
+6.  SEED SATELLITE TRACKING DATA
+    Add satellite catalog to seed-dynamic-content.ts.
+    Key: satellites:catalog
+STATUS:
+
+7.  SEED DEBRIS-MONITOR AND SOLAR-FLARES DATA
+    Verify Prisma tables (SolarFlare, DebrisObject) seeded via init endpoints.
+    If not, add from src/lib/fallback-space-weather.ts.
+STATUS:
+
+8.  ADD _meta RESPONSE FIELD TO ALL FALLBACK APIs
+    Add _meta: { source, refreshedAt, ttl } to 5 API responses.
+    Helps frontend display data freshness indicators.
+STATUS:
+
+
+=============================================================
+TIER 3 — FEATURE COMPLETION
+=============================================================
+
+9.  COMPLETE COMPLIANCE FETCH DB PERSISTENCE (only TODO in codebase)
+    File: src/app/api/compliance/fetch/route.ts line 125
+    Upsert fetched Federal Register documents into ProposedRegulation table.
+    Use docketNumber as unique identifier.
+STATUS:
+
+10. REPLACE LAUNCH WEATHER SEEDED RANDOM WITH REAL API
+    File: src/app/api/launch-day/[eventId]/weather/route.ts
+    Integrate NOAA Weather API (free, no key needed) for US launch sites.
+    Keep seededRandom as fallback. Use circuit breaker.
+STATUS:
+
+
+=============================================================
+TIER 4 — CLIENT LOGGER & CONSOLE CLEANUP (189 calls)
+=============================================================
+
+11. CREATE CLIENT-SIDE LOGGER UTILITY
+    Create src/lib/client-logger.ts with production-gated structured logging.
+    DO NOT touch: error.tsx files, ServiceWorkerRegistration.tsx, logger.ts.
+STATUS:
+
+12. REPLACE console.* IN SERVER-SIDE LIB FILES (~20 calls)
+    Replace with logger from src/lib/logger.ts.
+    Files: blog-content.ts, chart-export.ts, dashboard-layouts.ts, etc.
+STATUS:
+
+13. REPLACE console.* IN CLIENT COMPONENTS (~55 calls)
+    Use clientLogger in DataInitializer, HeroStats, module components.
+STATUS:
+
+14. REPLACE console.* IN PAGE COMPONENTS (~45 calls)
+    Use clientLogger in page-level useEffect catch blocks.
+    Skip error.tsx files (console.error is correct there).
+STATUS:
+
+
+=============================================================
+TIER 5 — DEPENDENCY UPGRADES
+=============================================================
+
+15. UPGRADE PRISMA 5.8 → 5.22 (latest 5.x, no breaking changes)
+    Update prisma + @prisma/client. Run generate, db push, build, test.
+STATUS:
+
+16. UPGRADE @anthropic-ai/sdk 0.72 → latest 0.x
+    Only used in marketplace copilot route. Low risk.
+STATUS:
+
+17. UPGRADE STRIPE 17.7 → 18.x (one major at a time)
+    Verify stripe.ts, stripe-helpers.ts, api/stripe/**/*.ts.
+STATUS:
+
+
+=============================================================
+TIER 6 — TESTING & VERIFICATION
+=============================================================
+
+18. ADD DYNAMICCONTENT SEEDING TESTS
+    Test bulkUpsertContent(), getModuleContent(), fallback behavior.
+STATUS:
+
+19. ADD COMPLIANCE PERSISTENCE TESTS
+    Test Federal Register → ProposedRegulation upsert, duplicate detection.
+STATUS:
+
+20. FULL BUILD + TEST VERIFICATION
+    Clean install, build, run all tests. Verify 0 TypeScript errors.
+STATUS:
+
+
+=============================================================
+TIER 7 — DOCUMENTATION & OBSERVABILITY
+=============================================================
+
+21. UPDATE CLAUDE.md AND MEMORY.md
+    Remove (prisma as any) workaround references.
+    Document clientLogger pattern. Update test count.
+STATUS:
+
+22. VERIFY AI DATA REFRESHER COVERS SEEDED MODULES
+    Check ai-data-refresher.ts has entries for space-tourism, supply-chain, satellites.
+    Verify cron scheduler triggers refreshes per FRESHNESS_POLICIES.
+STATUS:

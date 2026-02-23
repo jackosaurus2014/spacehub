@@ -28,7 +28,7 @@ export async function GET(
     const { slug, threadId } = await params;
 
     // Verify category exists
-    const category = await (prisma as any).forumCategory.findUnique({
+    const category = await prisma.forumCategory.findUnique({
       where: { slug },
       select: { id: true, slug: true, name: true },
     });
@@ -42,7 +42,7 @@ export async function GET(
     const userId = session?.user?.id;
 
     // Fetch thread with posts
-    const thread = await (prisma as any).forumThread.findUnique({
+    const thread = await prisma.forumThread.findUnique({
       where: { id: threadId },
       include: {
         author: {
@@ -67,7 +67,7 @@ export async function GET(
     }
 
     // Increment view count (fire and forget)
-    (prisma as any).forumThread
+    prisma.forumThread
       .update({
         where: { id: threadId },
         data: { viewCount: { increment: 1 } },
@@ -87,15 +87,15 @@ export async function GET(
     if (userId) {
       try {
         const [threadVote, subscription, postVotes] = await Promise.all([
-          (prisma as any).threadVote.findUnique({
+          prisma.threadVote.findUnique({
             where: { threadId_userId: { threadId, userId } },
             select: { value: true },
           }),
-          (prisma as any).threadSubscription.findUnique({
+          prisma.threadSubscription.findUnique({
             where: { userId_threadId: { userId, threadId } },
             select: { id: true },
           }),
-          (prisma as any).postVote.findMany({
+          prisma.postVote.findMany({
             where: { userId, postId: { in: thread.posts.map((p: any) => p.id) } },
             select: { postId: true, value: true },
           }),
@@ -181,7 +181,7 @@ export async function POST(
     const { slug, threadId } = await params;
 
     // Verify category exists
-    const category = await (prisma as any).forumCategory.findUnique({
+    const category = await prisma.forumCategory.findUnique({
       where: { slug },
       select: { id: true },
     });
@@ -191,9 +191,9 @@ export async function POST(
     }
 
     // Fetch thread to verify it exists and check locked status
-    const thread = await (prisma as any).forumThread.findUnique({
+    const thread = await prisma.forumThread.findUnique({
       where: { id: threadId },
-      select: { id: true, categoryId: true, isLocked: true },
+      select: { id: true, categoryId: true, isLocked: true, authorId: true },
     });
 
     if (!thread || thread.categoryId !== category.id) {
@@ -216,8 +216,8 @@ export async function POST(
     }
 
     // Create the post, update thread's updatedAt, and auto-subscribe the replier
-    const [post] = await (prisma as any).$transaction([
-      (prisma as any).forumPost.create({
+    const [post] = await prisma.$transaction([
+      prisma.forumPost.create({
         data: {
           threadId,
           authorId: session.user.id,
@@ -229,14 +229,14 @@ export async function POST(
           },
         },
       }),
-      (prisma as any).forumThread.update({
+      prisma.forumThread.update({
         where: { id: threadId },
         data: { updatedAt: new Date() },
       }),
     ]);
 
     // Auto-subscribe the replier to the thread (fire and forget)
-    (prisma as any).threadSubscription
+    prisma.threadSubscription
       .upsert({
         where: { userId_threadId: { userId: session.user.id, threadId } },
         create: { userId: session.user.id, threadId },
@@ -245,7 +245,7 @@ export async function POST(
       .catch(() => {});
 
     // Notify thread subscribers about the new reply (fire and forget)
-    const threadForNotify = await (prisma as any).forumThread.findUnique({
+    const threadForNotify = await prisma.forumThread.findUnique({
       where: { id: threadId },
       select: { title: true, categoryId: true, category: { select: { slug: true } } },
     });
@@ -316,7 +316,7 @@ export async function PATCH(
     const { content, title } = validation.data;
 
     // Verify category exists
-    const category = await (prisma as any).forumCategory.findUnique({
+    const category = await prisma.forumCategory.findUnique({
       where: { slug },
       select: { id: true },
     });
@@ -326,7 +326,7 @@ export async function PATCH(
     }
 
     // Find thread and verify it belongs to this category
-    const thread = await (prisma as any).forumThread.findUnique({
+    const thread = await prisma.forumThread.findUnique({
       where: { id: threadId },
       select: { id: true, categoryId: true, authorId: true },
     });
@@ -350,7 +350,7 @@ export async function PATCH(
       return validationError('No fields to update');
     }
 
-    const updatedThread = await (prisma as any).forumThread.update({
+    const updatedThread = await prisma.forumThread.update({
       where: { id: threadId },
       data: updateData,
       include: {
@@ -409,7 +409,7 @@ export async function DELETE(
     const { slug, threadId } = await params;
 
     // Verify category exists
-    const category = await (prisma as any).forumCategory.findUnique({
+    const category = await prisma.forumCategory.findUnique({
       where: { slug },
       select: { id: true },
     });
@@ -419,7 +419,7 @@ export async function DELETE(
     }
 
     // Find thread and verify it belongs to this category
-    const thread = await (prisma as any).forumThread.findUnique({
+    const thread = await prisma.forumThread.findUnique({
       where: { id: threadId },
       select: { id: true, categoryId: true, authorId: true },
     });
@@ -435,7 +435,7 @@ export async function DELETE(
 
     // If admin deleting someone else's thread, log moderation action
     if (session.user.isAdmin && thread.authorId !== session.user.id) {
-      await (prisma as any).moderationAction.create({
+      await prisma.moderationAction.create({
         data: {
           moderatorId: session.user.id,
           targetUserId: thread.authorId,
@@ -448,7 +448,7 @@ export async function DELETE(
     }
 
     // Delete thread (cascade deletes all posts via Prisma onDelete: Cascade)
-    await (prisma as any).forumThread.delete({
+    await prisma.forumThread.delete({
       where: { id: threadId },
     });
 

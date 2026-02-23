@@ -37,7 +37,7 @@ export async function processWatchlistAlerts(prisma: PrismaClient): Promise<{
     for (const article of recentNews) {
       for (const company of article.companyTags) {
         // Find watchers with notifyNews=true
-        const watchers = await (prisma as any).companyWatchlistItem.findMany({
+        const watchers = await prisma.companyWatchlistItem.findMany({
           where: {
             companyProfileId: company.id,
             notifyNews: true,
@@ -48,7 +48,7 @@ export async function processWatchlistAlerts(prisma: PrismaClient): Promise<{
         for (const watcher of watchers) {
           // Dedup check
           try {
-            await (prisma as any).watchlistAlertLog.create({
+            await prisma.watchlistAlertLog.create({
               data: {
                 userId: watcher.userId,
                 companyProfileId: company.id,
@@ -106,29 +106,29 @@ export async function processWatchlistAlerts(prisma: PrismaClient): Promise<{
     }
 
     // ─── Contract Alerts ───────────────────────────────────────
-    const recentContracts = await (prisma as any).governmentContractAward.findMany({
+    const recentContracts = await prisma.governmentContractAward.findMany({
       where: {
         awardDate: { gte: twentyFourHoursAgo },
-        companyProfileId: { not: null },
+        companyId: { not: null },
       },
       select: {
         id: true,
         title: true,
-        awardAmount: true,
+        value: true,
         agency: true,
-        companyProfileId: true,
-        companyProfile: {
+        companyId: true,
+        company: {
           select: { id: true, name: true, slug: true },
         },
       },
     });
 
     for (const contract of recentContracts) {
-      if (!contract.companyProfile) continue;
+      if (!contract.company) continue;
 
-      const watchers = await (prisma as any).companyWatchlistItem.findMany({
+      const watchers = await prisma.companyWatchlistItem.findMany({
         where: {
-          companyProfileId: contract.companyProfileId,
+          companyProfileId: contract.companyId!,
           notifyContracts: true,
         },
         select: { userId: true },
@@ -136,10 +136,10 @@ export async function processWatchlistAlerts(prisma: PrismaClient): Promise<{
 
       for (const watcher of watchers) {
         try {
-          await (prisma as any).watchlistAlertLog.create({
+          await prisma.watchlistAlertLog.create({
             data: {
               userId: watcher.userId,
-              companyProfileId: contract.companyProfileId,
+              companyProfileId: contract.companyId!,
               alertType: 'contract',
               referenceId: contract.id,
             },
@@ -148,8 +148,8 @@ export async function processWatchlistAlerts(prisma: PrismaClient): Promise<{
           continue;
         }
 
-        const amount = contract.awardAmount
-          ? `$${(contract.awardAmount / 1e6).toFixed(1)}M`
+        const amount = contract.value
+          ? `$${(contract.value / 1e6).toFixed(1)}M`
           : 'undisclosed amount';
 
         await prisma.alertDelivery.create({
@@ -157,14 +157,14 @@ export async function processWatchlistAlerts(prisma: PrismaClient): Promise<{
             userId: watcher.userId,
             channel: 'in_app',
             status: 'pending',
-            title: `${contract.companyProfile.name}: New ${amount} Contract`,
+            title: `${contract.company.name}: New ${amount} Contract`,
             message: contract.title || `New contract awarded by ${contract.agency}`,
             source: 'watchlist',
             data: {
               type: 'watchlist_contract',
-              companySlug: contract.companyProfile.slug,
-              companyName: contract.companyProfile.name,
-              link: `/company-profiles/${contract.companyProfile.slug}?tab=contracts`,
+              companySlug: contract.company.slug,
+              companyName: contract.company.name,
+              link: `/company-profiles/${contract.company.slug}?tab=contracts`,
             } as any,
           },
         });
@@ -174,12 +174,12 @@ export async function processWatchlistAlerts(prisma: PrismaClient): Promise<{
             userId: watcher.userId,
             channel: 'email',
             status: 'pending',
-            title: `${contract.companyProfile.name}: New ${amount} Contract`,
+            title: `${contract.company.name}: New ${amount} Contract`,
             message: contract.title || `New contract awarded by ${contract.agency}`,
             source: 'watchlist',
             data: {
               type: 'watchlist_contract',
-              companySlug: contract.companyProfile.slug,
+              companySlug: contract.company.slug,
               emailFrequency: 'daily_digest',
             } as any,
           },
@@ -190,28 +190,27 @@ export async function processWatchlistAlerts(prisma: PrismaClient): Promise<{
     }
 
     // ─── Listing Alerts ────────────────────────────────────────
-    const recentListings = await (prisma as any).serviceListing.findMany({
+    const recentListings = await prisma.serviceListing.findMany({
       where: {
         createdAt: { gte: twentyFourHoursAgo },
-        companyProfileId: { not: null },
       },
       select: {
         id: true,
-        title: true,
+        name: true,
         category: true,
-        companyProfileId: true,
-        companyProfile: {
+        companyId: true,
+        company: {
           select: { id: true, name: true, slug: true },
         },
       },
     });
 
     for (const listing of recentListings) {
-      if (!listing.companyProfile) continue;
+      if (!listing.company) continue;
 
-      const watchers = await (prisma as any).companyWatchlistItem.findMany({
+      const watchers = await prisma.companyWatchlistItem.findMany({
         where: {
-          companyProfileId: listing.companyProfileId,
+          companyProfileId: listing.companyId,
           notifyListings: true,
         },
         select: { userId: true },
@@ -219,10 +218,10 @@ export async function processWatchlistAlerts(prisma: PrismaClient): Promise<{
 
       for (const watcher of watchers) {
         try {
-          await (prisma as any).watchlistAlertLog.create({
+          await prisma.watchlistAlertLog.create({
             data: {
               userId: watcher.userId,
-              companyProfileId: listing.companyProfileId,
+              companyProfileId: listing.companyId,
               alertType: 'listing',
               referenceId: listing.id,
             },
@@ -236,13 +235,13 @@ export async function processWatchlistAlerts(prisma: PrismaClient): Promise<{
             userId: watcher.userId,
             channel: 'in_app',
             status: 'pending',
-            title: `${listing.companyProfile.name}: New Marketplace Listing`,
-            message: listing.title || `New ${listing.category} listing`,
+            title: `${listing.company.name}: New Marketplace Listing`,
+            message: listing.name || `New ${listing.category} listing`,
             source: 'watchlist',
             data: {
               type: 'watchlist_listing',
-              companySlug: listing.companyProfile.slug,
-              companyName: listing.companyProfile.name,
+              companySlug: listing.company.slug,
+              companyName: listing.company.name,
               link: `/marketplace/listings/${listing.id}`,
             } as any,
           },

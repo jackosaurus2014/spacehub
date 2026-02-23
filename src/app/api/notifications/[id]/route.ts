@@ -28,14 +28,13 @@ export async function PATCH(
     const { id } = await params;
 
     // Update only if it belongs to the current user
-    const result = await (prisma as any).notification.updateMany({
+    const result = await prisma.notification.updateMany({
       where: {
         id,
         userId: session.user.id,
       },
       data: {
         read: true,
-        readAt: new Date(),
       },
     });
 

@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     }
 
     const [explainers, total] = await Promise.all([
-      (prisma as any).regulationExplainer.findMany({
+      prisma.regulationExplainer.findMany({
         where,
         orderBy: { generatedAt: 'desc' },
         take: limit,
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
           createdAt: true,
         },
       }),
-      (prisma as any).regulationExplainer.count({ where }),
+      prisma.regulationExplainer.count({ where }),
     ]);
 
     // Parse JSON strings for response

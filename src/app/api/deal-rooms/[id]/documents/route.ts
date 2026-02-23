@@ -26,7 +26,7 @@ export async function GET(
 
   try {
     // Verify membership
-    const membership = await (prisma as any).dealRoomMember.findFirst({
+    const membership = await prisma.dealRoomMember.findFirst({
       where: { dealRoomId: id, email: userEmail },
     });
 
@@ -35,7 +35,7 @@ export async function GET(
     }
 
     // Check NDA acceptance if required
-    const room = await (prisma as any).dealRoom.findUnique({
+    const room = await prisma.dealRoom.findUnique({
       where: { id },
       select: { ndaRequired: true },
     });
@@ -49,7 +49,7 @@ export async function GET(
       where.category = category;
     }
 
-    const documents = await (prisma as any).dealRoomDocument.findMany({
+    const documents = await prisma.dealRoomDocument.findMany({
       where,
       orderBy: { createdAt: 'desc' },
     });
@@ -96,7 +96,7 @@ export async function POST(
     const docCategory = VALID_CATEGORIES.includes(category) ? category : 'general';
 
     // Verify membership and permission
-    const membership = await (prisma as any).dealRoomMember.findFirst({
+    const membership = await prisma.dealRoomMember.findFirst({
       where: { dealRoomId: id, email: userEmail, role: { in: ['owner', 'admin'] } },
     });
 
@@ -105,7 +105,7 @@ export async function POST(
     }
 
     // Check NDA
-    const room = await (prisma as any).dealRoom.findUnique({
+    const room = await prisma.dealRoom.findUnique({
       where: { id },
       select: { ndaRequired: true },
     });
@@ -115,11 +115,11 @@ export async function POST(
     }
 
     // Count existing docs with same name for versioning
-    const existingCount = await (prisma as any).dealRoomDocument.count({
+    const existingCount = await prisma.dealRoomDocument.count({
       where: { dealRoomId: id, name: name.trim() },
     });
 
-    const document = await (prisma as any).dealRoomDocument.create({
+    const document = await prisma.dealRoomDocument.create({
       data: {
         dealRoomId: id,
         name: name.trim(),
@@ -133,7 +133,7 @@ export async function POST(
     });
 
     // Log activity
-    await (prisma as any).dealRoomActivity.create({
+    await prisma.dealRoomActivity.create({
       data: {
         dealRoomId: id,
         userEmail,

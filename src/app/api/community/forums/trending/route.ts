@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     const cutoffDate = new Date(now.getTime() - cutoffHours * 60 * 60 * 1000);
 
     // Fetch threads created within the timeframe
-    const threads = await (prisma as any).forumThread.findMany({
+    const threads = await prisma.forumThread.findMany({
       where: {
         createdAt: { gte: cutoffDate },
       },
