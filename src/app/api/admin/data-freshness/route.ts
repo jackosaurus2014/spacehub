@@ -6,6 +6,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { unauthorizedError, internalError, requireCronSecret } from '@/lib/errors';
 import { logger } from '@/lib/logger';
+import { logAuditAction } from '@/lib/audit-log';
 
 export const dynamic = 'force-dynamic';
 
@@ -172,6 +173,28 @@ export async function POST(request: NextRequest) {
     });
 
     const refreshResult = await refreshResponse.json();
+
+    // Log to audit trail (only for session-based admin requests, not cron)
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) {
+      const session = await getServerSession(authOptions);
+      if (session?.user?.id) {
+        const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+          request.headers.get('x-real-ip') || undefined;
+
+        await logAuditAction({
+          adminId: session.user.id,
+          action: 'refresh_data',
+          resource: 'data',
+          details: {
+            module,
+            success: refreshResponse.ok,
+            triggeredAt: new Date().toISOString(),
+          },
+          ipAddress: ip,
+        });
+      }
+    }
 
     return NextResponse.json({
       success: refreshResponse.ok,

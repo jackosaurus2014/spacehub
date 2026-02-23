@@ -31,6 +31,12 @@ model User {
 
   // Admin
   isAdmin Boolean @default(false)
+  adminRole String? // 'super_admin', 'moderator', 'data_analyst' — null means basic admin
+
+  // Community reputation
+  reputation          Int @default(0)
+  forumPostCount      Int @default(0)
+  acceptedAnswerCount Int @default(0)
 
   // Moderation
   isBanned    Boolean   @default(false)
@@ -97,6 +103,9 @@ model User {
   threadVotes              ThreadVote[]
   notifications            Notification[]
   threadSubscriptions      ThreadSubscription[]
+
+  // Audit logging
+  auditLogs                AuditLog[]
 }
 
 model PasswordResetToken {
@@ -3952,4 +3961,24 @@ model ThreadSubscription {
 
   @@unique([userId, threadId])
   @@index([threadId])
+}
+
+// ============================================================
+// Admin: Audit Logging
+// ============================================================
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  admin      User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  action     String   // 'grant_admin', 'revoke_admin', 'update_role', 'seed_data', 'refresh_data', 'ban_user', 'mute_user', etc.
+  resource   String   // 'user', 'content', 'data', 'system'
+  resourceId String?
+  details    Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
 }

@@ -13,6 +13,7 @@ import {
   internalError,
 } from '@/lib/errors';
 import { validateBody, moderationActionSchema } from '@/lib/validations';
+import { logAuditAction } from '@/lib/audit-log';
 
 /**
  * POST /api/admin/moderation/users/[userId]/action
@@ -205,6 +206,28 @@ export async function POST(
       targetUserId: userId,
       action,
       actionId: moderationAction.id,
+    });
+
+    // Write to audit log
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      req.headers.get('x-real-ip') || undefined;
+
+    await logAuditAction({
+      adminId: session.user.id,
+      action: 'moderation_action',
+      resource: 'user',
+      resourceId: userId,
+      details: {
+        moderationAction: action,
+        targetUserEmail: targetUser.email,
+        targetUserName: targetUser.name,
+        reason,
+        duration: duration || null,
+        contentType: contentType || null,
+        contentId: contentId || null,
+        moderationActionId: moderationAction.id,
+      },
+      ipAddress: ip,
     });
 
     return NextResponse.json({
