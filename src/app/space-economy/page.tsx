@@ -9,7 +9,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 // Types
 // ────────────────────────────────────────
 
-type TabId = 'market' | 'investment' | 'government' | 'workforce';
+type TabId = 'market' | 'investment' | 'government' | 'launch-costs' | 'workforce';
 
 interface MarketSegment {
   name: string;
@@ -92,6 +92,7 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'market', label: 'Market Overview', icon: '📊' },
   { id: 'investment', label: 'Investment', icon: '💰' },
   { id: 'government', label: 'Government Budgets', icon: '🏛️' },
+  { id: 'launch-costs', label: 'Launch Costs', icon: '🚀' },
   { id: 'workforce', label: 'Workforce & Trends', icon: '👷' },
 ];
 
@@ -492,6 +493,23 @@ interface GovernmentBudgetsTabProps {
 function GovernmentBudgetsTab({ governmentBudgets }: GovernmentBudgetsTabProps) {
   const [sortBy, setSortBy] = useState<'budget' | 'change'>('budget');
 
+  if (governmentBudgets.length === 0) {
+    return (
+      <div className="space-y-8">
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-12 text-center">
+          <div className="text-4xl mb-4">{'\u{1F3DB}\u{FE0F}'}</div>
+          <h3 className="text-lg font-semibold text-white mb-2">Government Budget Data Loading</h3>
+          <p className="text-slate-400 text-sm max-w-md mx-auto">
+            Government space budget data is being initialized. This data covers 16+ national space agencies including NASA, Space Force, ESA, CNSA, and more.
+          </p>
+          <p className="text-slate-500 text-xs mt-4">
+            Data will appear once the space economy data has been seeded via the init endpoint.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const sortedBudgets = [...governmentBudgets].sort((a, b) => {
     if (sortBy === 'budget') return b.budget2025 - a.budget2025;
     return b.change - a.change;
@@ -499,6 +517,12 @@ function GovernmentBudgetsTab({ governmentBudgets }: GovernmentBudgetsTabProps) 
 
   const totalBudget2024 = governmentBudgets.reduce((sum, b) => sum + b.budget2024, 0);
   const totalBudget2025 = governmentBudgets.reduce((sum, b) => sum + b.budget2025, 0);
+  const yoyGrowth = totalBudget2024 > 0
+    ? ((totalBudget2025 - totalBudget2024) / totalBudget2024) * 100
+    : 0;
+  const usTotal = governmentBudgets
+    .filter(b => b.country === 'United States')
+    .reduce((sum, b) => sum + b.budget2025, 0);
 
   return (
     <div className="space-y-8">
@@ -510,7 +534,7 @@ function GovernmentBudgetsTab({ governmentBudgets }: GovernmentBudgetsTabProps) 
         </div>
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
           <div className="text-3xl font-bold text-green-400">
-            {formatPercent(((totalBudget2025 - totalBudget2024) / totalBudget2024) * 100)}
+            {formatPercent(yoyGrowth)}
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">YoY Growth</div>
         </div>
@@ -519,7 +543,7 @@ function GovernmentBudgetsTab({ governmentBudgets }: GovernmentBudgetsTabProps) 
           <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Agencies Tracked</div>
         </div>
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
-          <div className="text-3xl font-bold text-amber-400">$58.9B</div>
+          <div className="text-3xl font-bold text-amber-400">{formatBillions(usTotal)}</div>
           <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">U.S. Space (Total)</div>
         </div>
       </div>
@@ -590,7 +614,7 @@ function GovernmentBudgetsTab({ governmentBudgets }: GovernmentBudgetsTabProps) 
                 <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"
-                    style={{ width: `${(budget.budget2025 / Math.max(...governmentBudgets.map((b) => b.budget2025))) * 100}%` }}
+                    style={{ width: `${(budget.budget2025 / (Math.max(...governmentBudgets.map((b) => b.budget2025)) || 1)) * 100}%` }}
                   />
                 </div>
               </div>
@@ -622,16 +646,181 @@ function GovernmentBudgetsTab({ governmentBudgets }: GovernmentBudgetsTabProps) 
 }
 
 // ────────────────────────────────────────
-// Tab 4: Workforce & Trends
+// Tab 4: Launch Costs
+// ────────────────────────────────────────
+
+interface LaunchCostsTabProps {
+  launchCostTrends: LaunchCostDataPoint[];
+}
+
+function LaunchCostsTab({ launchCostTrends }: LaunchCostsTabProps) {
+  const cheapest = launchCostTrends.length > 0
+    ? launchCostTrends.reduce((min, l) => l.costPerKgLEO < min.costPerKgLEO ? l : min, launchCostTrends[0])
+    : null;
+  const reusableCount = launchCostTrends.filter(l => l.reusable).length;
+  const avgCost = launchCostTrends.length > 0
+    ? launchCostTrends.reduce((sum, l) => sum + l.costPerKgLEO, 0) / launchCostTrends.length
+    : 0;
+  const highestPayload = launchCostTrends.length > 0
+    ? launchCostTrends.reduce((max, l) => l.payload > max.payload ? l : max, launchCostTrends[0])
+    : null;
+
+  return (
+    <div className="space-y-8">
+      {/* Headline Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
+          <div className="text-3xl font-bold text-green-400">{cheapest ? `$${cheapest.costPerKgLEO.toLocaleString()}` : '--'}</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Lowest $/kg (LEO)</div>
+          <div className="text-slate-500 text-xs mt-1">{cheapest?.vehicle || ''}</div>
+        </div>
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
+          <div className="text-3xl font-bold text-cyan-400">{launchCostTrends.length}</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Vehicles Tracked</div>
+        </div>
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
+          <div className="text-3xl font-bold text-purple-400">{reusableCount}</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Reusable Vehicles</div>
+        </div>
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
+          <div className="text-3xl font-bold text-amber-400">{highestPayload ? `${(highestPayload.payload / 1000).toFixed(0)}t` : '--'}</div>
+          <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Max Payload (LEO)</div>
+          <div className="text-slate-500 text-xs mt-1">{highestPayload?.vehicle || ''}</div>
+        </div>
+      </div>
+
+      {/* Launch Cost Comparison Table */}
+      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <span className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-lg">{'\u{1F680}'}</span>
+          Launch Cost Comparison ($/kg to LEO)
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-slate-700/50">
+                <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Vehicle</th>
+                <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Operator</th>
+                <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">$/kg (LEO)</th>
+                <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm hidden sm:table-cell">Payload (LEO)</th>
+                <th className="text-center py-3 px-4 text-slate-400 font-medium text-sm">Reusable</th>
+                <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm hidden md:table-cell">Cost Bar</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...launchCostTrends]
+                .sort((a, b) => a.costPerKgLEO - b.costPerKgLEO)
+                .map((launch) => {
+                  const maxCost = Math.max(...launchCostTrends.map((l) => l.costPerKgLEO), 1);
+                  const logMax = Math.log10(maxCost);
+                  const logVal = Math.log10(launch.costPerKgLEO);
+                  const barWidth = logMax > 0 ? (logVal / logMax) * 100 : 0;
+                  return (
+                    <tr key={launch.vehicle} className="border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors">
+                      <td className="py-3 px-4 text-white font-medium text-sm">{launch.vehicle}</td>
+                      <td className="py-3 px-4 text-slate-400 text-sm">{launch.operator}</td>
+                      <td className="py-3 px-4 text-right text-cyan-400 font-mono font-bold text-sm">
+                        ${launch.costPerKgLEO.toLocaleString()}
+                      </td>
+                      <td className="py-3 px-4 text-right text-slate-400 font-mono text-sm hidden sm:table-cell">
+                        {launch.payload.toLocaleString()} kg
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        {launch.reusable ? (
+                          <span className="text-green-400 text-xs bg-green-900/30 px-2 py-0.5 rounded">Yes</span>
+                        ) : (
+                          <span className="text-slate-500 text-xs bg-slate-700/30 px-2 py-0.5 rounded">No</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 hidden md:table-cell">
+                        <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${
+                              launch.costPerKgLEO <= 1000
+                                ? 'bg-gradient-to-r from-green-500 to-emerald-400'
+                                : launch.costPerKgLEO <= 5000
+                                ? 'bg-gradient-to-r from-cyan-500 to-blue-400'
+                                : launch.costPerKgLEO <= 10000
+                                ? 'bg-gradient-to-r from-amber-500 to-orange-400'
+                                : 'bg-gradient-to-r from-red-500 to-rose-400'
+                            }`}
+                            style={{ width: `${barWidth}%` }}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-green-500" /> Under $1,000/kg
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" /> $1,000 - $5,000/kg
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> $5,000 - $10,000/kg
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500" /> Over $10,000/kg
+          </div>
+        </div>
+      </div>
+
+      {/* Key Insights */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+          <h4 className="text-white font-semibold mb-3">Launch Cost Revolution</h4>
+          <div className="space-y-3 text-sm text-slate-300">
+            <p>
+              Launch costs have dropped by over 95% since the Space Shuttle era.
+              SpaceX&apos;s Falcon 9 reduced costs to ~$2,720/kg through booster reuse (20+ flights per booster).
+            </p>
+            <p>
+              Starship, if operational at projected rates, could reduce costs to ~$100/kg --
+              a 500x reduction from the Shuttle and enabling entirely new categories of space activity.
+            </p>
+            <p>
+              Small launch vehicles like Electron are more expensive per kg ($25,000) but offer
+              dedicated orbits and schedules for small satellites, commanding a premium.
+            </p>
+          </div>
+        </div>
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+          <h4 className="text-white font-semibold mb-3">2025 Launch Market Trends</h4>
+          <div className="space-y-3 text-sm text-slate-300">
+            <p>
+              SpaceX continues to dominate with 130+ launches in 2024, driven by Starlink deployments.
+              New Glenn completed its maiden flight in early 2025, adding medium/heavy-lift competition.
+            </p>
+            <p>
+              Ariane 6 became operational in 2024, restoring European autonomous access to space.
+              China&apos;s commercial launch sector (Galactic Energy, LandSpace, iSpace) is expanding rapidly.
+            </p>
+            <p>
+              The dedicated small launch market is consolidating around Rocket Lab (Electron) and Firefly (Alpha),
+              while rideshare missions continue to offer ultra-low per-kg pricing on medium/heavy vehicles.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────
+// Tab 5: Workforce & Trends
 // ────────────────────────────────────────
 
 interface WorkforceTrendsTabProps {
   workforceStats: WorkforceStat[];
-  launchCostTrends: LaunchCostDataPoint[];
   salaryBenchmarks?: SalaryBenchmark[];
 }
 
-function WorkforceTrendsTab({ workforceStats, launchCostTrends, salaryBenchmarks = [] }: WorkforceTrendsTabProps) {
+function WorkforceTrendsTab({ workforceStats, salaryBenchmarks = [] }: WorkforceTrendsTabProps) {
   return (
     <div className="space-y-8">
       {/* Workforce Stats Grid */}
@@ -711,106 +900,8 @@ function WorkforceTrendsTab({ workforceStats, launchCostTrends, salaryBenchmarks
         </div>
       </div>
 
-      {/* Launch Cost Trends */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-lg">🚀</span>
-          Launch Cost Comparison ($/kg to LEO)
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-slate-700/50">
-                <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Vehicle</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Operator</th>
-                <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">$/kg (LEO)</th>
-                <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm hidden sm:table-cell">Payload (LEO)</th>
-                <th className="text-center py-3 px-4 text-slate-400 font-medium text-sm">Reusable</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm hidden md:table-cell">Cost Bar</th>
-              </tr>
-            </thead>
-            <tbody>
-              {launchCostTrends
-                .sort((a, b) => a.costPerKgLEO - b.costPerKgLEO)
-                .map((launch) => {
-                  const maxCost = Math.max(...launchCostTrends.map((l) => l.costPerKgLEO));
-                  const logMax = Math.log10(maxCost);
-                  const logVal = Math.log10(launch.costPerKgLEO);
-                  const barWidth = (logVal / logMax) * 100;
-                  return (
-                    <tr key={launch.vehicle} className="border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors">
-                      <td className="py-3 px-4 text-white font-medium text-sm">{launch.vehicle}</td>
-                      <td className="py-3 px-4 text-slate-400 text-sm">{launch.operator}</td>
-                      <td className="py-3 px-4 text-right text-cyan-400 font-mono font-bold text-sm">
-                        ${launch.costPerKgLEO.toLocaleString()}
-                      </td>
-                      <td className="py-3 px-4 text-right text-slate-400 font-mono text-sm hidden sm:table-cell">
-                        {launch.payload.toLocaleString()} kg
-                      </td>
-                      <td className="py-3 px-4 text-center">
-                        {launch.reusable ? (
-                          <span className="text-green-400 text-xs bg-green-900/30 px-2 py-0.5 rounded">Yes</span>
-                        ) : (
-                          <span className="text-slate-500 text-xs bg-slate-700/30 px-2 py-0.5 rounded">No</span>
-                        )}
-                      </td>
-                      <td className="py-3 px-4 hidden md:table-cell">
-                        <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full ${
-                              launch.costPerKgLEO <= 1000
-                                ? 'bg-gradient-to-r from-green-500 to-emerald-400'
-                                : launch.costPerKgLEO <= 5000
-                                ? 'bg-gradient-to-r from-cyan-500 to-blue-400'
-                                : launch.costPerKgLEO <= 10000
-                                ? 'bg-gradient-to-r from-amber-500 to-orange-400'
-                                : 'bg-gradient-to-r from-red-500 to-rose-400'
-                            }`}
-                            style={{ width: `${barWidth}%` }}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-500">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500" /> Under $1,000/kg
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" /> $1,000 - $5,000/kg
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> $5,000 - $10,000/kg
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500" /> Over $10,000/kg
-          </div>
-        </div>
-      </div>
-
       {/* Key Insights */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
-          <h4 className="text-white font-semibold mb-3">Launch Cost Revolution</h4>
-          <div className="space-y-3 text-sm text-slate-300">
-            <p>
-              Launch costs have dropped by over 95% since the Space Shuttle era.
-              SpaceX&apos;s Falcon 9 reduced costs to ~$2,720/kg through booster reuse (20+ flights per booster).
-            </p>
-            <p>
-              Starship, if operational at projected rates, could reduce costs to ~$100/kg --
-              a 500x reduction from the Shuttle and enabling entirely new categories of space activity.
-            </p>
-            <p>
-              Small launch vehicles like Electron are more expensive per kg ($26,500) but offer
-              dedicated orbits and schedules for small satellites, commanding a premium.
-            </p>
-          </div>
-        </div>
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
           <h4 className="text-white font-semibold mb-3">Workforce Outlook</h4>
           <div className="space-y-3 text-sm text-slate-300">
@@ -819,12 +910,29 @@ function WorkforceTrendsTab({ workforceStats, launchCostTrends, salaryBenchmarks
               primarily in software engineering, systems engineering, and RF/satellite communications.
             </p>
             <p>
-              Space software engineers command the highest salaries (median $165K), reflecting
+              Space software engineers command the highest salaries (median $151K), reflecting
               the growing importance of software-defined satellites and AI/ML in space applications.
             </p>
             <p>
-              GNC (Guidance, Navigation & Control) engineers are seeing 5.5% annual salary growth,
+              GNC (Guidance, Navigation & Control) engineers are seeing 5.0% annual salary growth,
               driven by demand from autonomous spacecraft operations and lunar/Mars missions.
+            </p>
+          </div>
+        </div>
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+          <h4 className="text-white font-semibold mb-3">Hiring Trends (2025)</h4>
+          <div className="space-y-3 text-sm text-slate-300">
+            <p>
+              Space AI/ML roles are the fastest-growing category with 8.5% salary growth YoY,
+              driven by demand for autonomous operations, Earth observation analytics, and mission planning optimization.
+            </p>
+            <p>
+              Space policy and regulatory specialists are seeing 6.0% salary growth as the regulatory
+              landscape expands with new commercial operators and international frameworks.
+            </p>
+            <p>
+              Women now represent 24% of the aerospace workforce, up from 20% in 2019,
+              though the industry still lags behind broader tech sector diversity metrics.
             </p>
           </div>
         </div>
@@ -968,7 +1076,8 @@ export default function SpaceEconomyPage() {
         {activeTab === 'market' && <MarketOverviewTab marketSegments={marketSegments} />}
         {activeTab === 'investment' && <InvestmentTab quarterlyVC={quarterlyVC} annualInvestment={annualInvestment} />}
         {activeTab === 'government' && <GovernmentBudgetsTab governmentBudgets={governmentBudgets} />}
-        {activeTab === 'workforce' && <WorkforceTrendsTab workforceStats={workforceStats} launchCostTrends={launchCostTrends} salaryBenchmarks={salaryBenchmarks} />}
+        {activeTab === 'launch-costs' && <LaunchCostsTab launchCostTrends={launchCostTrends} />}
+        {activeTab === 'workforce' && <WorkforceTrendsTab workforceStats={workforceStats} salaryBenchmarks={salaryBenchmarks} />}
 
         {/* Data Sources Footer */}
         <ScrollReveal>
