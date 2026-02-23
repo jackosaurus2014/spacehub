@@ -886,6 +886,7 @@ function ProcurementContent() {
                   <option value="">All Agencies</option>
                   <option value="NASA">NASA</option>
                   <option value="Space Force">Space Force</option>
+                  <option value="DARPA">DARPA</option>
                   <option value="NOAA">NOAA</option>
                 </select>
                 <select
@@ -921,6 +922,7 @@ function ProcurementContent() {
                   <>
                     <BudgetTable items={budgetItems} agency="NASA" />
                     <BudgetTable items={budgetItems} agency="Space Force" />
+                    <BudgetTable items={budgetItems} agency="DARPA" />
                     <BudgetTable items={budgetItems} agency="NOAA" />
                   </>
                 )}
