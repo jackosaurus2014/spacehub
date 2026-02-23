@@ -381,6 +381,7 @@ export async function getOpportunities(options?: {
   category?: string;
   sector?: string;
   targetAudience?: string;
+  difficulty?: string;
   featured?: boolean;
   limit?: number;
   offset?: number;
@@ -405,6 +406,9 @@ export async function getOpportunities(options?: {
     where.targetAudience = {
       contains: options.targetAudience,
     };
+  }
+  if (options?.difficulty) {
+    where.difficulty = options.difficulty;
   }
 
   const [opportunities, total] = await Promise.all([

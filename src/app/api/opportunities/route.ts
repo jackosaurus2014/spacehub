@@ -12,6 +12,7 @@ export async function GET(request: Request) {
     const category = searchParams.get('category') || undefined;
     const sector = searchParams.get('sector') || undefined;
     const targetAudience = searchParams.get('targetAudience') || undefined;
+    const difficulty = searchParams.get('difficulty') || undefined;
     const featured = searchParams.get('featured');
     const limit = constrainPagination(parseInt(searchParams.get('limit') || '20'));
     const offset = constrainOffset(parseInt(searchParams.get('offset') || '0'));
@@ -21,6 +22,7 @@ export async function GET(request: Request) {
       category,
       sector,
       targetAudience,
+      difficulty,
       featured: featured === 'true' ? true : featured === 'false' ? false : undefined,
       limit,
       offset,

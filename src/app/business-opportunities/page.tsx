@@ -316,6 +316,9 @@ function BusinessOpportunitiesContent() {
   const [selectedAudience, setSelectedAudience] = useState<TargetAudience | ''>(
     (searchParams.get('audience') as TargetAudience | '') || ''
   );
+  const [selectedDifficulty, setSelectedDifficulty] = useState<OpportunityDifficulty | ''>(
+    (searchParams.get('difficulty') as OpportunityDifficulty | '') || ''
+  );
 
   // Sync filters and tab to URL
   useEffect(() => {
@@ -324,9 +327,10 @@ function BusinessOpportunitiesContent() {
     if (selectedType) params.set('type', selectedType);
     if (selectedCategory) params.set('category', selectedCategory);
     if (selectedAudience) params.set('audience', selectedAudience);
+    if (selectedDifficulty) params.set('difficulty', selectedDifficulty);
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  }, [activeTab, selectedType, selectedCategory, selectedAudience, router, pathname]);
+  }, [activeTab, selectedType, selectedCategory, selectedAudience, selectedDifficulty, router, pathname]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -336,6 +340,7 @@ function BusinessOpportunitiesContent() {
       if (selectedType) params.set('type', selectedType);
       if (selectedCategory) params.set('category', selectedCategory);
       if (selectedAudience) params.set('targetAudience', selectedAudience);
+      if (selectedDifficulty) params.set('difficulty', selectedDifficulty);
       params.set('limit', '50');
 
       const [oppsRes, statsRes] = await Promise.all([
@@ -358,7 +363,7 @@ function BusinessOpportunitiesContent() {
     } finally {
       setLoading(false);
     }
-  }, [selectedType, selectedCategory, selectedAudience]);
+  }, [selectedType, selectedCategory, selectedAudience, selectedDifficulty]);
 
   useEffect(() => {
     fetchData();
@@ -526,13 +531,33 @@ function BusinessOpportunitiesContent() {
                   </select>
                 </div>
 
-                {(selectedType || selectedCategory || selectedAudience) && (
+                <div>
+                  <label htmlFor="opp-difficulty-filter" className="block text-slate-400 text-sm mb-1">Difficulty</label>
+                  <select
+                    id="opp-difficulty-filter"
+                    value={selectedDifficulty}
+                    onChange={(e) =>
+                      setSelectedDifficulty(e.target.value as OpportunityDifficulty | '')
+                    }
+                    className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                  >
+                    <option value="">All Difficulties</option>
+                    {(Object.entries(DIFFICULTY_INFO) as [OpportunityDifficulty, { label: string; color: string }][]).map(([value, info]) => (
+                      <option key={value} value={value}>
+                        {info.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {(selectedType || selectedCategory || selectedAudience || selectedDifficulty) && (
                   <div className="flex items-end">
                     <button
                       onClick={() => {
                         setSelectedType('');
                         setSelectedCategory('');
                         setSelectedAudience('');
+                        setSelectedDifficulty('');
                       }}
                       className="text-sm text-nebula-300 hover:text-nebula-200 py-2"
                     >
