@@ -682,10 +682,16 @@ export async function GET(request: NextRequest) {
   try {
     // Try to load satellite data from DynamicContent, fall back to hardcoded data
     let SATELLITES: Satellite[] = FALLBACK_SATELLITES;
+    let dataSource: 'database' | 'fallback' = 'fallback';
+    let refreshedAt: string = new Date().toISOString();
     try {
       const dynamicData = await getModuleContent<Satellite>('satellites', 'satellites');
       if (dynamicData.length > 0) {
         SATELLITES = dynamicData.map((item) => item.data);
+        dataSource = 'database';
+        const latestRefresh = dynamicData.reduce((latest, item) =>
+          item.refreshedAt > latest ? item.refreshedAt : latest, dynamicData[0].refreshedAt);
+        refreshedAt = latestRefresh.toISOString();
       }
     } catch {
       // DynamicContent unavailable, use fallback data
@@ -752,6 +758,11 @@ export async function GET(request: NextRequest) {
       iss,
       notableSatellites,
       total: filteredSatellites.length,
+      _meta: {
+        source: dataSource,
+        refreshedAt,
+        ttl: 604800,
+      },
     });
   } catch (error) {
     logger.error('Failed to fetch satellite data', { error: error instanceof Error ? error.message : String(error) });

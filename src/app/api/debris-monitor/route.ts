@@ -29,7 +29,14 @@ export async function GET(request: NextRequest) {
     // Cache the successful response for future fallback use
     apiCache.set(CACHE_KEY, data, CacheTTL.DEFAULT);
 
-    return NextResponse.json(data);
+    return NextResponse.json({
+      ...data,
+      _meta: {
+        source: 'database' as const,
+        refreshedAt: new Date().toISOString(),
+        ttl: 21600,
+      },
+    });
   } catch (error) {
     logger.error('Failed to fetch debris monitor data', {
       error: error instanceof Error ? error.message : String(error),
@@ -43,7 +50,11 @@ export async function GET(request: NextRequest) {
       });
       return NextResponse.json({
         ...stale.value,
-        _meta: { source: 'cache', isStale: true, age: Date.now() - stale.storedAt },
+        _meta: {
+          source: 'database' as const,
+          refreshedAt: new Date(stale.storedAt).toISOString(),
+          ttl: 21600,
+        },
       });
     }
 
@@ -51,7 +62,11 @@ export async function GET(request: NextRequest) {
     logger.warn('No cached debris data available, serving static fallback');
     return NextResponse.json({
       ...FALLBACK_DEBRIS_OVERVIEW,
-      _meta: { source: 'fallback', isFallback: true },
+      _meta: {
+        source: 'fallback' as const,
+        refreshedAt: new Date().toISOString(),
+        ttl: 21600,
+      },
     });
   }
 }

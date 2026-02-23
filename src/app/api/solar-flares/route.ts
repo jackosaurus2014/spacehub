@@ -20,24 +20,30 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
     const days = parseInt(searchParams.get('days') || '90');
 
+    const dbMeta = {
+      source: 'database' as const,
+      refreshedAt: new Date().toISOString(),
+      ttl: 21600,
+    };
+
     if (type === 'flares') {
       const flares = await getRecentSolarFlares(limit);
-      return NextResponse.json({ flares });
+      return NextResponse.json({ flares, _meta: dbMeta });
     }
 
     if (type === 'forecasts') {
       const forecasts = await getSolarForecasts(days);
-      return NextResponse.json({ forecasts });
+      return NextResponse.json({ forecasts, _meta: dbMeta });
     }
 
     if (type === 'activity') {
       const activity = await getCurrentSolarActivity();
-      return NextResponse.json({ activity });
+      return NextResponse.json({ activity, _meta: dbMeta });
     }
 
     if (type === 'stats') {
       const stats = await getSolarFlareStats();
-      return NextResponse.json({ stats });
+      return NextResponse.json({ stats, _meta: dbMeta });
     }
 
     // Return all data for dashboard
@@ -53,7 +59,7 @@ export async function GET(request: NextRequest) {
     // Cache full dashboard payload for fallback use
     apiCache.set(CACHE_KEY, data, CacheTTL.DEFAULT);
 
-    return NextResponse.json(data);
+    return NextResponse.json({ ...data, _meta: dbMeta });
   } catch (error) {
     logger.error('Failed to fetch solar flare data', {
       error: error instanceof Error ? error.message : String(error),
@@ -67,7 +73,11 @@ export async function GET(request: NextRequest) {
       });
       return NextResponse.json({
         ...stale.value,
-        _meta: { source: 'cache', isStale: true, age: Date.now() - stale.storedAt },
+        _meta: {
+          source: 'database' as const,
+          refreshedAt: new Date(stale.storedAt).toISOString(),
+          ttl: 21600,
+        },
       });
     }
 
@@ -75,7 +85,11 @@ export async function GET(request: NextRequest) {
     logger.warn('No cached solar flare data available, serving static fallback');
     return NextResponse.json({
       ...FALLBACK_SOLAR_ACTIVITY,
-      _meta: { source: 'fallback', isFallback: true },
+      _meta: {
+        source: 'fallback' as const,
+        refreshedAt: new Date().toISOString(),
+        ttl: 21600,
+      },
     });
   }
 }

@@ -43,10 +43,17 @@ export async function GET(request: Request) {
   try {
     // Try to load tourism data from DynamicContent, fall back to hardcoded data
     let allOfferings: SpaceTourismOffering[] = FALLBACK_OFFERINGS;
+    let dataSource: 'database' | 'fallback' = 'fallback';
+    let refreshedAt: string = new Date().toISOString();
     try {
       const dynamicData = await getModuleContent<SpaceTourismOffering>('space-tourism', 'offerings');
       if (dynamicData.length > 0) {
         allOfferings = dynamicData.map((item) => item.data);
+        dataSource = 'database';
+        // Use the most recent refreshedAt from the dynamic content items
+        const latestRefresh = dynamicData.reduce((latest, item) =>
+          item.refreshedAt > latest ? item.refreshedAt : latest, dynamicData[0].refreshedAt);
+        refreshedAt = latestRefresh.toISOString();
       }
     } catch {
       // DynamicContent unavailable, use fallback data
@@ -108,6 +115,11 @@ export async function GET(request: Request) {
         minPrice,
         maxPrice,
         status,
+      },
+      _meta: {
+        source: dataSource,
+        refreshedAt,
+        ttl: 604800,
       },
     });
   } catch (error) {

@@ -45,6 +45,8 @@ export async function GET(request: Request) {
     let allCompanies: SupplyChainCompany[] = FALLBACK_COMPANIES;
     let allRelationships: SupplyRelationship[] = FALLBACK_RELATIONSHIPS;
     let allShortages: SupplyShortage[] = FALLBACK_SHORTAGES;
+    let dataSource: 'database' | 'fallback' = 'fallback';
+    let refreshedAt: string = new Date().toISOString();
 
     try {
       const [dynamicCompanies, dynamicRelationships, dynamicShortages] = await Promise.all([
@@ -53,21 +55,39 @@ export async function GET(request: Request) {
         getModuleContent<SupplyShortage>('supply-chain', 'shortages'),
       ]);
       // DynamicContent stores each section as a single JSON blob containing the full array
+      let hasDbData = false;
+      let latestRefresh: Date | null = null;
       if (dynamicCompanies.length > 0) {
         const data = dynamicCompanies[0].data;
         allCompanies = Array.isArray(data) ? data : [data];
+        hasDbData = true;
+        latestRefresh = dynamicCompanies[0].refreshedAt;
       }
       if (dynamicRelationships.length > 0) {
         const data = dynamicRelationships[0].data;
         allRelationships = Array.isArray(data) ? data : [data];
+        hasDbData = true;
+        if (!latestRefresh || dynamicRelationships[0].refreshedAt > latestRefresh) {
+          latestRefresh = dynamicRelationships[0].refreshedAt;
+        }
       }
       if (dynamicShortages.length > 0) {
         const data = dynamicShortages[0].data;
         allShortages = Array.isArray(data) ? data : [data];
+        hasDbData = true;
+        if (!latestRefresh || dynamicShortages[0].refreshedAt > latestRefresh) {
+          latestRefresh = dynamicShortages[0].refreshedAt;
+        }
+      }
+      if (hasDbData && latestRefresh) {
+        dataSource = 'database';
+        refreshedAt = latestRefresh.toISOString();
       }
     } catch {
       // DynamicContent unavailable, use fallback data
     }
+
+    const _meta = { source: dataSource, refreshedAt, ttl: 1209600 };
 
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') || 'stats';
@@ -81,7 +101,7 @@ export async function GET(request: Request) {
     switch (type) {
       case 'stats': {
         const stats = computeStats(allCompanies, allRelationships, allShortages);
-        return NextResponse.json(stats);
+        return NextResponse.json({ ...stats, _meta });
       }
 
       case 'companies': {
@@ -104,7 +124,7 @@ export async function GET(request: Request) {
           );
         }
 
-        return NextResponse.json({ companies });
+        return NextResponse.json({ companies, _meta });
       }
 
       case 'company': {
@@ -118,7 +138,7 @@ export async function GET(request: Request) {
         const relationships = allRelationships.filter(
           (r) => r.supplierId === companyId || r.customerId === companyId
         );
-        return NextResponse.json({ company, relationships });
+        return NextResponse.json({ company, relationships, _meta });
       }
 
       case 'relationships': {
@@ -138,7 +158,7 @@ export async function GET(request: Request) {
           );
         }
 
-        return NextResponse.json({ relationships });
+        return NextResponse.json({ relationships, _meta });
       }
 
       case 'shortages': {
@@ -156,7 +176,7 @@ export async function GET(request: Request) {
           shortages = shortages.filter((s) => s.category === category);
         }
 
-        return NextResponse.json({ shortages });
+        return NextResponse.json({ shortages, _meta });
       }
 
       case 'risks': {
@@ -176,6 +196,7 @@ export async function GET(request: Request) {
             totalCriticalShortages: criticalShortages.length,
             riskCountries: ['China', 'Russia', 'DR Congo'],
           },
+          _meta,
         });
       }
 
