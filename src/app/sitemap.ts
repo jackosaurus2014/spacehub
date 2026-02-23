@@ -155,6 +155,29 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/privacy`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/terms`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/cookies`, changeFrequency: 'monthly' as const, priority: 0.3 },
+
+    // Community
+    { url: `${BASE_URL}/community`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/community/forums`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/community/guidelines`, changeFrequency: 'monthly' as const, priority: 0.3 },
+
+    // Additional content pages
+    { url: `${BASE_URL}/ecosystem-map`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/executive-moves`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/regulatory-calendar`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/salary-benchmarks`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/reports`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/deals`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/space-score`, changeFrequency: 'weekly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/supply-chain-map`, changeFrequency: 'weekly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/launch-cost-calculator`, changeFrequency: 'weekly' as const, priority: 0.5 },
+
+    // Developer pages
+    { url: `${BASE_URL}/developer/docs`, changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/developer/explorer`, changeFrequency: 'monthly' as const, priority: 0.4 },
+
+    // Procurement
+    { url: `${BASE_URL}/procurement/awards`, changeFrequency: 'weekly' as const, priority: 0.6 },
   ];
 
   return routes.map(route => ({

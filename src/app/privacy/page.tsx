@@ -1,5 +1,12 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'Learn how SpaceNexus collects, uses, and protects your personal information. Our commitment to data privacy and security for space industry professionals.',
+  alternates: { canonical: 'https://spacenexus.us/privacy' },
+};
 
 export const revalidate = 86400; // ISR: revalidate every 24 hours
 

@@ -1,5 +1,12 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
+
+export const metadata: Metadata = {
+  title: 'Cookie Policy',
+  description: 'Learn about how SpaceNexus uses cookies and similar tracking technologies, including what types of cookies we use and how to manage your preferences.',
+  alternates: { canonical: 'https://spacenexus.us/cookies' },
+};
 
 export const revalidate = 86400; // ISR: revalidate every 24 hours
 

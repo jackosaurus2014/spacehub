@@ -23,6 +23,7 @@ export default function robots(): MetadataRoute.Robots {
           '/my-watchlists',
           '/messages/',
           '/notifications/',
+          '/widgets/',
         ],
         crawlDelay: 1,
       },

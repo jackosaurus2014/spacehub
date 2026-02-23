@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     url: 'https://spacenexus.us/reports',
     images: [
       {
-        url: '/og-reports.png',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'SpaceNexus Intelligence Reports',
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: 'SpaceNexus Intelligence Reports',
     description:
       'AI-powered space industry research reports. Sector overviews, company deep dives, competitive analysis, and market entry briefs.',
-    images: ['/og-reports.png'],
+    images: ['/og-image.png'],
   },
   alternates: {
     canonical: 'https://spacenexus.us/reports',

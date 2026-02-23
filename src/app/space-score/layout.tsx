@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     url: 'https://spacenexus.us/space-score',
     images: [
       {
-        url: '/og-space-score.png',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'SpaceNexus Space Score Leaderboard - Rating 100+ Space Companies',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'SpaceNexus Space Score - Company Ratings & Leaderboard',
     description: 'Composite 0-1000 rating system for 100+ space companies across 5 key dimensions.',
-    images: ['/og-space-score.png'],
+    images: ['/og-image.png'],
   },
   alternates: {
     canonical: 'https://spacenexus.us/space-score',

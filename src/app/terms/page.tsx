@@ -1,5 +1,12 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
+
+export const metadata: Metadata = {
+  title: 'Terms of Service',
+  description: 'Read the SpaceNexus Terms of Service governing your use of our space industry intelligence platform, data services, and community features.',
+  alternates: { canonical: 'https://spacenexus.us/terms' },
+};
 
 export const revalidate = 86400; // ISR: revalidate every 24 hours
 

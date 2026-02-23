@@ -656,13 +656,13 @@ export async function refreshAllAIResearchedModules(): Promise<{
   let totalCreated = 0;
   let totalTokens = 0;
 
-  for (const module of aiModules) {
+  for (const moduleItem of aiModules) {
     // Check if module has data that needs refresh
-    const policy = FRESHNESS_POLICIES[module];
+    const policy = FRESHNESS_POLICIES[moduleItem];
     if (!policy) continue;
 
     const latestContent = await prisma.dynamicContent.findFirst({
-      where: { module, isActive: true },
+      where: { module: moduleItem, isActive: true },
       orderBy: { refreshedAt: 'desc' },
       select: { refreshedAt: true },
     });
@@ -672,12 +672,12 @@ export async function refreshAllAIResearchedModules(): Promise<{
       const ageMs = Date.now() - latestContent.refreshedAt.getTime();
       const ttlMs = policy.ttlHours * 60 * 60 * 1000;
       if (ageMs < ttlMs) {
-        logger.info(`Skipping AI research for ${module}: data is fresh (${Math.round(ageMs / 3600000)}h old, TTL ${policy.ttlHours}h)`);
+        logger.info(`Skipping AI research for ${moduleItem}: data is fresh (${Math.round(ageMs / 3600000)}h old, TTL ${policy.ttlHours}h)`);
         continue;
       }
     }
 
-    const result = await refreshModuleViaAI(module);
+    const result = await refreshModuleViaAI(moduleItem);
     results.push(result);
     totalUpdated += result.itemsUpdated;
     totalCreated += result.itemsCreated;

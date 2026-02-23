@@ -116,28 +116,6 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  useEffect(() => {
-    if (!initialModules) {
-      fetchModules();
-    }
-  }, [session, initialModules]);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (isDropdownOpen) return;
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        goToPrevious();
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        goToNext();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isDropdownOpen, modules.length]);
-
   const fetchModules = async () => {
     try {
       const res = await fetch('/api/modules');
@@ -175,6 +153,28 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
     const newIndex = currentIndex < enabledModules.length - 1 ? currentIndex + 1 : 0;
     navigateToModule(newIndex);
   }, [currentIndex, enabledModules.length, navigateToModule]);
+
+  useEffect(() => {
+    if (!initialModules) {
+      fetchModules();
+    }
+  }, [session, initialModules]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isDropdownOpen) return;
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goToPrevious();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goToNext();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDropdownOpen, goToNext, goToPrevious]);
 
   const jumpToModule = (index: number) => {
     navigateToModule(index);
