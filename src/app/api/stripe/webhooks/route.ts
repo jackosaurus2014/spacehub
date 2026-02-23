@@ -289,10 +289,11 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
         sponsorUpdateData.sponsorTier = newSponsorTier;
       }
 
+      const sponsorPeriodEnd = subscription.items.data[0]?.current_period_end;
       if (subscription.cancel_at) {
         sponsorUpdateData.sponsorExpires = new Date(subscription.cancel_at * 1000);
-      } else if (subscription.current_period_end) {
-        sponsorUpdateData.sponsorExpires = new Date(subscription.current_period_end * 1000);
+      } else if (sponsorPeriodEnd) {
+        sponsorUpdateData.sponsorExpires = new Date(sponsorPeriodEnd * 1000);
       }
 
       await (prisma.companyProfile as any).update({
@@ -332,10 +333,11 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   }
 
   // Set end date if subscription has a cancel_at or current_period_end
+  const periodEnd = subscription.items.data[0]?.current_period_end;
   if (subscription.cancel_at) {
     updateData.subscriptionEndDate = new Date(subscription.cancel_at * 1000);
-  } else if (subscription.current_period_end) {
-    updateData.subscriptionEndDate = new Date(subscription.current_period_end * 1000);
+  } else if (periodEnd) {
+    updateData.subscriptionEndDate = new Date(periodEnd * 1000);
   }
 
   await prisma.user.update({
@@ -434,7 +436,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
     customerId,
     amountPaid: invoice.amount_paid,
     currency: invoice.currency,
-    subscriptionId: invoice.subscription as string | undefined,
+    subscriptionId: invoice.parent?.subscription_details?.subscription as string | undefined,
   });
 }
 

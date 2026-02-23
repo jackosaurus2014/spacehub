@@ -177,7 +177,6 @@ function makeStripeSubscription(overrides: Record<string, unknown> = {}) {
     status: 'active',
     customer: 'cus_test123',
     start_date: Math.floor(Date.now() / 1000),
-    current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
     cancel_at: null,
     items: {
       data: [
@@ -185,6 +184,8 @@ function makeStripeSubscription(overrides: Record<string, unknown> = {}) {
           price: {
             id: 'price_pro_monthly_test',
           },
+          current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
+          current_period_start: Math.floor(Date.now() / 1000),
         },
       ],
     },
