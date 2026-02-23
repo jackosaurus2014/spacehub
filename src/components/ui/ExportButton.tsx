@@ -63,7 +63,7 @@ export default function ExportButton({
       <button
         onClick={() => setOpen(!open)}
         disabled={isExporting}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-space-700/50 text-star-300 hover:bg-space-600/50 hover:text-white transition-all border border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-space-700/50 text-star-300 hover:bg-space-600/50 hover:text-white transition-all border border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -90,13 +90,13 @@ export default function ExportButton({
           <div className="absolute right-0 mt-1 z-50 bg-space-800 border border-white/[0.1] rounded-lg shadow-lg overflow-hidden min-w-[120px]">
             <button
               onClick={() => handleExport('csv')}
-              className="w-full px-4 py-2 text-left text-xs text-star-300 hover:bg-space-700 hover:text-white transition-colors"
+              className="w-full px-4 py-2 text-left text-xs text-star-300 hover:bg-space-700 hover:text-white transition-colors min-h-[44px]"
             >
               Export CSV
             </button>
             <button
               onClick={() => handleExport('json')}
-              className="w-full px-4 py-2 text-left text-xs text-star-300 hover:bg-space-700 hover:text-white transition-colors border-t border-white/[0.06]"
+              className="w-full px-4 py-2 text-left text-xs text-star-300 hover:bg-space-700 hover:text-white transition-colors border-t border-white/[0.06] min-h-[44px]"
             >
               Export JSON
             </button>

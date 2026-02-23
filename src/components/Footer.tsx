@@ -31,44 +31,44 @@ export default function Footer() {
             {/* Column 2: Platform */}
             <div>
               <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4">Platform</h4>
-              <ul className="space-y-2.5">
+              <ul className="space-y-3">
                 <li>
-                  <Link href="/mission-control" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/mission-control" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Mission Control
                   </Link>
                 </li>
                 <li>
-                  <Link href="/market-intel" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/market-intel" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Market Intel
                   </Link>
                 </li>
                 <li>
-                  <Link href="/news" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/news" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     News
                   </Link>
                 </li>
                 <li>
-                  <Link href="/solar-exploration" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/solar-exploration" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Solar Exploration
                   </Link>
                 </li>
                 <li>
-                  <Link href="/company-profiles" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/company-profiles" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Company Directory
                   </Link>
                 </li>
                 <li>
-                  <Link href="/marketplace" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/marketplace" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Marketplace
                   </Link>
                 </li>
                 <li>
-                  <Link href="/satellites" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/satellites" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Satellite Tracker
                   </Link>
                 </li>
                 <li>
-                  <Link href="/space-talent" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/space-talent" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Space Talent Hub
                   </Link>
                 </li>
@@ -78,44 +78,44 @@ export default function Footer() {
             {/* Column 3: Resources */}
             <div>
               <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4">Resources</h4>
-              <ul className="space-y-2.5">
+              <ul className="space-y-3">
                 <li>
-                  <Link href="/blog" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/blog" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Blog
                   </Link>
                 </li>
                 <li>
-                  <Link href="/blogs" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/blogs" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Industry Feeds
                   </Link>
                 </li>
                 <li>
-                  <Link href="/compliance" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/compliance" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Compliance
                   </Link>
                 </li>
                 <li>
-                  <Link href="/pricing" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/pricing" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Pricing
                   </Link>
                 </li>
                 <li>
-                  <Link href="/business-opportunities" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/business-opportunities" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Business Opportunities
                   </Link>
                 </li>
                 <li>
-                  <Link href="/learn" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/learn" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Learning Center
                   </Link>
                 </li>
                 <li>
-                  <Link href="/launch" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/launch" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Launch Dashboard
                   </Link>
                 </li>
                 <li>
-                  <Link href="/developer" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/developer" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Developer API
                   </Link>
                 </li>
@@ -123,29 +123,29 @@ export default function Footer() {
 
               {/* Legal Links */}
               <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4 mt-6">Legal</h4>
-              <ul className="space-y-2.5">
+              <ul className="space-y-3">
                 <li>
-                  <Link href="/privacy" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/privacy" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link href="/terms" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/terms" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Terms of Service
                   </Link>
                 </li>
                 <li>
-                  <Link href="/cookies" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/cookies" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Cookie Policy
                   </Link>
                 </li>
                 <li>
-                  <Link href="/community/guidelines" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/community/guidelines" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Community Guidelines
                   </Link>
                 </li>
                 <li>
-                  <Link href="/legal/dmca" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/legal/dmca" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     DMCA Policy
                   </Link>
                 </li>
@@ -153,19 +153,19 @@ export default function Footer() {
 
               {/* Support Links */}
               <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4 mt-6">Support</h4>
-              <ul className="space-y-2.5">
+              <ul className="space-y-3">
                 <li>
-                  <Link href="/faq" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/faq" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     FAQ
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/contact" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Contact Us
                   </Link>
                 </li>
                 <li>
-                  <Link href="/press" className="text-slate-700 hover:text-slate-900 text-sm transition-colors">
+                  <Link href="/press" className="text-slate-700 hover:text-slate-900 text-sm transition-colors py-1 inline-block">
                     Press Kit
                   </Link>
                 </li>

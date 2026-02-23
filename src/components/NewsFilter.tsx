@@ -25,10 +25,10 @@ export default function NewsFilter({
   onCategoryChange,
 }: NewsFilterProps) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex gap-2 overflow-x-auto flex-nowrap sm:flex-wrap">
       <button
         onClick={() => onCategoryChange(null)}
-        className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+        className={`flex-shrink-0 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
           selectedCategory === null
             ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
             : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
@@ -40,7 +40,7 @@ export default function NewsFilter({
         <button
           key={category.slug}
           onClick={() => onCategoryChange(category.slug)}
-          className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${
+          className={`flex-shrink-0 px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${
             selectedCategory === category.slug
               ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
               : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'

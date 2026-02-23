@@ -111,9 +111,9 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
       <div className="relative card overflow-hidden bg-slate-900 border-0">
         <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-cyan-500/10" />
 
-        <div className="relative flex">
+        <div className="relative flex flex-col sm:flex-row items-center sm:items-stretch">
           {/* Image */}
-          <div className="relative w-36 h-40 flex-shrink-0 bg-slate-800 overflow-hidden">
+          <div className="relative w-full h-32 sm:w-36 sm:h-40 flex-shrink-0 bg-slate-800 overflow-hidden">
             {event.imageUrl ? (
               <Image
                 src={event.imageUrl}
@@ -532,9 +532,9 @@ function EventCard({ event }: { event: SpaceEvent }) {
 
   return (
     <div className={`card overflow-hidden ${isWithin48Hours ? 'border-green-500/50 glow-border' : ''} ${isLiveOrImminent ? 'border-red-500/50' : ''}`}>
-      <div className="flex">
+      <div className="flex flex-col sm:flex-row items-center sm:items-stretch">
         {/* Image */}
-        <div className="relative w-32 h-32 flex-shrink-0 bg-slate-800 overflow-hidden">
+        <div className="relative w-full h-32 sm:w-32 sm:h-32 flex-shrink-0 bg-slate-800 overflow-hidden">
           {event.imageUrl ? (
             <Image
               src={event.imageUrl}
@@ -632,7 +632,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
                 href={event.streamUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`text-xs font-medium px-2 py-1 rounded transition-colors flex items-center gap-1 ${
+                className={`text-xs font-medium px-3 py-2 rounded transition-colors flex items-center gap-1 ${
                   event.isLive
                     ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30'
                     : 'bg-orange-500/10 text-orange-500 hover:bg-orange-500/20'
@@ -648,7 +648,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
                 href={event.infoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-medium px-2 py-1 rounded transition-colors flex items-center gap-1 bg-slate-700/50 text-slate-300 hover:bg-slate-600/50"
+                className="text-xs font-medium px-3 py-2 rounded transition-colors flex items-center gap-1 bg-slate-700/50 text-slate-300 hover:bg-slate-600/50"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -659,7 +659,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
             {event.type === 'launch' && (
               <Link
                 href="/resource-exchange"
-                className="text-xs text-rocket-400 hover:text-rocket-300 bg-rocket-500/10 px-2 py-1 rounded transition-colors"
+                className="text-xs text-rocket-400 hover:text-rocket-300 bg-rocket-500/10 px-3 py-2 rounded transition-colors"
               >
                 Launch providers
               </Link>
@@ -667,7 +667,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
             {event.type === 'satellite' && (
               <Link
                 href="/orbital-slots?tab=operators"
-                className="text-xs text-nebula-300 hover:text-nebula-200 bg-nebula-500/10 px-2 py-1 rounded transition-colors"
+                className="text-xs text-nebula-300 hover:text-nebula-200 bg-nebula-500/10 px-3 py-2 rounded transition-colors"
               >
                 Orbital slots
               </Link>
@@ -675,7 +675,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
             {event.type === 'moon_mission' && (
               <Link
                 href="/solar-exploration?body=moon"
-                className="text-xs text-yellow-400 hover:text-yellow-300 bg-yellow-500/10 px-2 py-1 rounded transition-colors"
+                className="text-xs text-yellow-400 hover:text-yellow-300 bg-yellow-500/10 px-3 py-2 rounded transition-colors"
               >
                 Moon exploration
               </Link>
@@ -683,7 +683,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
             {event.type === 'mars_mission' && (
               <Link
                 href="/solar-exploration?body=mars"
-                className="text-xs text-red-400 hover:text-red-300 bg-red-500/10 px-2 py-1 rounded transition-colors"
+                className="text-xs text-red-400 hover:text-red-300 bg-red-500/10 px-3 py-2 rounded transition-colors"
               >
                 Mars exploration
               </Link>
