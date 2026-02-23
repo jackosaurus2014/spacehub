@@ -148,17 +148,6 @@ interface LiveProcurement {
   type?: string;
 }
 
-interface DefenseNewsItem {
-  id: string;
-  title: string;
-  summary: string;
-  source: string;
-  url: string;
-  imageUrl?: string;
-  publishedAt: string;
-  category?: string;
-}
-
 function HeroStats({ forceCount, programCount, contractCount, allianceCount }: {
   forceCount: number;
   programCount: number;
@@ -288,7 +277,7 @@ function ProgramCard({ program }: { program: DefenseProgram }) {
     <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
       <div className="flex items-start justify-between mb-2">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 flex-wrap mb-1">
             <span className="text-nebula-400 font-mono font-bold text-sm">{program.abbreviation}</span>
             <span className={`text-xs font-medium px-2 py-0.5 rounded ${statusStyle.bg} ${statusStyle.color}`}>
               {statusStyle.label}
@@ -297,9 +286,28 @@ function ProgramCard({ program }: { program: DefenseProgram }) {
           </div>
           <h3 className="text-white font-semibold">{program.name}</h3>
         </div>
+        {program.budget && (
+          <span className="text-green-400 font-bold text-sm whitespace-nowrap ml-3">{program.budget}</span>
+        )}
       </div>
 
-      <div className="space-y-2 mb-3">
+      {/* Quick stats row */}
+      <div className="grid grid-cols-2 gap-2 mb-3">
+        {program.constellation && (
+          <div className="bg-slate-900/50 rounded p-2">
+            <span className="text-star-500 text-xs block">Assets</span>
+            <span className="text-star-200 text-sm">{program.constellation}</span>
+          </div>
+        )}
+        {program.nextMilestone && (
+          <div className="bg-slate-900/50 rounded p-2">
+            <span className="text-star-500 text-xs block">Next Milestone</span>
+            <span className="text-yellow-400 text-sm">{program.nextMilestone}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-1.5 mb-3">
         <div className="flex items-center gap-2 text-sm">
           <span className="text-star-400 min-w-[90px]">Agency:</span>
           <span className="text-star-200">{program.agency}</span>
@@ -308,44 +316,28 @@ function ProgramCard({ program }: { program: DefenseProgram }) {
           <span className="text-star-400 min-w-[90px]">Contractor:</span>
           <span className="text-star-200">{program.contractor}</span>
         </div>
-        {program.budget && (
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-star-400 min-w-[90px]">Budget:</span>
-            <span className="text-green-400 font-medium">{program.budget}</span>
-          </div>
-        )}
-        {program.constellation && (
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-star-400 min-w-[90px]">Constellation:</span>
-            <span className="text-star-200">{program.constellation}</span>
-          </div>
-        )}
-        {program.nextMilestone && (
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-star-400 min-w-[90px]">Next:</span>
-            <span className="text-yellow-400">{program.nextMilestone}</span>
-          </div>
-        )}
       </div>
 
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="text-xs text-nebula-400 hover:text-nebula-300 transition-colors flex items-center gap-1"
-      >
-        <svg
-          className={`w-3 h-3 transition-transform ${expanded ? 'rotate-90' : ''}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+      {/* Always show a brief description excerpt */}
+      <p className="text-star-300 text-sm leading-relaxed mb-2">
+        {expanded ? program.description : program.description.slice(0, 180) + (program.description.length > 180 ? '...' : '')}
+      </p>
+
+      {program.description.length > 180 && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-xs text-nebula-400 hover:text-nebula-300 transition-colors flex items-center gap-1"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-        {expanded ? 'Show less' : 'Details'}
-      </button>
-      {expanded && (
-        <p className="text-star-300 text-sm mt-3 leading-relaxed border-t border-slate-700/50 pt-3">
-          {program.description}
-        </p>
+          <svg
+            className={`w-3 h-3 transition-transform ${expanded ? 'rotate-90' : ''}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          {expanded ? 'Show less' : 'Read full description'}
+        </button>
       )}
     </div>
   );
@@ -566,6 +558,94 @@ function SpendingTrends() {
 // Threat Summary Component
 // ────────────────────────────────────────
 
+function ThreatCategoryCard({ cat, style }: {
+  cat: {
+    name: string;
+    level: string;
+    nations: string[];
+    description: string;
+    rationale: string;
+    trajectory: string;
+    keyIndicators: string[];
+  };
+  style: { label: string; color: string; bg: string };
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className={`rounded-lg border border-slate-700/50 ${style.bg} p-4`}>
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="text-white font-semibold">{cat.name}</h4>
+        <span className={`text-xs font-bold px-2.5 py-1 rounded ${style.bg} ${style.color}`}>
+          Threat Level: {style.label}
+        </span>
+      </div>
+      <p className="text-star-300 text-sm mb-2">{cat.description}</p>
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        <span className="text-star-400 text-xs mr-1">Known capable:</span>
+        {cat.nations.map((nation) => (
+          <span key={nation} className="px-2 py-0.5 bg-slate-700/50 text-star-200 rounded text-xs">
+            {nation}
+          </span>
+        ))}
+      </div>
+
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="text-xs text-nebula-400 hover:text-nebula-300 transition-colors flex items-center gap-1"
+      >
+        <svg
+          className={`w-3 h-3 transition-transform ${expanded ? 'rotate-90' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+        {expanded ? 'Hide analysis' : 'Why this rating? View full analysis'}
+      </button>
+
+      {expanded && (
+        <div className="mt-3 space-y-4 border-t border-slate-700/50 pt-3">
+          {/* Rationale */}
+          <div>
+            <h5 className="text-white text-sm font-semibold mb-1 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0" />
+              Assessment Rationale
+            </h5>
+            <p className="text-star-300 text-sm leading-relaxed">{cat.rationale}</p>
+          </div>
+
+          {/* Key Indicators */}
+          <div>
+            <h5 className="text-white text-sm font-semibold mb-1 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 flex-shrink-0" />
+              Key Indicators
+            </h5>
+            <ul className="space-y-1">
+              {cat.keyIndicators.map((indicator) => (
+                <li key={indicator} className="text-star-300 text-sm flex items-start gap-2">
+                  <span className="text-star-500 mt-0.5 flex-shrink-0">--</span>
+                  {indicator}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Trajectory */}
+          <div>
+            <h5 className="text-white text-sm font-semibold mb-1 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-400 flex-shrink-0" />
+              5-10 Year Trajectory
+            </h5>
+            <p className="text-star-300 text-sm leading-relaxed">{cat.trajectory}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ThreatSummary() {
   const categories = [
     {
@@ -573,30 +653,78 @@ function ThreatSummary() {
       level: 'high',
       nations: ['China', 'Russia', 'India', 'United States'],
       description: 'Direct-ascent missiles that physically destroy satellites. Creates debris, difficult to conceal. Four nations have demonstrated this capability.',
+      rationale: 'Rated HIGH because four nations have successfully demonstrated kinetic ASAT capability in live tests. China (2007), the United States (2008), India (2019), and Russia (2021) have all destroyed satellites with interceptor missiles. However, kinetic ASAT is not rated VERY HIGH because the debris consequences create strong deterrence against actual use -- Russia\'s 2021 Cosmos 1408 test drew near-universal condemnation and the resulting debris endangered the ISS. Additionally, kinetic ASAT tests are easily detected by ground-based sensors and provide significant strategic warning, limiting surprise employment. The capability exists and is proven, but practical use during conflict carries severe second-order consequences that constrain its utility.',
+      keyIndicators: [
+        'Four nations have conducted successful kinetic ASAT intercept tests',
+        'China\'s SC-19 and DN-3 interceptors are assessed to be operationally deployable',
+        'Russia\'s Nudol PL-19 has undergone at least 10 flight tests',
+        'U.S. SM-3 Block IIA has inherent ASAT capability',
+        'Kinetic ASAT creates long-lived debris that threatens all nations\' assets',
+      ],
+      trajectory: 'The kinetic ASAT threat is expected to remain HIGH but unlikely to escalate to VERY HIGH over the next decade. International norms against debris-generating ASAT tests are strengthening -- the U.S., Canada, New Zealand, Japan, Germany, and others have pledged to halt destructive ASAT testing. However, existing demonstrated capabilities cannot be un-invented. China and Russia are shifting investment toward reversible counterspace methods (jamming, cyber, directed energy) that avoid debris consequences. The primary risk is not new testing but the potential employment of existing kinetic ASAT arsenals during great-power conflict, where debris consequences may be accepted as a cost of war.',
     },
     {
       name: 'Co-Orbital / RPO',
       level: 'high',
       nations: ['China', 'Russia', 'United States'],
       description: 'Satellites that maneuver near other satellites for inspection, surveillance, or potential interference. Ambiguous intent makes attribution challenging.',
+      rationale: 'Rated HIGH because Russia and China conduct regular, demonstrated rendezvous and proximity operations (RPO) near Western military and commercial satellites, and these operations are inherently dual-use. Russia\'s Luch/Olymp satellite has shadowed Western GEO SATCOM assets; Cosmos 2542/2543 tracked a U.S. KH-11 reconnaissance satellite. China\'s SJ-21 physically grappled and relocated a defunct BeiDou satellite, demonstrating potential offensive capability. The threat is HIGH rather than VERY HIGH because co-orbital attacks require significant orbital maneuvering time, providing some warning to defenders, and the ambiguity between inspection and attack allows diplomatic engagement before escalation.',
+      keyIndicators: [
+        'Russia\'s Luch satellite repositions near Western GEO assets repeatedly',
+        'Cosmos 2543 released a projectile in orbit (July 2020)',
+        'China\'s SJ-21 demonstrated grapple-and-tow capability (2022)',
+        'Multiple Chinese Shiyan/Shijian satellites have performed close approaches',
+        'The U.S. GSSAP program also conducts RPO for space domain awareness',
+      ],
+      trajectory: 'Expected to INCREASE toward VERY HIGH over the next 5-10 years. Co-orbital operations are proliferating as on-orbit servicing technology matures and dual-use RPO satellites become cheaper to build and deploy. China is investing heavily in robotic servicing, debris removal, and on-orbit manufacturing -- all with inherent co-orbital ASAT applications. Russia continues to develop successive generations of inspection satellites. The growing number of maneuvering objects in GEO and LEO will make it harder to distinguish hostile from benign RPO, increasing the risk of miscalculation. On-orbit "space-to-space" weapons that can disable satellites without creating debris are particularly concerning because they avoid the consequences that deter kinetic ASAT.',
     },
     {
       name: 'Electronic Warfare (Jamming/Spoofing)',
       level: 'very_high',
       nations: ['Russia', 'China', 'Iran', 'North Korea'],
       description: 'Ground-based or space-based systems that jam or spoof satellite signals, particularly GPS/GNSS and SATCOM. Most frequently used counterspace capability.',
+      rationale: 'Rated VERY HIGH because electronic warfare is the most operationally deployed and frequently used counterspace capability today. Russia employs GPS/GNSS jamming and spoofing daily in the Ukraine conflict and across the Baltic, Black Sea, and Eastern Mediterranean regions, affecting both military operations and civilian aviation safety. Systems like Krasukha-4, Pole-21, and Tirada-2 are fielded in large numbers with trained operators. North Korea has jammed GPS across the Seoul metropolitan area affecting over 1,100 aircraft. Iran conducts regional GPS interference in the Persian Gulf. Unlike kinetic ASAT, electronic warfare is reversible, deniable, tactically useful at the unit level, and does not create debris -- making it far more likely to be employed across the conflict spectrum, including in gray-zone operations below the threshold of armed conflict.',
+      keyIndicators: [
+        'Russia conducts persistent GPS jamming/spoofing across multiple theaters daily',
+        'NATO allies report widespread GPS outages caused by Russian EW systems',
+        'North Korea conducted a mass GPS jamming campaign affecting 1,800+ aircraft and ships',
+        'Iran interferes with GPS and commercial SATCOM in the Persian Gulf',
+        'Jammers are cheap, mobile, and widely available on the commercial market',
+        'SATCOM uplink jamming can be achieved with relatively low-power ground equipment',
+      ],
+      trajectory: 'Expected to REMAIN VERY HIGH and potentially worsen. Electronic warfare against space systems is becoming more accessible as software-defined radio technology proliferates and commercial jammers become cheaper. The barrier to entry is significantly lower than for other counterspace domains. Mitigation efforts (anti-jam GPS M-code, frequency hopping, beam nulling) are advancing but deployment lags the threat. As militaries become more dependent on space-based PNT and SATCOM, the incentive to jam increases. Space-based EW systems (jamming from orbit) represent an emerging threat that would extend jamming coverage globally. The contested electromagnetic environment in space will intensify through the 2030s.',
     },
     {
       name: 'Cyber',
       level: 'high',
       nations: ['Russia', 'China', 'Iran', 'North Korea'],
       description: 'Attacks on satellite ground systems, communication links, or spacecraft software. Demonstrated in the 2022 Viasat attack. Hard to attribute definitively.',
+      rationale: 'Rated HIGH because the 2022 Viasat KA-SAT cyberattack proved that state actors will target satellite infrastructure in real combat operations. The GRU-attributed attack disabled 30,000+ terminals across Europe hours before Russia\'s invasion of Ukraine, disrupting Ukrainian military communications and affecting civilian infrastructure in multiple NATO countries. Satellite ground systems are networked, software-intensive, and exposed to the same cyber vulnerabilities as other IT infrastructure. Four nations (Russia, China, Iran, North Korea) have sophisticated cyber operations units with demonstrated interest in space targets. The threat is HIGH rather than VERY HIGH because successful satellite cyber operations require significant reconnaissance and access development, and the most critical military systems use isolated networks and encryption.',
+      keyIndicators: [
+        'Russia\'s GRU Unit 74455 (Sandworm) conducted the Viasat attack',
+        'China\'s APT groups have targeted satellite operators and defense contractors',
+        'Iran-linked groups attempted to compromise satellite ground stations',
+        'Many satellite ground systems use legacy software with known vulnerabilities',
+        'Supply chain attacks on satellite components represent a growing vector',
+        'Ransomware groups have targeted space industry companies',
+      ],
+      trajectory: 'Expected to INCREASE toward VERY HIGH over the next 5-10 years. As satellite constellations grow and ground segments become more networked and cloud-based, the attack surface expands. The shift toward software-defined satellites with reprogrammable payloads introduces new attack vectors -- a compromised satellite firmware update could disable an entire constellation. AI-powered cyber tools will lower the skill barrier for sophisticated attacks. The proliferation of commercial space operations means more potential targets with varying levels of cybersecurity maturity. Space-specific cybersecurity standards (NIST, CISA) are emerging but adoption is uneven across the industry.',
     },
     {
       name: 'Directed Energy',
       level: 'medium',
       nations: ['China', 'Russia'],
       description: 'Ground-based or space-based lasers for dazzling, blinding, or damaging satellite sensors. China and Russia assessed to be developing these systems.',
+      rationale: 'Rated MEDIUM because while China and Russia are both developing ground-based laser systems that can dazzle or blind satellite sensors, no confirmed operational attacks against foreign satellites have been publicly documented. China has reportedly lased U.S. satellites on multiple occasions for tracking purposes, and the DIA has assessed that China may have a limited capability to damage satellite sensors with ground-based lasers. Russia is developing similar systems, including the Peresvet mobile laser system (which may have an anti-satellite role). The threat is MEDIUM rather than HIGH because the technology is still maturing, atmospheric effects limit ground-to-space laser effectiveness, and the high-power systems needed to physically damage satellites at orbital distances require significant infrastructure that is detectable.',
+      keyIndicators: [
+        'China has lased U.S. reconnaissance satellites (multiple reported incidents)',
+        'Russia deployed the Peresvet laser system to operational units in 2019',
+        'DIA assesses China could have sensor-damaging laser by mid-2020s',
+        'Both nations are investing in high-energy laser research',
+        'Ground-based dazzling/blinding is achievable with current technology',
+        'Physical damage from ground to orbit requires megawatt-class power levels',
+      ],
+      trajectory: 'Expected to INCREASE to HIGH over the next 5-10 years. Both China and Russia are investing heavily in directed energy programs. Advances in solid-state laser technology, adaptive optics, and beam control are steadily overcoming atmospheric limitations. Space-based directed energy weapons -- which avoid atmospheric absorption entirely -- are a logical next step and have been studied by multiple nations. By the early 2030s, China is assessed likely to have ground-based lasers capable of physically damaging satellite optical sensors and solar panels in LEO. The proliferation of lower-cost high-power lasers could also enable non-state actors to dazzle commercial satellites. Space-based laser weapons remain technically challenging but cannot be ruled out for the 2035 timeframe.',
     },
   ];
 
@@ -609,28 +737,16 @@ function ThreatSummary() {
 
   return (
     <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur mb-8">
-      <h3 className="text-white font-bold mb-4">Counterspace Threat Overview (OSINT Assessment)</h3>
+      <h3 className="text-white font-bold mb-2">Counterspace Threat Overview (OSINT Assessment)</h3>
+      <p className="text-star-400 text-xs mb-4">
+        Click &quot;View full analysis&quot; on each threat category to see the rationale behind each rating,
+        key indicators, and the projected 5-10 year trajectory.
+      </p>
       <div className="space-y-4">
         {categories.map((cat) => {
           const style = levelStyles[cat.level];
           return (
-            <div key={cat.name} className={`rounded-lg border border-slate-700/50 ${style.bg} p-4`}>
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="text-white font-semibold">{cat.name}</h4>
-                <span className={`text-xs font-bold px-2.5 py-1 rounded ${style.bg} ${style.color}`}>
-                  Threat Level: {style.label}
-                </span>
-              </div>
-              <p className="text-star-300 text-sm mb-2">{cat.description}</p>
-              <div className="flex flex-wrap gap-1.5">
-                <span className="text-star-400 text-xs mr-1">Known capable:</span>
-                {cat.nations.map((nation) => (
-                  <span key={nation} className="px-2 py-0.5 bg-slate-700/50 text-star-200 rounded text-xs">
-                    {nation}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <ThreatCategoryCard key={cat.name} cat={cat} style={style} />
           );
         })}
       </div>
@@ -654,7 +770,6 @@ export default function SpaceDefensePage() {
   const [counterspaceEvents, setCounterspaceEvents] = useState<CounterspaceEvent[]>([]);
   const [alliances, setAlliances] = useState<Alliance[]>([]);
   const [liveProcurement, setLiveProcurement] = useState<LiveProcurement[]>([]);
-  const [defenseNews, setDefenseNews] = useState<DefenseNewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
@@ -667,24 +782,22 @@ export default function SpaceDefensePage() {
     async function fetchData() {
       setError(null);
       try {
-        const [forcesRes, programsRes, contractsRes, eventsRes, alliancesRes, procurementRes, newsRes] = await Promise.all([
+        const [forcesRes, programsRes, contractsRes, eventsRes, alliancesRes, procurementRes] = await Promise.all([
           fetch('/api/content/space-defense?section=space-forces'),
           fetch('/api/content/space-defense?section=defense-programs'),
           fetch('/api/content/space-defense?section=recent-contracts'),
           fetch('/api/content/space-defense?section=counterspace-events'),
           fetch('/api/content/space-defense?section=alliances'),
           fetch('/api/content/space-defense?section=live-procurement'),
-          fetch('/api/content/space-defense?section=defense-news'),
         ]);
 
-        const [forcesJson, programsJson, contractsJson, eventsJson, alliancesJson, procurementJson, newsJson] = await Promise.all([
+        const [forcesJson, programsJson, contractsJson, eventsJson, alliancesJson, procurementJson] = await Promise.all([
           forcesRes.json(),
           programsRes.json(),
           contractsRes.json(),
           eventsRes.json(),
           alliancesRes.json(),
           procurementRes.json(),
-          newsRes.json(),
         ]);
 
         if (forcesJson.data) setSpaceForces(forcesJson.data);
@@ -693,7 +806,6 @@ export default function SpaceDefensePage() {
         if (eventsJson.data) setCounterspaceEvents(eventsJson.data);
         if (alliancesJson.data) setAlliances(alliancesJson.data);
         if (procurementJson.data) setLiveProcurement(procurementJson.data);
-        if (newsJson.data) setDefenseNews(newsJson.data);
 
         // Use the most recent lastRefreshed from any section
         const timestamps = [
@@ -871,10 +983,24 @@ export default function SpaceDefensePage() {
             <div>
               <h2 className="text-xl font-bold text-white mb-2">Major Defense Space Programs</h2>
               <p className="text-star-300 text-sm mb-6">
-                The U.S. defense space enterprise encompasses hundreds of billions of dollars in satellite
-                constellations, ground systems, and launch services. The following are the major publicly
-                known programs across the Space Force, SDA, and NRO.
+                Tracking {defensePrograms.length} major defense space programs across the USSF, SDA, NRO, and allied nations.
+                Programs span communications, missile warning, navigation, surveillance, launch, and the
+                Proliferated Warfighter Space Architecture. Data sourced from public budget documents and official program updates.
               </p>
+
+              {/* Program Status Summary */}
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+                {Object.entries(PROGRAM_STATUS_STYLES).map(([status, style]) => {
+                  const count = defensePrograms.filter((p) => p.status === status).length;
+                  if (count === 0) return null;
+                  return (
+                    <div key={status} className={`rounded-lg border border-slate-700/50 ${style.bg} p-3 text-center`}>
+                      <span className={`text-2xl font-bold ${style.color}`}>{count}</span>
+                      <span className="text-star-400 text-xs block">{style.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
 
               {/* Category Filters */}
               <div className="card p-4 border border-slate-700/50 bg-slate-800/50 mb-6">
@@ -966,12 +1092,130 @@ export default function SpaceDefensePage() {
               </div>
             </div>
 
+            {/* Active USSF Procurement Priorities */}
+            <div>
+              <h2 className="text-xl font-bold text-white mb-2">Active USSF/DoD Procurement Priorities</h2>
+              <p className="text-star-300 text-sm mb-6">
+                Key Space Force and DoD procurement programs currently seeking industry proposals,
+                based on public RFIs, BAAs, and official acquisition announcements from FY2025-FY2026.
+              </p>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {[
+                  {
+                    title: 'Tactically Responsive Space (TacRS) Launch',
+                    agency: 'USSF / Space Systems Command',
+                    status: 'Active',
+                    statusColor: 'text-green-400',
+                    statusBg: 'bg-green-900/20',
+                    value: '~$200M (program)',
+                    description: 'Rapid-response launch capability to deploy replacement or augmentation satellites within 24-48 hours of a tasking order. SSC seeking responsive launch providers with rapid integration, containerized payload processing, and launch-on-demand capability from multiple sites.',
+                    vehicle: 'BAA / IDIQ',
+                    focus: ['Rapid launch integration', 'Mobile launch capability', 'Containerized payload processing'],
+                  },
+                  {
+                    title: 'Commercial SATCOM (COMSATCOM) Services',
+                    agency: 'USSF / Space Systems Command',
+                    status: 'Active',
+                    statusColor: 'text-green-400',
+                    statusBg: 'bg-green-900/20',
+                    value: '$900M+ (IDIQ ceiling)',
+                    description: 'Multi-award IDIQ contract for commercial satellite communications bandwidth to supplement military SATCOM capacity. Includes GEO and LEO commercial providers. Covers Ku, Ka, and commercial X-band services for COCOM requirements worldwide.',
+                    vehicle: 'IDIQ / Task Order',
+                    focus: ['LEO and GEO commercial bandwidth', 'CONUS and OCONUS coverage', 'Anti-jam augmentation'],
+                  },
+                  {
+                    title: 'Space Domain Awareness Sensors (Ground & Space)',
+                    agency: 'USSF / Space Operations Command',
+                    status: 'Solicitation',
+                    statusColor: 'text-blue-400',
+                    statusBg: 'bg-blue-900/20',
+                    value: '$300-500M (estimated)',
+                    description: 'Expansion of the Space Surveillance Network through commercial sensor contributions and new government-owned sensors. Seeking deep-space optical telescopes, LEO radars, and space-based SDA payloads to improve the space object catalog and threat characterization.',
+                    vehicle: 'CSO / BAA',
+                    focus: ['Deep-space optical sensors', 'LEO/MEO radar systems', 'Space-based SDA payloads'],
+                  },
+                  {
+                    title: 'PWSA Tranche 3 (Transport & Tracking)',
+                    agency: 'Space Development Agency',
+                    status: 'Pre-Solicitation',
+                    statusColor: 'text-yellow-400',
+                    statusBg: 'bg-yellow-900/20',
+                    value: '$5B+ (estimated full tranche)',
+                    description: 'Next spiral of the Proliferated Warfighter Space Architecture. Tranche 3 will add ~250 Transport Layer and ~60 Tracking Layer satellites with improved optical cross-links, higher-bandwidth data transport, and enhanced OPIR sensors. RFI released; solicitation expected FY2026.',
+                    vehicle: 'RFI / forthcoming RFP',
+                    focus: ['Next-gen optical inter-satellite links', 'Enhanced OPIR tracking sensors', 'Resilient mesh architecture'],
+                  },
+                  {
+                    title: 'SpaceWERX Orbital Prime (On-Orbit Servicing)',
+                    agency: 'USSF / SpaceWERX (AFWERX)',
+                    status: 'Active',
+                    statusColor: 'text-green-400',
+                    statusBg: 'bg-green-900/20',
+                    value: '$125M (program)',
+                    description: 'SpaceWERX Orbital Prime SBIR/STTR program for on-orbit servicing, assembly, and manufacturing (OSAM). Seeks commercial providers for satellite life extension, debris removal, in-space assembly, and space logistics. Multiple phases from concept to on-orbit demonstration.',
+                    vehicle: 'SBIR/STTR (Phase I/II/III)',
+                    focus: ['Satellite life extension', 'Active debris removal', 'In-space manufacturing'],
+                  },
+                  {
+                    title: 'Resilient GPS Backup / Alt-PNT',
+                    agency: 'USSF / Space Systems Command / DoD PNT Oversight Council',
+                    status: 'Sources Sought',
+                    statusColor: 'text-purple-400',
+                    statusBg: 'bg-purple-900/20',
+                    value: '$150-250M (estimated)',
+                    description: 'Alternative positioning, navigation, and timing solutions to supplement or back up GPS in contested/denied environments. Seeking LEO PNT augmentation, terrestrial eLoran, fiber-optic clocks, and quantum-inertial navigation solutions that can operate when GPS is jammed or spoofed.',
+                    vehicle: 'Sources Sought / BAA',
+                    focus: ['LEO PNT constellations', 'Terrestrial eLoran modernization', 'Quantum-inertial navigation'],
+                  },
+                ].map((opp) => (
+                  <div key={opp.title} className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h3 className="text-white font-semibold text-sm">{opp.title}</h3>
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap ${opp.statusBg} ${opp.statusColor}`}>
+                        {opp.status}
+                      </span>
+                    </div>
+                    <div className="space-y-1.5 mb-3 text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="text-star-400 min-w-[70px]">Agency:</span>
+                        <span className="text-star-200">{opp.agency}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-star-400 min-w-[70px]">Est. Value:</span>
+                        <span className="text-green-400 font-medium">{opp.value}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-star-400 min-w-[70px]">Vehicle:</span>
+                        <span className="text-star-200">{opp.vehicle}</span>
+                      </div>
+                    </div>
+                    <p className="text-star-300 text-xs leading-relaxed mb-3">{opp.description}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {opp.focus.map((f) => (
+                        <span key={f} className="px-2 py-0.5 bg-nebula-500/10 text-nebula-400 rounded text-xs">
+                          {f}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-star-500 text-xs mt-4">
+                Note: Procurement status and values are based on public RFIs, BAAs, and official acquisition announcements.
+                Visit SAM.gov for current solicitation details and response deadlines. For comprehensive procurement
+                intelligence including SBIR/STTR topics, see the{' '}
+                <a href="/business-opportunities?tab=procurement" className="text-nebula-400 hover:text-nebula-300 transition-colors underline">
+                  Procurement Intelligence module
+                </a>.
+              </p>
+            </div>
+
             {/* Live SAM.gov Solicitations */}
             {liveProcurement.length > 0 && (
               <div>
-                <h2 className="text-xl font-bold text-white mb-2">Active Solicitations & Opportunities</h2>
+                <h2 className="text-xl font-bold text-white mb-2">Live SAM.gov Defense Space Solicitations</h2>
                 <p className="text-star-300 text-sm mb-6">
-                  Live defense space opportunities from SAM.gov, updated daily at 6:00 AM UTC.
+                  Live defense space opportunities pulled directly from SAM.gov, updated daily at 6:00 AM UTC.
                   Filtered for DoD/Space Force/DARPA agencies with space-related NAICS codes.
                 </p>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -1038,37 +1282,27 @@ export default function SpaceDefensePage() {
               </div>
             )}
 
-            {/* Defense News */}
-            {defenseNews.length > 0 && (
-              <div>
-                <h2 className="text-xl font-bold text-white mb-2">Recent Defense & Security News</h2>
-                <p className="text-star-300 text-sm mb-4">
-                  Latest news articles related to space defense and national security.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {defenseNews.slice(0, 9).map((article) => (
-                    <a
-                      key={article.id}
-                      href={article.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all group"
-                    >
-                      <h4 className="text-white text-sm font-semibold group-hover:text-nebula-300 transition-colors line-clamp-2 mb-2">
-                        {article.title}
-                      </h4>
-                      {article.summary && (
-                        <p className="text-star-400 text-xs line-clamp-2 mb-2">{article.summary}</p>
-                      )}
-                      <div className="flex items-center justify-between text-xs text-star-500">
-                        <span>{article.source}</span>
-                        <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
-                      </div>
-                    </a>
-                  ))}
+            {/* Related News Cross-Link (replaces embedded news articles) */}
+            <div className="card p-5 border border-nebula-500/20 bg-nebula-500/5 backdrop-blur">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-white font-semibold mb-1">Defense & National Security News</h3>
+                  <p className="text-star-400 text-sm">
+                    Latest news articles on Space Force procurement, defense contracts, and national security developments
+                    are available in the News module filtered by the defense category.
+                  </p>
                 </div>
+                <a
+                  href="/news?category=space-defense"
+                  className="flex-shrink-0 ml-4 px-4 py-2 bg-nebula-500/20 hover:bg-nebula-500/30 text-nebula-300 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                >
+                  View Defense News
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </a>
               </div>
-            )}
+            </div>
 
             {/* SBIR/STTR Note */}
             <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
