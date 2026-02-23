@@ -27,6 +27,20 @@ export type BOMCategory =
   | 'communications'
   | 'payload';
 
+export interface MitigationStrategy {
+  name: string;
+  costDelta: string;
+  timeline: string;
+  effectiveness: string; // 'High' | 'Medium' | 'Low'
+}
+
+export interface HistoricalIncident {
+  date: string;
+  description: string;
+  impact: string;
+  resolution: string;
+}
+
 export interface BOMRiskItem {
   id: string;
   component: string;
@@ -38,6 +52,11 @@ export interface BOMRiskItem {
   leadTime: string;
   alternatives: string[];
   notes: string;
+  costImpactRange?: string;
+  affectedSubsystems?: string[];
+  mitigationStrategies?: MitigationStrategy[];
+  historicalIncidents?: HistoricalIncident[];
+  supplierCompanyIds?: string[]; // CompanyProfile slugs for cross-referencing
 }
 
 // ── Orbital System Display Names (for UI) ─────────
@@ -138,6 +157,18 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Neuromorphic processors (Intel Loihi, IBM TrueNorth research)',
     ],
     notes: 'True space-qualified GPU compute is 3-5 years away. Current orbital data center designs rely on commercial GPUs inside radiation-shielded enclosures, accepting reduced performance and added mass. This is the single largest technology gap for orbital computing.',
+    costImpactRange: '$80M-120M per orbital data center',
+    affectedSubsystems: ['Computing Payload', 'Power/Thermal', 'Radiation Shielding'],
+    mitigationStrategies: [
+      { name: 'FPGA-based inference acceleration using Xilinx UltraScale', costDelta: '+25-35%', timeline: '12-18 months', effectiveness: 'Medium' },
+      { name: 'Spot-shielded commercial GPU enclosures (Lumen Orbit approach)', costDelta: '+40-60%', timeline: '18-24 months', effectiveness: 'Medium' },
+      { name: 'Co-develop rad-hard AI ASIC with DARPA/DoD partnership', costDelta: '+100-200%', timeline: '36-48 months', effectiveness: 'High' },
+    ],
+    historicalIncidents: [
+      { date: '2023-10', description: 'US export controls on advanced AI chips (A100/H100) restricted to China', impact: 'Reduced global ASIC foundry capacity for custom space designs', resolution: 'Domestic foundry investment under CHIPS Act accelerated' },
+      { date: '2024-03', description: 'Lumen Orbit prototype radiation testing showed higher-than-expected single-event upsets', impact: 'Delayed orbital data center deployment by 12+ months', resolution: 'Additional shielding mass added, reducing payload capacity by 15%' },
+    ],
+    supplierCompanyIds: ['redwire'],
   },
   {
     id: 'bom-crit-2',
@@ -160,6 +191,17 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Subcooled propellant storage (delays boiloff onset)',
     ],
     notes: 'Zero-boil-off is THE critical enabling technology for propellant depots. Without it, long-term cryogenic storage in space is impossible. NASA, Lockheed Martin, and Ball Aerospace are developing solutions, but none have flown at the required scale.',
+    costImpactRange: '$150M-200M per propellant depot',
+    affectedSubsystems: ['Cryogenic Storage', 'Power/Thermal', 'Propellant Management'],
+    mitigationStrategies: [
+      { name: 'Passive sun-shield with thermodynamic vent system hybrid', costDelta: '+10-15%', timeline: '12-18 months', effectiveness: 'Low' },
+      { name: 'Dual-source Ball Aerospace + Lockheed Martin competitive development', costDelta: '+20-30%', timeline: '24-36 months', effectiveness: 'High' },
+      { name: 'Accept controlled boiloff with oversized depot capacity', costDelta: '+30-50%', timeline: '6-12 months', effectiveness: 'Medium' },
+    ],
+    historicalIncidents: [
+      { date: '2022-11', description: 'NASA Artemis I cryogenic propellant loading issues caused multiple scrub delays', impact: 'Highlighted ground-based cryo management challenges that are amplified in space', resolution: 'Revised loading procedures; underscored need for ZBO for in-space operations' },
+    ],
+    supplierCompanyIds: ['ball-aerospace', 'lockheed-martin', 'northrop-grumman'],
   },
   {
     id: 'bom-crit-3',
@@ -181,6 +223,19 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'SpaceX internal EVA suit (Polaris Dawn heritage, limited capability)',
     ],
     notes: 'Sole-source dependency is the primary risk. Current production rate is wholly inadequate for Artemis lunar EVAs, ISS maintenance, and commercial station operations simultaneously. Any supplier disruption has no backup.',
+    costImpactRange: '$15M-25M per suit system',
+    affectedSubsystems: ['Life Support', 'Crew Systems', 'EVA Operations'],
+    mitigationStrategies: [
+      { name: 'Fund SpaceX EVA suit qualification as second source', costDelta: '+20-30%', timeline: '24-36 months', effectiveness: 'High' },
+      { name: 'Stockpile critical PLSS spare components', costDelta: '+5-10%', timeline: '6-12 months', effectiveness: 'Low' },
+      { name: 'Invest in Collins Aerospace production line expansion', costDelta: '+15-25%', timeline: '18-24 months', effectiveness: 'Medium' },
+    ],
+    historicalIncidents: [
+      { date: '2021-08', description: 'NASA OIG report revealed xEMU suit delays would push Artemis III lunar EVA timeline', impact: 'Artemis III landing delayed from 2024 to 2025+; EVA suits identified as critical path item', resolution: 'NASA awarded Collins Aerospace sole-source contract for AxEMU; SpaceX developed lightweight EVA suit for Polaris Dawn' },
+      { date: '2022-03', description: 'ISS EVA cancelled due to water intrusion risk in legacy EMU suit', impact: 'Multiple planned ISS maintenance EVAs deferred; station maintenance backlog grew', resolution: 'Additional suit inspections mandated; further pressure on next-gen suit timeline' },
+      { date: '2024-09', description: 'SpaceX Polaris Dawn mission demonstrated first commercial EVA suit', impact: 'Proved alternative EVA suit design path outside Collins Aerospace monopoly', resolution: 'Opened discussion for SpaceX EVA suits as backup for commercial station operations' },
+    ],
+    supplierCompanyIds: ['spacex', 'axiom-space'],
   },
   {
     id: 'bom-crit-4',
@@ -204,6 +259,16 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Sacrificial seal designs with in-field replacement',
     ],
     notes: 'This applies to any orbital system designed for eventual lunar operations. For LEO-only habitats the risk is lower, but Artemis-related habitat designs must account for lunar dust compatibility in airlock and EVA interface seals.',
+    costImpactRange: '$5M-15M per habitat airlock system',
+    affectedSubsystems: ['Airlock Mechanisms', 'EVA Interface', 'Habitat Structure'],
+    mitigationStrategies: [
+      { name: 'Electrostatic dust mitigation coatings on seal surfaces', costDelta: '+10-15%', timeline: '18-24 months', effectiveness: 'Medium' },
+      { name: 'Sacrificial replaceable seal cartridges for lunar ops', costDelta: '+5-8%', timeline: '12-18 months', effectiveness: 'Medium' },
+      { name: 'Fund NASA GRC magnetic fluid seal R&D to TRL 7+', costDelta: '+50-100%', timeline: '36-48 months', effectiveness: 'High' },
+    ],
+    historicalIncidents: [
+      { date: '1972-12', description: 'Apollo 17 astronauts reported severe lunar dust contamination of suit seals and cabin', impact: 'Dust caused equipment failures, respiratory irritation, and seal degradation within hours', resolution: 'Problem documented but unresolved; remains a primary engineering challenge for Artemis' },
+    ],
   },
   {
     id: 'bom-crit-5',
@@ -225,6 +290,17 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Microbolometer arrays (lower sensitivity, uncooled)',
     ],
     notes: 'Critical for debris tracking sensors, Earth observation instruments, and scientific payloads. The dual-supplier situation is relatively fragile given that both are US-only and ITAR-controlled, blocking allied partner sourcing.',
+    costImpactRange: '$20M-40M per sensor suite',
+    affectedSubsystems: ['Debris Tracking Sensors', 'Earth Observation', 'Scientific Instruments'],
+    mitigationStrategies: [
+      { name: 'Qualify European Lynred detectors for smaller-format applications', costDelta: '+15-20%', timeline: '18-24 months', effectiveness: 'Medium' },
+      { name: 'Develop uncooled microbolometer alternative for debris detection', costDelta: '+5-10%', timeline: '12-18 months', effectiveness: 'Low' },
+      { name: 'Long-term purchase agreements with Teledyne and Raytheon', costDelta: '+8-12%', timeline: '6-9 months', effectiveness: 'High' },
+    ],
+    historicalIncidents: [
+      { date: '2023-06', description: 'OPIR satellite program absorbed 60%+ of Teledyne large-format FPA production', impact: 'Commercial and science missions experienced 6-12 month additional delays', resolution: 'Teledyne announced production expansion at Durham facility; deliveries expected to improve by 2025' },
+    ],
+    supplierCompanyIds: ['raytheon', 'l3harris-technologies'],
   },
   {
     id: 'bom-crit-6',
@@ -250,6 +326,18 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Triple-modular redundancy with COTS memory (mass penalty)',
     ],
     notes: 'This is the most broadly impactful supply chain bottleneck in the space industry. Every orbital system in the database depends on rad-hard memory. Starlink, Kuiper, and SDA Tranche programs are consuming the majority of available production.',
+    costImpactRange: '$2M-8M per spacecraft avionics suite',
+    affectedSubsystems: ['Flight Computer', 'Data Handling', 'Payload Processing', 'All Avionics'],
+    mitigationStrategies: [
+      { name: 'TMR with COTS memory and EDAC for LEO applications', costDelta: '+15-25%', timeline: '6-12 months', effectiveness: 'Medium' },
+      { name: 'Strategic stockpile of rad-hard memory from all 3 suppliers', costDelta: '+10-15%', timeline: '3-6 months', effectiveness: 'Medium' },
+      { name: 'Fund development of space-qualified DDR4 with BAE/Cobham', costDelta: '+80-120%', timeline: '36-48 months', effectiveness: 'High' },
+    ],
+    historicalIncidents: [
+      { date: '2021-01', description: 'Global semiconductor shortage severely impacted rad-hard memory availability', impact: 'Lead times extended from 12 to 24+ months; multiple satellite programs delayed', resolution: 'Suppliers prioritized defense/space orders; commercial programs absorbed worst delays' },
+      { date: '2023-04', description: 'SDA Tranche 1 production consumed bulk of available rad-hard SRAM inventory', impact: 'Commercial satellite builders faced 18-24 month wait for rad-hard memory', resolution: 'BAE Systems and 3D-Plus announced production capacity investments' },
+    ],
+    supplierCompanyIds: ['northrop-grumman', 'l3harris-technologies'],
   },
   {
     id: 'bom-crit-7',
@@ -271,6 +359,13 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Custom fiber links with space-qualified optics (lower bandwidth)',
     ],
     notes: 'Orbital data centers require data-center-class backplane connectivity (400G+). The complete absence of space-qualified high-bandwidth optical transceivers is a fundamental architecture constraint.',
+    costImpactRange: '$30M-60M per orbital data center',
+    affectedSubsystems: ['Data Backplane', 'Inter-Rack Connectivity', 'Computing Payload'],
+    mitigationStrategies: [
+      { name: 'Custom space-qualified fiber with modified COTS optics', costDelta: '+30-50%', timeline: '18-24 months', effectiveness: 'Medium' },
+      { name: 'Distributed computing architecture to reduce backplane bandwidth needs', costDelta: '+20-30%', timeline: '12-18 months', effectiveness: 'Medium' },
+      { name: 'DARPA-funded photonic interconnect development program', costDelta: '+100-150%', timeline: '36-48 months', effectiveness: 'High' },
+    ],
   },
 
   // ═══════════════════════════════════════════════════
@@ -297,6 +392,13 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Iodine propellant (emerging, solid storage advantages)',
     ],
     notes: 'Global xenon production is approximately 50-70 tons/year. Space demand alone could consume 20-30% of this as electric propulsion proliferates. The transition to krypton (as SpaceX has done for Starlink) alleviates some pressure.',
+    costImpactRange: '$3M-8M per EP-equipped spacecraft',
+    affectedSubsystems: ['Electric Propulsion', 'Propellant Storage'],
+    historicalIncidents: [
+      { date: '2022-02', description: 'Russia-Ukraine conflict disrupted Ukrainian xenon production (major global source)', impact: 'Xenon spot prices spiked 2-3x; EP satellite builders scrambled for supply', resolution: 'SpaceX accelerated krypton transition for Starlink v2; other operators secured long-term contracts' },
+      { date: '2023-07', description: 'Starlink constellation growth consumed estimated 10-15 tons/year of xenon/krypton', impact: 'Reduced global availability for other EP satellite programs', resolution: 'Full transition to krypton for Starlink reduced xenon demand pressure' },
+    ],
+    supplierCompanyIds: ['spacex'],
   },
   {
     id: 'bom-high-2',
@@ -318,6 +420,9 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Proprietary docking systems (limits interoperability)',
     ],
     notes: 'Major infrastructure bottleneck for the emerging multi-destination commercial LEO ecosystem. The lack of a COTS docking system forces expensive custom development for each program.',
+    costImpactRange: '$8M-15M per docking port',
+    affectedSubsystems: ['Docking/Berthing', 'Station Structure', 'Visiting Vehicle Interface'],
+    supplierCompanyIds: ['boeing', 'sierra-space'],
   },
   {
     id: 'bom-high-3',
@@ -340,6 +445,11 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'NASA technology license transfer',
     ],
     notes: 'Achieving >90% water recovery is essential for beyond-LEO missions and reduces resupply mass by thousands of kg/year. Each new commercial station must either license ISS heritage technology or develop proprietary systems at great cost and schedule risk.',
+    costImpactRange: '$20M-40M per habitat ECLSS',
+    affectedSubsystems: ['ECLSS', 'Crew Systems', 'Resupply Logistics'],
+    historicalIncidents: [
+      { date: '2023-11', description: 'ISS Water Processor Assembly experienced repeated failures requiring in-orbit repairs', impact: 'Crew time diverted to ECLSS maintenance; highlighted reliability concerns for WPA design', resolution: 'Collins Aerospace provided updated components; design improvements incorporated for commercial stations' },
+    ],
   },
   {
     id: 'bom-high-4',
@@ -362,6 +472,9 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Parabolic dish antennas (heavier, mechanically steered)',
     ],
     notes: 'Ka-band phased arrays are the backbone of modern high-throughput satellite communications. The GaN/GaAs compound semiconductor supply chain is the deeper bottleneck.',
+    costImpactRange: '$5M-12M per satellite comm system',
+    affectedSubsystems: ['Communications Payload', 'Data Downlink', 'User Terminal'],
+    supplierCompanyIds: ['ball-aerospace', 'viasat'],
   },
   {
     id: 'bom-high-5',
@@ -384,6 +497,9 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Titanium structures (heavier, mature supply chain)',
     ],
     notes: 'Advanced composites including CNTs are essential for next-generation lightweight space structures, particularly large deployable solar arrays and mega-structures.',
+    costImpactRange: '$10M-30M per large deployable structure',
+    affectedSubsystems: ['Primary Structure', 'Deployable Mechanisms', 'Solar Array Substrate'],
+    supplierCompanyIds: ['redwire'],
   },
   {
     id: 'bom-high-6',
@@ -406,6 +522,9 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Cold gas thrusters (very low performance)',
     ],
     notes: 'Green propellants are increasingly specified for ESG/regulatory compliance. The production ramp-up is not keeping pace with the demand shift away from hydrazine.',
+    costImpactRange: '$3M-7M per propulsion system',
+    affectedSubsystems: ['Propulsion', 'Attitude Control', 'Orbit Maintenance'],
+    supplierCompanyIds: ['aerojet-rocketdyne'],
   },
   {
     id: 'bom-high-7',
@@ -427,6 +546,13 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Ka-band crosslinks (lower data rate)',
     ],
     notes: 'Optical inter-satellite links are the most demanded new space component of the 2020s. The gap between production capacity and demand is the widest of any space component category.',
+    costImpactRange: '$4M-10M per satellite (2-4 terminals)',
+    affectedSubsystems: ['Inter-Satellite Links', 'Communications Payload', 'Data Relay'],
+    historicalIncidents: [
+      { date: '2023-01', description: 'Mynaric reported production delays and quality issues scaling CONDOR terminal manufacturing', impact: 'SDA Tranche 1 laser link deliveries delayed 6-9 months', resolution: 'Mynaric restructured production line; CACI/SA Photonics brought in as alternate supplier' },
+      { date: '2024-06', description: 'SpaceX began producing laser inter-satellite links in-house for Starlink v2 Mini', impact: 'Removed one of the largest demand sources from the commercial OISL market', resolution: 'Freed up commercial OISL capacity for defense and other commercial programs' },
+    ],
+    supplierCompanyIds: ['caci-international', 'general-atomics', 'spacex'],
   },
   {
     id: 'bom-high-8',
@@ -448,6 +574,11 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Cathode-less RF neutralizers (emerging, low TRL)',
     ],
     notes: 'The hollow cathode is the Achilles heel of Hall effect thrusters. Mega-constellation demand has strained production of a component that was previously a niche product.',
+    costImpactRange: '$1M-3M per EP thruster system',
+    affectedSubsystems: ['Electric Propulsion', 'Orbit Raising', 'Station Keeping'],
+    historicalIncidents: [
+      { date: '2022-09', description: 'Starlink v1.5 production surge consumed nearly all available BaO cathode insert inventory', impact: 'Non-SpaceX EP satellite builders faced 12+ month cathode delays', resolution: 'Busek Co. expanded production; LaB6 cathode alternatives gained traction' },
+    ],
   },
   {
     id: 'bom-high-9',
@@ -470,6 +601,8 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'MOXIE-derived CO2 electrolysis (experimental)',
     ],
     notes: 'The Collins Aerospace sole-source dependency for ECLSS components is one of the largest structural risks in commercial space station development. Every new station program competes for the same limited production capacity.',
+    costImpactRange: '$10M-20M per habitat ECLSS',
+    affectedSubsystems: ['ECLSS', 'Atmosphere Management', 'Crew Safety'],
   },
   {
     id: 'bom-high-10',
@@ -491,6 +624,12 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Custom direct-drive motors (no gearbox, limited torque)',
     ],
     notes: 'Space-qualified robotic actuators are a critical enabler for in-space assembly, servicing, and manufacturing. The concentrated supplier base in Switzerland and Japan creates geopolitical procurement risk for US programs.',
+    costImpactRange: '$5M-15M per robotic system',
+    affectedSubsystems: ['Robotics', 'In-Space Assembly', 'Servicing Mechanisms'],
+    historicalIncidents: [
+      { date: '2023-03', description: 'Canadarm3 program experienced actuator delivery delays from Harmonic Drive Systems', impact: 'Lunar Gateway robotic arm schedule slipped 6+ months', resolution: 'MDA Space secured additional supply commitments; qualified backup actuator designs' },
+    ],
+    supplierCompanyIds: ['redwire', 'northrop-grumman'],
   },
 
   // ═══════════════════════════════════════════════════
@@ -517,6 +656,11 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Additive manufacturing of titanium parts (emerging)',
     ],
     notes: 'The Russia-Ukraine conflict exposed dangerous dependence on VSMPO-AVISMA. Western supply chains are rebuilding but large forging capacity remains constrained.',
+    affectedSubsystems: ['Primary Structure', 'Pressure Vessels', 'Propulsion Mounts'],
+    historicalIncidents: [
+      { date: '2022-03', description: 'Western sanctions on Russia cut access to VSMPO-AVISMA, the world\'s largest titanium producer', impact: '30% of global aerospace titanium supply disrupted; Boeing and Airbus scrambled for alternatives', resolution: 'ATI, TIMET, and Kobe Steel expanded production; additive manufacturing of titanium parts accelerated' },
+      { date: '2023-06', description: 'Airbus continued purchasing Russian titanium despite sanctions, drawing industry criticism', impact: 'Highlighted difficulty of rapid supply chain diversification for critical materials', resolution: 'Airbus announced timeline to fully exit Russian titanium by 2025' },
+    ],
   },
   {
     id: 'bom-med-2',
@@ -542,6 +686,11 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Ultra-thin silicon cells (lower efficiency, lower cost)',
     ],
     notes: 'Space solar cell production is a mature but capacity-constrained market. The acquisition of SolAero by Rocket Lab provides vertical integration for one player. AZUR SPACE provides European supply independence.',
+    affectedSubsystems: ['Power Generation', 'Solar Array Panels'],
+    historicalIncidents: [
+      { date: '2023-08', description: 'China imposed export controls on gallium and germanium, key materials for III-V solar cells', impact: 'GaAs solar cell material costs increased 15-25%; supply chain diversification urgency grew', resolution: 'Western recycling programs and alternative material sourcing accelerated; prices partially stabilized' },
+    ],
+    supplierCompanyIds: ['boeing', 'rocket-lab'],
   },
   {
     id: 'bom-med-3',
@@ -566,6 +715,7 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'FPGA-based soft processors (flexible, lower raw performance)',
     ],
     notes: 'The RAD750 has been the workhorse of deep space for 20 years but is showing its age. The transition to newer rad-hard processors is slow due to the extreme qualification requirements.',
+    affectedSubsystems: ['Flight Computer', 'Command & Data Handling'],
   },
   {
     id: 'bom-med-4',
@@ -590,6 +740,7 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Deployable sunshades (for cryogenic applications)',
     ],
     notes: 'MLI is needed in quantity for every orbital system. The materials (aluminized Kapton/Mylar) are available, but space-qualified manufacturing with controlled contamination and precise layer counts is a specialized capability.',
+    affectedSubsystems: ['Thermal Control', 'External Insulation'],
   },
   {
     id: 'bom-med-5',
@@ -613,6 +764,8 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Sun sensor + magnetometer combo (much lower accuracy)',
     ],
     notes: 'Star trackers are essential attitude determination sensors. The market is split between Ball (US) and Sodern (EU) with smaller European players. Constellation demand has increased lead times significantly.',
+    affectedSubsystems: ['Attitude Determination', 'GN&C'],
+    supplierCompanyIds: ['ball-aerospace'],
   },
   {
     id: 'bom-med-6',
@@ -637,6 +790,10 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'RCS thrusters for momentum dumping (propellant cost)',
     ],
     notes: 'Reaction wheels are a mature technology but the qualification testing bottleneck limits production throughput. Bearing life and reliability remain active areas of concern.',
+    affectedSubsystems: ['Attitude Control', 'GN&C'],
+    historicalIncidents: [
+      { date: '2012-07', description: 'Kepler Space Telescope lost second reaction wheel, ending primary mission', impact: 'Demonstrated that reaction wheel failures can be mission-ending for precision-pointing missions', resolution: 'NASA repurposed Kepler as K2 using solar radiation pressure for stabilization' },
+    ],
   },
   {
     id: 'bom-med-7',
@@ -657,6 +814,8 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Proprietary berthing mechanisms (limits interoperability)',
     ],
     notes: 'The CBM is proven technology from ISS but production is limited and each new application requires customization. The industry is gradually shifting toward IDSS active docking.',
+    affectedSubsystems: ['Docking/Berthing', 'Station Structure'],
+    supplierCompanyIds: ['boeing'],
   },
   {
     id: 'bom-med-8',
@@ -681,6 +840,10 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Rad-hard ASICs (non-reconfigurable, expensive NRE)',
     ],
     notes: 'FPGAs are the programmable logic backbone of every modern satellite. The duopoly of Xilinx and Microchip for space-qualified parts creates a structural bottleneck.',
+    affectedSubsystems: ['Data Handling', 'Signal Processing', 'Payload Processing'],
+    historicalIncidents: [
+      { date: '2021-06', description: 'Global chip shortage extended FPGA lead times from 12 to 52+ weeks', impact: 'Satellite production lines idled waiting for Xilinx XQRKU060 parts', resolution: 'TSMC prioritized aerospace orders; NanoXplore NG-LARGE gained traction as European alternative' },
+    ],
   },
   {
     id: 'bom-med-9',
@@ -706,6 +869,7 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Lithium-iron-phosphate (safer, lower energy density)',
     ],
     notes: 'The terrestrial battery supply chain is massive, but the space qualification bottleneck makes space-rated packs a medium-risk item. EaglePicher and SAFT dominate the market.',
+    affectedSubsystems: ['Energy Storage', 'Power System'],
   },
   {
     id: 'bom-med-10',
@@ -726,6 +890,8 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Commercial telecom transponder derivatives (modified)',
     ],
     notes: 'Deep space transponders are a niche product with very low production rates. The increase in lunar and deep space missions is creating pressure on an artisanal production line.',
+    affectedSubsystems: ['Communications', 'Telemetry/Command'],
+    supplierCompanyIds: ['l3harris-technologies'],
   },
   {
     id: 'bom-med-11',
@@ -746,6 +912,7 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Iodine storage (solid at room temperature, different tank design)',
     ],
     notes: 'High-pressure composite overwrapped pressure vessels for noble gas propellant storage are a specialized product. The EP satellite boom has created a demand surge.',
+    affectedSubsystems: ['Propellant Storage', 'Electric Propulsion'],
   },
   {
     id: 'bom-med-12',
@@ -766,6 +933,7 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Custom hybrid designs with redundancy',
     ],
     notes: 'Power electronics (DC-DC converters, regulators, battery charge controllers) rated for beyond-LEO radiation environments are a growing bottleneck as cislunar and deep space missions increase.',
+    affectedSubsystems: ['Power Conditioning', 'Battery Management', 'Bus Regulation'],
   },
 
   // ═══════════════════════════════════════════════════
@@ -876,6 +1044,7 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'X-band transponders (higher data rate, more expensive)',
     ],
     notes: 'S-band transponders are the workhorse of spacecraft telemetry, tracking, and command (TT&C) communications. Very mature technology with a healthy supplier ecosystem.',
+    supplierCompanyIds: ['l3harris-technologies'],
   },
   {
     id: 'bom-low-6',
@@ -898,6 +1067,7 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Electric propulsion RCS (lower thrust, higher efficiency)',
     ],
     notes: 'Chemical RCS thrusters are one of the most mature space technologies. Multiple suppliers offer catalog products with well-characterized performance.',
+    supplierCompanyIds: ['aerojet-rocketdyne'],
   },
   {
     id: 'bom-low-7',
@@ -920,6 +1090,7 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Multi-constellation GNSS (GPS + Galileo + GLONASS)',
     ],
     notes: 'Space-grade GPS receivers are a commodity product with a healthy competitive market. Risk is minimal for LEO applications.',
+    supplierCompanyIds: ['raytheon'],
   },
   {
     id: 'bom-low-8',
@@ -980,6 +1151,7 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'FPGA-based computing (flexible, space-qualified)',
     ],
     notes: 'For LEO applications with limited radiation exposure, commercial-derived flight computers are increasingly used. The NewSpace vendor ecosystem is growing rapidly.',
+    supplierCompanyIds: ['aac-clyde-space'],
   },
   {
     id: 'bom-low-11',
@@ -1002,6 +1174,7 @@ export const BOM_RISK_ITEMS: BOMRiskItem[] = [
       'Conformal tanks (custom shapes, less heritage)',
     ],
     notes: 'Standard metallic propellant tanks are a well-established product category. Multiple suppliers offer catalog and custom designs with extensive flight heritage.',
+    supplierCompanyIds: ['aerojet-rocketdyne'],
   },
 
   // ═══════════════════════════════════════════════════
