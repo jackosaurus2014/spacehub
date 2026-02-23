@@ -12,6 +12,7 @@ import {
   internalError,
 } from '@/lib/errors';
 import { validateBody, voteSchema } from '@/lib/validations';
+import { updateReputation, REPUTATION_POINTS } from '@/lib/reputation';
 
 /**
  * POST /api/community/forums/[slug]/[threadId]/posts/[postId]/vote
@@ -41,7 +42,7 @@ export async function POST(
     // Verify post exists and belongs to the thread
     const post = await (prisma as any).forumPost.findUnique({
       where: { id: postId },
-      select: { id: true, threadId: true },
+      select: { id: true, threadId: true, authorId: true },
     });
 
     if (!post) {
@@ -113,6 +114,34 @@ export async function POST(
       where: { id: postId },
       data: { upvoteCount, downvoteCount } as any,
     });
+
+    // Update post author's reputation (don't award rep for voting on own post)
+    if (post.authorId && post.authorId !== userId) {
+      if (existingVote) {
+        if (existingVote.value === value) {
+          // Vote was toggled off -- reverse the previous vote's reputation effect
+          const reversePoints = existingVote.value === 1
+            ? -REPUTATION_POINTS.UPVOTE_RECEIVED
+            : -REPUTATION_POINTS.DOWNVOTE_RECEIVED;
+          await updateReputation(post.authorId, reversePoints, 'post_vote_removed');
+        } else {
+          // Vote was changed (e.g., upvote -> downvote)
+          const reverseOld = existingVote.value === 1
+            ? -REPUTATION_POINTS.UPVOTE_RECEIVED
+            : -REPUTATION_POINTS.DOWNVOTE_RECEIVED;
+          const applyNew = value === 1
+            ? REPUTATION_POINTS.UPVOTE_RECEIVED
+            : REPUTATION_POINTS.DOWNVOTE_RECEIVED;
+          await updateReputation(post.authorId, reverseOld + applyNew, 'post_vote_changed');
+        }
+      } else {
+        // New vote
+        const points = value === 1
+          ? REPUTATION_POINTS.UPVOTE_RECEIVED
+          : REPUTATION_POINTS.DOWNVOTE_RECEIVED;
+        await updateReputation(post.authorId, points, 'post_vote_received');
+      }
+    }
 
     logger.info('Post vote recorded', {
       postId,

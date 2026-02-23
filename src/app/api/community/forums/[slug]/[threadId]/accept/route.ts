@@ -14,6 +14,7 @@ import {
 } from '@/lib/errors';
 import { validateBody, acceptAnswerSchema } from '@/lib/validations';
 import { createNotification } from '@/lib/notifications-server';
+import { updateReputation, REPUTATION_POINTS } from '@/lib/reputation';
 
 /**
  * POST /api/community/forums/[slug]/[threadId]/accept
@@ -85,12 +86,28 @@ export async function POST(
 
       newAcceptedPostId = null;
 
+      // Revoke accepted answer reputation from post author
+      if (post.authorId && post.authorId !== userId) {
+        await updateReputation(post.authorId, REPUTATION_POINTS.ACCEPTED_ANSWER_REVOKED, 'accepted_answer_revoked');
+      }
+
       logger.info('Accepted answer removed', {
         threadId,
         postId,
         userId,
       });
     } else {
+      // If there was a previously accepted post, revoke its reputation
+      if (thread.acceptedPostId) {
+        const prevAcceptedPost = await (prisma as any).forumPost.findUnique({
+          where: { id: thread.acceptedPostId },
+          select: { authorId: true },
+        });
+        if (prevAcceptedPost?.authorId && prevAcceptedPost.authorId !== userId) {
+          await updateReputation(prevAcceptedPost.authorId, REPUTATION_POINTS.ACCEPTED_ANSWER_REVOKED, 'accepted_answer_replaced');
+        }
+      }
+
       // Clear any previously accepted post
       await (prisma as any).forumPost.updateMany({
         where: { threadId, isAccepted: true },
@@ -110,6 +127,11 @@ export async function POST(
       });
 
       newAcceptedPostId = postId;
+
+      // Award reputation to the post author for having their answer accepted
+      if (post.authorId && post.authorId !== userId) {
+        await updateReputation(post.authorId, REPUTATION_POINTS.ACCEPTED_ANSWER, 'accepted_answer');
+      }
 
       // Notify the post author that their answer was accepted
       await createNotification({

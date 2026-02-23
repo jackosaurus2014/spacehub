@@ -12,6 +12,7 @@ import {
   internalError,
 } from '@/lib/errors';
 import { validateBody, voteSchema } from '@/lib/validations';
+import { updateReputation, REPUTATION_POINTS } from '@/lib/reputation';
 
 /**
  * POST /api/community/forums/[slug]/[threadId]/vote
@@ -41,7 +42,7 @@ export async function POST(
     // Verify thread exists
     const thread = await (prisma as any).forumThread.findUnique({
       where: { id: threadId },
-      select: { id: true },
+      select: { id: true, authorId: true },
     });
 
     if (!thread) {
@@ -109,6 +110,35 @@ export async function POST(
       where: { id: threadId },
       data: { upvoteCount, downvoteCount } as any,
     });
+
+    // Update thread author's reputation (don't award rep for voting on own thread)
+    if (thread.authorId && thread.authorId !== userId) {
+      if (existingVote) {
+        if (existingVote.value === value) {
+          // Vote was toggled off -- reverse the previous vote's reputation effect
+          const reversePoints = existingVote.value === 1
+            ? -REPUTATION_POINTS.UPVOTE_RECEIVED
+            : -REPUTATION_POINTS.DOWNVOTE_RECEIVED;
+          await updateReputation(thread.authorId, reversePoints, 'thread_vote_removed');
+        } else {
+          // Vote was changed (e.g., upvote -> downvote)
+          // Reverse old vote and apply new one
+          const reverseOld = existingVote.value === 1
+            ? -REPUTATION_POINTS.UPVOTE_RECEIVED
+            : -REPUTATION_POINTS.DOWNVOTE_RECEIVED;
+          const applyNew = value === 1
+            ? REPUTATION_POINTS.UPVOTE_RECEIVED
+            : REPUTATION_POINTS.DOWNVOTE_RECEIVED;
+          await updateReputation(thread.authorId, reverseOld + applyNew, 'thread_vote_changed');
+        }
+      } else {
+        // New vote
+        const points = value === 1
+          ? REPUTATION_POINTS.UPVOTE_RECEIVED
+          : REPUTATION_POINTS.DOWNVOTE_RECEIVED;
+        await updateReputation(thread.authorId, points, 'thread_vote_received');
+      }
+    }
 
     logger.info('Thread vote recorded', {
       threadId,
