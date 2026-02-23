@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { fetchFederalRegisterUpdates, type FederalRegisterDocument } from '@/lib/regulatory-hub-data';
 import { apiCache, CacheTTL } from '@/lib/api-cache';
 import { logger } from '@/lib/logger';
+import prisma from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -122,10 +123,106 @@ export async function POST(request: NextRequest): Promise<NextResponse<FetchResp
 
     logger.info(`[Federal Register Fetch] Fetched ${documents.length} documents`);
 
-    // TODO: Store new regulations in database
-    // For now, we return all fetched documents
-    // In production, compare with existing records to determine newDocumentsCount
-    const newDocumentsCount = documents.length;
+    // Upsert fetched documents into the ProposedRegulation table
+    let newDocumentsCount = 0;
+
+    for (const doc of documents) {
+      const slug = doc.documentNumber
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+
+      const agency = doc.agencies[0] || 'Unknown';
+      const docketNumber = doc.docketIds[0] || null;
+
+      // Map Federal Register document type to ProposedRegulation type
+      const typeMap: Record<string, string> = {
+        'Rule': 'final_rule',
+        'Proposed Rule': 'proposed_rule',
+        'Notice': 'notice',
+        'Presidential Document': 'executive_order',
+      };
+      const regulationType = typeMap[doc.type] || 'notice';
+
+      // Determine category from agency slugs and title keywords
+      const titleLower = (doc.title || '').toLowerCase();
+      const abstractLower = (doc.abstract || '').toLowerCase();
+      const combinedText = `${titleLower} ${abstractLower}`;
+      const agencySlugsLower = doc.agencySlugs.map(s => s.toLowerCase());
+
+      let category = 'commercial_space';
+      if (agencySlugsLower.includes('bureau-of-industry-and-security') ||
+          combinedText.includes('export') || combinedText.includes('itar') || combinedText.includes('ear')) {
+        category = 'export_control';
+      } else if (combinedText.includes('license') || combinedText.includes('licensing') || combinedText.includes('permit')) {
+        category = 'licensing';
+      } else if (combinedText.includes('safety') || combinedText.includes('hazard') || combinedText.includes('mishap')) {
+        category = 'safety';
+      } else if (agencySlugsLower.includes('federal-communications-commission') ||
+                 combinedText.includes('spectrum') || combinedText.includes('frequency') || combinedText.includes('mhz')) {
+        category = 'spectrum';
+      } else if (combinedText.includes('environment') || combinedText.includes('nepa') || combinedText.includes('pollution')) {
+        category = 'environmental';
+      }
+
+      // Derive impact areas from title/abstract keywords
+      const impactAreas: string[] = [];
+      if (combinedText.includes('launch') || combinedText.includes('reentry')) impactAreas.push('launch');
+      if (combinedText.includes('satellite') || combinedText.includes('spacecraft')) impactAreas.push('satellite');
+      if (combinedText.includes('component') || combinedText.includes('hardware')) impactAreas.push('components');
+      if (combinedText.includes('software') || combinedText.includes('cyber')) impactAreas.push('software');
+      if (combinedText.includes('technology') || combinedText.includes('technical')) impactAreas.push('technology');
+      if (impactAreas.length === 0) impactAreas.push('technology'); // default
+
+      // Determine status: 'open' if effective date is in the future, 'closed' otherwise
+      const now = new Date();
+      let status = 'open';
+      if (doc.effectiveOn) {
+        const effectiveDate = new Date(doc.effectiveOn);
+        status = effectiveDate > now ? 'open' : 'closed';
+      } else if (regulationType === 'final_rule') {
+        status = 'closed';
+      }
+
+      // Derive comment URL from docket ID
+      const commentUrl = docketNumber
+        ? `https://www.regulations.gov/docket/${docketNumber}`
+        : null;
+
+      const data = {
+        title: doc.title,
+        summary: doc.abstract || 'No abstract available',
+        agency,
+        docketNumber,
+        federalRegisterCitation: doc.citation,
+        type: regulationType,
+        category,
+        impactAreas: JSON.stringify(impactAreas),
+        publishedDate: new Date(doc.publicationDate),
+        effectiveDate: doc.effectiveOn ? new Date(doc.effectiveOn) : null,
+        status,
+        sourceUrl: doc.htmlUrl,
+        commentUrl,
+      };
+
+      try {
+        const result = await prisma.proposedRegulation.upsert({
+          where: { slug },
+          create: { slug, ...data },
+          update: data,
+        });
+
+        // If createdAt equals updatedAt (within 1 second), it was newly created
+        const timeDiff = Math.abs(result.createdAt.getTime() - result.updatedAt.getTime());
+        if (timeDiff < 1000) {
+          newDocumentsCount++;
+        }
+      } catch (upsertError) {
+        logger.error(`[Federal Register Fetch] Failed to upsert document ${doc.documentNumber}`, {
+          error: upsertError instanceof Error ? upsertError.message : String(upsertError),
+        });
+      }
+    }
 
     const responseData: FetchResponse = {
       success: true,
