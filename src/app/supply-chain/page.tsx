@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -20,6 +20,18 @@ import {
   SUPPLY_CHAIN_PRODUCT_CATEGORIES,
   SHORTAGE_SEVERITY_INFO,
 } from '@/types';
+import {
+  BOM_RISK_ITEMS,
+  BOM_CATEGORY_INFO,
+  RISK_LEVEL_INFO,
+  ORBITAL_SYSTEM_NAMES,
+  getBOMRiskStats,
+  getAllBOMCategories,
+  getAllUsedInSystems,
+  type BOMRiskItem,
+  type BOMRiskLevel,
+  type BOMCategory,
+} from '@/lib/supply-chain-bom-risks';
 
 interface SupplyChainStats {
   totalCompanies: number;
@@ -50,8 +62,9 @@ function SupplyChainContent() {
   const initialSeverity = searchParams.get('severity') || '';
 
   // Local state
-  const [activeTab, setActiveTab] = useState<'overview' | 'companies' | 'shortages' | 'risks'>(
-    initialTab as 'overview' | 'companies' | 'shortages' | 'risks'
+  type TabId = 'overview' | 'companies' | 'shortages' | 'risks' | 'bom-risks';
+  const [activeTab, setActiveTab] = useState<TabId>(
+    initialTab as TabId
   );
   const [stats, setStats] = useState<SupplyChainStats | null>(null);
   const [companies, setCompanies] = useState<SupplyChainCompany[]>([]);
@@ -66,6 +79,13 @@ function SupplyChainContent() {
   const [countryFilter, setCountryFilter] = useState<string>(initialCountry);
   const [severityFilter, setSeverityFilter] = useState<string>(initialSeverity);
   const [showHighRiskOnly, setShowHighRiskOnly] = useState(false);
+
+  // BOM Risk tab state
+  const [bomSearch, setBomSearch] = useState('');
+  const [bomRiskFilter, setBomRiskFilter] = useState<Set<BOMRiskLevel>>(new Set());
+  const [bomCategoryFilter, setBomCategoryFilter] = useState<string>('');
+  const [bomSystemFilter, setBomSystemFilter] = useState<string>('');
+  const [expandedBomItems, setExpandedBomItems] = useState<Set<string>>(new Set());
 
   // Sync filters to URL
   useEffect(() => {
@@ -114,6 +134,11 @@ function SupplyChainContent() {
   };
 
   const fetchTabData = async () => {
+    // BOM risks tab uses client-side data — no fetch needed
+    if (activeTab === 'bom-risks') {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -158,6 +183,67 @@ function SupplyChainContent() {
 
   // Get unique countries from companies
   const availableCountries = Array.from(new Set(companies.map((c) => c.countryCode)));
+
+  // BOM risk data (client-side, filtered)
+  const bomRiskStats = useMemo(() => getBOMRiskStats(), []);
+  const bomCategories = useMemo(() => getAllBOMCategories(), []);
+  const bomSystems = useMemo(() => getAllUsedInSystems(), []);
+
+  const filteredBomItems = useMemo(() => {
+    let items = [...BOM_RISK_ITEMS];
+
+    // Filter by risk level checkboxes
+    if (bomRiskFilter.size > 0) {
+      items = items.filter((item) => bomRiskFilter.has(item.riskLevel));
+    }
+
+    // Filter by category
+    if (bomCategoryFilter) {
+      items = items.filter((item) => item.category === bomCategoryFilter);
+    }
+
+    // Filter by orbital system
+    if (bomSystemFilter) {
+      items = items.filter((item) => item.usedIn.includes(bomSystemFilter));
+    }
+
+    // Filter by search
+    if (bomSearch.trim()) {
+      const q = bomSearch.toLowerCase();
+      items = items.filter(
+        (item) =>
+          item.component.toLowerCase().includes(q) ||
+          item.primarySuppliers.some((s) => s.toLowerCase().includes(q)) ||
+          item.notes.toLowerCase().includes(q)
+      );
+    }
+
+    return items;
+  }, [bomRiskFilter, bomCategoryFilter, bomSystemFilter, bomSearch]);
+
+  const toggleBomRiskFilter = (level: BOMRiskLevel) => {
+    setBomRiskFilter((prev) => {
+      const next = new Set(prev);
+      if (next.has(level)) {
+        next.delete(level);
+      } else {
+        next.add(level);
+      }
+      return next;
+    });
+  };
+
+  const toggleBomExpanded = (id: string) => {
+    setExpandedBomItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   return (
     <>
@@ -234,6 +320,7 @@ function SupplyChainContent() {
           { id: 'companies', label: 'Companies', icon: '🏢' },
           { id: 'shortages', label: 'Shortages', icon: '⚠️' },
           { id: 'risks', label: 'Risk Analysis', icon: '🔴' },
+          { id: 'bom-risks', label: 'BOM Risk Analysis', icon: '📋' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -289,6 +376,37 @@ function SupplyChainContent() {
               ))}
             </select>
           )}
+          {activeTab === 'bom-risks' && (
+            <>
+              <input
+                type="text"
+                value={bomSearch}
+                onChange={(e) => setBomSearch(e.target.value)}
+                placeholder="Search components..."
+                className="bg-space-700 border border-space-600 text-slate-300 rounded-lg px-3 py-2 text-sm focus:border-nebula-500 focus:outline-none w-48"
+              />
+              <select
+                value={bomCategoryFilter}
+                onChange={(e) => setBomCategoryFilter(e.target.value)}
+                className="bg-space-700 border border-space-600 text-slate-300 rounded-lg px-3 py-2 text-sm focus:border-nebula-500 focus:outline-none"
+              >
+                <option value="">All Categories</option>
+                {bomCategories.map((cat) => (
+                  <option key={cat} value={cat}>{BOM_CATEGORY_INFO[cat].label}</option>
+                ))}
+              </select>
+              <select
+                value={bomSystemFilter}
+                onChange={(e) => setBomSystemFilter(e.target.value)}
+                className="bg-space-700 border border-space-600 text-slate-300 rounded-lg px-3 py-2 text-sm focus:border-nebula-500 focus:outline-none"
+              >
+                <option value="">All Systems</option>
+                {bomSystems.map((sys) => (
+                  <option key={sys} value={sys}>{ORBITAL_SYSTEM_NAMES[sys] || sys}</option>
+                ))}
+              </select>
+            </>
+          )}
           {activeTab === 'overview' && (
             <label className="flex items-center gap-2 text-sm text-slate-400 cursor-pointer">
               <input
@@ -325,6 +443,31 @@ function SupplyChainContent() {
                   { key: 'severity', label: 'Severity' },
                   { key: 'notes', label: 'Notes' },
                   { key: 'estimatedResolution', label: 'Est. Resolution' },
+                ]}
+              />
+            )}
+            {activeTab === 'bom-risks' && (
+              <ExportButton
+                data={filteredBomItems.map((item) => ({
+                  component: item.component,
+                  category: item.category,
+                  riskLevel: item.riskLevel,
+                  leadTime: item.leadTime,
+                  suppliers: item.primarySuppliers.join('; '),
+                  usedIn: item.usedIn.map((s) => ORBITAL_SYSTEM_NAMES[s] || s).join('; '),
+                  riskFactors: item.riskFactors.join('; '),
+                  notes: item.notes,
+                }))}
+                filename="bom-risk-analysis"
+                columns={[
+                  { key: 'component', label: 'Component' },
+                  { key: 'category', label: 'Category' },
+                  { key: 'riskLevel', label: 'Risk Level' },
+                  { key: 'leadTime', label: 'Lead Time' },
+                  { key: 'suppliers', label: 'Suppliers' },
+                  { key: 'usedIn', label: 'Used In' },
+                  { key: 'riskFactors', label: 'Risk Factors' },
+                  { key: 'notes', label: 'Notes' },
                 ]}
               />
             )}
@@ -512,6 +655,335 @@ function SupplyChainContent() {
                     .map((shortage) => (
                       <ShortageAlert key={shortage.id} shortage={shortage} isExpanded />
                     ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* BOM Risk Analysis Tab */}
+          {activeTab === 'bom-risks' && (
+            <div className="space-y-6">
+              {/* Risk Summary Cards */}
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {([
+                  { level: 'critical' as BOMRiskLevel, count: bomRiskStats.critical },
+                  { level: 'high' as BOMRiskLevel, count: bomRiskStats.high },
+                  { level: 'medium' as BOMRiskLevel, count: bomRiskStats.medium },
+                  { level: 'low' as BOMRiskLevel, count: bomRiskStats.low },
+                  { level: 'no-risk' as BOMRiskLevel, count: bomRiskStats.noRisk },
+                ]).map(({ level, count }) => {
+                  const info = RISK_LEVEL_INFO[level];
+                  const isActive = bomRiskFilter.has(level);
+                  return (
+                    <button
+                      key={level}
+                      onClick={() => toggleBomRiskFilter(level)}
+                      className={`card-elevated p-4 text-center transition-all cursor-pointer border ${
+                        isActive
+                          ? `${info.borderColor} ${info.bgColor}`
+                          : 'border-space-700 hover:border-space-600'
+                      }`}
+                    >
+                      <div className="flex items-center justify-center gap-2 mb-1">
+                        <span className={`w-2.5 h-2.5 rounded-full ${info.dotColor}`} />
+                        <span className={`text-xs uppercase tracking-widest font-medium ${info.color}`}>
+                          {info.label}
+                        </span>
+                      </div>
+                      <div className={`text-3xl font-bold font-display tracking-tight ${info.color}`}>
+                        {count}
+                      </div>
+                      <div className="text-slate-500 text-xs mt-1">
+                        {isActive ? 'Click to clear' : 'Click to filter'}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Risk Table */}
+              <div className="card overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-space-700">
+                        <th className="text-left p-4 text-slate-400 font-medium">Component</th>
+                        <th className="text-left p-4 text-slate-400 font-medium">Category</th>
+                        <th className="text-left p-4 text-slate-400 font-medium">Risk</th>
+                        <th className="text-left p-4 text-slate-400 font-medium">Lead Time</th>
+                        <th className="text-left p-4 text-slate-400 font-medium hidden lg:table-cell">Primary Suppliers</th>
+                        <th className="text-left p-4 text-slate-400 font-medium hidden md:table-cell">Used In</th>
+                        <th className="text-center p-4 text-slate-400 font-medium w-10">Info</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredBomItems.map((item) => {
+                        const riskInfo = RISK_LEVEL_INFO[item.riskLevel];
+                        const catInfo = BOM_CATEGORY_INFO[item.category];
+                        const isExpanded = expandedBomItems.has(item.id);
+
+                        return (
+                          <tr key={item.id} className="border-b border-space-800 hover:bg-space-800/50">
+                            <td className="p-4">
+                              <div className="font-medium text-white">{item.component}</div>
+                            </td>
+                            <td className="p-4">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${catInfo.color}`}>
+                                {catInfo.label}
+                              </span>
+                            </td>
+                            <td className="p-4">
+                              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold ${riskInfo.bgColor} ${riskInfo.color} border ${riskInfo.borderColor}`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${riskInfo.dotColor}`} />
+                                {riskInfo.label}
+                              </span>
+                            </td>
+                            <td className="p-4 text-slate-300 whitespace-nowrap">{item.leadTime}</td>
+                            <td className="p-4 text-slate-400 hidden lg:table-cell">
+                              <div className="max-w-xs truncate" title={item.primarySuppliers.join(', ')}>
+                                {item.primarySuppliers.slice(0, 2).join(', ')}
+                                {item.primarySuppliers.length > 2 && (
+                                  <span className="text-slate-500"> +{item.primarySuppliers.length - 2}</span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="p-4 hidden md:table-cell">
+                              <div className="flex flex-wrap gap-1">
+                                {item.usedIn.slice(0, 3).map((sys) => (
+                                  <span
+                                    key={sys}
+                                    className="inline-block px-1.5 py-0.5 rounded bg-space-700 text-slate-400 text-xs"
+                                    title={ORBITAL_SYSTEM_NAMES[sys] || sys}
+                                  >
+                                    {(ORBITAL_SYSTEM_NAMES[sys] || sys).split(' ').slice(0, 2).join(' ')}
+                                  </span>
+                                ))}
+                                {item.usedIn.length > 3 && (
+                                  <span className="inline-block px-1.5 py-0.5 rounded bg-space-700 text-slate-500 text-xs">
+                                    +{item.usedIn.length - 3}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="p-4 text-center">
+                              <button
+                                onClick={() => toggleBomExpanded(item.id)}
+                                className="text-slate-400 hover:text-white transition-colors p-1"
+                                aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
+                              >
+                                <svg
+                                  className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {filteredBomItems.length === 0 && (
+                  <div className="text-center py-12">
+                    <span className="text-5xl block mb-4">📋</span>
+                    <p className="text-slate-400">No BOM items match your filters.</p>
+                    <button
+                      onClick={() => {
+                        setBomSearch('');
+                        setBomRiskFilter(new Set());
+                        setBomCategoryFilter('');
+                        setBomSystemFilter('');
+                      }}
+                      className="mt-2 text-sm text-nebula-300 hover:text-nebula-200"
+                    >
+                      Clear all filters
+                    </button>
+                  </div>
+                )}
+
+                <div className="px-4 py-3 border-t border-space-700 text-sm text-slate-500">
+                  Showing {filteredBomItems.length} of {BOM_RISK_ITEMS.length} components
+                </div>
+              </div>
+
+              {/* Expanded Details (rendered outside table for proper layout) */}
+              {filteredBomItems
+                .filter((item) => expandedBomItems.has(item.id))
+                .map((item) => {
+                  const riskInfo = RISK_LEVEL_INFO[item.riskLevel];
+                  return (
+                    <div
+                      key={`detail-${item.id}`}
+                      className={`card p-5 border ${riskInfo.borderColor}`}
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h4 className="font-semibold text-white text-lg">{item.component}</h4>
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold mt-1 ${riskInfo.bgColor} ${riskInfo.color} border ${riskInfo.borderColor}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${riskInfo.dotColor}`} />
+                            {riskInfo.label} Risk
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => toggleBomExpanded(item.id)}
+                          className="text-slate-400 hover:text-white text-sm"
+                        >
+                          Close
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Risk Factors */}
+                        <div>
+                          <h5 className="text-sm font-medium text-slate-300 mb-2">Risk Factors</h5>
+                          <ul className="space-y-1">
+                            {item.riskFactors.map((factor, idx) => (
+                              <li key={idx} className="text-sm text-slate-400 flex items-start gap-2">
+                                <span className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${riskInfo.dotColor}`} />
+                                {factor}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {/* Suppliers & Alternatives */}
+                        <div className="space-y-4">
+                          <div>
+                            <h5 className="text-sm font-medium text-slate-300 mb-2">Primary Suppliers</h5>
+                            <div className="flex flex-wrap gap-2">
+                              {item.primarySuppliers.map((supplier) => (
+                                <span
+                                  key={supplier}
+                                  className="px-2 py-1 rounded bg-space-700 text-slate-300 text-xs border border-space-600"
+                                >
+                                  {supplier}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <h5 className="text-sm font-medium text-slate-300 mb-2">Alternatives</h5>
+                            <ul className="space-y-1">
+                              {item.alternatives.map((alt, idx) => (
+                                <li key={idx} className="text-sm text-slate-400 flex items-start gap-2">
+                                  <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 bg-blue-500" />
+                                  {alt}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div>
+                            <h5 className="text-sm font-medium text-slate-300 mb-2">Used In</h5>
+                            <div className="flex flex-wrap gap-2">
+                              {item.usedIn.map((sys) => (
+                                <span
+                                  key={sys}
+                                  className="px-2 py-1 rounded bg-nebula-500/10 text-nebula-300 text-xs border border-nebula-500/30"
+                                >
+                                  {ORBITAL_SYSTEM_NAMES[sys] || sys}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Notes */}
+                      <div className="mt-4 pt-4 border-t border-space-700">
+                        <p className="text-sm text-slate-400 leading-relaxed">{item.notes}</p>
+                        <div className="mt-2 text-xs text-slate-500">
+                          Lead Time: <span className="text-slate-300">{item.leadTime}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+              {/* Key Insights Section */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Critical Supply Chain Bottlenecks */}
+                <div className="card p-5 border border-red-500/30">
+                  <h4 className="font-semibold text-red-400 mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-red-500" />
+                    Critical Bottlenecks
+                  </h4>
+                  <ul className="space-y-2 text-sm text-slate-300">
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-400 mt-0.5">-</span>
+                      <span><strong className="text-white">Rad-hard memory</strong> impacts all 11 orbital systems. 12-18 month lead times with no DDR4/5 equivalents.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-400 mt-0.5">-</span>
+                      <span><strong className="text-white">Zero-boil-off cryocoolers</strong> block propellant depot viability. 100x scale-up needed from current TRL 5-6.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-400 mt-0.5">-</span>
+                      <span><strong className="text-white">EVA suit components</strong> sole-sourced from Collins Aerospace. One-at-a-time production rate.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-400 mt-0.5">-</span>
+                      <span><strong className="text-white">Space-qualified GPUs</strong> do not exist. Orbital data centers rely on shielded commercial parts.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Geopolitical Risk Factors */}
+                <div className="card p-5 border border-yellow-500/30">
+                  <h4 className="font-semibold text-yellow-400 mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                    Geopolitical Risks
+                  </h4>
+                  <ul className="space-y-2 text-sm text-slate-300">
+                    <li className="flex items-start gap-2">
+                      <span className="text-yellow-400 mt-0.5">-</span>
+                      <span><strong className="text-white">ITAR restrictions</strong> limit IR focal plane array and GPU exports. Only 2 US-based sources for large-format IR detectors.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-yellow-400 mt-0.5">-</span>
+                      <span><strong className="text-white">China rare earth controls</strong> affect gallium supply (80% global share) critical for GaAs solar cells and phased arrays.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-yellow-400 mt-0.5">-</span>
+                      <span><strong className="text-white">Russia titanium sanctions</strong> disrupted 30% of aerospace-grade titanium. Western alternatives ramping.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-yellow-400 mt-0.5">-</span>
+                      <span><strong className="text-white">Swiss/Japan actuator supply</strong> Precision robotic gearboxes depend on Maxon (CH) and Harmonic Drive (JP).</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Emerging Alternatives */}
+                <div className="card p-5 border border-green-500/30">
+                  <h4 className="font-semibold text-green-400 mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-green-500" />
+                    Emerging Alternatives
+                  </h4>
+                  <ul className="space-y-2 text-sm text-slate-300">
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-400 mt-0.5">-</span>
+                      <span><strong className="text-white">Krypton propellant</strong> replacing xenon for electric propulsion. SpaceX already transitioned Starlink fleet.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-400 mt-0.5">-</span>
+                      <span><strong className="text-white">NanoXplore NG-LARGE</strong> European FPGA alternative to Xilinx/Microchip duopoly. Reduces US foundry dependency.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-400 mt-0.5">-</span>
+                      <span><strong className="text-white">Green propellants</strong> (AF-M315E, LMP-103S) replacing toxic hydrazine. Bradford Space and Aerojet scaling production.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-400 mt-0.5">-</span>
+                      <span><strong className="text-white">Optical inter-satellite links</strong> Mynaric, Tesat, CACI racing to 1,000+ units/year capacity for constellation demand.</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
