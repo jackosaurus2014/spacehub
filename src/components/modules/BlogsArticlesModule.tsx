@@ -2,7 +2,35 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { BlogPost, BLOG_TOPICS, AUTHOR_TYPES } from '@/types';
+
+const TOPIC_LOGOS: Record<string, string> = {
+  'space-law': '/logos/logo-blog-space-law.png',
+  'legal': '/logos/logo-blog-space-law.png',
+  'investment': '/logos/logo-blog-investment.png',
+  'funding': '/logos/logo-blog-investment.png',
+  'policy': '/logos/logo-blog-policy.png',
+  'regulatory': '/logos/logo-blog-policy.png',
+  'technology': '/logos/logo-blog-technology.png',
+  'tech': '/logos/logo-blog-technology.png',
+  'business': '/logos/logo-blog-business.png',
+  'industry': '/logos/logo-blog-business.png',
+  'exploration': '/logos/logo-blog-exploration.png',
+  'science': '/logos/logo-blog-exploration.png',
+};
+
+function getBlogTopicLogo(topic: string | null | undefined): string | null {
+  if (!topic) return null;
+  // Try direct match first (topic values use underscores like 'space_law')
+  const normalized = topic.replace(/_/g, '-').toLowerCase();
+  if (TOPIC_LOGOS[normalized]) return TOPIC_LOGOS[normalized];
+  // Try keyword match
+  for (const [keyword, logo] of Object.entries(TOPIC_LOGOS)) {
+    if (normalized.includes(keyword)) return logo;
+  }
+  return null;
+}
 
 const topicColors: Record<string, string> = {
   space_law: 'bg-purple-500',
@@ -26,6 +54,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
   const topic = BLOG_TOPICS.find(t => t.value === post.topic);
   const authorIcon = authorTypeIcons[post.source.authorType] || '👤';
   const topicColor = topicColors[post.topic || 'exploration'] || 'bg-nebula-500';
+  const topicLogo = getBlogTopicLogo(post.topic);
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -43,7 +72,11 @@ function BlogPostCard({ post }: { post: BlogPost }) {
       className="card p-4 hover:border-nebula-500/50 transition-all group block"
     >
       <div className="flex items-start gap-3">
-        <div className="text-2xl">{authorIcon}</div>
+        {topicLogo ? (
+          <Image src={topicLogo} alt={post.topic || 'blog'} width={32} height={32} className="rounded-md flex-shrink-0 mt-0.5" />
+        ) : (
+          <div className="text-2xl">{authorIcon}</div>
+        )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             {topic && (

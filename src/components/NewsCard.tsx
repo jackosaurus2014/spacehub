@@ -64,6 +64,19 @@ const categoryColors: Record<string, string> = {
   debris: 'bg-orange-500',
 };
 
+const CATEGORY_LOGOS: Record<string, string> = {
+  'launches': '/logos/logo-news-launches.png',
+  'missions': '/logos/logo-news-missions.png',
+  'companies': '/logos/logo-news-companies.png',
+  'satellites': '/logos/logo-news-satellites.png',
+  'defense': '/logos/logo-news-defense.png',
+  'earnings': '/logos/logo-news-earnings.png',
+  'mergers': '/logos/logo-news-mergers.png',
+  'development': '/logos/logo-news-development.png',
+  'policy': '/logos/logo-news-policy.png',
+  'debris': '/logos/logo-news-debris.png',
+};
+
 export default function NewsCard({ article, featured = false }: NewsCardProps) {
   const categoryColor = categoryColors[article.category] || 'bg-nebula-500';
 
@@ -103,8 +116,11 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6">
             <span
-              className={`${categoryColor} text-white text-xs font-semibold px-2 py-1 rounded uppercase tracking-wide`}
+              className={`${categoryColor} text-white text-xs font-semibold px-2 py-1 rounded uppercase tracking-wide inline-flex items-center gap-1.5`}
             >
+              {CATEGORY_LOGOS[article.category] && (
+                <Image src={CATEGORY_LOGOS[article.category]} alt="" width={16} height={16} className="inline-block" />
+              )}
               {article.category}
             </span>
             <h3 className="text-xl md:text-2xl font-bold text-white mt-3 line-clamp-2 group-hover:text-nebula-200 transition-colors">
@@ -164,24 +180,22 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-space-800 to-space-700 flex items-center justify-center">
-            <span className="text-4xl opacity-30">
-              {article.category === 'launches' ? '🚀' :
-               article.category === 'missions' ? '🛸' :
-               article.category === 'companies' ? '🏢' :
-               article.category === 'satellites' ? '📡' :
-               article.category === 'defense' ? '🛡️' :
-               article.category === 'earnings' ? '💰' :
-               article.category === 'policy' ? '📜' :
-               article.category === 'debris' ? '💥' : '🌌'}
-            </span>
+            {CATEGORY_LOGOS[article.category] ? (
+              <Image src={CATEGORY_LOGOS[article.category]} alt={article.category} width={48} height={48} className="opacity-60" />
+            ) : (
+              <span className="text-4xl opacity-30">🌌</span>
+            )}
           </div>
         )}
       </div>
       <div className="p-3 flex flex-col flex-1 min-h-0">
         <div className="flex items-center gap-2 mb-1.5">
           <span
-            className={`${categoryColor} text-white text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wide`}
+            className={`${categoryColor} text-white text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wide inline-flex items-center gap-1`}
           >
+            {CATEGORY_LOGOS[article.category] && (
+              <Image src={CATEGORY_LOGOS[article.category]} alt="" width={12} height={12} className="inline-block" />
+            )}
             {article.category}
           </span>
           <span className="text-slate-500 text-xs">{formatDate(article.publishedAt)}</span>

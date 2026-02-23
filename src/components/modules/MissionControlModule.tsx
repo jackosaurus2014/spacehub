@@ -2,7 +2,31 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { SpaceEvent, EVENT_TYPE_INFO } from '@/types';
+
+const EVENT_TYPE_LOGOS: Record<string, string> = {
+  'launch': '/logos/logo-event-launch.png',
+  'crewed': '/logos/logo-event-crewed.png',
+  'moon': '/logos/logo-event-moon.png',
+  'lunar': '/logos/logo-event-moon.png',
+  'artemis': '/logos/logo-event-moon.png',
+  'mars': '/logos/logo-event-mars.png',
+  'station': '/logos/logo-event-station.png',
+  'iss': '/logos/logo-event-station.png',
+  'satellite': '/logos/logo-event-satellite.png',
+  'starlink': '/logos/logo-event-satellite.png',
+};
+
+function getEventLogo(name: string): string | null {
+  const lower = name.toLowerCase();
+  for (const [keyword, logo] of Object.entries(EVENT_TYPE_LOGOS)) {
+    if (lower.includes(keyword)) {
+      return logo;
+    }
+  }
+  return null;
+}
 
 interface CountdownTime {
   days: number;
@@ -102,14 +126,20 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
   const launchDate = event.launchDate ? new Date(event.launchDate) : null;
   const live = isEventLive(event);
   const streamUrl = getStreamUrl(event);
+  const eventLogo = getEventLogo(event.name);
 
   if (isPrimary && launchDate) {
     return (
       <div className="bg-gradient-to-br from-slate-100 to-nebula-500/20 rounded-xl p-6 border border-nebula-500/30">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className={`${typeInfo.color} text-white text-xs font-semibold px-2 py-1 rounded`}>
-              {typeInfo.icon} {typeInfo.label}
+            <span className={`${typeInfo.color} text-white text-xs font-semibold px-2 py-1 rounded inline-flex items-center gap-1.5`}>
+              {eventLogo ? (
+                <Image src={eventLogo} alt={typeInfo.label} width={20} height={20} className="inline-block" />
+              ) : (
+                <span>{typeInfo.icon}</span>
+              )}
+              {typeInfo.label}
             </span>
             {live ? (
               <span className="flex items-center gap-1.5 text-white text-xs font-semibold px-2 py-1 bg-red-500 rounded">
@@ -171,7 +201,11 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
   return (
     <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 hover:border-nebula-500/30 transition-colors">
       <div className="flex items-start gap-3">
-        <span className="text-2xl">{typeInfo.icon}</span>
+        {eventLogo ? (
+          <Image src={eventLogo} alt={event.name} width={40} height={40} className="rounded-md flex-shrink-0" />
+        ) : (
+          <span className="text-2xl">{typeInfo.icon}</span>
+        )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h4 className="font-semibold text-slate-800 text-sm line-clamp-1">{event.name}</h4>
