@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 
@@ -14,30 +16,32 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+  const userEmail = session.user.email;
   const { searchParams } = new URL(request.url);
-  const email = searchParams.get('email');
   const category = searchParams.get('category');
 
   try {
     // Verify membership
-    if (email) {
-      const membership = await (prisma as any).dealRoomMember.findFirst({
-        where: { dealRoomId: id, email },
-      });
+    const membership = await (prisma as any).dealRoomMember.findFirst({
+      where: { dealRoomId: id, email: userEmail },
+    });
 
-      if (!membership) {
-        return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-      }
+    if (!membership) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
 
-      // Check NDA acceptance if required
-      const room = await (prisma as any).dealRoom.findUnique({
-        where: { id },
-        select: { ndaRequired: true },
-      });
+    // Check NDA acceptance if required
+    const room = await (prisma as any).dealRoom.findUnique({
+      where: { id },
+      select: { ndaRequired: true },
+    });
 
-      if (room?.ndaRequired && !membership.ndaAcceptedAt) {
-        return NextResponse.json({ error: 'NDA acceptance required before accessing documents' }, { status: 403 });
-      }
+    if (room?.ndaRequired && !membership.ndaAcceptedAt) {
+      return NextResponse.json({ error: 'NDA acceptance required before accessing documents' }, { status: 403 });
     }
 
     const where: Record<string, unknown> = { dealRoomId: id };
@@ -63,13 +67,18 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+  const userEmail = session.user.email;
 
   try {
     const body = await request.json();
-    const { name, category, fileType, fileSize, uploaderEmail, description } = body;
+    const { name, category, fileType, fileSize, description } = body;
 
-    if (!name || !fileType || !fileSize || !uploaderEmail) {
-      return NextResponse.json({ error: 'name, fileType, fileSize, and uploaderEmail are required' }, { status: 400 });
+    if (!name || !fileType || !fileSize) {
+      return NextResponse.json({ error: 'name, fileType, and fileSize are required' }, { status: 400 });
     }
 
     if (typeof name !== 'string' || name.length > 500) {
@@ -88,7 +97,7 @@ export async function POST(
 
     // Verify membership and permission
     const membership = await (prisma as any).dealRoomMember.findFirst({
-      where: { dealRoomId: id, email: uploaderEmail, role: { in: ['owner', 'admin'] } },
+      where: { dealRoomId: id, email: userEmail, role: { in: ['owner', 'admin'] } },
     });
 
     if (!membership) {
@@ -117,7 +126,7 @@ export async function POST(
         category: docCategory,
         fileType,
         fileSize,
-        uploadedBy: uploaderEmail,
+        uploadedBy: userEmail,
         description: description?.trim() || null,
         version: existingCount + 1,
       },
@@ -127,7 +136,7 @@ export async function POST(
     await (prisma as any).dealRoomActivity.create({
       data: {
         dealRoomId: id,
-        userEmail: uploaderEmail,
+        userEmail,
         action: 'uploaded_document',
         details: `Uploaded "${name.trim()}" (${docCategory}, ${fileType})`,
       },

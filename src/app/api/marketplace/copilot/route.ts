@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { internalError } from '@/lib/errors';
+import { internalError, validationError } from '@/lib/errors';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { MARKETPLACE_CATEGORIES, CERTIFICATION_OPTIONS } from '@/lib/marketplace-types';
+import { validateBody, marketplaceCopilotSchema } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,15 +65,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { message, history } = body as { message: string; history?: Message[] };
-
-    if (!message || typeof message !== 'string' || message.trim().length === 0) {
-      return NextResponse.json({ error: 'Message is required' }, { status: 400 });
+    const validation = validateBody(marketplaceCopilotSchema, body);
+    if (!validation.success) {
+      return validationError('Invalid copilot request', validation.errors);
     }
-
-    if (message.length > 5000) {
-      return NextResponse.json({ error: 'Message too long (max 5000 characters)' }, { status: 400 });
-    }
+    const { message, history } = validation.data;
 
     // Fetch marketplace context to enrich the conversation
     const [listingCount, categoryBreakdown, recentRfqs] = await Promise.all([

@@ -3610,23 +3610,25 @@ model Investor {
 // ── Deal Room (Space Industry Deal Room) ──
 
 model DealRoom {
-  id            String          @id @default(cuid())
-  name          String
-  description   String?         @db.Text
-  companySlug   String?         // Link to CompanyProfile
-  status        String          @default("active") // "active", "archived", "closed"
-  createdBy     String          // User ID or email who created the room
-  accessCode    String?         @unique // Optional invite code
-  ndaRequired   Boolean         @default(false)
-  ndaText       String?         @db.Text
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id              String          @id @default(cuid())
+  name            String
+  description     String?         @db.Text
+  companySlug     String?         // Link to CompanyProfile
+  status          String          @default("active") // "active", "archived", "closed"
+  createdBy       String          // User ID or email who created the room
+  createdByUserId String?         // User ID of creator (nullable for backward compat)
+  accessCode      String?         @unique // Optional invite code
+  ndaRequired     Boolean         @default(false)
+  ndaText         String?         @db.Text
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
   members       DealRoomMember[]
   documents     DealRoomDocument[]
   activities    DealRoomActivity[]
 
   @@index([createdBy])
+  @@index([createdByUserId])
   @@index([status])
   @@index([companySlug])
 }

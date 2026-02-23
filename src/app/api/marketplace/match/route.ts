@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { internalError } from '@/lib/errors';
+import { internalError, validationError } from '@/lib/errors';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { validateBody, marketplaceMatchSchema } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,11 +16,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { rfqId } = body;
-
-    if (!rfqId) {
-      return NextResponse.json({ error: 'rfqId is required' }, { status: 400 });
+    const validation = validateBody(marketplaceMatchSchema, body);
+    if (!validation.success) {
+      return validationError('Invalid match request', validation.errors);
     }
+    const { rfqId } = validation.data;
 
     const rfq = await prisma.rFQ.findUnique({ where: { id: rfqId } });
     if (!rfq) {

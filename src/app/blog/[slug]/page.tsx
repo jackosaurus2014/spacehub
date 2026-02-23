@@ -1,8 +1,22 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import sanitizeHtml from 'sanitize-html';
 import { getBlogPost, BLOG_POSTS, BLOG_CATEGORIES } from '@/lib/blog-content';
 import FAQSchema from '@/components/seo/FAQSchema';
+
+const SAFE_HTML_CONFIG: sanitizeHtml.IOptions = {
+  allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'blockquote', 'code', 'pre', 'img', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
+  allowedAttributes: {
+    'a': ['href', 'title', 'target', 'rel'],
+    'img': ['src', 'alt', 'title', 'width', 'height'],
+    'span': ['class'],
+    'div': ['class'],
+    'td': ['colspan', 'rowspan'],
+    'th': ['colspan', 'rowspan'],
+  },
+  allowedSchemes: ['http', 'https', 'mailto'],
+};
 
 export const revalidate = 3600;
 
@@ -163,7 +177,7 @@ export default function BlogPostPage({ params }: Props) {
             prose-strong:text-white
             prose-a:text-nebula-400 prose-a:no-underline hover:prose-a:underline
             prose-ul:space-y-1 prose-ol:space-y-1"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content, SAFE_HTML_CONFIG) }}
         />
 
         {/* Topic-Aware CTA */}

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 
@@ -10,20 +12,22 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+  const userEmail = session.user.email;
   const { searchParams } = new URL(request.url);
-  const email = searchParams.get('email');
   const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 200);
 
   try {
     // Verify membership
-    if (email) {
-      const membership = await (prisma as any).dealRoomMember.findFirst({
-        where: { dealRoomId: id, email },
-      });
+    const membership = await (prisma as any).dealRoomMember.findFirst({
+      where: { dealRoomId: id, email: userEmail },
+    });
 
-      if (!membership) {
-        return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-      }
+    if (!membership) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
     const activities = await (prisma as any).dealRoomActivity.findMany({

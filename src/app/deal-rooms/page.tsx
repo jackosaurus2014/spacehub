@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
@@ -136,15 +137,6 @@ function formatDate(dateStr: string): string {
   });
 }
 
-function formatDateTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
-
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
@@ -162,9 +154,8 @@ function timeAgo(dateStr: string): string {
 // ────────────────────────────────────────
 
 function DealRoomsPageInner() {
-  // Auth state (simplified - uses email)
-  const [userEmail, setUserEmail] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { data: session, status: sessionStatus } = useSession();
+  const userEmail = session?.user?.email || '';
 
   // Room state
   const [rooms, setRooms] = useState<DealRoom[]>([]);
@@ -225,7 +216,7 @@ function DealRoomsPageInner() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`/api/deal-rooms?email=${encodeURIComponent(userEmail)}`);
+      const res = await fetch('/api/deal-rooms');
       const data = await res.json();
       if (res.ok) {
         setRooms(data.rooms || []);
@@ -244,7 +235,7 @@ function DealRoomsPageInner() {
     if (!userEmail) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/deal-rooms/${roomId}?email=${encodeURIComponent(userEmail)}`);
+      const res = await fetch(`/api/deal-rooms/${roomId}`);
       const data = await res.json();
       if (res.ok) {
         setRoomDetail(data);
@@ -271,10 +262,10 @@ function DealRoomsPageInner() {
   }, [userEmail]);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (sessionStatus === 'authenticated' && userEmail) {
       fetchRooms();
     }
-  }, [isAuthenticated, fetchRooms]);
+  }, [sessionStatus, userEmail, fetchRooms]);
 
   // ── Create room ──
   const handleCreateRoom = async (e: React.FormEvent) => {
@@ -284,10 +275,7 @@ function DealRoomsPageInner() {
       const res = await fetch('/api/deal-rooms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...createForm,
-          createdByEmail: userEmail,
-        }),
+        body: JSON.stringify(createForm),
       });
       const data = await res.json();
       if (res.ok) {
@@ -312,7 +300,7 @@ function DealRoomsPageInner() {
       const res = await fetch('/api/deal-rooms/join', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accessCode: joinCode.trim(), email: userEmail }),
+        body: JSON.stringify({ accessCode: joinCode.trim() }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -342,7 +330,6 @@ function DealRoomsPageInner() {
         body: JSON.stringify({
           inviteeEmail: inviteForm.email,
           role: inviteForm.role,
-          inviterEmail: userEmail,
         }),
       });
       const data = await res.json();
@@ -364,7 +351,7 @@ function DealRoomsPageInner() {
     if (!confirm(`Remove ${memberEmail} from this room?`)) return;
     try {
       const res = await fetch(
-        `/api/deal-rooms/${selectedRoom.id}/members?memberEmail=${encodeURIComponent(memberEmail)}&requesterEmail=${encodeURIComponent(userEmail)}`,
+        `/api/deal-rooms/${selectedRoom.id}/members?memberEmail=${encodeURIComponent(memberEmail)}`,
         { method: 'DELETE' }
       );
       const data = await res.json();
@@ -390,7 +377,6 @@ function DealRoomsPageInner() {
         body: JSON.stringify({
           ...uploadForm,
           fileSize: uploadForm.fileSize || 1024, // Default 1KB for metadata-only
-          uploaderEmail: userEmail,
         }),
       });
       const data = await res.json();
@@ -413,7 +399,7 @@ function DealRoomsPageInner() {
       const res = await fetch(`/api/deal-rooms/${selectedRoom.id}/nda`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: userEmail }),
+        body: JSON.stringify({}),
       });
       if (res.ok) {
         setShowNdaModal(false);
@@ -433,7 +419,7 @@ function DealRoomsPageInner() {
       const res = await fetch(`/api/deal-rooms/${selectedRoom.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...editForm, email: userEmail }),
+        body: JSON.stringify(editForm),
       });
       const data = await res.json();
       if (res.ok) {
@@ -453,7 +439,7 @@ function DealRoomsPageInner() {
     if (!confirm('Are you sure you want to archive this room? Members will no longer be able to access it.')) return;
     try {
       const res = await fetch(
-        `/api/deal-rooms/${selectedRoom.id}?email=${encodeURIComponent(userEmail)}`,
+        `/api/deal-rooms/${selectedRoom.id}`,
         { method: 'DELETE' }
       );
       if (res.ok) {
@@ -472,9 +458,17 @@ function DealRoomsPageInner() {
   };
 
   // ────────────────────────────────────────
-  // Auth gate (simplified email auth)
+  // Auth gate — show sign-in prompt if not authenticated
   // ────────────────────────────────────────
-  if (!isAuthenticated) {
+  if (sessionStatus === 'loading') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (sessionStatus !== 'authenticated' || !session?.user?.email) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-4">
         <div className="max-w-md w-full">
@@ -488,33 +482,22 @@ function DealRoomsPageInner() {
             <p className="text-slate-400">Secure document sharing for investors and startups</p>
           </div>
 
-          <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-slate-200 mb-4">Enter your email to get started</h2>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (userEmail.trim() && userEmail.includes('@')) {
-                  setIsAuthenticated(true);
-                }
-              }}
+          <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-6 text-center">
+            <h2 className="text-lg font-semibold text-slate-200 mb-4">Sign in to access Deal Rooms</h2>
+            <p className="text-sm text-slate-400 mb-6">
+              You need to be signed in to create, join, and manage deal rooms.
+            </p>
+            <Link
+              href="/login"
+              className="inline-block w-full px-4 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg transition-colors text-center"
             >
-              <input
-                type="email"
-                value={userEmail}
-                onChange={(e) => setUserEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 mb-4"
-                required
-              />
-              <button
-                type="submit"
-                className="w-full px-4 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg transition-colors"
-              >
-                Continue
-              </button>
-            </form>
-            <p className="text-xs text-slate-500 mt-3 text-center">
-              Full authentication coming soon. Email is used for room access.
+              Sign In
+            </Link>
+            <p className="text-xs text-slate-500 mt-3">
+              Don&apos;t have an account?{' '}
+              <Link href="/register" className="text-cyan-400 hover:text-cyan-300">
+                Create one
+              </Link>
             </p>
           </div>
         </div>
@@ -1136,12 +1119,6 @@ function DealRoomsPageInner() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             Signed in as <span className="text-cyan-300 font-medium">{userEmail}</span>
-            <button
-              onClick={() => { setIsAuthenticated(false); setRooms([]); setSelectedRoom(null); setRoomDetail(null); }}
-              className="text-slate-500 hover:text-slate-300 ml-2 text-xs"
-            >
-              (switch)
-            </button>
           </div>
         </div>
 

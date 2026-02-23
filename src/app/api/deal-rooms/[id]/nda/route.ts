@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 
@@ -10,17 +12,15 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+  const userEmail = session.user.email;
 
   try {
-    const body = await request.json();
-    const { email } = body;
-
-    if (!email) {
-      return NextResponse.json({ error: 'Email required' }, { status: 400 });
-    }
-
     const membership = await (prisma as any).dealRoomMember.findFirst({
-      where: { dealRoomId: id, email },
+      where: { dealRoomId: id, email: userEmail },
     });
 
     if (!membership) {
@@ -42,13 +42,13 @@ export async function POST(
     await (prisma as any).dealRoomActivity.create({
       data: {
         dealRoomId: id,
-        userEmail: email,
+        userEmail,
         action: 'accepted_nda',
         details: 'Accepted the NDA agreement',
       },
     });
 
-    logger.info('NDA accepted', { roomId: id, email });
+    logger.info('NDA accepted', { roomId: id, email: userEmail });
 
     return NextResponse.json({ success: true, message: 'NDA accepted' });
   } catch (error) {

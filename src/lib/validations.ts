@@ -1539,17 +1539,86 @@ export type CompanyWatchlistData = z.infer<typeof companyWatchlistSchema>;
 export type GeneralSavedSearchData = z.infer<typeof generalSavedSearchSchema>;
 
 // ============================================================
+// Investment Thesis
+// ============================================================
+
+export const investmentThesisSchema = z.object({
+  companySlug: z.string().min(1, 'Company slug is required').max(200).regex(/^[a-z0-9-]+$/, 'Invalid company slug'),
+});
+
+export type InvestmentThesisData = z.infer<typeof investmentThesisSchema>;
+
+// ============================================================
+// Subscription Actions
+// ============================================================
+
+export const subscriptionActionSchema = z.object({
+  action: z.enum(['create-checkout', 'create-portal', 'start-trial']),
+  tier: z.enum(['pro', 'enterprise']).optional(),
+  interval: z.enum(['month', 'year']).optional(),
+});
+
+export type SubscriptionActionData = z.infer<typeof subscriptionActionSchema>;
+
+// ============================================================
+// Report Generation
+// ============================================================
+
+export const reportGenerateSchema = z.object({
+  reportType: z.enum(['sector-overview', 'company-deep-dive', 'competitive-analysis', 'market-entry-brief']),
+  config: z.record(z.string(), z.unknown()),
+});
+
+export type ReportGenerateData = z.infer<typeof reportGenerateSchema>;
+
+// ============================================================
+// Marketplace Copilot
+// ============================================================
+
+export const marketplaceCopilotSchema = z.object({
+  message: z.string().min(1, 'Message is required').max(5000),
+  history: z.array(z.object({
+    role: z.enum(['user', 'assistant']),
+    content: z.string(),
+  })).max(50).optional().default([]),
+});
+
+export type MarketplaceCopilotData = z.infer<typeof marketplaceCopilotSchema>;
+
+// ============================================================
+// Marketplace Match
+// ============================================================
+
+export const marketplaceMatchSchema = z.object({
+  rfqId: z.string().min(1, 'RFQ ID is required'),
+});
+
+export type MarketplaceMatchData = z.infer<typeof marketplaceMatchSchema>;
+
+// ============================================================
+// Marketplace Verify Admin
+// ============================================================
+
+export const marketplaceVerifyAdminSchema = z.object({
+  companyId: z.string().min(1, 'Company ID is required'),
+  level: z.enum(['none', 'identity', 'capability', 'performance']),
+  notes: z.string().max(2000).optional(),
+});
+
+export type MarketplaceVerifyAdminData = z.infer<typeof marketplaceVerifyAdminSchema>;
+
+// ============================================================
 // Launch Engagement
 // ============================================================
 
 export const launchPollSchema = z.object({
-  question: z.string().min(5, 'Question must be at least 5 characters').max(300),
-  options: z.array(z.string().min(1).max(100)).min(2, 'At least 2 options').max(6, 'At most 6 options'),
+  question: z.string().min(1).max(500),
+  options: z.array(z.string().min(1).max(200)).min(2).max(6),
 });
 
 export const launchPollVoteSchema = z.object({
-  pollId: z.string().min(1, 'Poll ID is required'),
-  option: z.number().int().min(0, 'Invalid option'),
+  pollId: z.string().min(1),
+  optionIndex: z.number().int().min(0),
 });
 
 export const launchReactionSchema = z.object({
@@ -1684,3 +1753,46 @@ export const threadTagsSchema = z.object({
 export const acceptAnswerSchema = z.object({
   postId: z.string().min(1, 'Post ID is required'),
 });
+
+// ============================================================
+// Deal Room Schemas
+// ============================================================
+
+export const dealRoomCreateSchema = z.object({
+  name: z.string().min(3, 'Room name must be at least 3 characters').max(200).transform(val => val.trim()),
+  description: z.string().max(5000).optional().transform(val => val?.trim() || undefined),
+  companySlug: z.string().max(200).optional(),
+  ndaRequired: z.boolean().default(false),
+  ndaText: z.string().max(10000).optional().nullable(),
+});
+
+export const dealRoomJoinSchema = z.object({
+  accessCode: z.string().min(1, 'Access code is required'),
+});
+
+export const dealRoomUpdateSchema = z.object({
+  name: z.string().min(3).max(200).optional(),
+  description: z.string().max(5000).optional(),
+  status: z.enum(['active', 'archived', 'closed']).optional(),
+  ndaRequired: z.boolean().optional(),
+  ndaText: z.string().max(10000).optional().nullable(),
+});
+
+export const dealRoomInviteSchema = z.object({
+  inviteeEmail: z.string().email('Invalid email address'),
+  role: z.enum(['admin', 'viewer']).default('viewer'),
+});
+
+export const dealRoomDocumentSchema = z.object({
+  name: z.string().min(1).max(500),
+  type: z.string().max(100).optional(),
+  url: z.string().url().optional(),
+  description: z.string().max(2000).optional(),
+  confidentialityLevel: z.enum(['public', 'confidential', 'highly-confidential']).default('confidential'),
+});
+
+export type DealRoomCreateData = z.infer<typeof dealRoomCreateSchema>;
+export type DealRoomJoinData = z.infer<typeof dealRoomJoinSchema>;
+export type DealRoomUpdateData = z.infer<typeof dealRoomUpdateSchema>;
+export type DealRoomInviteData = z.infer<typeof dealRoomInviteSchema>;
+export type DealRoomDocumentData = z.infer<typeof dealRoomDocumentSchema>;

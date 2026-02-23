@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { internalError } from '@/lib/errors';
+import { internalError, validationError } from '@/lib/errors';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { validateBody, marketplaceVerifyAdminSchema } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,16 +17,11 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { companyId, level, notes } = body;
-
-    if (!companyId || !level) {
-      return NextResponse.json({ error: 'companyId and level are required' }, { status: 400 });
+    const validation = validateBody(marketplaceVerifyAdminSchema, body);
+    if (!validation.success) {
+      return validationError('Invalid verification request', validation.errors);
     }
-
-    const validLevels = ['none', 'identity', 'capability', 'performance'];
-    if (!validLevels.includes(level)) {
-      return NextResponse.json({ error: `level must be one of: ${validLevels.join(', ')}` }, { status: 400 });
-    }
+    const { companyId, level, notes } = validation.data;
 
     const company = await prisma.companyProfile.findUnique({ where: { id: companyId } });
     if (!company) {

@@ -3,6 +3,8 @@ import prisma from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { logger } from '@/lib/logger';
+import { validateBody, launchPollSchema } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,11 +52,11 @@ export async function POST(
     }
 
     const body = await request.json();
-    const { question, options } = body;
-
-    if (!question || !Array.isArray(options) || options.length < 2 || options.length > 6) {
-      return NextResponse.json({ error: 'Question and 2-6 options required' }, { status: 400 });
+    const validation = validateBody(launchPollSchema, body);
+    if (!validation.success) {
+      return validationError('Invalid poll data', validation.errors);
     }
+    const { question, options } = validation.data;
 
     const poll = await (prisma as any).launchPoll.create({
       data: {

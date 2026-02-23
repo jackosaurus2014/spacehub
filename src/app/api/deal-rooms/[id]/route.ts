@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { dealRoomUpdateSchema, validateBody } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,8 +14,11 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  const { searchParams } = new URL(request.url);
-  const email = searchParams.get('email');
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+  const userEmail = session.user.email;
 
   try {
     const room = await (prisma as any).dealRoom.findUnique({
@@ -38,19 +45,16 @@ export async function GET(
     }
 
     // Check if requesting user is a member
-    let membership = null;
-    if (email) {
-      membership = room.members.find((m: any) => m.email === email);
-      if (!membership) {
-        return NextResponse.json({ error: 'Access denied. You are not a member of this room.' }, { status: 403 });
-      }
-
-      // Update last access time
-      await (prisma as any).dealRoomMember.update({
-        where: { id: membership.id },
-        data: { lastAccessAt: new Date() },
-      });
+    const membership = room.members.find((m: any) => m.email === userEmail);
+    if (!membership) {
+      return NextResponse.json({ error: 'Access denied. You are not a member of this room.' }, { status: 403 });
     }
+
+    // Update last access time
+    await (prisma as any).dealRoomMember.update({
+      where: { id: membership.id },
+      data: { lastAccessAt: new Date() },
+    });
 
     return NextResponse.json({
       room,
@@ -69,32 +73,37 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+  const userEmail = session.user.email;
 
   try {
     const body = await request.json();
-    const { name, description, ndaRequired, ndaText, status, email } = body;
+    const validation = validateBody(dealRoomUpdateSchema, body);
 
-    if (!email) {
-      return NextResponse.json({ error: 'Email required for authorization' }, { status: 400 });
+    if (!validation.success) {
+      return validationError('Invalid update data', validation.errors);
     }
 
     // Check if user is owner or admin
     const membership = await (prisma as any).dealRoomMember.findFirst({
-      where: { dealRoomId: id, email, role: { in: ['owner', 'admin'] } },
+      where: { dealRoomId: id, email: userEmail, role: { in: ['owner', 'admin'] } },
     });
 
     if (!membership) {
       return NextResponse.json({ error: 'Only owners and admins can update room settings' }, { status: 403 });
     }
 
+    const { name, description, ndaRequired, ndaText, status } = validation.data;
+
     const updateData: Record<string, unknown> = {};
     if (name !== undefined) updateData.name = name.trim();
     if (description !== undefined) updateData.description = description?.trim() || null;
     if (ndaRequired !== undefined) updateData.ndaRequired = ndaRequired;
     if (ndaText !== undefined) updateData.ndaText = ndaText?.trim() || null;
-    if (status !== undefined && ['active', 'archived', 'closed'].includes(status)) {
-      updateData.status = status;
-    }
+    if (status !== undefined) updateData.status = status;
 
     const updatedRoom = await (prisma as any).dealRoom.update({
       where: { id },
@@ -110,7 +119,7 @@ export async function PUT(
     await (prisma as any).dealRoomActivity.create({
       data: {
         dealRoomId: id,
-        userEmail: email,
+        userEmail,
         action: 'updated_room',
         details: `Updated room settings: ${Object.keys(updateData).join(', ')}`,
       },
@@ -131,17 +140,16 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  const { searchParams } = new URL(request.url);
-  const email = searchParams.get('email');
-
-  if (!email) {
-    return NextResponse.json({ error: 'Email required for authorization' }, { status: 400 });
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
   }
+  const userEmail = session.user.email;
 
   try {
     // Only owners can archive
     const membership = await (prisma as any).dealRoomMember.findFirst({
-      where: { dealRoomId: id, email, role: 'owner' },
+      where: { dealRoomId: id, email: userEmail, role: 'owner' },
     });
 
     if (!membership) {
@@ -156,13 +164,13 @@ export async function DELETE(
     await (prisma as any).dealRoomActivity.create({
       data: {
         dealRoomId: id,
-        userEmail: email,
+        userEmail,
         action: 'archived_room',
         details: 'Room archived',
       },
     });
 
-    logger.info('Deal room archived', { roomId: id, archivedBy: email });
+    logger.info('Deal room archived', { roomId: id, archivedBy: userEmail });
 
     return NextResponse.json({ success: true, message: 'Room archived' });
   } catch (error) {

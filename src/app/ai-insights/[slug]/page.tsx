@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import GlassCard from '@/components/ui/GlassCard';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
@@ -96,140 +98,6 @@ function SkeletonDetail() {
       </div>
     </div>
   );
-}
-
-function markdownToHtml(markdown: string): string {
-  const lines = markdown.split('\n');
-  const htmlParts: string[] = [];
-  let i = 0;
-
-  while (i < lines.length) {
-    const line = lines[i];
-    const trimmed = line.trim();
-
-    // Empty line — skip (paragraph separation handled by grouping)
-    if (trimmed === '') {
-      i++;
-      continue;
-    }
-
-    // Horizontal rule
-    if (/^(-{3,}|\*{3,})$/.test(trimmed)) {
-      htmlParts.push('<hr />');
-      i++;
-      continue;
-    }
-
-    // Heading ##
-    if (trimmed.startsWith('## ')) {
-      const text = inlineFormat(trimmed.slice(3));
-      htmlParts.push(`<h2>${text}</h2>`);
-      i++;
-      continue;
-    }
-
-    // Heading ###
-    if (trimmed.startsWith('### ')) {
-      const text = inlineFormat(trimmed.slice(4));
-      htmlParts.push(`<h3>${text}</h3>`);
-      i++;
-      continue;
-    }
-
-    // Blockquote
-    if (trimmed.startsWith('> ')) {
-      const quoteLines: string[] = [];
-      while (i < lines.length && lines[i].trim().startsWith('> ')) {
-        quoteLines.push(inlineFormat(lines[i].trim().slice(2)));
-        i++;
-      }
-      htmlParts.push(`<blockquote><p>${quoteLines.join(' ')}</p></blockquote>`);
-      continue;
-    }
-
-    // Unordered list (- item or * item, but not ---, ***)
-    if (/^[-*] /.test(trimmed) && !/^[-*]{3,}$/.test(trimmed)) {
-      const items: string[] = [];
-      while (i < lines.length) {
-        const cur = lines[i].trim();
-        if (/^[-*] /.test(cur)) {
-          items.push(`<li>${inlineFormat(cur.slice(2))}</li>`);
-          i++;
-        } else if (cur === '') {
-          // Check if next non-empty line is still a list item
-          let peek = i + 1;
-          while (peek < lines.length && lines[peek].trim() === '') peek++;
-          if (peek < lines.length && /^[-*] /.test(lines[peek].trim())) {
-            i = peek;
-          } else {
-            break;
-          }
-        } else {
-          break;
-        }
-      }
-      htmlParts.push(`<ul>${items.join('')}</ul>`);
-      continue;
-    }
-
-    // Ordered list (1. item)
-    if (/^\d+\. /.test(trimmed)) {
-      const items: string[] = [];
-      while (i < lines.length) {
-        const cur = lines[i].trim();
-        if (/^\d+\. /.test(cur)) {
-          items.push(`<li>${inlineFormat(cur.replace(/^\d+\. /, ''))}</li>`);
-          i++;
-        } else if (cur === '') {
-          let peek = i + 1;
-          while (peek < lines.length && lines[peek].trim() === '') peek++;
-          if (peek < lines.length && /^\d+\. /.test(lines[peek].trim())) {
-            i = peek;
-          } else {
-            break;
-          }
-        } else {
-          break;
-        }
-      }
-      htmlParts.push(`<ol>${items.join('')}</ol>`);
-      continue;
-    }
-
-    // Regular paragraph — collect consecutive non-empty, non-special lines
-    const paraLines: string[] = [];
-    while (i < lines.length) {
-      const cur = lines[i].trim();
-      if (
-        cur === '' ||
-        cur.startsWith('## ') ||
-        cur.startsWith('### ') ||
-        cur.startsWith('> ') ||
-        /^[-*] /.test(cur) ||
-        /^\d+\. /.test(cur) ||
-        /^(-{3,}|\*{3,})$/.test(cur)
-      ) {
-        break;
-      }
-      paraLines.push(cur);
-      i++;
-    }
-    if (paraLines.length > 0) {
-      htmlParts.push(`<p>${inlineFormat(paraLines.join(' '))}</p>`);
-    }
-  }
-
-  return htmlParts.join('\n');
-}
-
-function inlineFormat(text: string): string {
-  // Bold: **text**
-  let result = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  // Italic: *text* (but not inside <strong> tags — use negative lookbehind/ahead for *)
-  result = result.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
-  // Links: [text](url)
-  result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
-  return result;
 }
 
 export default function AIInsightDetailPage() {
@@ -425,10 +293,37 @@ export default function AIInsightDetailPage() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="mb-12"
             >
-              <div
-                className="prose prose-invert prose-slate max-w-none prose-headings:text-white prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3 prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-300 prose-strong:text-white prose-a:text-cyan-400 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-cyan-500/40 prose-blockquote:text-slate-400 prose-hr:border-slate-700"
-                dangerouslySetInnerHTML={{ __html: markdownToHtml(insight.content) }}
-              />
+              <div className="max-w-none">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    h1: ({children}) => <h2 className="text-2xl font-bold text-white mt-10 mb-4">{children}</h2>,
+                    h2: ({children}) => <h2 className="text-2xl font-bold text-white mt-10 mb-4">{children}</h2>,
+                    h3: ({children}) => <h3 className="text-xl font-semibold text-white mt-8 mb-3">{children}</h3>,
+                    h4: ({children}) => <h4 className="text-lg font-semibold text-slate-200 mt-6 mb-2">{children}</h4>,
+                    p: ({children}) => <p className="text-slate-300 leading-relaxed mb-4">{children}</p>,
+                    a: ({href, children}) => <a href={href} className="text-cyan-400 hover:text-cyan-300 hover:underline" target="_blank" rel="noopener noreferrer">{children}</a>,
+                    ul: ({children}) => <ul className="list-disc list-inside space-y-2 text-slate-300 mb-4">{children}</ul>,
+                    ol: ({children}) => <ol className="list-decimal list-inside space-y-2 text-slate-300 mb-4">{children}</ol>,
+                    li: ({children}) => <li className="text-slate-300">{children}</li>,
+                    blockquote: ({children}) => <blockquote className="border-l-4 border-cyan-500/40 pl-4 my-4 text-slate-400 italic">{children}</blockquote>,
+                    code: ({children, className}) => {
+                      const isBlock = className?.includes('language-');
+                      return isBlock
+                        ? <pre className="bg-slate-800/50 rounded-lg p-4 overflow-x-auto my-4"><code className="text-sm text-cyan-300">{children}</code></pre>
+                        : <code className="bg-slate-800/50 px-1.5 py-0.5 rounded text-cyan-300 text-sm">{children}</code>;
+                    },
+                    strong: ({children}) => <strong className="text-white font-semibold">{children}</strong>,
+                    em: ({children}) => <em className="text-slate-200">{children}</em>,
+                    hr: () => <hr className="border-slate-700 my-8" />,
+                    table: ({children}) => <div className="overflow-x-auto my-4"><table className="min-w-full border-collapse">{children}</table></div>,
+                    th: ({children}) => <th className="border border-slate-600 px-4 py-2 bg-slate-800/50 text-left text-white font-semibold">{children}</th>,
+                    td: ({children}) => <td className="border border-slate-700 px-4 py-2 text-slate-300">{children}</td>,
+                  }}
+                >
+                  {insight.content}
+                </ReactMarkdown>
+              </div>
             </motion.div>
 
             {/* Sources Section */}

@@ -1,22 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { dealRoomCreateSchema, validateBody } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
 import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
-// GET — list deal rooms for a user (by email query param)
+// GET — list deal rooms for the authenticated user
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const email = searchParams.get('email');
-
-  if (!email) {
-    return NextResponse.json({ error: 'Email parameter required' }, { status: 400 });
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
   }
+  const userEmail = session.user.email;
 
   try {
     const memberships = await (prisma as any).dealRoomMember.findMany({
-      where: { email },
+      where: { email: userEmail },
       include: {
         dealRoom: {
           include: {
@@ -43,32 +46,39 @@ export async function GET(request: NextRequest) {
 
 // POST — create a new deal room
 export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+  const userEmail = session.user.email;
+  const userId = (session.user as any).id;
+
   try {
     const body = await request.json();
-    const { name, description, companySlug, createdByEmail, ndaRequired, ndaText } = body;
+    const validation = validateBody(dealRoomCreateSchema, body);
 
-    if (!name || !createdByEmail) {
-      return NextResponse.json({ error: 'name and createdByEmail are required' }, { status: 400 });
+    if (!validation.success) {
+      return validationError('Invalid deal room data', validation.errors);
     }
 
-    if (typeof name !== 'string' || name.length > 200) {
-      return NextResponse.json({ error: 'Name must be a string under 200 characters' }, { status: 400 });
-    }
+    const { name, description, companySlug, ndaRequired, ndaText } = validation.data;
 
     const accessCode = crypto.randomBytes(6).toString('hex');
 
     const room = await (prisma as any).dealRoom.create({
       data: {
-        name: name.trim(),
-        description: description?.trim() || null,
+        name,
+        description: description || null,
         companySlug: companySlug?.trim() || null,
-        createdBy: createdByEmail,
+        createdBy: userEmail,
+        createdByUserId: userId || null,
         accessCode,
         ndaRequired: ndaRequired || false,
         ndaText: ndaText?.trim() || null,
         members: {
           create: {
-            email: createdByEmail,
+            email: userEmail,
+            userId: userId || null,
             role: 'owner',
             joinedAt: new Date(),
             ndaAcceptedAt: new Date(), // Owner auto-accepts
@@ -84,13 +94,14 @@ export async function POST(request: NextRequest) {
     await (prisma as any).dealRoomActivity.create({
       data: {
         dealRoomId: room.id,
-        userEmail: createdByEmail,
+        userId: userId || null,
+        userEmail,
         action: 'created_room',
-        details: `Created deal room: ${name.trim()}`,
+        details: `Created deal room: ${name}`,
       },
     });
 
-    logger.info('Deal room created', { roomId: room.id, name: room.name, createdBy: createdByEmail });
+    logger.info('Deal room created', { roomId: room.id, name: room.name, createdBy: userEmail });
 
     return NextResponse.json({ room, accessCode }, { status: 201 });
   } catch (error) {

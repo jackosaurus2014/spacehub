@@ -3,6 +3,8 @@ import prisma from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { logger } from '@/lib/logger';
+import { validateBody, launchReactionSchema } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -71,13 +73,11 @@ export async function POST(
 
     const userId = (session.user as any).id;
     const body = await request.json();
-    const { emoji, phase } = body;
-
-    if (!emoji || !VALID_EMOJIS.includes(emoji)) {
-      return NextResponse.json({
-        error: `Invalid emoji. Use one of: ${VALID_EMOJIS.join(', ')}`,
-      }, { status: 400 });
+    const validation = validateBody(launchReactionSchema, body);
+    if (!validation.success) {
+      return validationError('Invalid reaction', validation.errors);
     }
+    const { emoji, phase } = validation.data;
 
     // Rate limit: check last reaction from this user
     const twoSecondsAgo = new Date(Date.now() - 2000);

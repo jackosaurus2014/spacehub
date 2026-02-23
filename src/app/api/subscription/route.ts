@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { isTrialActive } from '@/lib/subscription';
+import { validateBody, subscriptionActionSchema } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -117,6 +119,10 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+    const validation = validateBody(subscriptionActionSchema, body);
+    if (!validation.success) {
+      return validationError('Invalid subscription request', validation.errors);
+    }
 
     // Handle Stripe checkout redirect
     if (body.action === 'create-checkout') {

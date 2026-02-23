@@ -4,7 +4,7 @@
 
 /**
  * API route handler tests for Deal Rooms endpoints:
- *   - GET  /api/deal-rooms                       (list rooms by email)
+ *   - GET  /api/deal-rooms                       (list rooms for authenticated user)
  *   - POST /api/deal-rooms                       (create a new room)
  *   - GET  /api/deal-rooms/[id]                  (room detail with membership check)
  *   - PUT  /api/deal-rooms/[id]                  (update room settings)
@@ -53,7 +53,8 @@ jest.mock('@/lib/db', () => ({
   },
 }));
 
-jest.mock('next-auth', () => ({ getServerSession: jest.fn() }));
+const mockGetServerSession = jest.fn();
+jest.mock('next-auth', () => ({ getServerSession: (...args: unknown[]) => mockGetServerSession(...args) }));
 jest.mock('@/lib/auth', () => ({ authOptions: {} }));
 jest.mock('@/lib/logger', () => ({
   logger: { debug: jest.fn(), info: jest.fn(), warn: jest.fn(), error: jest.fn() },
@@ -74,6 +75,16 @@ import { POST as joinPOST } from '@/app/api/deal-rooms/join/route';
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const mockPrisma = prisma as jest.Mocked<typeof prisma>;
+
+function mockSession(email: string = 'owner@example.com', id: string = 'user-1') {
+  mockGetServerSession.mockResolvedValue({
+    user: { id, email, name: 'Test User', isAdmin: false },
+  });
+}
+
+function mockNoSession() {
+  mockGetServerSession.mockResolvedValue(null);
+}
 
 function makeDealRoom(overrides: Record<string, unknown> = {}) {
   return {
@@ -156,6 +167,8 @@ function putRequest(url: string, body: Record<string, unknown>) {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // Default: authenticated session
+  mockSession();
 });
 
 // =============================================================================
@@ -163,12 +176,12 @@ beforeEach(() => {
 // =============================================================================
 
 describe('GET /api/deal-rooms', () => {
-  it('returns rooms for a given email', async () => {
+  it('returns rooms for the authenticated user', async () => {
     const room = makeDealRoom();
     const membership = { ...makeMember(), dealRoom: room };
     (mockPrisma.dealRoomMember.findMany as jest.Mock).mockResolvedValue([membership]);
 
-    const req = new NextRequest('http://localhost/api/deal-rooms?email=owner@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms');
     const res = await listGET(req);
     const body = await res.json();
 
@@ -182,7 +195,7 @@ describe('GET /api/deal-rooms', () => {
   it('returns empty array for user with no rooms', async () => {
     (mockPrisma.dealRoomMember.findMany as jest.Mock).mockResolvedValue([]);
 
-    const req = new NextRequest('http://localhost/api/deal-rooms?email=nobody@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms');
     const res = await listGET(req);
     const body = await res.json();
 
@@ -190,19 +203,20 @@ describe('GET /api/deal-rooms', () => {
     expect(body.rooms).toEqual([]);
   });
 
-  it('returns 400 when email param is missing', async () => {
+  it('returns 401 when not authenticated', async () => {
+    mockNoSession();
     const req = new NextRequest('http://localhost/api/deal-rooms');
     const res = await listGET(req);
     const body = await res.json();
 
-    expect(res.status).toBe(400);
-    expect(body.error).toBe('Email parameter required');
+    expect(res.status).toBe(401);
+    expect(body.error).toBe('Authentication required');
   });
 
   it('returns 500 when prisma throws', async () => {
     (mockPrisma.dealRoomMember.findMany as jest.Mock).mockRejectedValue(new Error('DB connection lost'));
 
-    const req = new NextRequest('http://localhost/api/deal-rooms?email=owner@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms');
     const res = await listGET(req);
     const body = await res.json();
 
@@ -224,7 +238,6 @@ describe('POST /api/deal-rooms', () => {
     const req = jsonRequest('http://localhost/api/deal-rooms', {
       name: 'Series A Funding Room',
       description: 'Deal room for Series A discussions',
-      createdByEmail: 'owner@example.com',
     });
     const res = await createPOST(req);
     const body = await res.json();
@@ -235,38 +248,25 @@ describe('POST /api/deal-rooms', () => {
     expect(body.accessCode).toBeDefined();
   });
 
-  it('returns 400 when name is missing', async () => {
-    const req = jsonRequest('http://localhost/api/deal-rooms', {
-      createdByEmail: 'owner@example.com',
-    });
-    const res = await createPOST(req);
-    const body = await res.json();
-
-    expect(res.status).toBe(400);
-    expect(body.error).toBe('name and createdByEmail are required');
-  });
-
-  it('returns 400 when createdByEmail is missing', async () => {
+  it('returns 401 when not authenticated', async () => {
+    mockNoSession();
     const req = jsonRequest('http://localhost/api/deal-rooms', {
       name: 'Test Room',
     });
     const res = await createPOST(req);
     const body = await res.json();
 
-    expect(res.status).toBe(400);
-    expect(body.error).toBe('name and createdByEmail are required');
+    expect(res.status).toBe(401);
+    expect(body.error).toBe('Authentication required');
   });
 
-  it('returns 400 when name exceeds 200 characters', async () => {
+  it('returns 400 when name is too short', async () => {
     const req = jsonRequest('http://localhost/api/deal-rooms', {
-      name: 'A'.repeat(201),
-      createdByEmail: 'owner@example.com',
+      name: 'AB',
     });
     const res = await createPOST(req);
-    const body = await res.json();
 
     expect(res.status).toBe(400);
-    expect(body.error).toBe('Name must be a string under 200 characters');
   });
 
   it('creates room with ndaRequired flag', async () => {
@@ -276,7 +276,6 @@ describe('POST /api/deal-rooms', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms', {
       name: 'Confidential Room',
-      createdByEmail: 'owner@example.com',
       ndaRequired: true,
       ndaText: 'NDA text here',
     });
@@ -299,7 +298,6 @@ describe('POST /api/deal-rooms', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms', {
       name: 'Test Room',
-      createdByEmail: 'owner@example.com',
     });
     const res = await createPOST(req);
     const body = await res.json();
@@ -323,7 +321,7 @@ describe('GET /api/deal-rooms/[id]', () => {
     (mockPrisma.dealRoom.findUnique as jest.Mock).mockResolvedValue(room);
     (mockPrisma.dealRoomMember.update as jest.Mock).mockResolvedValue({});
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1?email=owner@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1');
     const res = await detailGET(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -337,7 +335,7 @@ describe('GET /api/deal-rooms/[id]', () => {
   it('returns 404 for nonexistent room', async () => {
     (mockPrisma.dealRoom.findUnique as jest.Mock).mockResolvedValue(null);
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/nonexistent?email=owner@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms/nonexistent');
     const res = await detailGET(req, { params: { id: 'nonexistent' } });
     const body = await res.json();
 
@@ -346,12 +344,13 @@ describe('GET /api/deal-rooms/[id]', () => {
   });
 
   it('returns 403 when user is not a member', async () => {
+    mockSession('stranger@example.com', 'user-2');
     const room = makeDealRoom({
       members: [makeMember()],
     });
     (mockPrisma.dealRoom.findUnique as jest.Mock).mockResolvedValue(room);
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1?email=stranger@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1');
     const res = await detailGET(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -359,17 +358,14 @@ describe('GET /api/deal-rooms/[id]', () => {
     expect(body.error).toBe('Access denied. You are not a member of this room.');
   });
 
-  it('returns room without membership check when no email provided', async () => {
-    const room = makeDealRoom({ members: [makeMember()] });
-    (mockPrisma.dealRoom.findUnique as jest.Mock).mockResolvedValue(room);
-
+  it('returns 401 when not authenticated', async () => {
+    mockNoSession();
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1');
     const res = await detailGET(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
-    expect(res.status).toBe(200);
-    expect(body.myRole).toBeNull();
-    expect(body.ndaAccepted).toBe(false);
+    expect(res.status).toBe(401);
+    expect(body.error).toBe('Authentication required');
   });
 
   it('updates last access time for member', async () => {
@@ -378,7 +374,7 @@ describe('GET /api/deal-rooms/[id]', () => {
     (mockPrisma.dealRoom.findUnique as jest.Mock).mockResolvedValue(room);
     (mockPrisma.dealRoomMember.update as jest.Mock).mockResolvedValue({});
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1?email=owner@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1');
     await detailGET(req, { params: { id: 'room-1' } });
 
     expect(mockPrisma.dealRoomMember.update).toHaveBeenCalledWith({
@@ -390,7 +386,7 @@ describe('GET /api/deal-rooms/[id]', () => {
   it('returns 500 when prisma throws', async () => {
     (mockPrisma.dealRoom.findUnique as jest.Mock).mockRejectedValue(new Error('DB error'));
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1?email=owner@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1');
     const res = await detailGET(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -412,7 +408,6 @@ describe('PUT /api/deal-rooms/[id]', () => {
 
     const req = putRequest('http://localhost/api/deal-rooms/room-1', {
       name: 'Updated Name',
-      email: 'owner@example.com',
     });
     const res = await updatePUT(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -422,6 +417,7 @@ describe('PUT /api/deal-rooms/[id]', () => {
   });
 
   it('updates room settings for admin', async () => {
+    mockSession('admin@example.com', 'user-2');
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockResolvedValue(
       makeMember({ role: 'admin', email: 'admin@example.com' })
     );
@@ -431,22 +427,22 @@ describe('PUT /api/deal-rooms/[id]', () => {
 
     const req = putRequest('http://localhost/api/deal-rooms/room-1', {
       description: 'New description',
-      email: 'admin@example.com',
     });
     const res = await updatePUT(req, { params: { id: 'room-1' } });
 
     expect(res.status).toBe(200);
   });
 
-  it('returns 400 when email is missing', async () => {
+  it('returns 401 when not authenticated', async () => {
+    mockNoSession();
     const req = putRequest('http://localhost/api/deal-rooms/room-1', {
       name: 'Updated Name',
     });
     const res = await updatePUT(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
-    expect(res.status).toBe(400);
-    expect(body.error).toBe('Email required for authorization');
+    expect(res.status).toBe(401);
+    expect(body.error).toBe('Authentication required');
   });
 
   it('returns 403 for viewer trying to update', async () => {
@@ -454,7 +450,6 @@ describe('PUT /api/deal-rooms/[id]', () => {
 
     const req = putRequest('http://localhost/api/deal-rooms/room-1', {
       name: 'Updated Name',
-      email: 'viewer@example.com',
     });
     const res = await updatePUT(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -470,7 +465,6 @@ describe('PUT /api/deal-rooms/[id]', () => {
 
     const req = putRequest('http://localhost/api/deal-rooms/room-1', {
       status: 'archived',
-      email: 'owner@example.com',
     });
     await updatePUT(req, { params: { id: 'room-1' } });
 
@@ -487,7 +481,6 @@ describe('PUT /api/deal-rooms/[id]', () => {
 
     const req = putRequest('http://localhost/api/deal-rooms/room-1', {
       name: 'Updated',
-      email: 'owner@example.com',
     });
     const res = await updatePUT(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -507,7 +500,7 @@ describe('DELETE /api/deal-rooms/[id]', () => {
     (mockPrisma.dealRoom.update as jest.Mock).mockResolvedValue({});
     (mockPrisma.dealRoomActivity.create as jest.Mock).mockResolvedValue({});
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1?email=owner@example.com', {
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1', {
       method: 'DELETE',
     });
     const res = await archiveDELETE(req, { params: { id: 'room-1' } });
@@ -518,21 +511,22 @@ describe('DELETE /api/deal-rooms/[id]', () => {
     expect(body.message).toBe('Room archived');
   });
 
-  it('returns 400 when email is missing', async () => {
+  it('returns 401 when not authenticated', async () => {
+    mockNoSession();
     const req = new NextRequest('http://localhost/api/deal-rooms/room-1', {
       method: 'DELETE',
     });
     const res = await archiveDELETE(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
-    expect(res.status).toBe(400);
-    expect(body.error).toBe('Email required for authorization');
+    expect(res.status).toBe(401);
+    expect(body.error).toBe('Authentication required');
   });
 
   it('returns 403 when non-owner tries to archive', async () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockResolvedValue(null);
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1?email=viewer@example.com', {
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1', {
       method: 'DELETE',
     });
     const res = await archiveDELETE(req, { params: { id: 'room-1' } });
@@ -546,7 +540,7 @@ describe('DELETE /api/deal-rooms/[id]', () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockResolvedValue(makeMember());
     (mockPrisma.dealRoom.update as jest.Mock).mockRejectedValue(new Error('DB error'));
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1?email=owner@example.com', {
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1', {
       method: 'DELETE',
     });
     const res = await archiveDELETE(req, { params: { id: 'room-1' } });
@@ -568,7 +562,7 @@ describe('GET /api/deal-rooms/[id]/documents', () => {
     const docs = [makeDocument(), makeDocument({ id: 'doc-2', name: 'Financials' })];
     (mockPrisma.dealRoomDocument.findMany as jest.Mock).mockResolvedValue(docs);
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents?email=owner@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents');
     const res = await docsGET(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -581,7 +575,7 @@ describe('GET /api/deal-rooms/[id]/documents', () => {
     (mockPrisma.dealRoom.findUnique as jest.Mock).mockResolvedValue({ ndaRequired: false });
     (mockPrisma.dealRoomDocument.findMany as jest.Mock).mockResolvedValue([makeDocument()]);
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents?email=owner@example.com&category=pitch_deck');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents?category=pitch_deck');
     await docsGET(req, { params: { id: 'room-1' } });
 
     expect(mockPrisma.dealRoomDocument.findMany).toHaveBeenCalledWith(
@@ -594,7 +588,7 @@ describe('GET /api/deal-rooms/[id]/documents', () => {
   it('returns 403 when user is not a member', async () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockResolvedValue(null);
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents?email=stranger@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents');
     const res = await docsGET(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -608,7 +602,7 @@ describe('GET /api/deal-rooms/[id]/documents', () => {
     );
     (mockPrisma.dealRoom.findUnique as jest.Mock).mockResolvedValue({ ndaRequired: true });
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents?email=member@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents');
     const res = await docsGET(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -619,7 +613,7 @@ describe('GET /api/deal-rooms/[id]/documents', () => {
   it('returns 500 when prisma throws', async () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockRejectedValue(new Error('DB error'));
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents?email=owner@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/documents');
     const res = await docsGET(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -646,7 +640,6 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       category: 'pitch_deck',
       fileType: 'pdf',
       fileSize: 5242880,
-      uploaderEmail: 'owner@example.com',
     });
     const res = await docsPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -659,13 +652,12 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
   it('returns 400 when required fields are missing', async () => {
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/documents', {
       name: 'Test',
-      uploaderEmail: 'owner@example.com',
     });
     const res = await docsPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
     expect(res.status).toBe(400);
-    expect(body.error).toBe('name, fileType, fileSize, and uploaderEmail are required');
+    expect(body.error).toBe('name, fileType, and fileSize are required');
   });
 
   it('returns 400 when name exceeds 500 characters', async () => {
@@ -673,7 +665,6 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       name: 'A'.repeat(501),
       fileType: 'pdf',
       fileSize: 1024,
-      uploaderEmail: 'owner@example.com',
     });
     const res = await docsPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -687,7 +678,6 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       name: 'Test',
       fileType: 'exe',
       fileSize: 1024,
-      uploaderEmail: 'owner@example.com',
     });
     const res = await docsPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -701,7 +691,6 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       name: 'Test',
       fileType: 'pdf',
       fileSize: -1,
-      uploaderEmail: 'owner@example.com',
     });
     const res = await docsPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -715,7 +704,6 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       name: 'Huge File',
       fileType: 'pdf',
       fileSize: 60 * 1024 * 1024,
-      uploaderEmail: 'owner@example.com',
     });
     const res = await docsPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -731,7 +719,6 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       name: 'Test',
       fileType: 'pdf',
       fileSize: 1024,
-      uploaderEmail: 'viewer@example.com',
     });
     const res = await docsPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -751,7 +738,6 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       name: 'Pitch Deck Q1 2026',
       fileType: 'pdf',
       fileSize: 1024,
-      uploaderEmail: 'owner@example.com',
     });
     await docsPOST(req, { params: { id: 'room-1' } });
 
@@ -772,7 +758,6 @@ describe('POST /api/deal-rooms/[id]/documents', () => {
       name: 'Test',
       fileType: 'pdf',
       fileSize: 1024,
-      uploaderEmail: 'owner@example.com',
     });
     const res = await docsPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -796,7 +781,7 @@ describe('GET /api/deal-rooms/[id]/activity', () => {
     (mockPrisma.dealRoomActivity.findMany as jest.Mock).mockResolvedValue(activities);
     (mockPrisma.dealRoomActivity.count as jest.Mock).mockResolvedValue(2);
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity?email=owner@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity');
     const res = await activityGET(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -810,7 +795,7 @@ describe('GET /api/deal-rooms/[id]/activity', () => {
     (mockPrisma.dealRoomActivity.findMany as jest.Mock).mockResolvedValue([]);
     (mockPrisma.dealRoomActivity.count as jest.Mock).mockResolvedValue(0);
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity?email=owner@example.com&limit=10');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity?limit=10');
     await activityGET(req, { params: { id: 'room-1' } });
 
     expect(mockPrisma.dealRoomActivity.findMany).toHaveBeenCalledWith(
@@ -823,7 +808,7 @@ describe('GET /api/deal-rooms/[id]/activity', () => {
     (mockPrisma.dealRoomActivity.findMany as jest.Mock).mockResolvedValue([]);
     (mockPrisma.dealRoomActivity.count as jest.Mock).mockResolvedValue(0);
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity?email=owner@example.com&limit=500');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity?limit=500');
     await activityGET(req, { params: { id: 'room-1' } });
 
     expect(mockPrisma.dealRoomActivity.findMany).toHaveBeenCalledWith(
@@ -834,7 +819,7 @@ describe('GET /api/deal-rooms/[id]/activity', () => {
   it('returns 403 when user is not a member', async () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockResolvedValue(null);
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity?email=stranger@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity');
     const res = await activityGET(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -845,7 +830,7 @@ describe('GET /api/deal-rooms/[id]/activity', () => {
   it('returns 500 when prisma throws', async () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockRejectedValue(new Error('DB error'));
 
-    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity?email=owner@example.com');
+    const req = new NextRequest('http://localhost/api/deal-rooms/room-1/activity');
     const res = await activityGET(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -872,7 +857,6 @@ describe('POST /api/deal-rooms/[id]/members', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
       inviteeEmail: 'invitee@example.com',
-      inviterEmail: 'owner@example.com',
     });
     const res = await membersPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -895,7 +879,6 @@ describe('POST /api/deal-rooms/[id]/members', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
       inviteeEmail: 'admin-invitee@example.com',
-      inviterEmail: 'owner@example.com',
       role: 'admin',
     });
     const res = await membersPOST(req, { params: { id: 'room-1' } });
@@ -908,38 +891,25 @@ describe('POST /api/deal-rooms/[id]/members', () => {
     );
   });
 
-  it('returns 400 when inviteeEmail is missing', async () => {
+  it('returns 400 when inviteeEmail is invalid', async () => {
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
-      inviterEmail: 'owner@example.com',
+      inviteeEmail: 'not-an-email',
     });
     const res = await membersPOST(req, { params: { id: 'room-1' } });
-    const body = await res.json();
 
     expect(res.status).toBe(400);
-    expect(body.error).toBe('inviteeEmail and inviterEmail are required');
   });
 
-  it('returns 400 when inviterEmail is missing', async () => {
+  it('returns 401 when not authenticated', async () => {
+    mockNoSession();
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
       inviteeEmail: 'invitee@example.com',
     });
     const res = await membersPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
-    expect(res.status).toBe(400);
-    expect(body.error).toBe('inviteeEmail and inviterEmail are required');
-  });
-
-  it('returns 400 for invalid email address', async () => {
-    const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
-      inviteeEmail: 'not-an-email',
-      inviterEmail: 'owner@example.com',
-    });
-    const res = await membersPOST(req, { params: { id: 'room-1' } });
-    const body = await res.json();
-
-    expect(res.status).toBe(400);
-    expect(body.error).toBe('Invalid email address');
+    expect(res.status).toBe(401);
+    expect(body.error).toBe('Authentication required');
   });
 
   it('returns 403 when inviter is not owner or admin', async () => {
@@ -947,7 +917,6 @@ describe('POST /api/deal-rooms/[id]/members', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
       inviteeEmail: 'new@example.com',
-      inviterEmail: 'viewer@example.com',
     });
     const res = await membersPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -964,7 +933,6 @@ describe('POST /api/deal-rooms/[id]/members', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
       inviteeEmail: 'existing@example.com',
-      inviterEmail: 'owner@example.com',
     });
     const res = await membersPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -980,7 +948,6 @@ describe('POST /api/deal-rooms/[id]/members', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/members', {
       inviteeEmail: 'new@example.com',
-      inviterEmail: 'owner@example.com',
     });
     const res = await membersPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
@@ -1003,7 +970,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
     (mockPrisma.dealRoomActivity.create as jest.Mock).mockResolvedValue({});
 
     const req = new NextRequest(
-      'http://localhost/api/deal-rooms/room-1/members?memberEmail=viewer@example.com&requesterEmail=owner@example.com',
+      'http://localhost/api/deal-rooms/room-1/members?memberEmail=viewer@example.com',
       { method: 'DELETE' }
     );
     const res = await membersDELETE(req, { params: { id: 'room-1' } });
@@ -1015,6 +982,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
   });
 
   it('allows self-removal for any member', async () => {
+    mockSession('viewer@example.com', 'user-3');
     (mockPrisma.dealRoomMember.findFirst as jest.Mock)
       .mockResolvedValueOnce(makeMember({ role: 'viewer', email: 'viewer@example.com' }))
       .mockResolvedValueOnce(makeMember({ id: 'member-2', role: 'viewer', email: 'viewer@example.com' }));
@@ -1022,7 +990,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
     (mockPrisma.dealRoomActivity.create as jest.Mock).mockResolvedValue({});
 
     const req = new NextRequest(
-      'http://localhost/api/deal-rooms/room-1/members?memberEmail=viewer@example.com&requesterEmail=viewer@example.com',
+      'http://localhost/api/deal-rooms/room-1/members?memberEmail=viewer@example.com',
       { method: 'DELETE' }
     );
     const res = await membersDELETE(req, { params: { id: 'room-1' } });
@@ -1034,21 +1002,21 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
 
   it('returns 400 when memberEmail is missing', async () => {
     const req = new NextRequest(
-      'http://localhost/api/deal-rooms/room-1/members?requesterEmail=owner@example.com',
+      'http://localhost/api/deal-rooms/room-1/members',
       { method: 'DELETE' }
     );
     const res = await membersDELETE(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
     expect(res.status).toBe(400);
-    expect(body.error).toBe('memberEmail and requesterEmail are required');
+    expect(body.error).toBe('memberEmail is required');
   });
 
   it('returns 403 when requester is not a member', async () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockResolvedValueOnce(null);
 
     const req = new NextRequest(
-      'http://localhost/api/deal-rooms/room-1/members?memberEmail=someone@example.com&requesterEmail=stranger@example.com',
+      'http://localhost/api/deal-rooms/room-1/members?memberEmail=someone@example.com',
       { method: 'DELETE' }
     );
     const res = await membersDELETE(req, { params: { id: 'room-1' } });
@@ -1059,11 +1027,12 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
   });
 
   it('returns 403 when viewer tries to remove another member', async () => {
+    mockSession('viewer@example.com', 'user-3');
     (mockPrisma.dealRoomMember.findFirst as jest.Mock)
       .mockResolvedValueOnce(makeMember({ role: 'viewer', email: 'viewer@example.com' })); // requester is viewer
 
     const req = new NextRequest(
-      'http://localhost/api/deal-rooms/room-1/members?memberEmail=other@example.com&requesterEmail=viewer@example.com',
+      'http://localhost/api/deal-rooms/room-1/members?memberEmail=other@example.com',
       { method: 'DELETE' }
     );
     const res = await membersDELETE(req, { params: { id: 'room-1' } });
@@ -1079,7 +1048,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
       .mockResolvedValueOnce(null); // target not found
 
     const req = new NextRequest(
-      'http://localhost/api/deal-rooms/room-1/members?memberEmail=ghost@example.com&requesterEmail=owner@example.com',
+      'http://localhost/api/deal-rooms/room-1/members?memberEmail=ghost@example.com',
       { method: 'DELETE' }
     );
     const res = await membersDELETE(req, { params: { id: 'room-1' } });
@@ -1090,12 +1059,13 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
   });
 
   it('returns 400 when trying to remove the owner', async () => {
+    mockSession('admin@example.com', 'user-2');
     (mockPrisma.dealRoomMember.findFirst as jest.Mock)
       .mockResolvedValueOnce(makeMember({ role: 'admin', email: 'admin@example.com' }))
       .mockResolvedValueOnce(makeMember({ role: 'owner', email: 'owner@example.com' }));
 
     const req = new NextRequest(
-      'http://localhost/api/deal-rooms/room-1/members?memberEmail=owner@example.com&requesterEmail=admin@example.com',
+      'http://localhost/api/deal-rooms/room-1/members?memberEmail=owner@example.com',
       { method: 'DELETE' }
     );
     const res = await membersDELETE(req, { params: { id: 'room-1' } });
@@ -1109,7 +1079,7 @@ describe('DELETE /api/deal-rooms/[id]/members', () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockRejectedValue(new Error('DB error'));
 
     const req = new NextRequest(
-      'http://localhost/api/deal-rooms/room-1/members?memberEmail=viewer@example.com&requesterEmail=owner@example.com',
+      'http://localhost/api/deal-rooms/room-1/members?memberEmail=viewer@example.com',
       { method: 'DELETE' }
     );
     const res = await membersDELETE(req, { params: { id: 'room-1' } });
@@ -1132,9 +1102,7 @@ describe('POST /api/deal-rooms/[id]/nda', () => {
     (mockPrisma.dealRoomMember.update as jest.Mock).mockResolvedValue({});
     (mockPrisma.dealRoomActivity.create as jest.Mock).mockResolvedValue({});
 
-    const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {
-      email: 'member@example.com',
-    });
+    const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {});
     const res = await ndaPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -1148,9 +1116,7 @@ describe('POST /api/deal-rooms/[id]/nda', () => {
       makeMember({ ndaAcceptedAt: new Date('2026-01-10') })
     );
 
-    const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {
-      email: 'member@example.com',
-    });
+    const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {});
     const res = await ndaPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -1161,21 +1127,20 @@ describe('POST /api/deal-rooms/[id]/nda', () => {
     expect(mockPrisma.dealRoomActivity.create).not.toHaveBeenCalled();
   });
 
-  it('returns 400 when email is missing', async () => {
+  it('returns 401 when not authenticated', async () => {
+    mockNoSession();
     const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {});
     const res = await ndaPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
-    expect(res.status).toBe(400);
-    expect(body.error).toBe('Email required');
+    expect(res.status).toBe(401);
+    expect(body.error).toBe('Authentication required');
   });
 
   it('returns 403 when user is not a member', async () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockResolvedValue(null);
 
-    const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {
-      email: 'stranger@example.com',
-    });
+    const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {});
     const res = await ndaPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -1186,9 +1151,7 @@ describe('POST /api/deal-rooms/[id]/nda', () => {
   it('returns 500 when prisma throws', async () => {
     (mockPrisma.dealRoomMember.findFirst as jest.Mock).mockRejectedValue(new Error('DB error'));
 
-    const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {
-      email: 'member@example.com',
-    });
+    const req = jsonRequest('http://localhost/api/deal-rooms/room-1/nda', {});
     const res = await ndaPOST(req, { params: { id: 'room-1' } });
     const body = await res.json();
 
@@ -1210,7 +1173,6 @@ describe('POST /api/deal-rooms/join', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms/join', {
       accessCode: 'abc123def456',
-      email: 'joiner@example.com',
     });
     const res = await joinPOST(req);
     const body = await res.json();
@@ -1222,13 +1184,12 @@ describe('POST /api/deal-rooms/join', () => {
 
   it('returns already-a-member message for existing member', async () => {
     const room = makeDealRoom({
-      members: [makeMember({ email: 'existing@example.com' })],
+      members: [makeMember({ email: 'owner@example.com' })],
     });
     (mockPrisma.dealRoom.findUnique as jest.Mock).mockResolvedValue(room);
 
     const req = jsonRequest('http://localhost/api/deal-rooms/join', {
       accessCode: 'abc123def456',
-      email: 'existing@example.com',
     });
     const res = await joinPOST(req);
     const body = await res.json();
@@ -1239,25 +1200,22 @@ describe('POST /api/deal-rooms/join', () => {
   });
 
   it('returns 400 when accessCode is missing', async () => {
-    const req = jsonRequest('http://localhost/api/deal-rooms/join', {
-      email: 'joiner@example.com',
-    });
+    const req = jsonRequest('http://localhost/api/deal-rooms/join', {});
     const res = await joinPOST(req);
-    const body = await res.json();
 
     expect(res.status).toBe(400);
-    expect(body.error).toBe('accessCode and email are required');
   });
 
-  it('returns 400 when email is missing', async () => {
+  it('returns 401 when not authenticated', async () => {
+    mockNoSession();
     const req = jsonRequest('http://localhost/api/deal-rooms/join', {
       accessCode: 'abc123def456',
     });
     const res = await joinPOST(req);
     const body = await res.json();
 
-    expect(res.status).toBe(400);
-    expect(body.error).toBe('accessCode and email are required');
+    expect(res.status).toBe(401);
+    expect(body.error).toBe('Authentication required');
   });
 
   it('returns 404 for invalid access code', async () => {
@@ -1265,7 +1223,6 @@ describe('POST /api/deal-rooms/join', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms/join', {
       accessCode: 'bad-code',
-      email: 'joiner@example.com',
     });
     const res = await joinPOST(req);
     const body = await res.json();
@@ -1280,7 +1237,6 @@ describe('POST /api/deal-rooms/join', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms/join', {
       accessCode: 'abc123def456',
-      email: 'joiner@example.com',
     });
     const res = await joinPOST(req);
     const body = await res.json();
@@ -1297,7 +1253,6 @@ describe('POST /api/deal-rooms/join', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms/join', {
       accessCode: 'abc123def456',
-      email: 'joiner@example.com',
     });
     await joinPOST(req);
 
@@ -1318,7 +1273,6 @@ describe('POST /api/deal-rooms/join', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms/join', {
       accessCode: 'abc123def456',
-      email: 'joiner@example.com',
     });
     await joinPOST(req);
 
@@ -1336,7 +1290,6 @@ describe('POST /api/deal-rooms/join', () => {
 
     const req = jsonRequest('http://localhost/api/deal-rooms/join', {
       accessCode: 'abc123def456',
-      email: 'joiner@example.com',
     });
     const res = await joinPOST(req);
     const body = await res.json();

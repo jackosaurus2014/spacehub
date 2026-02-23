@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { dealRoomInviteSchema, validateBody } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,25 +14,25 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+  const userEmail = session.user.email;
 
   try {
     const body = await request.json();
-    const { inviteeEmail, role, inviterEmail } = body;
+    const validation = validateBody(dealRoomInviteSchema, body);
 
-    if (!inviteeEmail || !inviterEmail) {
-      return NextResponse.json({ error: 'inviteeEmail and inviterEmail are required' }, { status: 400 });
+    if (!validation.success) {
+      return validationError('Invalid invite data', validation.errors);
     }
 
-    if (typeof inviteeEmail !== 'string' || !inviteeEmail.includes('@')) {
-      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
-    }
-
-    const validRoles = ['admin', 'viewer'];
-    const memberRole = validRoles.includes(role) ? role : 'viewer';
+    const { inviteeEmail, role: memberRole } = validation.data;
 
     // Check if inviter has permission (owner or admin)
     const inviter = await (prisma as any).dealRoomMember.findFirst({
-      where: { dealRoomId: id, email: inviterEmail, role: { in: ['owner', 'admin'] } },
+      where: { dealRoomId: id, email: userEmail, role: { in: ['owner', 'admin'] } },
     });
 
     if (!inviter) {
@@ -56,7 +60,7 @@ export async function POST(
     await (prisma as any).dealRoomActivity.create({
       data: {
         dealRoomId: id,
-        userEmail: inviterEmail,
+        userEmail,
         action: 'invited_member',
         details: `Invited ${inviteeEmail.trim().toLowerCase()} as ${memberRole}`,
       },
@@ -77,25 +81,29 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+  const userEmail = session.user.email;
   const { searchParams } = new URL(request.url);
   const memberEmail = searchParams.get('memberEmail');
-  const requesterEmail = searchParams.get('requesterEmail');
 
-  if (!memberEmail || !requesterEmail) {
-    return NextResponse.json({ error: 'memberEmail and requesterEmail are required' }, { status: 400 });
+  if (!memberEmail) {
+    return NextResponse.json({ error: 'memberEmail is required' }, { status: 400 });
   }
 
   try {
     // Check if requester has permission (owner or admin), or is removing themselves
     const requester = await (prisma as any).dealRoomMember.findFirst({
-      where: { dealRoomId: id, email: requesterEmail },
+      where: { dealRoomId: id, email: userEmail },
     });
 
     if (!requester) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    const isSelfRemoval = memberEmail === requesterEmail;
+    const isSelfRemoval = memberEmail === userEmail;
     const hasPermission = requester.role === 'owner' || requester.role === 'admin';
 
     if (!isSelfRemoval && !hasPermission) {
@@ -123,13 +131,13 @@ export async function DELETE(
     await (prisma as any).dealRoomActivity.create({
       data: {
         dealRoomId: id,
-        userEmail: requesterEmail,
+        userEmail,
         action: 'removed_member',
         details: isSelfRemoval ? `Left the room` : `Removed ${memberEmail}`,
       },
     });
 
-    logger.info('Deal room member removed', { roomId: id, removedEmail: memberEmail, removedBy: requesterEmail });
+    logger.info('Deal room member removed', { roomId: id, removedEmail: memberEmail, removedBy: userEmail });
 
     return NextResponse.json({ success: true, message: 'Member removed' });
   } catch (error) {

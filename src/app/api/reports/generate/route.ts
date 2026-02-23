@@ -15,6 +15,7 @@ import {
   generateMarketEntryBrief,
 } from '@/lib/report-generator';
 import { REPORT_TYPES, SPACE_SECTORS } from '@/lib/report-templates';
+import { validateBody, reportGenerateSchema } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
 
@@ -120,7 +121,11 @@ export async function POST(request: NextRequest) {
 
     // Parse body
     const body = await request.json();
-    const { reportType, config } = body as {
+    const validation = validateBody(reportGenerateSchema, body);
+    if (!validation.success) {
+      return validationError('Invalid report request', validation.errors);
+    }
+    const { reportType, config } = validation.data as {
       reportType: string;
       config: {
         sector?: string;

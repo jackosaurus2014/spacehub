@@ -4,17 +4,26 @@ import prisma from '@/lib/db';
 import { MARKET_SEGMENTS } from '@/lib/market-sizing-data';
 import { assessRisk, SECTOR_RISK_PROFILES } from '@/lib/regulatory/risk-scoring';
 import { logger } from '@/lib/logger';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { validateBody, investmentThesisSchema } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { companySlug } = body;
-
-    if (!companySlug || typeof companySlug !== 'string') {
-      return NextResponse.json({ error: 'companySlug is required' }, { status: 400 });
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Authentication required. Sign in to generate investment thesis.' }, { status: 401 });
     }
+
+    const body = await request.json();
+    const validation = validateBody(investmentThesisSchema, body);
+    if (!validation.success) {
+      return validationError('Invalid request', validation.errors);
+    }
+    const { companySlug } = validation.data;
 
     // Gather all platform data about the company
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

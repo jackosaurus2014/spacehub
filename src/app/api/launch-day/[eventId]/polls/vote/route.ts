@@ -3,6 +3,8 @@ import prisma from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { logger } from '@/lib/logger';
+import { validateBody, launchPollVoteSchema } from '@/lib/validations';
+import { validationError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,11 +21,11 @@ export async function POST(
 
     const userId = (session.user as any).id;
     const body = await request.json();
-    const { pollId, option } = body;
-
-    if (!pollId || typeof option !== 'number') {
-      return NextResponse.json({ error: 'pollId and option (number) required' }, { status: 400 });
+    const validation = validateBody(launchPollVoteSchema, body);
+    if (!validation.success) {
+      return validationError('Invalid vote data', validation.errors);
     }
+    const { pollId, optionIndex: option } = validation.data;
 
     // Verify poll exists and is active
     const poll = await (prisma as any).launchPoll.findUnique({

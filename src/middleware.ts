@@ -47,10 +47,21 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   if (pathname.startsWith('/api/messages')) {
     return { maxRequests: 50, windowMs: 60 * 60 * 1000 }; // 50 messages/hour
   }
+  // Investment thesis — expensive AI call
+  if (pathname.startsWith('/api/investment-thesis')) {
+    return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 per hour
+  }
+  // Report generation — expensive AI call
+  if (pathname.startsWith('/api/reports/generate')) {
+    return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 per hour
+  }
+  // Marketplace copilot — expensive AI call
+  if (pathname.startsWith('/api/marketplace/copilot')) {
+    return { maxRequests: 20, windowMs: 60 * 60 * 1000 }; // 20 per hour
+  }
   // AI-powered endpoints (expensive external API calls)
   if (
     pathname.startsWith('/api/search/ai-intent') ||
-    pathname.startsWith('/api/marketplace/copilot') ||
     pathname.startsWith('/api/opportunities/moonshots') ||
     pathname.startsWith('/api/opportunities/analyze')
   ) {
@@ -137,9 +148,14 @@ function checkRateLimit(
     routeKey = 'community-reports';
   } else if (pathname.startsWith('/api/messages')) {
     routeKey = 'messages';
+  } else if (pathname.startsWith('/api/investment-thesis')) {
+    routeKey = 'investment-thesis';
+  } else if (pathname.startsWith('/api/reports/generate')) {
+    routeKey = 'reports-generate';
+  } else if (pathname.startsWith('/api/marketplace/copilot')) {
+    routeKey = 'marketplace-copilot';
   } else if (
     pathname.startsWith('/api/search/ai-intent') ||
-    pathname.startsWith('/api/marketplace/copilot') ||
     pathname.startsWith('/api/opportunities/moonshots') ||
     pathname.startsWith('/api/opportunities/analyze')
   ) {
@@ -212,11 +228,27 @@ function checkCsrf(req: NextRequest): boolean {
     return true;
   }
 
-  // Skip CSRF check for cron/internal requests authenticated via Bearer token
-  // (CRON_SECRET is a shared secret — stronger than origin checking)
+  // Skip CSRF check for cron/internal requests authenticated via valid CRON_SECRET Bearer token
+  // Only bypass for known internal paths to prevent arbitrary CSRF bypass with any Bearer token
   const authHeader = req.headers.get('authorization');
   if (authHeader && authHeader.startsWith('Bearer ')) {
-    return true;
+    const token = authHeader.slice(7);
+    const cronSecret = process.env.CRON_SECRET;
+
+    // Only skip CSRF for valid cron secret on known internal paths
+    if (cronSecret && token === cronSecret) {
+      const cronPaths = [
+        '/api/refresh', '/api/newsletter/send-digest', '/api/newsletter/send',
+        '/api/newsletter/intelligence-brief', '/api/newsletter/forum-digest',
+        '/api/ai-insights/generate', '/api/refresh/cleanup',
+        '/api/admin/seed-all', '/api/admin/freshness-check',
+      ];
+      // Also allow all /init endpoints
+      if (cronPaths.some(p => pathname.startsWith(p)) || pathname.endsWith('/init')) {
+        return true;
+      }
+    }
+    // Invalid or unrecognized Bearer token — proceed with normal CSRF check
   }
 
   const origin = req.headers.get('origin');
