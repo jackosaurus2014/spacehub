@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import PullToRefresh from '@/components/ui/PullToRefresh';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 
@@ -677,6 +678,14 @@ function ProcurementContent() {
     if (currentTab === 'saved') fetchSaved();
   }, [currentTab, fetchSaved]);
 
+  const handleRefresh = useCallback(async () => {
+    if (currentTab === 'opportunities') fetchOpportunities();
+    else if (currentTab === 'sbir') fetchSBIR();
+    else if (currentTab === 'budget') fetchBudget();
+    else if (currentTab === 'congressional') fetchCongressional();
+    else if (currentTab === 'saved') fetchSaved();
+  }, [currentTab, fetchOpportunities, fetchSBIR, fetchBudget, fetchCongressional, fetchSaved]);
+
   // Tab buttons
   const tabs: { id: Tab; label: string; icon: string; count?: number }[] = [
     { id: 'opportunities', label: 'Contract Opportunities', icon: '📋', count: stats?.overview.activeOpportunities },
@@ -687,6 +696,7 @@ function ProcurementContent() {
   ];
 
   return (
+    <PullToRefresh onRefresh={async () => { await handleRefresh(); }}>
     <div className="min-h-screen bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <AnimatedPageHeader
@@ -1035,6 +1045,7 @@ function ProcurementContent() {
         </div>
       </div>
     </div>
+    </PullToRefresh>
   );
 }
 

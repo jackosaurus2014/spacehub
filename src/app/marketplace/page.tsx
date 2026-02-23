@@ -11,6 +11,7 @@ import RFQCard from '@/components/marketplace/RFQCard';
 import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { toast } from '@/lib/toast';
 import AdSlot from '@/components/ads/AdSlot';
+import PullToRefresh from '@/components/ui/PullToRefresh';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 
@@ -79,6 +80,7 @@ export default function MarketplacePage() {
   }
 
   return (
+    <PullToRefresh onRefresh={async () => { await loadData(); }}>
     <div className="min-h-screen">
       <ItemListSchema
         name="Space Industry Marketplace"
@@ -346,5 +348,6 @@ export default function MarketplacePage() {
         </div>
       </div>
     </div>
+    </PullToRefresh>
   );
 }

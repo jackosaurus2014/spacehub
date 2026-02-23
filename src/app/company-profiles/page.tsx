@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
 import AdSlot from '@/components/ads/AdSlot';
+import PullToRefresh from '@/components/ui/PullToRefresh';
 import SponsorBadge from '@/components/company/SponsorBadge';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
@@ -363,6 +364,7 @@ export default function CompanyProfilesPage() {
   }, [fetchCompanies]);
 
   return (
+    <PullToRefresh onRefresh={async () => { await fetchCompanies(); }}>
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
       <ItemListSchema
         name="Space Company Directory"
@@ -648,5 +650,6 @@ export default function CompanyProfilesPage() {
         <AdSlot position="footer" module="company-profiles" />
       </div>
     </div>
+    </PullToRefresh>
   );
 }

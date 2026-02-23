@@ -11,6 +11,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import ExportButton from '@/components/ui/ExportButton';
 import CompanyRequestDialog from '@/components/ui/CompanyRequestDialog';
 import AdSlot from '@/components/ads/AdSlot';
+import PullToRefresh from '@/components/ui/PullToRefresh';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 
@@ -408,6 +409,7 @@ function MarketIntelContent() {
   };
 
   return (
+    <PullToRefresh onRefresh={async () => { await fetchData(); }}>
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
         <AnimatedPageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" icon="📊" accentColor="emerald" />
@@ -1078,6 +1080,7 @@ function MarketIntelContent() {
         onClose={() => setShowCompanyRequestDialog(false)}
       />
     </div>
+    </PullToRefresh>
   );
 }
 

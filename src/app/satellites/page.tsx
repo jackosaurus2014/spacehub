@@ -12,6 +12,7 @@ import SatelliteCard, {
   SatelliteStatus,
 } from '@/components/satellites/SatelliteCard';
 import AdSlot from '@/components/ads/AdSlot';
+import PullToRefresh from '@/components/ui/PullToRefresh';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 
@@ -200,6 +201,7 @@ function SatelliteTrackerContent() {
   const iss = data?.iss;
 
   return (
+    <PullToRefresh onRefresh={async () => { await fetchData(); }}>
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
@@ -625,6 +627,7 @@ function SatelliteTrackerContent() {
         )}
       </div>
     </div>
+    </PullToRefresh>
   );
 }
 

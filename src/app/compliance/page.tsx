@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import PullToRefresh from '@/components/ui/PullToRefresh';
+import { useSwipeTabs } from '@/hooks/useSwipeTabs';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
@@ -1352,6 +1354,56 @@ function RegulatoryHubContent() {
 
   const stats = getRegulatoryHubStats();
 
+  const fetchData = useCallback(async () => {
+    try {
+      const sections = [
+        'treaties',
+        'national-laws',
+        'artemis-principles',
+        'artemis-signatories',
+        'legal-proceedings',
+        'regulatory-bodies',
+        'fcc-filings',
+        'faa-licenses',
+        'itu-filings',
+        'sec-filings',
+        'federal-register-entries',
+        'bid-protests',
+      ];
+
+      const results = await Promise.all(
+        sections.map((section) =>
+          fetch(`/api/content/compliance?section=${section}`)
+            .then((res) => res.json())
+            .catch(() => ({ data: [], meta: {} }))
+        )
+      );
+
+      TREATIES = results[0]?.data || [];
+      NATIONAL_LAWS = results[1]?.data || [];
+      ARTEMIS_PRINCIPLES = results[2]?.data || [];
+      ARTEMIS_SIGNATORIES = results[3]?.data || [];
+      LEGAL_PROCEEDINGS = results[4]?.data || [];
+      REGULATORY_BODIES = results[5]?.data || [];
+      FCC_FILINGS = results[6]?.data || [];
+      FAA_LICENSES = results[7]?.data || [];
+      ITU_FILINGS = results[8]?.data || [];
+      SEC_FILINGS = results[9]?.data || [];
+      FEDERAL_REGISTER_ENTRIES = results[10]?.data || [];
+      BID_PROTESTS = results[11]?.data || [];
+
+      const firstMeta = results.find((r) => r?.meta?.lastRefreshed)?.meta;
+      if (firstMeta?.lastRefreshed) {
+        setRefreshedAt(firstMeta.lastRefreshed);
+      }
+    } catch (err) {
+      console.error('Failed to fetch compliance data:', err);
+      setError('Failed to load compliance data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // Fetch data from DynamicContent API
   useEffect(() => {
     // Reset module-level data on mount to prevent stale data from previous navigations
@@ -1367,56 +1419,6 @@ function RegulatoryHubContent() {
     SEC_FILINGS = [];
     FEDERAL_REGISTER_ENTRIES = [];
     BID_PROTESTS = [];
-
-    async function fetchData() {
-      try {
-        const sections = [
-          'treaties',
-          'national-laws',
-          'artemis-principles',
-          'artemis-signatories',
-          'legal-proceedings',
-          'regulatory-bodies',
-          'fcc-filings',
-          'faa-licenses',
-          'itu-filings',
-          'sec-filings',
-          'federal-register-entries',
-          'bid-protests',
-        ];
-
-        const results = await Promise.all(
-          sections.map((section) =>
-            fetch(`/api/content/compliance?section=${section}`)
-              .then((res) => res.json())
-              .catch(() => ({ data: [], meta: {} }))
-          )
-        );
-
-        TREATIES = results[0]?.data || [];
-        NATIONAL_LAWS = results[1]?.data || [];
-        ARTEMIS_PRINCIPLES = results[2]?.data || [];
-        ARTEMIS_SIGNATORIES = results[3]?.data || [];
-        LEGAL_PROCEEDINGS = results[4]?.data || [];
-        REGULATORY_BODIES = results[5]?.data || [];
-        FCC_FILINGS = results[6]?.data || [];
-        FAA_LICENSES = results[7]?.data || [];
-        ITU_FILINGS = results[8]?.data || [];
-        SEC_FILINGS = results[9]?.data || [];
-        FEDERAL_REGISTER_ENTRIES = results[10]?.data || [];
-        BID_PROTESTS = results[11]?.data || [];
-
-        const firstMeta = results.find((r) => r?.meta?.lastRefreshed)?.meta;
-        if (firstMeta?.lastRefreshed) {
-          setRefreshedAt(firstMeta.lastRefreshed);
-        }
-      } catch (err) {
-        console.error('Failed to fetch compliance data:', err);
-        setError('Failed to load compliance data. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    }
 
     fetchData();
 
@@ -1435,7 +1437,7 @@ function RegulatoryHubContent() {
       FEDERAL_REGISTER_ENTRIES = [];
       BID_PROTESTS = [];
     };
-  }, []);
+  }, [fetchData]);
 
   // Sync tab to URL
   useEffect(() => {
@@ -1445,11 +1447,17 @@ function RegulatoryHubContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [activeSubTab, router, pathname]);
 
-  const handleSectionChange = (section: TopSection) => {
+  const handleSectionChange = useCallback((section: TopSection) => {
     setActiveSection(section);
     const defaultTab = getDefaultSubTab(section);
     setActiveSubTab(defaultTab);
-  };
+  }, []);
+
+  useSwipeTabs(
+    ['compliance', 'space-law', 'filings', 'protests'],
+    activeSection,
+    (tab) => handleSectionChange(tab as TopSection)
+  );
 
   const topSections: { id: TopSection; label: string; icon: string }[] = [
     { id: 'compliance', label: 'Compliance', icon: '\uD83D\uDCCB' },
@@ -1505,7 +1513,7 @@ function RegulatoryHubContent() {
   }
 
   return (
-    <>
+    <PullToRefresh onRefresh={async () => { await fetchData(); }}>
       {error && (
         <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
           <div className="text-red-400 text-sm font-medium mb-2">{error}</div>
@@ -1651,7 +1659,7 @@ function RegulatoryHubContent() {
       {activeSubTab === 'protests-overview' && <ProtestsOverviewTab />}
       {activeSubTab === 'protests-timeline' && <ProtestsTimelineTab />}
       {activeSubTab === 'protests-analysis' && <ProtestsAnalysisTab />}
-    </>
+    </PullToRefresh>
   );
 }
 

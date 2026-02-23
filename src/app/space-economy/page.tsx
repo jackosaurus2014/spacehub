@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import DataFreshness from '@/components/ui/DataFreshness';
+import PullToRefresh from '@/components/ui/PullToRefresh';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
@@ -960,61 +961,61 @@ export default function SpaceEconomyPage() {
   const [launchCostTrends, setLaunchCostTrends] = useState<LaunchCostDataPoint[]>(LAUNCH_COST_FALLBACK);
   const [salaryBenchmarks, setSalaryBenchmarks] = useState<SalaryBenchmark[]>(SALARY_BENCHMARK_FALLBACK);
 
-  useEffect(() => {
-    async function fetchSection(section: string) {
-      const res = await fetch(`/api/content/space-economy?section=${section}`);
-      if (!res.ok) throw new Error(`Failed to fetch ${section}`);
-      return res.json();
+  const fetchAllData = useCallback(async () => {
+    setError(null);
+    try {
+      const fetchSection = async (section: string) => {
+        const res = await fetch(`/api/content/space-economy?section=${section}`);
+        if (!res.ok) throw new Error(`Failed to fetch ${section}`);
+        return res.json();
+      };
+
+      const [
+        segmentsRes,
+        vcRes,
+        investmentRes,
+        budgetsRes,
+        workforceRes,
+        launchRes,
+        salaryRes,
+      ] = await Promise.all([
+        fetchSection('market-segments'),
+        fetchSection('quarterly-vc'),
+        fetchSection('annual-investment'),
+        fetchSection('government-budgets'),
+        fetchSection('workforce-stats'),
+        fetchSection('launch-cost-trends'),
+        fetchSection('salary-benchmarks'),
+      ]);
+
+      setMarketSegments(segmentsRes.data || []);
+      setQuarterlyVC(vcRes.data || []);
+      setAnnualInvestment(investmentRes.data || []);
+      setGovernmentBudgets(budgetsRes.data || []);
+      setWorkforceStats(workforceRes.data || []);
+      // Use DynamicContent if available, otherwise keep fallback data
+      if (launchRes.data && launchRes.data.length > 0) setLaunchCostTrends(launchRes.data);
+      if (salaryRes.data && salaryRes.data.length > 0) setSalaryBenchmarks(salaryRes.data);
+
+      // Use the freshest lastRefreshed from any section
+      const allMetas = [segmentsRes, vcRes, investmentRes, budgetsRes, workforceRes, launchRes, salaryRes];
+      const freshest = allMetas
+        .map(r => r.meta?.lastRefreshed)
+        .filter(Boolean)
+        .sort()
+        .pop();
+      setRefreshedAt(freshest || null);
+    } catch (err) {
+      console.error('Error fetching space economy data:', err);
+      setError('Failed to load data.');
+    } finally {
+      setLoading(false);
     }
-
-    async function fetchAllData() {
-      setError(null);
-      try {
-        const [
-          segmentsRes,
-          vcRes,
-          investmentRes,
-          budgetsRes,
-          workforceRes,
-          launchRes,
-          salaryRes,
-        ] = await Promise.all([
-          fetchSection('market-segments'),
-          fetchSection('quarterly-vc'),
-          fetchSection('annual-investment'),
-          fetchSection('government-budgets'),
-          fetchSection('workforce-stats'),
-          fetchSection('launch-cost-trends'),
-          fetchSection('salary-benchmarks'),
-        ]);
-
-        setMarketSegments(segmentsRes.data || []);
-        setQuarterlyVC(vcRes.data || []);
-        setAnnualInvestment(investmentRes.data || []);
-        setGovernmentBudgets(budgetsRes.data || []);
-        setWorkforceStats(workforceRes.data || []);
-        // Use DynamicContent if available, otherwise keep fallback data
-        if (launchRes.data && launchRes.data.length > 0) setLaunchCostTrends(launchRes.data);
-        if (salaryRes.data && salaryRes.data.length > 0) setSalaryBenchmarks(salaryRes.data);
-
-        // Use the freshest lastRefreshed from any section
-        const allMetas = [segmentsRes, vcRes, investmentRes, budgetsRes, workforceRes, launchRes, salaryRes];
-        const freshest = allMetas
-          .map(r => r.meta?.lastRefreshed)
-          .filter(Boolean)
-          .sort()
-          .pop();
-        setRefreshedAt(freshest || null);
-      } catch (err) {
-        console.error('Error fetching space economy data:', err);
-        setError('Failed to load data.');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchAllData();
   }, []);
+
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   if (loading) {
     return (
@@ -1036,6 +1037,7 @@ export default function SpaceEconomyPage() {
   }
 
   return (
+    <PullToRefresh onRefresh={async () => { await fetchAllData(); }}>
     <div className="min-h-screen bg-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
@@ -1102,5 +1104,6 @@ export default function SpaceEconomyPage() {
         </ScrollReveal>
       </div>
     </div>
+    </PullToRefresh>
   );
 }

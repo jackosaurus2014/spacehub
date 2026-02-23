@@ -5,8 +5,10 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import PullToRefresh from '@/components/ui/PullToRefresh';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PremiumGate from '@/components/PremiumGate';
+import CompanyFundingComparison from '@/components/funding/CompanyFundingComparison';
 
 // ────────────────────────────────────────
 // Types
@@ -219,6 +221,7 @@ function FundingTrackerPageInner() {
   }
 
   return (
+    <PullToRefresh onRefresh={async () => { await fetchRounds(); }}>
     <div className="min-h-screen bg-slate-900">
       <BreadcrumbSchema items={[
         { name: 'Home', href: '/' },
@@ -709,6 +712,13 @@ function FundingTrackerPageInner() {
           )}
         </div>
 
+        {/* ── Company Funding Comparison Tool ── */}
+        {rounds.length > 0 && (
+          <ScrollReveal>
+            <CompanyFundingComparison allRounds={rounds} />
+          </ScrollReveal>
+        )}
+
         {/* ── Data Sources Footer ── */}
         <ScrollReveal>
           <div className="bg-slate-800/30 rounded-xl border border-slate-700/30 p-6">
@@ -732,6 +742,7 @@ function FundingTrackerPageInner() {
         </ScrollReveal>
       </div>
     </div>
+    </PullToRefresh>
   );
 }
 

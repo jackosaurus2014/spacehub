@@ -33,6 +33,8 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import ExportButton from '@/components/ui/ExportButton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { SkeletonPage } from '@/components/ui/Skeleton';
+import PullToRefresh from '@/components/ui/PullToRefresh';
+import { useSwipeTabs } from '@/hooks/useSwipeTabs';
 
 // ════════════════════════════════════════
 // Top-Level Tab Type
@@ -2561,8 +2563,9 @@ function SpaceEnvironmentContent() {
     : 'weather';
 
   const [activeTab, setActiveTab] = useState<MainTab>(initialTab);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const handleTabChange = (tab: MainTab) => {
+  const handleTabChange = useCallback((tab: MainTab) => {
     setActiveTab(tab);
     const params = new URLSearchParams(searchParams.toString());
     if (tab === 'weather') {
@@ -2572,9 +2575,16 @@ function SpaceEnvironmentContent() {
     }
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  };
+  }, [searchParams, router, pathname]);
+
+  useSwipeTabs(
+    ['weather', 'debris', 'operations'],
+    activeTab,
+    (tab) => handleTabChange(tab as MainTab)
+  );
 
   return (
+    <PullToRefresh onRefresh={async () => { setRefreshKey((k) => k + 1); }}>
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
@@ -2605,11 +2615,12 @@ function SpaceEnvironmentContent() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'weather' && <SpaceWeatherTab />}
-        {activeTab === 'debris' && <DebrisTrackingTab />}
-        {activeTab === 'operations' && <OperationsTab />}
+        {activeTab === 'weather' && <SpaceWeatherTab key={`weather-${refreshKey}`} />}
+        {activeTab === 'debris' && <DebrisTrackingTab key={`debris-${refreshKey}`} />}
+        {activeTab === 'operations' && <OperationsTab key={`operations-${refreshKey}`} />}
       </div>
     </div>
+    </PullToRefresh>
   );
 }
 

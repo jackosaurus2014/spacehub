@@ -25,8 +25,10 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import AdSlot from '@/components/ads/AdSlot';
+import PullToRefresh from '@/components/ui/PullToRefresh';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ItemListSchema from '@/components/seo/ItemListSchema';
+import { useSwipeTabs } from '@/hooks/useSwipeTabs';
 
 // ────────────────────────────────────────
 // Types
@@ -716,12 +718,25 @@ function SpaceTalentHubContent() {
     updateUrl({ tab: tab === 'talent' ? null : tab });
   };
 
+  // Swipe between tabs
+  useSwipeTabs(['talent', 'workforce'], topTab, (tab) => handleTopTabChange(tab as TopLevelTab));
+
+  // Combined refresh for pull-to-refresh
+  const handleRefresh = async () => {
+    if (topTab === 'talent') {
+      if (talentSubTab === 'experts') await fetchTalent();
+      else await fetchWebinars();
+    } else {
+      await fetchJobs(0, false);
+    }
+  };
+
   // ════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════
 
   return (
-    <>
+    <PullToRefresh onRefresh={handleRefresh}>
       {/* JobPosting structured data for Google for Jobs */}
       {jobs.length > 0 && (
         <script
@@ -1820,7 +1835,7 @@ function SpaceTalentHubContent() {
           )}
         </div>
       )}
-    </>
+    </PullToRefresh>
   );
 }
 
