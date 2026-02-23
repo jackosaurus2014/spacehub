@@ -55,7 +55,7 @@ async function callInitEndpoint(
  *
  * Calls all init endpoints to populate DynamicContent tables.
  * Requires CRON_SECRET authorization.
- * Runs in 3 phases: master init, then 2 parallel batches.
+ * Runs in 5 phases: master init, then 4 parallel batches.
  */
 export async function POST(request: NextRequest) {
   const authError = requireCronSecret(request);
@@ -132,6 +132,24 @@ export async function POST(request: NextRequest) {
   logger.info('Seed-all: batch C complete', {
     success: batchCResults.filter((r) => r.status === 'success').length,
     errors: batchCResults.filter((r) => r.status === 'error').length,
+  });
+
+  // Phase 5: Module inits — batch D (parallel, newer endpoints)
+  const batchD = [
+    '/api/community/forums/init',
+    '/api/space-economy/init',
+    '/api/funding-opportunities/init',
+    '/api/funding-tracker/init',
+    '/api/procurement/init',
+  ];
+
+  const batchDResults = await Promise.all(
+    batchD.map((path) => callInitEndpoint(baseUrl, path, secret))
+  );
+  results.push(...batchDResults);
+  logger.info('Seed-all: batch D complete', {
+    success: batchDResults.filter((r) => r.status === 'success').length,
+    errors: batchDResults.filter((r) => r.status === 'error').length,
   });
 
   const totalDuration = Date.now() - startTime;

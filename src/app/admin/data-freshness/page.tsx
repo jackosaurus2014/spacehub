@@ -1,7 +1,45 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+
+// TTL policies mirrored from src/lib/freshness-policies.ts for client-side status calculation
+const FRESHNESS_POLICIES: Record<string, { ttlHours: number; refreshPriority: string }> = {
+  'space-stations': { ttlHours: 24, refreshPriority: 'critical' },
+  'constellations': { ttlHours: 168, refreshPriority: 'high' },
+  'space-economy': { ttlHours: 24, refreshPriority: 'high' },
+  'startups': { ttlHours: 168, refreshPriority: 'high' },
+  'space-capital': { ttlHours: 168, refreshPriority: 'moderate' },
+  'space-defense': { ttlHours: 24, refreshPriority: 'high' },
+  'cislunar': { ttlHours: 168, refreshPriority: 'high' },
+  'compliance': { ttlHours: 48, refreshPriority: 'high' },
+  'asteroid-watch': { ttlHours: 48, refreshPriority: 'high' },
+  'patents': { ttlHours: 168, refreshPriority: 'moderate' },
+  'launch-vehicles': { ttlHours: 168, refreshPriority: 'moderate' },
+  'mars-planner': { ttlHours: 336, refreshPriority: 'moderate' },
+  'spaceports': { ttlHours: 336, refreshPriority: 'moderate' },
+  'space-manufacturing': { ttlHours: 168, refreshPriority: 'moderate' },
+  'space-tourism': { ttlHours: 168, refreshPriority: 'moderate' },
+  'supply-chain': { ttlHours: 336, refreshPriority: 'moderate' },
+  'talent-board': { ttlHours: 168, refreshPriority: 'moderate' },
+  'webinars': { ttlHours: 168, refreshPriority: 'moderate' },
+  'mission-control': { ttlHours: 24, refreshPriority: 'high' },
+  'business-opportunities': { ttlHours: 24, refreshPriority: 'high' },
+  'space-environment': { ttlHours: 6, refreshPriority: 'critical' },
+  'exoplanets': { ttlHours: 168, refreshPriority: 'low' },
+  'earth-imagery': { ttlHours: 24, refreshPriority: 'moderate' },
+  'dsn': { ttlHours: 1, refreshPriority: 'critical' },
+  'fireballs': { ttlHours: 24, refreshPriority: 'moderate' },
+  'sbir-grants': { ttlHours: 168, refreshPriority: 'low' },
+  'solar-imagery': { ttlHours: 1, refreshPriority: 'critical' },
+  'aurora': { ttlHours: 1, refreshPriority: 'critical' },
+  'ground-stations': { ttlHours: 1440, refreshPriority: 'low' },
+};
+
+const DEFAULT_TTL_HOURS = 720;
+
+type HeatmapStatus = 'fresh' | 'stale' | 'expired' | 'no-data';
+type SortBy = 'priority' | 'staleness' | 'name';
 
 interface CircuitBreakerInfo {
   name: string;
@@ -27,8 +65,21 @@ interface TableTimestamp {
   ageMinutes: number | null;
 }
 
+interface ModuleFreshnessDetail {
+  total?: number;
+  active?: number;
+  stale?: number;
+  expired?: number;
+  lastRefreshed?: string | null;
+  sourceBreakdown?: Record<string, number>;
+  // Some modules return these alternate shapes
+  itemCount?: number;
+  lastRefreshedAt?: string | null;
+  hasExpired?: boolean;
+}
+
 interface FreshnessData {
-  dynamicContent: Record<string, unknown>;
+  dynamicContent: Record<string, ModuleFreshnessDetail>;
   circuitBreakers: CircuitBreakerInfo[];
   recentRefreshLogs: RefreshLog[];
   tableTimestamps: {
@@ -38,6 +89,44 @@ interface FreshnessData {
   };
   generatedAt: string;
 }
+
+interface HeatmapEntry {
+  module: string;
+  status: HeatmapStatus;
+  ageLabel: string;
+  ageMinutes: number | null;
+  priority: string;
+  ttlHours: number;
+}
+
+function getModuleHeatmapStatus(
+  module: string,
+  lastRefreshed: string | null | undefined
+): { status: HeatmapStatus; ageMinutes: number | null } {
+  if (!lastRefreshed) return { status: 'no-data', ageMinutes: null };
+
+  const policy = FRESHNESS_POLICIES[module];
+  const ttlHours = policy?.ttlHours ?? DEFAULT_TTL_HOURS;
+  const ttlMs = ttlHours * 60 * 60 * 1000;
+
+  const ageMs = Date.now() - new Date(lastRefreshed).getTime();
+  const ageMinutes = Math.floor(ageMs / 60000);
+
+  if (ageMs > ttlMs * 2) return { status: 'expired', ageMinutes };
+  if (ageMs > ttlMs) return { status: 'stale', ageMinutes };
+  return { status: 'fresh', ageMinutes };
+}
+
+function formatAgeShort(minutes: number | null): string {
+  if (minutes === null) return 'No data';
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+const priorityOrder: Record<string, number> = { critical: 0, high: 1, moderate: 2, low: 3 };
 
 function StatusDot({ status }: { status: string }) {
   const color =
@@ -67,11 +156,36 @@ function LogStatusBadge({ status }: { status: string }) {
   );
 }
 
+function HeatmapCell({ entry }: { entry: HeatmapEntry }) {
+  const bgColor =
+    entry.status === 'fresh' ? 'bg-green-500/15 border-green-500/30 hover:bg-green-500/25' :
+    entry.status === 'stale' ? 'bg-yellow-500/15 border-yellow-500/30 hover:bg-yellow-500/25' :
+    entry.status === 'expired' ? 'bg-red-500/15 border-red-500/30 hover:bg-red-500/25' :
+    'bg-slate-800/50 border-slate-700/30 hover:bg-slate-700/50';
+
+  const textColor =
+    entry.status === 'fresh' ? 'text-green-400' :
+    entry.status === 'stale' ? 'text-yellow-400' :
+    entry.status === 'expired' ? 'text-red-400' :
+    'text-slate-500';
+
+  return (
+    <div
+      className={`rounded-lg p-2.5 border transition-colors cursor-default ${bgColor}`}
+      title={`${entry.module} - TTL: ${entry.ttlHours}h - Priority: ${entry.priority}`}
+    >
+      <div className="text-white text-xs font-medium truncate">{entry.module}</div>
+      <div className={`text-[10px] mt-0.5 ${textColor}`}>{entry.ageLabel}</div>
+    </div>
+  );
+}
+
 export default function DataFreshnessPage() {
   const [data, setData] = useState<FreshnessData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<SortBy>('priority');
 
   const fetchData = useCallback(async () => {
     try {
@@ -117,6 +231,79 @@ export default function DataFreshnessPage() {
       setRefreshing(null);
     }
   };
+
+  // Build heatmap entries from all known modules (policies + dynamic content)
+  const heatmapEntries = useMemo((): HeatmapEntry[] => {
+    if (!data) return [];
+
+    const allModules = new Set<string>();
+
+    // Add all modules from freshness policies
+    for (const mod of Object.keys(FRESHNESS_POLICIES)) {
+      allModules.add(mod);
+    }
+
+    // Add all modules from dynamic content data
+    if (data.dynamicContent) {
+      for (const mod of Object.keys(data.dynamicContent)) {
+        allModules.add(mod);
+      }
+    }
+
+    const entries: HeatmapEntry[] = [];
+    for (const mod of Array.from(allModules)) {
+      const info = data.dynamicContent?.[mod];
+      const lastRefreshed = info?.lastRefreshed ?? info?.lastRefreshedAt ?? null;
+      const { status, ageMinutes } = getModuleHeatmapStatus(mod, lastRefreshed);
+      const policy = FRESHNESS_POLICIES[mod];
+
+      entries.push({
+        module: mod,
+        status,
+        ageLabel: formatAgeShort(ageMinutes),
+        ageMinutes,
+        priority: policy?.refreshPriority ?? 'low',
+        ttlHours: policy?.ttlHours ?? DEFAULT_TTL_HOURS,
+      });
+    }
+
+    return entries;
+  }, [data]);
+
+  // Sort heatmap entries
+  const sortedEntries = useMemo(() => {
+    const sorted = [...heatmapEntries];
+    switch (sortBy) {
+      case 'priority':
+        sorted.sort((a, b) => (priorityOrder[a.priority] ?? 4) - (priorityOrder[b.priority] ?? 4));
+        break;
+      case 'staleness': {
+        const statusOrder: Record<HeatmapStatus, number> = {
+          'expired': 0, 'stale': 1, 'no-data': 2, 'fresh': 3,
+        };
+        sorted.sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+        break;
+      }
+      case 'name':
+        sorted.sort((a, b) => a.module.localeCompare(b.module));
+        break;
+    }
+    return sorted;
+  }, [heatmapEntries, sortBy]);
+
+  // Summary counts
+  const summary = useMemo(() => {
+    let fresh = 0, stale = 0, expired = 0, noData = 0;
+    for (const entry of heatmapEntries) {
+      switch (entry.status) {
+        case 'fresh': fresh++; break;
+        case 'stale': stale++; break;
+        case 'expired': expired++; break;
+        case 'no-data': noData++; break;
+      }
+    }
+    return { fresh, stale, expired, noData };
+  }, [heatmapEntries]);
 
   if (loading) {
     return (
@@ -176,6 +363,68 @@ export default function DataFreshnessPage() {
           <Link href="/admin" className="text-cyan-400 hover:underline text-sm">
             Back to Admin
           </Link>
+        </div>
+
+        {/* Freshness Heatmap */}
+        <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
+          <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <h2 className="text-white font-semibold text-sm">Freshness Heatmap</h2>
+                <div className="flex flex-wrap gap-3 mt-1.5 text-xs">
+                  <span className="text-green-400">{summary.fresh} fresh</span>
+                  <span className="text-yellow-400">{summary.stale} stale</span>
+                  <span className="text-red-400">{summary.expired} expired</span>
+                  {summary.noData > 0 && (
+                    <span className="text-slate-500">{summary.noData} no data</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 text-xs">Sort:</span>
+                <div className="flex rounded-lg border border-slate-700/50 overflow-hidden">
+                  {(['priority', 'staleness', 'name'] as SortBy[]).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setSortBy(s)}
+                      className={`px-2.5 py-1 text-[10px] font-medium transition-colors capitalize ${
+                        sortBy === s
+                          ? 'bg-cyan-500/20 text-cyan-300'
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="p-4">
+            <div className="flex flex-wrap gap-4 mb-3 text-[10px]">
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-green-500/30 border border-green-500/50" />
+                <span className="text-slate-400">Fresh (within TTL)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-yellow-500/30 border border-yellow-500/50" />
+                <span className="text-slate-400">Stale (&gt;TTL)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-red-500/30 border border-red-500/50" />
+                <span className="text-slate-400">Expired (&gt;2x TTL)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-slate-700/50 border border-slate-600/50" />
+                <span className="text-slate-400">No data</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+              {sortedEntries.map((entry) => (
+                <HeatmapCell key={entry.module} entry={entry} />
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Table Timestamps */}
@@ -284,17 +533,17 @@ export default function DataFreshnessPage() {
                   <tbody className="divide-y divide-slate-800">
                     {Object.entries(data.dynamicContent).map(([module, info]) => {
                       const modInfo = info as Record<string, unknown>;
-                      const lastRefreshed = modInfo.lastRefreshedAt as string | null;
+                      const lastRefreshed = (modInfo.lastRefreshedAt ?? modInfo.lastRefreshed) as string | null;
                       const ageMin = lastRefreshed
                         ? Math.round((Date.now() - new Date(lastRefreshed).getTime()) / 60000)
                         : null;
                       return (
                         <tr key={module} className="hover:bg-slate-800/30">
                           <td className="px-3 py-2 text-white font-medium">{module}</td>
-                          <td className="px-3 py-2 text-slate-300">{(modInfo.itemCount as number) || '-'}</td>
+                          <td className="px-3 py-2 text-slate-300">{(modInfo.itemCount as number) ?? (modInfo.total as number) ?? '-'}</td>
                           <td className="px-3 py-2"><AgeLabel minutes={ageMin} /></td>
                           <td className="px-3 py-2">
-                            {(modInfo.hasExpired as boolean)
+                            {(modInfo.hasExpired as boolean) || (modInfo.expired as number) > 0
                               ? <span className="text-red-400 text-xs">Expired items</span>
                               : <span className="text-green-400 text-xs">OK</span>
                             }
