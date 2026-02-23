@@ -1,17 +1,38 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
+import nextDynamic from 'next/dynamic';
 import { ModuleContainer } from '@/components/modules';
 import { getDefaultModulePreferences } from '@/lib/module-preferences';
 import LandingHero from '@/components/LandingHero';
-import LandingValueProp from '@/components/LandingValueProp';
-import TrustSignals from '@/components/TrustSignals';
-import HeroStats from '@/components/HeroStats';
-import NewsletterSignup from '@/components/NewsletterSignup';
-import { AdBanner } from '@/components/ads';
-import PersonaDashboard from '@/components/PersonaDashboard';
 import prisma from '@/lib/db';
 import { BLOG_POSTS } from '@/lib/blog-content';
 import { logger } from '@/lib/logger';
+
+// Lazy-load below-the-fold components to reduce initial JS bundle
+const LandingValueProp = nextDynamic(() => import('@/components/LandingValueProp'), {
+  ssr: false,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse space-y-6"><div className="h-8 bg-slate-800 rounded w-1/3 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">{[1,2,3].map(i => <div key={i} className="h-48 bg-slate-800 rounded-xl"></div>)}</div></div></div></div>,
+});
+const TrustSignals = nextDynamic(() => import('@/components/TrustSignals'), {
+  ssr: false,
+  loading: () => <div className="py-12"><div className="container mx-auto px-4"><div className="animate-pulse h-24 bg-slate-800 rounded-xl"></div></div></div>,
+});
+const HeroStats = nextDynamic(() => import('@/components/HeroStats'), {
+  ssr: false,
+  loading: () => <div className="animate-pulse"><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-20 bg-slate-800 rounded-xl"></div>)}</div></div>,
+});
+const NewsletterSignup = nextDynamic(() => import('@/components/NewsletterSignup'), {
+  ssr: false,
+  loading: () => <div className="relative card p-10 md:p-16 text-center rounded-3xl overflow-hidden"><div className="animate-pulse"><div className="h-8 bg-slate-700/50 rounded w-3/4 mx-auto mb-4"></div><div className="h-4 bg-slate-700/50 rounded w-2/3 mx-auto mb-8"></div><div className="h-12 bg-nebula-600/50 rounded-xl w-48 mx-auto"></div></div></div>,
+});
+const AdBanner = nextDynamic(() => import('@/components/ads').then(mod => ({ default: mod.AdBanner })), {
+  ssr: false,
+  loading: () => null,
+});
+const PersonaDashboard = nextDynamic(() => import('@/components/PersonaDashboard'), {
+  ssr: false,
+  loading: () => <div className="py-8"><div className="container mx-auto px-4"><div className="animate-pulse h-40 bg-slate-800 rounded-xl"></div></div></div>,
+});
 
 // Force dynamic rendering - no static generation at build time
 export const dynamic = 'force-dynamic';
@@ -244,17 +265,7 @@ export default async function HomePage() {
       {/* Newsletter CTA Section */}
       <section className="section-spacer">
         <div className="container mx-auto px-4">
-          <Suspense fallback={
-            <div className="relative card p-10 md:p-16 text-center rounded-3xl glow-border overflow-hidden">
-              <div className="animate-pulse">
-                <div className="h-8 bg-slate-700/50 rounded w-3/4 mx-auto mb-4"></div>
-                <div className="h-4 bg-slate-700/50 rounded w-2/3 mx-auto mb-8"></div>
-                <div className="h-12 bg-nebula-600/50 rounded-xl w-48 mx-auto"></div>
-              </div>
-            </div>
-          }>
-            <NewsletterSignup variant="cta" source="homepage_cta" />
-          </Suspense>
+          <NewsletterSignup variant="cta" source="homepage_cta" />
         </div>
       </section>
     </div>

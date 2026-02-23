@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import { useSwipeTabs } from '@/hooks/useSwipeTabs';
 import Link from 'next/link';
@@ -12,6 +13,37 @@ import InlineDisclaimer from '@/components/InlineDisclaimer';
 import DataFreshness from '@/components/ui/DataFreshness';
 import PremiumGate from '@/components/PremiumGate';
 import ExportButton from '@/components/ui/ExportButton';
+
+// Lazy-load non-default tab sections (only visible when their section tab is clicked)
+const SpaceLawSection = dynamic(() => import('./SpaceLawSection'), {
+  ssr: false,
+  loading: () => (
+    <div className="animate-pulse space-y-4">
+      <div className="h-20 bg-slate-800 rounded-lg"></div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}</div>
+    </div>
+  ),
+});
+const FilingsSection = dynamic(() => import('./FilingsSection'), {
+  ssr: false,
+  loading: () => (
+    <div className="animate-pulse space-y-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>)}</div>
+      <div className="h-16 bg-slate-800 rounded-lg"></div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}</div>
+    </div>
+  ),
+});
+const ProtestsSection = dynamic(() => import('./ProtestsSection'), {
+  ssr: false,
+  loading: () => (
+    <div className="animate-pulse space-y-4">
+      <div className="h-20 bg-slate-800 rounded-lg"></div>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">{[1,2,3,4,5].map(i => <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>)}</div>
+      <div className="space-y-4">{[1,2,3].map(i => <div key={i} className="h-40 bg-slate-800 rounded-lg"></div>)}</div>
+    </div>
+  ),
+});
 import {
   POLICY_CHANGES,
   LICENSE_REQUIREMENTS,
@@ -1646,19 +1678,39 @@ function RegulatoryHubContent() {
       {activeSubTab === 'cases' && <CaseLawArchiveTab />}
       {activeSubTab === 'export' && <ExportControlMonitorTab />}
       {activeSubTab === 'experts' && <ExpertCommentaryTab />}
-      {activeSubTab === 'treaties' && <SpaceLawTreatiesTab />}
-      {activeSubTab === 'national' && <SpaceLawNationalTab />}
-      {activeSubTab === 'artemis' && <SpaceLawArtemisTab />}
-      {activeSubTab === 'proceedings' && <SpaceLawProceedingsTab />}
-      {activeSubTab === 'bodies' && <SpaceLawBodiesTab />}
-      {activeSubTab === 'fcc' && <FilingsFCCTab />}
-      {activeSubTab === 'faa' && <FilingsFAATab />}
-      {activeSubTab === 'itu' && <FilingsITUTab />}
-      {activeSubTab === 'sec' && <FilingsSECTab />}
-      {activeSubTab === 'federal-register' && <FilingsFederalRegisterTab />}
-      {activeSubTab === 'protests-overview' && <ProtestsOverviewTab />}
-      {activeSubTab === 'protests-timeline' && <ProtestsTimelineTab />}
-      {activeSubTab === 'protests-analysis' && <ProtestsAnalysisTab />}
+
+      {/* Space Law Section (lazy-loaded) */}
+      {activeSection === 'space-law' && (
+        <SpaceLawSection
+          activeSubTab={activeSubTab}
+          treaties={TREATIES}
+          nationalLaws={NATIONAL_LAWS}
+          artemisPrinciples={ARTEMIS_PRINCIPLES}
+          artemisSignatories={ARTEMIS_SIGNATORIES}
+          legalProceedings={LEGAL_PROCEEDINGS}
+          regulatoryBodies={REGULATORY_BODIES}
+        />
+      )}
+
+      {/* Filings Section (lazy-loaded) */}
+      {activeSection === 'filings' && (
+        <FilingsSection
+          activeSubTab={activeSubTab}
+          fccFilings={FCC_FILINGS}
+          faaLicenses={FAA_LICENSES}
+          ituFilings={ITU_FILINGS}
+          secFilings={SEC_FILINGS}
+          federalRegisterEntries={FEDERAL_REGISTER_ENTRIES}
+        />
+      )}
+
+      {/* Protests Section (lazy-loaded) */}
+      {activeSection === 'protests' && (
+        <ProtestsSection
+          activeSubTab={activeSubTab}
+          protests={BID_PROTESTS}
+        />
+      )}
     </PullToRefresh>
   );
 }

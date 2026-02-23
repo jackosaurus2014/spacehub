@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ReportButton from '@/components/community/ReportButton';
@@ -11,9 +12,14 @@ import VoteButton from '@/components/community/VoteButton';
 import AcceptedAnswerBadge from '@/components/community/AcceptedAnswerBadge';
 import SubscribeButton from '@/components/community/SubscribeButton';
 import ThreadTags from '@/components/community/ThreadTags';
-import MarkdownContent from '@/components/community/MarkdownContent';
 import { toast } from '@/lib/toast';
 import { useSession } from 'next-auth/react';
+
+// Lazy-load MarkdownContent (react-markdown + remark-gfm are heavy)
+const MarkdownContent = dynamic(() => import('@/components/community/MarkdownContent'), {
+  ssr: false,
+  loading: () => <div className="animate-pulse space-y-2 py-2"><div className="h-4 bg-slate-800 rounded w-full"></div><div className="h-4 bg-slate-800 rounded w-5/6"></div><div className="h-4 bg-slate-800 rounded w-4/6"></div></div>,
+});
 
 interface ForumPost {
   id: string;
