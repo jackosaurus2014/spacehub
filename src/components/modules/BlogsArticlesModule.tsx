@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { BlogPost, BLOG_TOPICS, AUTHOR_TYPES } from '@/types';
+import { clientLogger } from '@/lib/client-logger';
 
 const TOPIC_LOGOS: Record<string, string> = {
   'space-law': '/logos/logo-blog-space-law.png',
@@ -113,7 +114,7 @@ export default function BlogsArticlesModule() {
         const data = await res.json();
         setPosts(data.posts || []);
       } catch (error) {
-        console.error('Failed to fetch blog posts:', error);
+        clientLogger.error('Failed to fetch blog posts', { error: error instanceof Error ? error.message : String(error) });
       } finally {
         setLoading(false);
       }

@@ -14,6 +14,7 @@ import {
 } from '@/lib/government-contracts-data';
 import ContractCard from './ContractCard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { clientLogger } from '@/lib/client-logger';
 
 interface ContractsListProps {
   initialAgency?: ContractAgency | '';
@@ -65,7 +66,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
         setStats(statsData);
       }
     } catch (error) {
-      console.error('Failed to fetch contracts:', error);
+      clientLogger.error('Failed to fetch contracts', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setLoading(false);
     }
@@ -81,7 +82,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
       await fetch('/api/government-contracts/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize contracts:', error);
+      clientLogger.error('Failed to initialize contracts', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }

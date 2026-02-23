@@ -21,6 +21,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types
@@ -532,7 +533,7 @@ function SpaceMiningContent() {
         const data = await res.json();
         setStats(data.stats || data);
       } catch (err) {
-        console.error('Failed to fetch stats:', err);
+        clientLogger.error('Failed to fetch stats', { error: err instanceof Error ? err.message : String(err) });
       }
     }
     fetchStats();
@@ -572,7 +573,7 @@ function SpaceMiningContent() {
         const data = await res.json();
         setCommodities(data.commodities || []);
       } catch (err) {
-        console.error('Failed to fetch commodities:', err);
+        clientLogger.error('Failed to fetch commodities', { error: err instanceof Error ? err.message : String(err) });
       }
     }
     fetchCommodities();
@@ -595,7 +596,7 @@ function SpaceMiningContent() {
         });
         setMiningTargets(targets);
       } catch (err) {
-        console.error('Failed to fetch mining targets:', err);
+        clientLogger.error('Failed to fetch mining targets', { error: err instanceof Error ? err.message : String(err) });
       } finally {
         setMiningTargetsLoading(false);
       }

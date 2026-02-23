@@ -8,6 +8,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import TourismCard from '@/components/tourism/TourismCard';
 import ComparisonModal from '@/components/tourism/ComparisonModal';
+import { clientLogger } from '@/lib/client-logger';
 import {
   SpaceTourismOffering,
   EXPERIENCE_TYPES,
@@ -278,7 +279,7 @@ function SpaceTourismContent() {
           setOfferings(data.offerings || []);
         }
       } catch (error) {
-        console.error('Failed to fetch space tourism data:', error);
+        clientLogger.error('Failed to fetch space tourism data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
       } finally {
         setLoading(false);

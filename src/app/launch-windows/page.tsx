@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import { clientLogger } from '@/lib/client-logger';
 import {
   LaunchWindow,
   CelestialDestination,
@@ -456,7 +457,7 @@ function LaunchWindowsContent() {
       }
       setData(result);
     } catch (err) {
-      console.error('Failed to fetch launch window data:', err);
+      clientLogger.error('Failed to fetch launch window data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);
@@ -469,7 +470,7 @@ function LaunchWindowsContent() {
       await fetch('/api/launch-windows/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize launch window data:', error);
+      clientLogger.error('Failed to initialize launch window data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }

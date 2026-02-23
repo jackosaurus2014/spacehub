@@ -11,6 +11,7 @@ import {
   KG_TO_LB,
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { clientLogger } from '@/lib/client-logger';
 
 // Default benchmark: Falcon 9 cost to LEO
 const DEFAULT_LAUNCH_COST = 2720;
@@ -124,7 +125,7 @@ export default function ResourceExchangeModule() {
         }
       }
     } catch (error) {
-      console.error('Failed to fetch resources:', error);
+      clientLogger.error('Failed to fetch resources', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setLoading(false);
     }
@@ -136,7 +137,7 @@ export default function ResourceExchangeModule() {
       await fetch('/api/resources/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize resources:', error);
+      clientLogger.error('Failed to initialize resources', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }

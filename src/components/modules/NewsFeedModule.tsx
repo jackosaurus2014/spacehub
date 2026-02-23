@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NewsCard from '@/components/NewsCard';
 import { NewsArticle, NEWS_CATEGORIES } from '@/types';
+import { clientLogger } from '@/lib/client-logger';
 
 const categoryIcons: Record<string, string> = {
   launches: '🚀',
@@ -29,7 +30,7 @@ export default function NewsFeedModule() {
         const data = await res.json();
         setArticles(data.articles || []);
       } catch (error) {
-        console.error('Failed to fetch news:', error);
+        clientLogger.error('Failed to fetch news', { error: error instanceof Error ? error.message : String(error) });
       } finally {
         setLoading(false);
       }

@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import RFQCard from '@/components/marketplace/RFQCard';
 import { MARKETPLACE_CATEGORIES, CERTIFICATION_OPTIONS, VERIFICATION_LEVELS } from '@/lib/marketplace-types';
+import { clientLogger } from '@/lib/client-logger';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
 
 function SearchContent() {
@@ -55,7 +56,7 @@ function SearchContent() {
         setError('Failed to load listings. Please try again.');
       }
     } catch (err) {
-      console.error('Failed to fetch listings', err);
+      clientLogger.error('Failed to fetch listings', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load listings. Please try again.');
     } finally {
       setLoading(false);
@@ -81,7 +82,7 @@ function SearchContent() {
         setError('Failed to load RFQs. Please try again.');
       }
     } catch (err) {
-      console.error('Failed to fetch RFQs', err);
+      clientLogger.error('Failed to fetch RFQs', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load RFQs. Please try again.');
     } finally {
       setLoading(false);

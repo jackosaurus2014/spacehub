@@ -13,6 +13,7 @@ import CompanyRequestDialog from '@/components/ui/CompanyRequestDialog';
 import AdSlot from '@/components/ads/AdSlot';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import { clientLogger } from '@/lib/client-logger';
 import FAQSchema from '@/components/seo/FAQSchema';
 
 interface StockData {
@@ -323,7 +324,7 @@ function MarketIntelContent() {
       });
       setDetailedStockData(detailedMap);
     } catch (error) {
-      console.error('Failed to fetch stock data:', error);
+      clientLogger.error('Failed to fetch stock data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     }
   }, []);
@@ -344,7 +345,7 @@ function MarketIntelContent() {
         setEtfData(etfMap);
       }
     } catch (error) {
-      console.error('Failed to fetch ETF data:', error);
+      clientLogger.error('Failed to fetch ETF data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     }
   }, []);
@@ -385,7 +386,7 @@ function MarketIntelContent() {
       // Fetch ETF data
       fetchEtfData();
     } catch (error) {
-      console.error('Failed to fetch market data:', error);
+      clientLogger.error('Failed to fetch market data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);
@@ -402,7 +403,7 @@ function MarketIntelContent() {
       await fetch('/api/companies/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize companies:', error);
+      clientLogger.error('Failed to initialize companies', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }

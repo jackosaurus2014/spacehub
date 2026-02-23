@@ -11,6 +11,7 @@ import {
   IMPACT_LEVEL_INFO,
 } from '@/types';
 import { SponsorBadge } from '@/components/ads';
+import { clientLogger } from '@/lib/client-logger';
 
 interface SolarFlareData {
   flares: SolarFlare[];
@@ -45,7 +46,7 @@ export default function SolarFlareTrackerModule() {
 
         setData(result);
       } catch (err) {
-        console.error('Failed to fetch solar flare data:', err);
+        clientLogger.error('Failed to fetch solar flare data', { error: err instanceof Error ? err.message : String(err) });
         setError('Failed to load solar activity data');
       } finally {
         setLoading(false);

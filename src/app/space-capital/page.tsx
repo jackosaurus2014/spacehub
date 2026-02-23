@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types
@@ -764,7 +765,7 @@ function SpaceCapitalInner() {
       const timestamps = [investorsJson.meta?.lastRefreshed, fundingJson.meta?.lastRefreshed].filter(Boolean);
       if (timestamps.length > 0) setRefreshedAt(timestamps.sort().reverse()[0]);
     } catch (error) {
-      console.error('Failed to fetch space capital data:', error);
+      clientLogger.error('Failed to fetch space capital data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);

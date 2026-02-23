@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { clientLogger } from '@/lib/client-logger';
 
 interface ChatMessage {
   id: string;
@@ -51,7 +52,7 @@ export default function LiveChat() {
         );
         setMessages(recentMessages);
       } catch (e) {
-        console.error('Failed to parse saved messages:', e);
+        clientLogger.error('Failed to parse saved messages', { error: e instanceof Error ? e.message : String(e) });
       }
     }
 

@@ -1,4 +1,5 @@
 // Notification types and utilities for SpaceNexus
+import { clientLogger } from '@/lib/client-logger';
 
 export type NotificationType = 'launch' | 'price_alert' | 'news' | 'system' | 'watchlist';
 
@@ -30,7 +31,7 @@ export function getNotifications(): Notification[] {
       return JSON.parse(stored);
     }
   } catch (error) {
-    console.error('Failed to parse notifications from localStorage:', error);
+    clientLogger.error('Failed to parse notifications from localStorage', { error: error instanceof Error ? error.message : String(error) });
   }
 
   // No notifications yet — they'll be created by the system via addNotification()
@@ -44,7 +45,7 @@ export function setNotifications(notifications: Notification[]): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
   } catch (error) {
-    console.error('Failed to save notifications to localStorage:', error);
+    clientLogger.error('Failed to save notifications to localStorage', { error: error instanceof Error ? error.message : String(error) });
   }
 }
 

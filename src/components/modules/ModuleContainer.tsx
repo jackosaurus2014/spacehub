@@ -8,6 +8,7 @@ import PremiumGate from '@/components/PremiumGate';
 import { getRequiredTierForModule } from '@/lib/subscription';
 import { MODULE_SECTIONS } from '@/types';
 import ModuleErrorBoundary from './ModuleErrorBoundary';
+import { clientLogger } from '@/lib/client-logger';
 
 // Loading placeholder for dynamically imported modules
 function ModuleLoadingFallback() {
@@ -122,7 +123,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
       const data = await res.json();
       setModules(data.modules || []);
     } catch (error) {
-      console.error('Failed to fetch modules:', error);
+      clientLogger.error('Failed to fetch modules', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setLoading(false);
     }

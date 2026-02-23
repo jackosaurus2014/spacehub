@@ -8,6 +8,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import ProposalCard from '@/components/marketplace/ProposalCard';
+import { clientLogger } from '@/lib/client-logger';
 import ReviewCard from '@/components/marketplace/ReviewCard';
 import VerificationBadge from '@/components/marketplace/VerificationBadge';
 import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
@@ -78,7 +79,7 @@ function DashboardContent() {
           }
         }
       } catch (err) {
-        console.error('Dashboard load error', err);
+        clientLogger.error('Dashboard load error', { error: err instanceof Error ? err.message : String(err) });
       } finally {
         setLoading(false);
       }

@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types
@@ -1598,7 +1599,7 @@ export default function PatentTrackerPage() {
         if (d6.data?.length) setGeoData(d6.data);
         setRefreshedAt(d1.meta?.lastRefreshed || null);
       } catch (error) {
-        console.error('Failed to load patent data:', error);
+        clientLogger.error('Failed to load patent data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
       } finally {
         setLoading(false);

@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PremiumGate from '@/components/PremiumGate';
+import { clientLogger } from '@/lib/client-logger';
 import CompanyFundingComparison from '@/components/funding/CompanyFundingComparison';
 
 // ────────────────────────────────────────
@@ -165,7 +166,7 @@ function FundingTrackerPageInner() {
         setStats(data);
       } catch (err) {
         setError('Failed to load funding statistics');
-        console.error(err);
+        clientLogger.error('Operation failed', { error: err instanceof Error ? err.message : String(err) });
       }
     }
     fetchStats();
@@ -187,7 +188,7 @@ function FundingTrackerPageInner() {
       const data = await res.json();
       setRounds(data.rounds);
     } catch (err) {
-      console.error(err);
+      clientLogger.error('Operation failed', { error: err instanceof Error ? err.message : String(err) });
     } finally {
       setRoundsLoading(false);
       setLoading(false);

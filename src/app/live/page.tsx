@@ -7,6 +7,7 @@ import TelemetryPanel from '@/components/live/TelemetryPanel';
 import LiveChat from '@/components/live/LiveChat';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PageHeader from '@/components/ui/PageHeader';
+import { clientLogger } from '@/lib/client-logger';
 
 interface LiveStream {
   id: string;
@@ -50,7 +51,7 @@ function LiveHubContent() {
           setSelectedStream(result.nextStream);
         }
       } catch (error) {
-        console.error('Failed to fetch live streams:', error);
+        clientLogger.error('Failed to fetch live streams', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
       } finally {
         setLoading(false);

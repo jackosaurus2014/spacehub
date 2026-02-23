@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { clientLogger } from '@/lib/client-logger';
 import {
   SpaceResource,
   LaunchProvider,
@@ -229,7 +230,7 @@ function ResourceExchangeContent() {
         setStats(statsData);
       }
     } catch (error) {
-      console.error('Failed to fetch resources:', error);
+      clientLogger.error('Failed to fetch resources', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);
@@ -247,7 +248,7 @@ function ResourceExchangeContent() {
       await fetch('/api/resources/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize resources:', error);
+      clientLogger.error('Failed to initialize resources', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }

@@ -5,6 +5,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import DataFreshness from '@/components/ui/DataFreshness';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types
@@ -1006,7 +1007,7 @@ export default function SpaceEconomyPage() {
         .pop();
       setRefreshedAt(freshest || null);
     } catch (err) {
-      console.error('Error fetching space economy data:', err);
+      clientLogger.error('Error fetching space economy data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);

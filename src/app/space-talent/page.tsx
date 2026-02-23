@@ -29,6 +29,7 @@ import PullToRefresh from '@/components/ui/PullToRefresh';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import { useSwipeTabs } from '@/hooks/useSwipeTabs';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types
@@ -553,7 +554,7 @@ function SpaceTalentHubContent() {
       if (data.talent) setTalent(data.talent);
       if (data.stats) setTalentStats(data.stats);
     } catch (error) {
-      console.error('Failed to fetch talent:', error);
+      clientLogger.error('Failed to fetch talent', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setTalentLoading(false);
@@ -579,7 +580,7 @@ function SpaceTalentHubContent() {
       if (data.webinars) setWebinars(data.webinars);
       if (data.stats) setWebinarStats(data.stats);
     } catch (error) {
-      console.error('Failed to fetch webinars:', error);
+      clientLogger.error('Failed to fetch webinars', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setWebinarLoading(false);
@@ -636,7 +637,7 @@ function SpaceTalentHubContent() {
       setTrendsLoading(false);
       setSalariesLoading(false);
     } catch (error) {
-      console.error('Failed to fetch workforce data:', error);
+      clientLogger.error('Failed to fetch workforce data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setJobsLoading(false);

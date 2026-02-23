@@ -13,6 +13,7 @@ import SatelliteCard, {
 } from '@/components/satellites/SatelliteCard';
 import AdSlot from '@/components/ads/AdSlot';
 import PullToRefresh from '@/components/ui/PullToRefresh';
+import { clientLogger } from '@/lib/client-logger';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 
@@ -185,7 +186,7 @@ function SatelliteTrackerContent() {
         setData(result);
       }
     } catch (error) {
-      console.error('Failed to fetch satellite data:', error);
+      clientLogger.error('Failed to fetch satellite data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);

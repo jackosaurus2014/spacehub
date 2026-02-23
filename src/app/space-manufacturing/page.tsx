@@ -7,6 +7,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types — Manufacturing
@@ -1881,7 +1882,7 @@ function ManufacturingAndImageryContent() {
 
         setMfgData((prev) => ({ ...prev, ...newData, refreshedAt: latestRefresh }));
       } catch (error) {
-        console.error('Failed to fetch manufacturing data:', error);
+        clientLogger.error('Failed to fetch manufacturing data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
       } finally {
         setLoading(false);

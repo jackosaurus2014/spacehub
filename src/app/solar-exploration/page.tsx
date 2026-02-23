@@ -13,6 +13,7 @@ import {
 } from '@/types';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import { clientLogger } from '@/lib/client-logger';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 
@@ -89,7 +90,7 @@ function SolarExplorationContent() {
       const json = await res.json();
       setExoplanets(json.data || []);
     } catch (err) {
-      console.error('Failed to fetch exoplanets:', err);
+      clientLogger.error('Failed to fetch exoplanets', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load data. Please try again.');
     } finally {
       setExoplanetsLoading(false);
@@ -137,7 +138,7 @@ function SolarExplorationContent() {
         setStats(statsData.stats);
       }
     } catch (err) {
-      console.error('Failed to fetch data:', err);
+      clientLogger.error('Failed to fetch data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load data. Please try again.');
     } finally {
       setLoading(false);

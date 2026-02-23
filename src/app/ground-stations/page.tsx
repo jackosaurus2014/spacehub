@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types
@@ -330,7 +331,7 @@ export default function GroundStationsPage() {
           .pop();
         if (latestRefresh) setRefreshedAt(latestRefresh);
       } catch (error) {
-        console.error('Failed to fetch ground station data:', error);
+        clientLogger.error('Failed to fetch ground station data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
       } finally {
         setLoading(false);

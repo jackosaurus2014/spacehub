@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { LaunchWindow, CelestialDestination, TransferType } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { clientLogger } from '@/lib/client-logger';
 
 interface LaunchWindowsData {
   destinations: CelestialDestination[];
@@ -64,7 +65,7 @@ export default function LaunchWindowsModule() {
       setData(result);
       setError(null);
     } catch (err) {
-      console.error('Failed to fetch launch window data:', err);
+      clientLogger.error('Failed to fetch launch window data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load launch window data');
     } finally {
       setLoading(false);
@@ -83,7 +84,7 @@ export default function LaunchWindowsModule() {
 
       await fetchData();
     } catch (err) {
-      console.error('Failed to initialize launch window data:', err);
+      clientLogger.error('Failed to initialize launch window data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to initialize data');
     } finally {
       setInitializing(false);

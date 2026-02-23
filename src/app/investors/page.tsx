@@ -8,6 +8,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PortfolioAnalysis from '@/components/investors/PortfolioAnalysis';
+import { clientLogger } from '@/lib/client-logger';
 import InvestorActivityBadge from '@/components/investors/InvestorActivityBadge';
 import type { InvestorActivityResult } from '@/lib/investor-sentiment';
 
@@ -133,7 +134,7 @@ function InvestorsPageInner() {
       setInvestors(data.investors || []);
     } catch (err) {
       setError('Failed to load investor data');
-      console.error(err);
+      clientLogger.error('Operation failed', { error: err instanceof Error ? err.message : String(err) });
     } finally {
       setLoading(false);
     }

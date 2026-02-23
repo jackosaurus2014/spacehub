@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { clientLogger } from '@/lib/client-logger';
 
 // Types
 type OrbitType = 'LEO' | 'MEO' | 'GEO' | 'HEO' | 'SSO' | 'Polar';
@@ -76,7 +77,7 @@ export default function SatelliteTrackerModule() {
 
       setData(result);
     } catch (err) {
-      console.error('Failed to fetch satellite data:', err);
+      clientLogger.error('Failed to fetch satellite data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load satellite data');
     } finally {
       setLoading(false);

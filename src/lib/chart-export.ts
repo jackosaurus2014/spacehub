@@ -2,6 +2,8 @@
  * Chart export utilities for CSV and PNG downloads.
  */
 
+import { logger } from '@/lib/logger';
+
 /**
  * Trigger a file download in the browser by creating a temporary anchor element.
  */
@@ -122,7 +124,7 @@ export function exportToPNG(svgElement: SVGSVGElement, filename: string) {
 
   img.onerror = () => {
     URL.revokeObjectURL(url);
-    console.error('Failed to render SVG to PNG');
+    logger.error('Failed to render SVG to PNG');
   };
 
   img.src = url;

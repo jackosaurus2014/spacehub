@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { PlanetaryBody, LANDER_STATUS_INFO } from '@/types';
+import { clientLogger } from '@/lib/client-logger';
 
 // Dynamic import for 3D scene (client-side only)
 const PlanetaryScene = dynamic(
@@ -43,7 +44,7 @@ export default function SolarExplorationModule() {
           setSelectedBodySlug(data.bodies[0].slug);
         }
       } catch (err) {
-        console.error('Failed to fetch planetary bodies:', err);
+        clientLogger.error('Failed to fetch planetary bodies', { error: err instanceof Error ? err.message : String(err) });
         setError('Failed to load exploration data');
       } finally {
         setLoading(false);

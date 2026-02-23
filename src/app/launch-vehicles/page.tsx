@@ -5,6 +5,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types
@@ -957,7 +958,7 @@ export default function LaunchVehiclesPage() {
         }
         setRefreshedAt(data.meta?.lastRefreshed || null);
       } catch (error) {
-        console.error('Failed to load launch vehicles data:', error);
+        clientLogger.error('Failed to load launch vehicles data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
         setVehicles(VEHICLES);
       } finally {

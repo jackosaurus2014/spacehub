@@ -8,6 +8,7 @@ import {
   SPECTRUM_BANDS,
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { clientLogger } from '@/lib/client-logger';
 
 interface SpectrumStats {
   totalBands: number;
@@ -168,7 +169,7 @@ export default function SpectrumTrackerModule() {
 
       setData(result);
     } catch (err) {
-      console.error('Failed to fetch spectrum data:', err);
+      clientLogger.error('Failed to fetch spectrum data', { error: err instanceof Error ? err.message : String(err) });
     } finally {
       setLoading(false);
     }
@@ -180,7 +181,7 @@ export default function SpectrumTrackerModule() {
       await fetch('/api/spectrum/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize spectrum data:', error);
+      clientLogger.error('Failed to initialize spectrum data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }

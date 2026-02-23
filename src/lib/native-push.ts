@@ -1,4 +1,5 @@
 import { isNativePlatform, isIOS } from '@/lib/capacitor';
+import { clientLogger } from '@/lib/client-logger';
 
 /**
  * Initialize native push notifications (APNs on iOS, FCM on Android).
@@ -11,7 +12,7 @@ export async function initNativePush(): Promise<string | null> {
 
   const permResult = await PushNotifications.requestPermissions();
   if (permResult.receive !== 'granted') {
-    console.log('[NativePush] Permission denied');
+    clientLogger.warn('Push permission denied');
     return null;
   }
 
@@ -19,18 +20,18 @@ export async function initNativePush(): Promise<string | null> {
 
   return new Promise((resolve) => {
     PushNotifications.addListener('registration', (token) => {
-      console.log('[NativePush] Token received');
-      sendTokenToServer(token.value).catch(console.error);
+      clientLogger.info('Push token received');
+      sendTokenToServer(token.value).catch((err) => clientLogger.error('Push token server sync failed', { error: err instanceof Error ? err.message : String(err) }));
       resolve(token.value);
     });
 
     PushNotifications.addListener('registrationError', (error) => {
-      console.error('[NativePush] Registration error:', error);
+      clientLogger.error('Push registration error', { error: error instanceof Error ? error.message : String(error) });
       resolve(null);
     });
 
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      console.log('[NativePush] Received:', notification.title);
+      clientLogger.info('Push notification received', { title: notification.title });
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
@@ -50,6 +51,6 @@ async function sendTokenToServer(token: string): Promise<void> {
       body: JSON.stringify({ token, platform: isIOS() ? 'ios' : 'android' }),
     });
   } catch (error) {
-    console.error('[NativePush] Failed to send token to server:', error);
+    clientLogger.error('Failed to send push token to server', { error: error instanceof Error ? error.message : String(error) });
   }
 }

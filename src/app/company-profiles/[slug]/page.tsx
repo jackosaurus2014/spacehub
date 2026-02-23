@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import { clientLogger } from '@/lib/client-logger';
 import OrganizationProfileSchema from '@/components/seo/OrganizationProfileSchema';
 import { toast } from '@/lib/toast';
 import SponsorBadge from '@/components/company/SponsorBadge';
@@ -1143,7 +1144,7 @@ export default function CompanyProfileDetailPage() {
           }).catch(() => {}); // fire and forget
         }
       } catch (err) {
-        console.error('Company profile load error:', err);
+        clientLogger.error('Company profile load error', { error: err instanceof Error ? err.message : String(err) });
         setError(err instanceof Error ? err.message : 'Failed to load company profile');
       } finally {
         setLoading(false);

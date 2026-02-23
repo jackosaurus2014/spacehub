@@ -10,6 +10,7 @@ import {
   CONGESTION_LEVEL_INFO,
   COUNTRY_INFO,
 } from '@/types';
+import { clientLogger } from '@/lib/client-logger';
 
 interface OrbitalData {
   slots: OrbitalSlot[];
@@ -47,7 +48,7 @@ export default function OrbitalSlotsModule() {
 
         setData(result);
       } catch (err) {
-        console.error('Failed to fetch orbital data:', err);
+        clientLogger.error('Failed to fetch orbital data', { error: err instanceof Error ? err.message : String(err) });
         setError('Failed to load orbital data');
       } finally {
         setLoading(false);

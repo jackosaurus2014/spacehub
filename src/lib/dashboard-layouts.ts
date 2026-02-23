@@ -4,6 +4,8 @@
  * and custom configurations saved to localStorage
  */
 
+import { logger } from '@/lib/logger';
+
 export type LayoutGridColumns = 1 | 2 | 3;
 export type ModuleSize = 'compact' | 'standard' | 'expanded';
 
@@ -109,7 +111,7 @@ export function getLayoutPreference(): UserLayoutPreference | null {
     }
     return JSON.parse(stored) as UserLayoutPreference;
   } catch (error) {
-    console.error('Failed to parse layout preference:', error);
+    logger.error('Failed to parse layout preference', { error: error instanceof Error ? error.message : String(error) });
     return null;
   }
 }
@@ -126,7 +128,7 @@ export function setLayoutPreference(preference: UserLayoutPreference): void {
     preference.lastUpdated = new Date().toISOString();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(preference));
   } catch (error) {
-    console.error('Failed to save layout preference:', error);
+    logger.error('Failed to save layout preference', { error: error instanceof Error ? error.message : String(error) });
   }
 }
 

@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import CategoryGrid from '@/components/marketplace/CategoryGrid';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import RFQCard from '@/components/marketplace/RFQCard';
+import { clientLogger } from '@/lib/client-logger';
 import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { toast } from '@/lib/toast';
 import AdSlot from '@/components/ads/AdSlot';
@@ -55,7 +56,7 @@ export default function MarketplacePage() {
         setError('Failed to load marketplace data. Please try again.');
       }
     } catch (err) {
-      console.error('Failed to load marketplace data', err);
+      clientLogger.error('Failed to load marketplace data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load marketplace data. Please try again.');
     } finally {
       setLoading(false);

@@ -8,6 +8,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types
@@ -736,14 +737,14 @@ function BlueprintsContent() {
         const data = await response.json();
 
         if (data.error) {
-          console.error('API error:', data.error);
+          clientLogger.error('API error', { error: String(data.error) });
         } else {
           setBlueprints(data.blueprints || []);
           setStats(data.stats || null);
           setManufacturers(data.manufacturers || []);
         }
       } catch (error) {
-        console.error('Failed to fetch blueprints:', error);
+        clientLogger.error('Failed to fetch blueprints', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
       } finally {
         setLoading(false);

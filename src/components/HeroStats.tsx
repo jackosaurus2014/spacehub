@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { clientLogger } from '@/lib/client-logger';
 
 interface LaunchData {
   name: string;
@@ -102,7 +103,7 @@ export default function HeroStats() {
             }
           }
         } catch (e) {
-          console.error('Error fetching IPO data:', e);
+          clientLogger.error('Error fetching IPO data', { error: e instanceof Error ? e.message : String(e) });
         }
 
         // If no upcoming IPO, show top performing stock
@@ -175,7 +176,7 @@ export default function HeroStats() {
 
         setSolar({ status, flareClass, kpIndex });
       } catch (error) {
-        console.error('Error fetching hero stats:', error);
+        clientLogger.error('Error fetching hero stats', { error: error instanceof Error ? error.message : String(error) });
       } finally {
         setLoading(false);
       }

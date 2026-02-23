@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { toast } from '@/lib/toast';
+import { clientLogger } from '@/lib/client-logger';
 
 interface WatchlistItem {
   id: string;
@@ -121,7 +122,7 @@ function WatchlistsContent() {
           setSearchMeta({ count: data.count || 0, limit: data.limit, tier: data.tier || 'free' });
         }
       } catch (err) {
-        console.error('Failed to load watchlists', err);
+        clientLogger.error('Failed to load watchlists', { error: err instanceof Error ? err.message : String(err) });
       } finally {
         setLoading(false);
       }

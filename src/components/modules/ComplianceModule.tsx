@@ -11,6 +11,7 @@ import {
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import InlineDisclaimer from '@/components/InlineDisclaimer';
+import { clientLogger } from '@/lib/client-logger';
 
 interface ExportClassification {
   id: string;
@@ -183,7 +184,7 @@ export default function ComplianceModule() {
       if (regData.regulations) setRegulations(regData.regulations);
       if (sourcesData.sources) setLegalSources(sourcesData.sources);
     } catch (error) {
-      console.error('Failed to fetch compliance data:', error);
+      clientLogger.error('Failed to fetch compliance data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setLoading(false);
     }
@@ -195,7 +196,7 @@ export default function ComplianceModule() {
       await fetch('/api/compliance/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize compliance data:', error);
+      clientLogger.error('Failed to initialize compliance data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }

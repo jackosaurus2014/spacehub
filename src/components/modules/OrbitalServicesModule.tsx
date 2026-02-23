@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ORBITAL_SERVICE_CATEGORIES, ORBITAL_SERVICE_TYPES, type OrbitalServiceCategory } from '@/types';
+import { clientLogger } from '@/lib/client-logger';
 
 interface OrbitalService {
   id: string;
@@ -70,7 +71,7 @@ export default function OrbitalServicesModule() {
           contracts: contractsData.contracts || [],
         });
       } catch (err) {
-        console.error('Failed to fetch orbital services:', err);
+        clientLogger.error('Failed to fetch orbital services', { error: err instanceof Error ? err.message : String(err) });
         setError('Failed to load orbital services');
       } finally {
         setLoading(false);

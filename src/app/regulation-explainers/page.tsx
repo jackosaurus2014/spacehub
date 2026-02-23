@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Link from 'next/link';
+import { clientLogger } from '@/lib/client-logger';
 
 const AGENCIES = ['FCC', 'FAA', 'DOD', 'NOAA', 'FTC', 'NASA', 'DOC', 'State'];
 const CATEGORIES = [
@@ -61,7 +62,7 @@ function ExplainersContent() {
         setTotal(data.total || 0);
       }
     } catch (err) {
-      console.error('Failed to fetch explainers', err);
+      clientLogger.error('Failed to fetch explainers', { error: err instanceof Error ? err.message : String(err) });
     } finally {
       setLoading(false);
     }

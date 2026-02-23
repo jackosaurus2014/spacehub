@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import GlassCard from '@/components/ui/GlassCard';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import { clientLogger } from '@/lib/client-logger';
 
 interface Insight {
   id: string;
@@ -120,7 +121,7 @@ export default function AIInsightsPage() {
       setTotalPages(data.totalPages);
       setTotal(data.total);
     } catch (error) {
-      console.error('Failed to fetch AI insights:', error);
+      clientLogger.error('Failed to fetch AI insights', { error: error instanceof Error ? error.message : String(error) });
       setInsights([]);
     } finally {
       setLoading(false);

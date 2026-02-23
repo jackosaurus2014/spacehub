@@ -36,6 +36,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { SkeletonPage } from '@/components/ui/Skeleton';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import { useSwipeTabs } from '@/hooks/useSwipeTabs';
+import { clientLogger } from '@/lib/client-logger';
 
 // ════════════════════════════════════════
 // Top-Level Tab Type
@@ -767,7 +768,7 @@ function SpaceWeatherTab() {
       const result = await res.json();
       setData(result);
     } catch (err) {
-      console.error('Failed to fetch solar flare data:', err);
+      clientLogger.error('Failed to fetch solar flare data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);
@@ -790,7 +791,7 @@ function SpaceWeatherTab() {
       if (eventsData.data) setEarthEvents(eventsData.data);
       if (imageryData.data) setSolarImagery(imageryData.data);
     } catch (error) {
-      console.error('Failed to fetch dynamic content:', error);
+      clientLogger.error('Failed to fetch dynamic content', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setContentLoading(false);
@@ -1416,7 +1417,7 @@ function DebrisTrackingTab() {
         setData(result);
       }
     } catch (error) {
-      console.error('Failed to fetch debris monitor data:', error);
+      clientLogger.error('Failed to fetch debris monitor data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);
@@ -1430,7 +1431,7 @@ function DebrisTrackingTab() {
       setLoading(true);
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize debris data:', error);
+      clientLogger.error('Failed to initialize debris data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setInitializing(false);
@@ -1947,7 +1948,7 @@ function OperationsTab() {
       if (!specData.error) setSpectrumAlerts(specData.alerts || []);
 
     } catch (error) {
-      console.error('Failed to fetch operational awareness data:', error);
+      clientLogger.error('Failed to fetch operational awareness data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);
@@ -1961,7 +1962,7 @@ function OperationsTab() {
       setLoading(true);
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize data:', error);
+      clientLogger.error('Failed to initialize data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setInitializing(false);

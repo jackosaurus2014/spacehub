@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import DataFreshness from '@/components/ui/DataFreshness';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types & Constants
@@ -482,7 +483,7 @@ export default function ConstellationTrackerPage() {
         setConstellations(json.data || []);
         setRefreshedAt(json.meta?.lastRefreshed || null);
       } catch (err) {
-        console.error('Error fetching constellation data:', err);
+        clientLogger.error('Error fetching constellation data', { error: err instanceof Error ? err.message : String(err) });
         setConstellations([]);
       } finally {
         setLoading(false);

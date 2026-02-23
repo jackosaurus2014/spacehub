@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { clientLogger } from '@/lib/client-logger';
 
 const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
 
@@ -38,16 +39,16 @@ export default function DataInitializer() {
       const refreshData = await refreshRes.json();
 
       if (refreshData.newsStale) {
-        console.log('News data is stale, refreshing in background...');
+        clientLogger.info('News data is stale, refreshing in background...');
         fetch('/api/news/fetch', { method: 'POST' })
           .then(r => r.json())
-          .then(data => console.log('News refresh complete:', data))
-          .catch(err => console.error('News refresh failed:', err));
+          .then(data => clientLogger.info('News refresh complete', { data }))
+          .catch(err => clientLogger.error('News refresh failed', { error: err instanceof Error ? err.message : String(err) }));
       }
 
       setStatus('done');
     } catch (error) {
-      console.error('Data check error:', error);
+      clientLogger.error('Data check error', { error: error instanceof Error ? error.message : String(error) });
       if (isInitial) {
         setStatus('error');
         setMessage(String(error));

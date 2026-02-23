@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types
@@ -943,7 +944,7 @@ export default function SpaceStationTrackerPage() {
         else if (issData.data && !Array.isArray(issData.data)) setIssPosition(issData.data);
         setRefreshedAt(stationsData.meta?.lastRefreshed || null);
       } catch (error) {
-        console.error('Failed to load space stations data:', error);
+        clientLogger.error('Failed to load space stations data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
       } finally {
         setLoading(false);
@@ -960,7 +961,7 @@ export default function SpaceStationTrackerPage() {
       if (data.data?.[0]) setIssPosition(data.data[0]);
       else if (data.data && !Array.isArray(data.data)) setIssPosition(data.data);
     } catch (error) {
-      console.error('Failed to refresh ISS position:', error);
+      clientLogger.error('Failed to refresh ISS position', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setIssPositionLoading(false);
     }

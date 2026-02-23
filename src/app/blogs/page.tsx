@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
+import { clientLogger } from '@/lib/client-logger';
 import AdSlot from '@/components/ads/AdSlot';
 
 const topicColors: Record<string, string> = {
@@ -173,7 +174,7 @@ function BlogsContent() {
       }
       setTotal(data.total || 0);
     } catch (error) {
-      console.error('Failed to fetch posts:', error);
+      clientLogger.error('Failed to fetch posts', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);
@@ -191,7 +192,7 @@ function BlogsContent() {
         fetchPosts();
       }
     } catch (error) {
-      console.error('Failed to fetch new posts:', error);
+      clientLogger.error('Failed to fetch new posts', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setFetching(false);
     }
@@ -422,7 +423,7 @@ export default function BlogsPage() {
       const res = await fetch('/api/blogs/fetch', { method: 'POST' });
       await res.json();
     } catch (error) {
-      console.error('Failed to fetch new posts:', error);
+      clientLogger.error('Failed to fetch new posts', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setFetching(false);
     }

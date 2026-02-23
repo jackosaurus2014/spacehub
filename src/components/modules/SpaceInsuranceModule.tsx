@@ -9,6 +9,7 @@ import {
   InsuranceMissionType,
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { clientLogger } from '@/lib/client-logger';
 
 interface InsuranceStats {
   totalPremiums: number;
@@ -49,7 +50,7 @@ export default function SpaceInsuranceModule() {
       if (data.marketHistory) setMarketHistory(data.marketHistory);
       if (data.stats) setStats(data.stats);
     } catch (error) {
-      console.error('Failed to fetch space insurance data:', error);
+      clientLogger.error('Failed to fetch space insurance data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setLoading(false);
     }
@@ -61,7 +62,7 @@ export default function SpaceInsuranceModule() {
       await fetch('/api/space-insurance/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize space insurance data:', error);
+      clientLogger.error('Failed to initialize space insurance data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }
@@ -98,7 +99,7 @@ export default function SpaceInsuranceModule() {
         });
       }
     } catch (error) {
-      console.error('Failed to calculate premium:', error);
+      clientLogger.error('Failed to calculate premium', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setCalculating(false);
     }

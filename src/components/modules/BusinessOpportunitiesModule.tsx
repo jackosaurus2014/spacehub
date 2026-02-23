@@ -12,6 +12,7 @@ import {
   TargetAudience,
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { clientLogger } from '@/lib/client-logger';
 
 interface MoonshotIdea {
   id: string;
@@ -137,7 +138,7 @@ export default function BusinessOpportunitiesModule() {
         setMoonshots(moonshotsData.moonshots);
       }
     } catch (error) {
-      console.error('Failed to fetch opportunities:', error);
+      clientLogger.error('Failed to fetch opportunities', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setLoading(false);
     }
@@ -149,7 +150,7 @@ export default function BusinessOpportunitiesModule() {
       await fetch('/api/opportunities/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize opportunities:', error);
+      clientLogger.error('Failed to initialize opportunities', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }
@@ -164,7 +165,7 @@ export default function BusinessOpportunitiesModule() {
         await fetchData();
       }
     } catch (error) {
-      console.error('Failed to run analysis:', error);
+      clientLogger.error('Failed to run analysis', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setAnalyzing(false);
     }

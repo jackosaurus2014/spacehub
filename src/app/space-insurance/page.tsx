@@ -13,6 +13,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { SkeletonPage } from '@/components/ui/Skeleton';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import { clientLogger } from '@/lib/client-logger';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 
@@ -487,7 +488,7 @@ function InsuranceContent() {
         });
       }
     } catch (error) {
-      console.error('Failed to fetch space insurance data:', error);
+      clientLogger.error('Failed to fetch space insurance data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);
@@ -501,7 +502,7 @@ function InsuranceContent() {
       setLoading(true);
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize space insurance data:', error);
+      clientLogger.error('Failed to initialize space insurance data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }

@@ -8,6 +8,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import GlassCard from '@/components/ui/GlassCard';
+import { clientLogger } from '@/lib/client-logger';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 interface Insight {
@@ -122,7 +123,7 @@ export default function AIInsightDetailPage() {
       const data = await res.json();
       setInsight(data.insight);
     } catch (error) {
-      console.error('Failed to fetch insight:', error);
+      clientLogger.error('Failed to fetch insight', { error: error instanceof Error ? error.message : String(error) });
       setNotFound(true);
     } finally {
       setLoading(false);

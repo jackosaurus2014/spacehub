@@ -3,6 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useState, useEffect, useCallback } from 'react';
 import { FEATURE_REQUEST_STATUSES, HELP_REQUEST_STATUSES } from '@/types';
+import { clientLogger } from '@/lib/client-logger';
 import type { FeatureRequest, HelpRequest } from '@/types';
 import { AVAILABLE_MODULES } from '@/types';
 
@@ -94,7 +95,7 @@ export default function AdminPage() {
         }
       }
     } catch (err) {
-      console.error('Error fetching data:', err);
+      clientLogger.error('Error fetching data', { error: err instanceof Error ? err.message : String(err) });
     } finally {
       setLoading(false);
     }
@@ -561,7 +562,7 @@ function FeatureRequestItem({ item, onUpdate }: { item: FeatureRequest; onUpdate
       });
       if (res.ok) onUpdate();
     } catch (err) {
-      console.error('Error saving:', err);
+      clientLogger.error('Error saving', { error: err instanceof Error ? err.message : String(err) });
     } finally {
       setSaving(false);
     }
@@ -644,7 +645,7 @@ function HelpRequestItem({ item, onUpdate }: { item: HelpRequest; onUpdate: () =
       });
       if (res.ok) onUpdate();
     } catch (err) {
-      console.error('Error saving:', err);
+      clientLogger.error('Error saving', { error: err instanceof Error ? err.message : String(err) });
     } finally {
       setSaving(false);
     }

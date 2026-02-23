@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { clientLogger } from '@/lib/client-logger';
 import {
   BusinessOpportunity,
   OPPORTUNITY_TYPES,
@@ -358,7 +359,7 @@ function BusinessOpportunitiesContent() {
         setStats(statsData);
       }
     } catch (error) {
-      console.error('Failed to fetch opportunities:', error);
+      clientLogger.error('Failed to fetch opportunities', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);
@@ -375,7 +376,7 @@ function BusinessOpportunitiesContent() {
       await fetch('/api/opportunities/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize opportunities:', error);
+      clientLogger.error('Failed to initialize opportunities', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }

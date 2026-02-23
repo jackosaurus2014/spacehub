@@ -8,6 +8,7 @@ import { useSwipeTabs } from '@/hooks/useSwipeTabs';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import { clientLogger } from '@/lib/client-logger';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import InlineDisclaimer from '@/components/InlineDisclaimer';
 import DataFreshness from '@/components/ui/DataFreshness';
@@ -1429,7 +1430,7 @@ function RegulatoryHubContent() {
         setRefreshedAt(firstMeta.lastRefreshed);
       }
     } catch (err) {
-      console.error('Failed to fetch compliance data:', err);
+      clientLogger.error('Failed to fetch compliance data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load compliance data. Please try again.');
     } finally {
       setLoading(false);

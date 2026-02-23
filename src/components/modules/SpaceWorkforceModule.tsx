@@ -9,6 +9,7 @@ import {
   SeniorityLevel,
 } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { clientLogger } from '@/lib/client-logger';
 
 interface SalaryBenchmark {
   category: JobCategory;
@@ -214,7 +215,7 @@ export default function SpaceWorkforceModule() {
       if (data.stats) setStats(data.stats);
       if (data.salaryBenchmarks?.byCategory) setSalaryBenchmarks(data.salaryBenchmarks.byCategory);
     } catch (error) {
-      console.error('Failed to fetch workforce data:', error);
+      clientLogger.error('Failed to fetch workforce data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setLoading(false);
     }
@@ -226,7 +227,7 @@ export default function SpaceWorkforceModule() {
       await fetch('/api/workforce/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize workforce data:', error);
+      clientLogger.error('Failed to initialize workforce data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }

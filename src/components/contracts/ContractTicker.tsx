@@ -9,6 +9,7 @@ import {
   ContractAgency,
 } from '@/lib/government-contracts-data';
 import ContractCard from './ContractCard';
+import { clientLogger } from '@/lib/client-logger';
 
 interface ContractTickerProps {
   onFilterChange?: (agency: ContractAgency | '') => void;
@@ -34,7 +35,7 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
         setContracts(data.contracts);
       }
     } catch (error) {
-      console.error('Failed to fetch contracts:', error);
+      clientLogger.error('Failed to fetch contracts', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setLoading(false);
     }

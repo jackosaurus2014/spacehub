@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
+import { clientLogger } from '@/lib/client-logger';
 import {
   SpectrumAllocation,
   SpectrumFiling,
@@ -863,7 +864,7 @@ function SpectrumContent() {
       }
       setData(result);
     } catch (err) {
-      console.error('Failed to fetch spectrum data:', err);
+      clientLogger.error('Failed to fetch spectrum data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);
@@ -876,7 +877,7 @@ function SpectrumContent() {
       await fetch('/api/spectrum/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize spectrum data:', error);
+      clientLogger.error('Failed to initialize spectrum data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { clientLogger } from '@/lib/client-logger';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -170,7 +171,7 @@ export default function PWAInstallPrompt() {
       // Clear the deferred prompt - it can only be used once
       setDeferredPrompt(null);
     } catch (error) {
-      console.error('Error showing install prompt:', error);
+      clientLogger.error('Error showing install prompt', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setIsInstalling(false);
       handleClose();

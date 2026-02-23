@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
+import { clientLogger } from '@/lib/client-logger';
 
 // Lazy-load the Communications tab (~730 lines, only visible when tab selected)
 const SpaceportsCommunicationsTab = dynamic(() => import('./SpaceportsCommunicationsTab'), {
@@ -2209,7 +2210,7 @@ function SpaceportDirectoryPage() {
         if (data[11].data?.length) setEstrackStationsData(data[11].data);
         setRefreshedAt(data[0].meta?.lastRefreshed || null);
       } catch (error) {
-        console.error('Failed to load spaceport data:', error);
+        clientLogger.error('Failed to load spaceport data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
       } finally {
         setLoading(false);

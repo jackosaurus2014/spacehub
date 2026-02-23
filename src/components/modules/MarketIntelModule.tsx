@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { SpaceCompany, FOCUS_AREAS, COUNTRY_INFO, CompanyCountry } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import StockMiniChart from '@/components/ui/StockMiniChart';
+import { clientLogger } from '@/lib/client-logger';
 
 interface StockData {
   ticker: string;
@@ -181,7 +182,7 @@ export default function MarketIntelModule() {
         setStats(statsData);
       }
     } catch (error) {
-      console.error('Failed to fetch market data:', error);
+      clientLogger.error('Failed to fetch market data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setLoading(false);
     }
@@ -207,7 +208,7 @@ export default function MarketIntelModule() {
         setStockData(stockMap);
       }
     } catch (error) {
-      console.error('Failed to fetch stock data:', error);
+      clientLogger.error('Failed to fetch stock data', { error: error instanceof Error ? error.message : String(error) });
     }
   };
 
@@ -217,7 +218,7 @@ export default function MarketIntelModule() {
       await fetch('/api/companies/init', { method: 'POST' });
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize companies:', error);
+      clientLogger.error('Failed to initialize companies', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }

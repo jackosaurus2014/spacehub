@@ -13,6 +13,7 @@ import PullToRefresh from '@/components/ui/PullToRefresh';
 import ArticleLimitBanner from '@/components/ui/ArticleLimitBanner';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import AdSlot from '@/components/ads/AdSlot';
+import { clientLogger } from '@/lib/client-logger';
 import Link from 'next/link';
 import { BLOG_POSTS } from '@/lib/blog-content';
 import ItemListSchema from '@/components/seo/ItemListSchema';
@@ -73,7 +74,7 @@ function NewsContent() {
       setTotal(data.total);
       setLastUpdated(new Date());
     } catch (error) {
-      console.error('Failed to fetch news:', error);
+      clientLogger.error('Failed to fetch news', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);

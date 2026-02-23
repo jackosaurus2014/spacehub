@@ -10,6 +10,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import MissionStream, { extractYouTubeId } from '@/components/live/MissionStream';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import AdSlot from '@/components/ads/AdSlot';
+import { clientLogger } from '@/lib/client-logger';
 
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
   { value: 'all', label: 'All Events', icon: '🌌' },
@@ -775,7 +776,7 @@ function MissionControlContent() {
       const data = await res.json();
       setEvents(data.events || []);
     } catch (error) {
-      console.error('Failed to fetch events:', error);
+      clientLogger.error('Failed to fetch events', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);
@@ -815,7 +816,7 @@ function MissionControlContent() {
         if (nasaData.data) setNasaImages(nasaData.data);
         if (dsnData.data) setDsnAntennas(dsnData.data);
       } catch (error) {
-        console.error('Failed to fetch dynamic content:', error);
+        clientLogger.error('Failed to fetch dynamic content', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
       } finally {
         setContentLoading(false);

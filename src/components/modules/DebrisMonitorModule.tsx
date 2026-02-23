@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { clientLogger } from '@/lib/client-logger';
 import {
   DebrisStats,
   ConjunctionEvent,
@@ -58,7 +59,7 @@ export default function DebrisMonitorModule() {
         setData(result);
       }
     } catch (err) {
-      console.error('Failed to fetch debris monitor data:', err);
+      clientLogger.error('Failed to fetch debris monitor data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load debris monitor data');
     } finally {
       setLoading(false);
@@ -79,7 +80,7 @@ export default function DebrisMonitorModule() {
       setLoading(true);
       await fetchData();
     } catch (err) {
-      console.error('Failed to initialize debris data:', err);
+      clientLogger.error('Failed to initialize debris data', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to initialize debris data');
     } finally {
       setInitializing(false);

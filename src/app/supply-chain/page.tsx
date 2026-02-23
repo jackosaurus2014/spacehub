@@ -12,6 +12,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import SupplyChainNode from '@/components/supply-chain/SupplyChainNode';
 import ShortageAlert from '@/components/supply-chain/ShortageAlert';
 import DependencyChart from '@/components/supply-chain/DependencyChart';
+import { clientLogger } from '@/lib/client-logger';
 import {
   SupplyChainCompany,
   SupplyRelationship,
@@ -101,7 +102,7 @@ function SupplyChainContent() {
       const data = await res.json();
       setStats(data);
     } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      clientLogger.error('Failed to fetch stats', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     }
   }, []);
@@ -113,7 +114,7 @@ function SupplyChainContent() {
       const data = await res.json();
       setRelationships(data.relationships || []);
     } catch (error) {
-      console.error('Failed to fetch relationships:', error);
+      clientLogger.error('Failed to fetch relationships', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     }
   }, []);
@@ -159,7 +160,7 @@ function SupplyChainContent() {
         }
       }
     } catch (error) {
-      console.error('Failed to fetch data:', error);
+      clientLogger.error('Failed to fetch data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);

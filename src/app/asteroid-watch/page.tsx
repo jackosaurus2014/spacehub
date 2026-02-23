@@ -7,6 +7,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types
@@ -294,7 +295,7 @@ function AsteroidWatchContent() {
         setFireballEvents(d11.data || []);
         setRefreshedAt(d1.meta?.lastRefreshed || null);
       } catch (error) {
-        console.error('Failed to load asteroid watch data:', error);
+        clientLogger.error('Failed to load asteroid watch data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
       } finally {
         setLoading(false);

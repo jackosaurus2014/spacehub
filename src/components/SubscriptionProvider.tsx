@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 import { useSession } from 'next-auth/react';
 import { SubscriptionTier } from '@/types';
 import { canAccessModule, canAccessFeature, TIER_ACCESS } from '@/lib/subscription';
+import { clientLogger } from '@/lib/client-logger';
 
 interface SubscriptionContextType {
   tier: SubscriptionTier;
@@ -72,7 +73,7 @@ export default function SubscriptionProvider({ children }: SubscriptionProviderP
           : null
       );
     } catch (error) {
-      console.error('Failed to fetch subscription:', error);
+      clientLogger.error('Failed to fetch subscription', { error: error instanceof Error ? error.message : String(error) });
       setTier('free');
       setIsTrialing(false);
       setTrialEndsAt(null);

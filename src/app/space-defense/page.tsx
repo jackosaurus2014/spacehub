@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
+import { clientLogger } from '@/lib/client-logger';
 
 // ────────────────────────────────────────
 // Types
@@ -819,7 +820,7 @@ export default function SpaceDefensePage() {
           setRefreshedAt(timestamps.sort().reverse()[0]);
         }
       } catch (error) {
-        console.error('Failed to fetch space defense data:', error);
+        clientLogger.error('Failed to fetch space defense data', { error: error instanceof Error ? error.message : String(error) });
         setError('Failed to load data.');
       } finally {
         setLoading(false);

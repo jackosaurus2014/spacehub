@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import type { SearchModule } from '@/lib/validations';
 import CompanyIntelCard from '@/components/search/CompanyIntelCard';
 import { detectSearchIntent, getIntentSuggestion } from '@/lib/search-intent';
+import { clientLogger } from '@/lib/client-logger';
 
 // --- Types ---
 
@@ -501,7 +502,7 @@ function SearchContent() {
       const data: SearchResults = await res.json();
       setResults(data);
     } catch (err) {
-      console.error('Search failed:', err);
+      clientLogger.error('Search failed', { error: err instanceof Error ? err.message : String(err) });
       setResults({ news: [], companies: [], events: [], opportunities: [], blogs: [] });
     } finally {
       setLoading(false);
@@ -546,7 +547,7 @@ function SearchContent() {
         }
       }
     } catch (err) {
-      console.error('AI search failed:', err);
+      clientLogger.error('AI search failed', { error: err instanceof Error ? err.message : String(err) });
     } finally {
       setAiLoading(false);
     }

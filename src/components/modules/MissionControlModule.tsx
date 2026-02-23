@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { SpaceEvent, EVENT_TYPE_INFO } from '@/types';
+import { clientLogger } from '@/lib/client-logger';
 
 const EVENT_TYPE_LOGOS: Record<string, string> = {
   'launch': '/logos/logo-event-launch.png',
@@ -270,7 +271,7 @@ export default function MissionControlModule() {
           setNextEvent(null);
         }
       } catch (error) {
-        console.error('Failed to fetch events:', error);
+        clientLogger.error('Failed to fetch events', { error: error instanceof Error ? error.message : String(error) });
       } finally {
         setLoading(false);
       }

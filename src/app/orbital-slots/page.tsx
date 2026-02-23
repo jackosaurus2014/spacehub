@@ -26,6 +26,7 @@ import {
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { SkeletonPage } from '@/components/ui/Skeleton';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import { clientLogger } from '@/lib/client-logger';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import ServiceListingDialog from '@/components/ui/ServiceListingDialog';
@@ -634,7 +635,7 @@ function OrbitalManagementContent() {
         setData(result);
       }
     } catch (error) {
-      console.error('Failed to fetch orbital data:', error);
+      clientLogger.error('Failed to fetch orbital data', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
     } finally {
       setLoading(false);
@@ -648,7 +649,7 @@ function OrbitalManagementContent() {
       setLoading(true);
       await fetchData();
     } catch (error) {
-      console.error('Failed to initialize orbital data:', error);
+      clientLogger.error('Failed to initialize orbital data', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
     }
@@ -689,7 +690,7 @@ function OrbitalManagementContent() {
 
       setContracts(cData.contracts || []);
     } catch (err) {
-      console.error('Failed to fetch contracts:', err);
+      clientLogger.error('Failed to fetch contracts', { error: err instanceof Error ? err.message : String(err) });
       setError('Failed to load data.');
     }
   };
