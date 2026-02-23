@@ -23,7 +23,7 @@ import PageTracker from '@/components/PageTracker';
 import SwipeModuleNavigation from '@/components/mobile/SwipeModuleNavigation';
 import PageTransitionProvider from '@/components/mobile/PageTransitionProvider';
 import OfflineIndicator from '@/components/ui/OfflineIndicator';
-const ChangelogModal = dynamic(() => import('@/components/ui/ChangelogModal'), { ssr: false });
+// Changelog modal removed — no longer shown on visit
 const NpsSurvey = dynamic(() => import('@/components/ui/NpsSurvey'), { ssr: false });
 const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), { ssr: false });
 import ModuleNavBar from '@/components/ModuleNavBar';
@@ -204,7 +204,7 @@ export default function RootLayout({
               <PWAInstallPrompt />
               <ServiceWorkerRegistration />
               <ToastContainer />
-              <ChangelogModal />
+              {/* ChangelogModal removed */}
               <NpsSurvey />
               <OnboardingTour />
               <PageTracker />

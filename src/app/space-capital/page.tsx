@@ -188,7 +188,7 @@ function OverviewTab({ investors, fundingByYear, startups }: {
       {/* Top 20 Investors + Top 20 Startups */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Top 20 Investors</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Top {Math.min(investors.length, 20)} Investors</h3>
           <div className="space-y-3">
             {investors.slice(0, 20).map((inv, i) => (
               <div key={inv.id} className="flex items-center gap-3">

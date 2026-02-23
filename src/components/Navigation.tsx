@@ -22,6 +22,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'SpaceNexus Blog', href: '/blog', description: 'Guides, analysis & market reports' },
   { label: 'Space Defense', href: '/space-defense', description: 'Military space & national security' },
   { label: 'AI Insights', href: '/ai-insights', description: 'AI-powered industry analysis' },
+  { label: 'Community Forums', href: '/community/forums', description: 'Discussions with space professionals' },
   { label: 'Solar Exploration', href: '/solar-exploration', description: '3D planetary visualization' },
   { label: 'Mars Mission Planner', href: '/mars-planner', description: 'Mars missions and launch windows' },
   { label: 'Cislunar Ecosystem', href: '/cislunar', description: 'Gateway, Artemis & lunar economy' },
