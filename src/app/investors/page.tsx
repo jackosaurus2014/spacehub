@@ -7,6 +7,9 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import PortfolioAnalysis from '@/components/investors/PortfolioAnalysis';
+import InvestorActivityBadge from '@/components/investors/InvestorActivityBadge';
+import type { InvestorActivityResult } from '@/lib/investor-sentiment';
 
 // ────────────────────────────────────────
 // Types
@@ -111,6 +114,9 @@ function InvestorsPageInner() {
   const [sectorFilter, setSectorFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [sentimentData, setSentimentData] = useState<
+    Record<string, InvestorActivityResult & { recentDeals: number; previousDeals: number }>
+  >({});
 
   const fetchInvestors = useCallback(async () => {
     setLoading(true);
@@ -136,6 +142,20 @@ function InvestorsPageInner() {
   useEffect(() => {
     fetchInvestors();
   }, [fetchInvestors]);
+
+  // Fetch investor sentiment data after investors load
+  useEffect(() => {
+    if (investors.length === 0) return;
+    const names = investors.map((inv) => inv.name).join(',');
+    fetch(`/api/investors/sentiment?names=${encodeURIComponent(names)}`)
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (data?.sentiment) setSentimentData(data.sentiment);
+      })
+      .catch(() => {
+        // Sentiment is supplementary; fail silently
+      });
+  }, [investors]);
 
   // Client-side search filter
   const filtered = useMemo(() => {
@@ -298,6 +318,11 @@ function InvestorsPageInner() {
           </div>
         </div>
 
+        {/* Portfolio Analysis Section */}
+        {investors.length > 0 && (
+          <PortfolioAnalysis investors={investors} />
+        )}
+
         {/* Investor Cards Grid */}
         {filtered.length === 0 ? (
           <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-8 text-center">
@@ -409,6 +434,19 @@ function InvestorsPageInner() {
                         </span>
                       ))}
                     </div>
+
+                    {/* Activity Trend Badge */}
+                    {sentimentData[inv.name] && (
+                      <div className="mb-3">
+                        <InvestorActivityBadge
+                          trend={sentimentData[inv.name].trend}
+                          label={sentimentData[inv.name].label}
+                          color={sentimentData[inv.name].color}
+                          recentDeals={sentimentData[inv.name].recentDeals}
+                          previousDeals={sentimentData[inv.name].previousDeals}
+                        />
+                      </div>
+                    )}
 
                     {/* Expand/collapse button */}
                     <button

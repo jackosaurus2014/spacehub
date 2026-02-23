@@ -12,6 +12,7 @@ import { toast } from '@/lib/toast';
 import SponsorBadge from '@/components/company/SponsorBadge';
 import SponsorBanner from '@/components/company/SponsorBanner';
 import LeadCaptureForm from '@/components/company/LeadCaptureForm';
+import SimilarCompanies from '@/components/company/SimilarCompanies';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -1485,6 +1486,11 @@ export default function CompanyProfileDetailPage() {
           )}
         </motion.div>
       </AnimatePresence>
+
+      {/* Similar Companies Section */}
+      <div className="mt-6">
+        <SimilarCompanies companySlug={company.slug} companyName={company.name} />
+      </div>
     </div>
   );
 }
