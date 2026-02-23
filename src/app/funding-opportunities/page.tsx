@@ -59,11 +59,19 @@ const AGENCY_OPTIONS = [
   { value: 'NASA', label: 'NASA' },
   { value: 'DARPA', label: 'DARPA' },
   { value: 'NSF', label: 'NSF' },
+  { value: 'DOE', label: 'DOE' },
   { value: 'Space Force', label: 'US Space Force' },
   { value: 'ESA', label: 'ESA' },
-  { value: 'Space Florida', label: 'Space Florida' },
   { value: 'UK Space Agency', label: 'UK Space Agency' },
   { value: 'Canadian Space Agency', label: 'CSA' },
+  { value: 'European Commission', label: 'EU' },
+  { value: 'Australian Space Agency', label: 'Australia' },
+  { value: 'DLR', label: 'DLR (Germany)' },
+  { value: 'CNES', label: 'CNES (France)' },
+  { value: 'JAXA', label: 'JAXA (Japan)' },
+  { value: 'Space Florida', label: 'Space Florida' },
+  { value: 'Texas Space Commission', label: 'Texas Space' },
+  { value: 'Colorado OEDIT', label: 'Colorado' },
 ];
 
 const CATEGORY_OPTIONS = [
@@ -111,11 +119,21 @@ const AGENCY_ICONS: Record<string, string> = {
   NASA: '🚀',
   DARPA: '🛡️',
   NSF: '🔬',
+  DOE: '⚡',
   'US Space Force': '⭐',
   ESA: '🇪🇺',
-  'Space Florida': '🌴',
   'UK Space Agency': '🇬🇧',
   'Canadian Space Agency': '🇨🇦',
+  'European Commission': '🇪🇺',
+  'Australian Space Agency': '🇦🇺',
+  DLR: '🇩🇪',
+  CNES: '🇫🇷',
+  JAXA: '🇯🇵',
+  'Space Florida': '🌴',
+  'Florida Space Grant': '🌴',
+  'Texas Space Commission': '🤠',
+  'Colorado OEDIT': '🏔️',
+  'Alabama': '🏭',
 };
 
 // ---------- Helpers ----------
