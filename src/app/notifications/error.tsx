@@ -6,10 +6,10 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="text-center max-w-md mx-auto">
-        <div className="text-6xl mb-4">📋</div>
+        <div className="text-6xl mb-4">🔔</div>
         <h2 className="text-2xl font-bold text-white mb-2">Something went wrong</h2>
         <p className="text-slate-400 mb-6 text-sm">
-          {error.message || 'An unexpected error occurred while loading compliance data.'}
+          {error.message || 'An unexpected error occurred while loading notifications.'}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
