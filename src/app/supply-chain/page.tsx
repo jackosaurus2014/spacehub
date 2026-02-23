@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, Suspense } from 'react';
+import { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -98,18 +98,7 @@ function SupplyChainContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [activeTab, tierFilter, countryFilter, severityFilter, router, pathname]);
 
-  // Fetch stats on mount
-  useEffect(() => {
-    fetchStats();
-    fetchRelationships();
-  }, []);
-
-  // Fetch data based on active tab
-  useEffect(() => {
-    fetchTabData();
-  }, [activeTab, tierFilter, countryFilter, severityFilter]);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     setError(null);
     try {
       const res = await fetch('/api/supply-chain?type=stats');
@@ -119,9 +108,9 @@ function SupplyChainContent() {
       console.error('Failed to fetch stats:', error);
       setError('Failed to load data.');
     }
-  };
+  }, []);
 
-  const fetchRelationships = async () => {
+  const fetchRelationships = useCallback(async () => {
     setError(null);
     try {
       const res = await fetch('/api/supply-chain?type=relationships');
@@ -131,9 +120,9 @@ function SupplyChainContent() {
       console.error('Failed to fetch relationships:', error);
       setError('Failed to load data.');
     }
-  };
+  }, []);
 
-  const fetchTabData = async () => {
+  const fetchTabData = useCallback(async () => {
     // BOM risks tab uses client-side data — no fetch needed
     if (activeTab === 'bom-risks') {
       setLoading(false);
@@ -179,7 +168,18 @@ function SupplyChainContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab, tierFilter, countryFilter, severityFilter]);
+
+  // Fetch stats on mount
+  useEffect(() => {
+    fetchStats();
+    fetchRelationships();
+  }, [fetchStats, fetchRelationships]);
+
+  // Fetch data based on active tab
+  useEffect(() => {
+    fetchTabData();
+  }, [fetchTabData]);
 
   // Get unique countries from companies
   const availableCountries = Array.from(new Set(companies.map((c) => c.countryCode)));

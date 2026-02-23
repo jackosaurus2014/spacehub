@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const position = searchParams.get('position');
-    const module = searchParams.get('module') || undefined;
+    const targetModule = searchParams.get('module') || undefined;
     const tier = searchParams.get('tier') as SubscriptionTier | null;
 
     if (!position) {
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 
     const ad = await selectAd({
       position,
-      module,
+      module: targetModule,
       userTier: tier || undefined,
     });
 

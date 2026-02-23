@@ -106,7 +106,7 @@ export default function SolarFlareTrackerModule() {
           Solar Flare Tracker
         </h2>
         <Link
-          href="/solar-flares"
+          href="/space-environment?tab=weather"
           className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
         >
           Full Dashboard →

@@ -279,7 +279,7 @@ export default function SpaceWorkforceModule() {
           </div>
         </div>
         <Link
-          href="/workforce"
+          href="/space-talent?tab=workforce"
           className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
         >
           Full Dashboard →

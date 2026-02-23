@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -522,14 +523,13 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                   <div className="flex items-center gap-3 mb-3 pb-2 border-b border-slate-700/30">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-700 to-slate-600 flex items-center justify-center text-sm flex-shrink-0 border border-slate-600/50">
                       {company.logoUrl ? (
-                        <img
+                        <Image
                           src={company.logoUrl}
                           alt={company.name}
                           width={20}
                           height={20}
                           className="w-5 h-5 rounded object-contain"
-                          loading="lazy"
-                          decoding="async"
+                          unoptimized
                         />
                       ) : (
                         getSectorIcon(company.sector)
@@ -615,14 +615,13 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                         </button>
                         <div className="w-10 h-10 mx-auto rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg font-bold border border-slate-600/50 mb-1.5">
                           {company.logoUrl ? (
-                            <img
+                            <Image
                               src={company.logoUrl}
                               alt={company.name}
                               width={28}
                               height={28}
                               className="w-7 h-7 rounded object-contain"
-                              loading="lazy"
-                              decoding="async"
+                              unoptimized
                             />
                           ) : (
                             getSectorIcon(company.sector)

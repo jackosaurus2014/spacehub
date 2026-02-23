@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 // ────────────────────────────────────────
@@ -141,14 +142,13 @@ export default function SimilarCompanies({ companySlug, companyName }: SimilarCo
                 {/* Logo / Icon */}
                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg flex-shrink-0 border border-slate-600/30">
                   {company.logoUrl ? (
-                    <img
+                    <Image
                       src={company.logoUrl}
                       alt={`${company.name} logo`}
                       width={28}
                       height={28}
                       className="w-7 h-7 rounded object-contain"
-                      loading="lazy"
-                      decoding="async"
+                      unoptimized
                     />
                   ) : (
                     getSectorIcon(company.sector)

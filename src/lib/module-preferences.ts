@@ -66,8 +66,8 @@ export async function updateModulePreference(
     settings?: Record<string, unknown>;
   }
 ) {
-  const module = AVAILABLE_MODULES.find(m => m.moduleId === moduleId);
-  if (!module) {
+  const moduleDef = AVAILABLE_MODULES.find(m => m.moduleId === moduleId);
+  if (!moduleDef) {
     throw new Error(`Module ${moduleId} not found`);
   }
 
@@ -83,8 +83,8 @@ export async function updateModulePreference(
     create: {
       userId,
       moduleId,
-      enabled: updates.enabled ?? module.defaultEnabled,
-      position: updates.position ?? module.defaultPosition,
+      enabled: updates.enabled ?? moduleDef.defaultEnabled,
+      position: updates.position ?? moduleDef.defaultPosition,
       settings: updates.settings ? JSON.stringify(updates.settings) : null,
     },
   });

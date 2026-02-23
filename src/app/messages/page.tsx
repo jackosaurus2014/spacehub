@@ -2,18 +2,19 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ConversationList, { Conversation } from '@/components/community/ConversationList';
 import MessageThread, { Message } from '@/components/community/MessageThread';
 import { toast } from '@/lib/toast';
 
-// Placeholder current user ID — in production this comes from auth
-const CURRENT_USER_ID = 'current-user';
-
 function MessagesPageInner() {
   const searchParams = useSearchParams();
   const toUserId = searchParams.get('to');
+  const { data: session } = useSession();
+  const currentUserId = (session?.user as any)?.id || '';
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
@@ -136,6 +137,19 @@ function MessagesPageInner() {
     setMessages([]);
   };
 
+  if (!session?.user) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white mb-4">Sign in to access messages</h2>
+          <Link href="/login" className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg min-h-[44px] inline-flex items-center">
+            Sign In
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
@@ -172,7 +186,7 @@ function MessagesPageInner() {
               <ConversationList
                 conversations={conversations}
                 activeId={activeConversationId || undefined}
-                currentUserId={CURRENT_USER_ID}
+                currentUserId={currentUserId}
                 onSelect={handleSelectConversation}
               />
             </div>
@@ -204,7 +218,7 @@ function MessagesPageInner() {
                 ) : (
                   <MessageThread
                     messages={messages}
-                    currentUserId={CURRENT_USER_ID}
+                    currentUserId={currentUserId}
                     onSend={handleSendMessage}
                   />
                 )

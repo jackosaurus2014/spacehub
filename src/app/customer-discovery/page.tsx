@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
@@ -562,10 +563,13 @@ export default function CustomerDiscoveryPage() {
                                   >
                                     <div className="flex items-center gap-2 mb-1.5">
                                       {company.logoUrl ? (
-                                        <img
+                                        <Image
                                           src={company.logoUrl}
-                                          alt=""
+                                          alt={company.name + ' logo'}
+                                          width={24}
+                                          height={24}
                                           className="w-6 h-6 rounded object-contain bg-white/10"
+                                          unoptimized
                                         />
                                       ) : (
                                         <div className="w-6 h-6 rounded bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-400">

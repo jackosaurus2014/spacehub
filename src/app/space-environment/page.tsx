@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   SolarFlare,
   SolarForecast,
@@ -1088,7 +1089,7 @@ function SpaceWeatherTab() {
               <span>&#128279;</span> Related Modules
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <Link href="/debris-monitor" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
+              <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
                 <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">&#128752; Debris Monitor</div>
                 <p className="text-xs text-slate-400 mt-1">Solar storms can alter debris orbits</p>
               </Link>
@@ -1322,11 +1323,12 @@ function SpaceWeatherTab() {
                 {solarImagery.map((img) => (
                   <div key={img.id} className="card overflow-hidden">
                     <div className="relative h-48 bg-slate-900">
-                      <img
+                      <Image
                         src={img.image_url}
                         alt={img.name || 'Solar image'}
                         className="w-full h-full object-cover"
-                        loading="lazy"
+                        fill
+                        unoptimized
                       />
                     </div>
                     <div className="p-3">

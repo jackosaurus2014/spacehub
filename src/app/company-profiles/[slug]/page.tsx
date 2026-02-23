@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
@@ -926,7 +927,7 @@ function NewsTab({ companySlug, companyName }: { companySlug: string; companyNam
               className="flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
             >
               {article.imageUrl && (
-                <img src={article.imageUrl} alt={article.title} width={64} height={48} className="w-16 h-12 rounded object-cover flex-shrink-0" loading="lazy" decoding="async" />
+                <Image src={article.imageUrl} alt={article.title} width={64} height={48} className="w-16 h-12 rounded object-cover flex-shrink-0" unoptimized />
               )}
               <div className="flex-1 min-w-0">
                 <h4 className="text-sm font-medium text-white group-hover:text-cyan-400 transition-colors line-clamp-1">
@@ -1053,7 +1054,7 @@ function RelationshipsTab({ company }: { company: CompanyDetail }) {
                   className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3 flex items-center gap-3 cursor-pointer hover:border-cyan-500/30 transition-colors"
                 >
                   <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-sm">
-                    {c.logoUrl ? <img src={c.logoUrl} alt={`${c.name} logo`} width={20} height={20} className="w-5 h-5 rounded" loading="lazy" decoding="async" /> : getSectorIcon(c.sector)}
+                    {c.logoUrl ? <Image src={c.logoUrl} alt={`${c.name} logo`} width={20} height={20} className="w-5 h-5 rounded" unoptimized /> : getSectorIcon(c.sector)}
                   </div>
                   <div>
                     <div className="text-sm font-medium text-white">{c.name}</div>
@@ -1249,7 +1250,7 @@ export default function CompanyProfileDetailPage() {
                 className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-3xl flex-shrink-0 border border-slate-600/50"
               >
                 {company.logoUrl ? (
-                  <img src={company.logoUrl} alt={`${company.name} logo`} width={48} height={48} className="w-12 h-12 rounded-xl object-contain" loading="lazy" decoding="async" />
+                  <Image src={company.logoUrl} alt={`${company.name} logo`} width={48} height={48} className="w-12 h-12 rounded-xl object-contain" unoptimized />
                 ) : (
                   getSectorIcon(company.sector)
                 )}

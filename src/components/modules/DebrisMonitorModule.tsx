@@ -180,7 +180,7 @@ export default function DebrisMonitorModule() {
           Space Debris & Collision Risk Monitor
         </h2>
         <Link
-          href="/debris-monitor"
+          href="/space-environment?tab=debris"
           className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
         >
           Full Dashboard &rarr;

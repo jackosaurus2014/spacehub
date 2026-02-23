@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -664,11 +665,13 @@ export default function MarsPlannerPage() {
                     <StaggerItem key={photo.id}>
                       <div className="card p-3 border border-slate-700/50 hover:border-red-500/30 transition-all bg-gradient-to-br from-slate-800/60 to-slate-900/60">
                         <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-slate-800">
-                          <img
+                          <Image
                             src={photo.img_src}
                             alt={`Mars photo from ${photo.rover_name} - ${photo.camera_full_name}`}
                             className="w-full h-full object-cover"
-                            loading="lazy"
+                            width={400}
+                            height={400}
+                            unoptimized
                           />
                         </div>
                         <div className="space-y-1">
@@ -706,7 +709,7 @@ export default function MarsPlannerPage() {
             <Link href="/mission-cost" className="btn-secondary text-sm">
               💰 Mission Cost Calculator
             </Link>
-            <Link href="/debris-monitor" className="btn-secondary text-sm">
+            <Link href="/space-environment?tab=debris" className="btn-secondary text-sm">
               ⚠️ Debris Monitor
             </Link>
           </div>

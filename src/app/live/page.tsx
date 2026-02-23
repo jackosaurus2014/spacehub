@@ -317,14 +317,14 @@ function LiveHubContent() {
               <p className="text-xs text-slate-400 mt-1">All upcoming launches</p>
             </Link>
             <Link
-              href="/solar-flares"
+              href="/space-environment?tab=weather"
               className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-cyan-300">Solar Activity</div>
               <p className="text-xs text-slate-400 mt-1">Space weather impacts</p>
             </Link>
             <Link
-              href="/debris-monitor"
+              href="/space-environment?tab=debris"
               className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-cyan-300">Debris Monitor</div>

@@ -832,7 +832,7 @@ function AsteroidWatchContent() {
             <ScrollReveal><div className="card p-5">
               <h3 className="text-lg font-semibold text-white mb-3">Related Modules</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <Link href="/debris-monitor" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
+                <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
                   <div className="text-sm font-medium text-white group-hover:text-nebula-300">Debris Monitor</div>
                   <p className="text-xs text-slate-400 mt-1">Impact debris and conjunction tracking</p>
                 </Link>

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { PROPOSAL_STATUSES } from '@/lib/marketplace-types';
 import MatchScore from './MatchScore';
 import ComingSoonBadge from './ComingSoonBadge';
@@ -62,7 +63,7 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
             <>
               <div className="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-sm flex-shrink-0">
                 {proposal.company.logoUrl ? (
-                  <img src={proposal.company.logoUrl} alt={`${proposal.company.name} logo`} width={24} height={24} className="w-6 h-6 rounded object-contain" loading="lazy" decoding="async" />
+                  <Image src={proposal.company.logoUrl} alt={`${proposal.company.name} logo`} width={24} height={24} className="w-6 h-6 rounded object-contain" unoptimized />
                 ) : (
                   proposal.company.name.charAt(0)
                 )}

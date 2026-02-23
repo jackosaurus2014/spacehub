@@ -748,11 +748,11 @@ function InsuranceContent() {
                     Active Risk Factors
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <Link href="/debris-monitor" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
+                    <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
                       <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">🛰️ Debris Monitor</div>
                       <p className="text-xs text-slate-400 mt-1">Orbital debris increases collision risk and claims</p>
                     </Link>
-                    <Link href="/solar-flares" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
+                    <Link href="/space-environment?tab=weather" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
                       <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">☀️ Solar Activity</div>
                       <p className="text-xs text-slate-400 mt-1">Solar storms affect satellite operations</p>
                     </Link>
@@ -1103,7 +1103,7 @@ function InsuranceContent() {
                       </p>
                     </div>
                     <Link
-                      href="/workforce?tab=jobs&category=legal"
+                      href="/space-talent?tab=jobs&category=legal"
                       className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors whitespace-nowrap"
                     >
                       Find insurance professionals

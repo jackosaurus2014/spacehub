@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface SponsorBannerProps {
   companyName: string;
@@ -15,7 +16,7 @@ export default function SponsorBanner({ companyName, companySlug, bannerUrl, tag
     <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/5 via-slate-800/50 to-amber-500/5 mb-6">
       {bannerUrl && (
         <div className="absolute inset-0 opacity-20">
-          <img src={bannerUrl} alt="" className="w-full h-full object-cover" />
+          <Image src={bannerUrl} alt={companyName + ' sponsor banner'} className="w-full h-full object-cover" fill unoptimized />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent" />
         </div>
       )}

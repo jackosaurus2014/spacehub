@@ -187,13 +187,14 @@ export default function HeroStats() {
   }, []);
 
   // Update countdown every second
+  const launchDate = launch?.date;
   useEffect(() => {
-    if (!launch) return;
+    if (!launchDate) return;
     const interval = setInterval(() => {
       setLaunch(prev => prev ? { ...prev, timeUntil: formatTimeUntil(prev.date) } : null);
     }, 1000);
     return () => clearInterval(interval);
-  }, [launch?.date]);
+  }, [launchDate]);
 
   if (loading) {
     return (

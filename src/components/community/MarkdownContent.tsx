@@ -2,6 +2,7 @@
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Image from 'next/image';
 
 interface MarkdownContentProps {
   content: string;
@@ -90,11 +91,13 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
           ),
           hr: () => <hr className="border-slate-700/50 my-4" />,
           img: ({ src, alt }) => (
-            <img
-              src={src}
+            <Image
+              src={src || ''}
               alt={alt || ''}
+              width={800}
+              height={400}
               className="max-w-full h-auto rounded-lg border border-slate-700/50 my-2"
-              loading="lazy"
+              unoptimized
             />
           ),
         }}

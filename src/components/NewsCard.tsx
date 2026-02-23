@@ -119,7 +119,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
               className={`${categoryColor} text-white text-xs font-semibold px-2 py-1 rounded uppercase tracking-wide inline-flex items-center gap-1.5`}
             >
               {CATEGORY_LOGOS[article.category] && (
-                <Image src={CATEGORY_LOGOS[article.category]} alt="" width={16} height={16} className="inline-block" />
+                <Image src={CATEGORY_LOGOS[article.category]} alt={article.category + ' category'} width={16} height={16} className="inline-block" />
               )}
               {article.category}
             </span>
@@ -194,7 +194,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
             className={`${categoryColor} text-white text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wide inline-flex items-center gap-1`}
           >
             {CATEGORY_LOGOS[article.category] && (
-              <Image src={CATEGORY_LOGOS[article.category]} alt="" width={12} height={12} className="inline-block" />
+              <Image src={CATEGORY_LOGOS[article.category]} alt={article.category + ' category'} width={12} height={12} className="inline-block" />
             )}
             {article.category}
           </span>

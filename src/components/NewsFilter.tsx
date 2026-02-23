@@ -63,7 +63,7 @@ export default function NewsFilter({
           {CATEGORY_LOGOS[category.slug] ? (
             <Image
               src={CATEGORY_LOGOS[category.slug]}
-              alt=""
+              alt={category.name + ' category'}
               width={20}
               height={20}
               className="rounded-sm flex-shrink-0"

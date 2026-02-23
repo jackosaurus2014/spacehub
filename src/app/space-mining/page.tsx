@@ -906,7 +906,7 @@ function SpaceMiningContent() {
           <Link href="/launch-windows" className="btn-secondary text-sm">
             🪟 Launch Windows
           </Link>
-          <Link href="/debris-monitor" className="btn-secondary text-sm">
+          <Link href="/space-environment?tab=debris" className="btn-secondary text-sm">
             ⚠️ Debris Monitor
           </Link>
         </div>

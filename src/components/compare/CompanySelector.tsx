@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 
 interface CompanyOption {
   id: string;
@@ -168,10 +169,13 @@ export default function CompanySelector({
               >
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-700 to-slate-600 flex items-center justify-center text-sm flex-shrink-0 border border-slate-600/50">
                   {company.logoUrl ? (
-                    <img
+                    <Image
                       src={company.logoUrl}
                       alt={company.name}
+                      width={20}
+                      height={20}
                       className="w-5 h-5 rounded object-contain"
+                      unoptimized
                     />
                   ) : (
                     <span className="text-slate-400 text-xs font-bold">

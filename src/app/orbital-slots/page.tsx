@@ -339,7 +339,7 @@ function OrbitTypeCard({ slot }: { slot: OrbitalSlot }) {
       {/* Cross-module link */}
       <div className="mt-3 pt-3 border-t border-slate-200">
         <Link
-          href="/debris-monitor?tab=overview"
+          href="/space-environment?tab=debris"
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
         >
           View debris in this orbit &rarr;
@@ -445,7 +445,7 @@ function OperatorCard({ operator, rank }: { operator: SatelliteOperator; rank: n
       {/* Cross-module links */}
       <div className="mt-3 pt-3 border-t border-slate-200 flex flex-wrap gap-2">
         <Link
-          href="/debris-monitor?tab=objects"
+          href="/space-environment?tab=debris"
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
         >
           View Debris &rarr;
@@ -540,7 +540,7 @@ function EventCard({ event }: { event: OrbitalEvent }) {
       {isConjunction && (
         <div className="mt-3 pt-3 border-t border-slate-200">
           <Link
-            href="/debris-monitor?tab=conjunctions"
+            href="/space-environment?tab=debris"
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
           >
             View in Debris Monitor &rarr;

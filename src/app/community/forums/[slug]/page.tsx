@@ -142,16 +142,14 @@ export default function ForumCategoryPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-4">
-          <Link href="/community" className="hover:text-cyan-400 transition-colors">Community</Link>
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          <Link href="/community/forums" className="hover:text-cyan-400 transition-colors">Forums</Link>
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          <span className="text-slate-300">{category?.name || slug}</span>
+        <nav className="flex items-center gap-2 text-sm text-slate-400 mb-4 overflow-x-auto" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
+          <span className="text-slate-600">/</span>
+          <Link href="/community" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Community</Link>
+          <span className="text-slate-600">/</span>
+          <Link href="/community/forums" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Forums</Link>
+          <span className="text-slate-600">/</span>
+          <span className="text-slate-300 whitespace-nowrap">{category?.name || slug}</span>
         </nav>
 
         <div className="flex items-center justify-between mb-6">

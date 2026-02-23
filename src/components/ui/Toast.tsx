@@ -202,7 +202,7 @@ export default function ToastContainer() {
       unsubToast();
       unsubDismiss();
     };
-  }, [removeToast]);
+  }, [removeToast, haptics]);
 
   if (toasts.length === 0) {
     return null;

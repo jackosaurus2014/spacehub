@@ -66,7 +66,7 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
   const [countdown, setCountdown] = useState<string>('');
   const [isExpired, setIsExpired] = useState(false);
   const typeInfo = EVENT_TYPE_INFO[event.type] || EVENT_TYPE_INFO.launch;
-  const launchDate = event.launchDate ? new Date(event.launchDate) : null;
+  const launchDate = useMemo(() => event.launchDate ? new Date(event.launchDate) : null, [event.launchDate]);
 
   useEffect(() => {
     if (!launchDate) return;
@@ -1055,11 +1055,12 @@ function MissionControlContent() {
                     {epicEarthImages.map((img) => (
                       <div key={img.identifier} className="card overflow-hidden w-72 flex-shrink-0">
                         <div className="relative h-48 bg-slate-800">
-                          <img
+                          <Image
                             src={img.image_url}
                             alt={img.caption || 'Earth from EPIC camera'}
                             className="w-full h-full object-cover"
-                            loading="lazy"
+                            fill
+                            unoptimized
                           />
                         </div>
                         <div className="p-3">
@@ -1100,11 +1101,12 @@ function MissionControlContent() {
                   {nasaImages.map((img) => (
                     <div key={img.nasa_id} className="card overflow-hidden">
                       <div className="relative h-40 bg-slate-800">
-                        <img
+                        <Image
                           src={img.thumbnail_url}
                           alt={img.title}
                           className="w-full h-full object-cover"
-                          loading="lazy"
+                          fill
+                          unoptimized
                         />
                         {img.media_type && img.media_type !== 'image' && (
                           <div className="absolute top-2 right-2 bg-slate-900/70 text-white text-xs px-2 py-0.5 rounded capitalize">
@@ -1184,11 +1186,11 @@ function MissionControlContent() {
               <span>🔗</span> Related Intelligence
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <Link href="/solar-flares" className="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors group">
+              <Link href="/space-environment?tab=weather" className="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors group">
                 <div className="text-sm font-medium text-slate-200 group-hover:text-nebula-200">☀️ Solar Flares</div>
                 <p className="text-xs text-slate-400 mt-1">Solar weather can delay launches</p>
               </Link>
-              <Link href="/debris-monitor" className="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors group">
+              <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors group">
                 <div className="text-sm font-medium text-slate-200 group-hover:text-nebula-200">🛰️ Debris Monitor</div>
                 <p className="text-xs text-slate-400 mt-1">Track orbital debris near missions</p>
               </Link>

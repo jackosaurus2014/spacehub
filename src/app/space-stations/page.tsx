@@ -1121,10 +1121,10 @@ export default function SpaceStationTrackerPage() {
         <div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur mt-8">
           <h3 className="text-sm font-semibold text-white mb-3">Related Modules</h3>
           <div className="flex flex-wrap gap-3">
-            <Link href="/lunar-gateway" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/cislunar?tab=gateway" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
               Lunar Gateway
             </Link>
-            <Link href="/debris-monitor" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/space-environment?tab=debris" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
               Debris Monitor
             </Link>
             <Link href="/launch-windows" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">

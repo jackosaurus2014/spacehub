@@ -91,12 +91,12 @@ export default function RFQDetailPage({ params }: { params: { id: string } }) {
           { name: rfqData?.title || 'RFQ' },
         ]} />
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center gap-2 text-sm text-slate-500">
-          <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
-          <span>/</span>
-          <Link href="/marketplace" className="hover:text-slate-300 transition-colors">Marketplace</Link>
-          <span>/</span>
-          <span className="text-slate-400 truncate">{rfqData?.title || 'RFQ'}</span>
+        <nav className="flex items-center gap-2 text-sm text-slate-400 mb-4 overflow-x-auto" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
+          <span className="text-slate-600">/</span>
+          <Link href="/marketplace" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Marketplace</Link>
+          <span className="text-slate-600">/</span>
+          <span className="text-slate-300 whitespace-nowrap">{rfqData?.title || 'RFQ Details'}</span>
         </nav>
 
         {/* Header */}

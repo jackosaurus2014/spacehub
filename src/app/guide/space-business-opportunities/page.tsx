@@ -139,14 +139,12 @@ export default function SpaceBusinessOpportunitiesPage() {
     <div className="min-h-screen bg-space-900">
       <div className="container mx-auto px-4 pb-16">
         {/* Breadcrumbs */}
-        <nav className="pt-6 mb-4" aria-label="Breadcrumb">
-          <ol className="flex items-center gap-2 text-sm text-slate-400">
-            <li><Link href="/" className="hover:text-nebula-400 transition-colors">Home</Link></li>
-            <li>/</li>
-            <li><Link href="/guide/space-industry" className="hover:text-nebula-400 transition-colors">Guides</Link></li>
-            <li>/</li>
-            <li className="text-nebula-400">Space Business Opportunities</li>
-          </ol>
+        <nav className="flex items-center gap-2 text-sm text-slate-400 pt-6 mb-4 overflow-x-auto" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
+          <span className="text-slate-600">/</span>
+          <Link href="/guide/space-industry" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Guides</Link>
+          <span className="text-slate-600">/</span>
+          <span className="text-slate-300 whitespace-nowrap">Space Business Opportunities</span>
         </nav>
 
         <div className="max-w-4xl mx-auto">

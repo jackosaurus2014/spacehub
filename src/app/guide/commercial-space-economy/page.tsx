@@ -133,17 +133,17 @@ export default function CommercialSpaceEconomyPage() {
             className="absolute inset-0 bg-gradient-to-b from-nebula-600/30 via-space-900/80 to-transparent pointer-events-none"
           />
           <div className="relative container mx-auto px-4 text-center max-w-4xl">
-            <div className="flex items-center justify-center gap-2 text-star-300 text-sm mb-4">
-              <Link href="/" className="hover:text-white transition-colors">
+            <nav className="flex items-center justify-center gap-2 text-sm text-slate-400 mb-4 overflow-x-auto" aria-label="Breadcrumb">
+              <Link href="/" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">
                 Home
               </Link>
-              <span className="text-star-300/50">/</span>
-              <Link href="/guide/space-industry" className="hover:text-white transition-colors">
-                Guide
+              <span className="text-slate-600">/</span>
+              <Link href="/guide/space-industry" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">
+                Guides
               </Link>
-              <span className="text-star-300/50">/</span>
-              <span className="text-white">Commercial Space Economy</span>
-            </div>
+              <span className="text-slate-600">/</span>
+              <span className="text-slate-300 whitespace-nowrap">Commercial Space Economy</span>
+            </nav>
             <h1 className="text-display-lg md:text-display-xl font-display font-bold text-white mb-6 leading-tight">
               Commercial Space Economy Overview
             </h1>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from '@/lib/toast';
 
 interface Clarification {
@@ -28,7 +28,7 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
   const [isPublicQ, setIsPublicQ] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchClarifications = async () => {
+  const fetchClarifications = useCallback(async () => {
     try {
       const res = await fetch(`/api/marketplace/rfq/${rfqId}/clarifications`);
       if (res.ok) {
@@ -40,9 +40,9 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
     } finally {
       setLoading(false);
     }
-  };
+  }, [rfqId]);
 
-  useEffect(() => { fetchClarifications(); }, [rfqId]);
+  useEffect(() => { fetchClarifications(); }, [fetchClarifications]);
 
   const handleAskQuestion = async (e: React.FormEvent) => {
     e.preventDefault();

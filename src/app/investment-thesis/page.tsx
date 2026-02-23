@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
@@ -448,10 +449,13 @@ export default function InvestmentThesisPage() {
                       className="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-slate-700/50 transition-colors first:rounded-t-xl last:rounded-b-xl"
                     >
                       {company.logoUrl ? (
-                        <img
+                        <Image
                           src={company.logoUrl}
-                          alt=""
+                          alt={company.name + ' logo'}
+                          width={32}
+                          height={32}
                           className="w-8 h-8 rounded-lg object-contain bg-white/10 p-0.5"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center">
@@ -476,10 +480,13 @@ export default function InvestmentThesisPage() {
             {selectedCompany && (
               <div className="flex items-center gap-3 mb-6 p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl">
                 {selectedCompany.logoUrl ? (
-                  <img
+                  <Image
                     src={selectedCompany.logoUrl}
-                    alt=""
+                    alt={selectedCompany.name + ' logo'}
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-lg object-contain bg-white/10 p-0.5"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center">
@@ -596,10 +603,13 @@ export default function InvestmentThesisPage() {
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                     <div className="flex items-center gap-4">
                       {thesisData.company.logoUrl ? (
-                        <img
+                        <Image
                           src={thesisData.company.logoUrl}
-                          alt=""
+                          alt={thesisData.company.name + ' logo'}
+                          width={56}
+                          height={56}
                           className="w-14 h-14 rounded-xl object-contain bg-white/10 p-1"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-14 h-14 rounded-xl bg-slate-700 flex items-center justify-center">

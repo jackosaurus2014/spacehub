@@ -126,7 +126,7 @@ function DetailModal({
 
           {/* Features */}
           <div>
-            <h3 className="text-white font-semibold mb-3">What's Included</h3>
+            <h3 className="text-white font-semibold mb-3">What&apos;s Included</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {(offering.features || []).map((feature, i) => (
                 <div key={i} className="flex items-start gap-2 text-sm">

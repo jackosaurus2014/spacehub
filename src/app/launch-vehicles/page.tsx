@@ -1554,9 +1554,9 @@ export default function LaunchVehiclesPage() {
                 <div>
                   <h4 className="text-white font-medium mb-2">Launch Records</h4>
                   <ul className="space-y-1">
-                    <li>Jonathan McDowell's Launch Log</li>
+                    <li>Jonathan McDowell&apos;s Launch Log</li>
                     <li>Space Launch Report</li>
-                    <li>Gunter's Space Page</li>
+                    <li>Gunter&apos;s Space Page</li>
                     <li>Next Spaceflight</li>
                   </ul>
                 </div>
@@ -1564,8 +1564,8 @@ export default function LaunchVehiclesPage() {
                   <h4 className="text-white font-medium mb-2">Manufacturer Data</h4>
                   <ul className="space-y-1">
                     <li>SpaceX Capabilities & Services</li>
-                    <li>ULA Payload Planner's Guide</li>
-                    <li>Arianespace User's Manual</li>
+                    <li>ULA Payload Planner&apos;s Guide</li>
+                    <li>Arianespace User&apos;s Manual</li>
                     <li>ISRO Official Launch Records</li>
                   </ul>
                 </div>

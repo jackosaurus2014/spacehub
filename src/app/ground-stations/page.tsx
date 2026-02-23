@@ -831,7 +831,7 @@ export default function GroundStationsPage() {
             <Link href="/orbital-services" className="btn-secondary text-sm">
               {String.fromCodePoint(0x1F310)} Orbital Services
             </Link>
-            <Link href="/debris-monitor" className="btn-secondary text-sm">
+            <Link href="/space-environment?tab=debris" className="btn-secondary text-sm">
               {String.fromCodePoint(0x26A0)} Debris Monitor
             </Link>
           </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { SpaceCompany, FOCUS_AREAS, COUNTRY_INFO, CompanyCountry } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -153,11 +153,7 @@ export default function MarketIntelModule() {
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [companiesRes, statsRes] = await Promise.all([
         fetch('/api/companies?limit=50'),
@@ -189,7 +185,11 @@ export default function MarketIntelModule() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const fetchStockData = async (publicCompanies: SpaceCompany[]) => {
     const tickers = publicCompanies.map((c) => c.ticker).join(',');

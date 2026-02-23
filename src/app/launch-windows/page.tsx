@@ -800,7 +800,7 @@ function LaunchWindowsContent() {
                   Solar Exploration
                 </Link>
                 <Link
-                  href="/debris-monitor"
+                  href="/space-environment?tab=debris"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors"
                 >
                   <span>⚠️</span>

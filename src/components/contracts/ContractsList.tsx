@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   GovernmentContract,
   CONTRACT_AGENCIES,
@@ -40,11 +40,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
   const [statusFilter, setStatusFilter] = useState<ContractStatus | ''>('');
   const [categoryFilter, setCategoryFilter] = useState<ContractCategory | ''>('');
 
-  useEffect(() => {
-    fetchData();
-  }, [agencyFilter, typeFilter, statusFilter, categoryFilter]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -73,7 +69,11 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
     } finally {
       setLoading(false);
     }
-  };
+  }, [agencyFilter, typeFilter, statusFilter, categoryFilter]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleInitialize = async () => {
     setInitializing(true);

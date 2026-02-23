@@ -306,7 +306,7 @@ export default function SatelliteTrackerModule() {
           View Orbital Slots &rarr;
         </Link>
         <Link
-          href="/debris-monitor"
+          href="/space-environment?tab=debris"
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 transition-colors border border-orange-500/30"
         >
           Debris Monitor &rarr;
