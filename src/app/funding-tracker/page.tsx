@@ -35,8 +35,8 @@ interface FundingRound {
 
 interface Stats {
   summary: {
-    ytdTotal: number;
-    ytdDealCount: number;
+    last12MonthsTotal: number;
+    last12MonthsDealCount: number;
     allTimeTotal: number;
     totalDeals: number;
     avgRoundSize: number;
@@ -245,20 +245,20 @@ function FundingTrackerPageInner() {
               <StaggerItem>
                 <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
                   <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                    {formatAmount(stats.summary.ytdTotal)}
+                    {formatAmount(stats.summary.last12MonthsTotal)}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">
-                    Raised YTD
+                    Last 12 Months
                   </div>
                 </div>
               </StaggerItem>
               <StaggerItem>
                 <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
                   <div className="text-2xl md:text-3xl font-bold text-cyan-400">
-                    {stats.summary.ytdDealCount}
+                    {stats.summary.last12MonthsDealCount}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">
-                    Deals YTD
+                    Deals (12 Mo)
                   </div>
                 </div>
               </StaggerItem>

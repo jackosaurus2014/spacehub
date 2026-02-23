@@ -93,25 +93,6 @@ export async function GET() {
       }))
       .sort((a, b) => b.avgAmount - a.avgAmount);
 
-    // ── Top investors by deal count ──
-    const investorDeals: Record<string, { deals: number; totalAmount: number }> = {};
-    allRounds.forEach((r) => {
-      const allInvestors = [
-        ...(r.leadInvestor ? [r.leadInvestor] : []),
-        ...r.investors,
-      ];
-      const uniqueInvestors = Array.from(new Set(allInvestors));
-      uniqueInvestors.forEach((inv) => {
-        if (!investorDeals[inv]) investorDeals[inv] = { deals: 0, totalAmount: 0 };
-        investorDeals[inv].deals += 1;
-        investorDeals[inv].totalAmount += r.amount || 0;
-      });
-    });
-    const topInvestors = Object.entries(investorDeals)
-      .map(([name, data]) => ({ name, ...data }))
-      .sort((a, b) => b.deals - a.deals)
-      .slice(0, 20);
-
     // ── Largest rounds ──
     const largestRounds = allRounds
       .filter((r) => r.amount && r.amount > 0)
@@ -129,25 +110,49 @@ export async function GET() {
         postValuation: r.postValuation,
       }));
 
-    // ── YTD summary stats ──
-    const yearStart = new Date(now.getFullYear(), 0, 1);
-    const ytdRounds = allRounds.filter((r) => r.date >= yearStart);
-    const ytdTotal = ytdRounds.reduce((sum, r) => sum + (r.amount || 0), 0);
-    const ytdDealCount = ytdRounds.length;
-    const allTimeTotal = allRounds.reduce((sum, r) => sum + (r.amount || 0), 0);
+    // ── Last 12 months summary stats ──
+    const twelveMonthsAgo = new Date(now);
+    twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
+    const last12Rounds = allRounds.filter((r) => r.date >= twelveMonthsAgo);
+    const last12MonthsTotal = last12Rounds.reduce((sum, r) => sum + (r.amount || 0), 0);
+    const last12MonthsDealCount = last12Rounds.length;
+    const last12WithAmount = last12Rounds.filter((r) => r.amount);
     const avgRoundSize =
-      allRounds.filter((r) => r.amount).length > 0
-        ? allTimeTotal / allRounds.filter((r) => r.amount).length
+      last12WithAmount.length > 0
+        ? last12MonthsTotal / last12WithAmount.length
         : 0;
-    const largestRound = allRounds.reduce(
+    const largestRound = last12Rounds.reduce(
       (max, r) => ((r.amount || 0) > max ? r.amount || 0 : max),
       0
     );
+    const allTimeTotal = allRounds.reduce((sum, r) => sum + (r.amount || 0), 0);
+
+    // ── Top investors by deal count (last 5 years) ──
+    const fiveYearsAgo = new Date(now);
+    fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
+    const last5YearRounds = allRounds.filter((r) => r.date >= fiveYearsAgo);
+    const investorDeals5yr: Record<string, { deals: number; totalAmount: number }> = {};
+    last5YearRounds.forEach((r) => {
+      const allInvestorNames = [
+        ...(r.leadInvestor ? [r.leadInvestor] : []),
+        ...r.investors,
+      ];
+      const uniqueInvestorNames = Array.from(new Set(allInvestorNames));
+      uniqueInvestorNames.forEach((inv) => {
+        if (!investorDeals5yr[inv]) investorDeals5yr[inv] = { deals: 0, totalAmount: 0 };
+        investorDeals5yr[inv].deals += 1;
+        investorDeals5yr[inv].totalAmount += r.amount || 0;
+      });
+    });
+    const topInvestors5yr = Object.entries(investorDeals5yr)
+      .map(([name, data]) => ({ name, ...data }))
+      .sort((a, b) => b.deals - a.deals)
+      .slice(0, 20);
 
     return NextResponse.json({
       summary: {
-        ytdTotal,
-        ytdDealCount,
+        last12MonthsTotal,
+        last12MonthsDealCount,
         allTimeTotal,
         totalDeals: allRounds.length,
         avgRoundSize,
@@ -156,7 +161,7 @@ export async function GET() {
       fundingByQuarter,
       fundingBySector,
       avgRoundByStage,
-      topInvestors,
+      topInvestors: topInvestors5yr,
       largestRounds,
     });
   } catch (error) {

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -99,13 +100,16 @@ function formatAUM(value: number): string {
 // Main Page Component
 // ────────────────────────────────────────
 
-export default function InvestorsPage() {
+function InvestorsPageInner() {
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get('search') || '';
+
   const [investors, setInvestors] = useState<Investor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState('');
   const [sectorFilter, setSectorFilter] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const fetchInvestors = useCallback(async () => {
@@ -513,5 +517,13 @@ export default function InvestorsPage() {
         </ScrollReveal>
       </div>
     </div>
+  );
+}
+
+export default function InvestorsPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <InvestorsPageInner />
+    </Suspense>
   );
 }
