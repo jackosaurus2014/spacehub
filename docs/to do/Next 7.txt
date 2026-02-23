@@ -1,0 +1,281 @@
+1.  In our space capital module, we have a section called top 20 investors, but right now it only shows 10 investors.  Can we identify more investors to include here?  If not, let's rename it the title of that section to match the number of investors we found.
+STATUS: DONE - Changed "Top 20 Investors" to dynamic "Top {count} Investors" so it always matches the actual count. (Commit 14a7497)
+
+2.  Let's add a link straight to the forums in the menu at the top of the page.
+STATUS: DONE - Added "Community Forums" link to the EXPLORE_ITEMS array in Navigation.tsx with description. (Commit 14a7497)
+
+3.  For the pull out menu at the bottom left of our side (that includes the SpaceNexus Blog, AI insights, marketplace, etc) - let's add forums into this section as well.
+STATUS: DONE - Added forums link with chat bubble icon to QuickAccessSidebar.tsx bottom section. (Commit 14a7497)
+
+4.  Let's optimize our site for mobile use.
+STATUS: DONE - P1 mobile fixes applied: (Commit 3634ca6)
+  - Mission control cards: stack vertically on mobile (flex-col sm:flex-row), full-width images
+  - Touch targets: increased all action links from ~24px to 44px+ min height (WCAG 2.5.8)
+  - News filter: horizontal scroll on mobile (overflow-x-auto) instead of wrapping off screen
+  - Footer links: increased spacing to 12px between items for easier tap targets
+  - Export button: 44px minimum height on main button and dropdown items
+
+5.  How can I make sure that my admin account has full access to the site?
+STATUS: DONE - Created scripts/grant-admin.ts script. (Commit 293f61e)
+  Usage: npx tsx scripts/grant-admin.ts your-email@example.com
+  This sets isAdmin=true on your User model, giving you access to:
+  - /admin (feature/help request dashboard)
+  - /admin/moderation (content moderation, user ban/mute/warn)
+  - /admin/data-freshness (data source health monitoring)
+  - Edit/delete any forum post or thread
+  - Approve/reject AI insights
+  - Manage other users' alert rules
+  - Access campaign analytics
+  - Full marketplace verification
+  Alternative: Direct DB query: UPDATE "User" SET "isAdmin" = true WHERE email = 'your@email.com';
+
+6.  For the cards in the mission control, we have a section in the top left of the card that says the mission name and then we repeat the name in the main part of the card.  E.g. falcon 9 block 5 starlink group 17-26 is repeated both in the logo/upper left part of the card and in the main part of the card.  Let's get rid of the text/name in the logo part and instead just use custom designed logos to represent whether the mission is a launch, crewed event, moon event, mars event, station event or satellite event.  Use nanobanana to create custom logos for each of those events.
+STATUS: DONE - Code updated + logo generator script created. (Commit e229a32)
+  - MissionControlModule.tsx now uses event type logos (48x48 for primary, 40x40 for secondary cards)
+  - Keyword matching: launch, crewed, moon/lunar/artemis, mars, station/iss, satellite/starlink
+  - Falls back to emoji icons when logo files not yet generated
+  ACTION NEEDED: Run `npx tsx scripts/generate-category-logos.ts` to generate the 6 event logos via NanoBanana/Gemini API
+
+7.  Do the same thing as above for our Space News.  Right now we repeat the news title in the top/logo section of the card and in the main title of the card.  Let's create custom logos in nanobanana for launches, missions, companies, satellites, defense, earnings, M&A, development, policy and debris news.  Then fix the toggle buttons at the top of the news section to implement those logos and update all of the cards in the news section to show the proper logo without any text in the logo section.  Make sure we use the logos moving forward on the cards - we don't want to be repeating the news text in two parts of the card.
+STATUS: DONE - Code updated + logo generator script created. (Commit e229a32)
+  - NewsCard.tsx: category logos in featured/standard badges (16x16 and 12x12)
+  - Image placeholder area: 48x48 category logo when no article image exists
+  - 10 news categories mapped to logo files
+  ACTION NEEDED: Run `npx tsx scripts/generate-category-logos.ts` to generate the 10 news logos via NanoBanana/Gemini API
+
+8.  For the Blogs section, let's create logos for each of the topics - space law, investment, policy, technology, business, and exploration.  Then insert those new logos into the toggleable buttons for the filter by topic section.  Then for the cards in the blogs & articles section let's make sure we're using the appropriate logo in each of the cards instead of the notepad/pencil logo we have in the cards right now.
+STATUS: DONE - Code updated + logo generator script created. (Commit e229a32)
+  - BlogsArticlesModule.tsx: 32x32 topic logos replace notepad/pencil emojis
+  - Topic matching via slug and keyword aliases (e.g., "legal" -> space-law logo)
+  - Falls back to original emoji when logo file not found
+  ACTION NEEDED: Run `npx tsx scripts/generate-category-logos.ts` to generate the 6 blog logos via NanoBanana/Gemini API
+
+9.  Let's reevaluate the Space Defense & National Security module.  What information should we be offering here that would be of use to our enterprise or professional customers?  I like the procurement section but right now we don't list any active procurements from the space forces.  We have some news articles linked in here but those should be showing up in our news section so I'm not sure listing them here adds a lot of value.  I like the threat assessment module but it doesn't really explain why those threats are medium, high or very high - maybe we can provide more explanation about what those threats are and how we expect those threats to evolve over the next 5-10 years.  Our programs tab doesn't have much information in it.  If we can't find more information to display in the major defense space programs tab let's just remove it.
+STATUS: DONE - Major reevaluation and overhaul. (Commit df024ce)
+  - Threat assessment: Added rationale, keyIndicators, and trajectory (5-10 year outlook) to each threat
+  - Expandable threat details with "Why this rating" explanations
+  - Programs tab: Enhanced with budget figures, status summary badges, expanded descriptions
+  - New "Active USSF/DoD Procurement Priorities" section with 6 real programs (Next-Gen OPIR, SDA Tranche 3, GPS IIIF, Evolved EELV, Blackjack, Commercial SSA)
+  - Removed redundant defense news section, replaced with cross-link banner to /news?category=space-defense
+  - Also added DARPA to procurement page budget agency filter
+
+10.  For the public and private companies lists in the market intel module, can we add filter option next to the title (publicly traded companies or private companies)?  Where a user can filter to just list launch providers or companies that do space stations?
+STATUS: DONE - Added sector filter pills to both company tables. (Commit b470928)
+  - Public companies: 7 green filter pills (All, Launch Providers, Satellite Operators, Defense & Intel, Space Stations, Earth Observation, Communications)
+  - Private companies: 7 yellow filter pills (same categories)
+  - Independent filtering per section
+  - Filtered count shown in section headers (e.g., "Publicly Traded Companies (5 of 12)")
+  - Uses CompanyFocusArea enum matching against company focus areas
+
+11.  Our space economy dashboard appears to be broken.  It's currently showing $0 for 2024 market size (should it be showing 2025 market size?), $0 for the 2025 estimate (should be 2026), and 0% avg segment growth but a 1.8T forecast for 2040.  Let's make sure we're pulling accurate and up to date data for the market size (2025), 2026 estimate, and avg segment growth.  Likewise, the investment tab in the space economy dashboard doesn't show any VC investment, deal counts, total private deals or cumulative totals - they don't have any data.
+STATUS: DONE - Created init endpoint to seed DynamicContent with real data. (Commit de9e6f9)
+  - /api/space-economy/init seeds: 7 market segments (~$600B total), quarterly VC data (Q1 2023-Q1 2025), annual investment (2019-2024), 16 government agency budgets, workforce stats
+  ACTION NEEDED: Hit POST /api/space-economy/init with CRON_SECRET Bearer token to seed data on production
+
+12.  In our space economy dashboard, The Government Budgets tab gives me a "Something went wrong.  An unexpected error occurred while rendering this page.  Please try again or return to home page" error.
+STATUS: DONE - Fixed crash caused by Math operations on empty arrays. (Commit de9e6f9)
+  - Added empty-state guard when no budget data loaded
+  - Safe yoyGrowth computation (avoid NaN from division by zero)
+  - Safe bar width calculation (avoid divide-by-zero on maxBudget)
+
+13.  In our space economy dashboard, let's take the Launch Cost comparison that currently sits under the workforce & trends tab and move that out to a separate tab titled Launch Costs.
+STATUS: DONE - Extracted to new "Launch Costs" tab. (Commit de9e6f9)
+  - New LaunchCostsTab component with 4 stat cards + cost comparison table + market insights
+  - Tab order: Market Overview | Investment | Government Budgets | Launch Costs | Workforce & Trends
+
+14.  In our Space Startups & Funding Tracker, we show $0 raised YTD, 0 deals YTD.  Let's change those summary cards to the $ raised in the last 12 months and the # of deals in the last 12 months instead of by calendar year.  Then for the average rounds size let's calculate that as a running average over the last 12 months.  For the largest round, let's also do the largest round in the last 12 months and keep that updated.  In our quarterly funding totals card, we don't show any deals from q4 2024 or q1 2025.  Let's confirm that there weren't any deals in those quarters.  For the top investors by deal count, let's do a Top Investors by Deal Count over the last 5 years and only include the # of deals and value of those investments over the past 5 years.
+STATUS: DONE - Changed YTD to trailing 12-month rolling window. (Commit e68d441)
+  - Stats API: now calculates last12MonthsTotal, last12MonthsDealCount, averageRoundSize, largestRound all from trailing 12 months
+  - Top investors: changed to last 5 years window
+  - UI labels updated from "YTD" to "Last 12 Months"
+  - Created init endpoint to seed 50 investors + 120+ funding rounds
+  ACTION NEEDED: Hit POST /api/funding-tracker/init with CRON_SECRET Bearer token to seed data on production
+
+15.  Our investor directory or Space Industry Investors module doesn't appear to be working.  It's showing 0 investors.  Let's revisit this module and confirm that we're pulling the data we need to source this module and to refresh it on a weekly basis.
+STATUS: DONE - Init endpoint seeds 50 investors with real data. (Commit e68d441)
+  - Added Suspense wrapper for useSearchParams (Next.js 14 requirement)
+  - Added URL search param support (?search=)
+  - Investor data seeded via funding-tracker/init endpoint
+  ACTION NEEDED: Hit POST /api/funding-tracker/init with CRON_SECRET Bearer token to seed data on production
+
+16.  In our awesome business opportunities module, let's add a fourth filter box for "difficulty" that allows people to select which difficulties they want to display here.
+STATUS: DONE - Added difficulty filter dropdown. (Commit 042d5a3)
+  - New dropdown with All / Low / Medium / High / Expert options
+  - Color-coded descriptions in DIFFICULTY_INFO constant
+  - Syncs with URL query params for deep linking
+  - Clear Filters button resets all 4 filters
+
+17.  We can do a lot of work on our global supply chain module.  We should identify all the hardware and components that would be used in our space facility modules that we estimate the cost for in our orbital system costs modules.  Let's build up a thorough, in-depth bill of materials for each of those orbital systems and then include all of the items on that bill of materials in the supply chain module.  We could create a new tab that is called "Supply Chain availability" and list all of these items and their general availability and risks associated with their supply chains.  For example, GPUs and TPUs are going to be restricted in sourcing because Nvidia and other GPU manufacturers are already output restrained and data centers are already demanding commitments several years out from the GPU manufacturers making it very difficult for other companies to source GPUs for use in data centers and orbital data centers.  With that type of constraint in mind, let's find similar constraints for the systems and components we identify in our module.  Let's include no risk, low risk, medium risk, high risk, and critical risk items in our supply chain availability tab.
+STATUS: DONE - New BOM Risk Analysis tab with 48 components. (Commit 3802aa0)
+  - Created src/lib/supply-chain-bom-risks.ts with comprehensive risk data:
+    * 7 Critical Risk items (space GPUs, cryocoolers, EVA suits, lunar seals, IR arrays, rad-hard memory, optical interconnects)
+    * 10 High Risk items (xenon, IDSS docking, water recovery, Ka-band antennas, carbon nanotubes, green propellant, optical comms, thruster cathodes, CO2 canisters, robotic actuators)
+    * 12 Medium Risk items (titanium, solar cells, rad-hard processors, MLI, star trackers, reaction wheels, etc.)
+    * 11 Low Risk items (aluminum, CFRP, cold plates, transponders, RCS thrusters, GPS receivers, etc.)
+    * 8 No Risk items (commodity propellants, water, fasteners, wiring, connectors, food, shielding)
+  - Each item maps to the 11 orbital systems where it's used
+  - Filter by risk level (clickable summary cards), category, orbital system, text search
+  - Expandable rows with risk factors, suppliers, alternatives, and notes
+  - Key Insights section: critical bottlenecks, geopolitical risks, emerging alternatives
+  - CSV export of filtered data
+
+18.  Our patent & IP tracker shows that it was last updated 9 days ago for all of the tabs.  Let's make sure this is pulling weekly.  Also, when I go into the technology trends tab I get a "Space Patents error - we encountered an error loading patent data.  Please try again."
+STATUS: DONE - Fixed crash + set weekly refresh. (Commit a59cb6f)
+  - Trends tab crash: null-safe access on topHolders, emergingSubfields, totalPatents, recentFilings
+  - Portfolios tab: null-safe on keyAreas, notablePatents
+  - Freshness policy: changed from 30-day TTL to 7-day (weekly) in freshness-policies.ts
+
+19.  For our Manufacturing & Imagery module, let's also make sure that all the tabs in here are updating weekly (every 7 days).  Also, the imagery marketplace is giving me the "Something went wrong.  An unexpected error occurred while rendering this page" error.  Likewise, the companies tab in the space manufacturing section gives me the same error.
+STATUS: DONE - Fixed crashes + set weekly refresh. (Commit a59cb6f)
+  - Companies tab: null-safe on keyProducts, milestones
+  - Imagery marketplace: null-safe on constellationSize, highlights, keyMetrics, topProviders
+  - Imagery trends: null-safe on stats array
+  - Freshness policy: changed from 14-day TTL to 7-day (weekly) in freshness-policies.ts
+
+20.  Our procurement intelligence module doesn't have any data in it.  The Contract Opportunities are showing 0 active contract opportunities, 0 SBIR/STTR solicitations, no budget data, and no congressional activity.
+STATUS: DONE - Created init endpoint with 67 records. (Commit 3006e85)
+  - /api/procurement/init seeds: 18 contract opportunities, 12 SBIR/STTR solicitations, 29 budget line items, 8 congressional activities
+  - Real programs: Next-Gen OPIR, Artemis V, Blackjack, GPS IIIF, SpaceWERX, SBIR topics, etc.
+  - Added DARPA to budget agency filter
+  ACTION NEEDED: Hit POST /api/procurement/init with CRON_SECRET Bearer token to seed data on production
+
+21.  Our space funding opportunities module only shows 3 open opportunities.  There should be a lot more than that among all the various grant programs in the US, Canada, UK and EU.  Let's do a deep research dive and analysis of funding opportunities to display here.
+STATUS: DONE - Created init endpoint with 50 programs from 17 agencies. (Commit a88e403)
+  - /api/funding-opportunities/init seeds funding from:
+    * US Federal (20): NASA, DARPA, SpaceWERX, AFRL, NRO, SDA, MDA, NOAA, NSF, DOE
+    * US State (5): Colorado, Florida, Texas, New Mexico, Virginia
+    * International (25): ESA, UKSA, CSA, EU Horizon, Australian Space Agency, DLR, CNES, JAXA
+  - Expanded agency filter from 8 to 17 options with flag icons
+  ACTION NEEDED: Hit POST /api/funding-opportunities/init with CRON_SECRET Bearer token to seed data on production
+
+22.  Let's remove the display of a changelog when a user visits our site or logs back in to our site.
+STATUS: DONE - Removed ChangelogModal import and render from layout.tsx. (Commit 14a7497)
+
+
+==============================================
+PRODUCTION ACTIONS NEEDED (run after deploy):
+==============================================
+After pushing to dev and Railway auto-deploys, hit these init endpoints with CRON_SECRET:
+
+curl -X POST https://your-domain/api/space-economy/init -H "Authorization: Bearer YOUR_CRON_SECRET"
+curl -X POST https://your-domain/api/funding-tracker/init -H "Authorization: Bearer YOUR_CRON_SECRET"
+curl -X POST https://your-domain/api/procurement/init -H "Authorization: Bearer YOUR_CRON_SECRET"
+curl -X POST https://your-domain/api/funding-opportunities/init -H "Authorization: Bearer YOUR_CRON_SECRET"
+
+And run the logo generator once:
+npx tsx scripts/generate-category-logos.ts
+
+And grant admin access:
+npx tsx scripts/grant-admin.ts your-email@example.com
+
+
+==============================================
+NEW IDEAS & OPTIMIZATIONS (discovered during work):
+==============================================
+
+1.  ADMIN DASHBOARD ENHANCEMENTS
+    - Add admin management page so admins can grant/revoke access via UI (instead of scripts)
+    - Add audit logging for all admin actions (moderation, data edits, access grants)
+    - Implement role-based access control (super-admin, moderator, data-analyst roles)
+    - Add admin activity dashboard showing recent actions
+STATUS: DONE (Commit dfc0af4)
+  - Prisma schema: AuditLog model + User.adminRole/reputation/forumPostCount fields
+  - src/lib/audit-log.ts: logAuditAction() utility, wired into moderation + data refresh routes
+  - /admin/users page: 3 tabs (All Users, Admin Management, Audit Log)
+  - API: /admin/users (list + role update), /admin/audit-log (paginated + filterable)
+  - API: /admin/moderation/users/search + /admin/moderation/actions (missing endpoints filled)
+  - Role-based access: super_admin, moderator, data_analyst roles with permission checks
+
+2.  MOBILE OPTIMIZATION P2
+    - Add bottom navigation bar for mobile (currently mobile users must scroll to nav menu)
+    - Implement skeleton loading states for all mobile card layouts
+    - Add pull-to-refresh on mobile for all data pages
+    - Consider swipe between tabs on mobile for tabbed modules
+    - Test with Lighthouse mobile audit and fix any remaining scoring issues
+STATUS: DONE (Commit 4aa6985)
+  Note: Bottom nav bar already existed (MobileTabBar.tsx)
+  - Pull-to-refresh added to 10 high-traffic pages: market-intel, satellites, company-profiles,
+    marketplace, space-talent, funding-tracker, space-economy, procurement, compliance, space-environment
+  - 5 new standardized skeleton presets: SkeletonTable, SkeletonChart, SkeletonList, SkeletonTabs, SkeletonHero
+  - useSwipeTabs hook for gesture-based tab navigation
+  - Swipe-between-tabs integrated on space-talent, compliance, space-environment
+
+3.  INIT ENDPOINT CONSOLIDATION
+    - Create a single /api/admin/seed-all endpoint that calls all init endpoints in sequence
+    - Add a "Data Status" panel in admin dashboard showing which modules have been seeded
+    - Consider running init endpoints automatically on first deploy (migration hook)
+STATUS: DONE (Commit 15b44ca)
+  - seed-all updated with Phase 5: forums, space-economy, funding-tracker, procurement, funding-opportunities
+  - Now covers all 24 init endpoints across 5 phases
+  - Data Status tab added to admin dashboard with module seed status grid
+  - Each module card shows: name, last seeded timestamp, record count, re-seed button
+  - "Seed All" button at top with progress tracking
+
+4.  SUPPLY CHAIN BOM IMPROVEMENTS
+    - Add cost-impact analysis: calculate total project cost impact when a critical component has supply issues
+    - Add historical supply chain incidents (e.g., 2021 chip shortage impact on space industry)
+    - Cross-reference with company profiles to show which of our tracked companies are affected by shortages
+    - Add "mitigation strategies" field to each risk item with actionable recommendations
+    - Create a supply chain risk dashboard with trends over time
+STATUS: DONE (Commit 8900c34)
+  - BOMRiskItem enhanced with: costImpactRange, affectedSubsystems, mitigationStrategies,
+    historicalIncidents, supplierCompanyIds
+  - All 17 critical+high risk items have cost impact ranges
+  - 15 historical incidents (2021 chip shortage, xenon crisis, Collins EVA delays, etc.)
+  - 2-3 mitigation strategies per critical item with cost delta, timeline, effectiveness
+  - Company cross-reference links to /company-profiles/[slug]
+  - New Impact Analysis section: total cost at risk, most vulnerable systems, supply concentration
+
+5.  LOGO SYSTEM IMPROVEMENTS
+    - Generate multiple logo variations and let users A/B test preferences
+    - Create animated logo versions (subtle pulse/glow) for featured/breaking content
+    - Add logo support to the news filter toggle buttons (replace emoji in NewsFilter.tsx)
+    - Create logos for additional module categories beyond the initial 22
+STATUS: DONE (Commit f31b353)
+  - NewsFilter.tsx: category logos (20x20) replace emojis in all 10 filter buttons
+  - New scripts/generate-module-logos.ts creates 21 additional logos via NanoBanana:
+    7 satellite purposes, 4 compliance, 3 space environment, 4 business, 3 workforce
+  ACTION NEEDED: Run `npx tsx scripts/generate-module-logos.ts` to generate the 21 new logos
+
+6.  DATA FRESHNESS AUTOMATION
+    - Patents and manufacturing now have 7-day TTL but no automated refresh cron job
+    - Create a unified cron job that refreshes all DynamicContent modules on their TTL schedule
+    - Add Slack/email notifications when data sources go stale past their TTL
+    - Dashboard widget showing data freshness at a glance for all modules
+STATUS: DONE (Commit 15b44ca)
+  - src/lib/freshness-alerts.ts: checkAndAlertStaleness() checks all modules against TTL policies
+  - Creates in-app Notification records for all admins when critical modules go stale
+  - API: /admin/freshness-check endpoint (CRON_SECRET auth) for automated staleness checks
+  - Enhanced data-freshness dashboard: color-coded freshness heatmap (green/yellow/red/gray)
+  - Summary stats: X fresh, Y stale, Z expired modules
+  Note: Cron scheduler already has jobs for all module refreshes; freshness-check can be added as cron
+
+7.  INVESTOR & FUNDING IMPROVEMENTS
+    - Add investor portfolio visualization (Sankey diagram: investor -> company -> sector)
+    - Add funding round comparison tool (compare rounds by sector, stage, geography)
+    - Add "similar companies" feature on company profiles based on funding patterns
+    - Track investor sentiment via news article analysis
+STATUS: DONE (Commit 89386c4)
+  - PortfolioAnalysis component: sector × stage heatmap + geographic distribution bar chart
+  - CompanyFundingComparison component: multi-select 2-5 companies for side-by-side comparison
+  - SimilarCompanies component + API: algorithm scores by sector, tags, competitive mapping
+  - InvestorActivityBadge: trend indicator (increasing/steady/decreasing) from deal activity
+  - src/lib/investor-sentiment.ts: computeInvestorActivity() helper
+  - Similar companies section added to company profile detail pages
+
+8.  COMMUNITY FORUM ENGAGEMENT
+    - Add "trending threads" to the community sidebar
+    - Implement reputation/karma system based on upvotes and accepted answers
+    - Add thread tagging with space industry categories
+    - Create weekly digest email of top community posts
+STATUS: DONE (Commit fa4b509)
+  Note: Thread tagging already existed (11 predefined tags)
+  - Trending algorithm: score = (upvotes×3) + (views×0.1) + (replies×5) - (ageHours×0.5)
+  - API: /community/forums/trending (public, filterable by timeframe: 24h, 7d, 30d)
+  - Reputation system with 6 levels: Novice → Contributor → Active Member → Expert → Trusted → Space Authority
+  - Point rewards: +10 upvote received, +25 accepted answer, +5 thread created, -2 downvote
+  - Reputation updates wired into vote + accept-answer API routes
+  - ReputationBadge + TrendingSidebar components
+  - ThreadCard shows author reputation badge
+  - Weekly forum digest email template + /api/newsletter/forum-digest sending endpoint
+  - TrendingSidebar integrated into forum category page (right column on desktop)
