@@ -68,7 +68,7 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     keywords: ['asteroid', 'NEO', 'near-Earth', 'DART', 'planetary defense', 'close approach', 'JPL'],
   },
   'patents': {
-    ttlHours: 720, // 30 days
+    ttlHours: 168, // 7 days
     refreshPriority: 'moderate',
     refreshSource: 'api', // USPTO PatentsView
     keywords: ['space patent', 'space IP', 'patent filing', 'space technology patent'],
@@ -92,7 +92,7 @@ export const FRESHNESS_POLICIES: Record<string, FreshnessPolicy> = {
     keywords: ['spaceport', 'launch site', 'launch pad', 'Cape Canaveral', 'Boca Chica', 'launch complex', 'DSN', 'TDRS', 'optical comms', 'LCRD', 'ESTRACK'],
   },
   'space-manufacturing': {
-    ttlHours: 336, // 14 days
+    ttlHours: 168, // 7 days
     refreshPriority: 'moderate',
     refreshSource: 'ai-research',
     keywords: ['space manufacturing', 'in-space production', 'Varda', 'Redwire', 'space factory', 'microgravity'],

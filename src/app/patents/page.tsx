@@ -921,7 +921,7 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
       const q = searchQuery.toLowerCase();
       result = result.filter(h =>
         h.name.toLowerCase().includes(q) ||
-        h.keyAreas.some(a => a.toLowerCase().includes(q)) ||
+        (h.keyAreas || []).some(a => a.toLowerCase().includes(q)) ||
         h.description.toLowerCase().includes(q)
       );
     }
@@ -1081,7 +1081,7 @@ function CompanyPortfolioCard({ holder }: { holder: PatentHolder }) {
 
       {/* Key Areas */}
       <div className="flex flex-wrap gap-1.5 mb-3">
-        {holder.keyAreas.map((area) => (
+        {(holder.keyAreas || []).map((area) => (
           <span
             key={area}
             className="px-2 py-0.5 bg-nebula-500/10 text-nebula-600 rounded text-xs font-medium"
@@ -1098,7 +1098,7 @@ function CompanyPortfolioCard({ holder }: { holder: PatentHolder }) {
           <div className="mb-3">
             <div className="text-xs text-slate-400 uppercase tracking-widest mb-1.5">Notable Patents</div>
             <ul className="space-y-1">
-              {holder.notablePatents.map((patent) => (
+              {(holder.notablePatents || []).map((patent) => (
                 <li key={patent} className="text-xs text-slate-500 flex items-center gap-1.5">
                   <span className="w-1 h-1 bg-nebula-400 rounded-full flex-shrink-0" />
                   {patent}
@@ -1136,6 +1136,18 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
   }, [sortBy, categoriesData]);
 
   const maxPatents = Math.max(...categoriesData.map(c => c.totalPatents || 0), 1);
+  const growthRates = categoriesData.map(c => c.growthRate ?? 0);
+  const fastestGrowth = growthRates.length > 0 ? Math.max(...growthRates) : 0;
+
+  if (!categoriesData.length) {
+    return (
+      <div className="card p-12 text-center">
+        <div className="text-5xl mb-4">📊</div>
+        <h3 className="text-lg font-semibold text-slate-900 mb-2">No Technology Trend Data Available</h3>
+        <p className="text-slate-400 text-sm">Technology category data is loading or has not been populated yet.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -1143,7 +1155,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-slate-900">
-            {formatNumber(categoriesData.reduce((s, c) => s + c.totalPatents, 0))}
+            {formatNumber(categoriesData.reduce((s, c) => s + (c.totalPatents || 0), 0))}
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Categorized</div>
         </div>
@@ -1155,13 +1167,13 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
         </div>
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-cyan-400">
-            +{Math.max(...categoriesData.map(c => c.growthRate)).toFixed(1)}%
+            +{fastestGrowth.toFixed(1)}%
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Fastest Growth</div>
         </div>
         <div className="card-elevated p-6 text-center">
           <div className="text-4xl font-bold font-display tracking-tight text-purple-400">
-            {formatNumber(categoriesData.reduce((s, c) => s + c.recentFilings, 0))}
+            {formatNumber(categoriesData.reduce((s, c) => s + (c.recentFilings || 0), 0))}
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Filed Last 2 Years</div>
         </div>
@@ -1220,7 +1232,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
                 <div>
                   <div className="text-xs text-slate-400 uppercase tracking-widest mb-1.5">Top Holders</div>
                   <div className="flex flex-wrap gap-1">
-                    {cat.topHolders.map((holder) => (
+                    {(cat.topHolders || []).map((holder) => (
                       <span key={holder} className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">
                         {holder}
                       </span>
@@ -1231,7 +1243,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
                 <div>
                   <div className="text-xs text-slate-400 uppercase tracking-widest mb-1.5">Emerging Subfields</div>
                   <ul className="space-y-0.5">
-                    {cat.emergingSubfields.map((sub) => (
+                    {(cat.emergingSubfields || []).map((sub) => (
                       <li key={sub} className="text-xs text-slate-500 flex items-center gap-1.5">
                         <span className="w-1 h-1 bg-green-400 rounded-full flex-shrink-0" />
                         {sub}

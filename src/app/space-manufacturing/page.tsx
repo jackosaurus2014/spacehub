@@ -1095,7 +1095,7 @@ function CompaniesTab() {
               <div className="mb-3">
                 <div className="text-star-400 text-xs uppercase tracking-widest mb-1.5">Key Products</div>
                 <div className="flex flex-wrap gap-1.5">
-                  {company.keyProducts.map((product) => (
+                  {(company.keyProducts || []).map((product) => (
                     <span
                       key={product}
                       className="px-2 py-0.5 bg-nebula-500/10 text-nebula-300 rounded text-xs font-medium"
@@ -1110,7 +1110,7 @@ function CompaniesTab() {
               <div className="mb-3">
                 <div className="text-star-400 text-xs uppercase tracking-widest mb-1.5">Key Milestones</div>
                 <ul className="space-y-1">
-                  {company.milestones.slice(0, 3).map((milestone, i) => (
+                  {(company.milestones || []).slice(0, 3).map((milestone, i) => (
                     <li key={i} className="text-star-300 text-xs flex items-start gap-1.5">
                       <span className="text-nebula-400 mt-0.5">&#9656;</span>
                       {milestone}
@@ -1237,7 +1237,7 @@ function ISSLabTab() {
                     <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
                       <h4 className="text-white font-semibold text-sm mb-3">Key Results & Publications</h4>
                       <ul className="space-y-2">
-                        {category.keyResults.map((result, i) => (
+                        {(category.keyResults || []).map((result, i) => (
                           <li key={i} className="text-star-300 text-sm flex items-start gap-2">
                             <span className="text-nebula-400 mt-0.5">&#9656;</span>
                             {result}
@@ -1433,7 +1433,7 @@ function ProductsTab() {
                     <h4 className="text-white font-semibold text-sm mb-2">Competitive Landscape</h4>
                     <p className="text-star-300 text-sm mb-3">{product.competitiveLandscape}</p>
                     <div className="flex flex-wrap gap-1.5">
-                      {product.leaders.map((leader) => (
+                      {(product.leaders || []).map((leader) => (
                         <span
                           key={leader}
                           className="px-2 py-0.5 bg-nebula-500/10 text-nebula-300 rounded text-xs font-medium"
@@ -1486,7 +1486,7 @@ function ProductsTab() {
                     <span className="text-star-300 text-sm">{product.timeToMarket}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-star-400 text-xs">{product.leaders.slice(0, 2).join(', ')}</span>
+                    <span className="text-star-400 text-xs">{(product.leaders || []).slice(0, 2).join(', ')}</span>
                   </td>
                 </tr>
               ))}
@@ -1518,9 +1518,9 @@ function ImgProviderCard({ provider }: { provider: ImageryProvider }) {
         </div>
       </div>
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-slate-700/30 rounded-lg p-2.5"><div className="text-star-400 text-xs uppercase tracking-widest mb-0.5">Resolution</div><div className="text-white text-sm font-semibold">{provider.resolutionM}m</div></div>
-        <div className="bg-slate-700/30 rounded-lg p-2.5"><div className="text-star-400 text-xs uppercase tracking-widest mb-0.5">Revisit</div><div className="text-white text-sm font-semibold">{provider.revisitHours}h</div></div>
-        <div className="bg-slate-700/30 rounded-lg p-2.5"><div className="text-star-400 text-xs uppercase tracking-widest mb-0.5">Satellites</div><div className="text-white text-sm font-semibold">{provider.constellationSize.split(' ')[0]}</div></div>
+        <div className="bg-slate-700/30 rounded-lg p-2.5"><div className="text-star-400 text-xs uppercase tracking-widest mb-0.5">Resolution</div><div className="text-white text-sm font-semibold">{provider.resolutionM || '?'}m</div></div>
+        <div className="bg-slate-700/30 rounded-lg p-2.5"><div className="text-star-400 text-xs uppercase tracking-widest mb-0.5">Revisit</div><div className="text-white text-sm font-semibold">{provider.revisitHours || '?'}h</div></div>
+        <div className="bg-slate-700/30 rounded-lg p-2.5"><div className="text-star-400 text-xs uppercase tracking-widest mb-0.5">Satellites</div><div className="text-white text-sm font-semibold">{(provider.constellationSize || '').split(' ')[0] || '?'}</div></div>
       </div>
       <div className="flex flex-wrap gap-1.5 mb-4">
         <span className="px-2 py-0.5 bg-slate-700/50 text-star-300 border border-slate-600/30 rounded text-xs">{provider.spectralBands}</span>
@@ -1529,7 +1529,7 @@ function ImgProviderCard({ provider }: { provider: ImageryProvider }) {
         {provider.archiveAvailable && <span className="px-2 py-0.5 bg-green-900/20 text-green-400 border border-green-500/20 rounded text-xs">Archive</span>}
         {provider.taskingAvailable && <span className="px-2 py-0.5 bg-cyan-900/20 text-cyan-400 border border-cyan-500/20 rounded text-xs">Tasking</span>}
       </div>
-      <p className="text-star-300 text-sm leading-relaxed mb-4">{expanded ? provider.description : provider.description.slice(0, 180) + '...'}</p>
+      <p className="text-star-300 text-sm leading-relaxed mb-4">{expanded ? (provider.description || '') : (provider.description || '').slice(0, 180) + '...'}</p>
       {expanded && (
         <div className="space-y-4 mb-4">
           <div className="grid grid-cols-2 gap-3">
@@ -1540,7 +1540,7 @@ function ImgProviderCard({ provider }: { provider: ImageryProvider }) {
           </div>
           <div>
             <div className="text-star-400 text-xs uppercase tracking-widest mb-2">Key Highlights</div>
-            <ul className="space-y-1">{provider.highlights.map((h, i) => (<li key={i} className="text-star-300 text-sm flex items-start gap-2"><span className="text-cyan-400 mt-0.5 flex-shrink-0">-</span>{h}</li>))}</ul>
+            <ul className="space-y-1">{(provider.highlights || []).map((h, i) => (<li key={i} className="text-star-300 text-sm flex items-start gap-2"><span className="text-cyan-400 mt-0.5 flex-shrink-0">-</span>{h}</li>))}</ul>
           </div>
         </div>
       )}
@@ -1609,12 +1609,12 @@ function ImgUseCaseCard({ useCase }: { useCase: UseCase }) {
         <span className="text-2xl flex-shrink-0">{useCase.icon}</span>
         <div><h3 className="text-white font-semibold text-lg">{useCase.name}</h3><p className="text-star-400 text-sm mt-1 leading-relaxed">{useCase.description}</p></div>
       </div>
-      <div className="flex flex-wrap gap-1.5 mb-4">{useCase.keyMetrics.map((metric) => (<span key={metric} className="px-2 py-0.5 bg-cyan-900/20 text-cyan-300 border border-cyan-500/20 rounded text-xs font-medium">{metric}</span>))}</div>
+      <div className="flex flex-wrap gap-1.5 mb-4">{(useCase.keyMetrics || []).map((metric) => (<span key={metric} className="px-2 py-0.5 bg-cyan-900/20 text-cyan-300 border border-cyan-500/20 rounded text-xs font-medium">{metric}</span>))}</div>
       <div className="mb-4">
         <div className="text-star-400 text-xs uppercase tracking-widest mb-2">Recommended Providers</div>
-        <div className="flex flex-wrap gap-1.5">{useCase.topProviders.map((provider, idx) => (<span key={provider} className={`px-2.5 py-1 rounded text-xs font-medium ${idx === 0 ? 'bg-amber-900/20 text-amber-300 border border-amber-500/20' : 'bg-slate-700/50 text-star-300 border border-slate-600/30'}`}>{idx === 0 ? `\u2B50 ${provider}` : provider}</span>))}</div>
+        <div className="flex flex-wrap gap-1.5">{(useCase.topProviders || []).map((provider, idx) => (<span key={provider} className={`px-2.5 py-1 rounded text-xs font-medium ${idx === 0 ? 'bg-amber-900/20 text-amber-300 border border-amber-500/20' : 'bg-slate-700/50 text-star-300 border border-slate-600/30'}`}>{idx === 0 ? `\u2B50 ${provider}` : provider}</span>))}</div>
       </div>
-      {expanded && (<div className="mb-4"><div className="text-star-400 text-xs uppercase tracking-widest mb-2">Key Requirements</div><ul className="space-y-1">{useCase.requirements.map((req, i) => (<li key={i} className="text-star-300 text-sm flex items-start gap-2"><span className="text-cyan-400 mt-0.5 flex-shrink-0">-</span>{req}</li>))}</ul></div>)}
+      {expanded && (<div className="mb-4"><div className="text-star-400 text-xs uppercase tracking-widest mb-2">Key Requirements</div><ul className="space-y-1">{(useCase.requirements || []).map((req, i) => (<li key={i} className="text-star-300 text-sm flex items-start gap-2"><span className="text-cyan-400 mt-0.5 flex-shrink-0">-</span>{req}</li>))}</ul></div>)}
       <button onClick={() => setExpanded(!expanded)} className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">{expanded ? 'Show less' : 'View requirements'} {expanded ? '\u2191' : '\u2193'}</button>
     </div>
   );
@@ -1732,7 +1732,7 @@ function ImageryMarketplaceContent() {
             <div className="space-y-3">
               {(() => {
                 const providerCounts: Record<string, number> = {};
-                IMG_USE_CASES.forEach((uc) => { uc.topProviders.forEach((p) => { providerCounts[p] = (providerCounts[p] || 0) + 1; }); });
+                IMG_USE_CASES.forEach((uc) => { (uc.topProviders || []).forEach((p) => { providerCounts[p] = (providerCounts[p] || 0) + 1; }); });
                 const sorted = Object.entries(providerCounts).sort(([, a], [, b]) => b - a).slice(0, 8);
                 const maxCount = sorted[0]?.[1] || 1;
                 return sorted.map(([name, count]) => (<div key={name} className="flex items-center gap-4"><div className="w-40 flex-shrink-0 text-sm text-white font-medium truncate">{name}</div><div className="flex-1 h-6 bg-slate-700/30 rounded overflow-hidden relative"><div className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 rounded transition-all" style={{ width: `${Math.max((count / maxCount) * 100, 3)}%` }} /><span className="absolute inset-0 flex items-center px-2 text-xs text-white font-mono">{count} use cases</span></div></div>));
@@ -1779,7 +1779,7 @@ function ImageryMarketplaceContent() {
               <div key={trend.title} className={`card p-6 border ${trend.borderColor} bg-slate-800/50 backdrop-blur`}>
                 <h3 className={`text-lg font-semibold ${trend.color} mb-2`}>{trend.title}</h3>
                 <p className="text-star-400 text-sm leading-relaxed mb-4">{trend.description}</p>
-                <div className="space-y-2">{trend.stats.map((stat, i) => (<div key={i} className="text-star-300 text-sm flex items-start gap-2"><span className={`mt-0.5 flex-shrink-0 ${trend.color}`}>-</span>{stat}</div>))}</div>
+                <div className="space-y-2">{(trend.stats || []).map((stat, i) => (<div key={i} className="text-star-300 text-sm flex items-start gap-2"><span className={`mt-0.5 flex-shrink-0 ${trend.color}`}>-</span>{stat}</div>))}</div>
               </div>
             ))}
           </div>
