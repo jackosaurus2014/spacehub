@@ -54,6 +54,16 @@ const SPACE_ETFS: SpaceETF[] = [
   { ticker: 'FITE', name: 'SPDR S&P Kensho Future Security ETF', category: 'aerospace_defense', expenseRatio: 0.45 },
 ];
 
+const SECTOR_FILTERS: { value: string; label: string; focusAreas: CompanyFocusArea[] }[] = [
+  { value: '', label: 'All', focusAreas: [] },
+  { value: 'launch', label: 'Launch Providers', focusAreas: ['launch_provider'] },
+  { value: 'satellites', label: 'Satellite Operators', focusAreas: ['satellites'] },
+  { value: 'earth_observation', label: 'Earth Observation', focusAreas: ['earth_observation'] },
+  { value: 'space_stations', label: 'Space Stations', focusAreas: ['space_stations'] },
+  { value: 'defense', label: 'Defense & Security', focusAreas: ['defense'] },
+  { value: 'ground_segment', label: 'Ground Segment', focusAreas: ['communications', 'space_infrastructure'] },
+];
+
 const COUNTRY_FILTERS = [
   { value: '', label: 'All Countries' },
   { value: 'USA', label: '🇺🇸 United States' },
@@ -253,6 +263,17 @@ function MarketIntelContent() {
     (searchParams.get('focus') as CompanyFocusArea | '') || ''
   );
   const [showCompanyRequestDialog, setShowCompanyRequestDialog] = useState(false);
+  const [publicSectorFilter, setPublicSectorFilter] = useState('');
+  const [privateSectorFilter, setPrivateSectorFilter] = useState('');
+
+  const filterBySector = useCallback((companyList: SpaceCompany[], sectorValue: string) => {
+    if (!sectorValue) return companyList;
+    const sectorDef = SECTOR_FILTERS.find(s => s.value === sectorValue);
+    if (!sectorDef) return companyList;
+    return companyList.filter(c =>
+      (c.focusAreas as string[]).some(area => sectorDef.focusAreas.includes(area as CompanyFocusArea))
+    );
+  }, []);
 
   // Sync filters to URL
   useEffect(() => {
@@ -805,11 +826,30 @@ function MarketIntelContent() {
             {/* Publicly Traded Companies */}
             {companies.filter(c => c.isPublic).length > 0 && (
               <div>
-                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <span className="text-green-400">📈</span>
-                  Publicly Traded Companies
-                  <span className="text-slate-400 font-normal text-sm">({companies.filter(c => c.isPublic).length})</span>
-                </h3>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                  <h3 className="text-xl font-semibold text-white flex items-center gap-2">
+                    <span className="text-green-400">📈</span>
+                    Publicly Traded Companies
+                    <span className="text-slate-400 font-normal text-sm">
+                      ({filterBySector(companies.filter(c => c.isPublic), publicSectorFilter).length})
+                    </span>
+                  </h3>
+                  <div className="flex flex-wrap gap-1.5 sm:ml-auto">
+                    {SECTOR_FILTERS.map((sector) => (
+                      <button
+                        key={sector.value}
+                        onClick={() => setPublicSectorFilter(publicSectorFilter === sector.value ? '' : sector.value)}
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                          publicSectorFilter === sector.value
+                            ? 'bg-green-500/20 text-green-400 ring-1 ring-green-500/40'
+                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-300'
+                        }`}
+                      >
+                        {sector.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div className="card overflow-hidden">
                   <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
                     <table className="w-full min-w-[640px]">
@@ -824,7 +864,7 @@ function MarketIntelContent() {
                         </tr>
                       </thead>
                       <tbody>
-                        {companies.filter(c => c.isPublic).map((company) => {
+                        {filterBySector(companies.filter(c => c.isPublic), publicSectorFilter).map((company) => {
                           const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
                           const stock = company.ticker ? stockData[company.ticker] : null;
                           const isPositive = stock ? stock.changePercent >= 0 : true;
@@ -897,11 +937,30 @@ function MarketIntelContent() {
             {/* Private Companies */}
             {companies.filter(c => !c.isPublic).length > 0 && (
               <div>
-                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <span className="text-yellow-400">🔒</span>
-                  Private Companies
-                  <span className="text-slate-400 font-normal text-sm">({companies.filter(c => !c.isPublic).length})</span>
-                </h3>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                  <h3 className="text-xl font-semibold text-white flex items-center gap-2">
+                    <span className="text-yellow-400">🔒</span>
+                    Private Companies
+                    <span className="text-slate-400 font-normal text-sm">
+                      ({filterBySector(companies.filter(c => !c.isPublic), privateSectorFilter).length})
+                    </span>
+                  </h3>
+                  <div className="flex flex-wrap gap-1.5 sm:ml-auto">
+                    {SECTOR_FILTERS.map((sector) => (
+                      <button
+                        key={sector.value}
+                        onClick={() => setPrivateSectorFilter(privateSectorFilter === sector.value ? '' : sector.value)}
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                          privateSectorFilter === sector.value
+                            ? 'bg-yellow-500/20 text-yellow-400 ring-1 ring-yellow-500/40'
+                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-300'
+                        }`}
+                      >
+                        {sector.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div className="card overflow-hidden">
                   <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
                     <table className="w-full min-w-[720px]">
@@ -917,7 +976,7 @@ function MarketIntelContent() {
                         </tr>
                       </thead>
                       <tbody>
-                        {companies.filter(c => !c.isPublic).sort((a, b) => (b.valuation || 0) - (a.valuation || 0)).map((company) => {
+                        {filterBySector(companies.filter(c => !c.isPublic), privateSectorFilter).sort((a, b) => (b.valuation || 0) - (a.valuation || 0)).map((company) => {
                           const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
 
                           return (
