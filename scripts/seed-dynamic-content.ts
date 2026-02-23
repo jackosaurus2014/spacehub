@@ -1669,8 +1669,281 @@ async function main() {
     // 12 total shortages
   ]);
 
-  console.log('\n✅ DynamicContent seed completed successfully!');
-  console.log(`   Seeded 17 modules with ${Object.keys(FRESHNESS_POLICIES).length} freshness policies applied.`);
+  // ═══════════════════════════════════════════════════════════════════
+  // 18. SPACE ENVIRONMENT — Earth Events + Solar Imagery
+  // ═══════════════════════════════════════════════════════════════════
+
+  console.log('🌍 Seeding space-environment...');
+
+  await upsertContent('space-environment', 'earth-events', [
+    { id: 'EONET_1', title: 'Tropical Storm Gamma', description: 'Category 2 tropical cyclone in the Gulf of Mexico with sustained winds of 110 mph', categories: [{ id: 10, title: 'Severe Storms' }], sources: [{ id: 'NASA_EONET', url: 'https://eonet.gsfc.nasa.gov' }], geometry: [{ date: '2025-09-15', type: 'Point', coordinates: [-89.5, 22.3] }], closed: null },
+    { id: 'EONET_2', title: 'Dixie Creek Wildfire', description: 'Major wildfire burning across 85,000 acres in northern California with 30% containment', categories: [{ id: 8, title: 'Wildfires' }], sources: [{ id: 'InciWeb', url: 'https://inciweb.nwcg.gov' }], geometry: [{ date: '2025-08-22', type: 'Point', coordinates: [-121.3, 40.1] }], closed: null },
+    { id: 'EONET_3', title: 'Mount Etna Eruption', description: 'Strombolian eruption from the Southeast Crater with lava fountaining reaching 500m', categories: [{ id: 12, title: 'Volcanoes' }], sources: [{ id: 'Smithsonian_GVP', url: 'https://volcano.si.edu' }], geometry: [{ date: '2025-10-03', type: 'Point', coordinates: [15.0, 37.75] }], closed: null },
+    { id: 'EONET_4', title: 'Pakistan Monsoon Flooding', description: 'Severe monsoon flooding across Sindh and Balochistan provinces affecting 2 million people', categories: [{ id: 9, title: 'Floods' }], sources: [{ id: 'GDACS', url: 'https://www.gdacs.org' }], geometry: [{ date: '2025-08-10', type: 'Point', coordinates: [68.4, 26.2] }], closed: null },
+    { id: 'EONET_5', title: 'Arctic Sea Ice Minimum', description: 'Annual Arctic sea ice extent reaches second-lowest minimum on record at 3.74 million sq km', categories: [{ id: 15, title: 'Sea and Lake Ice' }], sources: [{ id: 'NSIDC', url: 'https://nsidc.org' }], geometry: [{ date: '2025-09-18', type: 'Point', coordinates: [0, 85] }], closed: '2025-10-01' },
+    { id: 'EONET_6', title: 'Tonga Volcanic Eruption', description: 'Submarine volcanic eruption in the Tongan archipelago producing ash plume to 15 km altitude', categories: [{ id: 12, title: 'Volcanoes' }], sources: [{ id: 'Smithsonian_GVP', url: 'https://volcano.si.edu' }], geometry: [{ date: '2025-11-12', type: 'Point', coordinates: [-175.4, -20.5] }], closed: '2025-11-15' },
+    { id: 'EONET_7', title: 'Saharan Dust Plume', description: 'Massive Saharan dust layer extending across the Atlantic Ocean toward the Caribbean', categories: [{ id: 16, title: 'Dust and Haze' }], sources: [{ id: 'NASA_EONET', url: 'https://eonet.gsfc.nasa.gov' }], geometry: [{ date: '2025-07-05', type: 'Point', coordinates: [-40.0, 18.5] }], closed: '2025-07-12' },
+    { id: 'EONET_8', title: 'Chilean Glacier Collapse', description: 'Major calving event at Grey Glacier in Torres del Paine National Park releasing iceberg the size of 10 football fields', categories: [{ id: 15, title: 'Sea and Lake Ice' }], sources: [{ id: 'CONAF', url: 'https://www.conaf.cl' }], geometry: [{ date: '2025-06-20', type: 'Point', coordinates: [-73.2, -51.1] }], closed: '2025-06-22' },
+    { id: 'EONET_9', title: 'Typhoon Bolaven', description: 'Super typhoon with sustained winds of 155 mph approaching the Philippines and Taiwan', categories: [{ id: 10, title: 'Severe Storms' }], sources: [{ id: 'JTWC', url: 'https://www.metoc.navy.mil/jtwc' }], geometry: [{ date: '2025-10-28', type: 'Point', coordinates: [127.5, 18.9] }], closed: null },
+    { id: 'EONET_10', title: 'Amazon Drought and Fires', description: 'Exceptional drought conditions fueling widespread fires across the Brazilian Amazon basin', categories: [{ id: 8, title: 'Wildfires' }], sources: [{ id: 'INPE', url: 'https://queimadas.dgi.inpe.br' }], geometry: [{ date: '2025-09-08', type: 'Point', coordinates: [-60.2, -3.4] }], closed: null },
+  ]);
+
+  await upsertContent('space-environment', 'solar-imagery', [
+    { id: 'sdo_aia_171', name: 'SDO AIA 171 Angstrom', description: 'Solar corona in extreme ultraviolet showing active regions and coronal loops', image_url: 'https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0171.jpg', timestamp: '2025-12-01T12:00:00Z', instrument: 'SDO/AIA', measurement: '171 Angstrom (Fe IX)' },
+    { id: 'sdo_aia_304', name: 'SDO AIA 304 Angstrom', description: 'Solar chromosphere and transition region showing prominences and filaments', image_url: 'https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0304.jpg', timestamp: '2025-12-01T12:00:00Z', instrument: 'SDO/AIA', measurement: '304 Angstrom (He II)' },
+    { id: 'sdo_aia_193', name: 'SDO AIA 193 Angstrom', description: 'Solar corona and hot flare plasma at 1.2 million degrees showing coronal holes', image_url: 'https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0193.jpg', timestamp: '2025-12-01T12:00:00Z', instrument: 'SDO/AIA', measurement: '193 Angstrom (Fe XII, XXIV)' },
+    { id: 'sdo_hmi_mag', name: 'SDO HMI Magnetogram', description: 'Solar surface magnetic field map showing positive and negative polarities of sunspots', image_url: 'https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_HMIBC.jpg', timestamp: '2025-12-01T12:00:00Z', instrument: 'SDO/HMI', measurement: 'Line-of-Sight Magnetogram' },
+    { id: 'soho_lasco_c2', name: 'SOHO LASCO C2', description: 'Solar coronagraph showing the outer corona and coronal mass ejections from 2 to 6 solar radii', image_url: 'https://soho.nascom.nasa.gov/data/realtime/c2/1024/latest.jpg', timestamp: '2025-12-01T12:00:00Z', instrument: 'SOHO/LASCO', measurement: 'C2 Coronagraph (2-6 Rs)' },
+    { id: 'stereo_a_euvi_195', name: 'STEREO-A EUVI 195', description: 'Sun viewed from STEREO-A spacecraft position showing EUV emission at 195 Angstrom', image_url: 'https://stereo-ssc.nascom.nasa.gov/beacon/latest_1024_euvi_195.jpg', timestamp: '2025-12-01T12:00:00Z', instrument: 'STEREO-A/SECCHI EUVI', measurement: '195 Angstrom (Fe XII)' },
+  ]);
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 19. MISSION CONTROL — EPIC Earth, NASA Images, DSN Status
+  // ═══════════════════════════════════════════════════════════════════
+
+  console.log('🎛️ Seeding mission-control...');
+
+  await upsertContent('mission-control', 'epic-earth', [
+    { identifier: '20251201003633', caption: 'EPIC image of Earth from L1 showing the Americas under clear skies', date: '2025-12-01', image_url: 'https://epic.gsfc.nasa.gov/archive/natural/2025/12/01/png/epic_1b_20251201003633.png', centroid_coordinates: { lat: 12.5, lon: -45.2 } },
+    { identifier: '20251130191205', caption: 'EPIC view of Earth showing Africa and Europe with Saharan dust visible', date: '2025-11-30', image_url: 'https://epic.gsfc.nasa.gov/archive/natural/2025/11/30/png/epic_1b_20251130191205.png', centroid_coordinates: { lat: 8.3, lon: 15.7 } },
+    { identifier: '20251129120842', caption: 'EPIC Earth image with Pacific Ocean domination and typhoon formation visible', date: '2025-11-29', image_url: 'https://epic.gsfc.nasa.gov/archive/natural/2025/11/29/png/epic_1b_20251129120842.png', centroid_coordinates: { lat: -2.1, lon: -165.4 } },
+    { identifier: '20251128053417', caption: 'EPIC view showing Asia and Australia with Indian monsoon cloud patterns', date: '2025-11-28', image_url: 'https://epic.gsfc.nasa.gov/archive/natural/2025/11/28/png/epic_1b_20251128053417.png', centroid_coordinates: { lat: 5.8, lon: 105.3 } },
+    { identifier: '20251127224901', caption: 'EPIC image showing North Atlantic with Gulf Stream thermal contrast visible', date: '2025-11-27', image_url: 'https://epic.gsfc.nasa.gov/archive/natural/2025/11/27/png/epic_1b_20251127224901.png', centroid_coordinates: { lat: 22.4, lon: -55.8 } },
+    { identifier: '20251126162533', caption: 'EPIC view of Earth showing Indian Ocean and East African coastline', date: '2025-11-26', image_url: 'https://epic.gsfc.nasa.gov/archive/natural/2025/11/26/png/epic_1b_20251126162533.png', centroid_coordinates: { lat: -5.2, lon: 62.1 } },
+    { identifier: '20251125094108', caption: 'EPIC Earth image with Central Pacific and Hawaiian islands visible', date: '2025-11-25', image_url: 'https://epic.gsfc.nasa.gov/archive/natural/2025/11/25/png/epic_1b_20251125094108.png', centroid_coordinates: { lat: 10.9, lon: -148.7 } },
+    { identifier: '20251124031744', caption: 'EPIC view showing South America with Amazon basin cloud formations', date: '2025-11-24', image_url: 'https://epic.gsfc.nasa.gov/archive/natural/2025/11/24/png/epic_1b_20251124031744.png', centroid_coordinates: { lat: -8.6, lon: -72.3 } },
+  ]);
+
+  await upsertContent('mission-control', 'nasa-images', [
+    { nasa_id: 'PIA25432', title: 'Mars Perseverance Rover Selfie', description: 'Self-portrait of the Perseverance rover on the Martian surface at Jezero Crater taken with WATSON camera on robotic arm', date_created: '2025-06-15', media_type: 'image', thumbnail_url: 'https://images-assets.nasa.gov/image/PIA25432/PIA25432~thumb.jpg', keywords: ['Mars', 'Perseverance', 'rover', 'Jezero Crater'] },
+    { nasa_id: 'PIA26120', title: 'Webb Deep Field - Pandora Cluster', description: 'James Webb Space Telescope deep field image of galaxy cluster Abell 2744 (Pandora Cluster) showing gravitationally lensed galaxies', date_created: '2025-04-22', media_type: 'image', thumbnail_url: 'https://images-assets.nasa.gov/image/PIA26120/PIA26120~thumb.jpg', keywords: ['JWST', 'Webb', 'deep field', 'galaxy cluster'] },
+    { nasa_id: 'KSC-20250301-PH-01', title: 'Artemis II SLS on Launch Pad', description: 'Space Launch System rocket for Artemis II mission standing on Launch Complex 39B at Kennedy Space Center', date_created: '2025-03-01', media_type: 'image', thumbnail_url: 'https://images-assets.nasa.gov/image/KSC-20250301-PH-01/KSC-20250301-PH-01~thumb.jpg', keywords: ['Artemis', 'SLS', 'Moon', 'launch pad'] },
+    { nasa_id: 'ISS072-E-001234', title: 'Aurora Australis from ISS', description: 'Stunning view of the Southern Lights (Aurora Australis) photographed from the International Space Station over the Southern Ocean', date_created: '2025-05-18', media_type: 'image', thumbnail_url: 'https://images-assets.nasa.gov/image/ISS072-E-001234/ISS072-E-001234~thumb.jpg', keywords: ['ISS', 'aurora', 'Earth observation'] },
+    { nasa_id: 'PIA26085', title: 'Juno Jupiter Great Red Spot Close-up', description: 'Enhanced-color close-up of Jupiter Great Red Spot captured during Juno perijove 58', date_created: '2025-02-10', media_type: 'image', thumbnail_url: 'https://images-assets.nasa.gov/image/PIA26085/PIA26085~thumb.jpg', keywords: ['Jupiter', 'Juno', 'Great Red Spot'] },
+    { nasa_id: 'PIA26200', title: 'Europa Clipper First Image of Europa', description: 'First high-resolution image of Europa icy surface captured by Europa Clipper EIS camera during initial flyby', date_created: '2025-08-15', media_type: 'image', thumbnail_url: 'https://images-assets.nasa.gov/image/PIA26200/PIA26200~thumb.jpg', keywords: ['Europa', 'Europa Clipper', 'Jupiter moon', 'ocean world'] },
+    { nasa_id: 'PIA25890', title: 'Webb Horsehead Nebula', description: 'James Webb Space Telescope near-infrared view of the Horsehead Nebula (Barnard 33) revealing unprecedented detail in the photodissociation region', date_created: '2025-01-20', media_type: 'image', thumbnail_url: 'https://images-assets.nasa.gov/image/PIA25890/PIA25890~thumb.jpg', keywords: ['JWST', 'nebula', 'Horsehead', 'infrared'] },
+    { nasa_id: 'KSC-20250115-PH-NGL01', title: 'Blue Origin New Glenn First Launch', description: 'Blue Origin New Glenn rocket lifting off from Launch Complex 36 at Cape Canaveral Space Force Station on its maiden flight', date_created: '2025-01-16', media_type: 'image', thumbnail_url: 'https://images-assets.nasa.gov/image/KSC-20250115-PH-NGL01/KSC-20250115-PH-NGL01~thumb.jpg', keywords: ['Blue Origin', 'New Glenn', 'launch', 'commercial space'] },
+    { nasa_id: 'GSFC-20250620-LCRD01', title: 'LCRD Laser Communications Relay', description: 'Optical communications relay demonstration between LCRD in geosynchronous orbit and ground terminal at Table Mountain', date_created: '2025-06-20', media_type: 'image', thumbnail_url: 'https://images-assets.nasa.gov/image/GSFC-20250620-LCRD01/GSFC-20250620-LCRD01~thumb.jpg', keywords: ['LCRD', 'laser', 'optical communications', 'Goddard'] },
+    { nasa_id: 'PIA26150', title: 'OSIRIS-APEX Approaching Apophis', description: 'Artist concept of OSIRIS-APEX spacecraft approaching asteroid Apophis ahead of the April 2029 close encounter with Earth', date_created: '2025-07-04', media_type: 'image', thumbnail_url: 'https://images-assets.nasa.gov/image/PIA26150/PIA26150~thumb.jpg', keywords: ['OSIRIS-APEX', 'Apophis', 'asteroid', 'planetary defense'] },
+    { nasa_id: 'ISS072-E-005678', title: 'SpaceX Dragon Docked to ISS', description: 'SpaceX Crew Dragon spacecraft docked to the International Space Station Harmony module with Earth horizon visible', date_created: '2025-09-12', media_type: 'image', thumbnail_url: 'https://images-assets.nasa.gov/image/ISS072-E-005678/ISS072-E-005678~thumb.jpg', keywords: ['ISS', 'SpaceX', 'Crew Dragon', 'docking'] },
+    { nasa_id: 'PIA26300', title: 'Ingenuity Final Resting Site', description: 'Mars Perseverance rover image of the Ingenuity helicopter final resting site in Valinor Hills after 72 flights on Mars', date_created: '2025-02-28', media_type: 'image', thumbnail_url: 'https://images-assets.nasa.gov/image/PIA26300/PIA26300~thumb.jpg', keywords: ['Mars', 'Ingenuity', 'helicopter', 'Perseverance'] },
+  ]);
+
+  await upsertContent('mission-control', 'dsn-status', [
+    { dish_name: 'DSS-14', azimuth: 245.3, elevation: 42.7, wind_speed: 8, is_active: true, target: 'Voyager 1', signal_type: 'Downlink', data_rate: '160 bps', frequency: 'S-band', complex: 'Goldstone', diameter: 70 },
+    { dish_name: 'DSS-43', azimuth: 180.5, elevation: 35.2, wind_speed: 12, is_active: true, target: 'Parker Solar Probe', signal_type: 'Downlink', data_rate: '2.1 Mbps', frequency: 'Ka-band', complex: 'Canberra', diameter: 70 },
+    { dish_name: 'DSS-24', azimuth: 312.1, elevation: 28.4, wind_speed: 5, is_active: true, target: 'JWST', signal_type: 'Downlink', data_rate: '28 Mbps', frequency: 'Ka-band', complex: 'Goldstone', diameter: 34 },
+    { dish_name: 'DSS-25', azimuth: 128.7, elevation: 55.1, wind_speed: 6, is_active: true, target: 'Juno', signal_type: 'Downlink', data_rate: '18 Mbps', frequency: 'X-band', complex: 'Goldstone', diameter: 34 },
+    { dish_name: 'DSS-26', azimuth: 95.4, elevation: 19.8, wind_speed: 7, is_active: false, target: 'Maintenance', signal_type: 'None', data_rate: '0', frequency: 'N/A', complex: 'Goldstone', diameter: 34 },
+    { dish_name: 'DSS-34', azimuth: 210.8, elevation: 47.3, wind_speed: 14, is_active: true, target: 'Mars Reconnaissance Orbiter', signal_type: 'Uplink/Downlink', data_rate: '6 Mbps', frequency: 'X-band', complex: 'Canberra', diameter: 34 },
+    { dish_name: 'DSS-35', azimuth: 275.2, elevation: 31.9, wind_speed: 10, is_active: true, target: 'Europa Clipper', signal_type: 'Downlink', data_rate: '12 Mbps', frequency: 'Ka-band', complex: 'Canberra', diameter: 34 },
+    { dish_name: 'DSS-36', azimuth: 155.6, elevation: 62.4, wind_speed: 9, is_active: true, target: 'Perseverance Relay', signal_type: 'Downlink', data_rate: '2 Mbps', frequency: 'X-band', complex: 'Canberra', diameter: 34 },
+    { dish_name: 'DSS-54', azimuth: 88.9, elevation: 23.5, wind_speed: 3, is_active: true, target: 'New Horizons', signal_type: 'Downlink', data_rate: '1 kbps', frequency: 'X-band', complex: 'Madrid', diameter: 34 },
+    { dish_name: 'DSS-55', azimuth: 202.3, elevation: 38.7, wind_speed: 4, is_active: true, target: 'OSIRIS-APEX', signal_type: 'Uplink/Downlink', data_rate: '914 kbps', frequency: 'X-band', complex: 'Madrid', diameter: 34 },
+    { dish_name: 'DSS-63', azimuth: 340.1, elevation: 50.2, wind_speed: 6, is_active: true, target: 'Voyager 2', signal_type: 'Downlink', data_rate: '160 bps', frequency: 'S-band', complex: 'Madrid', diameter: 70 },
+    { dish_name: 'DSS-65', azimuth: 165.8, elevation: 44.6, wind_speed: 5, is_active: true, target: 'Lucy', signal_type: 'Downlink', data_rate: '4 Mbps', frequency: 'X-band', complex: 'Madrid', diameter: 34 },
+  ]);
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 20. SOLAR EXPLORATION — Exoplanets
+  // ═══════════════════════════════════════════════════════════════════
+
+  console.log('🪐 Seeding solar-exploration exoplanets...');
+
+  await upsertContent('solar-exploration', 'exoplanets', [
+    { pl_name: 'Proxima Centauri b', hostname: 'Proxima Centauri', disc_year: 2016, disc_facility: 'La Silla Observatory', disc_method: 'Radial Velocity', pl_orbper: 11.186, pl_rade: 1.08, pl_bmasse: 1.27, pl_eqt: 234, sy_dist: 1.30, pl_orbsmax: 0.0485, st_spectype: 'M5.5V', habitable_zone: true },
+    { pl_name: 'TRAPPIST-1 e', hostname: 'TRAPPIST-1', disc_year: 2017, disc_facility: 'La Silla Observatory', disc_method: 'Transit', pl_orbper: 6.099, pl_rade: 0.92, pl_bmasse: 0.692, pl_eqt: 251, sy_dist: 12.43, pl_orbsmax: 0.02928, st_spectype: 'M8V', habitable_zone: true },
+    { pl_name: 'TRAPPIST-1 f', hostname: 'TRAPPIST-1', disc_year: 2017, disc_facility: 'La Silla Observatory', disc_method: 'Transit', pl_orbper: 9.207, pl_rade: 1.045, pl_bmasse: 1.039, pl_eqt: 219, sy_dist: 12.43, pl_orbsmax: 0.03853, st_spectype: 'M8V', habitable_zone: true },
+    { pl_name: 'TRAPPIST-1 g', hostname: 'TRAPPIST-1', disc_year: 2017, disc_facility: 'La Silla Observatory', disc_method: 'Transit', pl_orbper: 12.354, pl_rade: 1.129, pl_bmasse: 1.321, pl_eqt: 199, sy_dist: 12.43, pl_orbsmax: 0.04688, st_spectype: 'M8V', habitable_zone: true },
+    { pl_name: 'Kepler-442 b', hostname: 'Kepler-442', disc_year: 2015, disc_facility: 'Kepler', disc_method: 'Transit', pl_orbper: 112.305, pl_rade: 1.34, pl_bmasse: 2.36, pl_eqt: 233, sy_dist: 342.0, pl_orbsmax: 0.409, st_spectype: 'K5V', habitable_zone: true },
+    { pl_name: 'Kepler-186 f', hostname: 'Kepler-186', disc_year: 2014, disc_facility: 'Kepler', disc_method: 'Transit', pl_orbper: 129.944, pl_rade: 1.17, pl_bmasse: 1.71, pl_eqt: 188, sy_dist: 178.5, pl_orbsmax: 0.432, st_spectype: 'M1V', habitable_zone: true },
+    { pl_name: 'TOI-700 d', hostname: 'TOI-700', disc_year: 2020, disc_facility: 'TESS', disc_method: 'Transit', pl_orbper: 37.426, pl_rade: 1.19, pl_bmasse: 1.72, pl_eqt: 269, sy_dist: 31.13, pl_orbsmax: 0.163, st_spectype: 'M2V', habitable_zone: true },
+    { pl_name: 'K2-18 b', hostname: 'K2-18', disc_year: 2015, disc_facility: 'K2', disc_method: 'Transit', pl_orbper: 32.940, pl_rade: 2.61, pl_bmasse: 8.63, pl_eqt: 255, sy_dist: 38.03, pl_orbsmax: 0.1429, st_spectype: 'M2.5V', habitable_zone: true },
+    { pl_name: 'LHS 1140 b', hostname: 'LHS 1140', disc_year: 2017, disc_facility: 'MEarth-South', disc_method: 'Transit', pl_orbper: 24.737, pl_rade: 1.73, pl_bmasse: 6.98, pl_eqt: 235, sy_dist: 12.47, pl_orbsmax: 0.0946, st_spectype: 'M4.5V', habitable_zone: true },
+    { pl_name: 'GJ 1002 b', hostname: 'GJ 1002', disc_year: 2022, disc_facility: 'Calar Alto Observatory', disc_method: 'Radial Velocity', pl_orbper: 10.346, pl_rade: 1.03, pl_bmasse: 1.08, pl_eqt: 231, sy_dist: 4.84, pl_orbsmax: 0.0457, st_spectype: 'M5.5V', habitable_zone: true },
+    { pl_name: 'Wolf 1069 b', hostname: 'Wolf 1069', disc_year: 2023, disc_facility: 'Calar Alto Observatory', disc_method: 'Radial Velocity', pl_orbper: 15.564, pl_rade: 1.08, pl_bmasse: 1.26, pl_eqt: 250, sy_dist: 9.59, pl_orbsmax: 0.0672, st_spectype: 'M5V', habitable_zone: true },
+    { pl_name: 'Ross 128 b', hostname: 'Ross 128', disc_year: 2017, disc_facility: 'La Silla Observatory', disc_method: 'Radial Velocity', pl_orbper: 9.866, pl_rade: 1.10, pl_bmasse: 1.40, pl_eqt: 256, sy_dist: 3.37, pl_orbsmax: 0.0496, st_spectype: 'M4V', habitable_zone: true },
+    { pl_name: 'Kepler-62 f', hostname: 'Kepler-62', disc_year: 2013, disc_facility: 'Kepler', disc_method: 'Transit', pl_orbper: 267.291, pl_rade: 1.41, pl_bmasse: 2.80, pl_eqt: 208, sy_dist: 301.0, pl_orbsmax: 0.718, st_spectype: 'K2V', habitable_zone: true },
+    { pl_name: 'Kepler-452 b', hostname: 'Kepler-452', disc_year: 2015, disc_facility: 'Kepler', disc_method: 'Transit', pl_orbper: 384.843, pl_rade: 1.63, pl_bmasse: 3.29, pl_eqt: 265, sy_dist: 430.0, pl_orbsmax: 1.046, st_spectype: 'G2V', habitable_zone: true },
+    { pl_name: 'Kepler-22 b', hostname: 'Kepler-22', disc_year: 2011, disc_facility: 'Kepler', disc_method: 'Transit', pl_orbper: 289.862, pl_rade: 2.38, pl_bmasse: 9.10, pl_eqt: 262, sy_dist: 189.0, pl_orbsmax: 0.849, st_spectype: 'G5V', habitable_zone: true },
+    { pl_name: 'TOI-700 e', hostname: 'TOI-700', disc_year: 2023, disc_facility: 'TESS', disc_method: 'Transit', pl_orbper: 28.396, pl_rade: 0.953, pl_bmasse: 0.818, pl_eqt: 296, sy_dist: 31.13, pl_orbsmax: 0.134, st_spectype: 'M2V', habitable_zone: true },
+    { pl_name: 'GJ 667 C c', hostname: 'GJ 667 C', disc_year: 2011, disc_facility: 'La Silla Observatory', disc_method: 'Radial Velocity', pl_orbper: 28.143, pl_rade: 1.54, pl_bmasse: 3.81, pl_eqt: 247, sy_dist: 6.84, pl_orbsmax: 0.125, st_spectype: 'M1.5V', habitable_zone: true },
+    { pl_name: 'Teegarden b', hostname: "Teegarden's Star", disc_year: 2019, disc_facility: 'Calar Alto Observatory', disc_method: 'Radial Velocity', pl_orbper: 4.910, pl_rade: 1.02, pl_bmasse: 1.05, pl_eqt: 264, sy_dist: 3.83, pl_orbsmax: 0.0252, st_spectype: 'M7V', habitable_zone: true },
+    { pl_name: 'GJ 357 d', hostname: 'GJ 357', disc_year: 2019, disc_facility: 'TESS', disc_method: 'Radial Velocity', pl_orbper: 55.661, pl_rade: 1.75, pl_bmasse: 6.10, pl_eqt: 220, sy_dist: 9.44, pl_orbsmax: 0.204, st_spectype: 'M2.5V', habitable_zone: true },
+    { pl_name: 'LP 890-9 c', hostname: 'LP 890-9', disc_year: 2022, disc_facility: 'SPECULOOS Southern Observatory', disc_method: 'Transit', pl_orbper: 8.457, pl_rade: 1.37, pl_bmasse: 2.50, pl_eqt: 272, sy_dist: 32.4, pl_orbsmax: 0.0397, st_spectype: 'M6V', habitable_zone: true },
+    { pl_name: 'Kepler-1649 c', hostname: 'Kepler-1649', disc_year: 2020, disc_facility: 'Kepler', disc_method: 'Transit', pl_orbper: 19.535, pl_rade: 1.06, pl_bmasse: 1.20, pl_eqt: 234, sy_dist: 92.0, pl_orbsmax: 0.0825, st_spectype: 'M5V', habitable_zone: true },
+    { pl_name: 'HD 40307 g', hostname: 'HD 40307', disc_year: 2012, disc_facility: 'La Silla Observatory', disc_method: 'Radial Velocity', pl_orbper: 197.8, pl_rade: 2.39, pl_bmasse: 7.09, pl_eqt: 225, sy_dist: 12.83, pl_orbsmax: 0.600, st_spectype: 'K2.5V', habitable_zone: true },
+    { pl_name: 'Kepler-62 e', hostname: 'Kepler-62', disc_year: 2013, disc_facility: 'Kepler', disc_method: 'Transit', pl_orbper: 122.387, pl_rade: 1.61, pl_bmasse: 4.13, pl_eqt: 270, sy_dist: 301.0, pl_orbsmax: 0.427, st_spectype: 'K2V', habitable_zone: true },
+    { pl_name: 'GJ 1002 c', hostname: 'GJ 1002', disc_year: 2022, disc_facility: 'Calar Alto Observatory', disc_method: 'Radial Velocity', pl_orbper: 21.202, pl_rade: 1.08, pl_bmasse: 1.36, pl_eqt: 196, sy_dist: 4.84, pl_orbsmax: 0.0738, st_spectype: 'M5.5V', habitable_zone: true },
+    { pl_name: 'Kepler-296 e', hostname: 'Kepler-296', disc_year: 2014, disc_facility: 'Kepler', disc_method: 'Transit', pl_orbper: 34.142, pl_rade: 1.53, pl_bmasse: 3.60, pl_eqt: 241, sy_dist: 226.0, pl_orbsmax: 0.169, st_spectype: 'M2V', habitable_zone: true },
+  ]);
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 21. SPACE STATIONS — Transition Risks + ISS Position
+  // ═══════════════════════════════════════════════════════════════════
+
+  console.log('🚀 Seeding space-stations (transition-risks, iss-position)...');
+
+  await upsertContent('space-stations', 'transition-risks', [
+    { category: 'Capability Gap', risk: '2-3 year gap between ISS deorbit and full commercial station operations', mitigation: 'Overlap ISS operations with initial CLD modules; Axiom attaching to ISS first', severity: 'high' },
+    { category: 'Crew Rescue', risk: 'Commercial stations must maintain reliable crew return capability at all times', mitigation: 'Require CLD providers to have dedicated crew return vehicles or agreements with SpaceX/Boeing', severity: 'high' },
+    { category: 'Research Continuity', risk: 'Loss of continuous microgravity research platform during transition period', mitigation: 'Preserve ISS National Lab equipment manifests; pre-position experiments on commercial stations', severity: 'high' },
+    { category: 'International Partnerships', risk: 'ESA, JAXA, CSA may lose access to LEO crewed facilities if commercial stations are US-only', mitigation: 'Negotiate international partner access agreements with CLD providers; ESA pursuing own LEO plans', severity: 'medium' },
+    { category: 'Technical Readiness', risk: 'CLD providers may face delays in developing and certifying life support and docking systems', mitigation: 'NASA CLD Phase 2 certification milestones with go/no-go gates; redundant provider selection (3+ awardees)', severity: 'high' },
+    { category: 'Cost Escalation', risk: 'NASA ISS sustainment costs rising to $1.3B/year while also funding CLD development', mitigation: 'Fixed-price CLD contracts; phased ISS decommissioning to reduce overlap costs', severity: 'medium' },
+    { category: 'Market Demand', risk: 'Insufficient commercial demand to sustain multiple privately operated space stations', mitigation: 'NASA anchor tenancy contracts guarantee minimum utilization; grow in-space manufacturing market', severity: 'medium' },
+    { category: 'Deorbit Risk', risk: 'ISS controlled deorbit into Pacific is technically complex with narrow error margins', mitigation: 'SpaceX awarded $843M for dedicated deorbit vehicle; extensive planning and rehearsal timeline', severity: 'high' },
+  ]);
+
+  await upsertContent('space-stations', 'iss-position', [
+    { latitude: 28.5, longitude: -80.6, altitude: 408, velocity: 7.66, visibility: 'daylight', timestamp: 1735689600, footprint: 4500 },
+  ]);
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 22. SPACE MANUFACTURING — ISS Experiments, Imagery Market Trends, Hero Stats
+  // ═══════════════════════════════════════════════════════════════════
+
+  console.log('🏭 Seeding space-manufacturing (iss-experiments, imagery sections)...');
+
+  await upsertContent('space-manufacturing', 'iss-experiments', [
+    { name: 'ZBLAN Fiber Optics', icon: '\uD83D\uDD2C', count: 12, color: 'cyan', description: 'Manufacturing fluoride glass fibers in microgravity for ultra-low-loss telecommunications', keyResults: ['99.9% purity achieved', '10x lower signal loss than Earth-made fiber', 'Commercial viability demonstrated by Flawless Photonics'] },
+    { name: 'Protein Crystallization', icon: '\uD83E\uDDEC', count: 47, color: 'purple', description: 'Growing protein crystals in microgravity for drug design and structural biology research', keyResults: ['Superior crystal quality vs ground-based', 'Merck partnership for pembrolizumab (Keytruda)', 'Over 1,000 proteins crystallized on ISS'] },
+    { name: 'Bioprinting', icon: '\u2764\uFE0F', count: 8, color: 'red', description: 'Three-dimensional printing of living tissue constructs including cardiac tissue and organoids', keyResults: ['First cardiac tissue printed in space (Techshot)', 'Meniscus tissue for knee repair', 'Scaffoldless printing enabled by microgravity'] },
+    { name: 'Metal Alloy Development', icon: '\u2699\uFE0F', count: 15, color: 'amber', description: 'Developing novel metal alloys and studying solidification behavior in microgravity conditions', keyResults: ['New titanium-aluminum alloys with improved strength', 'Reduced porosity in cast alloys', 'Applications for jet engine turbine blades'] },
+    { name: 'Semiconductor Wafers', icon: '\uD83D\uDCBB', count: 6, color: 'blue', description: 'Growing semiconductor crystals with reduced defects for advanced electronics applications', keyResults: ['Gallium arsenide crystals with 100x fewer defects', 'Space Forge ForgeStar mission planned', 'Potential for next-gen 5G/6G components'] },
+    { name: 'Pharmaceutical Manufacturing', icon: '\uD83D\uDC8A', count: 9, color: 'green', description: 'Producing active pharmaceutical ingredients with superior formulations in microgravity', keyResults: ['Varda Space returned Ritonavir (HIV drug) crystals', 'Improved bioavailability of formulations', 'New crystal polymorphs only possible in microgravity'] },
+    { name: 'Ceramic Turbine Components', icon: '\uD83D\uDD25', count: 5, color: 'orange', description: 'Manufacturing advanced ceramic and cermet components for high-temperature turbine applications', keyResults: ['Redwire ceramic turbine blades printed on ISS', 'Withstand temperatures above 1,600C', 'Potential 10% fuel efficiency gain in jet engines'] },
+    { name: 'Stem Cell Expansion', icon: '\uD83E\uDDE0', count: 11, color: 'pink', description: 'Expanding stem cells at scale in microgravity for regenerative medicine therapies', keyResults: ['10-40x faster expansion rates than Earth labs', 'Maintained pluripotency in microgravity', 'NASA-funded Cedars-Sinai partnership'] },
+  ]);
+
+  await upsertContent('space-manufacturing', 'img-market-trends', [
+    { title: 'AI-Enhanced Analytics Boom', description: 'Machine learning and computer vision applied to satellite imagery analysis automate change detection, object classification, and anomaly identification at scale', color: 'bg-cyan-500/10', borderColor: 'border-cyan-500/30', stats: ['Market growing 28% CAGR', '$4.2B by 2028', '500+ startups in geospatial AI'] },
+    { title: 'SAR Revolution', description: 'Synthetic Aperture Radar constellations enabling all-weather, day-night imaging for maritime, defense, and disaster response applications', color: 'bg-purple-500/10', borderColor: 'border-purple-500/30', stats: ['SAR market $5.5B by 2030', '25cm resolution achieved', 'Capella + ICEYE leading commercial SAR'] },
+    { title: 'Hyperspectral Expansion', description: 'New hyperspectral satellite constellations capturing hundreds of spectral bands for mineral mapping, crop health analysis, and environmental monitoring', color: 'bg-emerald-500/10', borderColor: 'border-emerald-500/30', stats: ['200+ spectral bands per pixel', 'Precision agriculture market $3.8B', 'EnMAP + PRISMA operational'] },
+    { title: 'Video from Space', description: 'Near-real-time video satellites providing continuous monitoring capability for defense, disaster response, and infrastructure surveillance', color: 'bg-amber-500/10', borderColor: 'border-amber-500/30', stats: ['Sub-1m video resolution', '90-second revisit targets', 'Albedo + EOS Data Analytics leading'] },
+  ]);
+
+  await upsertContent('space-manufacturing', 'img-hero-stats', [
+    { label: 'Global EO Revenue', value: '$6.8B', color: 'text-cyan-400' },
+    { label: 'Active EO Satellites', value: '1,200+', color: 'text-emerald-400' },
+    { label: 'Daily Image Captures', value: '150TB+', color: 'text-purple-400' },
+    { label: 'Resolution Leaders', value: '<30cm', color: 'text-amber-400' },
+  ]);
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 23. ASTEROID WATCH — Spectral Distribution, Impact Risk, Fireballs
+  // ═══════════════════════════════════════════════════════════════════
+
+  console.log('☄️ Seeding asteroid-watch (spectral, impact-risk, fireballs)...');
+
+  await upsertContent('asteroid-watch', 'spectral-distribution', [
+    { spectralType: 'C', count: 4800, percentage: 39.2, description: 'Carbonaceous - most common, dark, primitive composition rich in water and organics', color: 'text-slate-400', resources: ['Water', 'Carbon compounds', 'Organics'] },
+    { spectralType: 'S', count: 3200, percentage: 26.1, description: 'Silicaceous - rocky, moderate albedo, composed of iron-magnesium silicates', color: 'text-amber-400', resources: ['Iron', 'Magnesium silicates', 'Nickel'] },
+    { spectralType: 'M', count: 980, percentage: 8.0, description: 'Metallic - bright, composed primarily of iron-nickel with platinum-group metals', color: 'text-gray-300', resources: ['Iron', 'Nickel', 'Platinum-group metals', 'Gold'] },
+    { spectralType: 'X', count: 1100, percentage: 9.0, description: 'X-complex - encompasses E, M, and P types with varying compositions and albedos', color: 'text-zinc-400', resources: ['Varied - metals to organics', 'Enstatite', 'Iron-nickel'] },
+    { spectralType: 'V', count: 740, percentage: 6.0, description: 'Vestoid - basaltic composition originating from asteroid 4 Vesta, high pyroxene content', color: 'text-violet-400', resources: ['Pyroxene', 'Feldspar', 'Iron'] },
+    { spectralType: 'D', count: 860, percentage: 7.0, description: 'D-type - very dark, carbon-rich, found primarily in outer main belt and among Trojans', color: 'text-red-400', resources: ['Water ice', 'Carbon', 'Organic compounds'] },
+    { spectralType: 'E', count: 570, percentage: 4.7, description: 'Enstatite - high albedo, iron-poor silicates, found predominantly in inner main belt', color: 'text-cyan-400', resources: ['Enstatite', 'Iron-free silicates', 'Rare metals'] },
+  ]);
+
+  await upsertContent('asteroid-watch', 'impact-risk', [
+    { des: '99942', fullname: '99942 Apophis (2004 MN4)', ip: '2.2e-06', ps_cum: '-3.17', ps_max: '-3.17', v_inf: '12.59', last_obs: '2025-03-15', n_imp: '1', range: '2029-2116', ts_max: '0' },
+    { des: '101955', fullname: '101955 Bennu (1999 RQ36)', ip: '3.7e-04', ps_cum: '-1.59', ps_max: '-1.59', v_inf: '6.02', last_obs: '2025-01-20', n_imp: '78', range: '2178-2290', ts_max: '0' },
+    { des: '2023 DW', fullname: '2023 DW', ip: '1.4e-04', ps_cum: '-2.14', ps_max: '-2.14', v_inf: '24.63', last_obs: '2024-11-12', n_imp: '1', range: '2046', ts_max: '0' },
+    { des: '2024 YR4', fullname: '2024 YR4', ip: '1.2e-06', ps_cum: '-3.91', ps_max: '-3.91', v_inf: '17.20', last_obs: '2025-02-23', n_imp: '1', range: '2032', ts_max: '0' },
+    { des: '29075', fullname: '29075 (1950 DA)', ip: '2.5e-04', ps_cum: '-1.42', ps_max: '-1.42', v_inf: '14.20', last_obs: '2024-10-05', n_imp: '1', range: '2880', ts_max: '0' },
+    { des: '2010 RF12', fullname: '2010 RF12', ip: '4.7e-02', ps_cum: '-2.80', ps_max: '-2.80', v_inf: '7.18', last_obs: '2024-09-08', n_imp: '2', range: '2095-2118', ts_max: '0' },
+    { des: '2008 JL3', fullname: '2008 JL3', ip: '5.3e-06', ps_cum: '-4.18', ps_max: '-4.18', v_inf: '20.31', last_obs: '2024-06-15', n_imp: '4', range: '2027-2115', ts_max: '0' },
+    { des: '2006 QV89', fullname: '2006 QV89', ip: '1.7e-04', ps_cum: '-5.33', ps_max: '-5.33', v_inf: '8.91', last_obs: '2024-08-22', n_imp: '1', range: '2029', ts_max: '0' },
+    { des: '2000 SG344', fullname: '2000 SG344', ip: '1.1e-03', ps_cum: '-3.72', ps_max: '-3.72', v_inf: '0.46', last_obs: '2024-07-10', n_imp: '7', range: '2069-2113', ts_max: '0' },
+    { des: '2009 JF1', fullname: '2009 JF1', ip: '3.1e-05', ps_cum: '-4.62', ps_max: '-4.62', v_inf: '15.43', last_obs: '2024-05-01', n_imp: '1', range: '2052', ts_max: '0' },
+  ]);
+
+  await upsertContent('asteroid-watch', 'fireballs', [
+    { date: '2025-11-18T03:22:14Z', energy: 0.28, impact_e: 0.012, lat: 34.2, lat_dir: 'N', lon: -118.5, lon_dir: 'W', alt: 42.3, vel: 18.7 },
+    { date: '2025-10-25T14:08:33Z', energy: 1.5, impact_e: 0.061, lat: -22.8, lat_dir: 'S', lon: 28.4, lon_dir: 'E', alt: 35.1, vel: 22.4 },
+    { date: '2025-09-12T22:45:01Z', energy: 0.073, impact_e: 0.003, lat: 55.6, lat_dir: 'N', lon: 37.2, lon_dir: 'E', alt: 48.7, vel: 14.2 },
+    { date: '2025-08-30T09:17:55Z', energy: 4.2, impact_e: 0.17, lat: 8.1, lat_dir: 'N', lon: -79.5, lon_dir: 'W', alt: 28.9, vel: 25.8 },
+    { date: '2025-07-19T18:31:42Z', energy: 0.15, impact_e: 0.006, lat: 42.7, lat_dir: 'N', lon: 141.3, lon_dir: 'E', alt: 44.2, vel: 16.9 },
+    { date: '2025-06-04T01:55:28Z', energy: 0.62, impact_e: 0.025, lat: -33.5, lat_dir: 'S', lon: 151.2, lon_dir: 'E', alt: 38.6, vel: 20.1 },
+    { date: '2025-05-22T11:03:19Z', energy: 2.8, impact_e: 0.11, lat: 18.3, lat_dir: 'N', lon: -66.1, lon_dir: 'W', alt: 31.4, vel: 24.3 },
+    { date: '2025-04-08T06:42:07Z', energy: 0.094, impact_e: 0.004, lat: 61.2, lat_dir: 'N', lon: -150.4, lon_dir: 'W', alt: 51.8, vel: 13.5 },
+    { date: '2024-12-31T19:28:44Z', energy: 7.8, impact_e: 0.32, lat: -5.4, lat_dir: 'S', lon: 105.8, lon_dir: 'E', alt: 25.2, vel: 28.6 },
+    { date: '2024-11-15T08:14:53Z', energy: 0.41, impact_e: 0.017, lat: 48.9, lat_dir: 'N', lon: 2.3, lon_dir: 'E', alt: 39.7, vel: 19.3 },
+    { date: '2024-10-02T23:59:11Z', energy: 1.1, impact_e: 0.045, lat: 25.0, lat_dir: 'N', lon: 55.3, lon_dir: 'E', alt: 36.3, vel: 21.7 },
+    { date: '2024-09-17T15:37:26Z', energy: 0.22, impact_e: 0.009, lat: -15.8, lat_dir: 'S', lon: -47.9, lon_dir: 'W', alt: 43.1, vel: 17.4 },
+  ]);
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 24. SPACE INSURANCE — Related News + Market Commentary
+  // ═══════════════════════════════════════════════════════════════════
+
+  console.log('🛡️ Seeding space-insurance...');
+
+  await upsertContent('space-insurance', 'related-news', [
+    { title: 'Space Insurance Market Premiums Rise 15% Amid Increased Launch Activity', date: '2025-11-15', source: 'Insurance Journal', summary: 'Global space insurance premiums reached $600M in 2025, driven by mega-constellation deployments and increased launch cadence. Underwriters adjusting rates for reusable vehicle track records.', url: '#' },
+    { title: 'Starlink Constellation Loss Ratio Drops Below Industry Average', date: '2025-10-22', source: 'Space News', summary: 'SpaceX Starlink satellite failure rates have declined to under 2%, resulting in favorable loss ratios for constellation insurers and downward pressure on per-satellite premiums.', url: '#' },
+    { title: 'Lloyd\'s Syndicate Launches Dedicated Space Debris Liability Product', date: '2025-09-18', source: 'Lloyd\'s List', summary: 'New insurance product specifically covers third-party liability from space debris collisions, filling a gap as orbital congestion increases.', url: '#' },
+    { title: 'Lunar Surface Operations Insurance Framework Proposed', date: '2025-08-05', source: 'SpaceNews', summary: 'Industry working group proposes standardized insurance framework for commercial lunar surface operations ahead of Artemis III and CLPS missions.', url: '#' },
+    { title: 'In-Orbit Servicing Missions Create New Insurance Category', date: '2025-07-12', source: 'Satellite Today', summary: 'Astroscale and Orbit Fab missions driving demand for new insurance products covering rendezvous, proximity operations, and satellite life extension.', url: '#' },
+  ]);
+
+  await upsertContent('space-insurance', 'market-commentary', [
+    {
+      summary: 'The global space insurance market is experiencing a period of cautious growth, with total premiums estimated at $600M for 2025. Improved launch reliability from SpaceX and other providers has reduced claim frequency, but increasing orbital congestion and the emergence of new operational paradigms (mega-constellations, in-orbit servicing, lunar missions) are creating both opportunities and challenges for underwriters.',
+      keyTrends: [
+        'Reusable launch vehicles driving down launch insurance premiums by 20-30%',
+        'Mega-constellation operators self-insuring smaller satellites while covering launch batches',
+        'Growing demand for third-party liability coverage as debris risk increases',
+        'New product categories emerging for in-orbit servicing and lunar operations',
+        'Parametric insurance models gaining traction for weather satellite coverage',
+      ],
+      outlook: 'Market expected to grow to $800M by 2028 driven by commercial LEO stations, Artemis lunar missions, and expanding constellation deployments. Underwriters developing new actuarial models for reusable vehicles and AI-assisted risk assessment.',
+      metrics: {
+        totalPremiums2025: '$600M',
+        averageLossRatio: '65%',
+        largestSingleClaim2024: '$180M (GEO satellite total loss)',
+        activePolicies: '~450 worldwide',
+      },
+    },
+  ]);
+
+  // ═══════════════════════════════════════════════════════════════════
+  // 25. RESOURCE EXCHANGE — Related News + Market Commentary
+  // ═══════════════════════════════════════════════════════════════════
+
+  console.log('🔄 Seeding resource-exchange...');
+
+  await upsertContent('resource-exchange', 'related-news', [
+    { title: 'Orbit Fab Completes First Commercial Refueling Demo in GEO', date: '2025-11-08', source: 'SpaceNews', summary: 'Orbit Fab successfully demonstrated on-orbit refueling of a GEO satellite using its RAFTI fuel port interface, marking a milestone for the in-space resource exchange market.', url: '#' },
+    { title: 'In-Space Propellant Depot Architecture Selected for Artemis V', date: '2025-10-01', source: 'NASA.gov', summary: 'NASA selects propellant depot concept for Artemis V lunar mission, enabling longer surface stays and reducing per-mission launch mass requirements.', url: '#' },
+    { title: 'ISRU Water Extraction Demonstration Planned for 2027 Lunar Mission', date: '2025-09-15', source: 'SpaceNews', summary: 'Commercial partnership to demonstrate water extraction from permanently shadowed lunar regolith, a key step toward establishing a cislunar resource economy.', url: '#' },
+    { title: 'Space Resources Coalition Proposes International Trading Framework', date: '2025-08-20', source: 'The Space Review', summary: 'International industry group proposes standardized contracts and pricing mechanisms for trading space-derived resources, building on Artemis Accords principles.', url: '#' },
+    { title: 'AstroForge Raises $40M for Asteroid Mining Refinery Mission', date: '2025-07-28', source: 'TechCrunch', summary: 'AstroForge closes Series B funding to develop and launch its first asteroid mining refinery spacecraft, targeting platinum-group metal extraction from a near-Earth asteroid.', url: '#' },
+  ]);
+
+  await upsertContent('resource-exchange', 'market-commentary', [
+    {
+      summary: 'The space resource exchange market is in its nascent phase but accelerating rapidly. On-orbit refueling services are emerging as the first commercially viable segment, with Orbit Fab leading commercial propellant delivery. Lunar ISRU programs are progressing from concept to demonstration phase, with water ice extraction being the primary near-term target. Asteroid mining remains a longer-term opportunity but is attracting renewed venture investment.',
+      keyTrends: [
+        'On-orbit refueling emerging as first viable space resource market ($500M projected by 2030)',
+        'Lunar water ice extraction demonstrations planned for 2027-2028 timeframe',
+        'Standardized docking and fueling interfaces (RAFTI) gaining industry adoption',
+        'Asteroid mining companies securing new funding for prospecting missions',
+        'International legal frameworks for space resource rights expanding (43 Artemis Accords signatories)',
+      ],
+      outlook: 'The in-space resource economy is expected to reach $1.5B by 2032, driven initially by propellant services and expanding to include lunar materials and eventually asteroid resources. Key enablers include reduced launch costs (Starship), improved ISRU technology, and growing cislunar infrastructure.',
+      metrics: {
+        onOrbitRefuelingMarket2025: '$50M',
+        projectedMarket2032: '$1.5B',
+        activeISRUPrograms: '12 worldwide',
+        lunarWaterIceEstimate: '600M+ metric tons in PSRs',
+      },
+    },
+  ]);
+
+  console.log('\n\u2705 DynamicContent seed completed successfully!');
+  console.log(`   Seeded 19+ modules with ${Object.keys(FRESHNESS_POLICIES).length} freshness policies applied.`);
   console.log('   Run "npx tsx scripts/seed-dynamic-content.ts" to execute.\n');
 }
 
