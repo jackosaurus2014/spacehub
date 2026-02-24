@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const sortBy = searchParams.get('sortBy') as 'price' | 'name' | 'production' | null;
     const sortOrder = searchParams.get('sortOrder') as 'asc' | 'desc' | null;
     const limitParam = searchParams.get('limit');
-    const limit = limitParam ? parseInt(limitParam, 10) : 50;
+    const limit = limitParam ? Math.min(100, Math.max(1, parseInt(limitParam, 10))) : 50;
 
     const commodities = await getCommodityPrices({
       category: category || undefined,

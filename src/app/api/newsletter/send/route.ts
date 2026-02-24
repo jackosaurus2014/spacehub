@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { sendDailyDigest } from '@/lib/newsletter/email-service';
+import { sendDailyDigest, filterSubscribersByPreferences } from '@/lib/newsletter/email-service';
 import { getLatestDigest } from '@/lib/newsletter/digest-generator';
 import { logger } from '@/lib/logger';
 
@@ -23,8 +23,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Get all verified subscribers who haven't unsubscribed
-    const subscribers = await prisma.newsletterSubscriber.findMany({
+    // Get all verified subscribers who haven't unsubscribed, then filter by preferences
+    const allSubscribers = await prisma.newsletterSubscriber.findMany({
       where: {
         verified: true,
         unsubscribedAt: null,
@@ -32,8 +32,11 @@ export async function POST(request: Request) {
       select: {
         email: true,
         unsubscribeToken: true,
+        userId: true,
       },
     });
+
+    const subscribers = await filterSubscribersByPreferences(allSubscribers, 'news');
 
     if (subscribers.length === 0) {
       return NextResponse.json(

@@ -404,7 +404,7 @@ function SecuritySection() {
               type="button"
               onClick={() => setShowCurrent(!showCurrent)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
-              tabIndex={-1}
+              aria-label={showCurrent ? 'Hide current password' : 'Show current password'}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 {showCurrent ? (
@@ -436,7 +436,7 @@ function SecuritySection() {
               type="button"
               onClick={() => setShowNew(!showNew)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
-              tabIndex={-1}
+              aria-label={showNew ? 'Hide new password' : 'Show new password'}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 {showNew ? (
@@ -471,7 +471,7 @@ function SecuritySection() {
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
-              tabIndex={-1}
+              aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 {showConfirm ? (

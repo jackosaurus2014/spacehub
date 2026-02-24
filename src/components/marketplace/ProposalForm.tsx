@@ -59,6 +59,7 @@ export default function ProposalForm({ rfqId, onSuccess }: ProposalFormProps) {
           <label className="block text-sm text-slate-400 mb-1">Proposed Price ($) <span className="text-slate-600 text-[10px]">optional</span></label>
           <input
             type="number"
+            min="0"
             value={form.price}
             onChange={(e) => updateField('price', e.target.value)}
             placeholder="e.g., 50000"
@@ -84,6 +85,8 @@ export default function ProposalForm({ rfqId, onSuccess }: ProposalFormProps) {
           onChange={(e) => updateField('approach', e.target.value)}
           rows={5}
           required
+          minLength={50}
+          maxLength={10000}
           placeholder="Describe your approach, qualifications, relevant experience, and why you're the right provider for this RFQ..."
           className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500"
         />

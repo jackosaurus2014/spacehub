@@ -7,6 +7,12 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    // Reject oversized payloads (5KB limit for telemetry beacons)
+    const contentLength = parseInt(request.headers.get('content-length') || '0', 10);
+    if (contentLength > 5120) {
+      return new NextResponse(null, { status: 204 });
+    }
+
     const body = await request.json();
     const validation = validateBody(telemetryEventSchema, body);
 

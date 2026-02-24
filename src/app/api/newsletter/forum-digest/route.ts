@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireCronSecret, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/db';
-import { sendDailyDigest } from '@/lib/newsletter/email-service';
+import { sendDailyDigest, filterSubscribersByPreferences } from '@/lib/newsletter/email-service';
 import { generateForumDigestEmail } from '@/lib/newsletter/forum-digest';
 
 /**
@@ -22,8 +22,8 @@ export async function POST(request: NextRequest) {
     // 1. Generate the forum digest email
     const { html, plain, subject } = await generateForumDigestEmail();
 
-    // 2. Get verified, active newsletter subscribers
-    const subscribers = await prisma.newsletterSubscriber.findMany({
+    // 2. Get verified, active newsletter subscribers and filter by preferences
+    const allSubscribers = await prisma.newsletterSubscriber.findMany({
       where: {
         verified: true,
         unsubscribedAt: null,
@@ -31,8 +31,11 @@ export async function POST(request: NextRequest) {
       select: {
         email: true,
         unsubscribeToken: true,
+        userId: true,
       },
     });
+
+    const subscribers = await filterSubscribersByPreferences(allSubscribers, 'forum');
 
     if (subscribers.length === 0) {
       logger.info('Forum digest: no subscribers to send to');

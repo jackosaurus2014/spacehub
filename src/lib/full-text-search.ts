@@ -15,12 +15,16 @@ export interface FTSResult {
  * Joins words with & (AND), appends :* for prefix matching.
  */
 export function buildTsQuery(query: string): string {
-  return query
+  const words = query
     .trim()
     .split(/\s+/)
     .filter(Boolean)
-    .map(word => word.replace(/[^a-zA-Z0-9]/g, '') + ':*')
-    .join(' & ');
+    .map(word => word.replace(/[^a-zA-Z0-9]/g, ''))
+    .filter(Boolean); // Remove words that became empty after sanitization
+
+  if (words.length === 0) return '';
+
+  return words.map(word => word + ':*').join(' & ');
 }
 
 export async function searchNewsFTS(tsQuery: string, limit: number): Promise<FTSResult[]> {

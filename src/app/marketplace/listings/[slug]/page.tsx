@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
 import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -47,17 +48,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
   }
 
   if (error || !data) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-4xl mb-3">🔍</div>
-          <div className="text-slate-400">{error || 'Listing not found'}</div>
-          <Link href="/marketplace/search" className="text-cyan-400 text-sm hover:underline mt-2 block">
-            Back to Search
-          </Link>
-        </div>
-      </div>
-    );
+    notFound();
   }
 
   const listing = data.listing;

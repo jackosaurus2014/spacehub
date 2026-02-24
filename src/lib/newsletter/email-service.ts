@@ -2,6 +2,7 @@
 import { Resend } from 'resend';
 import { personalizeEmail } from './email-templates';
 import { logger } from '@/lib/logger';
+import prisma from '@/lib/db';
 
 // Lazy initialization to avoid build-time errors when API key is not set
 let resendClient: Resend | null = null;
@@ -26,11 +27,96 @@ interface Subscriber {
   unsubscribeToken: string;
 }
 
+interface SubscriberWithUserId {
+  email: string;
+  unsubscribeToken: string;
+  userId?: string | null;
+}
+
 interface SendResult {
   success: boolean;
   sentCount: number;
   failedCount: number;
   errors: string[];
+}
+
+/**
+ * Filter subscribers based on their NotificationPreference settings.
+ * - Subscribers without a userId are kept (explicitly subscribed as anonymous).
+ * - Subscribers whose userId has no NotificationPreference record are kept (defaults are all true).
+ * - Subscribers who opted out of emailDigest are excluded from all digests.
+ * - Subscribers who opted out of newsDigest are excluded when digestType is 'news'.
+ * - Subscribers who opted out of forumReplies are excluded when digestType is 'forum'.
+ */
+export async function filterSubscribersByPreferences(
+  subscribers: SubscriberWithUserId[],
+  digestType: 'news' | 'forum'
+): Promise<SubscriberWithUserId[]> {
+  // Collect userIds that are linked to subscribers
+  const userIds = subscribers
+    .map(s => s.userId)
+    .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+  if (userIds.length === 0) {
+    // No linked users — all subscribers are anonymous, keep all
+    return subscribers;
+  }
+
+  // Batch-fetch notification preferences for all linked users
+  const preferences = await prisma.notificationPreference.findMany({
+    where: { userId: { in: userIds } },
+    select: {
+      userId: true,
+      emailDigest: true,
+      newsDigest: true,
+      forumReplies: true,
+    },
+  });
+
+  // Build a lookup map: userId -> preference
+  const prefMap = new Map(preferences.map(p => [p.userId, p]));
+
+  const filtered = subscribers.filter(subscriber => {
+    // Keep subscribers without a linked userId (anonymous subscribers)
+    if (!subscriber.userId) {
+      return true;
+    }
+
+    const pref = prefMap.get(subscriber.userId);
+
+    // Keep subscribers with no NotificationPreference record (defaults are all true)
+    if (!pref) {
+      return true;
+    }
+
+    // Exclude if emailDigest is false (opted out of all digests)
+    if (!pref.emailDigest) {
+      return false;
+    }
+
+    // Exclude if newsDigest is false and this is a news digest
+    if (digestType === 'news' && !pref.newsDigest) {
+      return false;
+    }
+
+    // Exclude if forumReplies is false and this is a forum digest
+    if (digestType === 'forum' && !pref.forumReplies) {
+      return false;
+    }
+
+    return true;
+  });
+
+  const excludedCount = subscribers.length - filtered.length;
+  if (excludedCount > 0) {
+    logger.info(`Filtered out ${excludedCount} subscribers based on notification preferences`, {
+      digestType,
+      originalCount: subscribers.length,
+      filteredCount: filtered.length,
+    });
+  }
+
+  return filtered;
 }
 
 // Helper to delay between batches

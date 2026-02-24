@@ -3411,6 +3411,7 @@ model RFQ {
   @@index([deadline])
   @@index([status, isPublic])
   @@index([category, status])
+  @@index([createdAt])
 }
 
 model Proposal {
@@ -3431,6 +3432,8 @@ model Proposal {
   @@index([rfqId])
   @@index([companyId])
   @@index([status])
+  @@index([submittedAt])
+  @@index([status, submittedAt])
 }
 
 model RFQProviderMatch {
@@ -3825,6 +3828,7 @@ model ForumThread {
 
   @@index([categoryId, createdAt])
   @@index([authorId])
+  @@index([isPinned, createdAt])
 }
 
 model ForumPost {

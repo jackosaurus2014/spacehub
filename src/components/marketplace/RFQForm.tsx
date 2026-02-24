@@ -11,6 +11,7 @@ interface RFQFormProps {
 export default function RFQForm({ onSuccess }: RFQFormProps) {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     title: '',
     category: '',
@@ -27,9 +28,26 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
   });
 
   const selectedCategory = MARKETPLACE_CATEGORIES.find((c) => c.value === form.category);
+  const today = new Date().toISOString().split('T')[0];
 
   const updateField = (field: string, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+    // Clear related validation errors when fields change
+    if (field === 'budgetMin' || field === 'budgetMax') {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next.budget;
+        return next;
+      });
+    }
+    if (field === 'deadline' || field === 'deliveryDate') {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next.deadline;
+        delete next.deliveryDate;
+        return next;
+      });
+    }
   };
 
   const toggleCert = (cert: string) => {
@@ -41,7 +59,33 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
     }));
   };
 
+  const validateBudgetAndDates = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    if (form.budgetMin && form.budgetMax) {
+      if (parseFloat(form.budgetMin) > parseFloat(form.budgetMax)) {
+        errors.budget = 'Minimum budget cannot exceed maximum budget';
+      }
+    }
+
+    if (form.deadline && form.deadline < today) {
+      errors.deadline = 'Response deadline must be today or later';
+    }
+
+    if (form.deliveryDate && form.deliveryDate < today) {
+      errors.deliveryDate = 'Delivery date must be today or later';
+    }
+
+    if (form.deadline && form.deliveryDate && form.deliveryDate < form.deadline) {
+      errors.deliveryDate = 'Delivery date must be on or after the response deadline';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if (!validateBudgetAndDates()) return;
     setSubmitting(true);
     try {
       let reqJson = {};
@@ -210,6 +254,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               <input
                 id="rfq-budget-min"
                 type="number"
+                min="0"
                 value={form.budgetMin}
                 onChange={(e) => updateField('budgetMin', e.target.value)}
                 placeholder="0"
@@ -221,6 +266,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               <input
                 id="rfq-budget-max"
                 type="number"
+                min="0"
                 value={form.budgetMax}
                 onChange={(e) => updateField('budgetMax', e.target.value)}
                 placeholder="100,000"
@@ -228,26 +274,37 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               />
             </div>
           </div>
+          {validationErrors.budget && (
+            <p className="text-xs text-red-400 mt-1">{validationErrors.budget}</p>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label htmlFor="rfq-deadline" className="block text-sm text-slate-400 mb-2">Response Deadline</label>
               <input
                 id="rfq-deadline"
                 type="date"
+                min={today}
                 value={form.deadline}
                 onChange={(e) => updateField('deadline', e.target.value)}
                 className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
               />
+              {validationErrors.deadline && (
+                <p className="text-xs text-red-400 mt-1">{validationErrors.deadline}</p>
+              )}
             </div>
             <div>
               <label htmlFor="rfq-delivery-date" className="block text-sm text-slate-400 mb-2">Delivery Date</label>
               <input
                 id="rfq-delivery-date"
                 type="date"
+                min={today}
                 value={form.deliveryDate}
                 onChange={(e) => updateField('deliveryDate', e.target.value)}
                 className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
               />
+              {validationErrors.deliveryDate && (
+                <p className="text-xs text-red-400 mt-1">{validationErrors.deliveryDate}</p>
+              )}
             </div>
           </div>
           <div>
@@ -285,7 +342,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               Back
             </button>
             <button
-              onClick={() => setStep(4)}
+              onClick={() => { if (validateBudgetAndDates()) setStep(4); }}
               className="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium transition-colors"
             >
               Review

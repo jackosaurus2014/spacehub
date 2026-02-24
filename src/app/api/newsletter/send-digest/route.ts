@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireCronSecret, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/db';
-import { sendDailyDigest } from '@/lib/newsletter/email-service';
+import { sendDailyDigest, filterSubscribersByPreferences } from '@/lib/newsletter/email-service';
 import { renderDigestEmail } from '@/lib/newsletter/email-templates';
 import { generateFeatureArticles, categorizeNews } from '@/lib/newsletter/digest-generator';
 
@@ -136,8 +136,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 10. Get verified subscribers and send
-    const subscribers = await prisma.newsletterSubscriber.findMany({
+    // 10. Get verified subscribers and filter by notification preferences
+    const allSubscribers = await prisma.newsletterSubscriber.findMany({
       where: {
         verified: true,
         unsubscribedAt: null,
@@ -145,8 +145,11 @@ export async function POST(request: NextRequest) {
       select: {
         email: true,
         unsubscribeToken: true,
+        userId: true,
       },
     });
+
+    const subscribers = await filterSubscribersByPreferences(allSubscribers, 'news');
 
     if (subscribers.length === 0) {
       await prisma.dailyDigest.update({

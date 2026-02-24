@@ -71,6 +71,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
             <input
               type="text"
               required
+              maxLength={100}
               value={formData.name}
               onChange={(e) => setFormData((f) => ({ ...f, name: e.target.value }))}
               className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 text-sm"
@@ -94,6 +95,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
             <label className="block text-sm text-slate-400 mb-1">Company</label>
             <input
               type="text"
+              maxLength={100}
               value={formData.company}
               onChange={(e) => setFormData((f) => ({ ...f, company: e.target.value }))}
               className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 text-sm"
@@ -116,6 +118,8 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
           <textarea
             required
             rows={4}
+            minLength={10}
+            maxLength={5000}
             value={formData.message}
             onChange={(e) => setFormData((f) => ({ ...f, message: e.target.value }))}
             className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 text-sm resize-none"

@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
     const sortBy = searchParams.get('sortBy') as 'name' | 'manufacturer' | 'firstFlight' | 'missionsFlown' | null;
     const sortOrder = searchParams.get('sortOrder') as 'asc' | 'desc' | null;
     const limitParam = searchParams.get('limit');
-    const limit = limitParam ? parseInt(limitParam, 10) : 50;
+    const limit = limitParam ? Math.min(100, Math.max(1, parseInt(limitParam, 10))) : 50;
     const offsetParam = searchParams.get('offset');
-    const offset = offsetParam ? parseInt(offsetParam, 10) : 0;
+    const offset = offsetParam ? Math.max(0, parseInt(offsetParam, 10)) : 0;
 
     // Fetch data
     const [{ blueprints, total }, stats, manufacturers] = await Promise.all([

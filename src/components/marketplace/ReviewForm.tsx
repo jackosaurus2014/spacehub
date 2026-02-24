@@ -23,6 +23,7 @@ function StarSelector({ value, onChange, label }: { value: number; onChange: (v:
             onClick={() => onChange(star)}
             onMouseEnter={() => setHover(star)}
             onMouseLeave={() => setHover(0)}
+            aria-label={`Rate ${star} star${star !== 1 ? 's' : ''}`}
             className={`text-lg transition-colors ${
               star <= (hover || value) ? 'text-yellow-400' : 'text-slate-600'
             } hover:scale-110`}
