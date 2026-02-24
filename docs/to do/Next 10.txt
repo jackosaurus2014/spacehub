@@ -1,0 +1,157 @@
+SPACENEXUS — NEXT 10: LAUNCH READINESS
+========================================================
+Generated 2026-02-23 after Next 9 production hardening completion (22/22 tasks).
+
+Platform state: 437 routes, 154 Prisma models, 88 pages, 1,515 tests passing.
+Focus: Error tracking, account management, search upgrade, HTTP caching, notifications.
+
+=============================================================
+TIER 1 — ERROR TRACKING (Critical)
+=============================================================
+
+1.  CLIENT ERROR TELEMETRY ENDPOINT + BEACON
+    Created src/app/api/telemetry/route.ts — POST endpoint validates with Zod, logs via structured logger, returns 204.
+    Modified src/lib/client-logger.ts — error() and warn() fire navigator.sendBeacon in production.
+    Added telemetryEventSchema to src/lib/validations.ts.
+STATUS: DONE — Telemetry endpoint created, client-logger beacons errors/warns in production.
+
+2.  GLOBAL ERROR BOUNDARY + ERROR.TSX UPGRADE
+    Created src/app/global-error.tsx — catches errors escaping root layout.
+    Modified src/app/error.tsx — replaced console.error with clientLogger.error.
+STATUS: DONE — Global error boundary catches unhandled errors, telemetry fires.
+
+3.  UNHANDLED REJECTION + WINDOW.ONERROR CAPTURE
+    Created src/lib/error-boundary-reporter.ts — window error/unhandledrejection listeners with 60s dedup.
+    Created src/components/ErrorReporter.tsx — client component initialized in layout.tsx.
+STATUS: DONE — All unhandled client errors captured and beaconed to server.
+
+
+=============================================================
+TIER 2 — ACCOUNT MANAGEMENT (Critical)
+=============================================================
+
+4.  NOTIFICATIONPREFERENCE PRISMA MODEL
+    Added NotificationPreference model to prisma/schema.prisma.
+    8 boolean toggle fields + digestFrequency enum + userId unique relation.
+STATUS: DONE — Model created, db push successful.
+
+5.  PASSWORD CHANGE API
+    Created src/app/api/account/change-password/route.ts.
+    POST, auth required, bcrypt verify + hash(12).
+    Added changePasswordSchema to validations.ts with .refine() for password match.
+STATUS: DONE — Password change with current password verification.
+
+6.  PROFILE UPDATE API
+    Created src/app/api/account/profile/route.ts.
+    GET (current profile) + PATCH (update name).
+    Added updateProfileSchema to validations.ts.
+STATUS: DONE — Profile read and update working.
+
+7.  NOTIFICATION PREFERENCES API
+    Created src/app/api/account/notification-preferences/route.ts.
+    GET (returns prefs or defaults) + PATCH (upsert).
+    Added notificationPreferencesSchema to validations.ts.
+STATUS: DONE — Preferences CRUD with defaults fallback.
+
+8.  REBUILD ACCOUNT PAGE WITH ALL SECTIONS
+    Rebuilt src/app/account/page.tsx with 4 tabbed sections:
+    Profile (edit name), Security (change password with show/hide),
+    Notifications (8 toggles + frequency dropdown), Data & Privacy (export + delete).
+    Mobile-first stacked layout, toast feedback on save.
+STATUS: DONE — Full account management page with all sections.
+
+
+=============================================================
+TIER 3 — HTTP CACHING
+=============================================================
+
+9.  CACHE-CONTROL HEADERS FOR 15+ API ROUTES
+    Created src/lib/cache-headers.ts — withCacheHeaders() utility.
+    Modified next.config.js — 12 new Cache-Control header entries (18 total cached routes).
+    Routes cached: company-profiles, marketplace, launch-windows, satellites, compliance,
+    space-environment, procurement, search, taxonomy, blogs, space-tourism, supply-chain.
+STATUS: DONE — Zero changes to route files, all caching via next.config.js headers.
+
+10. ETAG SUPPORT FOR SEARCH API
+    Modified src/app/api/search/route.ts — MD5 hash of response as ETag.
+    Checks If-None-Match header, returns 304 Not Modified if matching.
+STATUS: DONE — Search API supports conditional requests.
+
+
+=============================================================
+TIER 4 — SEARCH UPGRADE
+=============================================================
+
+11. POSTGRESQL FULL-TEXT SEARCH
+    Created src/lib/full-text-search.ts — buildTsQuery(), searchNews(), searchCompanies(),
+    searchEvents(), searchOpportunities(), searchBlogs() using prisma.$queryRaw
+    with to_tsvector, to_tsquery, ts_rank, ts_headline.
+    Modified src/app/api/search/route.ts — FTS for 2+ word queries, ILIKE fallback for short queries.
+STATUS: DONE — Relevance-ranked full-text search with headline snippets.
+
+12. SEARCH RESULT HIGHLIGHTING
+    Created src/components/search/HighlightedText.tsx — renders <mark> tags from ts_headline.
+    Modified src/app/search/page.tsx — HighlightedText for FTS result snippets, "Full-text" badge.
+STATUS: DONE — Visual highlighting of search matches.
+
+
+=============================================================
+TIER 5 — NOTIFICATION IMPROVEMENTS
+=============================================================
+
+13. WIRE PREFERENCES INTO NOTIFICATION CREATION
+    Modified src/lib/notifications-server.ts — checks NotificationPreference before creating.
+    Maps types to preference fields (reply→forumReplies, marketplace→marketplaceUpdates, etc.).
+    ALWAYS_DELIVER_TYPES for moderation/system notifications bypass preferences.
+STATUS: DONE — Notifications respect user opt-out preferences.
+
+14. NOTIFICATION DEDUPLICATION
+    Modified src/lib/notifications-server.ts — checks same type + userId + relatedContentId
+    within last 5 minutes before creating. Skips duplicates.
+STATUS: DONE — No more notification spam from rapid repeated events.
+
+
+=============================================================
+TIER 6 — DEVELOPER EXPERIENCE
+=============================================================
+
+15. CREATE .ENV.EXAMPLE
+    Created .env.example — 33 environment variables across 9 categories:
+    Required, Email, AI, Payments, Cron, Public, Analytics, Ads, API.
+STATUS: DONE — New developers can onboard without guessing env vars.
+
+16. VALIDATION TESTS FOR NEW SCHEMAS
+    Added 17 new tests to src/lib/__tests__/validations.test.ts:
+    telemetryEventSchema (5), changePasswordSchema (4),
+    updateProfileSchema (4), notificationPreferencesSchema (4).
+STATUS: DONE — All 4 new schemas fully covered.
+
+
+=============================================================
+TIER 7 — TEST COVERAGE
+=============================================================
+
+17. TELEMETRY API ROUTE TESTS
+    Created src/lib/__tests__/api-routes-telemetry.test.ts — 11 tests.
+    Valid/invalid payloads, logger routing, graceful degradation for malformed beacons.
+STATUS: DONE — Full coverage of telemetry endpoint.
+
+18. ACCOUNT MANAGEMENT ROUTE TESTS
+    Created src/lib/__tests__/api-routes-account-management.test.ts — 17 tests.
+    Change password (correct/wrong/mismatch), profile GET/PATCH, notification preferences CRUD.
+STATUS: DONE — Full coverage of all account management routes.
+
+
+=============================================================
+SUMMARY
+=============================================================
+
+All 18 tasks completed across 3 batches:
+- Batch 1: Tasks 1-7, 9, 15 (error telemetry, account APIs, caching, .env.example)
+- Batch 2: Tasks 8, 10-14 (account page, FTS search, ETag, notification prefs/dedup)
+- Batch 3: Tasks 16-18 (test suites)
+
+New files created: 14
+Files modified: 10
+Tests added: 45 (17 + 11 + 17)
+Total tests: 1,515 across 43 suites
