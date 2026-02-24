@@ -1515,6 +1515,21 @@ export type RFQClarificationAnswerData = z.infer<typeof rfqClarificationAnswerSc
 export type ReviewResponseData = z.infer<typeof reviewResponseSchema>;
 
 // ============================================================
+// Error Telemetry Schema
+// ============================================================
+
+export const telemetryEventSchema = z.object({
+  level: z.enum(['error', 'warn', 'info']),
+  message: z.string().max(500),
+  context: z.record(z.string(), z.unknown()).optional(),
+  url: z.string().max(2000).optional(),
+  userAgent: z.string().max(500).optional(),
+  timestamp: z.string().optional(),
+});
+
+export type TelemetryEventData = z.infer<typeof telemetryEventSchema>;
+
+// ============================================================
 // Company Watchlists & Saved Searches
 // ============================================================
 
@@ -1666,6 +1681,42 @@ export const awardsQuerySchema = z.object({
 });
 
 export type AwardsQueryParams = z.infer<typeof awardsQuerySchema>;
+
+// ============================================================
+// Account Management Schemas
+// ============================================================
+
+// Change password schema
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmNewPassword: z.string().min(1, 'Please confirm your new password'),
+}).refine((data) => data.newPassword === data.confirmNewPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmNewPassword'],
+});
+
+// Update profile schema
+export const updateProfileSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100, 'Name too long').trim(),
+});
+
+// Notification preferences schema
+export const notificationPreferencesSchema = z.object({
+  emailDigest: z.boolean().optional(),
+  emailAlerts: z.boolean().optional(),
+  pushEnabled: z.boolean().optional(),
+  forumReplies: z.boolean().optional(),
+  directMessages: z.boolean().optional(),
+  marketplaceUpdates: z.boolean().optional(),
+  watchlistAlerts: z.boolean().optional(),
+  newsDigest: z.boolean().optional(),
+  digestFrequency: z.enum(['daily', 'weekly', 'none']).optional(),
+});
+
+export type ChangePasswordData = z.infer<typeof changePasswordSchema>;
+export type UpdateProfileData = z.infer<typeof updateProfileSchema>;
+export type NotificationPreferencesData = z.infer<typeof notificationPreferencesSchema>;
 
 // Sponsor checkout
 export const sponsorCheckoutSchema = z.object({

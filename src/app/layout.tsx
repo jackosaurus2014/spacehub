@@ -28,6 +28,7 @@ const NpsSurvey = dynamic(() => import('@/components/ui/NpsSurvey'), { ssr: fals
 const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), { ssr: false });
 import ModuleNavBar from '@/components/ModuleNavBar';
 import WebVitals from '@/components/analytics/WebVitals';
+import ErrorReporter from '@/components/ErrorReporter';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'swap' });
@@ -209,6 +210,7 @@ export default function RootLayout({
               <KeyboardShortcutsModal />
               <SwipeModuleNavigation />
               <WebVitals />
+              <ErrorReporter />
             </div>
           </SubscriptionProvider>
         </AuthProvider>

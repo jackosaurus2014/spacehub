@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
+import { clientLogger } from '@/lib/client-logger';
 
 export default function Error({
   error,
@@ -11,7 +12,11 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Page error:', error);
+    clientLogger.error('Page error', {
+      message: error.message,
+      digest: error.digest,
+      stack: error.stack?.slice(0, 500),
+    });
   }, [error]);
 
   return (

@@ -114,6 +114,81 @@ const nextConfig = {
           },
         ],
       },
+      // API route caching — company/marketplace
+      {
+        source: '/api/company-profiles',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' },
+        ],
+      },
+      {
+        source: '/api/company-profiles/:slug',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' },
+        ],
+      },
+      {
+        source: '/api/marketplace/listings',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=120, stale-while-revalidate=300' },
+        ],
+      },
+      {
+        source: '/api/marketplace/taxonomy',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=3600, stale-while-revalidate=7200' },
+        ],
+      },
+      // API route caching — real-time / near-real-time data
+      {
+        source: '/api/launch-windows',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=60, stale-while-revalidate=120' },
+        ],
+      },
+      {
+        source: '/api/satellites',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=60, stale-while-revalidate=120' },
+        ],
+      },
+      {
+        source: '/api/space-environment',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=60, stale-while-revalidate=120' },
+        ],
+      },
+      {
+        source: '/api/search',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=60, stale-while-revalidate=120' },
+        ],
+      },
+      // API route caching — moderate-frequency data
+      {
+        source: '/api/compliance',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=600, stale-while-revalidate=1200' },
+        ],
+      },
+      {
+        source: '/api/procurement',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' },
+        ],
+      },
+      {
+        source: '/api/space-tourism',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' },
+        ],
+      },
+      {
+        source: '/api/supply-chain',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' },
+        ],
+      },
       // Service worker headers for PWA discoverability
       {
         source: '/sw.js',
