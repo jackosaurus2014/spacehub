@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createHash } from 'crypto';
 import prisma from '@/lib/db';
 import { searchQuerySchema, validateSearchParams } from '@/lib/validations';
 import type { SearchModule, SearchSortBy } from '@/lib/validations';
 import { validationError, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
+import { fullTextSearch, buildTsQuery } from '@/lib/full-text-search';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +45,30 @@ function getOrderBy(
   }
 }
 
+/**
+ * Build a JSON response with ETag header and 304 support.
+ */
+function buildETagResponse(
+  req: NextRequest,
+  responseData: Record<string, unknown>
+): NextResponse {
+  const body = JSON.stringify(responseData);
+  const etag = `"${createHash('md5').update(body).digest('hex')}"`;
+
+  // Check If-None-Match for conditional GET
+  const ifNoneMatch = req.headers.get('If-None-Match');
+  if (ifNoneMatch && ifNoneMatch === etag) {
+    return new NextResponse(null, {
+      status: 304,
+      headers: { ETag: etag },
+    });
+  }
+
+  return NextResponse.json(responseData, {
+    headers: { ETag: etag },
+  });
+}
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -54,11 +80,37 @@ export async function GET(req: NextRequest) {
 
     const { q, limit, modules, dateFrom, dateTo, sortBy, sortOrder } = validation.data;
 
-    const containsFilter = { contains: q, mode: 'insensitive' as const };
-    const dateFilter = buildDateFilter(dateFrom, dateTo);
-
     // Track which modules to search
     const activeModules = new Set<SearchModule>(modules);
+
+    // Determine if we should try full-text search first:
+    // Use FTS for queries with 2+ words, no date filters, and relevance sort
+    const wordCount = q.trim().split(/\s+/).filter(Boolean).length;
+    const canUseFTS = wordCount >= 2 && !dateFrom && !dateTo && sortBy === 'relevance';
+
+    if (canUseFTS) {
+      const ftsResults = await fullTextSearch(q, limit);
+
+      if (ftsResults.length > 0) {
+        // Group FTS results by source into the standard response shape
+        const response: Record<string, unknown> = {
+          news: ftsResults.filter(r => r.source === 'news' && activeModules.has('news')),
+          companies: ftsResults.filter(r => r.source === 'companies' && activeModules.has('companies')),
+          events: ftsResults.filter(r => r.source === 'events' && activeModules.has('events')),
+          opportunities: ftsResults.filter(r => r.source === 'opportunities' && activeModules.has('opportunities')),
+          blogs: ftsResults.filter(r => r.source === 'blogs' && activeModules.has('blogs')),
+          _meta: { searchMethod: 'fts' },
+        };
+
+        return buildETagResponse(req, response);
+      }
+      // FTS returned empty — fall through to ILIKE
+    }
+
+    // --- ILIKE fallback (original logic) ---
+
+    const containsFilter = { contains: q, mode: 'insensitive' as const };
+    const dateFilter = buildDateFilter(dateFrom, dateTo);
 
     // Build parallel queries only for requested modules
     const queries: Promise<unknown>[] = [];
@@ -248,7 +300,10 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.json(response);
+    // Add search method metadata
+    response._meta = { searchMethod: 'ilike' };
+
+    return buildETagResponse(req, response);
   } catch (error) {
     logger.error('Search failed', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Search failed');

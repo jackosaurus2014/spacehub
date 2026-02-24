@@ -7,12 +7,19 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import type { SearchModule } from '@/lib/validations';
 import CompanyIntelCard from '@/components/search/CompanyIntelCard';
+import HighlightedText from '@/components/search/HighlightedText';
 import { detectSearchIntent, getIntentSuggestion } from '@/lib/search-intent';
 import { clientLogger } from '@/lib/client-logger';
 
 // --- Types ---
 
-interface NewsResult {
+// FTS results include snippet + rank fields; ILIKE results do not
+interface FTSFields {
+  snippet?: string;
+  rank?: number;
+}
+
+interface NewsResult extends FTSFields {
   id: string;
   title: string;
   summary: string | null;
@@ -44,7 +51,7 @@ interface CompanyResult {
   };
 }
 
-interface EventResult {
+interface EventResult extends FTSFields {
   id: string;
   name: string;
   description: string | null;
@@ -54,7 +61,7 @@ interface EventResult {
   agency: string | null;
 }
 
-interface OpportunityResult {
+interface OpportunityResult extends FTSFields {
   id: string;
   slug: string;
   title: string;
@@ -65,7 +72,7 @@ interface OpportunityResult {
   publishedAt: string | null;
 }
 
-interface BlogResult {
+interface BlogResult extends FTSFields {
   id: string;
   title: string;
   excerpt: string | null;
@@ -80,6 +87,7 @@ interface SearchResults {
   events: EventResult[];
   opportunities: OpportunityResult[];
   blogs: BlogResult[];
+  _meta?: { searchMethod: 'fts' | 'ilike' };
 }
 
 type SortOption = 'relevance' | 'date_desc' | 'date_asc' | 'title_asc';
@@ -233,9 +241,13 @@ function NewsResultCard({ item }: { item: NewsResult }) {
           <h3 className="text-slate-100 font-medium group-hover:text-cyan-300 transition-colors line-clamp-1">
             {item.title}
           </h3>
-          {item.summary && (
+          {item.snippet ? (
+            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-cyan-400/20 [&_mark]:text-cyan-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
+              <HighlightedText html={item.snippet} fallback={item.summary || ''} />
+            </p>
+          ) : item.summary ? (
             <p className="text-star-300 text-sm mt-1 line-clamp-2">{item.summary}</p>
-          )}
+          ) : null}
           <div className="flex items-center gap-3 mt-2 text-xs text-star-300">
             <span className="text-blue-400">{item.source}</span>
             {item.publishedAt && (
@@ -283,9 +295,13 @@ function EventResultCard({ item }: { item: EventResult }) {
               {item.status}
             </span>
           </div>
-          {item.description && (
+          {item.snippet ? (
+            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-cyan-400/20 [&_mark]:text-cyan-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
+              <HighlightedText html={item.snippet} fallback={item.description || ''} />
+            </p>
+          ) : item.description ? (
             <p className="text-star-300 text-sm mt-1 line-clamp-2">{item.description}</p>
-          )}
+          ) : null}
           <div className="flex items-center gap-3 mt-2 text-xs text-star-300">
             {item.agency && <span className="text-orange-400">{item.agency}</span>}
             {item.launchDate && (
@@ -319,9 +335,13 @@ function OpportunityResultCard({ item }: { item: OpportunityResult }) {
           <h3 className="text-slate-100 font-medium group-hover:text-cyan-300 transition-colors line-clamp-1">
             {item.title}
           </h3>
-          {item.description && (
+          {item.snippet ? (
+            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-cyan-400/20 [&_mark]:text-cyan-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
+              <HighlightedText html={item.snippet} fallback={item.description || ''} />
+            </p>
+          ) : item.description ? (
             <p className="text-star-300 text-sm mt-1 line-clamp-2">{item.description}</p>
-          )}
+          ) : null}
           <div className="flex items-center gap-3 mt-2 text-xs text-star-300">
             <span className="text-purple-400 capitalize">{item.type.replace(/_/g, ' ')}</span>
             <span className="text-star-300/40">|</span>
@@ -357,9 +377,13 @@ function BlogResultCard({ item }: { item: BlogResult }) {
           <h3 className="text-slate-100 font-medium group-hover:text-cyan-300 transition-colors line-clamp-1">
             {item.title}
           </h3>
-          {item.excerpt && (
+          {item.snippet ? (
+            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-cyan-400/20 [&_mark]:text-cyan-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
+              <HighlightedText html={item.snippet} fallback={item.excerpt || ''} />
+            </p>
+          ) : item.excerpt ? (
             <p className="text-star-300 text-sm mt-1 line-clamp-2">{item.excerpt}</p>
-          )}
+          ) : null}
           <div className="flex items-center gap-3 mt-2 text-xs text-star-300">
             {item.authorName && <span className="text-pink-400">{item.authorName}</span>}
             {item.publishedAt && (
@@ -439,6 +463,7 @@ function SearchContent() {
   });
 
   const [results, setResults] = useState<SearchResults | null>(null);
+  const [searchMethod, setSearchMethod] = useState<'fts' | 'ilike' | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -500,6 +525,7 @@ function SearchContent() {
       const res = await fetch(`/api/search?${params}`);
       if (!res.ok) throw new Error('Search request failed');
       const data: SearchResults = await res.json();
+      setSearchMethod(data._meta?.searchMethod || null);
       setResults(data);
     } catch (err) {
       clientLogger.error('Search failed', { error: err instanceof Error ? err.message : String(err) });
@@ -719,6 +745,11 @@ function SearchContent() {
           {hasSearched && !loading && (
             <span className="text-sm text-star-300">
               {totalResults} {totalResults === 1 ? 'result' : 'results'} found
+              {searchMethod === 'fts' && (
+                <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                  Full-text
+                </span>
+              )}
             </span>
           )}
         </div>
