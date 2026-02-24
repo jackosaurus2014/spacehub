@@ -10,6 +10,10 @@ import {
   registerSchema,
   loginSchema,
   validateBody,
+  telemetryEventSchema,
+  changePasswordSchema,
+  updateProfileSchema,
+  notificationPreferencesSchema,
 } from '../validations';
 
 // ---------------------------------------------------------------------------
@@ -376,6 +380,224 @@ describe('validateBody', () => {
     if (result.success) {
       expect(result.data.email).toBe('user@example.com');
       expect(result.data.password).toBe('secret123');
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// telemetryEventSchema
+// ---------------------------------------------------------------------------
+describe('telemetryEventSchema', () => {
+  it('accepts valid error event', () => {
+    const result = telemetryEventSchema.safeParse({
+      level: 'error',
+      message: 'Something went wrong',
+      context: { component: 'Sidebar', code: 500 },
+      url: 'https://spacenexus.io/dashboard',
+      userAgent: 'Mozilla/5.0',
+      timestamp: '2026-02-23T12:00:00Z',
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.level).toBe('error');
+      expect(result.data.message).toBe('Something went wrong');
+    }
+  });
+
+  it('accepts minimal event (only level + message)', () => {
+    const result = telemetryEventSchema.safeParse({
+      level: 'info',
+      message: 'Page loaded',
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.level).toBe('info');
+      expect(result.data.context).toBeUndefined();
+      expect(result.data.url).toBeUndefined();
+      expect(result.data.userAgent).toBeUndefined();
+      expect(result.data.timestamp).toBeUndefined();
+    }
+  });
+
+  it('rejects missing level', () => {
+    const result = telemetryEventSchema.safeParse({
+      message: 'Something happened',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const paths = result.error.issues.map((i) => i.path[0]);
+      expect(paths).toContain('level');
+    }
+  });
+
+  it('rejects invalid level value', () => {
+    const result = telemetryEventSchema.safeParse({
+      level: 'debug',
+      message: 'A debug message',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const paths = result.error.issues.map((i) => i.path[0]);
+      expect(paths).toContain('level');
+    }
+  });
+
+  it('rejects message over 500 chars', () => {
+    const result = telemetryEventSchema.safeParse({
+      level: 'warn',
+      message: 'a'.repeat(501),
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const paths = result.error.issues.map((i) => i.path[0]);
+      expect(paths).toContain('message');
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// changePasswordSchema
+// ---------------------------------------------------------------------------
+describe('changePasswordSchema', () => {
+  it('accepts valid matching passwords', () => {
+    const result = changePasswordSchema.safeParse({
+      currentPassword: 'OldPassword1',
+      newPassword: 'NewSecure8',
+      confirmNewPassword: 'NewSecure8',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects when passwords don\'t match', () => {
+    const result = changePasswordSchema.safeParse({
+      currentPassword: 'OldPassword1',
+      newPassword: 'NewSecure8',
+      confirmNewPassword: 'Different9',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages).toContain('Passwords do not match');
+    }
+  });
+
+  it('rejects newPassword under 8 chars', () => {
+    const result = changePasswordSchema.safeParse({
+      currentPassword: 'OldPassword1',
+      newPassword: 'Short1',
+      confirmNewPassword: 'Short1',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages).toContain('Password must be at least 8 characters');
+    }
+  });
+
+  it('rejects empty currentPassword', () => {
+    const result = changePasswordSchema.safeParse({
+      currentPassword: '',
+      newPassword: 'NewSecure8',
+      confirmNewPassword: 'NewSecure8',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages).toContain('Current password is required');
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// updateProfileSchema
+// ---------------------------------------------------------------------------
+describe('updateProfileSchema', () => {
+  it('accepts valid name', () => {
+    const result = updateProfileSchema.safeParse({ name: 'Alice' });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.name).toBe('Alice');
+    }
+  });
+
+  it('trims whitespace from name', () => {
+    const result = updateProfileSchema.safeParse({ name: '  Bob  ' });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.name).toBe('Bob');
+    }
+  });
+
+  it('rejects empty name', () => {
+    const result = updateProfileSchema.safeParse({ name: '' });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages).toContain('Name is required');
+    }
+  });
+
+  it('rejects name over 100 chars', () => {
+    const result = updateProfileSchema.safeParse({ name: 'a'.repeat(101) });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages).toContain('Name too long');
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// notificationPreferencesSchema
+// ---------------------------------------------------------------------------
+describe('notificationPreferencesSchema', () => {
+  it('accepts valid full preferences object', () => {
+    const result = notificationPreferencesSchema.safeParse({
+      emailDigest: true,
+      emailAlerts: false,
+      pushEnabled: true,
+      forumReplies: true,
+      directMessages: false,
+      marketplaceUpdates: true,
+      watchlistAlerts: false,
+      newsDigest: true,
+      digestFrequency: 'daily',
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.emailDigest).toBe(true);
+      expect(result.data.digestFrequency).toBe('daily');
+    }
+  });
+
+  it('accepts empty object (all fields optional)', () => {
+    const result = notificationPreferencesSchema.safeParse({});
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.emailDigest).toBeUndefined();
+      expect(result.data.digestFrequency).toBeUndefined();
+    }
+  });
+
+  it('accepts partial update (single field)', () => {
+    const result = notificationPreferencesSchema.safeParse({
+      pushEnabled: true,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.pushEnabled).toBe(true);
+      expect(result.data.emailDigest).toBeUndefined();
+    }
+  });
+
+  it('rejects invalid digestFrequency', () => {
+    const result = notificationPreferencesSchema.safeParse({
+      digestFrequency: 'monthly',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const paths = result.error.issues.map((i) => i.path[0]);
+      expect(paths).toContain('digestFrequency');
     }
   });
 });
