@@ -87,6 +87,20 @@ export const MODULE_ROUTES: Record<string, string> = {
   // ── Deal Room ──
   'deal-rooms': '/deal-rooms',
 
+  // ── Intelligence & Analytics ──
+  'investment-tracker': '/investment-tracker',
+  'market-map': '/market-map',
+  'intelligence-brief': '/intelligence-brief',
+  'mission-stats': '/mission-stats',
+  'government-budgets': '/government-budgets',
+
+  // ── Pipeline & Resources ──
+  'mission-pipeline': '/mission-pipeline',
+  'resources': '/resources',
+
+  // ── Executive Intelligence ──
+  'executive-moves': '/executive-moves',
+
   // ── Resources & Reference ──
   'glossary': '/glossary',
   'timeline': '/timeline',

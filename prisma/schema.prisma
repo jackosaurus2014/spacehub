@@ -4010,6 +4010,11 @@ model NotificationPreference {
   watchlistAlerts     Boolean @default(true)
   newsDigest          Boolean @default(true)
   digestFrequency     String  @default("daily") // "daily", "weekly", "none"
+  // Smart batching & quiet hours (v1.2.0)
+  alertDigestMode     String  @default("instant") // "instant", "hourly", "daily", "weekly"
+  quietHoursStart     Int?    // Hour 0-23, null = disabled
+  quietHoursEnd       Int?    // Hour 0-23, null = disabled
+  quietHoursTimezone  String  @default("UTC")
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }

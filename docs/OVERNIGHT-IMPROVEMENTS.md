@@ -131,6 +131,36 @@ Premium platforms cost $10K-50K+/yr. Free tools are shallow. We own the middle.
 | 10.5 | Add confidence + citations to WhyThisMatters, AI Insights, Investment Thesis | ✅ DONE |
 | 10.6 | Fix 2 failing account management tests | ✅ DONE |
 
+### Wave 11: Dashboard Templates, Glossary & Timeline
+**Commits:** `505b11f` + `56945d2` — 6 files changed, 2013 insertions
+| # | Task | Status |
+|---|------|--------|
+| 11.1 | Create role-based dashboard templates (investor, operator, supplier, executive) | ✅ DONE |
+| 11.2 | Create Space Industry Glossary (50+ terms, A-Z nav, search, categories) | ✅ DONE |
+| 11.3 | Create Space Industry Timeline (35+ events, 1957-2025, era filters) | ✅ DONE |
+
+### Wave 12: Social Sharing, Accessibility & Satellite Comparison
+**Commit:** `1893fc2` — 9 files changed, 1800 insertions
+| # | Task | Status |
+|---|------|--------|
+| 12.1 | Create ShareButton component (copy link, X/Twitter, LinkedIn, email) | ✅ DONE |
+| 12.2 | Add print-friendly CSS (@media print) | ✅ DONE |
+| 12.3 | Add skip-to-content link for keyboard navigation | ✅ DONE |
+| 12.4 | Add focus-visible styles for accessibility | ✅ DONE |
+| 12.5 | Create NotificationBell component with dropdown | ✅ DONE |
+| 12.6 | Create Satellite Constellation Comparison page (12+ constellations) | ✅ DONE |
+| 12.7 | Create Comparison Tools hub page | ✅ DONE |
+| 12.8 | Add glossary, timeline, comparison to navigation | ✅ DONE |
+
+### Wave 13: Competitor-Inspired Intelligence Pages
+**Commit:** `4a1d158` — 4 files changed, 2888 insertions
+| # | Task | Status |
+|---|------|--------|
+| 13.1 | Create Investment Tracker dashboard (funding trends, top deals, investors) | ✅ DONE |
+| 13.2 | Create Mission Statistics database (launch stats, providers, sites, orbits) | ✅ DONE |
+| 13.3 | Create Government Space Budgets tracker (15 agencies, per capita, programs) | ✅ DONE |
+| 13.4 | Create Mission Pipeline (future missions 2025-2030, confidence levels) | ✅ DONE |
+
 ---
 
 ## Deep Audit Findings (Wave 5+ Reference)
