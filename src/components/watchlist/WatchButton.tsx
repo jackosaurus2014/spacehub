@@ -81,9 +81,9 @@ export default function WatchButton({ companyProfileId, companyName, size = 'sm'
 
   if (loading) {
     if (size === 'sm') {
-      return <div className="w-6 h-6 rounded bg-slate-700/50 animate-pulse" />;
+      return <div className="w-8 h-8 min-w-[44px] min-h-[44px] rounded bg-slate-700/50 animate-pulse" />;
     }
-    return <div className="w-24 h-8 rounded bg-slate-700/50 animate-pulse" />;
+    return <div className="w-24 h-10 rounded bg-slate-700/50 animate-pulse" />;
   }
 
   if (size === 'sm') {
@@ -91,8 +91,9 @@ export default function WatchButton({ companyProfileId, companyName, size = 'sm'
       <button
         onClick={toggle}
         disabled={toggling}
+        aria-label={watching ? `Unwatch ${companyName}` : `Watch ${companyName}`}
         title={watching ? `Unwatch ${companyName}` : `Watch ${companyName}`}
-        className={`w-6 h-6 rounded flex items-center justify-center transition-all text-sm ${
+        className={`min-w-[44px] min-h-[44px] w-8 h-8 rounded flex items-center justify-center transition-all text-sm ${
           watching
             ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30'
             : 'bg-slate-700/50 text-slate-500 hover:text-yellow-400 hover:bg-slate-700'
@@ -107,7 +108,7 @@ export default function WatchButton({ companyProfileId, companyName, size = 'sm'
     <button
       onClick={toggle}
       disabled={toggling}
-      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+      className={`flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] rounded-lg text-sm font-medium transition-all ${
         watching
           ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30'
           : 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white'

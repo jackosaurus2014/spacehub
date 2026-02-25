@@ -137,19 +137,19 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
       <div className="mt-3 grid grid-cols-4 gap-1">
         <div className="text-center">
           <div className="text-xs text-blue-400 font-medium">{trend.engineeringOpenings}</div>
-          <div className="text-[10px] text-slate-400">Eng</div>
+          <div className="text-xs text-slate-400">Eng</div>
         </div>
         <div className="text-center">
           <div className="text-xs text-green-400 font-medium">{trend.operationsOpenings}</div>
-          <div className="text-[10px] text-slate-400">Ops</div>
+          <div className="text-xs text-slate-400">Ops</div>
         </div>
         <div className="text-center">
           <div className="text-xs text-yellow-400 font-medium">{trend.businessOpenings}</div>
-          <div className="text-[10px] text-slate-400">Biz</div>
+          <div className="text-xs text-slate-400">Biz</div>
         </div>
         <div className="text-center">
           <div className="text-xs text-purple-400 font-medium">{trend.researchOpenings}</div>
-          <div className="text-[10px] text-slate-400">R&D</div>
+          <div className="text-xs text-slate-400">R&D</div>
         </div>
       </div>
     </div>
@@ -183,7 +183,7 @@ function SalaryBenchmarkBar({ benchmark }: { benchmark: SalaryBenchmark }) {
         />
       </div>
 
-      <div className="flex justify-between text-[10px] text-slate-400">
+      <div className="flex justify-between text-xs text-slate-400">
         <span>{formatSalary(benchmark.avgMin)}</span>
         <span className="text-nebula-300 font-medium">Median: {formatSalary(benchmark.avgMedian)}</span>
         <span>{formatSalary(benchmark.avgMax)}</span>

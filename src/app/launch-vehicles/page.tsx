@@ -1173,7 +1173,7 @@ export default function LaunchVehiclesPage() {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as VehicleStatus | '')}
-                    className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All</option>
                     <option value="Operational">Operational</option>
@@ -1186,7 +1186,7 @@ export default function LaunchVehiclesPage() {
                   <select
                     value={countryFilter}
                     onChange={(e) => setCountryFilter(e.target.value)}
-                    className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All</option>
                     {countries.map(c => (
@@ -1199,7 +1199,7 @@ export default function LaunchVehiclesPage() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="payloadLeo">Payload LEO</option>
                     <option value="payloadGto">Payload GTO</option>
@@ -1495,7 +1495,7 @@ export default function LaunchVehiclesPage() {
                             <Link href={getCompanyProfileUrl(v.manufacturer)!} className="hover:underline">{v.manufacturer}</Link>
                           ) : v.manufacturer})</span>
                           {v.reusable && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-cyan-900/30 text-cyan-400 border border-cyan-500/30 hidden md:inline">
+                            <span className="px-1.5 py-0.5 rounded text-xs bg-cyan-900/30 text-cyan-400 border border-cyan-500/30 hidden md:inline">
                               Reusable
                             </span>
                           )}
@@ -1597,14 +1597,14 @@ export default function LaunchVehiclesPage() {
                   {formatCostPerKg(costRanked[0]?.costPerKgLeo ?? null)}
                 </div>
                 <div className="text-star-300 text-xs uppercase tracking-widest font-medium">Lowest $/kg LEO</div>
-                <div className="text-star-300 text-[10px] mt-0.5">{costRanked[0]?.name}</div>
+                <div className="text-star-300 text-xs mt-0.5">{costRanked[0]?.name}</div>
               </div>
               <div className="card p-4 text-center">
                 <div className="text-2xl font-bold font-display text-white">
                   {formatCost(costRanked.find(v => v.id === 'falcon-9')?.costMillions ?? null)}
                 </div>
                 <div className="text-star-300 text-xs uppercase tracking-widest font-medium">Market Leader</div>
-                <div className="text-star-300 text-[10px] mt-0.5">Falcon 9</div>
+                <div className="text-star-300 text-xs mt-0.5">Falcon 9</div>
               </div>
               <div className="card p-4 text-center">
                 <div className="text-2xl font-bold font-display text-cyan-400">
@@ -1617,7 +1617,7 @@ export default function LaunchVehiclesPage() {
                   {formatCost(costRanked.length > 0 ? costRanked[costRanked.length - 1].costMillions : null)}
                 </div>
                 <div className="text-star-300 text-xs uppercase tracking-widest font-medium">Most Expensive</div>
-                <div className="text-star-300 text-[10px] mt-0.5">{costRanked.length > 0 ? costRanked[costRanked.length - 1].name : '--'}</div>
+                <div className="text-star-300 text-xs mt-0.5">{costRanked.length > 0 ? costRanked[costRanked.length - 1].name : '--'}</div>
               </div>
             </div>
 
@@ -1639,7 +1639,7 @@ export default function LaunchVehiclesPage() {
                             <Link href={getCompanyProfileUrl(v.manufacturer)!} className="hover:underline">{v.manufacturer}</Link>
                           ) : v.manufacturer})</span>
                           {v.reusable && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-cyan-900/30 text-cyan-400 border border-cyan-500/30">
+                            <span className="px-1.5 py-0.5 rounded text-xs bg-cyan-900/30 text-cyan-400 border border-cyan-500/30">
                               Reusable
                             </span>
                           )}

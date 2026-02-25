@@ -128,7 +128,7 @@ export default function TrendingSidebar() {
                     {thread.title}
                   </h4>
                   {/* Meta */}
-                  <div className="flex items-center gap-2 text-[10px] text-slate-500">
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
                     {/* Score badge */}
                     <span className="inline-flex items-center gap-0.5 px-1 py-0.5 bg-amber-500/10 text-amber-400 rounded font-semibold">
                       <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

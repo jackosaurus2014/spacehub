@@ -975,7 +975,7 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
             <select
               value={countryFilter}
               onChange={(e) => setCountryFilter(e.target.value)}
-              className="bg-slate-700/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="">All Countries</option>
               {countries.map(c => (
@@ -989,7 +989,7 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'portfolio' | 'recent' | 'citations' | 'growth')}
-              className="bg-slate-700/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="portfolio">Portfolio Size</option>
               <option value="recent">Recent Filings</option>
@@ -1186,7 +1186,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as 'patents' | 'growth' | 'recent')}
-          className="bg-slate-700/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
         >
           <option value="patents">Sort by Total Patents</option>
           <option value="growth">Sort by Growth Rate</option>
@@ -1394,7 +1394,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-slate-700/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="">All Categories</option>
               {categories.map(c => (
@@ -1408,7 +1408,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-700/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="">All Statuses</option>
               {statuses.map(s => (

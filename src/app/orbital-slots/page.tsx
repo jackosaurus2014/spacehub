@@ -341,7 +341,7 @@ function OrbitTypeCard({ slot }: { slot: OrbitalSlot }) {
       <div className="mt-3 pt-3 border-t border-slate-700/50">
         <Link
           href="/space-environment?tab=debris"
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
         >
           View debris in this orbit &rarr;
         </Link>
@@ -447,20 +447,20 @@ function OperatorCard({ operator, rank }: { operator: SatelliteOperator; rank: n
       <div className="mt-3 pt-3 border-t border-slate-700/50 flex flex-wrap gap-2">
         <Link
           href="/space-environment?tab=debris"
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
         >
           View Debris &rarr;
         </Link>
         <Link
           href={`/market-intel?search=${encodeURIComponent(operator.name)}`}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium bg-green-500/20 text-green-300 hover:bg-green-500/30 transition-colors border border-green-500/30"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-green-500/20 text-green-300 hover:bg-green-500/30 transition-colors border border-green-500/30"
         >
           Company Intel &rarr;
         </Link>
         {operator.primaryPurpose === 'internet' && (
           <Link
             href="/spectrum"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium bg-rocket-500/20 text-rocket-300 hover:bg-rocket-500/30 transition-colors border border-rocket-500/30"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-rocket-500/20 text-rocket-300 hover:bg-rocket-500/30 transition-colors border border-rocket-500/30"
           >
             Spectrum Filings &rarr;
           </Link>
@@ -542,7 +542,7 @@ function EventCard({ event }: { event: OrbitalEvent }) {
         <div className="mt-3 pt-3 border-t border-slate-700/50">
           <Link
             href="/space-environment?tab=debris"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
           >
             View in Debris Monitor &rarr;
           </Link>
@@ -847,7 +847,7 @@ function OrbitalManagementContent() {
                     Most Congested
                   </div>
                   {mostCongestedSlot?.congestionLevel && (
-                    <div className={`text-[10px] mt-0.5 ${
+                    <div className={`text-xs mt-0.5 ${
                       CONGESTION_STYLES[mostCongestedSlot.congestionLevel]?.text || 'text-slate-400'
                     }`}>
                       {CONGESTION_LEVEL_INFO[mostCongestedSlot.congestionLevel]?.label}

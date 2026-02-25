@@ -228,7 +228,7 @@ function StatCard({ value, label, subValue, valueColor }: { value: string; label
         {label}
       </div>
       {subValue && (
-        <div className="text-slate-500 text-[10px] mt-0.5">{subValue}</div>
+        <div className="text-slate-500 text-xs mt-0.5">{subValue}</div>
       )}
     </div>
   );

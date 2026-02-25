@@ -26,7 +26,7 @@ export default function PriceDisplay({ pricingType, priceMin, priceMax, priceUni
         {formatPrice(priceMin, priceMax, priceUnit)}
       </div>
       {typeInfo && (
-        <div className="text-[10px] text-slate-500 uppercase tracking-wider">
+        <div className="text-xs text-slate-500 uppercase tracking-wider">
           {typeInfo.label}
         </div>
       )}

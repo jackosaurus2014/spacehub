@@ -40,7 +40,7 @@ export default function InvestorActivityBadge({
           : label
       }
     >
-      <span className={`${color} font-bold text-[10px]`}>{icon}</span>
+      <span className={`${color} font-bold text-xs`}>{icon}</span>
       <span className={`${color} font-medium`}>{label}</span>
     </div>
   );

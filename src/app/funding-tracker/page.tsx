@@ -315,7 +315,7 @@ function FundingTrackerPageInner() {
                         key={q.quarter}
                         className="flex-1 flex flex-col items-center gap-1"
                       >
-                        <div className="text-[10px] font-medium text-slate-400 truncate">
+                        <div className="text-xs font-medium text-slate-400 truncate">
                           {q.total > 0 ? formatAmount(q.total) : '--'}
                         </div>
                         <div className="w-full flex justify-center">
@@ -326,7 +326,7 @@ function FundingTrackerPageInner() {
                             }}
                           />
                         </div>
-                        <div className="text-[10px] text-slate-500 font-medium">
+                        <div className="text-xs text-slate-500 font-medium">
                           {q.quarter}
                         </div>
                         <div className="text-[9px] text-slate-600">
@@ -546,7 +546,7 @@ function FundingTrackerPageInner() {
                 <select
                   value={timeRange}
                   onChange={(e) => setTimeRange(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   {TIME_RANGES.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -562,7 +562,7 @@ function FundingTrackerPageInner() {
                 <select
                   value={roundType}
                   onChange={(e) => setRoundType(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   {ROUND_TYPES.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -578,7 +578,7 @@ function FundingTrackerPageInner() {
                 <select
                   value={sector}
                   onChange={(e) => setSector(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   {SECTOR_OPTIONS.map((s) => (
                     <option key={s.value} value={s.value}>

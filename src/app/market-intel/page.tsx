@@ -609,7 +609,7 @@ function MarketIntelContent() {
                     <button
                       key={tab.value}
                       onClick={() => setEtfFilter(tab.value)}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                      className={`px-4 py-2 min-h-[44px] rounded-lg text-sm font-medium transition-colors ${
                         etfFilter === tab.value
                           ? 'bg-nebula-500 text-white'
                           : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
@@ -634,7 +634,7 @@ function MarketIntelContent() {
                           <div className="card p-4 hover:border-nebula-500/50 transition-all relative">
                             {/* Category & leveraged badges */}
                             <div className="flex items-center gap-1.5 mb-2">
-                              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${
+                              <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
                                 etf.category === 'pure_space'
                                   ? 'bg-purple-500/20 text-purple-500'
                                   : 'bg-blue-500/20 text-blue-500'
@@ -642,7 +642,7 @@ function MarketIntelContent() {
                                 {etf.category === 'pure_space' ? 'Pure Space' : 'A&D'}
                               </span>
                               {etf.leveraged && (
-                                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">
+                                <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">
                                   3x Leveraged
                                 </span>
                               )}
@@ -717,7 +717,7 @@ function MarketIntelContent() {
                   <select
                     value={selectedCountry}
                     onChange={(e) => setSelectedCountry(e.target.value)}
-                    className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-nebula-500/50 focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     {COUNTRY_FILTERS.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -732,7 +732,7 @@ function MarketIntelContent() {
                   <select
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value as '' | 'public' | 'private')}
-                    className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-nebula-500/50 focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Types</option>
                     <option value="public">Public</option>
@@ -745,7 +745,7 @@ function MarketIntelContent() {
                   <select
                     value={selectedFocus}
                     onChange={(e) => setSelectedFocus(e.target.value as CompanyFocusArea | '')}
-                    className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-nebula-500/50 focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Focus Areas</option>
                     {FOCUS_AREAS.map((focus) => (
@@ -764,7 +764,7 @@ function MarketIntelContent() {
                         setSelectedType('');
                         setSelectedFocus('');
                       }}
-                      className="text-sm text-nebula-300 hover:text-nebula-200 py-2"
+                      className="text-sm text-nebula-300 hover:text-nebula-200 py-2 min-h-[44px]"
                     >
                       Clear Filters
                     </button>
@@ -852,7 +852,7 @@ function MarketIntelContent() {
                       <button
                         key={sector.value}
                         onClick={() => setPublicSectorFilter(publicSectorFilter === sector.value ? '' : sector.value)}
-                        className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                        className={`px-3 py-1.5 min-h-[44px] rounded-full text-xs font-medium transition-colors ${
                           publicSectorFilter === sector.value
                             ? 'bg-green-500/20 text-green-400 ring-1 ring-green-500/40'
                             : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-300'
@@ -863,7 +863,8 @@ function MarketIntelContent() {
                     ))}
                   </div>
                 </div>
-                <div className="card overflow-hidden">
+                {/* Desktop Table */}
+                <div className="card overflow-hidden hidden md:block">
                   <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
                     <table className="w-full min-w-[640px]">
                       <thead className="sticky top-0 z-10">
@@ -948,6 +949,69 @@ function MarketIntelContent() {
                     </table>
                   </div>
                 </div>
+
+                {/* Mobile Card View - Public Companies */}
+                <div className="md:hidden space-y-3">
+                  {filterBySector(companies.filter(c => c.isPublic), publicSectorFilter).map((company) => {
+                    const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
+                    const stock = company.ticker ? stockData[company.ticker] : null;
+                    const isPositive = stock ? stock.changePercent >= 0 : true;
+
+                    return (
+                      <div key={company.id} className="card p-4">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <span className="text-lg flex-shrink-0">{countryInfo?.flag || '🌐'}</span>
+                            <div className="min-w-0">
+                              <div className="font-semibold text-white text-sm truncate">
+                                {getCompanyProfileUrl(company.name) ? (
+                                  <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline">{company.name}</Link>
+                                ) : company.name}
+                              </div>
+                              <div className="text-xs text-nebula-300 font-mono">
+                                {company.exchange}:{company.ticker}
+                              </div>
+                            </div>
+                          </div>
+                          {stock && (
+                            <span className={`text-xs font-medium px-2 py-0.5 rounded flex-shrink-0 ${
+                              isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                            }`}>
+                              {isPositive ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between text-sm mb-2">
+                          {stock ? (
+                            <span className="font-mono font-medium text-white">${stock.price.toFixed(2)}</span>
+                          ) : (
+                            <div className="h-4 w-16 bg-slate-700/50 rounded animate-pulse" />
+                          )}
+                          <span className="text-slate-400 text-xs">
+                            {company.marketCap ? (
+                              company.marketCap >= 1 ? `$${company.marketCap.toFixed(1)}B` : `$${(company.marketCap * 1000).toFixed(0)}M`
+                            ) : '—'}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {(company.focusAreas as string[]).slice(0, 2).map((area) => {
+                            const focusInfo = FOCUS_AREAS.find(f => f.value === area);
+                            return (
+                              <span key={area} className="text-xs bg-slate-700/30 text-slate-300 px-2 py-0.5 rounded">
+                                {focusInfo?.icon} {focusInfo?.label || area}
+                              </span>
+                            );
+                          })}
+                        </div>
+                        {company.website && (
+                          <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-nebula-300 hover:text-nebula-200 text-xs">
+                            Visit →
+                          </a>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
@@ -967,7 +1031,7 @@ function MarketIntelContent() {
                       <button
                         key={sector.value}
                         onClick={() => setPrivateSectorFilter(privateSectorFilter === sector.value ? '' : sector.value)}
-                        className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                        className={`px-3 py-1.5 min-h-[44px] rounded-full text-xs font-medium transition-colors ${
                           privateSectorFilter === sector.value
                             ? 'bg-yellow-500/20 text-yellow-400 ring-1 ring-yellow-500/40'
                             : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-300'
@@ -978,7 +1042,8 @@ function MarketIntelContent() {
                     ))}
                   </div>
                 </div>
-                <div className="card overflow-hidden">
+                {/* Desktop Table */}
+                <div className="card overflow-hidden hidden md:block">
                   <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
                     <table className="w-full min-w-[720px]">
                       <thead className="sticky top-0 z-10">
@@ -1065,6 +1130,73 @@ function MarketIntelContent() {
                       </tbody>
                     </table>
                   </div>
+                </div>
+
+                {/* Mobile Card View - Private Companies */}
+                <div className="md:hidden space-y-3">
+                  {filterBySector(companies.filter(c => !c.isPublic), privateSectorFilter).sort((a, b) => (b.valuation || 0) - (a.valuation || 0)).map((company) => {
+                    const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
+
+                    return (
+                      <div key={company.id} className="card p-4">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <span className="text-lg flex-shrink-0">{countryInfo?.flag || '🌐'}</span>
+                            <div className="min-w-0">
+                              <div className="font-semibold text-white text-sm truncate">
+                                {getCompanyProfileUrl(company.name) ? (
+                                  <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline">{company.name}</Link>
+                                ) : company.name}
+                              </div>
+                              <div className="text-xs text-slate-400">{countryInfo?.name || company.country}</div>
+                            </div>
+                          </div>
+                          {company.isPreIPO ? (
+                            <span className="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded font-medium flex-shrink-0">Pre-IPO</span>
+                          ) : (
+                            <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded flex-shrink-0">Private</span>
+                          )}
+                        </div>
+                        <div className="space-y-1.5 text-sm">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-slate-500">Valuation</span>
+                            <span className="text-slate-300 font-medium">
+                              {company.valuation ? (
+                                company.valuation >= 1 ? `$${company.valuation.toFixed(1)}B` : `$${(company.valuation * 1000).toFixed(0)}M`
+                              ) : '—'}
+                            </span>
+                          </div>
+                          {company.lastFundingRound && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-slate-500">Last Funding</span>
+                              <span className="text-slate-300">{company.lastFundingRound} {company.lastFundingAmount ? `(${formatFunding(company.lastFundingAmount)})` : ''}</span>
+                            </div>
+                          )}
+                          {company.expectedIPODate && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-slate-500">IPO Expected</span>
+                              <span className="text-yellow-500">{company.expectedIPODate}</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {(company.focusAreas as string[]).slice(0, 2).map((area) => {
+                            const focusInfo = FOCUS_AREAS.find(f => f.value === area);
+                            return (
+                              <span key={area} className="text-xs bg-slate-700/30 text-slate-300 px-2 py-0.5 rounded">
+                                {focusInfo?.icon} {focusInfo?.label || area}
+                              </span>
+                            );
+                          })}
+                        </div>
+                        {company.website && (
+                          <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-nebula-300 hover:text-nebula-200 text-xs mt-2 inline-block">
+                            Visit →
+                          </a>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}

@@ -394,7 +394,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
         {/* Keyboard Hint */}
         <div className="text-center mt-2">
           <span className="text-xs text-slate-400">
-            Use <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 font-mono text-[10px]">←</kbd> <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 font-mono text-[10px]">→</kbd> arrow keys to navigate
+            Use <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 font-mono text-xs">←</kbd> <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 font-mono text-xs">→</kbd> arrow keys to navigate
           </span>
         </div>
       </div>

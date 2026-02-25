@@ -39,41 +39,44 @@ export default function NewsFilter({
   onCategoryChange,
 }: NewsFilterProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto flex-nowrap sm:flex-wrap">
-      <button
-        onClick={() => onCategoryChange(null)}
-        className={`flex-shrink-0 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-          selectedCategory === null
-            ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
-            : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
-        }`}
-      >
-        All
-      </button>
-      {NEWS_CATEGORIES.map((category) => (
+    <div className="relative">
+      <div className="flex gap-2 overflow-x-auto flex-nowrap sm:flex-wrap pb-1 scrollbar-hide">
         <button
-          key={category.slug}
-          onClick={() => onCategoryChange(category.slug)}
-          className={`flex-shrink-0 px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 ${
-            selectedCategory === category.slug
+          onClick={() => onCategoryChange(null)}
+          className={`flex-shrink-0 px-4 py-2 min-h-[44px] rounded-lg font-medium transition-all duration-200 ${
+            selectedCategory === null
               ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
               : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
           }`}
         >
-          {CATEGORY_LOGOS[category.slug] ? (
-            <Image
-              src={CATEGORY_LOGOS[category.slug]}
-              alt={category.name + ' category'}
-              width={20}
-              height={20}
-              className="rounded-sm flex-shrink-0"
-            />
-          ) : (
-            <span>{categoryIcons[category.slug]}</span>
-          )}
-          <span>{category.name}</span>
+          All
         </button>
-      ))}
+        {NEWS_CATEGORIES.map((category) => (
+          <button
+            key={category.slug}
+            onClick={() => onCategoryChange(category.slug)}
+            className={`flex-shrink-0 px-4 py-2 min-h-[44px] rounded-lg font-medium transition-all duration-200 flex items-center gap-2 ${
+              selectedCategory === category.slug
+                ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
+                : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
+            }`}
+          >
+            {CATEGORY_LOGOS[category.slug] ? (
+              <Image
+                src={CATEGORY_LOGOS[category.slug]}
+                alt={category.name + ' category'}
+                width={20}
+                height={20}
+                className="rounded-sm flex-shrink-0"
+              />
+            ) : (
+              <span>{categoryIcons[category.slug]}</span>
+            )}
+            <span>{category.name}</span>
+          </button>
+        ))}
+      </div>
+      <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none sm:hidden" />
     </div>
   );
 }

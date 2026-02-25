@@ -328,7 +328,7 @@ function SpaceTourismContent() {
                   <select
                     value={providerFilter}
                     onChange={(e) => handleProviderChange(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-600/50 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-cyan-500/50"
+                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Providers</option>
                     {TOURISM_PROVIDERS.map((provider) => (
@@ -345,7 +345,7 @@ function SpaceTourismContent() {
                   <select
                     value={experienceFilter}
                     onChange={(e) => handleExperienceChange(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-600/50 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-cyan-500/50"
+                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Types</option>
                     {EXPERIENCE_TYPES.map((type) => (
@@ -362,7 +362,7 @@ function SpaceTourismContent() {
                   <select
                     value={priceRangeIndex}
                     onChange={(e) => handlePriceRangeChange(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-600/50 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-cyan-500/50"
+                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     {PRICE_RANGES.map((range, i) => (
                       <option key={i} value={i}>

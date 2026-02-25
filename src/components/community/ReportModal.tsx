@@ -70,7 +70,7 @@ export default function ReportModal({ isOpen, onClose, contentType, contentId }:
             id="report-reason"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="w-full bg-slate-800/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             required
           >
             <option value="">Select a reason...</option>
@@ -101,7 +101,7 @@ export default function ReportModal({ isOpen, onClose, contentType, contentId }:
             placeholder="Provide any additional context..."
             rows={3}
             maxLength={2000}
-            className="w-full bg-slate-800/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-slate-200 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 resize-none"
+            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
           />
         </div>
 

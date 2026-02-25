@@ -285,7 +285,7 @@ function EventResultCard({ item }: { item: EventResult }) {
             <h3 className="text-slate-100 font-medium group-hover:text-cyan-300 transition-colors line-clamp-1">
               {item.name}
             </h3>
-            <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+            <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
               item.status === 'upcoming'
                 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
                 : item.status === 'completed'
@@ -687,7 +687,7 @@ function SearchContent() {
           </div>
           {aiResult.suggestedCompanies && aiResult.suggestedCompanies.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
-              <span className="text-[10px] text-purple-400 uppercase tracking-wider mr-1 self-center">Try:</span>
+              <span className="text-xs text-purple-400 uppercase tracking-wider mr-1 self-center">Try:</span>
               {aiResult.suggestedCompanies.map((company) => (
                 <button
                   key={company}
@@ -701,7 +701,7 @@ function SearchContent() {
           )}
           {aiResult.reformulatedQueries && aiResult.reformulatedQueries.length > 1 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
-              <span className="text-[10px] text-purple-400 uppercase tracking-wider mr-1 self-center">Also try:</span>
+              <span className="text-xs text-purple-400 uppercase tracking-wider mr-1 self-center">Also try:</span>
               {aiResult.reformulatedQueries.slice(1, 4).map((q) => (
                 <button
                   key={q}
@@ -715,7 +715,7 @@ function SearchContent() {
           )}
           <button
             onClick={() => setAiResult(null)}
-            className="text-[10px] text-star-400 hover:text-star-300 mt-2 transition-colors"
+            className="text-xs text-star-400 hover:text-star-300 mt-2 transition-colors"
           >
             Dismiss
           </button>
@@ -746,7 +746,7 @@ function SearchContent() {
             <span className="text-sm text-star-300">
               {totalResults} {totalResults === 1 ? 'result' : 'results'} found
               {searchMethod === 'fts' && (
-                <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
                   Full-text
                 </span>
               )}
@@ -761,7 +761,7 @@ function SearchContent() {
             id="sort-select"
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value as SortOption)}
-            className="bg-slate-800/60 border border-slate-600/40 rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-cyan-400/40 focus:ring-1 focus:ring-cyan-400/20 transition-all appearance-none cursor-pointer"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>

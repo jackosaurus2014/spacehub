@@ -13,7 +13,7 @@ interface SpaceScoreBadgeProps {
 
 const SIZE_CONFIG = {
   sm: { outer: 40, inner: 34, stroke: 3, fontSize: 'text-xs', tierFont: 'text-[8px]' },
-  md: { outer: 64, inner: 54, stroke: 4, fontSize: 'text-sm', tierFont: 'text-[10px]' },
+  md: { outer: 64, inner: 54, stroke: 4, fontSize: 'text-sm', tierFont: 'text-xs' },
   lg: { outer: 96, inner: 82, stroke: 5, fontSize: 'text-xl', tierFont: 'text-xs' },
 };
 
@@ -151,7 +151,7 @@ export function SpaceScoreInlineBadge({
     <span className={`inline-flex items-center gap-1.5 ${className}`}>
       <span className={`font-bold tabular-nums ${colorClass}`}>{score}</span>
       {showTier && (
-        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${tier.bgColor} ${tier.color}`}>
+        <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${tier.bgColor} ${tier.color}`}>
           {tier.label}
         </span>
       )}

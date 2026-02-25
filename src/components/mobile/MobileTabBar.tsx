@@ -308,7 +308,7 @@ export default function MobileTabBar() {
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="flex items-center justify-center gap-2 py-1 text-[10px] text-cyan-400/70 border-b border-slate-800/50">
+              <div className="flex items-center justify-center gap-2 py-1 text-xs text-cyan-400/70 border-b border-slate-800/50">
                 <span>{parentName}</span>
               </div>
             </motion.div>
@@ -335,7 +335,7 @@ export default function MobileTabBar() {
                 >
                   <NavIcon icon="back" />
                 </motion.div>
-                <span className="mt-1 text-[10px] font-medium">Back</span>
+                <span className="mt-1 text-xs font-medium">Back</span>
               </motion.button>
             )}
 
@@ -391,7 +391,7 @@ export default function MobileTabBar() {
 
                   {/* Label */}
                   <motion.span
-                    className="mt-1 text-[10px] font-medium truncate max-w-[60px]"
+                    className="mt-1 text-xs font-medium truncate max-w-[60px]"
                     animate={{ opacity: active ? 1 : 0.6 }}
                   >
                     {tab.name}
@@ -441,7 +441,7 @@ export default function MobileTabBar() {
               </motion.div>
 
               <motion.span
-                className="mt-1 text-[10px] font-medium"
+                className="mt-1 text-xs font-medium"
                 animate={{ opacity: moreOpen || moreRouteActive ? 1 : 0.6 }}
               >
                 More

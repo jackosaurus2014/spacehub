@@ -85,7 +85,7 @@ function ExplainersContent() {
           <select
             value={agency}
             onChange={(e) => { setAgency(e.target.value); setPage(1); }}
-            className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
           >
             <option value="">All Agencies</option>
             {AGENCIES.map((a) => (
@@ -96,7 +96,7 @@ function ExplainersContent() {
           <select
             value={category}
             onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-            className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
           >
             <option value="">All Categories</option>
             {CATEGORIES.map((c) => (
@@ -107,7 +107,7 @@ function ExplainersContent() {
           <select
             value={impactLevel}
             onChange={(e) => { setImpactLevel(e.target.value); setPage(1); }}
-            className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
           >
             <option value="">All Impact Levels</option>
             {IMPACT_LEVELS.map((l) => (

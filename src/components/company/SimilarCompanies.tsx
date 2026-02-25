@@ -163,7 +163,7 @@ export default function SimilarCompanies({ companySlug, companyName }: SimilarCo
 
                   {/* Sector badge */}
                   {company.sector && (
-                    <span className="text-[10px] text-cyan-400 capitalize">
+                    <span className="text-xs text-cyan-400 capitalize">
                       {company.sector}
                     </span>
                   )}
@@ -198,7 +198,7 @@ export default function SimilarCompanies({ companySlug, companyName }: SimilarCo
                 {company.reasons.slice(0, 3).map((reason) => (
                   <span
                     key={reason}
-                    className={`text-[10px] px-1.5 py-0.5 rounded ${getReasonColor(reason)}`}
+                    className={`text-xs px-1.5 py-0.5 rounded ${getReasonColor(reason)}`}
                   >
                     {reason}
                   </span>

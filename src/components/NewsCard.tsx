@@ -36,7 +36,7 @@ function CompanyBadges({ companies }: { companies: NewsArticleCompanyTag[] }) {
               window.location.href = `/company-profiles/${company.slug}`;
             }
           }}
-          className={`inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors cursor-pointer ${tierColors[company.tier] || tierColors[3]}`}
+          className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 min-h-[32px] rounded border transition-colors cursor-pointer ${tierColors[company.tier] || tierColors[3]}`}
         >
           {company.logoUrl && (
             <Image src={company.logoUrl} alt={`${company.name} logo`} width={12} height={12} className="rounded-sm" />
@@ -45,7 +45,7 @@ function CompanyBadges({ companies }: { companies: NewsArticleCompanyTag[] }) {
         </span>
       ))}
       {companies.length > 3 && (
-        <span className="text-[10px] text-slate-400 self-center">+{companies.length - 3}</span>
+        <span className="text-xs text-slate-400 self-center">+{companies.length - 3}</span>
       )}
     </div>
   );
@@ -146,7 +146,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
                         window.location.href = `/company-profiles/${company.slug}`;
                       }
                     }}
-                    className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-colors cursor-pointer"
                   >
                     {company.name}
                   </span>
@@ -192,7 +192,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
       <div className="p-3 flex flex-col flex-1 min-h-0">
         <div className="flex items-center gap-2 mb-1.5">
           <span
-            className={`${categoryColor} text-white text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wide inline-flex items-center gap-1`}
+            className={`${categoryColor} text-white text-xs font-semibold px-2 py-0.5 rounded uppercase tracking-wide inline-flex items-center gap-1`}
           >
             {CATEGORY_LOGOS[article.category] && (
               <Image src={CATEGORY_LOGOS[article.category]} alt={article.category + ' category'} width={12} height={12} className="inline-block" />

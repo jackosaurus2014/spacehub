@@ -249,7 +249,7 @@ function ReportsTab() {
             id="status-filter"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="block w-40 rounded-md border border-slate-600 bg-slate-800 px-3 py-1.5 text-sm text-slate-200 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none w-40"
           >
             <option value="all">All Statuses</option>
             <option value="pending">Pending</option>
@@ -264,7 +264,7 @@ function ReportsTab() {
             id="type-filter"
             value={contentTypeFilter}
             onChange={(e) => setContentTypeFilter(e.target.value)}
-            className="block w-40 rounded-md border border-slate-600 bg-slate-800 px-3 py-1.5 text-sm text-slate-200 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none w-40"
           >
             <option value="all">All Types</option>
             <option value="thread">Thread</option>

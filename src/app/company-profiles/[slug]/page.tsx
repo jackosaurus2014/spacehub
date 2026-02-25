@@ -194,7 +194,7 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
   return (
     <div className="mt-4 pt-4 border-t border-slate-700/30 flex flex-wrap items-center gap-3">
       {claimed && verLevel && (
-        <span className={`text-[10px] font-bold px-2 py-1 rounded ${
+        <span className={`text-xs font-bold px-2 py-1 rounded ${
           verLevel === 'performance' ? 'bg-yellow-500/20 text-yellow-400' :
           verLevel === 'capability' ? 'bg-green-500/20 text-green-400' :
           'bg-blue-500/20 text-blue-400'
@@ -324,7 +324,7 @@ function ScoreRing({ score, label, size = 64 }: { score: number; label: string; 
           {score}
         </div>
       </div>
-      <span className="text-[10px] text-slate-500 capitalize">{label}</span>
+      <span className="text-xs text-slate-500 capitalize">{label}</span>
     </div>
   );
 }
@@ -422,7 +422,7 @@ function OverviewTab({ company }: { company: CompanyDetail }) {
                 className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3"
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${
                     p.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
                     p.status === 'development' ? 'bg-amber-500/20 text-amber-400' :
                     'bg-slate-600/20 text-slate-400'
@@ -481,7 +481,7 @@ function FinancialsTab({ company }: { company: CompanyDetail }) {
                     className={`${colors[i % colors.length]} rounded-sm relative group cursor-pointer`}
                     title={`${r.seriesLabel || r.roundType}: ${fmt(r.amount)}`}
                   >
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
                       {r.seriesLabel || r.roundType}: {fmt(r.amount)}
                     </div>
                   </motion.div>
@@ -616,7 +616,7 @@ function ProductsTab({ company }: { company: CompanyDetail }) {
             >
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-semibold text-white text-lg">{p.name}</h4>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ml-2 ${
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ml-2 ${
                   p.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
                   p.status === 'development' ? 'bg-amber-500/20 text-amber-400' :
                   'bg-slate-600/20 text-slate-400'
@@ -633,7 +633,7 @@ function ProductsTab({ company }: { company: CompanyDetail }) {
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
                     {Object.entries(p.specs).map(([key, val]) => (
                       <div key={key}>
-                        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">{formatSpecLabel(key)}</div>
+                        <div className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">{formatSpecLabel(key)}</div>
                         <div className="text-sm font-semibold text-white">{formatSpecValue(key, val)}</div>
                       </div>
                     ))}
@@ -683,7 +683,7 @@ function PeopleTab({ company }: { company: CompanyDetail }) {
                 <div className="min-w-0">
                   <h4 className="font-semibold text-white text-sm">{p.name}</h4>
                   <div className="text-xs text-cyan-400">{p.title}</div>
-                  {p.role && <div className="text-[10px] text-slate-500 capitalize mt-0.5">{p.role}</div>}
+                  {p.role && <div className="text-xs text-slate-500 capitalize mt-0.5">{p.role}</div>}
                 </div>
               </div>
               {p.bio && (
@@ -692,12 +692,12 @@ function PeopleTab({ company }: { company: CompanyDetail }) {
               {p.previousCompanies.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
                   {p.previousCompanies.slice(0, 3).map(c => (
-                    <span key={c} className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400">{c}</span>
+                    <span key={c} className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400">{c}</span>
                   ))}
                 </div>
               )}
               {p.linkedinUrl && (
-                <a href={p.linkedinUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-[10px] text-blue-400 hover:text-blue-300">
+                <a href={p.linkedinUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300">
                   LinkedIn →
                 </a>
               )}
@@ -726,7 +726,7 @@ function ContractsTab({ company }: { company: CompanyDetail }) {
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 mr-2">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 mr-2">
                     {c.agency}
                   </span>
                   <span className="text-xs text-slate-500">{fmtDate(c.awardDate)}</span>
@@ -801,7 +801,7 @@ function SpaceAssetsTab({ company }: { company: CompanyDetail }) {
                     <td className="py-2 text-cyan-400 text-xs">{s.orbitType || '—'}</td>
                     <td className="py-2 text-slate-400 text-xs capitalize">{s.missionType?.replace(/-/g, ' ') || '—'}</td>
                     <td className="py-2">
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                      <span className={`text-xs px-1.5 py-0.5 rounded ${
                         s.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
                         s.status === 'planned' ? 'bg-blue-500/20 text-blue-400' :
                         'bg-slate-600/20 text-slate-400'
@@ -848,11 +848,11 @@ function TimelineTab({ company }: { company: CompanyDetail }) {
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm">{getEventIcon(e.type)}</span>
                   <span className="text-xs text-slate-500">{fmtDate(e.date)}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400 capitalize">
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400 capitalize">
                     {e.type.replace(/_/g, ' ')}
                   </span>
                   {e.importance >= 8 && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">HIGH IMPACT</span>
+                    <span className="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">HIGH IMPACT</span>
                   )}
                 </div>
                 <h4 className="font-medium text-white text-sm">{e.title}</h4>
@@ -938,11 +938,11 @@ function NewsTab({ companySlug, companyName }: { companySlug: string; companyNam
                   <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{article.summary}</p>
                 )}
                 <div className="flex items-center gap-2 mt-1">
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded ${categoryColors[article.category] || 'bg-slate-500/20 text-slate-300'}`}>
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${categoryColors[article.category] || 'bg-slate-500/20 text-slate-300'}`}>
                     {article.category}
                   </span>
-                  <span className="text-[10px] text-slate-500">{article.source}</span>
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-xs text-slate-500">{article.source}</span>
+                  <span className="text-xs text-slate-500">
                     {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}
                   </span>
                 </div>
@@ -1030,7 +1030,7 @@ function DigestTab({ companyId, companyName }: { companyId: string; companyName:
               {digest.content}
             </div>
 
-            <div className="flex items-center gap-3 text-[10px] text-slate-500 mt-3 pt-2 border-t border-slate-700/50">
+            <div className="flex items-center gap-3 text-xs text-slate-500 mt-3 pt-2 border-t border-slate-700/50">
               <span>{digest.newsCount} articles analyzed</span>
               <span>Generated {new Date(digest.generatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}</span>
             </div>
@@ -1094,7 +1094,7 @@ function RelationshipsTab({ company }: { company: CompanyDetail }) {
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-medium text-white">{p.partnerName}</span>
                   {p.type && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 capitalize">
+                    <span className="text-xs px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 capitalize">
                       {p.type.replace(/_/g, ' ')}
                     </span>
                   )}
@@ -1298,12 +1298,12 @@ export default function CompanyProfileDetailPage() {
                 {/* Tags */}
                 <div className="flex flex-wrap gap-1.5 mt-3">
                   {company.sector && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
                       {getSectorIcon(company.sector)} {company.sector}
                     </span>
                   )}
                   {company.tags?.map(tag => (
-                    <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
+                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
                       {tag}
                     </span>
                   ))}

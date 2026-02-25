@@ -665,7 +665,7 @@ function MissionCostContent() {
                 type="number"
                 value={payloadMass}
                 onChange={(e) => setPayloadMass(Math.max(1, parseInt(e.target.value) || 0))}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-nebula-500"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 min={1}
                 max={150000}
               />
@@ -694,7 +694,7 @@ function MissionCostContent() {
               <select
                 value={orbitType}
                 onChange={(e) => setOrbitType(e.target.value as OrbitType)}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-nebula-500"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 {ORBIT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -712,7 +712,7 @@ function MissionCostContent() {
               <select
                 value={payloadType}
                 onChange={(e) => setPayloadType(e.target.value as PayloadType)}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-nebula-500"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 {PAYLOAD_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -731,7 +731,7 @@ function MissionCostContent() {
                 type="number"
                 value={payloadValue}
                 onChange={(e) => setPayloadValue(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-nebula-500"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 min={0}
               />
               <div className="mt-2 flex flex-wrap gap-1">

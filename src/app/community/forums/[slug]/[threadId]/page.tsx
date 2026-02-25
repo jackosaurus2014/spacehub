@@ -266,7 +266,7 @@ export default function ThreadDetailPage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-3 flex-wrap">
                 {thread.isPinned && (
-                  <span className="text-[10px] px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded font-medium flex items-center gap-0.5">
+                  <span className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded font-medium flex items-center gap-0.5">
                     <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                     </svg>
@@ -274,18 +274,18 @@ export default function ThreadDetailPage() {
                   </span>
                 )}
                 {thread.isLocked && (
-                  <span className="text-[10px] px-1.5 py-0.5 bg-slate-600/30 text-slate-400 rounded font-medium flex items-center gap-0.5">
+                  <span className="text-xs px-1.5 py-0.5 bg-slate-600/30 text-slate-400 rounded font-medium flex items-center gap-0.5">
                     <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                     Locked
                   </span>
                 )}
-                <span className="text-[10px] px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded">
+                <span className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded">
                   {thread.category}
                 </span>
                 {thread.acceptedPostId && (
-                  <span className="text-[10px] px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded font-medium flex items-center gap-0.5">
+                  <span className="text-xs px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded font-medium flex items-center gap-0.5">
                     <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
@@ -373,7 +373,7 @@ export default function ThreadDetailPage() {
                       size="sm"
                     />
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-400 flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0">
                     {getInitials(reply.authorName)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -381,7 +381,7 @@ export default function ThreadDetailPage() {
                       <span className="text-sm font-medium text-slate-200">{reply.authorName}</span>
                       <span className="text-xs text-slate-500">{timeAgo(reply.createdAt)}</span>
                       {reply.isAccepted && (
-                        <span className="text-[10px] px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded font-medium flex items-center gap-0.5">
+                        <span className="text-xs px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded font-medium flex items-center gap-0.5">
                           <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
@@ -431,10 +431,10 @@ export default function ThreadDetailPage() {
                 onChange={(e) => setReplyContent(e.target.value)}
                 placeholder="Share your thoughts... (Markdown supported)"
                 rows={4}
-                className="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 resize-none mb-1"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none mb-1"
                 required
               />
-              <p className="text-[10px] text-slate-500 mb-3">Supports **bold**, *italic*, `code`, [links](url), and more Markdown formatting</p>
+              <p className="text-xs text-slate-500 mb-3">Supports **bold**, *italic*, `code`, [links](url), and more Markdown formatting</p>
               <div className="flex justify-end">
                 <button
                   type="submit"

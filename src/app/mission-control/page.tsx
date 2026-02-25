@@ -139,7 +139,7 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
                   <span className={`${typeInfo.color} text-slate-900 text-xs font-semibold px-2 py-0.5 rounded`}>
                     {typeInfo.icon} {typeInfo.label}
                   </span>
-                  <span className="bg-green-500 text-slate-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="bg-green-500 text-slate-900 text-xs font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1">
                     <span className="relative flex h-1.5 w-1.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-900 opacity-75" />
                       <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-slate-900" />
@@ -419,11 +419,11 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={`${typeInfo.color} text-slate-900 text-[10px] font-semibold px-1.5 py-0.5 rounded`}>
+                      <span className={`${typeInfo.color} text-slate-900 text-xs font-semibold px-1.5 py-0.5 rounded`}>
                         {typeInfo.label}
                       </span>
                       {isActuallyLive && (
-                        <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                        <span className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
                           <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
                           LIVE
                         </span>
@@ -569,7 +569,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
                   {typeInfo.icon} {typeInfo.label}
                 </span>
                 {event.isLive && (
-                  <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                  <span className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
                     <span className="relative flex h-1.5 w-1.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                       <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
@@ -578,7 +578,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
                   </span>
                 )}
                 {!event.isLive && isWithin48Hours && (
-                  <span className="bg-green-500 text-slate-900 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                  <span className="bg-green-500 text-slate-900 text-xs font-bold px-1.5 py-0.5 rounded">
                     SOON
                   </span>
                 )}

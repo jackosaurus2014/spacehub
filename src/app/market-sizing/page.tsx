@@ -100,7 +100,7 @@ function HeroStats({ segments }: { segments: MarketSegment[] }) {
         >
           <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
           <div className="text-xs text-slate-400 mt-1">{stat.label}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5">{stat.sub}</div>
+          <div className="text-xs text-slate-500 mt-0.5">{stat.sub}</div>
         </motion.div>
       ))}
     </motion.div>
@@ -222,14 +222,14 @@ function TAMTreemap({
                 <div>
                   <div className="text-xs text-slate-400 mb-1 truncate">{segment.name}</div>
                   <div className="text-xl font-bold text-white">{formatBillions(segment.currentTAM)}</div>
-                  <div className="text-[10px] text-slate-500">{segment.tamYear} TAM</div>
+                  <div className="text-xs text-slate-500">{segment.tamYear} TAM</div>
                 </div>
 
                 <div className="mt-auto pt-2">
-                  <span className={`inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded ${cagrStyle.bg} ${cagrStyle.text}`}>
+                  <span className={`inline-flex items-center text-xs font-semibold px-1.5 py-0.5 rounded ${cagrStyle.bg} ${cagrStyle.text}`}>
                     {formatCAGR(segment.cagr)} CAGR
                   </span>
-                  <div className="text-[10px] text-slate-500 mt-1">
+                  <div className="text-xs text-slate-500 mt-1">
                     {formatBillions(segment.projectedTAM)} by {segment.projectedYear}
                   </div>
                 </div>
@@ -319,15 +319,15 @@ function SegmentDetailPanel({
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-slate-800/50 rounded-lg p-3">
-              <div className="text-[10px] text-slate-500 uppercase tracking-wider">Current TAM ({segment.tamYear})</div>
+              <div className="text-xs text-slate-500 uppercase tracking-wider">Current TAM ({segment.tamYear})</div>
               <div className="text-xl font-bold text-white mt-1">{formatBillions(segment.currentTAM)}</div>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-3">
-              <div className="text-[10px] text-slate-500 uppercase tracking-wider">Projected ({segment.projectedYear})</div>
+              <div className="text-xs text-slate-500 uppercase tracking-wider">Projected ({segment.projectedYear})</div>
               <div className="text-xl font-bold text-emerald-400 mt-1">{formatBillions(segment.projectedTAM)}</div>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-3">
-              <div className="text-[10px] text-slate-500 uppercase tracking-wider">Gov vs Commercial</div>
+              <div className="text-xs text-slate-500 uppercase tracking-wider">Gov vs Commercial</div>
               <div className="flex items-center gap-2 mt-2">
                 <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
                   <div
@@ -337,14 +337,14 @@ function SegmentDetailPanel({
                 </div>
                 <span className="text-xs text-slate-400">{govPercent}% Gov</span>
               </div>
-              <div className="text-[10px] text-slate-500 mt-1">{commPercent}% Commercial</div>
+              <div className="text-xs text-slate-500 mt-1">{commPercent}% Commercial</div>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-3">
-              <div className="text-[10px] text-slate-500 uppercase tracking-wider">Growth Multiple</div>
+              <div className="text-xs text-slate-500 uppercase tracking-wider">Growth Multiple</div>
               <div className="text-xl font-bold text-purple-400 mt-1">
                 {(segment.projectedTAM / segment.currentTAM).toFixed(1)}x
               </div>
-              <div className="text-[10px] text-slate-500">
+              <div className="text-xs text-slate-500">
                 {segment.tamYear} to {segment.projectedYear}
               </div>
             </div>
@@ -447,11 +447,11 @@ function SegmentDetailPanel({
                   <div className="text-sm font-medium text-white mb-1">{child.name}</div>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-lg font-bold text-white">{formatBillions(child.currentTAM)}</span>
-                    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${childCagr.bg} ${childCagr.text}`}>
+                    <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${childCagr.bg} ${childCagr.text}`}>
                       {formatCAGR(child.cagr)}
                     </span>
                   </div>
-                  <div className="text-[10px] text-slate-500">
+                  <div className="text-xs text-slate-500">
                     {formatBillions(child.projectedTAM)} by {child.projectedYear}
                   </div>
                 </motion.button>
@@ -515,12 +515,12 @@ function SegmentCards({
                       {segment.name}
                     </h3>
                     {segment.parentId && (
-                      <div className="text-[10px] text-slate-500 mt-0.5">
+                      <div className="text-xs text-slate-500 mt-0.5">
                         Sub-segment of {segment.parentId.replace(/-/g, ' ')}
                       </div>
                     )}
                   </div>
-                  <span className={`flex-shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded ${cagrStyle.bg} ${cagrStyle.text}`}>
+                  <span className={`flex-shrink-0 text-xs font-bold px-1.5 py-0.5 rounded ${cagrStyle.bg} ${cagrStyle.text}`}>
                     {formatCAGR(segment.cagr)} CAGR
                   </span>
                 </div>
@@ -532,18 +532,18 @@ function SegmentCards({
                 {/* TAM row */}
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   <div className="bg-slate-800/50 rounded-lg p-2">
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">TAM {segment.tamYear}</div>
+                    <div className="text-xs text-slate-500 uppercase tracking-wider">TAM {segment.tamYear}</div>
                     <div className="text-sm font-semibold text-white">{formatBillions(segment.currentTAM)}</div>
                   </div>
                   <div className="bg-slate-800/50 rounded-lg p-2">
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">{segment.projectedYear} Est.</div>
+                    <div className="text-xs text-slate-500 uppercase tracking-wider">{segment.projectedYear} Est.</div>
                     <div className="text-sm font-semibold text-emerald-400">{formatBillions(segment.projectedTAM)}</div>
                   </div>
                 </div>
 
                 {/* Gov vs Commercial bar */}
                 <div className="mb-3">
-                  <div className="flex justify-between text-[10px] text-slate-500 mb-1">
+                  <div className="flex justify-between text-xs text-slate-500 mb-1">
                     <span>Gov {govPercent}%</span>
                     <span>Commercial {100 - govPercent}%</span>
                   </div>
@@ -558,19 +558,19 @@ function SegmentCards({
                 {/* Key Players */}
                 <div className="flex flex-wrap gap-1 mb-2">
                   {segment.keyPlayers.slice(0, 4).map(player => (
-                    <span key={player} className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
+                    <span key={player} className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
                       {player}
                     </span>
                   ))}
                   {segment.keyPlayers.length > 4 && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-500">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-500">
                       +{segment.keyPlayers.length - 4} more
                     </span>
                   )}
                 </div>
 
                 {/* Source */}
-                <div className="text-[10px] text-slate-600 pt-2 border-t border-slate-700/50 truncate">
+                <div className="text-xs text-slate-600 pt-2 border-t border-slate-700/50 truncate">
                   {segment.source}
                 </div>
               </motion.button>
@@ -851,7 +851,7 @@ export default function MarketSizingPage() {
               </p>
               <div className="flex flex-wrap gap-2 mt-3">
                 {['SIA', 'Morgan Stanley', 'Euroconsult', 'BryceTech', 'NSR', 'McKinsey', 'FAA'].map(src => (
-                  <span key={src} className="text-[10px] px-2 py-0.5 rounded bg-slate-800/50 text-slate-500 border border-slate-700/30">
+                  <span key={src} className="text-xs px-2 py-0.5 rounded bg-slate-800/50 text-slate-500 border border-slate-700/30">
                     {src}
                   </span>
                 ))}

@@ -198,11 +198,11 @@ function EcoCompanyCard({
         <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-slate-900/95 border border-slate-600/50 rounded-lg p-3 shadow-xl backdrop-blur-sm">
           <p className="text-slate-300 text-xs leading-relaxed mb-2">{company.description}</p>
           {company.hq && (
-            <div className="text-[10px] text-slate-500">HQ: {company.hq}</div>
+            <div className="text-xs text-slate-500">HQ: {company.hq}</div>
           )}
           <Link
             href={`/company-profiles/${company.slug}`}
-            className="text-[10px] text-cyan-400 hover:text-cyan-300 mt-1 inline-block"
+            className="text-xs text-cyan-400 hover:text-cyan-300 mt-1 inline-block"
           >
             View full profile
           </Link>
@@ -431,7 +431,7 @@ export default function EcosystemMapPage() {
             placeholder="Search companies by name, segment, or capability..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-purple-500"
+            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
           />
         </div>
 

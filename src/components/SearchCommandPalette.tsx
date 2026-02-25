@@ -733,12 +733,12 @@ export default function SearchCommandPalette() {
                             {item.label}
                           </span>
                           {item.type === 'recent' && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
                               Recent
                             </span>
                           )}
                           {item.type === 'result' && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/30">
                               Content
                             </span>
                           )}
@@ -749,7 +749,7 @@ export default function SearchCommandPalette() {
                       </div>
                       {isSelected && (
                         <div className="flex-shrink-0 flex items-center gap-1 text-slate-400">
-                          <kbd className="px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600/50 text-[10px] font-mono">
+                          <kbd className="px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600/50 text-xs font-mono">
                             Enter
                           </kbd>
                         </div>

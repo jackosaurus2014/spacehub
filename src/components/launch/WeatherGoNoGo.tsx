@@ -136,7 +136,7 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
         <motion.span
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
-          className={`text-[10px] px-2.5 py-0.5 rounded-full border font-bold uppercase tracking-wider ${rangeColors[rangeStatus]}`}
+          className={`text-xs px-2.5 py-0.5 rounded-full border font-bold uppercase tracking-wider ${rangeColors[rangeStatus]}`}
         >
           {rangeLabels[rangeStatus]}
         </motion.span>
@@ -147,24 +147,24 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
         {weather && (
           <div className="grid grid-cols-4 gap-2">
             <div className="bg-slate-800/50 rounded-lg p-2 text-center border border-slate-700/30">
-              <div className="text-slate-400 text-[10px] uppercase">Wind</div>
+              <div className="text-slate-400 text-xs uppercase">Wind</div>
               <div className="text-white font-mono text-sm font-bold">{weather.windSpeed}</div>
-              <div className="text-slate-500 text-[10px]">kts {weather.windDirection}</div>
+              <div className="text-slate-500 text-xs">kts {weather.windDirection}</div>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-2 text-center border border-slate-700/30">
-              <div className="text-slate-400 text-[10px] uppercase">Temp</div>
+              <div className="text-slate-400 text-xs uppercase">Temp</div>
               <div className="text-white font-mono text-sm font-bold">{weather.temperature}</div>
-              <div className="text-slate-500 text-[10px]">&deg;F</div>
+              <div className="text-slate-500 text-xs">&deg;F</div>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-2 text-center border border-slate-700/30">
-              <div className="text-slate-400 text-[10px] uppercase">Clouds</div>
+              <div className="text-slate-400 text-xs uppercase">Clouds</div>
               <div className="text-white font-mono text-sm font-bold">{weather.cloudCover}%</div>
-              <div className="text-slate-500 text-[10px]">coverage</div>
+              <div className="text-slate-500 text-xs">coverage</div>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-2 text-center border border-slate-700/30">
-              <div className="text-slate-400 text-[10px] uppercase">Visibility</div>
+              <div className="text-slate-400 text-xs uppercase">Visibility</div>
               <div className="text-white font-mono text-sm font-bold">{weather.visibility}</div>
-              <div className="text-slate-500 text-[10px]">mi</div>
+              <div className="text-slate-500 text-xs">mi</div>
             </div>
           </div>
         )}
@@ -183,7 +183,7 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
               <StatusIcon status={criterion.status} />
               <div className="flex-1 min-w-0">
                 <div className="text-white text-xs font-medium">{criterion.name}</div>
-                <div className="text-slate-500 text-[10px] truncate">{criterion.detail}</div>
+                <div className="text-slate-500 text-xs truncate">{criterion.detail}</div>
               </div>
               <span className={`text-[9px] font-bold uppercase tracking-wider ${
                 criterion.status === 'go' ? 'text-green-400' :
@@ -210,36 +210,36 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
                 spaceWeather.xrayConstraint === 'CAUTION' ? 'bg-yellow-900/20 border-yellow-500/30' :
                 'bg-slate-800/50 border-slate-700/30'
               }`}>
-                <div className="text-slate-400 text-[10px] uppercase">X-Ray</div>
+                <div className="text-slate-400 text-xs uppercase">X-Ray</div>
                 <div className={`font-mono text-sm font-bold ${
                   spaceWeather.xrayConstraint === 'NO-GO' ? 'text-red-400' :
                   spaceWeather.xrayConstraint === 'CAUTION' ? 'text-yellow-400' : 'text-green-400'
                 }`}>{spaceWeather.xrayClass}</div>
-                <div className="text-slate-500 text-[10px]">flare class</div>
+                <div className="text-slate-500 text-xs">flare class</div>
               </div>
               <div className={`rounded-lg p-2 text-center border ${
                 spaceWeather.geomagConstraint === 'NO-GO' ? 'bg-red-900/20 border-red-500/30' :
                 spaceWeather.geomagConstraint === 'CAUTION' ? 'bg-yellow-900/20 border-yellow-500/30' :
                 'bg-slate-800/50 border-slate-700/30'
               }`}>
-                <div className="text-slate-400 text-[10px] uppercase">Geomag</div>
+                <div className="text-slate-400 text-xs uppercase">Geomag</div>
                 <div className={`font-mono text-sm font-bold ${
                   spaceWeather.geomagConstraint === 'NO-GO' ? 'text-red-400' :
                   spaceWeather.geomagConstraint === 'CAUTION' ? 'text-yellow-400' : 'text-green-400'
                 }`}>G{spaceWeather.geomagScale}</div>
-                <div className="text-slate-500 text-[10px]">storm scale</div>
+                <div className="text-slate-500 text-xs">storm scale</div>
               </div>
               <div className={`rounded-lg p-2 text-center border ${
                 spaceWeather.protonConstraint === 'NO-GO' ? 'bg-red-900/20 border-red-500/30' :
                 spaceWeather.protonConstraint === 'CAUTION' ? 'bg-yellow-900/20 border-yellow-500/30' :
                 'bg-slate-800/50 border-slate-700/30'
               }`}>
-                <div className="text-slate-400 text-[10px] uppercase">Protons</div>
+                <div className="text-slate-400 text-xs uppercase">Protons</div>
                 <div className={`font-mono text-sm font-bold ${
                   spaceWeather.protonConstraint === 'NO-GO' ? 'text-red-400' :
                   spaceWeather.protonConstraint === 'CAUTION' ? 'text-yellow-400' : 'text-green-400'
                 }`}>{spaceWeather.radiationRisk}</div>
-                <div className="text-slate-500 text-[10px]">{spaceWeather.sepEvent ? 'SEP event' : 'radiation'}</div>
+                <div className="text-slate-500 text-xs">{spaceWeather.sepEvent ? 'SEP event' : 'radiation'}</div>
               </div>
             </div>
           </div>

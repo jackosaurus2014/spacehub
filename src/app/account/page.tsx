@@ -76,23 +76,26 @@ export default function AccountPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex overflow-x-auto border-b border-slate-800 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
-          {SECTION_TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveSection(tab.key)}
-              className={`flex items-center gap-2 py-3 px-4 font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
-                activeSection === tab.key
-                  ? 'border-cyan-500 text-white'
-                  : 'border-transparent text-slate-400 hover:text-white'
-              }`}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} />
-              </svg>
-              {tab.label}
-            </button>
-          ))}
+        <div className="relative">
+          <div className="flex overflow-x-auto border-b border-slate-800 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
+            {SECTION_TABS.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveSection(tab.key)}
+                className={`flex items-center gap-2 py-3 px-4 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                  activeSection === tab.key
+                    ? 'border-cyan-500 text-white'
+                    : 'border-transparent text-slate-400 hover:text-white'
+                }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} />
+                </svg>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none sm:hidden" />
         </div>
 
         {/* Section Content */}
@@ -278,7 +281,7 @@ function ProfileSection({ session }: { session: any }) {
           <label className="block text-sm text-slate-400 mb-1.5">Email Address</label>
           <div className="flex items-center gap-2">
             <p className="text-white">{profile?.email || session.user?.email}</p>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">
               Read-only
             </span>
           </div>
@@ -661,7 +664,7 @@ function NotificationsSection() {
             value={preferences.digestFrequency}
             onChange={(e) => handleFrequencyChange(e.target.value)}
             disabled={savingKey === 'digestFrequency'}
-            className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent disabled:opacity-50 sm:w-40"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-50 sm:w-40"
           >
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>

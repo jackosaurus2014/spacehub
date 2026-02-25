@@ -234,7 +234,7 @@ function DashboardContent() {
                         <span className={verification.criteria[item.key] ? 'text-slate-300' : 'text-slate-500'}>
                           {item.label}
                         </span>
-                        <span className="text-[10px] text-slate-600 ml-auto">{item.level}</span>
+                        <span className="text-xs text-slate-600 ml-auto">{item.level}</span>
                       </div>
                     ))}
                   </div>
@@ -288,7 +288,7 @@ function DashboardContent() {
                   >
                     <div className="text-xl mb-2">{feature.icon}</div>
                     <div className="text-xs font-semibold text-slate-300">{feature.title}</div>
-                    <div className="text-[10px] text-slate-500 mt-1">{feature.desc}</div>
+                    <div className="text-xs text-slate-500 mt-1">{feature.desc}</div>
                   </div>
                 ))}
               </div>

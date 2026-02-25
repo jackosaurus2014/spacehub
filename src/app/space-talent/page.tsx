@@ -197,7 +197,7 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
             <Link
               href={`/market-intel?search=${encodeURIComponent(job.company)}`}
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-nebula-500/10 text-nebula-300 hover:bg-nebula-500/20 transition-colors"
+              className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-nebula-500/10 text-nebula-300 hover:bg-nebula-500/20 transition-colors"
             >
               Market Intel
             </Link>
@@ -328,19 +328,19 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
         <div className="grid grid-cols-4 gap-2">
           <div className="text-center">
             <div className="text-sm text-blue-400 font-bold">{trend.engineeringOpenings.toLocaleString()}</div>
-            <div className="text-[10px] text-slate-400">Eng</div>
+            <div className="text-xs text-slate-400">Eng</div>
           </div>
           <div className="text-center">
             <div className="text-sm text-green-400 font-bold">{trend.operationsOpenings.toLocaleString()}</div>
-            <div className="text-[10px] text-slate-400">Ops</div>
+            <div className="text-xs text-slate-400">Ops</div>
           </div>
           <div className="text-center">
             <div className="text-sm text-yellow-400 font-bold">{trend.businessOpenings.toLocaleString()}</div>
-            <div className="text-[10px] text-slate-400">Biz</div>
+            <div className="text-xs text-slate-400">Biz</div>
           </div>
           <div className="text-center">
             <div className="text-sm text-purple-400 font-bold">{trend.researchOpenings.toLocaleString()}</div>
-            <div className="text-[10px] text-slate-400">R&D</div>
+            <div className="text-xs text-slate-400">R&D</div>
           </div>
         </div>
       </div>
@@ -351,7 +351,7 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
           <span className="text-slate-400 text-xs block mb-2">Top Skills</span>
           <div className="flex flex-wrap gap-1.5">
             {topSkills.map((skill) => (
-              <span key={skill} className="text-[10px] px-2 py-0.5 rounded bg-slate-700/50 text-slate-500">
+              <span key={skill} className="text-xs px-2 py-0.5 rounded bg-slate-700/50 text-slate-500">
                 {skill}
               </span>
             ))}
@@ -365,7 +365,7 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
           <span className="text-slate-400 text-xs block mb-2">Top Hiring</span>
           <div className="flex flex-wrap gap-1.5">
             {topCompanies.map((company) => (
-              <span key={company} className="text-[10px] px-2 py-0.5 rounded bg-nebula-500/10 text-nebula-300">
+              <span key={company} className="text-xs px-2 py-0.5 rounded bg-nebula-500/10 text-nebula-300">
                 {company}
               </span>
             ))}
@@ -785,10 +785,10 @@ function SpaceTalentHubContent() {
       )}
 
       {/* ──────────────── TOP-LEVEL TAB NAVIGATION ──────────────── */}
-      <div className="flex border-b border-slate-700/50 mb-8">
+      <div className="flex border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide">
         <button
           onClick={() => handleTopTabChange('talent')}
-          className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
+          className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
             topTab === 'talent'
               ? 'border-cyan-500 text-white'
               : 'border-transparent text-slate-400 hover:text-white'
@@ -800,7 +800,7 @@ function SpaceTalentHubContent() {
         </button>
         <button
           onClick={() => handleTopTabChange('workforce')}
-          className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
+          className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
             topTab === 'workforce'
               ? 'border-cyan-500 text-white'
               : 'border-transparent text-slate-400 hover:text-white'
@@ -818,10 +818,10 @@ function SpaceTalentHubContent() {
       {topTab === 'talent' && (
         <div>
           {/* Sub-tab navigation (Experts / Webinars) */}
-          <div className="flex border-b border-slate-700/50 mb-6">
+          <div className="flex border-b border-slate-700/50 mb-6 overflow-x-auto scrollbar-hide">
             <button
               onClick={() => setTalentSubTab('experts')}
-              className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
+              className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
                 talentSubTab === 'experts'
                   ? 'border-cyan-500 text-white'
                   : 'border-transparent text-slate-400 hover:text-white'
@@ -833,7 +833,7 @@ function SpaceTalentHubContent() {
             </button>
             <button
               onClick={() => setTalentSubTab('webinars')}
-              className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
+              className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
                 talentSubTab === 'webinars'
                   ? 'border-cyan-500 text-white'
                   : 'border-transparent text-slate-400 hover:text-white'
@@ -922,7 +922,7 @@ function SpaceTalentHubContent() {
                     aria-label="Filter by expertise area"
                     value={expertiseFilter}
                     onChange={(e) => setExpertiseFilter(e.target.value as TalentExpertiseArea | '')}
-                    className="bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-cyan-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Expertise Areas</option>
                     {TALENT_EXPERTISE_AREAS.map(exp => (
@@ -935,7 +935,7 @@ function SpaceTalentHubContent() {
                     aria-label="Filter by availability"
                     value={availabilityFilter}
                     onChange={(e) => setAvailabilityFilter(e.target.value as TalentAvailability | '')}
-                    className="bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-cyan-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Availability</option>
                     {Object.entries(TALENT_AVAILABILITY_INFO).map(([key, info]) => (
@@ -1074,7 +1074,7 @@ function SpaceTalentHubContent() {
                     aria-label="Filter by topic"
                     value={topicFilter}
                     onChange={(e) => setTopicFilter(e.target.value)}
-                    className="bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-cyan-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Topics</option>
                     {WEBINAR_TOPICS.map(topic => (
@@ -1501,35 +1501,38 @@ function SpaceTalentHubContent() {
           )}
 
           {/* Workforce Sub-Tab Navigation */}
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-            {[
-              { id: 'jobs' as const, label: 'Job Postings', count: totalJobs },
-              { id: 'trends' as const, label: 'Workforce Trends', count: trends.length },
-              { id: 'salaries' as const, label: 'Salary Benchmarks', count: benchmarksByCategory.length },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => handleWfSubTabChange(tab.id)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                  wfSubTab === tab.id
-                    ? 'bg-nebula-500 text-white shadow-glow-sm'
-                    : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
-                }`}
-              >
-                {tab.label}
-                {tab.count > 0 && (
-                  <span
-                    className={`text-xs px-1.5 py-0.5 rounded-full ${
-                      wfSubTab === tab.id
-                        ? 'bg-white/20 text-white'
-                        : 'bg-slate-700/50 text-slate-500'
+          <div className="relative">
+            <div className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide">
+              {[
+                { id: 'jobs' as const, label: 'Job Postings', count: totalJobs },
+                { id: 'trends' as const, label: 'Workforce Trends', count: trends.length },
+                { id: 'salaries' as const, label: 'Salary Benchmarks', count: benchmarksByCategory.length },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => handleWfSubTabChange(tab.id)}
+                  className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                    wfSubTab === tab.id
+                      ? 'bg-nebula-500 text-white shadow-glow-sm'
+                      : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
+                  }`}
+                >
+                  {tab.label}
+                  {tab.count > 0 && (
+                    <span
+                      className={`text-xs px-1.5 py-0.5 rounded-full ${
+                        wfSubTab === tab.id
+                          ? 'bg-white/20 text-white'
+                          : 'bg-slate-700/50 text-slate-500'
                     }`}
-                  >
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            ))}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
           </div>
 
           {/* ──────────────── JOB POSTINGS SUB-TAB ──────────────── */}
@@ -1559,7 +1562,7 @@ function SpaceTalentHubContent() {
                     aria-label="Filter by job category"
                     value={categoryFilter}
                     onChange={(e) => handleCategoryChange(e.target.value as JobCategory | '')}
-                    className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-nebula-500/50"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Categories</option>
                     {JOB_CATEGORIES.map((c) => (
@@ -1574,7 +1577,7 @@ function SpaceTalentHubContent() {
                     aria-label="Filter by seniority level"
                     value={seniorityFilter}
                     onChange={(e) => handleSeniorityChange(e.target.value as SeniorityLevel | '')}
-                    className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-nebula-500/50"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Levels</option>
                     {SENIORITY_LEVELS.map((s) => (

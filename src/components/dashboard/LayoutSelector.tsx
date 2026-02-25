@@ -159,12 +159,12 @@ export default function LayoutSelector({
                           <div className="flex items-center gap-2">
                             <p className="text-sm font-semibold text-slate-100">{layout.name}</p>
                             {layout.isDefault && (
-                              <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded">
+                              <span className="text-xs bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded">
                                 Default
                               </span>
                             )}
                             {layout.id === activeLayoutId && (
-                              <span className="text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded">
+                              <span className="text-xs bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded">
                                 Active
                               </span>
                             )}

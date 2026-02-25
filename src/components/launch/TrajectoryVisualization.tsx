@@ -200,7 +200,7 @@ export default function TrajectoryVisualization({
           </svg>
           3D Trajectory
         </h3>
-        <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-medium uppercase tracking-wider">
+        <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-medium uppercase tracking-wider">
           Simulated
         </span>
       </div>

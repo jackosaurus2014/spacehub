@@ -334,10 +334,10 @@ function PolicyTrackerTab() {
         </div>
       )}
       <div className="flex flex-wrap gap-3 mb-6">
-        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm">
+        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none">
           <option value="">All Agencies</option><option value="FAA">FAA (Launches)</option><option value="FCC">FCC (Spectrum)</option><option value="NOAA">NOAA (Remote Sensing)</option><option value="BIS">BIS (Export Controls)</option><option value="DDTC">DDTC (ITAR)</option><option value="NASA">NASA</option>
         </select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm">
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none">
           <option value="">All Statuses</option><option value="proposed">Proposed</option><option value="pending">Pending</option><option value="effective">Effective</option><option value="final">Final</option>
         </select>
         <div className="ml-auto">
@@ -391,10 +391,10 @@ function ComplianceWizardTab() {
         <p className="text-sm text-slate-400">Select your mission type below to see required licenses. Each license includes a checklist of requirements, processing times, fees, and links to application forms.</p>
       </div>
       <div className="flex flex-wrap gap-3 mb-6">
-        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm">
+        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none">
           <option value="">All License Types</option><option value="launch">Launch Licenses (FAA)</option><option value="satellite">Satellite Licenses (FCC)</option><option value="remote_sensing">Remote Sensing (NOAA)</option><option value="spectrum">Spectrum (ITU/FCC)</option><option value="export">Export Licenses</option>
         </select>
-        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm">
+        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none">
           <option value="">All Agencies</option><option value="FAA">FAA</option><option value="FCC">FCC</option><option value="NOAA">NOAA</option>
         </select>
       </div>
@@ -462,10 +462,10 @@ function CaseLawArchiveTab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-yellow-400">{filteredCases.filter(c => c.outcome === 'settlement').length}</div><div className="text-xs text-slate-400">Settlements</div></div>
       </div>
       <div className="flex flex-wrap gap-3 mb-6">
-        <select value={jurisdictionFilter} onChange={(e) => setJurisdictionFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm">
+        <select value={jurisdictionFilter} onChange={(e) => setJurisdictionFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none">
           <option value="">All Jurisdictions</option><option value="federal">Federal Courts</option><option value="international">International</option><option value="arbitration">Arbitration</option>
         </select>
-        <select value={subjectFilter} onChange={(e) => setSubjectFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm">
+        <select value={subjectFilter} onChange={(e) => setSubjectFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none">
           <option value="">All Subject Matter</option>{allSubjects.map(s => (<option key={s} value={s}>{s.replace(/_/g, ' ')}</option>))}
         </select>
         <div className="ml-auto"><ExportButton data={filteredCases} filename="space-law-cases" columns={[{ key: 'caseName', label: 'Case Name' },{ key: 'year', label: 'Year' },{ key: 'jurisdiction', label: 'Jurisdiction' },{ key: 'outcome', label: 'Outcome' },{ key: 'damages', label: 'Damages' },{ key: 'summary', label: 'Summary' }]} /></div>
@@ -628,8 +628,8 @@ function SpaceLawNationalTab() {
     <div>
       <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4 mb-6"><h4 className="font-semibold text-cyan-400 mb-2">National Space Legislation Tracker</h4><p className="text-sm text-slate-400">As commercial space activities expand, nations are rapidly developing domestic legislation to regulate launches, satellite operations, space resources, and liability. This tracker monitors major national frameworks.</p></div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
-        <div><label className="block text-slate-400 text-sm mb-1">Country</label><select value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"><option value="">All Countries</option>{countries.map(c => (<option key={c} value={c}>{c}</option>))}</select></div>
-        <div><label className="block text-slate-400 text-sm mb-1">Status</label><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"><option value="">All Statuses</option><option value="enacted">Enacted</option><option value="amended">Amended</option><option value="proposed">Proposed</option><option value="under_review">Under Review</option></select></div>
+        <div><label className="block text-slate-400 text-sm mb-1">Country</label><select value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Countries</option>{countries.map(c => (<option key={c} value={c}>{c}</option>))}</select></div>
+        <div><label className="block text-slate-400 text-sm mb-1">Status</label><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Statuses</option><option value="enacted">Enacted</option><option value="amended">Amended</option><option value="proposed">Proposed</option><option value="under_review">Under Review</option></select></div>
         {(countryFilter || statusFilter) && (<button onClick={() => { setCountryFilter(''); setStatusFilter(''); }} className="text-sm text-nebula-300 hover:text-nebula-200 py-2">Clear Filters</button>)}
       </div></div>
       <div className="flex items-center justify-between mb-4"><span className="text-sm text-slate-400">Showing {filteredLaws.length} of {NATIONAL_LAWS.length} laws</span></div>
@@ -658,7 +658,7 @@ function SpaceLawArtemisTab() {
       <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-white mb-3">Regional Distribution</h3><div className="space-y-3">{Object.entries(regionCounts).sort((a, b) => b[1] - a[1]).map(([region, count]) => { const maxCount = Math.max(...Object.values(regionCounts)); const pct = (count / maxCount) * 100; return (<div key={region}><div className="flex items-center justify-between mb-1"><span className="text-sm text-slate-400 font-medium">{region}</span><span className="text-sm text-slate-400">{count} signatories</span></div><div className="h-3 bg-slate-700 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-cyan-500 to-blue-400 rounded-full transition-all" style={{ width: `${pct}%` }} /></div></div>); })}</div></div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
         <div className="flex-1 min-w-[200px]"><label className="block text-slate-400 text-sm mb-1">Search</label><input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search countries, agencies..." className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500 placeholder:text-slate-400" /></div>
-        <div><label className="block text-slate-400 text-sm mb-1">Region</label><select value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"><option value="">All Regions</option>{regions.map(r => (<option key={r} value={r}>{r} ({regionCounts[r]})</option>))}</select></div>
+        <div><label className="block text-slate-400 text-sm mb-1">Region</label><select value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Regions</option>{regions.map(r => (<option key={r} value={r}>{r} ({regionCounts[r]})</option>))}</select></div>
         {(regionFilter || searchQuery) && (<button onClick={() => { setRegionFilter(''); setSearchQuery(''); }} className="text-sm text-nebula-300 hover:text-nebula-200 py-2">Clear Filters</button>)}
       </div></div>
       <div className="flex items-center justify-between mb-4"><span className="text-sm text-slate-400">Showing {filteredSignatories.length} of {ARTEMIS_SIGNATORIES.length} signatories</span></div>
@@ -696,8 +696,8 @@ function SpaceLawProceedingsTab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-yellow-400">{LEGAL_PROCEEDINGS.filter(p => p.status === 'pending').length}</div><div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Pending</div></div>
       </div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
-        <div><label className="block text-slate-400 text-sm mb-1">Case Type</label><select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"><option value="">All Types</option>{types.map(t => (<option key={t} value={t}>{t}</option>))}</select></div>
-        <div><label className="block text-slate-400 text-sm mb-1">Status</label><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"><option value="">All Statuses</option><option value="active">Active</option><option value="resolved">Resolved</option><option value="pending">Pending</option><option value="advisory">Advisory</option></select></div>
+        <div><label className="block text-slate-400 text-sm mb-1">Case Type</label><select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Types</option>{types.map(t => (<option key={t} value={t}>{t}</option>))}</select></div>
+        <div><label className="block text-slate-400 text-sm mb-1">Status</label><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Statuses</option><option value="active">Active</option><option value="resolved">Resolved</option><option value="pending">Pending</option><option value="advisory">Advisory</option></select></div>
         {(typeFilter || statusFilter) && (<button onClick={() => { setTypeFilter(''); setStatusFilter(''); }} className="text-sm text-nebula-300 hover:text-nebula-200 py-2">Clear Filters</button>)}
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{filteredProceedings.map((p) => (<ProceedingCard key={p.id} proceeding={p} />))}</div>
@@ -728,7 +728,7 @@ function SpaceLawBodiesTab() {
       <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4 mb-6"><h4 className="font-semibold text-purple-600 mb-2">Space Regulatory Bodies Directory</h4><p className="text-sm text-slate-400">Comprehensive directory of international, regional, and national regulatory bodies governing space activities. From UN organizations to national licensing authorities and industry coordination groups.</p></div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
         <div className="flex-1 min-w-[200px]"><label className="block text-slate-400 text-sm mb-1">Search</label><input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search bodies, functions..." className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500 placeholder:text-slate-400" /></div>
-        <div><label className="block text-slate-400 text-sm mb-1">Type</label><select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"><option value="">All Types</option><option value="un">UN Bodies</option><option value="national">National</option><option value="regional">Regional</option><option value="industry">Industry</option></select></div>
+        <div><label className="block text-slate-400 text-sm mb-1">Type</label><select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Types</option><option value="un">UN Bodies</option><option value="national">National</option><option value="regional">Regional</option><option value="industry">Industry</option></select></div>
         {(typeFilter || searchQuery) && (<button onClick={() => { setTypeFilter(''); setSearchQuery(''); }} className="text-sm text-nebula-300 hover:text-nebula-200 py-2">Clear Filters</button>)}
       </div></div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">{(Object.entries(BODY_TYPE_CONFIG) as [BodyType, typeof BODY_TYPE_CONFIG[BodyType]][]).map(([type, config]) => { const count = REGULATORY_BODIES.filter(b => b.type === type).length; return (<button key={type} onClick={() => setTypeFilter(typeFilter === type ? '' : type)} className={`card-elevated p-4 text-center transition-all cursor-pointer ${typeFilter === type ? 'ring-2 ring-nebula-500/50' : ''}`}><div className={`text-2xl font-bold font-display ${config.text}`}>{count}</div><div className="text-slate-400 text-xs uppercase tracking-widest font-medium">{config.label}</div></button>); })}</div>
@@ -754,9 +754,9 @@ function FilingsFCCTab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-cyan-400">{totalSats.toLocaleString()}</div><div className="text-star-300 text-xs uppercase tracking-widest">Satellites Filed</div></div>
       </div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="text" placeholder="Search applicant, file number, band..." aria-label="Search FCC filings" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2 text-sm placeholder:text-star-300/50 focus:outline-none focus:border-nebula-500/50" />
-        <select value={orbitFilter} onChange={(e) => setOrbitFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Orbits</option>{uniqueOrbits.map((o) => (<option key={o} value={o}>{o}</option>))}</select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Statuses</option>{uniqueStatuses.map((s) => (<option key={s} value={s}>{(FILING_STATUS_STYLES[s] || DEFAULT_FILING_STATUS_STYLE).label}</option>))}</select>
+        <input type="text" placeholder="Search applicant, file number, band..." aria-label="Search FCC filings" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none" />
+        <select value={orbitFilter} onChange={(e) => setOrbitFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Orbits</option>{uniqueOrbits.map((o) => (<option key={o} value={o}>{o}</option>))}</select>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Statuses</option>{uniqueStatuses.map((s) => (<option key={s} value={s}>{(FILING_STATUS_STYLES[s] || DEFAULT_FILING_STATUS_STYLE).label}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const statusStyle = FILING_STATUS_STYLES[filing.status] || DEFAULT_FILING_STATUS_STYLE; const orbitStyle = FILING_ORBIT_STYLES[filing.orbitType] || DEFAULT_FILING_ORBIT_STYLE; return (
@@ -784,9 +784,9 @@ function FilingsFAATab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-cyan-400">{totalMissions}</div><div className="text-star-300 text-xs uppercase tracking-widest">Missions Auth.</div></div>
       </div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="text" placeholder="Search licensee, vehicle, launch site..." aria-label="Search FAA licenses" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2 text-sm placeholder:text-star-300/50 focus:outline-none focus:border-nebula-500/50" />
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Statuses</option>{uniqueStatuses.map((s) => (<option key={s} value={s}>{(FILING_STATUS_STYLES[s] || DEFAULT_FILING_STATUS_STYLE).label}</option>))}</select>
+        <input type="text" placeholder="Search licensee, vehicle, launch site..." aria-label="Search FAA licenses" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none" />
+        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Statuses</option>{uniqueStatuses.map((s) => (<option key={s} value={s}>{(FILING_STATUS_STYLES[s] || DEFAULT_FILING_STATUS_STYLE).label}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} licenses</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((license) => { const statusStyle = FILING_STATUS_STYLES[license.status] || DEFAULT_FILING_STATUS_STYLE; return (
@@ -815,9 +815,9 @@ function FilingsITUTab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-green-400">{ITU_FILINGS.filter((f) => f.status === 'active').length}</div><div className="text-star-300 text-xs uppercase tracking-widest">Active Filings</div></div>
       </div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="text" placeholder="Search network name, administration..." aria-label="Search ITU filings" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2 text-sm placeholder:text-star-300/50 focus:outline-none focus:border-nebula-500/50" />
-        <select value={orbitFilter} onChange={(e) => setOrbitFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Orbits</option>{uniqueOrbits.map((o) => (<option key={o} value={o}>{o}</option>))}</select>
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Filing Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
+        <input type="text" placeholder="Search network name, administration..." aria-label="Search ITU filings" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none" />
+        <select value={orbitFilter} onChange={(e) => setOrbitFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Orbits</option>{uniqueOrbits.map((o) => (<option key={o} value={o}>{o}</option>))}</select>
+        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Filing Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const statusStyle = FILING_STATUS_STYLES[filing.status] || DEFAULT_FILING_STATUS_STYLE; const orbitStyle = FILING_ORBIT_STYLES[filing.orbitType] || DEFAULT_FILING_ORBIT_STYLE; return (
@@ -846,9 +846,9 @@ function FilingsSECTab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-purple-400">{uniqueTickers.length}</div><div className="text-star-300 text-xs uppercase tracking-widest">Companies</div></div>
       </div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="text" placeholder="Search company, ticker, content..." aria-label="Search SEC filings" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2 text-sm placeholder:text-star-300/50 focus:outline-none focus:border-nebula-500/50" />
-        <select value={companyFilter} onChange={(e) => setCompanyFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Companies</option>{uniqueTickers.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Filing Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
+        <input type="text" placeholder="Search company, ticker, content..." aria-label="Search SEC filings" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none" />
+        <select value={companyFilter} onChange={(e) => setCompanyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Companies</option>{uniqueTickers.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
+        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Filing Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const typeColor = filingTypeColors[filing.filingType] || { bg: 'bg-slate-800/500/20', text: 'text-slate-400' }; return (
@@ -879,10 +879,10 @@ function FilingsFederalRegisterTab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-red-400">{FEDERAL_REGISTER_ENTRIES.filter((e) => e.impact === 'high').length}</div><div className="text-star-300 text-xs uppercase tracking-widest">High Impact</div></div>
       </div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="text" placeholder="Search title, agency, content..." aria-label="Search Federal Register entries" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2 text-sm placeholder:text-star-300/50 focus:outline-none focus:border-nebula-500/50" />
-        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
-        <select value={impactFilter} onChange={(e) => setImpactFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Impact Levels</option><option value="high">High Impact</option><option value="medium">Medium Impact</option><option value="low">Low Impact</option></select>
+        <input type="text" placeholder="Search title, agency, content..." aria-label="Search Federal Register entries" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none" />
+        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
+        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
+        <select value={impactFilter} onChange={(e) => setImpactFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Impact Levels</option><option value="high">High Impact</option><option value="medium">Medium Impact</option><option value="low">Low Impact</option></select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} entries</span>
       </div></div>
       <div className="space-y-4">{filtered.map((entry) => { const typeColor = docTypeColors[entry.documentType] || { bg: 'bg-slate-800/500/20', text: 'text-slate-400' }; const impactStyle = FILING_IMPACT_STYLES[entry.impact] || DEFAULT_FILING_IMPACT_STYLE; return (
@@ -1002,11 +1002,11 @@ function ProtestsOverviewTab() {
       </div>
 
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="text" placeholder="Search case, protester, awardee..." aria-label="Search bid protests" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2 text-sm placeholder:text-star-300/50 focus:outline-none focus:border-nebula-500/50" />
-        <select value={forumFilter} onChange={(e) => setForumFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Forums</option>{uniqueForums.map((f) => (<option key={f} value={f}>{PROTEST_FORUM_STYLES[f].label}</option>))}</select>
-        <select value={outcomeFilter} onChange={(e) => setOutcomeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Outcomes</option>{uniqueOutcomes.map((o) => (<option key={o} value={o}>{PROTEST_OUTCOME_STYLES[o].label}</option>))}</select>
-        <select value={programFilter} onChange={(e) => setProgramFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Programs</option>{uniquePrograms.map((p) => (<option key={p} value={p}>{PROTEST_PROGRAM_LABELS[p]}</option>))}</select>
-        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
+        <input type="text" placeholder="Search case, protester, awardee..." aria-label="Search bid protests" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none" />
+        <select value={forumFilter} onChange={(e) => setForumFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Forums</option>{uniqueForums.map((f) => (<option key={f} value={f}>{PROTEST_FORUM_STYLES[f].label}</option>))}</select>
+        <select value={outcomeFilter} onChange={(e) => setOutcomeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Outcomes</option>{uniqueOutcomes.map((o) => (<option key={o} value={o}>{PROTEST_OUTCOME_STYLES[o].label}</option>))}</select>
+        <select value={programFilter} onChange={(e) => setProgramFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Programs</option>{uniquePrograms.map((p) => (<option key={p} value={p}>{PROTEST_PROGRAM_LABELS[p]}</option>))}</select>
+        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} cases</span>
       </div></div>
 
@@ -1309,7 +1309,8 @@ function ProtestsAnalysisTab() {
 
       <div className="card-elevated p-5">
         <h4 className="text-sm font-semibold text-star-300 uppercase tracking-wider mb-4">All Cases Summary</h4>
-        <div className="overflow-x-auto">
+        {/* Desktop Table */}
+        <div className="overflow-x-auto hidden md:block">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/10">
@@ -1340,6 +1341,46 @@ function ProtestsAnalysisTab() {
               })}
             </tbody>
           </table>
+        </div>
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-3">
+          {BID_PROTESTS.sort((a, b) => b.yearDecided - a.yearDecided).map((protest) => {
+            const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome];
+            const forumStyle = PROTEST_FORUM_STYLES[protest.forum];
+            return (
+              <div key={protest.id} className="bg-white/5 border border-white/10 rounded-lg p-3">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-white font-medium text-sm truncate">{protest.shortTitle}</div>
+                    <div className="text-star-300 text-xs font-mono">{protest.caseNumber}</div>
+                  </div>
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded flex-shrink-0 ${outcomeStyle.bg} ${outcomeStyle.text}`}>{outcomeStyle.label}</span>
+                </div>
+                <div className="space-y-1 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-star-300/70">Forum</span>
+                    <span className={`font-medium px-2 py-0.5 rounded ${forumStyle.bg} ${forumStyle.text}`}>{forumStyle.label}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-star-300/70">Protester</span>
+                    <span className="text-star-300 truncate ml-2">{protest.protester}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-star-300/70">Agency</span>
+                    <span className="text-star-300">{protest.agency}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-star-300/70">Value</span>
+                    <span className="text-white font-medium">{protest.contractValue}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-star-300/70">Year</span>
+                    <span className="text-star-300">{protest.yearDecided}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -1582,40 +1623,46 @@ function RegulatoryHubContent() {
       <InlineDisclaimer />
 
       {/* Top-Level Section Navigation */}
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">
-        {topSections.map((section) => (
-          <button
-            key={section.id}
-            onClick={() => handleSectionChange(section.id)}
-            className={`flex items-center gap-2 px-4 sm:px-5 py-3 rounded-lg font-semibold text-sm transition-all whitespace-nowrap touch-target ${
-              activeSection === section.id
-                ? 'bg-nebula-500 text-white shadow-glow-sm'
-                : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-600/50'
-            }`}
-          >
-            <span>{section.icon}</span>
-            {section.label}
-          </button>
-        ))}
+      <div className="relative">
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">
+          {topSections.map((section) => (
+            <button
+              key={section.id}
+              onClick={() => handleSectionChange(section.id)}
+              className={`flex items-center gap-2 px-4 sm:px-5 py-3 min-h-[44px] rounded-lg font-semibold text-sm transition-all whitespace-nowrap touch-target ${
+                activeSection === section.id
+                  ? 'bg-nebula-500 text-white shadow-glow-sm'
+                  : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-600/50'
+              }`}
+            >
+              <span>{section.icon}</span>
+              {section.label}
+            </button>
+          ))}
+        </div>
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
       </div>
 
       {/* Sub-Tab Navigation */}
       {activeSection === 'compliance' && (
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">
-          {complianceSubTabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveSubTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap touch-target ${
-                activeSubTab === tab.id
-                  ? 'bg-slate-700/80 text-slate-100 border-slate-500/50 shadow-glow-sm'
-                  : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
-              }`}
-            >
-              <span>{tab.icon}</span>
-              {tab.label}
-            </button>
-          ))}
+        <div className="relative">
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin">
+            {complianceSubTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveSubTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-lg font-medium transition-all whitespace-nowrap touch-target ${
+                  activeSubTab === tab.id
+                    ? 'bg-slate-700/80 text-slate-100 border-slate-500/50 shadow-glow-sm'
+                    : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
+                }`}
+              >
+                <span>{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
         </div>
       )}
 
@@ -1625,7 +1672,7 @@ function RegulatoryHubContent() {
             <button
               key={tab.id}
               onClick={() => setActiveSubTab(tab.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+              className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeSubTab === tab.id
                   ? 'bg-slate-700/80 text-slate-100 border border-slate-500/50 shadow-glow-sm'
                   : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
@@ -1638,21 +1685,24 @@ function RegulatoryHubContent() {
       )}
 
       {activeSection === 'filings' && (
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-          {getFilingsTabs().map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveSubTab(tab.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                activeSubTab === tab.id
-                  ? 'bg-nebula-500 text-white shadow-glow-sm'
-                  : 'bg-white/5 text-star-300 hover:bg-white/10'
-              }`}
-            >
-              {tab.label}
-              <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeSubTab === tab.id ? 'bg-white/20 text-white' : 'bg-white/10 text-star-300'}`}>{tab.count}</span>
-            </button>
-          ))}
+        <div className="relative">
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+            {getFilingsTabs().map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveSubTab(tab.id)}
+                className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                  activeSubTab === tab.id
+                    ? 'bg-nebula-500 text-white shadow-glow-sm'
+                    : 'bg-white/5 text-star-300 hover:bg-white/10'
+                }`}
+              >
+                {tab.label}
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeSubTab === tab.id ? 'bg-white/20 text-white' : 'bg-white/10 text-star-300'}`}>{tab.count}</span>
+              </button>
+            ))}
+          </div>
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
         </div>
       )}
 

@@ -113,13 +113,13 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] text-slate-500">
+                    <span className="text-xs text-slate-500">
                       {c.authorRole === 'provider' ? 'Provider' : 'Buyer'}
                     </span>
                     {!c.isPublic && (
-                      <span className="text-[10px] px-1 py-0.5 bg-yellow-500/10 text-yellow-500 rounded">Private</span>
+                      <span className="text-xs px-1 py-0.5 bg-yellow-500/10 text-yellow-500 rounded">Private</span>
                     )}
-                    <span className="text-[10px] text-slate-600">
+                    <span className="text-xs text-slate-600">
                       {new Date(c.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
                     </span>
                   </div>
@@ -134,8 +134,8 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[10px] text-slate-500">Buyer</span>
-                      <span className="text-[10px] text-slate-600">
+                      <span className="text-xs text-slate-500">Buyer</span>
+                      <span className="text-xs text-slate-600">
                         {c.answeredAt ? new Date(c.answeredAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''}
                       </span>
                     </div>
@@ -150,7 +150,7 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
                       onChange={(e) => setAnswerText(e.target.value)}
                       placeholder="Write your answer..."
                       rows={3}
-                      className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500"
+                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                     />
                     <div className="flex gap-2">
                       <button
@@ -198,7 +198,7 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
             placeholder="Ask a question about this RFQ..."
             rows={3}
             maxLength={2000}
-            className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500"
+            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
           />
           <div className="flex items-center justify-between">
             <label className="flex items-center gap-2 text-xs text-slate-400">

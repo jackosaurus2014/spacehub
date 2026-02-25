@@ -55,7 +55,7 @@ export default function CompactLaunchCard({ event }: CompactLaunchCardProps) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             {event.isLive && (
-              <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 text-[10px] font-bold flex-shrink-0">
+              <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 text-xs font-bold flex-shrink-0">
                 <span className="w-1 h-1 bg-red-400 rounded-full animate-pulse" />
                 LIVE
               </span>
@@ -66,7 +66,7 @@ export default function CompactLaunchCard({ event }: CompactLaunchCardProps) {
             {event.rocket && <span className="text-cyan-400">{event.rocket}</span>}
             {event.agency && <span>{event.agency}</span>}
             {phase && (
-              <span className="px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-300 text-[10px]">
+              <span className="px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-300 text-xs">
                 {phase}
               </span>
             )}

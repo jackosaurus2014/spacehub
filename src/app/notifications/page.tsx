@@ -288,10 +288,10 @@ export default function NotificationsPage() {
                         )}
                         <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{notif.message}</p>
                         <div className="flex items-center gap-2 mt-1.5">
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${getTypeColor(notif.type)}`}>
+                          <span className={`text-xs px-1.5 py-0.5 rounded ${getTypeColor(notif.type)}`}>
                             {getTypeLabel(notif.type)}
                           </span>
-                          <span className="text-[10px] text-slate-500">{formatRelativeTime(notif.timestamp)}</span>
+                          <span className="text-xs text-slate-500">{formatRelativeTime(notif.timestamp)}</span>
                         </div>
                       </div>
 

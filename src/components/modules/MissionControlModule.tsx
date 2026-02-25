@@ -211,7 +211,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
           <div className="flex items-center gap-2">
             <h4 className="font-semibold text-slate-800 text-sm line-clamp-1">{event.name}</h4>
             {live && (
-              <span className="flex items-center gap-1 text-white text-[10px] font-semibold px-1.5 py-0.5 bg-red-500 rounded shrink-0">
+              <span className="flex items-center gap-1 text-white text-xs font-semibold px-1.5 py-0.5 bg-red-500 rounded shrink-0">
                 <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
                 LIVE
               </span>

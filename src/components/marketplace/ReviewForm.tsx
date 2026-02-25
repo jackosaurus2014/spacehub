@@ -99,7 +99,7 @@ export default function ReviewForm({ companyId, rfqId, onSuccess }: ReviewFormPr
       <StarSelector value={overallRating} onChange={setOverallRating} label="Overall *" />
 
       <div className="border-t border-slate-700/50 pt-3 space-y-2">
-        <div className="text-[10px] text-slate-500 uppercase tracking-wider">Detailed Ratings (optional)</div>
+        <div className="text-xs text-slate-500 uppercase tracking-wider">Detailed Ratings (optional)</div>
         <StarSelector value={qualityRating} onChange={setQualityRating} label="Quality" />
         <StarSelector value={timelineRating} onChange={setTimelineRating} label="Timeline" />
         <StarSelector value={commRating} onChange={setCommRating} label="Communication" />
@@ -108,7 +108,7 @@ export default function ReviewForm({ companyId, rfqId, onSuccess }: ReviewFormPr
 
       <div>
         <label className="block text-sm text-slate-400 mb-1">
-          Review Title <span className="text-slate-600 text-[10px]">optional</span>
+          Review Title <span className="text-slate-600 text-xs">optional</span>
         </label>
         <input
           type="text"
@@ -116,13 +116,13 @@ export default function ReviewForm({ companyId, rfqId, onSuccess }: ReviewFormPr
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Summarize your experience"
           maxLength={200}
-          className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500"
+          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
         />
       </div>
 
       <div>
         <label className="block text-sm text-slate-400 mb-1">
-          Your Review <span className="text-slate-600 text-[10px]">optional</span>
+          Your Review <span className="text-slate-600 text-xs">optional</span>
         </label>
         <textarea
           value={content}
@@ -130,7 +130,7 @@ export default function ReviewForm({ companyId, rfqId, onSuccess }: ReviewFormPr
           placeholder="Share details about your experience working with this provider..."
           rows={4}
           maxLength={5000}
-          className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500"
+          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
         />
       </div>
 

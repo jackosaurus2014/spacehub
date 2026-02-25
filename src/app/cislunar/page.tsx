@@ -511,7 +511,7 @@ function CommercialLunarTab() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-slate-800/50 border border-slate-700/50 text-star-200 text-sm rounded-lg px-3 py-2 focus:border-nebula-500 focus:outline-none"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
         >
           <option value="all">All Statuses</option>
           {statuses.map((s) => (
@@ -521,7 +521,7 @@ function CommercialLunarTab() {
         <select
           value={companyFilter}
           onChange={(e) => setCompanyFilter(e.target.value)}
-          className="bg-slate-800/50 border border-slate-700/50 text-star-200 text-sm rounded-lg px-3 py-2 focus:border-nebula-500 focus:outline-none"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
         >
           <option value="all">All Companies</option>
           {companies.map((c) => (
@@ -693,7 +693,7 @@ function ISRUTab() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="bg-slate-800/50 border border-slate-700/50 text-star-200 text-sm rounded-lg px-3 py-2 focus:border-nebula-500 focus:outline-none"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
         >
           <option value="all">All Categories</option>
           {categories.map((c) => (
@@ -784,7 +784,7 @@ function InfrastructureTab() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="bg-slate-800/50 border border-slate-700/50 text-star-200 text-sm rounded-lg px-3 py-2 focus:border-nebula-500 focus:outline-none"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
         >
           <option value="all">All Categories</option>
           {categories.map((c) => (
@@ -918,7 +918,7 @@ function InvestmentTab() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="bg-slate-800/50 border border-slate-700/50 text-star-200 text-sm rounded-lg px-3 py-2 focus:border-nebula-500 focus:outline-none"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
         >
           <option value="all">All Types</option>
           {types.map((t) => (
@@ -1178,13 +1178,13 @@ function GatewayTab() {
       </div>
 
       {/* Sub-tab Navigation */}
-      <div className="border-b border-slate-700/50">
-        <div className="flex gap-1 overflow-x-auto">
+      <div className="border-b border-slate-700/50 relative">
+        <div className="flex gap-1 overflow-x-auto scrollbar-hide">
           {subTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setGatewaySubTab(tab.id)}
-              className={`px-3 py-2 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
+              className={`px-4 py-2.5 min-h-[44px] text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
                 gatewaySubTab === tab.id
                   ? 'border-nebula-500 text-nebula-300'
                   : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'
@@ -1195,6 +1195,7 @@ function GatewayTab() {
             </button>
           ))}
         </div>
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
       </div>
 
       {/* Overview Sub-tab */}

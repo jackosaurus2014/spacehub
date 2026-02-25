@@ -300,7 +300,7 @@ function WatchlistsContent() {
                           <div className="text-sm font-semibold text-white group-hover:text-cyan-400 transition-colors">
                             {item.companyProfile.name}
                           </div>
-                          <div className="text-[10px] text-slate-500">
+                          <div className="text-xs text-slate-500">
                             {item.companyProfile.sector || 'Space Industry'}
                             {item.companyProfile.tier && (
                               <span className="ml-1.5 px-1 py-0.5 rounded bg-slate-700 text-slate-400">
@@ -325,7 +325,7 @@ function WatchlistsContent() {
                       <select
                         value={item.priority}
                         onChange={(e) => handleUpdateWatch(item, { priority: e.target.value })}
-                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded border-0 cursor-pointer ${PRIORITY_COLORS[item.priority] || PRIORITY_COLORS.medium}`}
+                        className={`text-xs font-bold px-1.5 py-0.5 rounded border-0 cursor-pointer ${PRIORITY_COLORS[item.priority] || PRIORITY_COLORS.medium}`}
                       >
                         <option value="high">High</option>
                         <option value="medium">Medium</option>
@@ -333,7 +333,7 @@ function WatchlistsContent() {
                       </select>
 
                       {/* Notification toggles */}
-                      <label className="flex items-center gap-1 text-[10px] text-slate-400 cursor-pointer">
+                      <label className="flex items-center gap-1 text-xs text-slate-400 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={item.notifyNews}
@@ -342,7 +342,7 @@ function WatchlistsContent() {
                         />
                         News
                       </label>
-                      <label className="flex items-center gap-1 text-[10px] text-slate-400 cursor-pointer">
+                      <label className="flex items-center gap-1 text-xs text-slate-400 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={item.notifyContracts}
@@ -351,7 +351,7 @@ function WatchlistsContent() {
                         />
                         Contracts
                       </label>
-                      <label className="flex items-center gap-1 text-[10px] text-slate-400 cursor-pointer">
+                      <label className="flex items-center gap-1 text-xs text-slate-400 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={item.notifyListings}
@@ -430,11 +430,11 @@ function WatchlistsContent() {
                         <div className="flex items-center gap-2 mb-1">
                           <span>{typeInfo.icon}</span>
                           <span className="text-sm font-semibold text-white truncate">{search.name}</span>
-                          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-700 ${typeInfo.color}`}>
+                          <span className={`text-xs font-medium px-1.5 py-0.5 rounded bg-slate-700 ${typeInfo.color}`}>
                             {typeInfo.label}
                           </span>
                         </div>
-                        <div className="text-[10px] text-slate-500 truncate">
+                        <div className="text-xs text-slate-500 truncate">
                           {search.query && <span className="mr-2">&quot;{search.query}&quot;</span>}
                           {filterSummary && <span>{filterSummary}</span>}
                           {!search.query && !filterSummary && <span>No filters</span>}
@@ -534,7 +534,7 @@ function WatchlistsContent() {
                           </Link>
                         )}
                       </div>
-                      <span className="text-[10px] text-slate-500">
+                      <span className="text-xs text-slate-500">
                         {new Date(digest.periodStart).toLocaleDateString()} – {new Date(digest.periodEnd).toLocaleDateString()}
                       </span>
                     </div>
@@ -552,7 +552,7 @@ function WatchlistsContent() {
                       </ul>
                     )}
 
-                    <div className="text-[10px] text-slate-500 pt-1 border-t border-slate-700/50">
+                    <div className="text-xs text-slate-500 pt-1 border-t border-slate-700/50">
                       {digest.newsCount} articles analyzed
                     </div>
                   </motion.div>

@@ -603,7 +603,7 @@ export default function DeveloperPortalPage() {
                       placeholder="Key name (e.g., Production, Development)"
                       value={newKeyName}
                       onChange={(e) => setNewKeyName(e.target.value)}
-                      className="flex-1 px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+                      className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                       maxLength={100}
                     />
                     <button

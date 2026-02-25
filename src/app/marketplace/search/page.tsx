@@ -153,7 +153,7 @@ function SearchContent() {
                 id="marketplace-category"
                 value={category}
                 onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-                className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 <option value="">All Categories</option>
                 {MARKETPLACE_CATEGORIES.map((cat) => (
@@ -194,7 +194,7 @@ function SearchContent() {
                     id="marketplace-verification"
                     value={verFilter}
                     onChange={(e) => { setVerFilter(e.target.value); setPage(1); }}
-                    className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
+                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">Any Level</option>
                     {Object.entries(VERIFICATION_LEVELS).filter(([k]) => k !== 'none').map(([key, val]) => (
@@ -241,7 +241,7 @@ function SearchContent() {
                     aria-label="Sort listings"
                     value={sort}
                     onChange={(e) => { setSort(e.target.value); setPage(1); }}
-                    className="bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-white"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="newest">Newest First</option>
                     <option value="price_low">Price: Low to High</option>

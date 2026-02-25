@@ -139,22 +139,22 @@ function CountdownTimer({ targetDate }: { targetDate: Date | string }) {
     <div className="flex items-center gap-3">
       <div className="text-center">
         <div className="text-2xl font-bold font-display text-cyan-400">{timeLeft.days}</div>
-        <div className="text-[10px] text-slate-400 uppercase tracking-widest">Days</div>
+        <div className="text-xs text-slate-400 uppercase tracking-widest">Days</div>
       </div>
       <span className="text-slate-400">:</span>
       <div className="text-center">
         <div className="text-2xl font-bold font-display text-cyan-400">{String(timeLeft.hours).padStart(2, '0')}</div>
-        <div className="text-[10px] text-slate-400 uppercase tracking-widest">Hrs</div>
+        <div className="text-xs text-slate-400 uppercase tracking-widest">Hrs</div>
       </div>
       <span className="text-slate-400">:</span>
       <div className="text-center">
         <div className="text-2xl font-bold font-display text-cyan-400">{String(timeLeft.minutes).padStart(2, '0')}</div>
-        <div className="text-[10px] text-slate-400 uppercase tracking-widest">Min</div>
+        <div className="text-xs text-slate-400 uppercase tracking-widest">Min</div>
       </div>
       <span className="text-slate-400">:</span>
       <div className="text-center">
         <div className="text-2xl font-bold font-display text-cyan-400">{String(timeLeft.seconds).padStart(2, '0')}</div>
-        <div className="text-[10px] text-slate-400 uppercase tracking-widest">Sec</div>
+        <div className="text-xs text-slate-400 uppercase tracking-widest">Sec</div>
       </div>
     </div>
   );
@@ -184,7 +184,7 @@ function DestinationCard({ destination }: { destination: CelestialDestination })
         </div>
         <div className="text-right">
           <div className={`text-xl font-bold ${successColor}`}>{successRate.toFixed(0)}%</div>
-          <div className="text-[10px] text-slate-400 uppercase tracking-widest">Success</div>
+          <div className="text-xs text-slate-400 uppercase tracking-widest">Success</div>
         </div>
       </div>
 
@@ -306,7 +306,7 @@ function WindowCard({ window: launchWindow }: { window: LaunchWindow }) {
           ) : (
             <div>
               <div className="text-cyan-400 font-bold text-lg">T-{daysToOpen}d</div>
-              <div className="text-[10px] text-slate-400 uppercase tracking-widest">Until Open</div>
+              <div className="text-xs text-slate-400 uppercase tracking-widest">Until Open</div>
             </div>
           )}
         </div>

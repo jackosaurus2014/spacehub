@@ -40,7 +40,7 @@ export default function CategoryGrid({ categoryCounts, onSelect, selectedCategor
               <div className="text-xs font-semibold text-white group-hover:text-cyan-400 transition-colors mb-1">
                 {cat.label}
               </div>
-              <div className="text-[10px] text-slate-500">
+              <div className="text-xs text-slate-500">
                 {count} {count === 1 ? 'listing' : 'listings'}
               </div>
             </motion.button>
@@ -61,7 +61,7 @@ export default function CategoryGrid({ categoryCounts, onSelect, selectedCategor
             <div className="text-xs font-semibold text-white group-hover:text-cyan-400 transition-colors mb-1">
               {cat.label}
             </div>
-            <div className="text-[10px] text-slate-500">
+            <div className="text-xs text-slate-500">
               {count} {count === 1 ? 'listing' : 'listings'}
             </div>
           </motion.div>

@@ -104,7 +104,7 @@ export default function MessageThread({ messages, currentUserId, onSend }: Messa
               {showDate && (
                 <div className="flex items-center justify-center my-4">
                   <div className="h-px flex-1 bg-slate-700/50" />
-                  <span className="px-3 text-[10px] text-slate-500 font-medium uppercase tracking-wider">
+                  <span className="px-3 text-xs text-slate-500 font-medium uppercase tracking-wider">
                     {msgDate}
                   </span>
                   <div className="h-px flex-1 bg-slate-700/50" />
@@ -122,7 +122,7 @@ export default function MessageThread({ messages, currentUserId, onSend }: Messa
               >
                 {/* Avatar for others */}
                 {!isOwn && !sameSender && (
-                  <div className="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-400 flex-shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0">
                     {getInitials(msg.senderName)}
                   </div>
                 )}
@@ -131,7 +131,7 @@ export default function MessageThread({ messages, currentUserId, onSend }: Messa
                 <div className={`max-w-[75%] ${isOwn ? 'order-1' : ''}`}>
                   {/* Sender name for group messages */}
                   {!isOwn && !sameSender && (
-                    <p className="text-[10px] text-slate-500 mb-0.5 ml-1">
+                    <p className="text-xs text-slate-500 mb-0.5 ml-1">
                       {msg.senderName || 'Unknown'}
                     </p>
                   )}
@@ -165,7 +165,7 @@ export default function MessageThread({ messages, currentUserId, onSend }: Messa
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30"
+            className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             disabled={sending}
           />
           <button

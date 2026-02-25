@@ -283,7 +283,7 @@ function SupplyChainContent() {
               <select
                 value={tierFilter}
                 onChange={(e) => setTierFilter(e.target.value)}
-                className="bg-space-700 border border-space-600 text-slate-300 rounded-lg px-3 py-2 text-sm focus:border-nebula-500 focus:outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 <option value="">All Tiers</option>
                 {SUPPLY_CHAIN_TIERS.map((t) => (
@@ -293,7 +293,7 @@ function SupplyChainContent() {
               <select
                 value={countryFilter}
                 onChange={(e) => setCountryFilter(e.target.value)}
-                className="bg-space-700 border border-space-600 text-slate-300 rounded-lg px-3 py-2 text-sm focus:border-nebula-500 focus:outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 <option value="">All Countries</option>
                 {Object.entries(SUPPLY_CHAIN_COUNTRIES).map(([code, info]) => (
@@ -306,7 +306,7 @@ function SupplyChainContent() {
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="bg-space-700 border border-space-600 text-slate-300 rounded-lg px-3 py-2 text-sm focus:border-nebula-500 focus:outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="">All Severities</option>
               {Object.entries(SHORTAGE_SEVERITY_INFO).map(([key, info]) => (

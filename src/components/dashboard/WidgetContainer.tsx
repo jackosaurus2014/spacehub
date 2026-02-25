@@ -90,7 +90,7 @@ export default function WidgetContainer({
           <h3 className="text-sm font-semibold text-slate-900 truncate">{displayTitle}</h3>
 
           {/* Widget type badge */}
-          <span className="text-[10px] text-slate-400 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0">
+          <span className="text-xs text-slate-400 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0">
             {widgetType}
           </span>
         </div>

@@ -280,33 +280,36 @@ function SatelliteTrackerContent() {
             </ScrollReveal>
 
             {/* Tab Navigation */}
-            <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-              {([
-                { id: 'overview' as const, label: 'Overview' },
-                { id: 'satellites' as const, label: 'All Satellites', count: data?.total },
-                { id: 'operators' as const, label: 'By Operator', count: stats?.topOperators?.length },
-              ]).map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => handleTabChange(tab.id)}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
-                      : 'bg-slate-800/50 text-slate-500 hover:bg-slate-700'
-                  }`}
-                >
-                  {tab.label}
-                  {tab.count !== undefined && tab.count > 0 && (
-                    <span
-                      className={`text-xs px-1.5 py-0.5 rounded-full ${
-                        activeTab === tab.id ? 'bg-slate-600 text-white' : 'bg-slate-700 text-slate-400'
-                      }`}
-                    >
-                      {tab.count}
-                    </span>
-                  )}
-                </button>
-              ))}
+            <div className="relative">
+              <div className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide">
+                {([
+                  { id: 'overview' as const, label: 'Overview' },
+                  { id: 'satellites' as const, label: 'All Satellites', count: data?.total },
+                  { id: 'operators' as const, label: 'By Operator', count: stats?.topOperators?.length },
+                ]).map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleTabChange(tab.id)}
+                    className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                      activeTab === tab.id
+                        ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
+                        : 'bg-slate-800/50 text-slate-500 hover:bg-slate-700'
+                    }`}
+                  >
+                    {tab.label}
+                    {tab.count !== undefined && tab.count > 0 && (
+                      <span
+                        className={`text-xs px-1.5 py-0.5 rounded-full ${
+                          activeTab === tab.id ? 'bg-slate-600 text-white' : 'bg-slate-700 text-slate-400'
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
             </div>
 
             {/* ──────────────── OVERVIEW TAB ──────────────── */}
@@ -485,7 +488,7 @@ function SatelliteTrackerContent() {
                         placeholder="Search by name, NORAD ID, or operator..."
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-nebula-500 focus:ring-1 focus:ring-nebula-500 text-sm"
+                        className="w-full px-4 py-2 h-11 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-nebula-500 focus:ring-1 focus:ring-nebula-500 text-sm"
                       />
                     </div>
 
@@ -496,7 +499,7 @@ function SatelliteTrackerContent() {
                         id="satellite-orbit-filter"
                         value={orbitFilter}
                         onChange={(e) => handleOrbitFilterChange(e.target.value as OrbitType | '')}
-                        className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-nebula-500"
+                        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                       >
                         <option value="">All Orbits</option>
                         {ORBIT_TYPES.map((orbit) => (
@@ -514,7 +517,7 @@ function SatelliteTrackerContent() {
                         id="satellite-status-filter"
                         value={statusFilter}
                         onChange={(e) => handleStatusFilterChange(e.target.value as SatelliteStatus | '')}
-                        className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-nebula-500"
+                        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                       >
                         <option value="">All Status</option>
                         {STATUS_OPTIONS.map((status) => (

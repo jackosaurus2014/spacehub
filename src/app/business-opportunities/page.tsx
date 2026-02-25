@@ -102,7 +102,7 @@ function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
         </button>
       )}
       {count > 0 && (
-        <span className="text-[10px] text-slate-500">{count} interested</span>
+        <span className="text-xs text-slate-500">{count} interested</span>
       )}
     </div>
   );
@@ -484,7 +484,7 @@ function BusinessOpportunitiesContent() {
                     id="opp-type-filter"
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value as OpportunityType | '')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Types</option>
                     {OPPORTUNITY_TYPES.map((type) => (
@@ -503,7 +503,7 @@ function BusinessOpportunitiesContent() {
                     onChange={(e) =>
                       setSelectedCategory(e.target.value as OpportunityCategory | '')
                     }
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Categories</option>
                     {OPPORTUNITY_CATEGORIES.map((cat) => (
@@ -522,7 +522,7 @@ function BusinessOpportunitiesContent() {
                     onChange={(e) =>
                       setSelectedAudience(e.target.value as TargetAudience | '')
                     }
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Audiences</option>
                     <option value="entrepreneurs">💡 Entrepreneurs</option>
@@ -540,7 +540,7 @@ function BusinessOpportunitiesContent() {
                     onChange={(e) =>
                       setSelectedDifficulty(e.target.value as OpportunityDifficulty | '')
                     }
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   >
                     <option value="">All Difficulties</option>
                     {(Object.entries(DIFFICULTY_INFO) as [OpportunityDifficulty, { label: string; color: string }][]).map(([value, info]) => (

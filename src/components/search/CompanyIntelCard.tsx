@@ -73,11 +73,11 @@ export default function CompanyIntelCard({ item }: { item: CompanyIntelResult })
               {item.name}
             </h3>
             {item.isPublic && item.ticker && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">
+              <span className="text-xs px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">
                 {item.ticker}
               </span>
             )}
-            <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${tierInfo.color}`}>
+            <span className={`text-xs px-1.5 py-0.5 rounded border font-medium ${tierInfo.color}`}>
               {tierInfo.label}
             </span>
           </div>
@@ -110,32 +110,32 @@ export default function CompanyIntelCard({ item }: { item: CompanyIntelResult })
           {hasModuleData && (
             <div className="flex items-center gap-2 mt-2.5 flex-wrap">
               {counts.newsArticles > 0 && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
                   {counts.newsArticles} News
                 </span>
               )}
               {counts.contracts > 0 && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20">
                   {counts.contracts} Contracts
                 </span>
               )}
               {counts.serviceListings > 0 && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
                   {counts.serviceListings} Listings
                 </span>
               )}
               {counts.satelliteAssets > 0 && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
                   {counts.satelliteAssets} Satellites
                 </span>
               )}
               {counts.fundingRounds > 0 && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   {counts.fundingRounds} Rounds
                 </span>
               )}
               {counts.products > 0 && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20">
                   {counts.products} Products
                 </span>
               )}
@@ -151,7 +151,7 @@ export default function CompanyIntelCard({ item }: { item: CompanyIntelResult })
                   style={{ width: `${Math.min(item.dataCompleteness, 100)}%` }}
                 />
               </div>
-              <span className="text-[10px] text-star-400">{item.dataCompleteness}% complete</span>
+              <span className="text-xs text-star-400">{item.dataCompleteness}% complete</span>
             </div>
           )}
         </div>

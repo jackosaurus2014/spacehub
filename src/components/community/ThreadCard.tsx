@@ -82,7 +82,7 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 {/* Indicators */}
                 {thread.isPinned && (
-                  <span className="text-[10px] px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded font-medium flex-shrink-0 flex items-center gap-0.5">
+                  <span className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded font-medium flex-shrink-0 flex items-center gap-0.5">
                     <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                     </svg>
@@ -90,18 +90,18 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
                   </span>
                 )}
                 {thread.isLocked && (
-                  <span className="text-[10px] px-1.5 py-0.5 bg-slate-600/30 text-slate-400 rounded font-medium flex-shrink-0 flex items-center gap-0.5">
+                  <span className="text-xs px-1.5 py-0.5 bg-slate-600/30 text-slate-400 rounded font-medium flex-shrink-0 flex items-center gap-0.5">
                     <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                     Locked
                   </span>
                 )}
-                <span className="text-[10px] px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded flex-shrink-0">
+                <span className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded flex-shrink-0">
                   {thread.category}
                 </span>
                 {thread.acceptedPostId && (
-                  <span className="text-[10px] px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded font-medium flex-shrink-0 flex items-center gap-0.5">
+                  <span className="text-xs px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded font-medium flex-shrink-0 flex items-center gap-0.5">
                     <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
@@ -109,7 +109,7 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
                   </span>
                 )}
                 {thread.tags && thread.tags.length > 0 && thread.tags.slice(0, 3).map((tag: string) => (
-                  <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-purple-500/10 text-purple-400 rounded flex-shrink-0">
+                  <span key={tag} className="text-xs px-1.5 py-0.5 bg-purple-500/10 text-purple-400 rounded flex-shrink-0">
                     {tag}
                   </span>
                 ))}

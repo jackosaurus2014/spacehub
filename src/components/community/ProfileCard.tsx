@@ -113,13 +113,13 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
               {profile.expertise.slice(0, 4).map((tag) => (
                 <span
                   key={tag}
-                  className="text-[10px] px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded"
+                  className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded"
                 >
                   {tag}
                 </span>
               ))}
               {profile.expertise.length > 4 && (
-                <span className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-500 rounded">
+                <span className="text-xs px-1.5 py-0.5 bg-slate-700/50 text-slate-500 rounded">
                   +{profile.expertise.length - 4}
                 </span>
               )}

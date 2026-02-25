@@ -140,7 +140,7 @@ export default function ReactionBar({ eventId, currentPhase }: ReactionBarProps)
                 >
                   <span className="text-lg">{EMOJI_MAP[key]}</span>
                   {totalCount > 0 && (
-                    <span className={`text-[10px] font-mono font-bold ${
+                    <span className={`text-xs font-mono font-bold ${
                       hasActivity ? 'text-cyan-400' : 'text-slate-500'
                     }`}>
                       {totalCount > 999 ? `${(totalCount / 1000).toFixed(1)}k` : totalCount}
@@ -157,7 +157,7 @@ export default function ReactionBar({ eventId, currentPhase }: ReactionBarProps)
           </div>
 
           {totalRecent > 0 && (
-            <span className="text-[10px] text-slate-500">
+            <span className="text-xs text-slate-500">
               {totalRecent} reactions (30s)
             </span>
           )}

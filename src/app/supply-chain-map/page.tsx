@@ -523,7 +523,7 @@ function DetailPanel({ node, edges, allNodes, onClose }: DetailPanelProps) {
             </h3>
             <div className="flex items-center gap-2 mt-1">
               <span
-                className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full"
+                className="text-xs uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full"
                 style={{
                   backgroundColor: `${color}22`,
                   color: color,
@@ -532,7 +532,7 @@ function DetailPanel({ node, edges, allNodes, onClose }: DetailPanelProps) {
               >
                 {SECTOR_LABELS[node.sector]}
               </span>
-              <span className="text-[10px] uppercase tracking-wider font-medium text-slate-400 bg-space-700 px-2 py-0.5 rounded-full">
+              <span className="text-xs uppercase tracking-wider font-medium text-slate-400 bg-space-700 px-2 py-0.5 rounded-full">
                 {node.tier}
               </span>
             </div>
@@ -703,7 +703,7 @@ function PathFinder({ nodes, onPathFound, onClear }: PathFinderProps) {
             setResult(null);
             onClear();
           }}
-          className="w-full bg-space-700 border border-space-600 text-slate-300 rounded-lg px-3 py-2 text-sm focus:border-nebula-500 focus:outline-none"
+          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
         >
           <option value="">From company...</option>
           {sorted.map((n) => (
@@ -719,7 +719,7 @@ function PathFinder({ nodes, onPathFound, onClear }: PathFinderProps) {
             setResult(null);
             onClear();
           }}
-          className="w-full bg-space-700 border border-space-600 text-slate-300 rounded-lg px-3 py-2 text-sm focus:border-nebula-500 focus:outline-none"
+          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
         >
           <option value="">To company...</option>
           {sorted.map((n) => (
@@ -1008,7 +1008,7 @@ function SupplyChainMapContent() {
             </svg>
             Filters
             {(sectorFilters.size > 0 || typeFilters.size > 0) && (
-              <span className="bg-nebula-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="bg-nebula-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
                 {sectorFilters.size + typeFilters.size}
               </span>
             )}
@@ -1206,25 +1206,25 @@ function SupplyChainMapContent() {
 
           {/* Legend overlay */}
           <div className="absolute bottom-3 left-3 bg-space-900/90 backdrop-blur-sm border border-space-700 rounded-lg p-3 max-w-[280px]">
-            <h5 className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-2">
+            <h5 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-2">
               Legend
             </h5>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+              <div className="flex items-center gap-1.5 text-xs text-slate-400">
                 <div className="w-5 h-5 rounded-full border-2 border-slate-400 flex items-center justify-center text-[7px] font-bold text-slate-400">
                   P
                 </div>
                 Prime
               </div>
-              <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+              <div className="flex items-center gap-1.5 text-xs text-slate-400">
                 <div className="w-4 h-4 rounded-full border border-slate-500" />
                 Tier 1
               </div>
-              <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+              <div className="flex items-center gap-1.5 text-xs text-slate-400">
                 <div className="w-3 h-3 rounded-full border border-slate-600" />
                 Tier 2
               </div>
-              <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+              <div className="flex items-center gap-1.5 text-xs text-slate-400">
                 <div className="w-2.5 h-2.5 rounded-full border border-slate-600" />
                 Startup
               </div>
@@ -1233,7 +1233,7 @@ function SupplyChainMapContent() {
               {Object.entries(EDGE_TYPE_LABELS).map(([type, label]) => (
                 <div
                   key={type}
-                  className="flex items-center gap-1.5 text-[10px] text-slate-400"
+                  className="flex items-center gap-1.5 text-xs text-slate-400"
                 >
                   <div
                     className="w-4 h-0.5 rounded"
@@ -1266,7 +1266,7 @@ function SupplyChainMapContent() {
                   >
                     {SECTOR_LABELS[node.sector]}
                   </span>
-                  <span className="text-[10px] text-slate-500">{node.tier}</span>
+                  <span className="text-xs text-slate-500">{node.tier}</span>
                 </div>
                 {node.revenue && (
                   <div className="text-xs text-slate-400 mt-1">

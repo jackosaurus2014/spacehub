@@ -77,7 +77,7 @@ export default function RatingDistribution({ reviews, avgRating }: RatingDistrib
         <div className="mt-4 pt-4 border-t border-slate-700/50 grid grid-cols-2 sm:grid-cols-4 gap-3">
           {subRatings.map((sub) => sub.avg !== null && (
             <div key={sub.key} className="text-center">
-              <div className="text-[10px] text-slate-500 uppercase">{sub.label}</div>
+              <div className="text-xs text-slate-500 uppercase">{sub.label}</div>
               <div className="flex items-center justify-center gap-1 mt-1">
                 <span className="text-sm text-yellow-400">★</span>
                 <span className="text-sm font-semibold text-white">{sub.avg.toFixed(1)}</span>

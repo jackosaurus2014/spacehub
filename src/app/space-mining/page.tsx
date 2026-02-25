@@ -439,7 +439,7 @@ function FilterBar({
       <select
         value={bodyType}
         onChange={(e) => setBodyType(e.target.value as MiningBodyType | '')}
-        className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm min-w-[140px] focus:outline-none focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50"
+        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
       >
         <option value="">All Body Types</option>
         {MINING_BODY_TYPES.map((t) => (
@@ -450,7 +450,7 @@ function FilterBar({
       <select
         value={spectralType}
         onChange={(e) => setSpectralType(e.target.value as SpectralType | '')}
-        className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm min-w-[140px] focus:outline-none focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50"
+        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
       >
         <option value="">All Spectral Types</option>
         {SPECTRAL_TYPES.map((t) => (
@@ -461,7 +461,7 @@ function FilterBar({
       <select
         value={trajectoryStatus}
         onChange={(e) => setTrajectoryStatus(e.target.value as TrajectoryStatus | '')}
-        className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm min-w-[140px] focus:outline-none focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50"
+        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
       >
         <option value="">All Accessibility</option>
         {Object.entries(TRAJECTORY_STYLES).map(([key, { label }]) => (
@@ -472,7 +472,7 @@ function FilterBar({
       <select
         value={sortBy}
         onChange={(e) => setSortBy(e.target.value as 'value' | 'deltaV' | 'diameter' | 'name')}
-        className="bg-slate-800 border border-slate-700/50 text-slate-200 rounded-lg px-3 py-2 text-sm min-w-[140px] focus:outline-none focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50"
+        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
       >
         <option value="value">Sort by Value</option>
         <option value="deltaV">Sort by Delta-V</option>

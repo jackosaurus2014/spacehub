@@ -208,7 +208,7 @@ export default function Footer() {
                 aria-label="Open keyboard shortcuts help"
               >
                 Keyboard shortcuts
-                <kbd className="inline-flex items-center justify-center min-w-[20px] h-5 bg-slate-700 border border-slate-600 rounded px-1 py-0 font-mono text-[10px] text-slate-300 ml-0.5">
+                <kbd className="inline-flex items-center justify-center min-w-[20px] h-5 bg-slate-700 border border-slate-600 rounded px-1 py-0 font-mono text-xs text-slate-300 ml-0.5">
                   ?
                 </kbd>
               </button>

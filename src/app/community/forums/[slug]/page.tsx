@@ -192,7 +192,7 @@ export default function ForumCategoryPage() {
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="What would you like to discuss?"
                   maxLength={200}
-                  className="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   required
                 />
               </div>
@@ -203,7 +203,7 @@ export default function ForumCategoryPage() {
                   onChange={(e) => setNewContent(e.target.value)}
                   placeholder="Share your thoughts, questions, or insights..."
                   rows={5}
-                  className="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 resize-none"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
                   required
                 />
               </div>
@@ -271,7 +271,7 @@ export default function ForumCategoryPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="text-xs bg-slate-800 border border-slate-700 rounded px-2 py-1 text-slate-300 focus:outline-none focus:border-cyan-500/50"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="newest">Newest</option>
               <option value="popular">Most Viewed</option>

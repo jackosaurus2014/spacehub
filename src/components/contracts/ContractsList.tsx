@@ -193,7 +193,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
             <select
               value={agencyFilter}
               onChange={(e) => setAgencyFilter(e.target.value as ContractAgency | '')}
-              className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="">All Agencies</option>
               {CONTRACT_AGENCIES.map((agency) => (
@@ -209,7 +209,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as ContractType | '')}
-              className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="">All Types</option>
               {CONTRACT_TYPES.map((type) => (
@@ -225,7 +225,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as ContractStatus | '')}
-              className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="">All Statuses</option>
               {Object.entries(CONTRACT_STATUS_INFO).map(([value, info]) => (
@@ -241,7 +241,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value as ContractCategory | '')}
-              className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="">All Categories</option>
               {CONTRACT_CATEGORIES.map((cat) => (

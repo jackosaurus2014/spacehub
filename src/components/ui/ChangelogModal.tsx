@@ -88,7 +88,7 @@ export default function ChangelogModal() {
                 {entry.changes.map((change, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <span
-                      className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border shrink-0 mt-0.5 ${typeStyles[change.type]}`}
+                      className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded border shrink-0 mt-0.5 ${typeStyles[change.type]}`}
                     >
                       {typeLabels[change.type]}
                     </span>

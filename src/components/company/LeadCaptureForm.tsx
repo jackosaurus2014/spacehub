@@ -74,7 +74,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
               maxLength={100}
               value={formData.name}
               onChange={(e) => setFormData((f) => ({ ...f, name: e.target.value }))}
-              className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 text-sm"
+              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               placeholder="Jane Smith"
             />
           </div>
@@ -85,7 +85,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
               required
               value={formData.email}
               onChange={(e) => setFormData((f) => ({ ...f, email: e.target.value }))}
-              className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 text-sm"
+              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               placeholder="jane@company.com"
             />
           </div>
@@ -98,7 +98,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
               maxLength={100}
               value={formData.company}
               onChange={(e) => setFormData((f) => ({ ...f, company: e.target.value }))}
-              className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 text-sm"
+              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               placeholder="Acme Corp"
             />
           </div>
@@ -108,7 +108,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData((f) => ({ ...f, phone: e.target.value }))}
-              className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 text-sm"
+              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               placeholder="+1 (555) 123-4567"
             />
           </div>
@@ -122,7 +122,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
             maxLength={5000}
             value={formData.message}
             onChange={(e) => setFormData((f) => ({ ...f, message: e.target.value }))}
-            className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 text-sm resize-none"
+            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
             placeholder="Tell them about your interest or requirements..."
           />
         </div>

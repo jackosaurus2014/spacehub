@@ -23,7 +23,7 @@ export default function VerificationBadge({ level, size = 'sm', showTooltip = tr
   if (key === 'none') return null;
 
   const sizeClasses = size === 'sm'
-    ? 'text-[10px] px-1.5 py-0.5'
+    ? 'text-xs px-1.5 py-0.5'
     : 'text-xs px-2 py-1';
 
   return (
@@ -38,8 +38,8 @@ export default function VerificationBadge({ level, size = 'sm', showTooltip = tr
 
       {showTooltip && tooltipVisible && (
         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-2.5 bg-slate-800 border border-slate-600 rounded-lg shadow-xl z-50 pointer-events-none">
-          <div className="text-[10px] font-bold text-white mb-1">{info.label}</div>
-          <div className="text-[10px] text-slate-400 leading-relaxed">
+          <div className="text-xs font-bold text-white mb-1">{info.label}</div>
+          <div className="text-xs text-slate-400 leading-relaxed">
             {CRITERIA_DESCRIPTIONS[key] || info.description}
           </div>
           <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 border-r border-b border-slate-600 rotate-45 -mt-1" />

@@ -359,7 +359,7 @@ export default function CompanyFundingComparison({ allRounds }: CompanyFundingCo
                             style={{ width: `${Math.max(widthPct, 3)}%` }}
                           >
                             {widthPct > 15 && (
-                              <span className="text-[10px] text-white font-semibold">
+                              <span className="text-xs text-white font-semibold">
                                 {formatAmount(company.totalRaised)}
                               </span>
                             )}

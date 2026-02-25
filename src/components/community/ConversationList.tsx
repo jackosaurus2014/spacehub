@@ -98,7 +98,7 @@ export default function ConversationList({ conversations, activeId, currentUserI
                   {otherParticipant?.name || 'Unknown'}
                 </span>
                 {conv.lastMessage && (
-                  <span className="text-[10px] text-slate-500 flex-shrink-0 ml-2">
+                  <span className="text-xs text-slate-500 flex-shrink-0 ml-2">
                     {timeAgo(conv.lastMessage.createdAt)}
                   </span>
                 )}

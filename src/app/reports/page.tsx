@@ -816,7 +816,7 @@ function ReportsPageInner() {
                       id="sector"
                       value={sector}
                       onChange={(e) => setSector(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                     >
                       <option value="">Choose a sector to analyze...</option>
                       {SPACE_SECTORS.map((s) => (
@@ -859,7 +859,7 @@ function ReportsPageInner() {
                           value={companySearch.query}
                           onChange={(e) => companySearch.search(e.target.value)}
                           placeholder="Search for a company..."
-                          className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                         />
                         {companySearch.loading && (
                           <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -934,7 +934,7 @@ function ReportsPageInner() {
                               ? 'Search and select 2-5 companies...'
                               : `Add another company (${selectedCompanies.length}/5)...`
                           }
-                          className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                         />
                         {multiSearch.loading && (
                           <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -980,7 +980,7 @@ function ReportsPageInner() {
                       placeholder='Describe the market or opportunity you want to enter (e.g., "LEO broadband constellation for maritime customers" or "On-orbit servicing for GEO satellites")'
                       rows={4}
                       maxLength={2000}
-                      className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 resize-y"
+                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-y"
                     />
                     <p className="text-xs text-slate-500 text-right">
                       {topic.length}/2000 characters

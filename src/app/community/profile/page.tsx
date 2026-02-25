@@ -122,7 +122,7 @@ export default function EditProfilePage() {
                   onChange={(e) => setForm((f) => ({ ...f, headline: e.target.value }))}
                   placeholder="e.g., Propulsion Engineer at SpaceX"
                   maxLength={150}
-                  className="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 />
                 <p className="text-xs text-slate-500 mt-1">A short tagline for your profile card</p>
               </div>
@@ -135,7 +135,7 @@ export default function EditProfilePage() {
                   placeholder="Tell the community about your experience and interests in the space industry..."
                   rows={5}
                   maxLength={1000}
-                  className="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 resize-none"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
                 />
                 <p className="text-xs text-slate-500 mt-1">{form.bio.length}/1000 characters</p>
               </div>
@@ -147,7 +147,7 @@ export default function EditProfilePage() {
                   value={form.expertise}
                   onChange={(e) => setForm((f) => ({ ...f, expertise: e.target.value }))}
                   placeholder="e.g., Propulsion Engineering, Mission Operations, RF Systems"
-                  className="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 />
                 <p className="text-xs text-slate-500 mt-1">Comma-separated list of your areas of expertise</p>
               </div>
@@ -165,7 +165,7 @@ export default function EditProfilePage() {
                   value={form.location}
                   onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
                   placeholder="e.g., Los Angeles, CA"
-                  className="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 />
               </div>
 
@@ -176,7 +176,7 @@ export default function EditProfilePage() {
                   value={form.linkedinUrl}
                   onChange={(e) => setForm((f) => ({ ...f, linkedinUrl: e.target.value }))}
                   placeholder="https://linkedin.com/in/yourname"
-                  className="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 />
               </div>
             </div>

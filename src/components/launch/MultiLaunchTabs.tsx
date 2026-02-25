@@ -34,7 +34,7 @@ function MiniCountdown({ launchDate }: { launchDate: string }) {
     return () => clearInterval(interval);
   }, [launchDate]);
 
-  return <span className="font-mono text-[10px]">{display}</span>;
+  return <span className="font-mono text-xs">{display}</span>;
 }
 
 export default function MultiLaunchTabs({ launches, activeEventId }: MultiLaunchTabsProps) {

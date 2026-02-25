@@ -1419,15 +1419,15 @@ function SpaceportCard({ spaceport }: { spaceport: Spaceport }) {
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="bg-space-800/50 rounded-lg p-2.5 text-center">
           <div className="text-cyan-400 text-xl font-bold font-display">{spaceport.recentLaunches2025}</div>
-          <div className="text-star-300/60 text-[10px] uppercase tracking-widest">2025 Launches</div>
+          <div className="text-star-300/60 text-xs uppercase tracking-widest">2025 Launches</div>
         </div>
         <div className="bg-space-800/50 rounded-lg p-2.5 text-center">
           <div className="text-white text-xl font-bold font-display">{spaceport.launchPads}</div>
-          <div className="text-star-300/60 text-[10px] uppercase tracking-widest">Launch Pads</div>
+          <div className="text-star-300/60 text-xs uppercase tracking-widest">Launch Pads</div>
         </div>
         <div className="bg-space-800/50 rounded-lg p-2.5 text-center">
           <div className="text-amber-400 text-xl font-bold font-display">{spaceport.yearEstablished}</div>
-          <div className="text-star-300/60 text-[10px] uppercase tracking-widest">Established</div>
+          <div className="text-star-300/60 text-xs uppercase tracking-widest">Established</div>
         </div>
       </div>
 
@@ -1548,7 +1548,7 @@ function EmergingSpaceportCard({ spaceport }: { spaceport: EmergingSpaceport }) 
         </div>
         <div className="text-right flex-shrink-0 ml-3">
           <div className="text-amber-400 text-sm font-bold">{spaceport.targetDate}</div>
-          <div className="text-star-300/60 text-[10px] uppercase tracking-widest">Target</div>
+          <div className="text-star-300/60 text-xs uppercase tracking-widest">Target</div>
         </div>
       </div>
 
@@ -1656,7 +1656,7 @@ function SiteComparisonTable({ activeSpaceports }: { activeSpaceports: Spaceport
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1">
                       {s.fuelingTypes.map((f) => (
-                        <span key={f} className="px-1.5 py-0.5 bg-space-700 text-emerald-300 rounded text-[10px]">
+                        <span key={f} className="px-1.5 py-0.5 bg-space-700 text-emerald-300 rounded text-xs">
                           {f}
                         </span>
                       ))}

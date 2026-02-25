@@ -173,7 +173,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                 id="rfq-subcategory"
                 value={form.subcategory}
                 onChange={(e) => updateField('subcategory', e.target.value)}
-                className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 <option value="">All subcategories</option>
                 {selectedCategory.subcategories.map((sub) => (
@@ -190,7 +190,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               value={form.title}
               onChange={(e) => updateField('title', e.target.value)}
               placeholder="e.g., Dedicated launch to SSO for 500kg payload"
-              className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500"
+              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             />
           </div>
           <button
@@ -215,7 +215,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               onChange={(e) => updateField('description', e.target.value)}
               rows={4}
               placeholder="Describe what you need, including technical requirements, volume, timeline expectations..."
-              className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500"
+              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             />
           </div>
           <div>
@@ -226,7 +226,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               onChange={(e) => updateField('requirements', e.target.value)}
               rows={3}
               placeholder="Additional technical specs, constraints, or requirements..."
-              className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500"
+              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             />
           </div>
           <div className="flex gap-2">
@@ -250,7 +250,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
           <h3 className="text-lg font-semibold text-white">Budget, Timeline & Compliance</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="rfq-budget-min" className="block text-sm text-slate-400 mb-2">Min Budget ($) <span className="text-yellow-500/70 text-[10px]">recommended</span></label>
+              <label htmlFor="rfq-budget-min" className="block text-sm text-slate-400 mb-2">Min Budget ($) <span className="text-yellow-500/70 text-xs">recommended</span></label>
               <input
                 id="rfq-budget-min"
                 type="number"
@@ -258,11 +258,11 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                 value={form.budgetMin}
                 onChange={(e) => updateField('budgetMin', e.target.value)}
                 placeholder="0"
-                className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               />
             </div>
             <div>
-              <label htmlFor="rfq-budget-max" className="block text-sm text-slate-400 mb-2">Max Budget ($) <span className="text-yellow-500/70 text-[10px]">recommended</span></label>
+              <label htmlFor="rfq-budget-max" className="block text-sm text-slate-400 mb-2">Max Budget ($) <span className="text-yellow-500/70 text-xs">recommended</span></label>
               <input
                 id="rfq-budget-max"
                 type="number"
@@ -270,7 +270,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                 value={form.budgetMax}
                 onChange={(e) => updateField('budgetMax', e.target.value)}
                 placeholder="100,000"
-                className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               />
             </div>
           </div>
@@ -286,7 +286,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                 min={today}
                 value={form.deadline}
                 onChange={(e) => updateField('deadline', e.target.value)}
-                className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               />
               {validationErrors.deadline && (
                 <p className="text-xs text-red-400 mt-1">{validationErrors.deadline}</p>
@@ -300,7 +300,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                 min={today}
                 value={form.deliveryDate}
                 onChange={(e) => updateField('deliveryDate', e.target.value)}
-                className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               />
               {validationErrors.deliveryDate && (
                 <p className="text-xs text-red-400 mt-1">{validationErrors.deliveryDate}</p>
@@ -357,17 +357,17 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
           <h3 className="text-lg font-semibold text-white">Review & Submit</h3>
           <div className="card p-4 space-y-3">
             <div>
-              <div className="text-[10px] text-slate-500 uppercase">Title</div>
+              <div className="text-xs text-slate-500 uppercase">Title</div>
               <div className="text-sm text-white font-medium">{form.title}</div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <div className="text-[10px] text-slate-500 uppercase">Category</div>
+                <div className="text-xs text-slate-500 uppercase">Category</div>
                 <div className="text-sm text-white">{selectedCategory?.icon} {selectedCategory?.label}</div>
               </div>
               {form.budgetMax && (
                 <div>
-                  <div className="text-[10px] text-slate-500 uppercase">Budget</div>
+                  <div className="text-xs text-slate-500 uppercase">Budget</div>
                   <div className="text-sm text-emerald-400">
                     {form.budgetMin ? `$${parseInt(form.budgetMin).toLocaleString()} - ` : ''}${parseInt(form.budgetMax).toLocaleString()}
                   </div>
@@ -375,15 +375,15 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               )}
             </div>
             <div>
-              <div className="text-[10px] text-slate-500 uppercase">Description</div>
+              <div className="text-xs text-slate-500 uppercase">Description</div>
               <div className="text-xs text-slate-300 line-clamp-4">{form.description}</div>
             </div>
             {form.complianceReqs.length > 0 && (
               <div>
-                <div className="text-[10px] text-slate-500 uppercase">Required Certifications</div>
+                <div className="text-xs text-slate-500 uppercase">Required Certifications</div>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {form.complianceReqs.map((c) => (
-                    <span key={c} className="text-[10px] px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded">{c}</span>
+                    <span key={c} className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded">{c}</span>
                   ))}
                 </div>
               </div>

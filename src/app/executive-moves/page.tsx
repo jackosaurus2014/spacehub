@@ -39,7 +39,7 @@ function getMoveTypeBadge(type: string) {
   };
   const style = styles[type] || styles.hired;
   return (
-    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${style.bg} ${style.text} whitespace-nowrap`}>
+    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${style.bg} ${style.text} whitespace-nowrap`}>
       {style.label}
     </span>
   );
@@ -331,7 +331,7 @@ function ExecutiveMovesContent() {
               placeholder="Search by person name, company, or title..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+              className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             />
             <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -343,7 +343,7 @@ function ExecutiveMovesContent() {
             aria-label="Filter by move type"
             value={moveType}
             onChange={(e) => updateParams({ moveType: e.target.value })}
-            className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
           >
             {MOVE_TYPE_OPTIONS.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -358,7 +358,7 @@ function ExecutiveMovesContent() {
               placeholder="Filter by company..."
               value={company}
               onChange={(e) => updateParams({ company: e.target.value })}
-              className="w-full lg:w-48 px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              className="w-full lg:w-48 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             />
           </div>
 
@@ -436,7 +436,7 @@ function ExecutiveMovesContent() {
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-300 border border-slate-600/50 flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-xs font-bold text-slate-300 border border-slate-600/50 flex-shrink-0">
                               {move.personName.split(' ').map(n => n[0]).join('').slice(0, 2)}
                             </div>
                             <div>
@@ -444,7 +444,7 @@ function ExecutiveMovesContent() {
                                 {move.personName}
                               </div>
                               {move.summary && (
-                                <div className="text-[10px] text-slate-500 max-w-xs truncate mt-0.5">
+                                <div className="text-xs text-slate-500 max-w-xs truncate mt-0.5">
                                   {move.summary}
                                 </div>
                               )}
@@ -500,7 +500,7 @@ function ExecutiveMovesContent() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="text-sm text-slate-300">{formatDate(move.date)}</div>
-                          <div className="text-[10px] text-slate-500 mt-0.5">
+                          <div className="text-xs text-slate-500 mt-0.5">
                             {daysAgo(move.date) === 0 ? 'Today' : `${daysAgo(move.date)}d ago`}
                           </div>
                         </td>
@@ -529,7 +529,7 @@ function ExecutiveMovesContent() {
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-300 border border-slate-600/50 flex-shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-xs font-bold text-slate-300 border border-slate-600/50 flex-shrink-0">
                         {move.personName.split(' ').map(n => n[0]).join('').slice(0, 2)}
                       </div>
                       <div>

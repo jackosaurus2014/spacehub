@@ -179,7 +179,7 @@ function getStatusBadge(status: string) {
   };
   const style = styles[status] || styles.closed;
   return (
-    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${style.bg} ${style.text}`}>
+    <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${style.bg} ${style.text}`}>
       {style.label}
     </span>
   );
@@ -296,13 +296,13 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
       {/* Key Info Row */}
       <div className="grid grid-cols-2 gap-2 mb-3">
         <div className="bg-slate-800/50 rounded-lg p-2">
-          <div className="text-[10px] text-slate-500 uppercase tracking-wider">Award Range</div>
+          <div className="text-xs text-slate-500 uppercase tracking-wider">Award Range</div>
           <div className="text-sm font-semibold text-emerald-400">
             {formatAmountRange(opp.amountMin, opp.amountMax)}
           </div>
         </div>
         <div className="bg-slate-800/50 rounded-lg p-2">
-          <div className="text-[10px] text-slate-500 uppercase tracking-wider">Deadline</div>
+          <div className="text-xs text-slate-500 uppercase tracking-wider">Deadline</div>
           <div className={`text-sm font-semibold ${
             deadlineInfo.urgency === 'critical' ? 'text-red-400' :
             deadlineInfo.urgency === 'warning' ? 'text-yellow-400' :
@@ -318,16 +318,16 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
         {opp.categories.slice(0, 4).map(cat => {
           const colors = CATEGORY_COLORS[cat] || CATEGORY_COLORS.general;
           return (
-            <span key={cat} className={`text-[10px] px-2 py-0.5 rounded-full ${colors.bg} ${colors.text} border border-slate-600/30`}>
+            <span key={cat} className={`text-xs px-2 py-0.5 rounded-full ${colors.bg} ${colors.text} border border-slate-600/30`}>
               {getCategoryLabel(cat)}
             </span>
           );
         })}
-        <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
+        <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
           {getTypeLabel(opp.fundingType)}
         </span>
         {opp.stateIncentive && opp.state && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+          <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
             {opp.state} State
           </span>
         )}
@@ -336,7 +336,7 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
       {/* Eligibility */}
       <div className="flex flex-wrap gap-1 mb-3">
         {opp.eligibility.slice(0, 3).map(elig => (
-          <span key={elig} className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-300 border border-slate-600/30">
+          <span key={elig} className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-300 border border-slate-600/30">
             {getEligibilityLabel(elig)}
           </span>
         ))}
@@ -344,7 +344,7 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-3 border-t border-slate-700/50">
-        <div className="flex items-center gap-3 text-[10px] text-slate-500">
+        <div className="flex items-center gap-3 text-xs text-slate-500">
           <span>Source: {opp.source}</span>
           {opp.recurring && (
             <span className="text-cyan-400 font-medium">Recurring</span>
@@ -520,7 +520,7 @@ export default function FundingOpportunitiesPage() {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-slate-800/80 border border-slate-700/50 text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               {STATUS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -531,7 +531,7 @@ export default function FundingOpportunitiesPage() {
             <select
               value={agency}
               onChange={(e) => setAgency(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-slate-800/80 border border-slate-700/50 text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               {AGENCY_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -542,7 +542,7 @@ export default function FundingOpportunitiesPage() {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-slate-800/80 border border-slate-700/50 text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/40 hidden sm:block"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none hidden sm:block"
             >
               {CATEGORY_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -553,7 +553,7 @@ export default function FundingOpportunitiesPage() {
             <select
               value={fundingType}
               onChange={(e) => setFundingType(e.target.value)}
-              className="px-3 py-2 rounded-lg bg-slate-800/80 border border-slate-700/50 text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/40 hidden sm:block"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none hidden sm:block"
             >
               {TYPE_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>

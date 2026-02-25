@@ -112,7 +112,7 @@ function getTierBadge(tier: number) {
   };
   const style = styles[tier] || styles[3];
   return (
-    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${style.bg} ${style.text}`}>
+    <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${style.bg} ${style.text}`}>
       {style.label}
     </span>
   );
@@ -314,7 +314,7 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                 {orbitTypes.map((o) => (
                   <span
                     key={o}
-                    className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-300"
+                    className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-300"
                   >
                     {o}
                   </span>
@@ -338,13 +338,13 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                 {c.products.slice(0, 5).map((p) => (
                   <span
                     key={p.id}
-                    className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
+                    className="text-xs px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
                   >
                     {p.name}
                   </span>
                 ))}
                 {c.products.length > 5 && (
-                  <span className="text-[10px] text-slate-500">+{c.products.length - 5} more</span>
+                  <span className="text-xs text-slate-500">+{c.products.length - 5} more</span>
                 )}
               </div>
             );
@@ -360,7 +360,7 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                 {cats.map((cat) => (
                   <span
                     key={cat}
-                    className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400 capitalize"
+                    className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400 capitalize"
                   >
                     {(cat as string).replace(/_/g, ' ')}
                   </span>
@@ -378,13 +378,13 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                 {c.tags.slice(0, 5).map((tag) => (
                   <span
                     key={tag}
-                    className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400"
+                    className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400"
                   >
                     {tag}
                   </span>
                 ))}
                 {c.tags.length > 5 && (
-                  <span className="text-[10px] text-slate-500">+{c.tags.length - 5} more</span>
+                  <span className="text-xs text-slate-500">+{c.tags.length - 5} more</span>
                 )}
               </div>
             );
@@ -463,13 +463,13 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                 {c.partnerships.slice(0, 4).map((p) => (
                   <span
                     key={p.id}
-                    className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20"
+                    className="text-xs px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20"
                   >
                     {p.partnerName}
                   </span>
                 ))}
                 {c.partnerships.length > 4 && (
-                  <span className="text-[10px] text-slate-500">+{c.partnerships.length - 4} more</span>
+                  <span className="text-xs text-slate-500">+{c.partnerships.length - 4} more</span>
                 )}
               </div>
             );
@@ -485,13 +485,13 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                   <a
                     key={comp.id}
                     href={`/company-profiles/${comp.slug}`}
-                    className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                    className="text-xs px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
                   >
                     {comp.name}
                   </a>
                 ))}
                 {c.summary.competitors.length > 4 && (
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-xs text-slate-500">
                     +{c.summary.competitors.length - 4} more
                   </span>
                 )}

@@ -41,12 +41,12 @@ export default function ReviewCard({ review }: ReviewCardProps) {
         <div className="flex items-center gap-2">
           <StarRating rating={review.overallRating} />
           {review.isVerified && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 font-bold">
+            <span className="text-xs px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 font-bold">
               Verified Purchase
             </span>
           )}
         </div>
-        <span className="text-[10px] text-slate-500">
+        <span className="text-xs text-slate-500">
           {new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
         </span>
       </div>
@@ -63,22 +63,22 @@ export default function ReviewCard({ review }: ReviewCardProps) {
       {(review.qualityRating || review.timelineRating || review.commRating || review.valueRating) && (
         <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1 border-t border-slate-700/50">
           {review.qualityRating && (
-            <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500">
               Quality <StarRating rating={review.qualityRating} />
             </div>
           )}
           {review.timelineRating && (
-            <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500">
               Timeline <StarRating rating={review.timelineRating} />
             </div>
           )}
           {review.commRating && (
-            <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500">
               Comms <StarRating rating={review.commRating} />
             </div>
           )}
           {review.valueRating && (
-            <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500">
               Value <StarRating rating={review.valueRating} />
             </div>
           )}
@@ -89,9 +89,9 @@ export default function ReviewCard({ review }: ReviewCardProps) {
       {review.providerResponse && (
         <div className="bg-slate-800/50 rounded-lg p-3 ml-4 border-l-2 border-cyan-500/30">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-bold text-cyan-400">Provider Response</span>
+            <span className="text-xs font-bold text-cyan-400">Provider Response</span>
             {review.providerRespondedAt && (
-              <span className="text-[10px] text-slate-600">
+              <span className="text-xs text-slate-600">
                 {new Date(review.providerRespondedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
               </span>
             )}

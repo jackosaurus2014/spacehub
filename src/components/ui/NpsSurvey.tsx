@@ -120,7 +120,7 @@ export default function NpsSurvey() {
                   </button>
                 ))}
               </div>
-              <div className="flex justify-between text-[10px] text-slate-500 mb-3">
+              <div className="flex justify-between text-xs text-slate-500 mb-3">
                 <span>Not likely</span>
                 <span>Very likely</span>
               </div>

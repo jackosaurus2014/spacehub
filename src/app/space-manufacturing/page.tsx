@@ -1017,7 +1017,7 @@ function CompaniesTab() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-600 text-star-300 text-sm rounded-lg px-3 py-2 focus:ring-nebula-500 focus:border-nebula-500"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
         >
           <option value="">All Statuses</option>
           {statuses.map((s) => (
@@ -1027,7 +1027,7 @@ function CompaniesTab() {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as 'name' | 'trl' | 'founded')}
-          className="bg-slate-800 border border-slate-600 text-star-300 text-sm rounded-lg px-3 py-2 focus:ring-nebula-500 focus:border-nebula-500"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
         >
           <option value="trl">Sort by TRL</option>
           <option value="name">Sort by Name</option>

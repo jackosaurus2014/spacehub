@@ -102,10 +102,10 @@ function BlogPostCard({ post }: { post: BlogPost }) {
       {/* Cross-module links */}
       {isComplianceRelated && (
         <div className="mt-3 pt-3 border-t border-slate-700 flex items-center gap-2">
-          <span className="text-[10px] text-slate-400">Related:</span>
+          <span className="text-xs text-slate-400">Related:</span>
           <Link
             href="/compliance"
-            className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-300 hover:bg-orange-500/20 transition-colors"
+            className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-300 hover:bg-orange-500/20 transition-colors"
           >
             Compliance
           </Link>

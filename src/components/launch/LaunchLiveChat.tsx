@@ -165,7 +165,7 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
                     }`}>
                       {msg.userName}
                     </span>
-                    <span className="text-slate-500 text-[10px]">{formatTime(msg.createdAt)}</span>
+                    <span className="text-slate-500 text-xs">{formatTime(msg.createdAt)}</span>
                   </div>
                   <div className={`px-3 py-1.5 rounded-lg text-sm ${
                     msg.userId === session?.user?.id
@@ -211,7 +211,7 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
                 placeholder="Type a message..."
                 maxLength={500}
                 disabled={sending || rateLimited}
-                className="flex-1 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 text-sm disabled:opacity-50"
+                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-50"
               />
               <button
                 type="submit"

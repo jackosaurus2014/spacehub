@@ -177,7 +177,7 @@ function OverviewTab({ investors, fundingByYear, startups }: {
                   />
                 </div>
                 <div className="text-xs text-slate-400 font-medium">{item.year}</div>
-                <div className="text-[10px] text-slate-500">{item.deals} deals</div>
+                <div className="text-xs text-slate-500">{item.deals} deals</div>
               </div>
             );
           })}
@@ -254,7 +254,7 @@ function InvestorsTab({ investors }: { investors: Investor[] }) {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
           >
             {INVESTOR_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
@@ -264,7 +264,7 @@ function InvestorsTab({ investors }: { investors: Investor[] }) {
           <select
             value={stageFilter}
             onChange={(e) => setStageFilter(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
           >
             {STAGE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
@@ -546,7 +546,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">Select sector...</option>
                   {sectorOptions.map(s => <option key={s} value={s}>{s}</option>)}
@@ -557,7 +557,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
                 <select
                   value={selectedStage}
                   onChange={(e) => setSelectedStage(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">Select stage...</option>
                   {stageOptions.map(s => <option key={s} value={s}>{s}</option>)}
@@ -609,7 +609,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
               <select
                 value={selectedInvestor}
                 onChange={(e) => setSelectedInvestor(e.target.value)}
-                className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 w-full max-w-md"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none w-full max-w-md"
               >
                 <option value="">Choose an investor...</option>
                 {investors.map(i => <option key={i.id} value={i.id}>{i.name} ({i.type})</option>)}

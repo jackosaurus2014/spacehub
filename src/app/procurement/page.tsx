@@ -742,13 +742,13 @@ function ProcurementContent() {
                   placeholder="Search opportunities..."
                   value={searchQuery}
                   onChange={e => { setSearchQuery(e.target.value); setOppOffset(0); }}
-                  className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 />
                 <select
                   aria-label="Filter by agency"
                   value={agencyFilter}
                   onChange={e => { setAgencyFilter(e.target.value); setOppOffset(0); }}
-                  className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">All Agencies</option>
                   {AGENCIES.map(a => <option key={a} value={a}>{a}</option>)}
@@ -757,7 +757,7 @@ function ProcurementContent() {
                   aria-label="Filter by type"
                   value={typeFilter}
                   onChange={e => { setTypeFilter(e.target.value); setOppOffset(0); }}
-                  className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">All Types</option>
                   {OPP_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
@@ -766,7 +766,7 @@ function ProcurementContent() {
                   aria-label="Filter by set-aside"
                   value={setAsideFilter}
                   onChange={e => { setSetAsideFilter(e.target.value); setOppOffset(0); }}
-                  className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">All Set-Asides</option>
                   {SET_ASIDES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -839,7 +839,7 @@ function ProcurementContent() {
                   aria-label="Filter SBIR by agency"
                   value={sbirAgencyFilter}
                   onChange={e => setSBIRAgencyFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">All Agencies</option>
                   <option value="NASA">NASA</option>
@@ -850,7 +850,7 @@ function ProcurementContent() {
                   aria-label="Filter by program"
                   value={sbirProgramFilter}
                   onChange={e => setSBIRProgramFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">All Programs</option>
                   <option value="SBIR">SBIR</option>
@@ -891,7 +891,7 @@ function ProcurementContent() {
                   aria-label="Filter budget by agency"
                   value={budgetAgencyFilter}
                   onChange={e => setBudgetAgencyFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">All Agencies</option>
                   <option value="NASA">NASA</option>
@@ -903,7 +903,7 @@ function ProcurementContent() {
                   aria-label="Filter by fiscal year"
                   value={budgetYearFilter}
                   onChange={e => setBudgetYearFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">All Years</option>
                   <option value="2026">FY2026</option>
@@ -950,7 +950,7 @@ function ProcurementContent() {
                   aria-label="Filter congressional activity by type"
                   value={congressionalTypeFilter}
                   onChange={e => setCongressionalTypeFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">All Types</option>
                   {CONGRESSIONAL_TYPES.map(t => <option key={t.value} value={t.value}>{t.icon} {t.label}</option>)}
@@ -959,7 +959,7 @@ function ProcurementContent() {
                   aria-label="Filter by committee"
                   value={congressionalCommitteeFilter}
                   onChange={e => setCongressionalCommitteeFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">All Committees</option>
                   {COMMITTEES.map(c => <option key={c} value={c}>{c}</option>)}

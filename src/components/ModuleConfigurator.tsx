@@ -327,7 +327,7 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
                               </span>
                             )}
                             {mod.def.isParent && children.length > 0 && (
-                              <span className="text-[10px] text-star-400">
+                              <span className="text-xs text-star-400">
                                 ({children.filter(c => c.defaultEnabled).length} sub-modules)
                               </span>
                             )}

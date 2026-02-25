@@ -35,7 +35,7 @@ export default function ReputationBadge({ reputation, size = 'sm' }: ReputationB
   if (size === 'sm') {
     return (
       <span
-        className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded ${current.bgColor} ${current.color} border ${current.borderColor} font-medium`}
+        className={`inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded ${current.bgColor} ${current.color} border ${current.borderColor} font-medium`}
         title={`${current.label} - ${reputation} reputation`}
       >
         <span>{current.badge}</span>
@@ -61,7 +61,7 @@ export default function ReputationBadge({ reputation, size = 'sm' }: ReputationB
         <span className={`text-xs font-semibold ${current.color}`}>
           {current.label}
         </span>
-        <span className="text-[10px] text-slate-500 ml-auto">
+        <span className="text-xs text-slate-500 ml-auto">
           {reputation} rep
         </span>
       </div>

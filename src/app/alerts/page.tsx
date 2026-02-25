@@ -786,7 +786,7 @@ function AlertsPageInner() {
                           {delivery.title}
                         </h4>
                         {delivery.alertRule?.priority && (
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${priorityColor}`}>
+                          <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${priorityColor}`}>
                             {delivery.alertRule.priority}
                           </span>
                         )}
@@ -814,7 +814,7 @@ function AlertsPageInner() {
                         <span className="text-slate-600">|</span>
                         <span>{formatRelativeTime(delivery.createdAt)}</span>
                         <span
-                          className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                          className={`px-1.5 py-0.5 rounded text-xs font-medium ${
                             delivery.status === 'read'
                               ? 'bg-slate-800 text-slate-500'
                               : delivery.status === 'delivered' || delivery.status === 'sent'
@@ -1131,7 +1131,7 @@ function AlertsPageInner() {
             </svg>
             Notifications
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-bold">
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-bold">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}

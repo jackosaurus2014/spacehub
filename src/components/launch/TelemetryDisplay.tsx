@@ -87,7 +87,7 @@ function StatusBadge({ status, type }: { status: string; type: 'stage' | 'fairin
   };
 
   return (
-    <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${colors[status] || colors.attached}`}>
+    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${colors[status] || colors.attached}`}>
       {labels[status] || status}
     </span>
   );
@@ -183,7 +183,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
             <motion.span
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/30 text-red-300 font-bold uppercase tracking-wider border border-red-500/40"
+              className="text-xs px-2 py-0.5 rounded-full bg-red-500/30 text-red-300 font-bold uppercase tracking-wider border border-red-500/40"
               style={{ boxShadow: '0 0 12px rgba(239,68,68,0.4), 0 0 24px rgba(239,68,68,0.2)' }}
             >
               MAX Q
@@ -196,7 +196,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
               <StatusBadge status={telemetry.fairingStatus} type="fairing" />
             </div>
           )}
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-medium uppercase tracking-wider">
+          <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-medium uppercase tracking-wider">
             Simulated Data
           </span>
           <span className="flex items-center gap-1 text-xs text-green-400">
@@ -244,7 +244,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
             <AnimatedValue value={telemetry?.velocity ?? 0} decimals={3} />
             <span className="text-slate-400 text-xs ml-1 font-sans">km/s</span>
           </div>
-          <div className="text-[10px] text-slate-500 mt-0.5">
+          <div className="text-xs text-slate-500 mt-0.5">
             Mach {machNumber}
           </div>
           <Sparkline data={velocityHistory} color="#22d3ee" height={24} />

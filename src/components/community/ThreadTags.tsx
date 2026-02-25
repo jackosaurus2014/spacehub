@@ -184,7 +184,7 @@ export default function ThreadTags({
 
       {/* Tag limit indicator in editable mode */}
       {editable && (
-        <span className="text-[10px] text-slate-600 ml-1">
+        <span className="text-xs text-slate-600 ml-1">
           {tags.length}/5
         </span>
       )}

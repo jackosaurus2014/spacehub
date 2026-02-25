@@ -86,7 +86,7 @@ export default function MobileDataCard({
         <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-3 border-t border-slate-700/40">
           {secondaryFields.map((field) => (
             <div key={field.label}>
-              <div className="text-[10px] text-slate-500 uppercase tracking-wider">{field.label}</div>
+              <div className="text-xs text-slate-500 uppercase tracking-wider">{field.label}</div>
               <div className="text-sm text-slate-200 font-medium tabular-nums">{field.value}</div>
             </div>
           ))}

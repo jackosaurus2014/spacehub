@@ -504,7 +504,7 @@ function DataStatusPanel() {
                     <td className="px-3 py-2 text-star-300">{log.refreshType}</td>
                     <td className="px-3 py-2">
                       <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${
+                        className={`text-xs px-2 py-0.5 rounded-full border font-medium ${
                           log.status === 'success'
                             ? 'bg-green-500/20 text-green-400 border-green-500/30'
                             : log.status === 'partial'

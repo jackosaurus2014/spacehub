@@ -222,7 +222,7 @@ function DropdownMenu({
                     {item.label}
                   </span>
                   {item.href === '/compliance' && !isPro && (
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
                       PRO
                     </span>
                   )}
@@ -514,7 +514,7 @@ export default function Navigation() {
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium">{item.label}</span>
                           {item.href === '/compliance' && !isPro && (
-                            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                            <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
                               PRO
                             </span>
                           )}

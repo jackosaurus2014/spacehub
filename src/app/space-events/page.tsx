@@ -73,7 +73,7 @@ function EventTypeBadge({ type }: { type: SpaceEvent['type'] }) {
   const color = getEventTypeColor(type);
   const label = getEventTypeLabel(type);
   return (
-    <span className={`inline-flex text-[10px] font-medium px-2 py-0.5 rounded-full text-white ${color}`}>
+    <span className={`inline-flex text-xs font-medium px-2 py-0.5 rounded-full text-white ${color}`}>
       {label}
     </span>
   );
@@ -82,14 +82,14 @@ function EventTypeBadge({ type }: { type: SpaceEvent['type'] }) {
 function CostBadge({ costType, cost }: { costType: 'free' | 'paid'; cost?: string }) {
   if (costType === 'free') {
     return (
-      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium">
+      <span className="text-xs px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium">
         Free
       </span>
     );
   }
   if (cost) {
     return (
-      <span className="text-[10px] text-slate-500">{cost}</span>
+      <span className="text-xs text-slate-500">{cost}</span>
     );
   }
   return null;
@@ -102,7 +102,7 @@ function AddToCalendarDropdown({ event }: { event: SpaceEvent }) {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded bg-slate-800 text-cyan-400 border border-slate-700 hover:border-cyan-500/30 transition-all whitespace-nowrap"
+        className="flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-slate-800 text-cyan-400 border border-slate-700 hover:border-cyan-500/30 transition-all whitespace-nowrap"
       >
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -173,12 +173,12 @@ function HighlightedEvents({ events }: { events: SpaceEvent[] }) {
               <div className="flex items-start justify-between mb-2">
                 <EventTypeBadge type={event.type} />
                 {daysUntil > 0 && (
-                  <span className="text-[10px] text-cyan-400 font-medium">
+                  <span className="text-xs text-cyan-400 font-medium">
                     in {daysUntil} days
                   </span>
                 )}
                 {daysUntil === 0 && (
-                  <span className="text-[10px] text-emerald-400 font-medium animate-pulse">
+                  <span className="text-xs text-emerald-400 font-medium animate-pulse">
                     Today
                   </span>
                 )}
@@ -187,12 +187,12 @@ function HighlightedEvents({ events }: { events: SpaceEvent[] }) {
               <div className="text-xs text-slate-400 mb-1">{formatDateRange(event.startDate, event.endDate)}</div>
               <div className="text-xs text-slate-500 mb-1">{event.location}</div>
               {event.country !== 'Virtual' && event.country !== 'Worldwide' && (
-                <div className="text-[10px] text-slate-600 mb-3">{event.country}</div>
+                <div className="text-xs text-slate-600 mb-3">{event.country}</div>
               )}
               <div className="flex items-center gap-2 flex-wrap">
                 <CostBadge costType={event.costType} cost={event.cost} />
                 {event.attendeeCount && (
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-xs text-slate-500">
                     {event.attendeeCount.toLocaleString()} attendees
                   </span>
                 )}
@@ -204,7 +204,7 @@ function HighlightedEvents({ events }: { events: SpaceEvent[] }) {
                     href={event.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[10px] px-2 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600 transition-all"
+                    className="text-xs px-2 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600 transition-all"
                   >
                     Website
                   </a>
@@ -214,7 +214,7 @@ function HighlightedEvents({ events }: { events: SpaceEvent[] }) {
                     href={event.registrationUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[10px] px-2 py-1 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/20 transition-all"
+                    className="text-xs px-2 py-1 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/20 transition-all"
                   >
                     Register
                   </a>
@@ -248,7 +248,7 @@ function EventListCard({ event, onSelect }: { event: SpaceEvent; onSelect: (e: S
           <div className="text-2xl font-bold text-white">
             {new Date(event.startDate + 'T00:00:00').getDate()}
           </div>
-          <div className="text-[10px] text-slate-500">
+          <div className="text-xs text-slate-500">
             {new Date(event.startDate + 'T00:00:00').getFullYear()}
           </div>
         </div>
@@ -258,12 +258,12 @@ function EventListCard({ event, onSelect }: { event: SpaceEvent; onSelect: (e: S
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <h3 className="text-sm font-semibold text-white">{event.name}</h3>
             {event.highlight && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+              <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
                 Featured
               </span>
             )}
             {isPast && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
+              <span className="text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
                 Past
               </span>
             )}
@@ -274,7 +274,7 @@ function EventListCard({ event, onSelect }: { event: SpaceEvent; onSelect: (e: S
             <span className="text-xs text-slate-400">{formatDateRange(event.startDate, event.endDate)}</span>
             <span className="text-xs text-slate-500">{event.location}</span>
             {event.virtual && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <span className="text-xs px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                 Virtual
               </span>
             )}
@@ -285,26 +285,26 @@ function EventListCard({ event, onSelect }: { event: SpaceEvent; onSelect: (e: S
           <div className="flex items-center gap-3 flex-wrap">
             <CostBadge costType={event.costType} cost={event.cost} />
             {event.attendeeCount && (
-              <span className="text-[10px] text-slate-500">
+              <span className="text-xs text-slate-500">
                 {event.attendeeCount.toLocaleString()} attendees
               </span>
             )}
             {event.exhibitors && (
-              <span className="text-[10px] text-slate-500">
+              <span className="text-xs text-slate-500">
                 {event.exhibitors}+ exhibitors
               </span>
             )}
-            <span className="text-[10px] text-slate-500">{event.organizer}</span>
+            <span className="text-xs text-slate-500">{event.organizer}</span>
           </div>
 
           <div className="flex items-center gap-2 mt-2 flex-wrap">
             {event.tags.slice(0, 4).map((tag) => (
-              <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700/50">
+              <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700/50">
                 {tag}
               </span>
             ))}
             {event.tags.length > 4 && (
-              <span className="text-[10px] text-slate-500">+{event.tags.length - 4}</span>
+              <span className="text-xs text-slate-500">+{event.tags.length - 4}</span>
             )}
           </div>
         </div>
@@ -317,13 +317,13 @@ function EventListCard({ event, onSelect }: { event: SpaceEvent; onSelect: (e: S
               href={event.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[10px] px-2 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600 transition-all whitespace-nowrap"
+              className="text-xs px-2 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600 transition-all whitespace-nowrap"
             >
               Website
             </a>
           )}
           {!isPast && daysUntil >= 0 && (
-            <span className="text-[10px] text-cyan-400 font-medium whitespace-nowrap">
+            <span className="text-xs text-cyan-400 font-medium whitespace-nowrap">
               {daysUntil === 0 ? 'Today' : `${daysUntil}d`}
             </span>
           )}
@@ -379,14 +379,14 @@ function CalendarMonth({
       <h3 className="text-sm font-semibold text-white mb-3">
         {MONTHS[month]} {year}
         {hasAnyEvents && (
-          <span className="text-[10px] text-slate-500 font-normal ml-2">
+          <span className="text-xs text-slate-500 font-normal ml-2">
             {monthEvents.filter((e, i, arr) => arr.findIndex((x) => x.id === e.id) === i).length} events
           </span>
         )}
       </h3>
       <div className="grid grid-cols-7 gap-px">
         {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((d) => (
-          <div key={d} className="text-[10px] text-slate-500 text-center py-1 font-medium">
+          <div key={d} className="text-xs text-slate-500 text-center py-1 font-medium">
             {d}
           </div>
         ))}
@@ -401,7 +401,7 @@ function CalendarMonth({
           return (
             <div
               key={day}
-              className={`aspect-square flex flex-col items-center justify-start p-0.5 rounded-md text-[10px] relative cursor-default transition-all ${
+              className={`aspect-square flex flex-col items-center justify-start p-0.5 rounded-md text-xs relative cursor-default transition-all ${
                 isToday(day)
                   ? 'bg-cyan-500/20 ring-1 ring-cyan-500/50'
                   : hasEvents
@@ -444,8 +444,8 @@ function CalendarMonth({
               className="w-full text-left flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-800/50 transition-colors"
             >
               <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getEventTypeColor(e.type)}`} />
-              <span className="text-[10px] text-slate-300 truncate">{e.name}</span>
-              <span className="text-[10px] text-slate-500 flex-shrink-0 ml-auto">
+              <span className="text-xs text-slate-300 truncate">{e.name}</span>
+              <span className="text-xs text-slate-500 flex-shrink-0 ml-auto">
                 {new Date(e.startDate + 'T00:00:00').getDate()}
                 {e.endDate && e.endDate !== e.startDate
                   ? `-${new Date(e.endDate + 'T00:00:00').getDate()}`
@@ -454,7 +454,7 @@ function CalendarMonth({
             </button>
           ))}
           {monthEvents.filter((e, i, arr) => arr.findIndex((x) => x.id === e.id) === i).length > 6 && (
-            <div className="text-[10px] text-slate-500 px-2">
+            <div className="text-xs text-slate-500 px-2">
               +{monthEvents.filter((e, i, arr) => arr.findIndex((x) => x.id === e.id) === i).length - 6} more
             </div>
           )}
@@ -491,12 +491,12 @@ function EventDetailModal({
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <EventTypeBadge type={event.type} />
               {event.highlight && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
                   Featured
                 </span>
               )}
               {event.virtual && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <span className="text-xs px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                   Virtual
                 </span>
               )}
@@ -575,7 +575,7 @@ function EventDetailModal({
 
         <div className="flex flex-wrap gap-1.5 mb-4">
           {event.tags.map((tag) => (
-            <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700/50">
+            <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700/50">
               {tag}
             </span>
           ))}
@@ -923,7 +923,7 @@ function SpaceEventsPageInner() {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 focus:border-cyan-500/50 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 <option value="all">All Types</option>
                 {EVENT_TYPES.map((t) => (
@@ -935,7 +935,7 @@ function SpaceEventsPageInner() {
               <select
                 value={countryFilter}
                 onChange={(e) => setCountryFilter(e.target.value)}
-                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 focus:border-cyan-500/50 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 <option value="all">All Countries</option>
                 {countries.map((c) => (
@@ -947,7 +947,7 @@ function SpaceEventsPageInner() {
               <select
                 value={monthFilter}
                 onChange={(e) => setMonthFilter(e.target.value)}
-                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 focus:border-cyan-500/50 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 <option value="all">All Months</option>
                 {MONTHS.map((m, i) => (
@@ -959,7 +959,7 @@ function SpaceEventsPageInner() {
               <select
                 value={formatFilter}
                 onChange={(e) => setFormatFilter(e.target.value)}
-                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 focus:border-cyan-500/50 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 <option value="all">All Formats</option>
                 <option value="in-person">In-Person</option>
@@ -970,7 +970,7 @@ function SpaceEventsPageInner() {
               <select
                 value={costFilter}
                 onChange={(e) => setCostFilter(e.target.value)}
-                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 focus:border-cyan-500/50 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 <option value="all">Any Cost</option>
                 <option value="free">Free</option>
@@ -1001,7 +1001,7 @@ function SpaceEventsPageInner() {
             </button>
           </div>
 
-          <div className="text-[10px] text-slate-500">
+          <div className="text-xs text-slate-500">
             Showing {filteredEvents.length} of {SPACE_EVENTS.length} events
             {hasActiveFilters && ' (filtered)'}
           </div>
@@ -1060,12 +1060,12 @@ function SpaceEventsPageInner() {
                 {EVENT_TYPES.map((t) => (
                   <div key={t.value} className="flex items-center gap-1.5">
                     <div className={`w-2.5 h-2.5 rounded-full ${t.color}`} />
-                    <span className="text-[10px] text-slate-400">{t.label}</span>
+                    <span className="text-xs text-slate-400">{t.label}</span>
                   </div>
                 ))}
                 <div className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-                  <span className="text-[10px] text-slate-400">Featured</span>
+                  <span className="text-xs text-slate-400">Featured</span>
                 </div>
               </div>
             </motion.div>
@@ -1107,7 +1107,7 @@ function SpaceEventsPageInner() {
             <button
               key={tag}
               onClick={() => setSearchQuery(tag)}
-              className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800/50 text-slate-400 border border-slate-700/30 hover:border-cyan-500/30 hover:text-cyan-400 transition-all cursor-pointer"
+              className="text-xs px-2 py-0.5 rounded-full bg-slate-800/50 text-slate-400 border border-slate-700/30 hover:border-cyan-500/30 hover:text-cyan-400 transition-all cursor-pointer"
             >
               {tag}
             </button>

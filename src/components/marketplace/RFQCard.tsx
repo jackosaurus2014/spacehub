@@ -48,7 +48,7 @@ export default function RFQCard({ rfq, index = 0 }: RFQCardProps) {
               <span>{getCategoryIcon(rfq.category)}</span>
               <span>{getCategoryLabel(rfq.category)}</span>
             </div>
-            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${statusInfo.bgColor}/20 ${statusInfo.color}`}>
+            <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${statusInfo.bgColor}/20 ${statusInfo.color}`}>
               {statusInfo.label}
             </span>
           </div>
@@ -61,19 +61,19 @@ export default function RFQCard({ rfq, index = 0 }: RFQCardProps) {
           {/* Details Row */}
           <div className="grid grid-cols-3 gap-2 mb-3">
             <div className="bg-slate-800/50 rounded p-2">
-              <div className="text-[10px] text-slate-500 uppercase tracking-wider">Budget</div>
+              <div className="text-xs text-slate-500 uppercase tracking-wider">Budget</div>
               <div className="text-xs font-semibold text-emerald-400">
                 {formatPrice(rfq.budgetMin, rfq.budgetMax)}
               </div>
             </div>
             <div className="bg-slate-800/50 rounded p-2">
-              <div className="text-[10px] text-slate-500 uppercase tracking-wider">Deadline</div>
+              <div className="text-xs text-slate-500 uppercase tracking-wider">Deadline</div>
               <div className={`text-xs font-semibold ${daysLeft !== null && daysLeft <= 7 ? 'text-orange-400' : 'text-slate-300'}`}>
                 {daysLeft !== null ? `${daysLeft}d left` : 'Open'}
               </div>
             </div>
             <div className="bg-slate-800/50 rounded p-2">
-              <div className="text-[10px] text-slate-500 uppercase tracking-wider">Proposals</div>
+              <div className="text-xs text-slate-500 uppercase tracking-wider">Proposals</div>
               <div className="text-xs font-semibold text-cyan-400">
                 {rfq._count?.proposals ?? 0}
               </div>
@@ -81,7 +81,7 @@ export default function RFQCard({ rfq, index = 0 }: RFQCardProps) {
           </div>
 
           {/* Footer */}
-          <div className="text-[10px] text-slate-500">
+          <div className="text-xs text-slate-500">
             Posted {new Date(rfq.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
           </div>
         </motion.div>

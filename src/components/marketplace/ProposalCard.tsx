@@ -53,7 +53,7 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
               </div>
               <div>
                 <div className="text-sm font-semibold text-white">{proposal.rfq.title}</div>
-                <div className="text-[10px] text-slate-500">
+                <div className="text-xs text-slate-500">
                   Submitted {new Date(proposal.submittedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
                   {proposal.rfq.status && <span className="ml-1">· RFQ {proposal.rfq.status}</span>}
                 </div>
@@ -70,18 +70,18 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
               </div>
               <div>
                 <div className="text-sm font-semibold text-white">{proposal.company.name}</div>
-                <div className="text-[10px] text-slate-500">
+                <div className="text-xs text-slate-500">
                   Submitted {new Date(proposal.submittedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
                 </div>
               </div>
             </>
           ) : (
-            <div className="text-[10px] text-slate-500">
+            <div className="text-xs text-slate-500">
               Submitted {new Date(proposal.submittedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
             </div>
           )}
         </div>
-        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${statusInfo.bgColor}/20 ${statusInfo.color}`}>
+        <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${statusInfo.bgColor}/20 ${statusInfo.color}`}>
           {statusInfo.label}
         </span>
       </div>
@@ -90,7 +90,7 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
       <div className="grid grid-cols-2 gap-3">
         {proposal.price && (
           <div className="bg-slate-800/50 rounded p-2">
-            <div className="text-[10px] text-slate-500 uppercase">Proposed Price</div>
+            <div className="text-xs text-slate-500 uppercase">Proposed Price</div>
             <div className="text-sm font-semibold text-emerald-400">
               ${proposal.price.toLocaleString()}
             </div>
@@ -98,7 +98,7 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
         )}
         {proposal.timeline && (
           <div className="bg-slate-800/50 rounded p-2">
-            <div className="text-[10px] text-slate-500 uppercase">Timeline</div>
+            <div className="text-xs text-slate-500 uppercase">Timeline</div>
             <div className="text-sm font-semibold text-slate-300">{proposal.timeline}</div>
           </div>
         )}
@@ -110,7 +110,7 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
 
       {proposal.matchScore && (
         <div className="pt-2 border-t border-slate-700/50">
-          <div className="text-[10px] text-slate-500 mb-1">Match Score</div>
+          <div className="text-xs text-slate-500 mb-1">Match Score</div>
           <MatchScore score={proposal.matchScore} />
         </div>
       )}

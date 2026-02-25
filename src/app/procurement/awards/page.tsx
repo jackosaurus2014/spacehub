@@ -107,7 +107,7 @@ function getAwardTypeBadge(awardType: string) {
 
   return (
     <span
-      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${style.bg} ${style.text} whitespace-nowrap`}
+      className={`text-xs font-semibold px-2 py-0.5 rounded-full ${style.bg} ${style.text} whitespace-nowrap`}
     >
       {style.label}
     </span>
@@ -264,7 +264,7 @@ export default function ContractAwardsPage() {
               placeholder="Search by recipient, description, or agency..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+              className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             />
             <svg
               className="absolute left-3 top-3 w-4 h-4 text-slate-500"
@@ -286,7 +286,7 @@ export default function ContractAwardsPage() {
             aria-label="Filter by agency"
             value={agency}
             onChange={(e) => setAgency(e.target.value)}
-            className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
           >
             {AGENCY_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -300,7 +300,7 @@ export default function ContractAwardsPage() {
             aria-label="Filter by date range"
             value={dateRange}
             onChange={(e) => setDateRange(Number(e.target.value))}
-            className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
           >
             {DATE_RANGE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -321,7 +321,7 @@ export default function ContractAwardsPage() {
               value={minAmount}
               onChange={(e) => setMinAmount(e.target.value)}
               min="0"
-              className="w-full lg:w-40 pl-7 pr-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+              className="w-full lg:w-40 pl-7 pr-3 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             />
           </div>
         </div>
@@ -491,7 +491,7 @@ export default function ContractAwardsPage() {
                         <div className="px-4 py-4 bg-slate-800/40 border-t border-slate-700/30">
                           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
                             <div>
-                              <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">
+                              <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
                                 Full Value
                               </div>
                               <div className="text-sm text-white font-semibold">
@@ -500,7 +500,7 @@ export default function ContractAwardsPage() {
                             </div>
                             {award.fundingAgency && (
                               <div>
-                                <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">
+                                <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
                                   Funding Agency
                                 </div>
                                 <div className="text-sm text-slate-300">
@@ -510,7 +510,7 @@ export default function ContractAwardsPage() {
                             )}
                             {award.placeOfPerformance && (
                               <div>
-                                <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">
+                                <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
                                   Place of Performance
                                 </div>
                                 <div className="text-sm text-slate-300">
@@ -520,7 +520,7 @@ export default function ContractAwardsPage() {
                             )}
                             {award.endDate && (
                               <div>
-                                <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">
+                                <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
                                   End Date
                                 </div>
                                 <div className="text-sm text-slate-300">
@@ -530,7 +530,7 @@ export default function ContractAwardsPage() {
                             )}
                             {award.naicsDescription && (
                               <div className="col-span-2">
-                                <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">
+                                <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
                                   NAICS Description
                                 </div>
                                 <div className="text-sm text-slate-300">
@@ -541,7 +541,7 @@ export default function ContractAwardsPage() {
                             )}
                             {award.recipientUei && (
                               <div>
-                                <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">
+                                <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
                                   Recipient UEI
                                 </div>
                                 <div className="text-sm text-slate-400 font-mono">
@@ -552,7 +552,7 @@ export default function ContractAwardsPage() {
                           </div>
                           {award.description && (
                             <div>
-                              <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">
+                              <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
                                 Description
                               </div>
                               <p className="text-sm text-slate-300 leading-relaxed">

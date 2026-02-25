@@ -249,8 +249,8 @@ export default function ModuleNavBar() {
       {/* Keyboard Hint — desktop only */}
       <div className="hidden sm:block text-center mt-2">
         <span className="text-xs text-slate-400">
-          Use <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 font-mono text-[10px]">←</kbd>{' '}
-          <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 font-mono text-[10px]">→</kbd> arrow keys to navigate modules
+          Use <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 font-mono text-xs">←</kbd>{' '}
+          <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 font-mono text-xs">→</kbd> arrow keys to navigate modules
         </span>
       </div>
     </div>

@@ -170,7 +170,7 @@ export default function QuickAccessSidebar() {
           {/* Pinned Section Header */}
           {pinnedModules.length > 0 && isExpanded && (
             <div className="px-4 mb-2">
-              <span className="text-[10px] uppercase tracking-widest text-cyan-400/60 font-medium">
+              <span className="text-xs uppercase tracking-widest text-cyan-400/60 font-medium">
                 Pinned
               </span>
             </div>
@@ -258,7 +258,7 @@ export default function QuickAccessSidebar() {
 
                           {/* Premium Badge */}
                           {module.isPremium && isExpanded && (
-                            <span className="ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex-shrink-0">
+                            <span className="ml-auto text-xs font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex-shrink-0">
                               PRO
                             </span>
                           )}
@@ -303,7 +303,7 @@ export default function QuickAccessSidebar() {
                       <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-2 rounded-lg bg-slate-800 border border-cyan-400/30 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 whitespace-nowrap">
                         <span className="text-sm text-slate-200 font-medium">{module.name}</span>
                         {module.isPremium && (
-                          <span className="ml-2 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                          <span className="ml-2 text-xs font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
                             PRO
                           </span>
                         )}

@@ -87,7 +87,7 @@ function ModelCard({
           <h3 className="font-semibold text-white text-sm group-hover:text-cyan-400 transition-colors">
             {model.name}
           </h3>
-          <span className={`inline-flex text-[10px] font-medium px-2 py-0.5 rounded-full border mt-1 ${sectorColor}`}>
+          <span className={`inline-flex text-xs font-medium px-2 py-0.5 rounded-full border mt-1 ${sectorColor}`}>
             {SECTOR_LABELS[model.sector] || model.sector}
           </span>
         </div>
@@ -98,16 +98,16 @@ function ModelCard({
       </p>
 
       <div className="bg-slate-800/50 rounded-lg p-3 mb-3">
-        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Revenue Model</div>
+        <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Revenue Model</div>
         <p className="text-xs text-slate-300 line-clamp-2">{model.revenueModel}</p>
       </div>
 
       <div className="flex items-center justify-between pt-2 border-t border-slate-700/50">
         <div>
-          <div className="text-[10px] text-slate-500 uppercase tracking-wider">Break-even</div>
+          <div className="text-xs text-slate-500 uppercase tracking-wider">Break-even</div>
           <div className="text-xs text-amber-400 font-medium mt-0.5 line-clamp-1">{model.breakEvenEstimate.split('.')[0]}</div>
         </div>
-        <div className="text-[10px] text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="text-xs text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">
           Click to expand &rarr;
         </div>
       </div>
@@ -170,7 +170,7 @@ function FundingTable({ data }: { data: { stage: string; typical: string }[] }) 
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       {data.map((d, i) => (
         <div key={i} className="bg-slate-800/50 rounded-lg p-3 text-center">
-          <div className="text-[10px] text-slate-500 uppercase tracking-wider">{d.stage}</div>
+          <div className="text-xs text-slate-500 uppercase tracking-wider">{d.stage}</div>
           <div className="text-sm font-bold text-purple-400 mt-1">{d.typical}</div>
         </div>
       ))}
@@ -329,7 +329,7 @@ function CompareView({
                 <span className="text-3xl">{model.icon}</span>
                 <div>
                   <h3 className="text-lg font-bold text-white">{model.name}</h3>
-                  <span className={`inline-flex text-[10px] font-medium px-2 py-0.5 rounded-full border mt-1 ${sectorColor}`}>
+                  <span className={`inline-flex text-xs font-medium px-2 py-0.5 rounded-full border mt-1 ${sectorColor}`}>
                     {SECTOR_LABELS[model.sector] || model.sector}
                   </span>
                 </div>
@@ -618,7 +618,7 @@ export default function BusinessModelsPage() {
               </p>
               <div className="flex flex-wrap gap-2 mt-3">
                 {['Industry Reports', 'SEC Filings', 'Investor Decks', 'Analyst Research', 'Public Data'].map((src) => (
-                  <span key={src} className="text-[10px] px-2 py-0.5 rounded bg-slate-800/50 text-slate-500 border border-slate-700/30">
+                  <span key={src} className="text-xs px-2 py-0.5 rounded bg-slate-800/50 text-slate-500 border border-slate-700/30">
                     {src}
                   </span>
                 ))}

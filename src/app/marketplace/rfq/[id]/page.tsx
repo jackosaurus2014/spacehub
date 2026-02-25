@@ -104,7 +104,7 @@ export default function RFQDetailPage({ params }: { params: { id: string } }) {
           <div className="flex items-center gap-2 mb-2">
             <span>{getCategoryIcon(rfqData.category)}</span>
             <span className="text-xs text-slate-400">{getCategoryLabel(rfqData.category)}</span>
-            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${statusInfo.bgColor}/20 ${statusInfo.color}`}>
+            <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${statusInfo.bgColor}/20 ${statusInfo.color}`}>
               {statusInfo.label}
             </span>
           </div>
@@ -134,25 +134,25 @@ export default function RFQDetailPage({ params }: { params: { id: string } }) {
         {/* Key Details */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="card p-3">
-            <div className="text-[10px] text-slate-500 uppercase">Budget Range</div>
+            <div className="text-xs text-slate-500 uppercase">Budget Range</div>
             <div className="text-sm font-semibold text-emerald-400">
               {formatPrice(rfqData.budgetMin, rfqData.budgetMax)}
             </div>
           </div>
           <div className="card p-3">
-            <div className="text-[10px] text-slate-500 uppercase">Deadline</div>
+            <div className="text-xs text-slate-500 uppercase">Deadline</div>
             <div className={`text-sm font-semibold ${daysLeft !== null && daysLeft <= 7 ? 'text-orange-400' : 'text-slate-300'}`}>
               {rfqData.deadline ? new Date(rfqData.deadline).toLocaleDateString() : 'Open'}
             </div>
           </div>
           <div className="card p-3">
-            <div className="text-[10px] text-slate-500 uppercase">Delivery</div>
+            <div className="text-xs text-slate-500 uppercase">Delivery</div>
             <div className="text-sm font-semibold text-slate-300">
               {rfqData.deliveryDate ? new Date(rfqData.deliveryDate).toLocaleDateString() : 'Flexible'}
             </div>
           </div>
           <div className="card p-3">
-            <div className="text-[10px] text-slate-500 uppercase">Proposals</div>
+            <div className="text-xs text-slate-500 uppercase">Proposals</div>
             <div className="text-sm font-semibold text-cyan-400">
               {rfqData.proposals?.length ?? rfqData._count?.proposals ?? 0}
             </div>

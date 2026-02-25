@@ -529,7 +529,7 @@ export default function InvestmentThesisPage() {
                       <p className="text-xs font-medium text-slate-300 truncate group-hover:text-slate-100">
                         {company.name}
                       </p>
-                      <p className="text-[10px] text-slate-500 truncate">{company.sector}</p>
+                      <p className="text-xs text-slate-500 truncate">{company.sector}</p>
                     </button>
                   ))}
                 </div>
@@ -736,7 +736,7 @@ export default function InvestmentThesisPage() {
                       {thesis.companyStrengths.map((s, i) => (
                         <li key={i} className="flex items-start gap-3">
                           <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                            <span className="text-[10px] font-bold text-emerald-400">{i + 1}</span>
+                            <span className="text-xs font-bold text-emerald-400">{i + 1}</span>
                           </div>
                           <p className="text-sm text-slate-300">{s}</p>
                         </li>
@@ -756,7 +756,7 @@ export default function InvestmentThesisPage() {
                       {thesis.companyWeaknesses.map((w, i) => (
                         <li key={i} className="flex items-start gap-3">
                           <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                            <span className="text-[10px] font-bold text-red-400">{i + 1}</span>
+                            <span className="text-xs font-bold text-red-400">{i + 1}</span>
                           </div>
                           <p className="text-sm text-slate-300">{w}</p>
                         </li>
@@ -849,7 +849,7 @@ export default function InvestmentThesisPage() {
                               </td>
                               <td className="py-3 px-4 text-center">
                                 <span
-                                  className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider ${sevConfig.bg} ${sevConfig.border} border ${sevConfig.color}`}
+                                  className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold tracking-wider ${sevConfig.bg} ${sevConfig.border} border ${sevConfig.color}`}
                                 >
                                   {sevConfig.label}
                                 </span>

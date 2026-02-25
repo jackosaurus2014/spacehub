@@ -186,7 +186,7 @@ export default function AdSlot({ position, module, className = '', adsenseSlot, 
     <div ref={containerRef} className={`relative ${className}`}>
       {/* Ad label */}
       <div className="absolute top-1 right-1 z-10">
-        <span className="bg-slate-900/80 backdrop-blur-sm text-slate-400 text-[10px] font-medium px-1.5 py-0.5 rounded uppercase tracking-wider">
+        <span className="bg-slate-900/80 backdrop-blur-sm text-slate-400 text-xs font-medium px-1.5 py-0.5 rounded uppercase tracking-wider">
           Ad
         </span>
       </div>
@@ -254,12 +254,12 @@ export default function AdSlot({ position, module, className = '', adsenseSlot, 
                 className="w-4 h-4 rounded object-contain"
               />
             )}
-            <span className="text-slate-400 text-[10px]">
+            <span className="text-slate-400 text-xs">
               Sponsored by <span className="text-slate-300 font-medium">{ad.advertiserName}</span>
             </span>
           </div>
           {ad.ctaText && (
-            <span className="text-cyan-400 text-[10px] font-medium">
+            <span className="text-cyan-400 text-xs font-medium">
               {ad.ctaText}
             </span>
           )}

@@ -23,7 +23,7 @@ interface MissionStats {
 function StatCard({ label, value, unit, color }: { label: string; value: string; unit: string; color: string }) {
   return (
     <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30 text-center">
-      <div className="text-slate-400 text-[10px] uppercase tracking-wider mb-1">{label}</div>
+      <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">{label}</div>
       <div className={`font-mono text-lg font-bold ${color}`}>
         {value}
         <span className="text-slate-400 text-xs ml-1 font-sans">{unit}</span>
@@ -126,7 +126,7 @@ export default function PostLaunchSummary({ eventId, missionTimeSeconds }: PostL
                 <div key={phase.id} className="flex items-center flex-shrink-0">
                   <div className={`flex flex-col items-center ${i > 0 ? 'ml-0' : ''}`}>
                     <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] border ${
+                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs border ${
                         isCompleted
                           ? 'bg-green-500/20 border-green-500/40 text-green-400'
                           : 'bg-slate-800/50 border-slate-700/30 text-slate-600'
@@ -161,7 +161,7 @@ export default function PostLaunchSummary({ eventId, missionTimeSeconds }: PostL
               className="flex items-center gap-1.5 px-2 py-1 rounded bg-green-500/5 border border-green-500/10"
             >
               <span className="text-xs">{phase.icon}</span>
-              <span className="text-green-400 text-[10px] font-medium">{phase.name}</span>
+              <span className="text-green-400 text-xs font-medium">{phase.name}</span>
               <span className="text-slate-500 text-[9px] ml-auto font-mono">
                 {formatMissionTime(phase.typicalTPlus)}
               </span>

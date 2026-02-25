@@ -74,13 +74,13 @@ export default function SaveSearchButton({ searchType, filters, query }: SaveSea
         placeholder="Search name..."
         maxLength={200}
         autoFocus
-        className="px-2.5 py-1.5 bg-slate-800 border border-slate-600 rounded-lg text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none w-40"
+        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none w-40"
         onKeyDown={(e) => {
           if (e.key === 'Enter') handleSave();
           if (e.key === 'Escape') setShowForm(false);
         }}
       />
-      <label className="flex items-center gap-1 text-[10px] text-slate-400 cursor-pointer">
+      <label className="flex items-center gap-1 text-xs text-slate-400 cursor-pointer">
         <input
           type="checkbox"
           checked={alertEnabled}

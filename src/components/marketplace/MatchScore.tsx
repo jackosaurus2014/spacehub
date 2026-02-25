@@ -33,7 +33,7 @@ export default function MatchScore({ score, reasons, showDetails = false }: Matc
         <span className={`text-sm font-bold ${getColor(score)}`}>{score}%</span>
       </div>
       {showDetails && reasons && (
-        <div className="space-y-0.5 text-[10px] text-slate-500">
+        <div className="space-y-0.5 text-xs text-slate-500">
           {Object.entries(reasons).map(([key, val]) => (
             <div key={key} className="flex justify-between">
               <span className="capitalize">{key}</span>

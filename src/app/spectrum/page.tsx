@@ -1063,7 +1063,8 @@ function SpectrumContent() {
         </ScrollReveal>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+        <div className="relative">
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide">
           {/* Divider label: Allocations & Filings */}
           <span className="text-xs text-slate-400 uppercase tracking-widest font-medium self-center pr-1 hidden md:inline">Tracker</span>
           {([
@@ -1074,7 +1075,7 @@ function SpectrumContent() {
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+              className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'bg-nebula-500 text-white shadow-glow-sm'
                   : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
@@ -1109,7 +1110,7 @@ function SpectrumContent() {
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+              className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'bg-nebula-500 text-white shadow-glow-sm'
                   : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
@@ -1129,6 +1130,8 @@ function SpectrumContent() {
               )}
             </button>
           ))}
+        </div>
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
         </div>
 
         {/* ──────────────── BAND ALLOCATIONS TAB ──────────────── */}
@@ -1157,7 +1160,7 @@ function SpectrumContent() {
                       title={`${alloc.bandName}: ${formatFrequency(alloc.frequencyMin)} - ${formatFrequency(alloc.frequencyMax)}`}
                     >
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-[10px] font-bold text-white/80 truncate px-1">
+                        <span className="text-xs font-bold text-white/80 truncate px-1">
                           {widthPercent > 8 ? alloc.bandName : ''}
                         </span>
                       </div>
@@ -1193,7 +1196,7 @@ function SpectrumContent() {
                 <select
                   value={statusFilter}
                   onChange={(e) => handleStatusFilterChange(e.target.value)}
-                  className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-nebula-500/50"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">All Statuses</option>
                   {OPERATOR_FILING_STATUSES.map((s) => (
@@ -1204,7 +1207,7 @@ function SpectrumContent() {
                 <select
                   value={bandFilter}
                   onChange={(e) => handleBandFilterChange(e.target.value)}
-                  className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-nebula-500/50"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   <option value="">All Bands</option>
                   {filingBands.map((band) => {

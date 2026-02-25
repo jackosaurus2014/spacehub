@@ -124,12 +124,12 @@ function RoleCard({ role, experienceLevel }: { role: SalaryRole; experienceLevel
       {/* Skills */}
       <div className="flex flex-wrap gap-1.5 mb-3">
         {role.skills.slice(0, expanded ? undefined : 3).map((skill) => (
-          <span key={skill} className="text-[10px] px-2 py-0.5 rounded bg-slate-700/50 text-slate-400">
+          <span key={skill} className="text-xs px-2 py-0.5 rounded bg-slate-700/50 text-slate-400">
             {skill}
           </span>
         ))}
         {!expanded && role.skills.length > 3 && (
-          <span className="text-[10px] px-2 py-0.5 rounded bg-slate-700/30 text-slate-500">
+          <span className="text-xs px-2 py-0.5 rounded bg-slate-700/30 text-slate-500">
             +{role.skills.length - 3}
           </span>
         )}
@@ -150,19 +150,19 @@ function RoleCard({ role, experienceLevel }: { role: SalaryRole; experienceLevel
             <h4 className="text-xs font-medium text-slate-400 mb-2">Salary by Experience</h4>
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-slate-700/30 rounded-lg p-2 text-center">
-                <div className="text-[10px] text-slate-500 mb-1">Junior (0-3 yr)</div>
+                <div className="text-xs text-slate-500 mb-1">Junior (0-3 yr)</div>
                 <div className="text-sm font-medium text-slate-300">
                   {formatSalary(role.experienceLevels.junior.min)} - {formatSalary(role.experienceLevels.junior.max)}
                 </div>
               </div>
               <div className="bg-slate-700/30 rounded-lg p-2 text-center">
-                <div className="text-[10px] text-slate-500 mb-1">Mid (3-7 yr)</div>
+                <div className="text-xs text-slate-500 mb-1">Mid (3-7 yr)</div>
                 <div className="text-sm font-medium text-slate-300">
                   {formatSalary(role.experienceLevels.mid.min)} - {formatSalary(role.experienceLevels.mid.max)}
                 </div>
               </div>
               <div className="bg-slate-700/30 rounded-lg p-2 text-center">
-                <div className="text-[10px] text-slate-500 mb-1">Senior (7+ yr)</div>
+                <div className="text-xs text-slate-500 mb-1">Senior (7+ yr)</div>
                 <div className="text-sm font-medium text-slate-300">
                   {formatSalary(role.experienceLevels.senior.min)} - {formatSalary(role.experienceLevels.senior.max)}
                 </div>
@@ -478,7 +478,7 @@ function SalaryBenchmarksContent() {
                     setSearchQuery(e.target.value);
                     updateUrl({ search: e.target.value || null });
                   }}
-                  className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 />
               </div>
               <select
@@ -489,7 +489,7 @@ function SalaryBenchmarksContent() {
                   setExperienceLevel(val);
                   updateUrl({ experience: val === 'all' ? null : val });
                 }}
-                className="bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-cyan-500"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 <option value="all">All Experience Levels</option>
                 <option value="junior">Junior (0-3 years)</option>
@@ -504,7 +504,7 @@ function SalaryBenchmarksContent() {
                   setLocationFilter(val);
                   updateUrl({ location: val || null });
                 }}
-                className="bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-cyan-500"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 <option value="">All Locations</option>
                 <option value="US">United States</option>

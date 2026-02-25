@@ -386,7 +386,7 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
               {primaryIsOperator && (
                 <Link
                   href="/orbital-slots?tab=operators"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
                 >
                   View {event.primaryObject} operator &rarr;
                 </Link>
@@ -394,7 +394,7 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
               {secondaryIsOperator && (
                 <Link
                   href="/orbital-slots?tab=operators"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
                 >
                   View {event.secondaryObject} operator &rarr;
                 </Link>
@@ -482,7 +482,7 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
           {isActivePayload && (
             <Link
               href="/orbital-slots?tab=operators"
-              className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded text-[10px] font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+              className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
             >
               View in Operator Registry &rarr;
             </Link>
@@ -1532,7 +1532,7 @@ function DebrisTrackingTab() {
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
             Kessler Index
           </div>
-          <div className={`text-[10px] mt-0.5 ${getKesslerColor(stats?.kesslerRiskIndex || 0)}`}>
+          <div className={`text-xs mt-0.5 ${getKesslerColor(stats?.kesslerRiskIndex || 0)}`}>
             {getKesslerLabel(stats?.kesslerRiskIndex || 0)}
           </div>
         </div>

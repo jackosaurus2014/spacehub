@@ -142,7 +142,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(listing.specifications).map(([key, val]) => (
                     <div key={key} className="bg-slate-800/50 rounded p-2">
-                      <div className="text-[10px] text-slate-500 uppercase">{key}</div>
+                      <div className="text-xs text-slate-500 uppercase">{key}</div>
                       <div className="text-xs text-slate-300">{String(val)}</div>
                     </div>
                   ))}

@@ -341,7 +341,7 @@ function ApiExplorerPageInner() {
                 <select
                   value={baseUrl}
                   onChange={(e) => setBaseUrl(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   {BASE_URL_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -359,7 +359,7 @@ function ApiExplorerPageInner() {
                     const ep = ALL_ENDPOINTS.find((ep) => ep.operationId === e.target.value);
                     if (ep) setSelectedEndpoint(ep);
                   }}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 >
                   {endpointOptions.map((group) => (
                     <optgroup key={group.label} label={group.label}>
@@ -401,7 +401,7 @@ function ApiExplorerPageInner() {
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
                     placeholder="snx_YOUR_API_KEY"
-                    className="w-full px-3 py-2 pr-20 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white placeholder-slate-500 font-mono focus:outline-none focus:border-cyan-500"
+                    className="w-full pr-20 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 font-mono focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   />
                   <button
                     onClick={() => setShowApiKey(!showApiKey)}
@@ -435,7 +435,7 @@ function ApiExplorerPageInner() {
                             onChange={(e) =>
                               setParamValues((prev) => ({ ...prev, [param.name]: e.target.value }))
                             }
-                            className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                           >
                             <option value="">-- any --</option>
                             {param.enum.map((v) => (
@@ -452,7 +452,7 @@ function ApiExplorerPageInner() {
                               setParamValues((prev) => ({ ...prev, [param.name]: e.target.value }))
                             }
                             placeholder={param.description}
-                            className="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                           />
                         )}
                       </div>

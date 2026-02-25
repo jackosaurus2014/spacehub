@@ -150,7 +150,7 @@ function LogStatusBadge({ status }: { status: string }) {
     status === 'partial' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
     'bg-red-500/20 text-red-400 border-red-500/30';
   return (
-    <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${cls}`}>
+    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cls}`}>
       {status}
     </span>
   );
@@ -175,7 +175,7 @@ function HeatmapCell({ entry }: { entry: HeatmapEntry }) {
       title={`${entry.module} - TTL: ${entry.ttlHours}h - Priority: ${entry.priority}`}
     >
       <div className="text-white text-xs font-medium truncate">{entry.module}</div>
-      <div className={`text-[10px] mt-0.5 ${textColor}`}>{entry.ageLabel}</div>
+      <div className={`text-xs mt-0.5 ${textColor}`}>{entry.ageLabel}</div>
     </div>
   );
 }
@@ -387,7 +387,7 @@ export default function DataFreshnessPage() {
                     <button
                       key={s}
                       onClick={() => setSortBy(s)}
-                      className={`px-2.5 py-1 text-[10px] font-medium transition-colors capitalize ${
+                      className={`px-2.5 py-1 text-xs font-medium transition-colors capitalize ${
                         sortBy === s
                           ? 'bg-cyan-500/20 text-cyan-300'
                           : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
@@ -401,7 +401,7 @@ export default function DataFreshnessPage() {
             </div>
           </div>
           <div className="p-4">
-            <div className="flex flex-wrap gap-4 mb-3 text-[10px]">
+            <div className="flex flex-wrap gap-4 mb-3 text-xs">
               <div className="flex items-center gap-1.5">
                 <span className="w-3 h-3 rounded bg-green-500/30 border border-green-500/50" />
                 <span className="text-slate-400">Fresh (within TTL)</span>

@@ -28,7 +28,7 @@ function getTierBadge(tier: number) {
   };
   const style = styles[tier] || styles[3];
   return (
-    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${style.bg} ${style.text}`}>
+    <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${style.bg} ${style.text}`}>
       {style.label}
     </span>
   );
@@ -134,7 +134,7 @@ export default function CompanySelector({
           }
           disabled={isFull}
           aria-label="Search companies to compare"
-          className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <svg
           className="absolute left-3 top-3.5 w-4 h-4 text-slate-500"

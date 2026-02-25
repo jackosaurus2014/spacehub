@@ -118,7 +118,7 @@ function formatShortDate(dateStr: string): string {
 function getTypeBadge(type: DealType) {
   const style = TYPE_STYLES[type];
   return (
-    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${style.bg} ${style.text} border border-current/20 uppercase tracking-wider`}>
+    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${style.bg} ${style.text} border border-current/20 uppercase tracking-wider`}>
       {style.label}
     </span>
   );
@@ -148,7 +148,7 @@ function StatCard({ label, value, subValue, color }: { label: string; value: str
         {label}
       </div>
       {subValue && (
-        <div className="text-slate-500 text-[10px] mt-0.5">{subValue}</div>
+        <div className="text-slate-500 text-xs mt-0.5">{subValue}</div>
       )}
     </motion.div>
   );
@@ -226,7 +226,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
                   </span>
                 ))}
                 {investors.length > 0 && (
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-xs text-slate-500">
                     + {investors.length} investor{investors.length > 1 ? 's' : ''}
                   </span>
                 )}
@@ -246,7 +246,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
                   </span>
                 ))}
                 {deal.stage && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400 border border-slate-600/30">
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400 border border-slate-600/30">
                     {deal.stage}
                   </span>
                 )}
@@ -292,7 +292,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
                 {/* Investors list */}
                 {investors.length > 0 && (
                   <div className="mb-3">
-                    <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Investors: </span>
+                    <span className="text-xs uppercase tracking-wider text-slate-500 font-semibold">Investors: </span>
                     <span className="text-xs text-slate-400">
                       {investors.map((inv, i) => (
                         <React.Fragment key={inv.company}>
@@ -538,7 +538,7 @@ function DealsPageContent() {
                   placeholder="Search deals by company, title, or description..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 text-sm"
+                  className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 />
                 <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -550,7 +550,7 @@ function DealsPageContent() {
                 aria-label="Filter by deal amount"
                 value={amountRange}
                 onChange={(e) => setAmountRange(e.target.value)}
-                className="px-3 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               >
                 {AMOUNT_RANGES.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -563,7 +563,7 @@ function DealsPageContent() {
                 aria-label="Date from"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="px-3 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               />
 
               {/* Date to */}
@@ -572,7 +572,7 @@ function DealsPageContent() {
                 aria-label="Date to"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="px-3 py-2.5 bg-slate-900/50 border border-slate-700/50 rounded-lg text-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               />
 
               {hasFilters && (
@@ -637,7 +637,7 @@ function DealsPageContent() {
                           key={q.quarter}
                           className="flex-1 flex flex-col items-center gap-1"
                         >
-                          <div className="text-[10px] font-medium text-slate-400 truncate">
+                          <div className="text-xs font-medium text-slate-400 truncate">
                             {q.volume > 0 ? formatChartVolume(q.volume) : '--'}
                           </div>
                           <div className="w-full flex justify-center">
@@ -648,7 +648,7 @@ function DealsPageContent() {
                               }}
                             />
                           </div>
-                          <div className="text-[10px] text-slate-500 font-medium">
+                          <div className="text-xs text-slate-500 font-medium">
                             {q.quarter}
                           </div>
                           <div className="text-[9px] text-slate-600">

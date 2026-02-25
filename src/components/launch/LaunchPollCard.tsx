@@ -146,7 +146,7 @@ export default function LaunchPollCard({ eventId }: LaunchPollCardProps) {
               })}
 
               {totalVotes > 0 && (
-                <div className="text-slate-500 text-[10px] text-center pt-1">
+                <div className="text-slate-500 text-xs text-center pt-1">
                   {totalVotes} vote{totalVotes !== 1 ? 's' : ''}
                 </div>
               )}

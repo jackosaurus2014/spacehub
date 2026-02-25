@@ -111,11 +111,11 @@ function ProtestsOverviewTab({ protests }: { protests: BidProtest[] }) {
       </div>
 
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="text" placeholder="Search case, protester, awardee..." aria-label="Search bid protests" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2 text-sm placeholder:text-star-300/50 focus:outline-none focus:border-nebula-500/50" />
-        <select value={forumFilter} onChange={(e) => setForumFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Forums</option>{uniqueForums.map((f) => (<option key={f} value={f}>{PROTEST_FORUM_STYLES[f].label}</option>))}</select>
-        <select value={outcomeFilter} onChange={(e) => setOutcomeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Outcomes</option>{uniqueOutcomes.map((o) => (<option key={o} value={o}>{PROTEST_OUTCOME_STYLES[o].label}</option>))}</select>
-        <select value={programFilter} onChange={(e) => setProgramFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Programs</option>{uniquePrograms.map((p) => (<option key={p} value={p}>{PROTEST_PROGRAM_LABELS[p]}</option>))}</select>
-        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
+        <input type="text" placeholder="Search case, protester, awardee..." aria-label="Search bid protests" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none" />
+        <select value={forumFilter} onChange={(e) => setForumFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Forums</option>{uniqueForums.map((f) => (<option key={f} value={f}>{PROTEST_FORUM_STYLES[f].label}</option>))}</select>
+        <select value={outcomeFilter} onChange={(e) => setOutcomeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Outcomes</option>{uniqueOutcomes.map((o) => (<option key={o} value={o}>{PROTEST_OUTCOME_STYLES[o].label}</option>))}</select>
+        <select value={programFilter} onChange={(e) => setProgramFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Programs</option>{uniquePrograms.map((p) => (<option key={p} value={p}>{PROTEST_PROGRAM_LABELS[p]}</option>))}</select>
+        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} cases</span>
       </div></div>
 
@@ -418,7 +418,8 @@ function ProtestsAnalysisTab({ protests }: { protests: BidProtest[] }) {
 
       <div className="card-elevated p-5">
         <h4 className="text-sm font-semibold text-star-300 uppercase tracking-wider mb-4">All Cases Summary</h4>
-        <div className="overflow-x-auto">
+        {/* Desktop Table */}
+        <div className="overflow-x-auto hidden md:block">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/10">
@@ -449,6 +450,46 @@ function ProtestsAnalysisTab({ protests }: { protests: BidProtest[] }) {
               })}
             </tbody>
           </table>
+        </div>
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-3">
+          {[...protests].sort((a, b) => b.yearDecided - a.yearDecided).map((protest) => {
+            const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome];
+            const forumStyle = PROTEST_FORUM_STYLES[protest.forum];
+            return (
+              <div key={protest.id} className="bg-white/5 border border-white/10 rounded-lg p-3">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-white font-medium text-sm truncate">{protest.shortTitle}</div>
+                    <div className="text-star-300 text-xs font-mono">{protest.caseNumber}</div>
+                  </div>
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded flex-shrink-0 ${outcomeStyle.bg} ${outcomeStyle.text}`}>{outcomeStyle.label}</span>
+                </div>
+                <div className="space-y-1 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-star-300/70">Forum</span>
+                    <span className={`font-medium px-2 py-0.5 rounded ${forumStyle.bg} ${forumStyle.text}`}>{forumStyle.label}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-star-300/70">Protester</span>
+                    <span className="text-star-300 truncate ml-2">{protest.protester}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-star-300/70">Agency</span>
+                    <span className="text-star-300">{protest.agency}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-star-300/70">Value</span>
+                    <span className="text-white font-medium">{protest.contractValue}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-star-300/70">Year</span>
+                    <span className="text-star-300">{protest.yearDecided}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

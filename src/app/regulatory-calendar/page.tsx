@@ -392,13 +392,13 @@ function MonthView({
                         className="flex items-center gap-1"
                       >
                         <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${AGENCY_COLORS[d.agency].dot}`} />
-                        <span className="text-[10px] md:text-xs text-slate-400 truncate leading-tight">
+                        <span className="text-xs md:text-xs text-slate-400 truncate leading-tight">
                           {d.title.length > 20 ? d.title.substring(0, 20) + '...' : d.title}
                         </span>
                       </div>
                     ))}
                     {dayItems.length > 3 && (
-                      <span className="text-[10px] text-slate-500">+{dayItems.length - 3} more</span>
+                      <span className="text-xs text-slate-500">+{dayItems.length - 3} more</span>
                     )}
                   </div>
                 )}
@@ -758,7 +758,7 @@ export default function RegulatoryCalendarPage() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as DeadlineType | '')}
-              className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-nebula-500/50"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="">All Types</option>
               {ALL_TYPES.map((t) => (
@@ -770,7 +770,7 @@ export default function RegulatoryCalendarPage() {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value as DeadlinePriority | '')}
-              className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-nebula-500/50"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="">All Priorities</option>
               {ALL_PRIORITIES.map((p) => (

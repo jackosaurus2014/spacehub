@@ -120,12 +120,12 @@ export default function MarketplacePage() {
             title="Space Industry Marketplace"
             subtitle="Connect with verified providers, submit RFQs, and procure space services"
           />
-          <div className="flex justify-center gap-3 mt-6">
+          <div className="flex flex-wrap justify-center gap-3 mt-6">
             <Link href="/marketplace/search">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-semibold transition-all"
+                className="px-6 py-3 min-h-[44px] bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-semibold transition-all"
               >
                 Browse Services
               </motion.button>
@@ -134,7 +134,7 @@ export default function MarketplacePage() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-semibold transition-all"
+                className="px-6 py-3 min-h-[44px] bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-semibold transition-all"
               >
                 Post an RFQ
               </motion.button>
@@ -143,7 +143,7 @@ export default function MarketplacePage() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-2.5 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-purple-500/30 text-purple-300 hover:border-purple-400/50 rounded-lg font-semibold transition-all flex items-center gap-2"
+                className="px-6 py-3 min-h-[44px] bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-purple-500/30 text-purple-300 hover:border-purple-400/50 rounded-lg font-semibold transition-all flex items-center gap-2"
               >
                 <span>🤖</span> AI Copilot
               </motion.button>
@@ -314,7 +314,7 @@ export default function MarketplacePage() {
                 <p className="text-xs text-slate-400 leading-relaxed mb-3">{feature.desc}</p>
                 <button
                   onClick={() => toast.info(`We'll notify you when ${feature.title} launches!`, 'Interest Registered')}
-                  className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                  className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors py-2 min-h-[44px]"
                 >
                   Notify Me →
                 </button>
@@ -334,14 +334,14 @@ export default function MarketplacePage() {
           <p className="text-sm text-slate-400 mb-4">
             Claim your company profile, list your services, and start receiving RFQs from buyers worldwide.
           </p>
-          <div className="flex justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-3">
             <Link href="/company-profiles">
-              <button className="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors">
+              <button className="px-5 py-2.5 min-h-[44px] bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors">
                 Claim Your Profile
               </button>
             </Link>
             <Link href="/provider-dashboard">
-              <button className="px-5 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors">
+              <button className="px-5 py-2.5 min-h-[44px] bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors">
                 Provider Dashboard
               </button>
             </Link>

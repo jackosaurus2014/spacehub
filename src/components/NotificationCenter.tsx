@@ -245,7 +245,7 @@ export default function NotificationCenter() {
 
         {/* Unread Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-cyan-500 rounded-full shadow-lg shadow-cyan-500/30">
+          <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-xs font-bold text-white bg-cyan-500 rounded-full shadow-lg shadow-cyan-500/30">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -358,7 +358,7 @@ function NotificationContent({ notification }: { notification: Notification }) {
         <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
           {notification.message}
         </p>
-        <p className="text-[10px] text-slate-400 mt-1">
+        <p className="text-xs text-slate-400 mt-1">
           {formatRelativeTime(notification.timestamp)}
         </p>
       </div>

@@ -128,7 +128,7 @@ export default function MissionTimeline({ currentPhaseId, missionTimeSeconds }: 
                         {phase.name}
                       </span>
                       {isCurrent && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 uppercase tracking-wider">
+                        <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 uppercase tracking-wider">
                           Now
                         </span>
                       )}
@@ -179,7 +179,7 @@ export default function MissionTimeline({ currentPhaseId, missionTimeSeconds }: 
                     )}
 
                     {(isCompleted || isCurrent) && (
-                      <span className="text-[10px] font-mono text-slate-500 mt-0.5 block">
+                      <span className="text-xs font-mono text-slate-500 mt-0.5 block">
                         {formatMissionTime(phase.typicalTPlus)}
                       </span>
                     )}

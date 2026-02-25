@@ -118,7 +118,7 @@ function getTierBadge(tier: number) {
   };
   const style = styles[tier] || styles[3];
   return (
-    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${style.bg} ${style.text}`}>
+    <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${style.bg} ${style.text}`}>
       {style.label}
     </span>
   );
@@ -192,7 +192,7 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
             <div className="grid grid-cols-2 gap-2 mb-3">
               {company.totalFunding && (
                 <div className="bg-slate-800/50 rounded-lg p-2">
-                  <div className="text-[10px] text-slate-500 uppercase tracking-wider">Funding</div>
+                  <div className="text-xs text-slate-500 uppercase tracking-wider">Funding</div>
                   <div className="text-sm font-semibold text-emerald-400">
                     {formatMoney(company.totalFunding)}
                   </div>
@@ -200,21 +200,21 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
               )}
               {company.isPublic && company.marketCap ? (
                 <div className="bg-slate-800/50 rounded-lg p-2">
-                  <div className="text-[10px] text-slate-500 uppercase tracking-wider">Market Cap</div>
+                  <div className="text-xs text-slate-500 uppercase tracking-wider">Market Cap</div>
                   <div className="text-sm font-semibold text-blue-400">
                     {formatMoney(company.marketCap)}
                   </div>
                 </div>
               ) : company.revenueEstimate ? (
                 <div className="bg-slate-800/50 rounded-lg p-2">
-                  <div className="text-[10px] text-slate-500 uppercase tracking-wider">Revenue</div>
+                  <div className="text-xs text-slate-500 uppercase tracking-wider">Revenue</div>
                   <div className="text-sm font-semibold text-blue-400">
                     {formatMoney(company.revenueEstimate)}
                   </div>
                 </div>
               ) : company.valuation ? (
                 <div className="bg-slate-800/50 rounded-lg p-2">
-                  <div className="text-[10px] text-slate-500 uppercase tracking-wider">Valuation</div>
+                  <div className="text-xs text-slate-500 uppercase tracking-wider">Valuation</div>
                   <div className="text-sm font-semibold text-purple-400">
                     {formatMoney(company.valuation)}
                   </div>
@@ -225,19 +225,19 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
             {/* Tags */}
             <div className="flex flex-wrap gap-1 mb-3">
               {company.sector && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-300 border border-slate-600/30">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-300 border border-slate-600/30">
                   {getSectorIcon(company.sector)} {company.sector}
                 </span>
               )}
               {company.tags?.slice(0, 2).map(tag => (
-                <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
+                <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
                   {tag}
                 </span>
               ))}
             </div>
 
             {/* Bottom Stats */}
-            <div className="flex items-center justify-between text-[10px] text-slate-500 pt-2 border-t border-slate-700/50">
+            <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-700/50">
               <div className="flex gap-3">
                 {company._count.products > 0 && (
                   <span>{company._count.products} products</span>
@@ -412,7 +412,7 @@ export default function CompanyProfilesPage() {
                 placeholder="Search companies by name, ticker, or location..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               />
               <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -424,7 +424,7 @@ export default function CompanyProfilesPage() {
               aria-label="Filter by sector"
               value={sector}
               onChange={(e) => setSector(e.target.value)}
-              className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               {SECTOR_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -435,7 +435,7 @@ export default function CompanyProfilesPage() {
               aria-label="Filter by tier"
               value={tier}
               onChange={(e) => setTier(e.target.value)}
-              className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               {TIER_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -446,7 +446,7 @@ export default function CompanyProfilesPage() {
               aria-label="Filter by status"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               {STATUS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -462,7 +462,7 @@ export default function CompanyProfilesPage() {
                 setSortBy(field);
                 setSortOrder(order);
               }}
-              className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
             >
               <option value="tier-asc">Sort: Tier (1→3)</option>
               <option value="name-asc">Sort: Name (A→Z)</option>
@@ -477,7 +477,8 @@ export default function CompanyProfilesPage() {
             <div className="flex bg-slate-800/50 border border-slate-700/50 rounded-lg overflow-hidden">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`px-3 py-2.5 text-sm transition-colors ${viewMode === 'grid' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-400 hover:text-white'}`}
+                aria-label="Grid view"
+                className={`min-w-[44px] min-h-[44px] px-3 py-2.5 text-sm transition-colors flex items-center justify-center ${viewMode === 'grid' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-400 hover:text-white'}`}
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
                   <path d="M1 2.5A1.5 1.5 0 012.5 1h3A1.5 1.5 0 017 2.5v3A1.5 1.5 0 015.5 7h-3A1.5 1.5 0 011 5.5v-3zm8 0A1.5 1.5 0 0110.5 1h3A1.5 1.5 0 0115 2.5v3A1.5 1.5 0 0113.5 7h-3A1.5 1.5 0 019 5.5v-3zm-8 8A1.5 1.5 0 012.5 9h3A1.5 1.5 0 017 10.5v3A1.5 1.5 0 015.5 15h-3A1.5 1.5 0 011 13.5v-3zm8 0A1.5 1.5 0 0110.5 9h3a1.5 1.5 0 011.5 1.5v3a1.5 1.5 0 01-1.5 1.5h-3A1.5 1.5 0 019 13.5v-3z"/>
@@ -485,7 +486,8 @@ export default function CompanyProfilesPage() {
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-3 py-2.5 text-sm transition-colors ${viewMode === 'list' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-400 hover:text-white'}`}
+                aria-label="List view"
+                className={`min-w-[44px] min-h-[44px] px-3 py-2.5 text-sm transition-colors flex items-center justify-center ${viewMode === 'list' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-400 hover:text-white'}`}
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
                   <path fillRule="evenodd" d="M2.5 12a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z"/>
@@ -504,16 +506,19 @@ export default function CompanyProfilesPage() {
               />
             </div>
             {stats && stats.sectors.length > 0 && (
-              <div className="flex gap-2 overflow-x-auto max-w-full pb-1 scrollbar-hide">
-                {stats.sectors.slice(0, 5).map(s => (
-                  <button
-                    key={s.sector}
-                    onClick={() => setSector(s.sector || '')}
-                    className="px-2 py-0.5 rounded bg-slate-800/50 hover:bg-slate-700/50 transition-colors whitespace-nowrap flex-shrink-0"
-                  >
-                    {getSectorIcon(s.sector)} {s.sector} ({s.count})
-                  </button>
-                ))}
+              <div className="relative">
+                <div className="flex gap-2 overflow-x-auto max-w-full pb-1 scrollbar-hide">
+                  {stats.sectors.slice(0, 5).map(s => (
+                    <button
+                      key={s.sector}
+                      onClick={() => setSector(s.sector || '')}
+                      className="px-3 py-1.5 min-h-[44px] rounded bg-slate-800/50 hover:bg-slate-700/50 transition-colors whitespace-nowrap flex-shrink-0 text-xs"
+                    >
+                      {getSectorIcon(s.sector)} {s.sector} ({s.count})
+                    </button>
+                  ))}
+                </div>
+                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-900 to-transparent pointer-events-none sm:hidden" />
               </div>
             )}
           </div>
@@ -594,19 +599,19 @@ export default function CompanyProfilesPage() {
                       {company.totalFunding && (
                         <div className="text-right">
                           <div className="text-emerald-400 font-semibold">{formatMoney(company.totalFunding)}</div>
-                          <div className="text-[10px] text-slate-500">funding</div>
+                          <div className="text-xs text-slate-500">funding</div>
                         </div>
                       )}
                       {company.isPublic && company.marketCap ? (
                         <div className="text-right">
                           <div className="text-blue-400 font-semibold">{formatMoney(company.marketCap)}</div>
-                          <div className="text-[10px] text-slate-500">market cap</div>
+                          <div className="text-xs text-slate-500">market cap</div>
                         </div>
                       ) : null}
                       {company.employeeRange && (
                         <div className="text-right w-20">
                           <div className="text-slate-300">{company.employeeRange}</div>
-                          <div className="text-[10px] text-slate-500">employees</div>
+                          <div className="text-xs text-slate-500">employees</div>
                         </div>
                       )}
                     </div>

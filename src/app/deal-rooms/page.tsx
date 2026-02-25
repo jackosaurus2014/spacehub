@@ -623,7 +623,7 @@ function DealRoomsPageInner() {
                       </svg>
                     </button>
                   </div>
-                  <p className="text-[10px] text-slate-500 mt-1">Share this code to invite others</p>
+                  <p className="text-xs text-slate-500 mt-1">Share this code to invite others</p>
                 </div>
               )}
             </div>
@@ -725,7 +725,7 @@ function DealRoomsPageInner() {
                             value={uploadForm.name}
                             onChange={(e) => setUploadForm(f => ({ ...f, name: e.target.value }))}
                             placeholder="Q4 2025 Pitch Deck"
-                            className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                             required
                           />
                         </div>
@@ -734,7 +734,7 @@ function DealRoomsPageInner() {
                           <select
                             value={uploadForm.category}
                             onChange={(e) => setUploadForm(f => ({ ...f, category: e.target.value }))}
-                            className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 focus:outline-none focus:border-cyan-500/50"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                           >
                             {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
                               <option key={key} value={key}>{label}</option>
@@ -746,7 +746,7 @@ function DealRoomsPageInner() {
                           <select
                             value={uploadForm.fileType}
                             onChange={(e) => setUploadForm(f => ({ ...f, fileType: e.target.value }))}
-                            className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 focus:outline-none focus:border-cyan-500/50"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                           >
                             {Object.entries(FILE_TYPE_ICONS).map(([key, label]) => (
                               <option key={key} value={key}>.{key} ({label})</option>
@@ -760,7 +760,7 @@ function DealRoomsPageInner() {
                             value={uploadForm.fileSize || ''}
                             onChange={(e) => setUploadForm(f => ({ ...f, fileSize: parseInt(e.target.value) || 0 }))}
                             placeholder="1048576"
-                            className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                           />
                         </div>
                         <div className="md:col-span-2">
@@ -770,7 +770,7 @@ function DealRoomsPageInner() {
                             value={uploadForm.description}
                             onChange={(e) => setUploadForm(f => ({ ...f, description: e.target.value }))}
                             placeholder="Latest investor presentation with Q4 financials"
-                            className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                           />
                         </div>
                         <div className="md:col-span-2 flex gap-3">
@@ -865,13 +865,13 @@ function DealRoomsPageInner() {
                       value={inviteForm.email}
                       onChange={(e) => setInviteForm(f => ({ ...f, email: e.target.value }))}
                       placeholder="investor@example.com"
-                      className="flex-1 px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                      className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                       required
                     />
                     <select
                       value={inviteForm.role}
                       onChange={(e) => setInviteForm(f => ({ ...f, role: e.target.value }))}
-                      className="px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 focus:outline-none focus:border-cyan-500/50"
+                      className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                     >
                       <option value="viewer">Viewer</option>
                       <option value="admin">Admin</option>
@@ -1012,7 +1012,7 @@ function DealRoomsPageInner() {
                       type="text"
                       value={editForm.name}
                       onChange={(e) => setEditForm(f => ({ ...f, name: e.target.value }))}
-                      className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 focus:outline-none focus:border-cyan-500/50"
+                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                       required
                     />
                   </div>
@@ -1022,7 +1022,7 @@ function DealRoomsPageInner() {
                       value={editForm.description}
                       onChange={(e) => setEditForm(f => ({ ...f, description: e.target.value }))}
                       rows={3}
-                      className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 focus:outline-none focus:border-cyan-500/50 resize-none"
+                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
                     />
                   </div>
                   <div className="flex items-center gap-3">
@@ -1045,7 +1045,7 @@ function DealRoomsPageInner() {
                         onChange={(e) => setEditForm(f => ({ ...f, ndaText: e.target.value }))}
                         rows={6}
                         placeholder="Enter your Non-Disclosure Agreement text here..."
-                        className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 resize-none"
+                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
                       />
                     </div>
                   )}
@@ -1157,7 +1157,7 @@ function DealRoomsPageInner() {
                   value={createForm.name}
                   onChange={(e) => setCreateForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="Series A Due Diligence - Acme Space Corp"
-                  className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                   required
                 />
               </div>
@@ -1168,7 +1168,7 @@ function DealRoomsPageInner() {
                   onChange={(e) => setCreateForm(f => ({ ...f, description: e.target.value }))}
                   rows={3}
                   placeholder="Confidential materials for Series A investors reviewing Acme Space Corp"
-                  className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 resize-none"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
                 />
               </div>
               <div>
@@ -1178,7 +1178,7 @@ function DealRoomsPageInner() {
                   value={createForm.companySlug}
                   onChange={(e) => setCreateForm(f => ({ ...f, companySlug: e.target.value }))}
                   placeholder="acme-space-corp"
-                  className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
                 />
                 <p className="text-xs text-slate-500 mt-1">Link this room to a company profile on SpaceNexus</p>
               </div>
@@ -1202,7 +1202,7 @@ function DealRoomsPageInner() {
                     onChange={(e) => setCreateForm(f => ({ ...f, ndaText: e.target.value }))}
                     rows={6}
                     placeholder="Enter your Non-Disclosure Agreement text here..."
-                    className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 resize-none"
+                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
                   />
                 </div>
               )}
@@ -1235,7 +1235,7 @@ function DealRoomsPageInner() {
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value)}
                 placeholder="Enter 12-character access code"
-                className="flex-1 px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 font-mono"
+                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none font-mono"
                 required
               />
               <button

@@ -460,7 +460,7 @@ export default function MobileBottomNav() {
 
                 {/* Label */}
                 <span
-                  className={`mt-1 text-[10px] font-medium transition-colors duration-200 ${
+                  className={`mt-1 text-xs font-medium transition-colors duration-200 ${
                     active ? 'text-cyan-400' : 'text-slate-400'
                   }`}
                 >
@@ -502,7 +502,7 @@ export default function MobileBottomNav() {
             </div>
 
             <span
-              className={`mt-1 text-[10px] font-medium transition-colors duration-200 ${
+              className={`mt-1 text-xs font-medium transition-colors duration-200 ${
                 moreOpen || moreRouteActive ? 'text-cyan-400' : 'text-slate-400'
               }`}
             >
