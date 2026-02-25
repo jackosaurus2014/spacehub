@@ -388,7 +388,7 @@ function ReportCard({
   const isPending = report.status === 'pending';
 
   return (
-    <div className="bg-slate-800/50 rounded-lg border border-slate-700 shadow-sm p-4">
+    <div className="card p-4">
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-base font-semibold text-white">{reasonLabel}</span>
@@ -668,7 +668,7 @@ function UserCard({
   const isMutedActive = user.isMuted && user.mutedUntil && new Date(user.mutedUntil) > new Date();
 
   return (
-    <div className="bg-slate-800/50 rounded-lg border border-slate-700 shadow-sm p-4">
+    <div className="card p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -901,7 +901,7 @@ function ActionLogTab() {
   }
 
   return (
-    <div className="bg-slate-800/50 rounded-lg border border-slate-700 shadow-sm overflow-hidden">
+    <div className="card overflow-hidden">
       {/* Table header */}
       <div className="hidden sm:grid sm:grid-cols-5 gap-4 px-4 py-3 bg-slate-800 border-b border-slate-700 text-xs font-medium text-slate-400 uppercase tracking-wider">
         <div>Date</div>
@@ -1005,7 +1005,7 @@ function LoadingSkeleton() {
         {/* Cards skeleton */}
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-slate-800/50 rounded-lg border border-slate-700 shadow-sm p-4">
+            <div key={i} className="card p-4">
               <div className="flex items-center gap-2 mb-3">
                 <div className="h-5 w-32 bg-slate-700 rounded animate-pulse" />
                 <div className="h-5 w-16 bg-slate-700 rounded-full animate-pulse" />

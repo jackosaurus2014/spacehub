@@ -15,6 +15,7 @@ import SponsorBadge from '@/components/company/SponsorBadge';
 import SponsorBanner from '@/components/company/SponsorBanner';
 import LeadCaptureForm from '@/components/company/LeadCaptureForm';
 import SimilarCompanies from '@/components/company/SimilarCompanies';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -1109,6 +1110,199 @@ function RelationshipsTab({ company }: { company: CompanyDetail }) {
   );
 }
 
+// ─── Quick Stats Section ─────────────────────────────────────────────────────
+
+function QuickStatsSection({ company }: { company: CompanyDetail }) {
+  const stats: { label: string; value: string; icon: React.ReactNode }[] = [];
+
+  if (company.foundedYear) {
+    stats.push({
+      label: 'Founded',
+      value: String(company.foundedYear),
+      icon: (
+        <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      ),
+    });
+  }
+
+  if (company.employeeRange || company.employeeCount) {
+    stats.push({
+      label: 'Employees',
+      value: company.employeeRange || (company.employeeCount ? company.employeeCount.toLocaleString() : '—'),
+      icon: (
+        <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      ),
+    });
+  }
+
+  if (company.valuation || (company.isPublic && company.marketCap)) {
+    const val = company.isPublic && company.marketCap ? company.marketCap : company.valuation;
+    const label = company.isPublic && company.marketCap ? 'Market Cap' : 'Valuation';
+    stats.push({
+      label,
+      value: fmt(val),
+      icon: (
+        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+        </svg>
+      ),
+    });
+  }
+
+  if (company.totalFunding) {
+    stats.push({
+      label: 'Total Funding',
+      value: fmt(company.totalFunding),
+      icon: (
+        <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+    });
+  }
+
+  if (company.summary.totalSatellites > 0) {
+    stats.push({
+      label: 'Satellites',
+      value: `${company.summary.activeSatellites} active / ${company.summary.totalSatellites}`,
+      icon: (
+        <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+    });
+  }
+
+  stats.push({
+    label: 'Tier',
+    value: `Tier ${company.tier}`,
+    icon: (
+      <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+      </svg>
+    ),
+  });
+
+  if (stats.length === 0) return null;
+
+  return (
+    <div className="border-t border-b border-slate-700/30 py-5 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        {stats.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 + i * 0.06, duration: 0.4, ease: 'easeOut' }}
+            className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/40 rounded-xl p-4 text-center hover:border-cyan-500/20 transition-colors"
+          >
+            <div className="flex justify-center mb-2">{stat.icon}</div>
+            <div className="text-white text-lg font-bold leading-tight">{stat.value}</div>
+            <div className="text-slate-400 text-xs mt-1">{stat.label}</div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Recent News Snippet ─────────────────────────────────────────────────────
+
+function RecentNewsSnippet({ companySlug, companyName }: { companySlug: string; companyName: string }) {
+  const [articles, setArticles] = useState<{ id: string; title: string; source: string; publishedAt: string; url: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchNews() {
+      try {
+        const res = await fetch(`/api/news?company=${companySlug}&limit=3`);
+        if (res.ok) {
+          const data = await res.json();
+          setArticles((data.articles || []).slice(0, 3));
+        }
+      } catch {
+        // Silently fail - supplementary feature
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchNews();
+  }, [companySlug]);
+
+  if (loading) {
+    return (
+      <div className="card p-5">
+        <h3 className="text-lg font-semibold text-white mb-4">Recent News</h3>
+        <div className="space-y-3">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="animate-pulse flex items-center gap-3">
+              <div className="h-4 bg-slate-700 rounded w-3/4" />
+              <div className="h-3 bg-slate-700/50 rounded w-1/4" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (articles.length === 0) return null;
+
+  return (
+    <div className="card p-5">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+          <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+          </svg>
+          Recent News
+        </h3>
+        <Link
+          href={`/news?search=${encodeURIComponent(companyName)}`}
+          className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+        >
+          View all &rarr;
+        </Link>
+      </div>
+      <div className="space-y-3">
+        {articles.map((article, i) => (
+          <motion.a
+            key={article.id}
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.08 }}
+            className="flex items-center justify-between gap-4 p-3 rounded-lg bg-slate-800/30 border border-slate-700/30 hover:border-cyan-500/20 transition-colors group"
+          >
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-medium text-white group-hover:text-cyan-400 transition-colors line-clamp-1">
+                {article.title}
+              </h4>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-slate-500">{article.source}</span>
+                <span className="text-xs text-slate-600">|</span>
+                <span className="text-xs text-slate-500">
+                  {new Date(article.publishedAt).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC',
+                  })}
+                </span>
+              </div>
+            </div>
+            <svg className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </motion.a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
 export default function CompanyProfileDetailPage() {
@@ -1428,6 +1622,9 @@ export default function CompanyProfileDetailPage() {
         </div>
       </motion.div>
 
+      {/* Quick Stats */}
+      <QuickStatsSection company={company} />
+
       {/* Tab Navigation */}
       <div className="card mb-6 overflow-hidden">
         <div className="flex overflow-x-auto scrollbar-hide">
@@ -1489,10 +1686,15 @@ export default function CompanyProfileDetailPage() {
         </motion.div>
       </AnimatePresence>
 
+      {/* Recent News Snippet */}
+      <ScrollReveal delay={0.1} className="mt-8">
+        <RecentNewsSnippet companySlug={company.slug} companyName={company.name} />
+      </ScrollReveal>
+
       {/* Similar Companies Section */}
-      <div className="mt-6">
+      <ScrollReveal delay={0.2} className="mt-6">
         <SimilarCompanies companySlug={company.slug} companyName={company.name} />
-      </div>
+      </ScrollReveal>
     </div>
   );
 }

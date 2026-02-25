@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { NewsArticle, NewsArticleCompanyTag } from '@/types';
+import WhyThisMatters from '@/components/news/WhyThisMatters';
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -165,48 +166,57 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
   }
 
   return (
-    <Link
-      href={article.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="card-interactive group flex flex-col overflow-hidden rounded-2xl h-[340px]"
-    >
-      <div className="relative h-36 flex-shrink-0">
-        {article.imageUrl ? (
-          <Image
-            src={article.imageUrl}
-            alt={article.title}
-            fill
-            className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-space-800 to-space-700 flex items-center justify-center">
-            {CATEGORY_LOGOS[article.category] ? (
-              <Image src={CATEGORY_LOGOS[article.category]} alt={article.category} width={48} height={48} className="opacity-60" />
-            ) : (
-              <span className="text-4xl opacity-30">🌌</span>
-            )}
-          </div>
-        )}
-      </div>
-      <div className="p-3 flex flex-col flex-1 min-h-0">
-        <div className="flex items-center gap-2 mb-1.5">
-          <span
-            className={`${categoryColor} text-white text-xs font-semibold px-2 py-0.5 rounded uppercase tracking-wide inline-flex items-center gap-1`}
-          >
-            {CATEGORY_LOGOS[article.category] && (
-              <Image src={CATEGORY_LOGOS[article.category]} alt={article.category + ' category'} width={12} height={12} className="inline-block" />
-            )}
-            {article.category}
-          </span>
-          <span className="text-slate-500 text-xs">{formatDate(article.publishedAt)}</span>
+    <div className="card-interactive group flex flex-col overflow-hidden rounded-2xl">
+      <a
+        href={article.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block"
+      >
+        <div className="relative h-36 flex-shrink-0">
+          {article.imageUrl ? (
+            <Image
+              src={article.imageUrl}
+              alt={article.title}
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-space-800 to-space-700 flex items-center justify-center">
+              {CATEGORY_LOGOS[article.category] ? (
+                <Image src={CATEGORY_LOGOS[article.category]} alt={article.category} width={48} height={48} className="opacity-60" />
+              ) : (
+                <span className="text-4xl opacity-30">🌌</span>
+              )}
+            </div>
+          )}
         </div>
-        <h3 className="font-bold text-white text-[15px] leading-snug line-clamp-2 group-hover:text-cyan-300 transition-colors">
-          {article.title}
-        </h3>
-        {article.summary && (
-          <p className="text-slate-400 text-sm mt-1.5 line-clamp-2 leading-relaxed">{article.summary}</p>
-        )}
+      </a>
+      <div className="p-3 flex flex-col flex-1 min-h-0">
+        <a
+          href={article.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block"
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <span
+              className={`${categoryColor} text-white text-xs font-semibold px-2 py-0.5 rounded uppercase tracking-wide inline-flex items-center gap-1`}
+            >
+              {CATEGORY_LOGOS[article.category] && (
+                <Image src={CATEGORY_LOGOS[article.category]} alt={article.category + ' category'} width={12} height={12} className="inline-block" />
+              )}
+              {article.category}
+            </span>
+            <span className="text-slate-500 text-xs">{formatDate(article.publishedAt)}</span>
+          </div>
+          <h3 className="font-bold text-white text-[15px] leading-snug line-clamp-2 group-hover:text-cyan-300 transition-colors">
+            {article.title}
+          </h3>
+          {article.summary && (
+            <p className="text-slate-400 text-sm mt-1.5 line-clamp-2 leading-relaxed">{article.summary}</p>
+          )}
+        </a>
         <div className="mt-auto pt-2">
           {article.companyTags && article.companyTags.length > 0 && (
             <CompanyBadges companies={article.companyTags} />
@@ -214,8 +224,13 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
           <div className="flex items-center mt-2 text-slate-500 text-xs">
             <span>{article.source}</span>
           </div>
+          <WhyThisMatters
+            articleTitle={article.title}
+            articleCategory={article.category}
+            articleSummary={article.summary || undefined}
+          />
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

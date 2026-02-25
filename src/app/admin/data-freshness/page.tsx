@@ -435,7 +435,7 @@ export default function DataFreshnessPage() {
           <div className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {Object.entries(data.tableTimestamps).map(([key, ts]) => (
-                <div key={key} className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/30">
+                <div key={key} className="card p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-slate-300 font-medium capitalize">{key}</span>
                     <AgeLabel minutes={ts.ageMinutes} />

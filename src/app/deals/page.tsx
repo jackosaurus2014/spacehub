@@ -139,7 +139,7 @@ function StatCard({ label, value, subValue, color }: { label: string; value: str
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center"
+      className="card p-5 text-center"
     >
       <div className={`text-2xl md:text-3xl font-bold ${color}`}>
         {value}
@@ -172,7 +172,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
       layout
     >
       <div
-        className="bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-slate-600/50 transition-all duration-200 cursor-pointer group"
+        className="card cursor-pointer group"
         onClick={() => setExpanded(!expanded)}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setExpanded(!expanded); }}
         role="button"
@@ -528,7 +528,7 @@ function DealsPageContent() {
 
         {/* Filters */}
         <ScrollReveal>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-4 mb-6">
+          <div className="card p-4 mb-6">
             <div className="flex flex-col lg:flex-row gap-3">
               {/* Search */}
               <div className="flex-1 relative">
@@ -619,7 +619,7 @@ function DealsPageContent() {
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Quarterly Volume Bar Chart (CSS-based) */}
-                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+                <div className="card p-6">
                   <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
                     <span className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-sm">
                       <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -661,7 +661,7 @@ function DealsPageContent() {
                 </div>
 
                 {/* Deals by Type Breakdown (CSS-based) */}
-                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+                <div className="card p-6">
                   <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
                     <span className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-sm">
                       <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -819,7 +819,7 @@ function DealsPageContent() {
 
         {/* Data Sources Footer */}
         <ScrollReveal>
-          <div className="bg-slate-800/30 rounded-xl border border-slate-700/30 p-6">
+          <div className="card p-6">
             <h4 className="text-slate-400 font-semibold text-sm mb-3">Data Sources</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs text-slate-500">
               <div>SEC Filings (EDGAR)</div>

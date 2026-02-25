@@ -495,7 +495,7 @@ export default function DeveloperPortalPage() {
                     description: 'Use your API key in the Authorization header to access any v1 endpoint.',
                   },
                 ].map((item) => (
-                  <div key={item.step} className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+                  <div key={item.step} className="card p-6">
                     <div className="w-10 h-10 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-lg mb-4">
                       {item.step}
                     </div>
@@ -518,7 +518,7 @@ export default function DeveloperPortalPage() {
                   { title: 'Usage Analytics', desc: 'Track your API usage by endpoint, status code, and time period' },
                   { title: 'Key Rotation', desc: 'Seamlessly rotate API keys without downtime' },
                 ].map((f) => (
-                  <div key={f.title} className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-4">
+                  <div key={f.title} className="card p-4">
                     <h3 className="font-semibold text-cyan-400 mb-1">{f.title}</h3>
                     <p className="text-sm text-slate-400">{f.desc}</p>
                   </div>
@@ -583,7 +583,7 @@ export default function DeveloperPortalPage() {
             <h2 className="text-2xl font-bold">Your API Keys</h2>
 
             {!session?.user ? (
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 text-center">
+              <div className="card p-8 text-center">
                 <p className="text-slate-400 mb-4">Sign in to manage your API keys.</p>
                 <Link
                   href="/login"
@@ -595,7 +595,7 @@ export default function DeveloperPortalPage() {
             ) : (
               <>
                 {/* Create New Key */}
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div className="card p-4">
                   <h3 className="text-lg font-semibold mb-3">Create New API Key</h3>
                   <div className="flex gap-3">
                     <input
@@ -618,7 +618,7 @@ export default function DeveloperPortalPage() {
 
                 {/* Key List */}
                 {apiKeys.length === 0 ? (
-                  <div className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-8 text-center">
+                  <div className="card p-8 text-center">
                     <p className="text-slate-400">No API keys yet. Create one above to get started.</p>
                   </div>
                 ) : (
@@ -645,7 +645,7 @@ export default function DeveloperPortalPage() {
             <h2 className="text-2xl font-bold">Usage Analytics</h2>
 
             {!session?.user ? (
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 text-center">
+              <div className="card p-8 text-center">
                 <p className="text-slate-400 mb-4">Sign in to view your usage analytics.</p>
                 <Link
                   href="/login"
@@ -655,7 +655,7 @@ export default function DeveloperPortalPage() {
                 </Link>
               </div>
             ) : !usage ? (
-              <div className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-8 text-center">
+              <div className="card p-8 text-center">
                 <p className="text-slate-400">Loading usage data...</p>
               </div>
             ) : (
@@ -679,7 +679,7 @@ export default function DeveloperPortalPage() {
                     },
                     { label: 'Top Endpoint', value: usage.byEndpoint[0]?.endpoint.replace('/api/v1/', '/') || 'N/A' },
                   ].map((card) => (
-                    <div key={card.label} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                    <div key={card.label} className="card p-4">
                       <div className="text-sm text-slate-400">{card.label}</div>
                       <div className="text-2xl font-bold text-white">{card.value}</div>
                     </div>
@@ -688,7 +688,7 @@ export default function DeveloperPortalPage() {
 
                 {/* Daily Usage Chart (simple bar representation) */}
                 {usage.dailyBreakdown.length > 0 && (
-                  <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+                  <div className="card p-6">
                     <h3 className="text-lg font-semibold mb-4">Daily Call Volume</h3>
                     <div className="flex items-end gap-1 h-32">
                       {usage.dailyBreakdown.map((day) => {
@@ -716,7 +716,7 @@ export default function DeveloperPortalPage() {
 
                 {/* Top Endpoints */}
                 {usage.byEndpoint.length > 0 && (
-                  <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+                  <div className="card p-6">
                     <h3 className="text-lg font-semibold mb-4">Top Endpoints</h3>
                     <div className="space-y-3">
                       {usage.byEndpoint.slice(0, 10).map((ep) => {
@@ -751,7 +751,7 @@ export default function DeveloperPortalPage() {
             <h2 className="text-2xl font-bold">API Documentation</h2>
 
             {/* Authentication */}
-            <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+            <section className="card p-6">
               <h3 className="text-lg font-semibold text-cyan-400 mb-3">Authentication</h3>
               <p className="text-slate-300 mb-3">
                 All API requests require authentication via an API key. Pass your key using either method:
@@ -768,7 +768,7 @@ export default function DeveloperPortalPage() {
             </section>
 
             {/* Response Format */}
-            <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+            <section className="card p-6">
               <h3 className="text-lg font-semibold text-cyan-400 mb-3">Response Format</h3>
               <p className="text-slate-300 mb-3">
                 All successful responses follow a consistent format:
@@ -797,7 +797,7 @@ export default function DeveloperPortalPage() {
             </section>
 
             {/* Rate Limit Headers */}
-            <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+            <section className="card p-6">
               <h3 className="text-lg font-semibold text-cyan-400 mb-3">Rate Limit Headers</h3>
               <p className="text-slate-300 mb-3">
                 Every response includes rate limit information:
@@ -811,7 +811,7 @@ export default function DeveloperPortalPage() {
             </section>
 
             {/* Available Endpoints */}
-            <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+            <section className="card p-6">
               <h3 className="text-lg font-semibold text-cyan-400 mb-3">Available Endpoints</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -853,7 +853,7 @@ export default function DeveloperPortalPage() {
             </section>
 
             {/* Code Examples */}
-            <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+            <section className="card p-6">
               <h3 className="text-lg font-semibold text-cyan-400 mb-3">Code Examples</h3>
               <div className="flex gap-2 mb-4">
                 {(['curl', 'javascript', 'axios', 'python'] as const).map((lang) => (
@@ -881,7 +881,7 @@ export default function DeveloperPortalPage() {
             </section>
 
             {/* Full Docs + Explorer Links */}
-            <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 text-center">
+            <section className="card p-6 text-center">
               <h3 className="text-lg font-semibold mb-2">Full API Reference</h3>
               <p className="text-slate-400 mb-4">
                 View the complete API documentation with detailed schemas, code examples in 3 languages,

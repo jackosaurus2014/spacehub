@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCommandPaletteShortcut, usePlatformModifier } from '@/hooks/useKeyboardShortcut';
+import SearchSuggestions from '@/components/search/SearchSuggestions';
 
 // Search item types
 type SearchItemType = 'module' | 'page' | 'recent' | 'result';
@@ -329,6 +330,7 @@ export default function SearchCommandPalette() {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [serverResults, setServerResults] = useState<SearchItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [suggestionCount, setSuggestionCount] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -508,10 +510,18 @@ export default function SearchCommandPalette() {
     return groups;
   }, [allItems]);
 
-  // Flat list for keyboard navigation
+  // Flat list for keyboard navigation (offset by suggestion count)
   const flatItems = useMemo(() => {
     return Object.values(groupedItems).flat();
   }, [groupedItems]);
+
+  // Total navigable item count including suggestions
+  const totalItemCount = suggestionCount + flatItems.length;
+
+  // Handle suggestion count changes from SearchSuggestions
+  const handleSuggestionCountChange = useCallback((count: number) => {
+    setSuggestionCount(count);
+  }, []);
 
   // Open/close handlers
   const openPalette = useCallback(() => {
@@ -520,6 +530,7 @@ export default function SearchCommandPalette() {
     setSelectedIndex(0);
     setServerResults([]);
     setIsSearching(false);
+    setSuggestionCount(0);
   }, []);
 
   const closePalette = useCallback(() => {
@@ -528,7 +539,21 @@ export default function SearchCommandPalette() {
     setSelectedIndex(0);
     setServerResults([]);
     setIsSearching(false);
+    setSuggestionCount(0);
   }, []);
+
+  // Handle selection of a suggestion item
+  const handleSuggestionSelect = useCallback(
+    (path: string) => {
+      closePalette();
+      if (path.startsWith('http')) {
+        window.open(path, '_blank', 'noopener,noreferrer');
+      } else {
+        router.push(path);
+      }
+    },
+    [closePalette, router]
+  );
 
   // Register keyboard shortcut
   useCommandPaletteShortcut(openPalette, !isOpen);
@@ -570,26 +595,42 @@ export default function SearchCommandPalette() {
     [saveRecentSearch, closePalette, router]
   );
 
-  // Keyboard navigation
+  // Keyboard navigation — accounts for suggestions (indices 0..suggestionCount-1)
+  // followed by the existing flat items (indices suggestionCount..totalItemCount-1)
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
           setSelectedIndex((prev) =>
-            prev < flatItems.length - 1 ? prev + 1 : 0
+            prev < totalItemCount - 1 ? prev + 1 : 0
           );
           break;
         case 'ArrowUp':
           e.preventDefault();
           setSelectedIndex((prev) =>
-            prev > 0 ? prev - 1 : flatItems.length - 1
+            prev > 0 ? prev - 1 : totalItemCount - 1
           );
           break;
         case 'Enter':
           e.preventDefault();
-          if (flatItems[selectedIndex]) {
-            handleSelect(flatItems[selectedIndex]);
+          // If the selected index falls within the suggestion range, the
+          // SearchSuggestions component handles the selection via its own
+          // onSelect callback. We only need to handle the existing items here.
+          if (selectedIndex >= suggestionCount) {
+            const itemIndex = selectedIndex - suggestionCount;
+            if (flatItems[itemIndex]) {
+              handleSelect(flatItems[itemIndex]);
+            }
+          }
+          // For suggestion items (selectedIndex < suggestionCount), the
+          // SearchSuggestions component fires onSelect when Enter is pressed
+          // via its own button click. We trigger a synthetic click here.
+          if (selectedIndex < suggestionCount && listRef.current) {
+            const el = listRef.current.querySelector(
+              `[data-index="${selectedIndex}"]`
+            ) as HTMLElement | null;
+            el?.click();
           }
           break;
         case 'Escape':
@@ -598,12 +639,12 @@ export default function SearchCommandPalette() {
           break;
       }
     },
-    [flatItems, selectedIndex, handleSelect, closePalette]
+    [totalItemCount, suggestionCount, flatItems, selectedIndex, handleSelect, closePalette]
   );
 
   // Scroll selected item into view
   useEffect(() => {
-    if (listRef.current && flatItems.length > 0) {
+    if (listRef.current && totalItemCount > 0) {
       const selectedElement = listRef.current.querySelector(
         `[data-index="${selectedIndex}"]`
       );
@@ -611,7 +652,7 @@ export default function SearchCommandPalette() {
         selectedElement.scrollIntoView({ block: 'nearest' });
       }
     }
-  }, [selectedIndex, flatItems.length]);
+  }, [selectedIndex, totalItemCount]);
 
   // Reset selection when query changes
   useEffect(() => {
@@ -686,7 +727,19 @@ export default function SearchCommandPalette() {
           ref={listRef}
           className="max-h-[60vh] overflow-y-auto py-2 scrollbar-thin"
         >
-          {flatItems.length === 0 ? (
+          {/* Autocomplete Suggestions (from /api/search/suggestions) */}
+          {query.trim().length >= 2 && (
+            <SearchSuggestions
+              query={query}
+              isOpen={isOpen}
+              onSelect={handleSuggestionSelect}
+              selectedIndex={selectedIndex}
+              indexOffset={0}
+              onItemCountChange={handleSuggestionCountChange}
+            />
+          )}
+
+          {totalItemCount === 0 && query.trim().length >= 2 ? (
             <div className="px-4 py-8 text-center text-slate-400">
               No results found for &ldquo;{query}&rdquo;
             </div>
@@ -699,15 +752,16 @@ export default function SearchCommandPalette() {
                   </span>
                 </div>
                 {items.map((item) => {
-                  const index = flatItems.indexOf(item);
-                  const isSelected = index === selectedIndex;
+                  const localIndex = flatItems.indexOf(item);
+                  const globalIndex = localIndex + suggestionCount;
+                  const isSelected = globalIndex === selectedIndex;
 
                   return (
                     <button
                       key={`${category}-${item.id}`}
-                      data-index={index}
+                      data-index={globalIndex}
                       onClick={() => handleSelect(item)}
-                      onMouseEnter={() => setSelectedIndex(index)}
+                      onMouseEnter={() => setSelectedIndex(globalIndex)}
                       className={`w-full flex items-center gap-4 px-4 py-3 text-left transition-colors ${
                         isSelected
                           ? 'bg-cyan-400/10 border-l-2 border-cyan-400'
