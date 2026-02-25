@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function LandingHero() {
   return (
@@ -31,23 +30,6 @@ export default function LandingHero() {
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
-          {/* Logo */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="mb-8"
-          >
-            <Image
-              src="/spacenexus-logo.png"
-              alt="SpaceNexus logo"
-              width={800}
-              height={400}
-              className="w-full max-w-2xl mx-auto h-auto rounded-lg opacity-95"
-              priority
-            />
-          </motion.div>
-
           {/* Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -55,12 +37,8 @@ export default function LandingHero() {
             transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
             className="text-3xl md:text-5xl lg:text-display-xl font-display font-bold mb-6 leading-tight"
           >
-            <span className="text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-              The Space Industry&apos;s First
-            </span>
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300">
-              Comprehensive Intelligence Platform
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+              The Space Industry&apos;s Comprehensive Intelligence Platform.
             </span>
           </motion.h1>
 
