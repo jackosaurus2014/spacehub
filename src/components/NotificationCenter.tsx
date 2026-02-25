@@ -324,7 +324,10 @@ export default function NotificationCenter() {
           <div className="border-t border-slate-700/50 px-4 py-2">
             <Link
               href="/notifications"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                handleMarkAllAsRead();
+                setIsOpen(false);
+              }}
               className="block text-center text-xs text-cyan-400 hover:text-cyan-300 transition-colors font-medium py-1"
             >
               View All Notifications
