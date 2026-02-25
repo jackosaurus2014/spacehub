@@ -532,7 +532,7 @@ function ApiExplorerPageInner() {
                       <div className="flex items-center justify-between mt-0.5">
                         <span className="text-xs text-slate-500 truncate">{item.endpointName}</span>
                         <span className="text-xs text-slate-600">
-                          {new Date(item.timestamp).toLocaleTimeString()}
+                          {new Date(item.timestamp).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'UTC' })}
                         </span>
                       </div>
                     </button>

@@ -89,10 +89,10 @@ export default function StreamEmbed({
             key={i}
             className="absolute w-1 h-1 bg-white/30 rounded-full animate-twinkle"
             style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 2}s`,
+              top: `${((i * 37 + 13) % 97)}%`,
+              left: `${((i * 53 + 7) % 97)}%`,
+              animationDelay: `${(i * 0.1) % 3}s`,
+              animationDuration: `${2 + (i % 5) * 0.4}s`,
             }}
           />
         ))}
@@ -144,6 +144,7 @@ export default function StreamEmbed({
             hour: '2-digit',
             minute: '2-digit',
             timeZoneName: 'short',
+            timeZone: 'UTC',
           })}
         </p>
 

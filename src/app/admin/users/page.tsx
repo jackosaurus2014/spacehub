@@ -384,6 +384,7 @@ function AllUsersTab() {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric',
+                    timeZone: 'UTC',
                   })}
                 </div>
 
@@ -602,6 +603,7 @@ function AdminManagementTab({ currentUserId }: { currentUserId: string }) {
                   month: 'short',
                   day: 'numeric',
                   year: 'numeric',
+                  timeZone: 'UTC',
                 })}
               </p>
 
@@ -834,6 +836,7 @@ function AuditLogTab() {
                         year: 'numeric',
                         hour: 'numeric',
                         minute: '2-digit',
+                        timeZone: 'UTC',
                       })}
                     </div>
 

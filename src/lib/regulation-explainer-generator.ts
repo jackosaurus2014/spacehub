@@ -106,7 +106,7 @@ export async function generateRegulationExplainers(): Promise<{
   const regContext = (newRegulations.length > 0 ? newRegulations : regulations)
     .map(
       (r, i) =>
-        `${i + 1}. ${r.title}\n   Agency: ${r.agency}\n   Type: ${r.type}\n   Category: ${r.category}\n   Status: ${r.status}\n   Docket: ${r.docketNumber || 'N/A'}\n   Comment Deadline: ${r.commentDeadline ? new Date(r.commentDeadline).toLocaleDateString() : 'N/A'}\n   Summary: ${r.summary || 'N/A'}\n   URL: ${r.sourceUrl || 'N/A'}`
+        `${i + 1}. ${r.title}\n   Agency: ${r.agency}\n   Type: ${r.type}\n   Category: ${r.category}\n   Status: ${r.status}\n   Docket: ${r.docketNumber || 'N/A'}\n   Comment Deadline: ${r.commentDeadline ? new Date(r.commentDeadline).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }) : 'N/A'}\n   Summary: ${r.summary || 'N/A'}\n   URL: ${r.sourceUrl || 'N/A'}`
     )
     .join('\n\n');
 

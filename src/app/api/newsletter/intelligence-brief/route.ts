@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       const weekStart = new Date(now);
       weekStart.setDate(weekStart.getDate() - 7);
 
-      const weekLabel = `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+      const weekLabel = `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}`;
 
       // Generate both pro and free versions
       const proHtml = generateIntelligenceBriefEmail(sections, true, weekLabel);

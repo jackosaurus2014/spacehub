@@ -357,7 +357,7 @@ export default function DataFreshnessPage() {
           <div>
             <h1 className="text-2xl font-bold">Data Freshness Dashboard</h1>
             <p className="text-slate-400 text-sm mt-1">
-              Last updated: {new Date(data.generatedAt).toLocaleString()}
+              Last updated: {new Date(data.generatedAt).toLocaleString('en-US', { timeZone: 'UTC' })}
             </p>
           </div>
           <Link href="/admin" className="text-cyan-400 hover:underline text-sm">
@@ -442,7 +442,7 @@ export default function DataFreshnessPage() {
                   </div>
                   <div className="text-slate-500 text-xs">
                     {ts.lastFetchedAt || ts.lastUpdatedAt
-                      ? new Date(ts.lastFetchedAt || ts.lastUpdatedAt || '').toLocaleString()
+                      ? new Date(ts.lastFetchedAt || ts.lastUpdatedAt || '').toLocaleString('en-US', { timeZone: 'UTC' })
                       : 'Never fetched'}
                   </div>
                 </div>
@@ -478,7 +478,7 @@ export default function DataFreshnessPage() {
                       <div>State: <span className="text-slate-300">{cb.state}</span></div>
                       <div>Failures: <span className="text-slate-300">{cb.failures}</span></div>
                       {cb.lastFailure && (
-                        <div>Last fail: <span className="text-slate-300">{new Date(cb.lastFailure).toLocaleString()}</span></div>
+                        <div>Last fail: <span className="text-slate-300">{new Date(cb.lastFailure).toLocaleString('en-US', { timeZone: 'UTC' })}</span></div>
                       )}
                     </div>
                   </div>
@@ -583,7 +583,7 @@ export default function DataFreshnessPage() {
                     {data.recentRefreshLogs.map((log) => (
                       <tr key={log.id} className="hover:bg-slate-800/30">
                         <td className="px-3 py-2 text-slate-400 text-xs whitespace-nowrap">
-                          {new Date(log.createdAt).toLocaleString()}
+                          {new Date(log.createdAt).toLocaleString('en-US', { timeZone: 'UTC' })}
                         </td>
                         <td className="px-3 py-2 text-white font-medium">{log.module}</td>
                         <td className="px-3 py-2 text-slate-300">{log.refreshType}</td>

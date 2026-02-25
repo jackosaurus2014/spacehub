@@ -52,7 +52,7 @@ function getSampleReport(reportType: string, title: string): GeneratedReport {
     executive_summary:
       'This is a sample report generated without an AI connection. Configure ANTHROPIC_API_KEY to enable full AI-powered report generation with real data analysis and insights.',
     methodology:
-      'Sample data only. Connect ANTHROPIC_API_KEY for AI-powered analysis using SpaceNexus database of 100+ company profiles, funding rounds, news articles, and market intelligence.',
+      'Sample data only. Connect ANTHROPIC_API_KEY for AI-powered analysis using SpaceNexus database of 200+ company profiles, funding rounds, news articles, and market intelligence.',
     sections: [
       {
         id: 'exec-summary',
@@ -268,7 +268,7 @@ async function gatherSectorData(sector: string): Promise<string> {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       parts.push(recentFunding.map((f: any) => {
         const amt = f.amount ? `$${(f.amount / 1e6).toFixed(1)}M` : 'Undisclosed amount';
-        return `- ${f.company.name}: ${f.seriesLabel || f.roundType || 'Round'} — ${amt}${f.leadInvestor ? `, led by ${f.leadInvestor}` : ''} (${new Date(f.date).toLocaleDateString()})`;
+        return `- ${f.company.name}: ${f.seriesLabel || f.roundType || 'Round'} — ${amt}${f.leadInvestor ? `, led by ${f.leadInvestor}` : ''} (${new Date(f.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })})`;
       }).join('\n'));
     }
 
@@ -276,7 +276,7 @@ async function gatherSectorData(sector: string): Promise<string> {
       parts.push('\n### Recent News (Past 90 Days)');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       parts.push(recentNews.map((n: any) =>
-        `- [${n.category}] ${n.title} — ${n.source} (${new Date(n.publishedAt).toLocaleDateString()})`
+        `- [${n.category}] ${n.title} — ${n.source} (${new Date(n.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })})`
       ).join('\n'));
     }
 
@@ -403,7 +403,7 @@ async function gatherCompanyData(companySlug: string): Promise<{ name: string; c
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       company.fundingRounds.forEach((f: any) => {
         const amt = f.amount ? `$${(f.amount / 1e6).toFixed(1)}M` : 'Undisclosed';
-        parts.push(`- ${f.seriesLabel || f.roundType || 'Round'}: ${amt}${f.leadInvestor ? ` (led by ${f.leadInvestor})` : ''} — ${new Date(f.date).toLocaleDateString()}`);
+        parts.push(`- ${f.seriesLabel || f.roundType || 'Round'}: ${amt}${f.leadInvestor ? ` (led by ${f.leadInvestor})` : ''} — ${new Date(f.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}`);
         if (f.investors?.length) parts.push(`  Investors: ${f.investors.join(', ')}`);
       });
     }
@@ -413,7 +413,7 @@ async function gatherCompanyData(companySlug: string): Promise<{ name: string; c
       parts.push('\n### Key Events & Milestones');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       company.events.forEach((e: any) => {
-        parts.push(`- [${e.type}] ${e.title} (${new Date(e.date).toLocaleDateString()}) — Importance: ${e.importance}/10`);
+        parts.push(`- [${e.type}] ${e.title} (${new Date(e.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}) — Importance: ${e.importance}/10`);
         if (e.description) parts.push(`  ${e.description.slice(0, 200)}`);
       });
     }
@@ -432,7 +432,7 @@ async function gatherCompanyData(companySlug: string): Promise<{ name: string; c
       parts.push('\n### Recent News');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       company.newsArticles.forEach((n: any) => {
-        parts.push(`- ${n.title} — ${n.source} (${new Date(n.publishedAt).toLocaleDateString()})`);
+        parts.push(`- ${n.title} — ${n.source} (${new Date(n.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })})`);
       });
     }
 
@@ -574,7 +574,7 @@ async function gatherMarketEntryData(topic: string): Promise<string> {
       parts.push('\n### Related Recent News');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       parts.push(relatedNews.map((n: any) =>
-        `- ${n.title} — ${n.source} (${new Date(n.publishedAt).toLocaleDateString()})`
+        `- ${n.title} — ${n.source} (${new Date(n.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })})`
       ).join('\n'));
     }
 

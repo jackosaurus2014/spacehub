@@ -54,7 +54,7 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
               <div>
                 <div className="text-sm font-semibold text-white">{proposal.rfq.title}</div>
                 <div className="text-[10px] text-slate-500">
-                  Submitted {new Date(proposal.submittedAt).toLocaleDateString()}
+                  Submitted {new Date(proposal.submittedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
                   {proposal.rfq.status && <span className="ml-1">· RFQ {proposal.rfq.status}</span>}
                 </div>
               </div>
@@ -71,13 +71,13 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
               <div>
                 <div className="text-sm font-semibold text-white">{proposal.company.name}</div>
                 <div className="text-[10px] text-slate-500">
-                  Submitted {new Date(proposal.submittedAt).toLocaleDateString()}
+                  Submitted {new Date(proposal.submittedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
                 </div>
               </div>
             </>
           ) : (
             <div className="text-[10px] text-slate-500">
-              Submitted {new Date(proposal.submittedAt).toLocaleDateString()}
+              Submitted {new Date(proposal.submittedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
             </div>
           )}
         </div>

@@ -293,6 +293,7 @@ function ProfileSection({ session }: { session: any }) {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
+                  timeZone: 'UTC',
                 })
               : 'Unknown'}
           </p>

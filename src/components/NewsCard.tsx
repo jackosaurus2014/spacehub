@@ -85,6 +85,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+      timeZone: 'UTC',
     });
   };
 

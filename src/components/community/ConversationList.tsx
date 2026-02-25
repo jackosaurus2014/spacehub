@@ -47,7 +47,7 @@ function timeAgo(dateStr: string): string {
   const days = Math.floor(hours / 24);
   if (days === 1) return 'Yesterday';
   if (days < 7) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
 export default function ConversationList({ conversations, activeId, currentUserId, onSelect }: ConversationListProps) {

@@ -144,7 +144,7 @@ export async function generateForumDigestEmail(): Promise<ForumDigestResult> {
   }
 
   // 4. Build the email
-  const weekLabel = `${oneWeekAgo.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  const weekLabel = `${oneWeekAgo.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })} - ${now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}`;
   const subject = `SpaceNexus Forum Weekly Digest - ${weekLabel}`;
 
   // Build thread rows HTML

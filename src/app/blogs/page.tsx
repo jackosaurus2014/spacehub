@@ -54,6 +54,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+      timeZone: 'UTC',
     });
   };
 

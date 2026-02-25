@@ -498,7 +498,7 @@ function DataStatusPanel() {
                 {recentLogs.slice(0, 20).map((log) => (
                   <tr key={log.id} className="hover:bg-space-700/20">
                     <td className="px-3 py-2 text-star-300 text-xs whitespace-nowrap">
-                      {new Date(log.createdAt).toLocaleString()}
+                      {new Date(log.createdAt).toLocaleString('en-US', { timeZone: 'UTC' })}
                     </td>
                     <td className="px-3 py-2 text-white font-medium">{log.module}</td>
                     <td className="px-3 py-2 text-star-300">{log.refreshType}</td>
@@ -576,7 +576,7 @@ function FeatureRequestItem({ item, onUpdate }: { item: FeatureRequest; onUpdate
         <div>
           <h3 className="text-white font-semibold">{item.title}</h3>
           <p className="text-star-300 text-sm">
-            {item.email} &middot; {new Date(item.createdAt).toLocaleDateString()} &middot;{' '}
+            {item.email} &middot; {new Date(item.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })} &middot;{' '}
             {item.type === 'existing_module' ? `Module: ${moduleName}` : 'New Module'}
           </p>
         </div>
@@ -659,7 +659,7 @@ function HelpRequestItem({ item, onUpdate }: { item: HelpRequest; onUpdate: () =
         <div>
           <h3 className="text-white font-semibold">{item.subject}</h3>
           <p className="text-star-300 text-sm">
-            {item.email} &middot; {new Date(item.createdAt).toLocaleDateString()}
+            {item.email} &middot; {new Date(item.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
           </p>
         </div>
         <span className={`text-xs px-2 py-0.5 rounded ${statusInfo?.color || 'bg-gray-500'} text-white`}>

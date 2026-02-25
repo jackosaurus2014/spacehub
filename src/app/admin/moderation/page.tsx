@@ -377,6 +377,7 @@ function ReportCard({
     month: 'short',
     day: 'numeric',
     year: 'numeric',
+    timeZone: 'UTC',
   });
   const truncatedDescription =
     report.description && report.description.length > 200
@@ -660,6 +661,7 @@ function UserCard({
     month: 'short',
     day: 'numeric',
     year: 'numeric',
+    timeZone: 'UTC',
   });
 
   const isMutedActive = user.isMuted && user.mutedUntil && new Date(user.mutedUntil) > new Date();
@@ -688,7 +690,7 @@ function UserCard({
           )}
           {isMutedActive && user.mutedUntil && (
             <p className="text-xs text-amber-600 mt-1">
-              Muted until {new Date(user.mutedUntil).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+              Muted until {new Date(user.mutedUntil).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'UTC' })}
             </p>
           )}
         </div>
@@ -929,6 +931,7 @@ function ActionLogRow({ action }: { action: ModerationActionRecord }) {
     year: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
+    timeZone: 'UTC',
   });
 
   const actionLabel = ACTION_LABELS[action.action] || action.action;

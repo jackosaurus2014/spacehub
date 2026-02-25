@@ -400,7 +400,7 @@ export async function sendDailyDigest(prisma: PrismaClient): Promise<{
           body: JSON.stringify({
             from: process.env.EMAIL_FROM || 'SpaceNexus Alerts <alerts@spacenexus.us>',
             to: user.email,
-            subject: `SpaceNexus Alert Digest - ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
+            subject: `SpaceNexus Alert Digest - ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}`,
             html,
             text,
           }),
@@ -526,7 +526,7 @@ export async function sendWeeklyDigest(prisma: PrismaClient): Promise<{
           body: JSON.stringify({
             from: process.env.EMAIL_FROM || 'SpaceNexus Alerts <alerts@spacenexus.us>',
             to: user.email,
-            subject: `SpaceNexus Weekly Alert Digest - Week of ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`,
+            subject: `SpaceNexus Weekly Alert Digest - Week of ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' })}`,
             html,
             text,
           }),

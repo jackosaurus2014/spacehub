@@ -1053,7 +1053,7 @@ export default function SpaceStationTrackerPage() {
               </div>
             </div>
             <div className="text-star-500 text-xs mt-3 text-right">
-              Last updated: {issPosition.timestamp ? new Date(issPosition.timestamp * 1000).toLocaleString() : '--'}
+              Last updated: {issPosition.timestamp ? new Date(issPosition.timestamp * 1000).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'UTC' }) : '--'}
             </div>
           </div>
         )}

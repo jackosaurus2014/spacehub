@@ -228,7 +228,7 @@ function ApiKeyCard({
         </div>
         <div>
           <span className="block text-xs text-slate-500">Last Used</span>
-          {apiKey.lastUsedAt ? new Date(apiKey.lastUsedAt).toLocaleDateString() : 'Never'}
+          {apiKey.lastUsedAt ? new Date(apiKey.lastUsedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }) : 'Never'}
         </div>
       </div>
 

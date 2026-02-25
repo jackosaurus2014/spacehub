@@ -115,6 +115,7 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
     return new Date(dateStr).toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
+      timeZone: 'UTC',
     });
   };
 

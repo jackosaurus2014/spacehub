@@ -651,7 +651,7 @@ export default function InvestmentThesisPage() {
                   {/* Timestamp + Export */}
                   <div className="flex items-center justify-between border-t border-slate-700/50 pt-4">
                     <p className="text-xs text-slate-500">
-                      Generated {new Date(thesisData.generatedAt).toLocaleString()}
+                      Generated {new Date(thesisData.generatedAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'UTC' })}
                     </p>
                     <div className="flex items-center gap-2">
                       <Link

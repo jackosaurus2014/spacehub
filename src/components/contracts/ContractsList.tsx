@@ -123,6 +123,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
       year: 'numeric',
       month: 'short',
       day: 'numeric',
+      timeZone: 'UTC',
     });
   };
 

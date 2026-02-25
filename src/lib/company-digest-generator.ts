@@ -87,7 +87,7 @@ export async function generateCompanyDigests(): Promise<{
         const articles = company.newsArticles
           .map(
             (a, i) =>
-              `  ${i + 1}. ${a.title}\n     Source: ${a.source}\n     Date: ${new Date(a.publishedAt).toLocaleDateString()}\n     Summary: ${a.summary || 'N/A'}\n     URL: ${a.url}`
+              `  ${i + 1}. ${a.title}\n     Source: ${a.source}\n     Date: ${new Date(a.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}\n     Summary: ${a.summary || 'N/A'}\n     URL: ${a.url}`
           )
           .join('\n');
         return `### ${company.name} (${company.sector || 'Space Industry'})\nRecent Articles (${company.newsArticles.length}):\n${articles}`;

@@ -120,7 +120,7 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
                       <span className="text-[10px] px-1 py-0.5 bg-yellow-500/10 text-yellow-500 rounded">Private</span>
                     )}
                     <span className="text-[10px] text-slate-600">
-                      {new Date(c.createdAt).toLocaleDateString()}
+                      {new Date(c.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
                     </span>
                   </div>
                   <p className="text-sm text-slate-300">{c.question}</p>
@@ -136,7 +136,7 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-[10px] text-slate-500">Buyer</span>
                       <span className="text-[10px] text-slate-600">
-                        {c.answeredAt ? new Date(c.answeredAt).toLocaleDateString() : ''}
+                        {c.answeredAt ? new Date(c.answeredAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''}
                       </span>
                     </div>
                     <p className="text-sm text-slate-300">{c.answer}</p>

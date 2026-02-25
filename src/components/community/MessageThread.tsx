@@ -21,6 +21,7 @@ function formatTime(dateStr: string): string {
   return new Date(dateStr).toLocaleTimeString('en-US', {
     hour: 'numeric',
     minute: '2-digit',
+    timeZone: 'UTC',
   });
 }
 
@@ -32,7 +33,7 @@ function formatDateSeparator(dateStr: string): string {
 
   if (days === 0) return 'Today';
   if (days === 1) return 'Yesterday';
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
 function getInitials(name: string | null): string {

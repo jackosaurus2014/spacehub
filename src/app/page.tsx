@@ -195,7 +195,7 @@ export default async function HomePage() {
                   <div className="flex items-center justify-between">
                     {card.author && <span className="text-xs text-slate-500">{card.author}</span>}
                     <time className="text-xs text-slate-500 ml-auto">
-                      {card.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      {card.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
                     </time>
                   </div>
                 </Link>

@@ -60,7 +60,7 @@ function BlogListingContent() {
         />
 
         <p className="text-xs text-slate-500 mb-6">
-          Latest post: {new Date(BLOG_POSTS.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())[0]?.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          Latest post: {new Date(BLOG_POSTS.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())[0]?.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
         </p>
 
         {/* Featured Posts */}

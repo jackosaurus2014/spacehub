@@ -71,7 +71,7 @@ async function factCheckArticle(
       messages: [
         {
           role: 'user',
-          content: `You are a fact-checker for a space industry intelligence platform. Today's date is ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}. Review the following article for factual accuracy.
+          content: `You are a fact-checker for a space industry intelligence platform. Today's date is ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}. Review the following article for factual accuracy.
 
 CRITICAL CONTEXT: The current date is ${new Date().toISOString().split('T')[0]}. Any references to dates in ${new Date().getFullYear()} or earlier are NOT "in the future" — they are current or past events. Do NOT flag current-year dates as future predictions.
 

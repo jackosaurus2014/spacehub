@@ -463,7 +463,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
   {
     moduleId: 'company-profiles',
     name: 'Space Company Profiles',
-    description: 'Comprehensive intelligence profiles for 100+ space industry companies with financials, key people, products, contracts, and relationships',
+    description: 'Comprehensive intelligence profiles for 200+ space industry companies with financials, key people, products, contracts, and relationships',
     icon: '🏢',
     section: 'intelligence',
     defaultEnabled: true,

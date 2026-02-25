@@ -247,9 +247,9 @@ async function fetchModuleData(
           title: (item.title as string) || (item.name as string) || 'Untitled',
           subtitle: (item.source as string) || (item.category as string) || (item.company as string) || undefined,
           date: item.publishedAt
-            ? new Date(item.publishedAt as string).toLocaleDateString()
+            ? new Date(item.publishedAt as string).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })
             : item.date
-            ? new Date(item.date as string).toLocaleDateString()
+            ? new Date(item.date as string).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })
             : undefined,
           url: (item.url as string) || undefined,
         }));

@@ -47,7 +47,7 @@ export default function ReviewCard({ review }: ReviewCardProps) {
           )}
         </div>
         <span className="text-[10px] text-slate-500">
-          {new Date(review.createdAt).toLocaleDateString()}
+          {new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
         </span>
       </div>
 
@@ -92,7 +92,7 @@ export default function ReviewCard({ review }: ReviewCardProps) {
             <span className="text-[10px] font-bold text-cyan-400">Provider Response</span>
             {review.providerRespondedAt && (
               <span className="text-[10px] text-slate-600">
-                {new Date(review.providerRespondedAt).toLocaleDateString()}
+                {new Date(review.providerRespondedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
               </span>
             )}
           </div>

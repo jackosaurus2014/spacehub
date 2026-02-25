@@ -197,7 +197,8 @@ export function renderDigestEmail(
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
+    timeZone: 'UTC',
   });
 
   const totalArticles = Object.values(categorizedNews).flat().length;

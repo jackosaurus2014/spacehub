@@ -333,7 +333,7 @@ export async function sendWatchlistDailyDigest(prisma: PrismaClient): Promise<{
           body: JSON.stringify({
             from: process.env.EMAIL_FROM || 'SpaceNexus Alerts <alerts@spacenexus.us>',
             to: user.email,
-            subject: `SpaceNexus Watchlist Update - ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
+            subject: `SpaceNexus Watchlist Update - ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}`,
             html,
             text,
           }),

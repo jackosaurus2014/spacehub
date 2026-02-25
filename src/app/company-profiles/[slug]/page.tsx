@@ -121,7 +121,7 @@ function fmt(value: number | null, opts?: { compact?: boolean }): string {
 
 function fmtDate(d: string | null): string {
   if (!d) return '—';
-  return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
 function getSectorIcon(s: string | null): string {
@@ -943,7 +943,7 @@ function NewsTab({ companySlug, companyName }: { companySlug: string; companyNam
                   </span>
                   <span className="text-[10px] text-slate-500">{article.source}</span>
                   <span className="text-[10px] text-slate-500">
-                    {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}
                   </span>
                 </div>
               </div>
@@ -1007,7 +1007,7 @@ function DigestTab({ companyId, companyName }: { companyId: string; companyName:
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-white font-semibold text-sm">{digest.title}</h3>
               <span className="text-xs text-slate-500">
-                {new Date(digest.periodStart).toLocaleDateString()} – {new Date(digest.periodEnd).toLocaleDateString()}
+                {new Date(digest.periodStart).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })} – {new Date(digest.periodEnd).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
               </span>
             </div>
             <p className="text-slate-300 text-sm mb-4">{digest.summary}</p>
@@ -1032,7 +1032,7 @@ function DigestTab({ companyId, companyName }: { companyId: string; companyName:
 
             <div className="flex items-center gap-3 text-[10px] text-slate-500 mt-3 pt-2 border-t border-slate-700/50">
               <span>{digest.newsCount} articles analyzed</span>
-              <span>Generated {new Date(digest.generatedAt).toLocaleDateString()}</span>
+              <span>Generated {new Date(digest.generatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}</span>
             </div>
           </div>
         );

@@ -632,7 +632,7 @@ function ReportsPageInner() {
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-emerald-400 rounded-full" />
-              100+ Company Profiles
+              200+ Company Profiles
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-purple-400 rounded-full" />
@@ -740,7 +740,7 @@ function ReportsPageInner() {
                 {
                   step: '3',
                   title: 'AI Analysis',
-                  desc: 'Claude AI analyzes data from 100+ company profiles, funding rounds, news, and market data.',
+                  desc: 'Claude AI analyzes data from 200+ company profiles, funding rounds, news, and market data.',
                 },
                 {
                   step: '4',

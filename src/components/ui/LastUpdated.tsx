@@ -20,7 +20,7 @@ function formatRelativeTime(date: Date): string {
   if (diffMin < 60) return `${diffMin}m ago`;
   if (diffHr < 24) return `${diffHr}h ago`;
   if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString();
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
 export default function LastUpdated({ timestamp, label = 'Updated', className = '' }: LastUpdatedProps) {

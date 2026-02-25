@@ -116,6 +116,7 @@ export function generateDigestEmail(
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'UTC',
   });
 
   // Build alert rows
@@ -126,6 +127,7 @@ export function generateDigestEmail(
     const time = alert.createdAt.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
+      timeZone: 'UTC',
     });
 
     alertRowsHtml += `
@@ -215,6 +217,7 @@ export function generateWatchlistDigestEmail(
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'UTC',
   });
 
   // Group alerts by company

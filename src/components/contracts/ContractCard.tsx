@@ -47,6 +47,7 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
+      timeZone: 'UTC',
     });
   };
 

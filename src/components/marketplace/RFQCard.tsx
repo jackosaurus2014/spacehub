@@ -82,7 +82,7 @@ export default function RFQCard({ rfq, index = 0 }: RFQCardProps) {
 
           {/* Footer */}
           <div className="text-[10px] text-slate-500">
-            Posted {new Date(rfq.createdAt).toLocaleDateString()}
+            Posted {new Date(rfq.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
           </div>
         </motion.div>
       </Link>
