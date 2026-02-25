@@ -45,6 +45,10 @@ export const MODULE_ROUTES: Record<string, string> = {
   'blueprints': '/blueprints',
   'orbital-costs': '/orbital-costs',
   'orbital-calculator': '/orbital-calculator',
+  'constellation-designer': '/constellation-designer',
+  'power-budget-calculator': '/power-budget-calculator',
+  'link-budget-calculator': '/link-budget-calculator',
+  'tools': '/tools',
 
   // ── Space Operations children ──
   'satellite-tracker': '/satellites',

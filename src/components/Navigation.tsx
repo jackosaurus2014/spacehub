@@ -57,6 +57,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [
+  { label: 'Engineering Tools Hub', href: '/tools', description: 'All calculators and analysis tools' },
   { label: 'Mission Cost Simulator', href: '/mission-cost', description: 'Estimate launch costs and fees' },
   { label: 'Launch Vehicle Comparison', href: '/launch-vehicles', description: 'Compare rocket specs and costs' },
   { label: 'Satellite Tracker', href: '/satellites', description: 'Track ISS, Starlink & weather satellites' },
