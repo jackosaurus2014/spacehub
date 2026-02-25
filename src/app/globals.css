@@ -696,3 +696,69 @@ body::after {
 }
 .scroll-snap-x::-webkit-scrollbar { display: none; }
 .scroll-snap-item { scroll-snap-align: start; }
+
+/* ——— Accessible focus indicators ——— */
+:focus-visible {
+  outline: 2px solid rgb(34 211 238); /* cyan-400 */
+  outline-offset: 2px;
+}
+
+/* Remove default focus for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ——— Print-friendly styles ——— */
+@media print {
+  /* Hide non-essential UI elements */
+  nav, footer, .no-print,
+  [data-no-print],
+  .fixed, .sticky,
+  button:not(.print-include),
+  .toast-container {
+    display: none !important;
+  }
+
+  /* Reset backgrounds for printing */
+  body, main, .min-h-screen {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Make text readable on paper */
+  * {
+    color: #1a1a1a !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Preserve links */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666 !important;
+  }
+
+  a[href^="#"]::after,
+  a[href^="javascript:"]::after {
+    content: "";
+  }
+
+  /* Cards and borders for structure */
+  .card, .card-elevated, .card-interactive {
+    border: 1px solid #ddd !important;
+    page-break-inside: avoid;
+  }
+
+  /* Tables */
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid #ddd !important; padding: 8px !important; }
+
+  /* Images */
+  img { max-width: 100% !important; }
+
+  /* Page breaks */
+  h1, h2, h3 { page-break-after: avoid; }
+  .page-break { page-break-before: always; }
+}

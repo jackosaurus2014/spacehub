@@ -87,6 +87,12 @@ export const MODULE_ROUTES: Record<string, string> = {
   // ── Deal Room ──
   'deal-rooms': '/deal-rooms',
 
+  // ── Resources & Reference ──
+  'glossary': '/glossary',
+  'timeline': '/timeline',
+  'comparison-tools': '/compare',
+  'satellite-comparison': '/compare/satellites',
+
   // ── Legacy backward-compat aliases ──
   // (These also have redirects in next.config.js for direct URL access)
   'news-intelligence': '/news',

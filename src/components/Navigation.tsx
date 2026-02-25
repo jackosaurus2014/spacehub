@@ -7,6 +7,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSubscription } from './SubscriptionProvider';
 import { useHighContrast } from '@/hooks/useHighContrast';
 import NotificationCenter from './NotificationCenter';
+import NotificationBell from '@/components/ui/NotificationBell';
 import RecentlyViewed from './ui/RecentlyViewed';
 
 interface DropdownItem {
@@ -27,6 +28,8 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Mars Mission Planner', href: '/mars-planner', description: 'Mars missions and launch windows' },
   { label: 'Cislunar Ecosystem', href: '/cislunar', description: 'Gateway, Artemis & lunar economy' },
   { label: 'Asteroid Watch', href: '/asteroid-watch', description: 'NEOs, planetary defense, and mining' },
+  { label: 'Space Glossary', href: '/glossary', description: 'Definitions of key space industry terms' },
+  { label: 'Space Timeline', href: '/timeline', description: 'History and milestones of space exploration' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
@@ -59,6 +62,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
 
 const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Engineering Tools Hub', href: '/tools', description: 'All calculators and analysis tools' },
+  { label: 'Comparison Tools', href: '/compare', description: 'Side-by-side vehicle, satellite & company analysis' },
   { label: 'Mission Cost Simulator', href: '/mission-cost', description: 'Estimate launch costs and fees' },
   { label: 'Launch Vehicle Comparison', href: '/launch-vehicles', description: 'Compare rocket specs and costs' },
   { label: 'Satellite Tracker', href: '/satellites', description: 'Track ISS, Starlink & weather satellites' },
@@ -396,6 +400,7 @@ export default function Navigation() {
             {/* Recently Viewed */}
             <RecentlyViewed />
             {/* Notification Center */}
+            <NotificationBell />
             <NotificationCenter />
             {status === 'loading' ? (
               <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
@@ -430,6 +435,7 @@ export default function Navigation() {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center space-x-2">
+            <NotificationBell />
             <NotificationCenter />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
