@@ -6,6 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import InlineDisclaimer from '@/components/InlineDisclaimer';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
 import {
   assessRisk,
   RISK_FACTORS,
@@ -653,6 +654,12 @@ export default function RegulatoryRiskPage() {
             </div>
           </ScrollReveal>
         )}
+
+        <RelatedModules modules={[
+          { name: 'Compliance Hub', description: 'Full regulatory framework', href: '/compliance', icon: '\u{2696}\u{FE0F}' },
+          { name: 'Regulatory Calendar', description: 'Upcoming deadlines', href: '/regulatory-calendar', icon: '\u{1F4C5}' },
+          { name: 'Space Insurance', description: 'Risk management and coverage', href: '/space-insurance', icon: '\u{1F6E1}\u{FE0F}' },
+        ]} />
 
         {/* Bottom CTA */}
         <div className="mt-12 text-center">

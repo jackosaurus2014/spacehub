@@ -5,12 +5,14 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SpaceEvent, EVENT_TYPE_INFO, SpaceEventType, MissionPhase, MISSION_PHASE_INFO } from '@/types';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ExportButton from '@/components/ui/ExportButton';
 import MissionStream, { extractYouTubeId } from '@/components/live/MissionStream';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import AdSlot from '@/components/ads/AdSlot';
 import { clientLogger } from '@/lib/client-logger';
+import { getCompanyProfileUrl } from '@/lib/company-links';
 
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
   { value: 'all', label: 'All Events', icon: '🌌' },
@@ -155,7 +157,11 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
             </div>
 
             {event.agency && (
-              <p className="text-cyan-400 text-sm font-medium">{event.agency}</p>
+              <p className="text-cyan-400 text-sm font-medium">
+                {getCompanyProfileUrl(event.agency) ? (
+                  <Link href={getCompanyProfileUrl(event.agency)!} className="hover:underline">{event.agency}</Link>
+                ) : event.agency}
+              </p>
             )}
 
             <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-400">
@@ -425,7 +431,11 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
                     </div>
                     <h4 className="font-semibold text-white text-sm line-clamp-1">{mission.name}</h4>
                     {mission.agency && (
-                      <p className="text-slate-400 text-xs">{mission.agency}</p>
+                      <p className="text-slate-400 text-xs">
+                        {getCompanyProfileUrl(mission.agency) ? (
+                          <Link href={getCompanyProfileUrl(mission.agency)!} className="hover:underline">{mission.agency}</Link>
+                        ) : mission.agency}
+                      </p>
                     )}
                     <div className="flex items-center gap-2 mt-1">
                       {/* Countdown or phase */}
@@ -589,7 +599,11 @@ function EventCard({ event }: { event: SpaceEvent }) {
           </div>
 
           {event.agency && (
-            <p className="text-slate-400 text-sm mt-1">{event.agency}</p>
+            <p className="text-slate-400 text-sm mt-1">
+              {getCompanyProfileUrl(event.agency) ? (
+                <Link href={getCompanyProfileUrl(event.agency)!} className="hover:underline">{event.agency}</Link>
+              ) : event.agency}
+            </p>
           )}
 
           <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-400">
@@ -719,7 +733,11 @@ function LiveStreamEmbed({ event }: { event: SpaceEvent }) {
         <span className="text-red-400 text-xs font-bold">LIVE</span>
         <span className="text-white text-xs font-medium truncate">{event.name}</span>
         {event.agency && (
-          <span className="text-slate-400 text-xs ml-auto">{event.agency}</span>
+          <span className="text-slate-400 text-xs ml-auto">
+            {getCompanyProfileUrl(event.agency) ? (
+              <Link href={getCompanyProfileUrl(event.agency)!} className="hover:underline">{event.agency}</Link>
+            ) : event.agency}
+          </span>
         )}
       </div>
     </div>
@@ -867,7 +885,7 @@ function MissionControlContent() {
     <PullToRefresh onRefresh={handleRefresh}>
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader title="Mission Control" subtitle="Explore all upcoming space missions, launches, and events for the next 5 years" breadcrumbs={[{label: 'Home', href: '/'}, {label: 'Mission Control'}]} />
+        <AnimatedPageHeader title="Mission Control" subtitle="Explore all upcoming space missions, launches, and events" icon="🚀" accentColor="cyan" />
 
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
@@ -967,7 +985,7 @@ function MissionControlContent() {
         {/* Timeline */}
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+            <LoadingSpinner size="lg" />
           </div>
         ) : years.length === 0 ? (
           <div className="text-center py-20">
@@ -1039,7 +1057,7 @@ function MissionControlContent() {
 
         {contentLoading ? (
           <div className="flex justify-center py-12">
-            <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+            <LoadingSpinner size="lg" />
           </div>
         ) : (
           <>
@@ -1217,10 +1235,7 @@ export default function MissionControlPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center py-20">
-          <div
-            className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin"
-            style={{ borderWidth: '3px' }}
-          />
+          <LoadingSpinner size="lg" />
         </div>
       }
     >

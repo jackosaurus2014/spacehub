@@ -9,6 +9,7 @@ import MultiLaunchTabs from '@/components/launch/MultiLaunchTabs';
 import CompactLaunchCard from '@/components/launch/CompactLaunchCard';
 import NotificationBell from '@/components/launch/NotificationBell';
 import EventSchema from '@/components/seo/EventSchema';
+import { getCompanyProfileUrl } from '@/lib/company-links';
 
 interface LaunchEvent {
   id: string;
@@ -122,7 +123,11 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
             {event.name}
           </h3>
           {event.agency && (
-            <p className="text-slate-400 text-sm mt-1">{event.agency}</p>
+            <p className="text-slate-400 text-sm mt-1">
+              {getCompanyProfileUrl(event.agency) ? (
+                <Link href={getCompanyProfileUrl(event.agency)!} className="hover:underline">{event.agency}</Link>
+              ) : event.agency}
+            </p>
           )}
 
           <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-400">

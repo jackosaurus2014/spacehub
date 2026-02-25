@@ -16,6 +16,7 @@ import PullToRefresh from '@/components/ui/PullToRefresh';
 import { clientLogger } from '@/lib/client-logger';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
 
 // Types
 interface SatelliteData {
@@ -626,6 +627,13 @@ function SatelliteTrackerContent() {
             )}
           </>
         )}
+
+        <RelatedModules modules={[
+          { name: 'Space Environment', description: 'Debris tracking and space weather', href: '/space-environment', icon: '\u{1F321}\u{FE0F}' },
+          { name: 'Orbital Slots', description: 'GEO/LEO slot management', href: '/orbital-slots', icon: '\u{1F6F0}\u{FE0F}' },
+          { name: 'Spectrum Management', description: 'Frequency allocations', href: '/spectrum', icon: '\u{1F4E1}' },
+          { name: 'Space Stations', description: 'ISS and commercial stations', href: '/space-stations', icon: '\u{1F3D7}\u{FE0F}' },
+        ]} />
       </div>
     </div>
     </PullToRefresh>

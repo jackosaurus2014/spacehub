@@ -15,6 +15,8 @@ import PullToRefresh from '@/components/ui/PullToRefresh';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { clientLogger } from '@/lib/client-logger';
 import FAQSchema from '@/components/seo/FAQSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { getCompanyProfileUrl } from '@/lib/company-links';
 
 interface StockData {
   ticker: string;
@@ -118,7 +120,11 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
         <div className="flex items-center gap-3">
           <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
           <div>
-            <div className="font-semibold text-white">{company.name}</div>
+            <div className="font-semibold text-white">
+              {getCompanyProfileUrl(company.name) ? (
+                <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline">{company.name}</Link>
+              ) : company.name}
+            </div>
             {company.ticker ? (
               <div className="text-xs text-nebula-300 font-mono">
                 {company.exchange}:{company.ticker}
@@ -507,7 +513,11 @@ function MarketIntelContent() {
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div>
-                              <div className="font-semibold text-white">{company.name}</div>
+                              <div className="font-semibold text-white">
+                                {getCompanyProfileUrl(company.name) ? (
+                                  <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline">{company.name}</Link>
+                                ) : company.name}
+                              </div>
                               <div className="text-xs text-nebula-300 font-mono">
                                 {company.exchange}:{company.ticker}
                               </div>
@@ -878,7 +888,11 @@ function MarketIntelContent() {
                                 <div className="flex items-center gap-3">
                                   <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
                                   <div>
-                                    <div className="font-semibold text-white">{company.name}</div>
+                                    <div className="font-semibold text-white">
+                                      {getCompanyProfileUrl(company.name) ? (
+                                        <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline">{company.name}</Link>
+                                      ) : company.name}
+                                    </div>
                                     <div className="text-xs text-nebula-300 font-mono">
                                       {company.exchange}:{company.ticker}
                                     </div>
@@ -988,7 +1002,11 @@ function MarketIntelContent() {
                                 <div className="flex items-center gap-3">
                                   <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
                                   <div>
-                                    <div className="font-semibold text-white">{company.name}</div>
+                                    <div className="font-semibold text-white">
+                                      {getCompanyProfileUrl(company.name) ? (
+                                        <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline">{company.name}</Link>
+                                      ) : company.name}
+                                    </div>
                                     <div className="text-xs text-slate-400">{countryInfo?.name || company.country}</div>
                                   </div>
                                 </div>
@@ -1052,6 +1070,13 @@ function MarketIntelContent() {
             )}
           </div>
         )}
+
+        <RelatedModules modules={[
+          { name: 'Company Profiles', description: '200+ detailed company pages', href: '/company-profiles', icon: '\u{1F3E2}' },
+          { name: 'Space Capital', description: 'Investment tracking and VC data', href: '/space-capital', icon: '\u{1F4B0}' },
+          { name: 'Funding Tracker', description: 'Recent funding rounds', href: '/funding-tracker', icon: '\u{1F4CA}' },
+          { name: 'Space Economy', description: 'Market overview and trends', href: '/space-economy', icon: '\u{1F30D}' },
+        ]} />
 
         {/* Footer Ad */}
         <div className="mt-8">

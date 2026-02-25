@@ -6,6 +6,7 @@ import DataFreshness from '@/components/ui/DataFreshness';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import { clientLogger } from '@/lib/client-logger';
+import RelatedModules from '@/components/ui/RelatedModules';
 
 // ────────────────────────────────────────
 // Types
@@ -1081,6 +1082,13 @@ export default function SpaceEconomyPage() {
         {activeTab === 'government' && <GovernmentBudgetsTab governmentBudgets={governmentBudgets} />}
         {activeTab === 'launch-costs' && <LaunchCostsTab launchCostTrends={launchCostTrends} />}
         {activeTab === 'workforce' && <WorkforceTrendsTab workforceStats={workforceStats} salaryBenchmarks={salaryBenchmarks} />}
+
+        <RelatedModules modules={[
+          { name: 'Space Capital', description: 'VC deals, investors, and startup funding', href: '/space-capital', icon: '\u{1F4B0}' },
+          { name: 'Funding Tracker', description: 'Track funding rounds and valuations', href: '/funding-tracker', icon: '\u{1F4CA}' },
+          { name: 'Market Intelligence', description: 'Stock prices and company data', href: '/market-intel', icon: '\u{1F4C8}' },
+          { name: 'Company Profiles', description: '200+ space company profiles', href: '/company-profiles', icon: '\u{1F3E2}' },
+        ]} />
 
         {/* Data Sources Footer */}
         <ScrollReveal>

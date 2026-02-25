@@ -7,6 +7,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
 
 // ────────────────────────────────────────
 // Types
@@ -845,6 +846,13 @@ function SpaceCapitalInner() {
         {activeTab === 'investors' && <InvestorsTab investors={investors} />}
         {activeTab === 'startups' && <StartupsTab startups={startups} />}
         {activeTab === 'matchmaker' && <MatchmakerTab investors={investors} startups={startups} />}
+
+        <RelatedModules modules={[
+          { name: 'Space Economy', description: 'Market size, government budgets, and trends', href: '/space-economy', icon: '\u{1F30D}' },
+          { name: 'Funding Tracker', description: 'Latest funding rounds and deals', href: '/funding-tracker', icon: '\u{1F4CA}' },
+          { name: 'Market Intelligence', description: 'Public company data and stock prices', href: '/market-intel', icon: '\u{1F4C8}' },
+          { name: 'Deal Flow', description: 'Active deal pipeline and opportunities', href: '/deals', icon: '\u{1F91D}' },
+        ]} />
 
         {/* Data Sources Footer */}
         <ScrollReveal>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import PremiumGate from '@/components/PremiumGate';
 import EventSchema from '@/components/seo/EventSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
 import {
   REGULATORY_DEADLINES,
   AGENCY_COLORS,
@@ -805,6 +806,12 @@ export default function RegulatoryCalendarPage() {
         )}
 
         </PremiumGate>
+
+        <RelatedModules modules={[
+          { name: 'Compliance Hub', description: 'Treaties, laws, and regulatory bodies', href: '/compliance', icon: '\u{2696}\u{FE0F}' },
+          { name: 'Regulatory Risk', description: 'Risk scoring and assessment', href: '/regulatory-risk', icon: '\u{26A0}\u{FE0F}' },
+          { name: 'Space Defense', description: 'Defense procurement and policy', href: '/space-defense', icon: '\u{1F6E1}\u{FE0F}' },
+        ]} />
 
         {/* Footer disclaimer */}
         <div className="mt-12 text-center text-xs text-slate-500">

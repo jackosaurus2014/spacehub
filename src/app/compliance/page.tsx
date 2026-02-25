@@ -14,6 +14,7 @@ import InlineDisclaimer from '@/components/InlineDisclaimer';
 import DataFreshness from '@/components/ui/DataFreshness';
 import PremiumGate from '@/components/PremiumGate';
 import ExportButton from '@/components/ui/ExportButton';
+import RelatedModules from '@/components/ui/RelatedModules';
 
 // Lazy-load non-default tab sections (only visible when their section tab is clicked)
 const SpaceLawSection = dynamic(() => import('./SpaceLawSection'), {
@@ -1748,6 +1749,12 @@ export default function RegulatoryHubPage() {
             <RegulatoryHubContent />
           </Suspense>
         </PremiumGate>
+
+        <RelatedModules modules={[
+          { name: 'Regulatory Calendar', description: 'Upcoming deadlines and filing dates', href: '/regulatory-calendar', icon: '\u{1F4C5}' },
+          { name: 'Regulatory Risk', description: 'Risk assessment and scoring', href: '/regulatory-risk', icon: '\u{26A0}\u{FE0F}' },
+          { name: 'Spectrum Management', description: 'Frequency allocations and auctions', href: '/spectrum', icon: '\u{1F4E1}' },
+        ]} />
       </div>
     </div>
     </>

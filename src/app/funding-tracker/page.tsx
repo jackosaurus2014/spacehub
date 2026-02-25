@@ -10,6 +10,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PremiumGate from '@/components/PremiumGate';
 import { clientLogger } from '@/lib/client-logger';
 import CompanyFundingComparison from '@/components/funding/CompanyFundingComparison';
+import RelatedModules from '@/components/ui/RelatedModules';
 
 // ────────────────────────────────────────
 // Types
@@ -720,6 +721,12 @@ function FundingTrackerPageInner() {
             <CompanyFundingComparison allRounds={rounds} />
           </ScrollReveal>
         )}
+
+        <RelatedModules modules={[
+          { name: 'Space Capital', description: 'Top investors and VC landscape', href: '/space-capital', icon: '\u{1F4B0}' },
+          { name: 'Space Economy', description: 'Market overview and government budgets', href: '/space-economy', icon: '\u{1F30D}' },
+          { name: 'Company Profiles', description: 'Detailed company intelligence', href: '/company-profiles', icon: '\u{1F3E2}' },
+        ]} />
 
         {/* ── Data Sources Footer ── */}
         <ScrollReveal>

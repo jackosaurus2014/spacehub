@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { SUBSCRIPTION_PLANS, SubscriptionTier } from '@/types';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import { toast } from '@/lib/toast';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import FAQSchema from '@/components/seo/FAQSchema';
 
 const PRICING_FAQ = [
@@ -333,10 +333,7 @@ function PricingPageContent() {
     <div className="min-h-screen pb-12">
       <FAQSchema items={PRICING_FAQ} />
       <div className="container mx-auto px-4">
-        <PageHeader
-          title="Choose Your Plan"
-          subtitle="The first and only platform that brings together real-time space industry data, interactive tools, regulatory intelligence, and market analytics. Built for entrepreneurs, executives, mission planners, lawyers, and enthusiasts."
-        />
+        <AnimatedPageHeader title="Choose Your Plan" subtitle="Unlock the full power of space intelligence" icon="💎" accentColor="purple" />
 
         {/* Audience strip */}
         <div className="flex flex-wrap justify-center gap-3 mb-10">

@@ -37,6 +37,7 @@ import { SkeletonPage } from '@/components/ui/Skeleton';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import { useSwipeTabs } from '@/hooks/useSwipeTabs';
 import { clientLogger } from '@/lib/client-logger';
+import RelatedModules from '@/components/ui/RelatedModules';
 
 // ════════════════════════════════════════
 // Top-Level Tab Type
@@ -2621,6 +2622,12 @@ function SpaceEnvironmentContent() {
         {activeTab === 'weather' && <SpaceWeatherTab key={`weather-${refreshKey}`} />}
         {activeTab === 'debris' && <DebrisTrackingTab key={`debris-${refreshKey}`} />}
         {activeTab === 'operations' && <OperationsTab key={`operations-${refreshKey}`} />}
+
+        <RelatedModules modules={[
+          { name: 'Satellite Tracker', description: 'Real-time satellite positions', href: '/satellites', icon: '\u{1F6F0}\u{FE0F}' },
+          { name: 'Mission Control', description: 'Upcoming launches and events', href: '/mission-control', icon: '\u{1F680}' },
+          { name: 'Asteroid Watch', description: 'Near-Earth object tracking', href: '/asteroid-watch', icon: '\u{2604}\u{FE0F}' },
+        ]} />
       </div>
     </div>
     </PullToRefresh>

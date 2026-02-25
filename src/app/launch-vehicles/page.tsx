@@ -5,7 +5,9 @@ import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
+import Link from 'next/link';
 import { clientLogger } from '@/lib/client-logger';
+import { getCompanyProfileUrl } from '@/lib/company-links';
 
 // ────────────────────────────────────────
 // Types
@@ -842,7 +844,11 @@ function VehicleCard({ vehicle, onSelect, isSelected }: { vehicle: LaunchVehicle
             <h3 className="text-base font-bold text-white truncate">{vehicle.name}</h3>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-star-300">{vehicle.manufacturer}</span>
+            <span className="text-star-300">
+              {getCompanyProfileUrl(vehicle.manufacturer) ? (
+                <Link href={getCompanyProfileUrl(vehicle.manufacturer)!} className="hover:underline">{vehicle.manufacturer}</Link>
+              ) : vehicle.manufacturer}
+            </span>
             <span className="text-star-300/30">|</span>
             <span className="text-star-300 text-xs font-mono">{getCountryFlag(vehicle.country)}</span>
           </div>
@@ -1291,7 +1297,11 @@ export default function LaunchVehiclesPage() {
                       {selectedVehicles.map(v => (
                         <th key={v.id} className="text-center py-3 px-4 min-w-[180px]">
                           <div className="text-white font-bold">{v.name}</div>
-                          <div className="text-star-300 text-xs">{v.manufacturer}</div>
+                          <div className="text-star-300 text-xs">
+                            {getCompanyProfileUrl(v.manufacturer) ? (
+                              <Link href={getCompanyProfileUrl(v.manufacturer)!} className="hover:underline">{v.manufacturer}</Link>
+                            ) : v.manufacturer}
+                          </div>
                         </th>
                       ))}
                     </tr>
@@ -1481,7 +1491,9 @@ export default function LaunchVehiclesPage() {
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="text-white font-medium text-sm truncate">{v.name}</span>
-                          <span className="text-star-300 text-xs hidden sm:inline">({v.manufacturer})</span>
+                          <span className="text-star-300 text-xs hidden sm:inline">({getCompanyProfileUrl(v.manufacturer) ? (
+                            <Link href={getCompanyProfileUrl(v.manufacturer)!} className="hover:underline">{v.manufacturer}</Link>
+                          ) : v.manufacturer})</span>
                           {v.reusable && (
                             <span className="px-1.5 py-0.5 rounded text-[10px] bg-cyan-900/30 text-cyan-400 border border-cyan-500/30 hidden md:inline">
                               Reusable
@@ -1623,7 +1635,9 @@ export default function LaunchVehiclesPage() {
                         <div className="flex items-center gap-2">
                           <span className={`text-xs font-bold w-6 ${idx === 0 ? 'text-green-400' : 'text-star-300'}`}>#{idx + 1}</span>
                           <span className="text-white font-medium text-sm">{v.name}</span>
-                          <span className="text-star-300 text-xs">({v.manufacturer})</span>
+                          <span className="text-star-300 text-xs">({getCompanyProfileUrl(v.manufacturer) ? (
+                            <Link href={getCompanyProfileUrl(v.manufacturer)!} className="hover:underline">{v.manufacturer}</Link>
+                          ) : v.manufacturer})</span>
                           {v.reusable && (
                             <span className="px-1.5 py-0.5 rounded text-[10px] bg-cyan-900/30 text-cyan-400 border border-cyan-500/30">
                               Reusable
@@ -1677,7 +1691,11 @@ export default function LaunchVehiclesPage() {
                       .map(v => (
                         <tr key={v.id} className="hover:bg-slate-800/50 transition-colors">
                           <td className="py-2.5 px-3 text-white font-medium">{v.name}</td>
-                          <td className="py-2.5 px-3 text-star-300">{v.manufacturer}</td>
+                          <td className="py-2.5 px-3 text-star-300">
+                            {getCompanyProfileUrl(v.manufacturer) ? (
+                              <Link href={getCompanyProfileUrl(v.manufacturer)!} className="hover:underline">{v.manufacturer}</Link>
+                            ) : v.manufacturer}
+                          </td>
                           <td className="py-2.5 px-3 text-right text-white font-semibold">{formatCost(v.costMillions)}</td>
                           <td className="py-2.5 px-3 text-right text-cyan-400 font-semibold">{formatCostPerKg(v.costPerKgLeo)}</td>
                           <td className="py-2.5 px-3 text-right text-white">{formatNumber(v.payloadLeoKg)} kg</td>
@@ -1707,7 +1725,11 @@ export default function LaunchVehiclesPage() {
                       <div key={v.id} className="flex items-center justify-between">
                         <div>
                           <span className="text-white text-sm font-medium">{v.name}</span>
-                          <span className="text-star-300 text-xs ml-2">{v.manufacturer}</span>
+                          <span className="text-star-300 text-xs ml-2">
+                            {getCompanyProfileUrl(v.manufacturer) ? (
+                              <Link href={getCompanyProfileUrl(v.manufacturer)!} className="hover:underline">{v.manufacturer}</Link>
+                            ) : v.manufacturer}
+                          </span>
                         </div>
                         <span className="text-cyan-400 font-bold text-sm">{formatCostPerKg(v.costPerKgLeo)}</span>
                       </div>
@@ -1732,7 +1754,11 @@ export default function LaunchVehiclesPage() {
                       <div key={v.id} className="flex items-center justify-between">
                         <div>
                           <span className="text-white text-sm font-medium">{v.name}</span>
-                          <span className="text-star-300 text-xs ml-2">{v.manufacturer}</span>
+                          <span className="text-star-300 text-xs ml-2">
+                            {getCompanyProfileUrl(v.manufacturer) ? (
+                              <Link href={getCompanyProfileUrl(v.manufacturer)!} className="hover:underline">{v.manufacturer}</Link>
+                            ) : v.manufacturer}
+                          </span>
                         </div>
                         <span className="text-white font-bold text-sm">{formatCostPerKg(v.costPerKgLeo)}</span>
                       </div>

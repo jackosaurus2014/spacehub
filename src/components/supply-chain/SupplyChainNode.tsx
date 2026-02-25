@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   SupplyChainCompany,
   SupplyRelationship,
@@ -8,6 +9,7 @@ import {
   SUPPLY_CRITICALITY_INFO,
   SUPPLY_CHAIN_COUNTRIES,
 } from '@/types';
+import { getCompanyProfileUrl } from '@/lib/company-links';
 
 interface SupplyChainNodeProps {
   company: SupplyChainCompany;
@@ -88,7 +90,11 @@ export default function SupplyChainNode({
               <span className="text-xl" title={countryInfo.name}>
                 {countryInfo.flag}
               </span>
-              <h3 className="font-semibold text-white truncate">{company.name}</h3>
+              <h3 className="font-semibold text-white truncate">
+                {getCompanyProfileUrl(company.name) ? (
+                  <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline" onClick={(e) => e.stopPropagation()}>{company.name}</Link>
+                ) : company.name}
+              </h3>
             </div>
 
             {/* Tags row */}
@@ -194,7 +200,11 @@ export default function SupplyChainNode({
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-white">{rel.supplierName}</span>
+                      <span className="text-sm text-white">
+                        {getCompanyProfileUrl(rel.supplierName) ? (
+                          <Link href={getCompanyProfileUrl(rel.supplierName)!} className="hover:underline">{rel.supplierName}</Link>
+                        ) : rel.supplierName}
+                      </span>
                       {rel.isCritical && (
                         <span className="text-xs bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded">
                           Critical
@@ -222,7 +232,11 @@ export default function SupplyChainNode({
                     key={rel.id}
                     className="flex items-center justify-between p-2 rounded-lg bg-space-700"
                   >
-                    <span className="text-sm text-white">{rel.customerName}</span>
+                    <span className="text-sm text-white">
+                      {getCompanyProfileUrl(rel.customerName) ? (
+                        <Link href={getCompanyProfileUrl(rel.customerName)!} className="hover:underline">{rel.customerName}</Link>
+                      ) : rel.customerName}
+                    </span>
                     {rel.annualValue && (
                       <span className="text-xs text-green-400">
                         ${(rel.annualValue / 1000000).toFixed(0)}M/yr

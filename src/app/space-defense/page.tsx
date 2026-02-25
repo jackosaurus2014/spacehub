@@ -5,7 +5,9 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
+import Link from 'next/link';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import { getCompanyProfileUrl } from '@/lib/company-links';
 
 // ────────────────────────────────────────
 // Types
@@ -316,7 +318,11 @@ function ProgramCard({ program }: { program: DefenseProgram }) {
         </div>
         <div className="flex items-center gap-2 text-sm">
           <span className="text-star-400 min-w-[90px]">Contractor:</span>
-          <span className="text-star-200">{program.contractor}</span>
+          <span className="text-star-200">
+            {getCompanyProfileUrl(program.contractor) ? (
+              <Link href={getCompanyProfileUrl(program.contractor)!} className="hover:underline">{program.contractor}</Link>
+            ) : program.contractor}
+          </span>
         </div>
       </div>
 
@@ -355,7 +361,11 @@ function ContractCard({ contract }: { contract: ContractAward }) {
       <div className="space-y-1.5 mb-3">
         <div className="flex items-center gap-2 text-sm">
           <span className="text-star-400 min-w-[80px]">Contractor:</span>
-          <span className="text-star-200">{contract.contractor}</span>
+          <span className="text-star-200">
+            {getCompanyProfileUrl(contract.contractor) ? (
+              <Link href={getCompanyProfileUrl(contract.contractor)!} className="hover:underline">{contract.contractor}</Link>
+            ) : contract.contractor}
+          </span>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <span className="text-star-400 min-w-[80px]">Agency:</span>
