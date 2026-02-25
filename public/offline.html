@@ -260,6 +260,99 @@
     .logo span {
       color: #06b6d4;
     }
+
+    /* Quick-access links section */
+    .cached-section {
+      margin-top: 40px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .cached-section h2 {
+      color: #cbd5e1;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    .cached-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+
+    .cached-note svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .quick-links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quick-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 10px;
+      color: #e2e8f0;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .quick-link:hover {
+      background: rgba(30, 41, 59, 0.9);
+      border-color: rgba(6, 182, 212, 0.3);
+      transform: translateX(4px);
+    }
+
+    .quick-link svg {
+      width: 20px;
+      height: 20px;
+      color: #06b6d4;
+      flex-shrink: 0;
+    }
+
+    .quick-link-text {
+      flex: 1;
+    }
+
+    .quick-link-sub {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 400;
+    }
+
+    .quick-link-arrow {
+      color: #475569;
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Last online timestamp */
+    .last-online {
+      margin-top: 20px;
+      text-align: center;
+      color: #475569;
+      font-size: 12px;
+    }
+
+    .last-online span {
+      color: #64748b;
+    }
   </style>
 </head>
 <body>
@@ -313,6 +406,61 @@
         <li>Restart your device if the problem persists</li>
         <li>Some content may be available offline</li>
       </ul>
+    </div>
+
+    <div class="cached-section">
+      <h2>Quick Access</h2>
+      <div class="cached-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        Cached content may be available for previously visited pages
+      </div>
+      <div class="quick-links">
+        <a href="/news" class="quick-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2"></path>
+          </svg>
+          <div class="quick-link-text">
+            View Cached News
+            <div class="quick-link-sub">Space industry headlines</div>
+          </div>
+          <svg class="quick-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </a>
+        <a href="/mission-control" class="quick-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <div class="quick-link-text">
+            Mission Control
+            <div class="quick-link-sub">Dashboard overview</div>
+          </div>
+          <svg class="quick-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </a>
+        <a href="/account" class="quick-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <div class="quick-link-text">
+            Saved Searches
+            <div class="quick-link-sub">Your saved preferences</div>
+          </div>
+          <svg class="quick-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </a>
+      </div>
+      <div class="last-online" id="lastOnline"></div>
     </div>
   </div>
 
@@ -390,8 +538,51 @@
       setTimeout(checkOnlineStatus, 1000);
     });
 
+    // Display last online timestamp from localStorage
+    function displayLastOnline() {
+      var container = document.getElementById('lastOnline');
+      if (!container) return;
+      try {
+        var ts = localStorage.getItem('spacenexus-last-online');
+        if (ts) {
+          var date = new Date(parseInt(ts, 10));
+          var now = new Date();
+          var diff = now - date;
+          var text = '';
+          if (diff < 60000) {
+            text = 'just now';
+          } else if (diff < 3600000) {
+            var mins = Math.floor(diff / 60000);
+            text = mins + ' minute' + (mins > 1 ? 's' : '') + ' ago';
+          } else if (diff < 86400000) {
+            var hrs = Math.floor(diff / 3600000);
+            text = hrs + ' hour' + (hrs > 1 ? 's' : '') + ' ago';
+          } else {
+            var days = Math.floor(diff / 86400000);
+            text = days + ' day' + (days > 1 ? 's' : '') + ' ago';
+          }
+          container.innerHTML = 'Last online: <span>' + text + '</span>';
+        }
+      } catch (e) {
+        // localStorage unavailable
+      }
+    }
+
+    // Listen for service worker messages to update lastOnline
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'LAST_ONLINE') {
+          try {
+            localStorage.setItem('spacenexus-last-online', String(event.data.timestamp));
+          } catch (e) {}
+          displayLastOnline();
+        }
+      });
+    }
+
     // Initialize
     generateStars();
+    displayLastOnline();
 
     // Periodically check connection
     setInterval(checkOnlineStatus, 30000);

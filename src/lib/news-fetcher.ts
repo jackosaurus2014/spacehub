@@ -53,6 +53,55 @@ export function categorizeArticle(title: string, summary: string): string {
   return 'missions'; // default fallback for uncategorizable articles
 }
 
+// --- Deduplication helpers ---
+
+/**
+ * Normalize a title for deduplication comparison:
+ * lowercase, strip punctuation/extra whitespace.
+ */
+function normalizeTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s]/g, '')  // remove punctuation
+    .replace(/\s+/g, ' ')     // collapse whitespace
+    .trim();
+}
+
+/**
+ * Check if an article is a duplicate by exact URL or normalized title match.
+ * Returns true if a duplicate exists (and the insert should be skipped).
+ */
+async function isDuplicateArticle(url: string, title: string): Promise<boolean> {
+  // 1. Exact URL match — fast unique index lookup
+  const byUrl = await prisma.newsArticle.findUnique({
+    where: { url },
+    select: { id: true },
+  });
+  if (byUrl) return true;
+
+  // 2. Normalized title match — search recent articles (last 14 days)
+  const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+  const normalizedTarget = normalizeTitle(title);
+  if (!normalizedTarget) return false;
+
+  const candidates = await prisma.newsArticle.findMany({
+    where: {
+      publishedAt: { gte: fourteenDaysAgo },
+    },
+    select: { id: true, title: true },
+    orderBy: { publishedAt: 'desc' },
+    take: 500,
+  });
+
+  for (const candidate of candidates) {
+    if (normalizeTitle(candidate.title) === normalizedTarget) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 // --- SNAPI (Spaceflight News API) fetching ---
 
 async function fetchSNAPIEndpoint(endpoint: string, limit: number): Promise<number> {
@@ -75,6 +124,26 @@ async function fetchSNAPIEndpoint(endpoint: string, limit: number): Promise<numb
       const category = categorizeArticle(article.title, article.summary || '');
 
       try {
+        // Deduplication: skip if a duplicate exists by normalized title
+        // (exact URL match is handled by the upsert below)
+        const duplicate = await isDuplicateArticle(article.url, article.title);
+        if (duplicate) {
+          // URL match is fine (upsert would update), but title-only match means
+          // the same story from a different source — skip the insert
+          const byUrl = await prisma.newsArticle.findUnique({
+            where: { url: article.url },
+            select: { id: true },
+          });
+          if (!byUrl) {
+            logger.debug('[SNAPI] Skipping duplicate article (title match)', {
+              title: article.title,
+              url: article.url,
+              source: article.news_site,
+            });
+            continue;
+          }
+        }
+
         await prisma.newsArticle.upsert({
           where: { url: article.url },
           update: {
@@ -259,6 +328,23 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
         const imageUrl = extractImageFromRSS(item);
 
         try {
+          // Deduplication: skip if a duplicate exists by normalized title
+          const duplicate = await isDuplicateArticle(item.link, item.title);
+          if (duplicate) {
+            const byUrl = await prisma.newsArticle.findUnique({
+              where: { url: item.link },
+              select: { id: true },
+            });
+            if (!byUrl) {
+              logger.debug('[RSS] Skipping duplicate article (title match)', {
+                title: item.title,
+                url: item.link,
+                source: feed.name,
+              });
+              continue;
+            }
+          }
+
           await prisma.newsArticle.upsert({
             where: { url: item.link },
             update: {

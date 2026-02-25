@@ -4,6 +4,77 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { toast } from '@/lib/toast';
+
+const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+function ResendVerificationForm() {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const handleResend = async () => {
+    if (!email.trim() || !isValidEmail(email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.ok) {
+        toast.success('If an account exists, a verification email has been sent.');
+        setSent(true);
+      } else {
+        toast.error('Failed to send verification email. Please try again.');
+      }
+    } catch {
+      toast.error('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (sent) {
+    return (
+      <p className="text-green-400 text-sm mt-4">
+        Verification email sent! Please check your inbox.
+      </p>
+    );
+  }
+
+  return (
+    <div className="mt-6 border-t border-slate-700/50 pt-4">
+      <p className="text-slate-400 text-sm mb-3">
+        Need a new verification link? Enter your email below:
+      </p>
+      <div className="flex items-center gap-2">
+        <input
+          type="email"
+          inputMode="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          className="input text-sm flex-1"
+          autoComplete="email"
+        />
+        <button
+          type="button"
+          onClick={handleResend}
+          disabled={loading}
+          className="btn-primary text-sm py-2 px-4 disabled:opacity-50 whitespace-nowrap"
+        >
+          {loading ? 'Sending...' : 'Resend'}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -76,10 +147,11 @@ function VerifyEmailContent() {
         </svg>
       </div>
       <h2 className="text-lg font-semibold text-white mb-2">Verification Failed</h2>
-      <p className="text-slate-400 mb-6">{message}</p>
+      <p className="text-slate-400 mb-4">{message}</p>
       <Link href="/login" className="text-plasma-400 hover:text-plasma-300 transition-colors">
         Go to login
       </Link>
+      <ResendVerificationForm />
     </div>
   );
 }

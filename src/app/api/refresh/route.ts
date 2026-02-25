@@ -189,12 +189,14 @@ export async function POST(request: Request) {
     }
 
     if (type === 'space-defense') {
-      const { fetchDefenseProcurement, fetchDefenseNews } = await import('@/lib/space-defense-fetcher');
+      const { fetchDefenseProcurement, fetchDefenseNews, fetchDefenseRSSFeeds } = await import('@/lib/space-defense-fetcher');
       const procurementCount = await fetchDefenseProcurement();
       const newsCount = await fetchDefenseNews();
+      const rssCount = await fetchDefenseRSSFeeds();
       results.spaceDefense = {
         liveProcurement: procurementCount,
         defenseNews: newsCount,
+        defenseRSS: rssCount,
       };
     }
 

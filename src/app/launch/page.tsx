@@ -8,6 +8,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import MultiLaunchTabs from '@/components/launch/MultiLaunchTabs';
 import CompactLaunchCard from '@/components/launch/CompactLaunchCard';
 import NotificationBell from '@/components/launch/NotificationBell';
+import EventSchema from '@/components/seo/EventSchema';
 
 interface LaunchEvent {
   id: string;
@@ -205,38 +206,23 @@ export default function LaunchListPage() {
   const allUpcoming = [...data.imminent, ...data.upcoming];
   const hasAny = data.live.length > 0 || allUpcoming.length > 0 || data.recent.length > 0;
 
-  // Build Event structured data for upcoming launches
-  const eventSchemaData = [...data.live, ...allUpcoming].slice(0, 10).map((event) => ({
-    '@context': 'https://schema.org',
-    '@type': 'Event',
-    name: event.name,
-    ...(event.description && { description: event.description }),
-    ...(event.launchDate && { startDate: event.launchDate }),
-    eventStatus: event.isLive
-      ? 'https://schema.org/EventScheduled'
-      : 'https://schema.org/EventScheduled',
-    eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
-    location: event.location
-      ? { '@type': 'Place', name: event.location, ...(event.country && { address: { '@type': 'PostalAddress', addressCountry: event.country } }) }
-      : { '@type': 'VirtualLocation', url: 'https://spacenexus.us/launch' },
-    organizer: {
-      '@type': 'Organization',
-      name: event.agency || 'Unknown',
-    },
-    ...(event.imageUrl && { image: event.imageUrl }),
-    ...(event.infoUrl && { url: event.infoUrl }),
-  }));
+  // Build Event structured data for upcoming launches (first 5)
+  const schemaEvents = [...data.live, ...allUpcoming].slice(0, 5);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      {eventSchemaData.length > 0 && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(eventSchemaData).replace(/</g, '\\u003c'),
-          }}
+      {schemaEvents.map((event) => (
+        <EventSchema
+          key={`schema-${event.id}`}
+          name={event.name}
+          description={event.description || `${event.name} - space launch event`}
+          startDate={event.launchDate || new Date().toISOString()}
+          location={event.location || undefined}
+          organizer={event.agency || 'Unknown'}
+          url={event.infoUrl || `https://spacenexus.us/launch/${event.id}`}
+          image={event.imageUrl || undefined}
         />
-      )}
+      ))}
       <div className="container mx-auto px-4 py-8">
         <PageHeader
           title="Launch Day"

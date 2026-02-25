@@ -10,6 +10,7 @@ import RFQCard from '@/components/marketplace/RFQCard';
 import { MARKETPLACE_CATEGORIES, CERTIFICATION_OPTIONS, VERIFICATION_LEVELS } from '@/lib/marketplace-types';
 import { clientLogger } from '@/lib/client-logger';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -104,6 +105,11 @@ function SearchContent() {
 
   return (
     <div className="min-h-screen">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Marketplace', href: '/marketplace' },
+        { name: 'Search' },
+      ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Marketplace Search"

@@ -119,6 +119,101 @@ export async function filterSubscribersByPreferences(
   return filtered;
 }
 
+/**
+ * Get all verified, active newsletter subscribers filtered by a notification preference.
+ *
+ * - Fetches all verified subscribers who have not unsubscribed.
+ * - Joins with User (by email) and NotificationPreference.
+ * - Filters out subscribers whose linked User has opted out of the specified preference.
+ * - Subscribers without a linked User account are kept (explicitly subscribed anonymous users).
+ * - Subscribers whose User has no NotificationPreference record are kept (defaults are all true).
+ *
+ * @param preferenceKey - The NotificationPreference boolean field to check (e.g. 'emailDigest', 'newsDigest', 'forumReplies')
+ * @returns Filtered list of subscribers who should receive the email
+ */
+export async function getSubscribersWithPreference(
+  preferenceKey: string
+): Promise<SubscriberWithUserId[]> {
+  // Step 1: Fetch all verified, active subscribers
+  const allSubscribers = await prisma.newsletterSubscriber.findMany({
+    where: {
+      verified: true,
+      unsubscribedAt: null,
+    },
+    select: {
+      email: true,
+      unsubscribeToken: true,
+      userId: true,
+    },
+  });
+
+  if (allSubscribers.length === 0) {
+    return [];
+  }
+
+  // Step 2: Collect linked userIds
+  const userIds = allSubscribers
+    .map(s => s.userId)
+    .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+  if (userIds.length === 0) {
+    // All subscribers are anonymous — keep all
+    return allSubscribers;
+  }
+
+  // Step 3: Batch-fetch notification preferences for linked users
+  const preferences = await prisma.notificationPreference.findMany({
+    where: { userId: { in: userIds } },
+    select: {
+      userId: true,
+      emailDigest: true,
+      newsDigest: true,
+      forumReplies: true,
+      marketplaceUpdates: true,
+      watchlistAlerts: true,
+      directMessages: true,
+    },
+  });
+
+  const prefMap = new Map(preferences.map(p => [p.userId, p]));
+
+  // Step 4: Filter out subscribers who opted out
+  const filtered = allSubscribers.filter(subscriber => {
+    if (!subscriber.userId) {
+      return true; // Anonymous subscriber, keep
+    }
+
+    const pref = prefMap.get(subscriber.userId);
+    if (!pref) {
+      return true; // No preference record, defaults are all true
+    }
+
+    // Check the emailDigest master switch first
+    if (!pref.emailDigest) {
+      return false;
+    }
+
+    // Check the specific preference key
+    const value = (pref as Record<string, unknown>)[preferenceKey];
+    if (value === false) {
+      return false;
+    }
+
+    return true;
+  });
+
+  const excludedCount = allSubscribers.length - filtered.length;
+  if (excludedCount > 0) {
+    logger.info(`getSubscribersWithPreference filtered out ${excludedCount} subscribers`, {
+      preferenceKey,
+      originalCount: allSubscribers.length,
+      filteredCount: filtered.length,
+    });
+  }
+
+  return filtered;
+}
+
 // Helper to delay between batches
 function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));

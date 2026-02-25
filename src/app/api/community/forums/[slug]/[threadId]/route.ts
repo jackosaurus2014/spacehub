@@ -5,6 +5,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { checkUserBanStatus } from '@/lib/moderation';
 import { notifyThreadSubscribers, createNotification } from '@/lib/notifications-server';
+import { parseMentions } from '@/lib/mentions';
 import {
   unauthorizedError,
   validationError,
@@ -271,6 +272,45 @@ export async function POST(
         relatedContentId: threadId,
         linkUrl: `/community/forums/${slug}/${threadId}`,
       }).catch(() => {});
+    }
+
+    // Parse @mentions and notify mentioned users (fire and forget)
+    try {
+      const mentionedUsernames = parseMentions(content);
+      if (mentionedUsernames.length > 0) {
+        const mentionedUsers = await prisma.user.findMany({
+          where: {
+            name: { in: mentionedUsernames },
+            id: { not: session.user.id }, // Don't notify yourself
+          },
+          select: { id: true, name: true },
+        });
+
+        for (const user of mentionedUsers) {
+          createNotification({
+            userId: user.id,
+            type: 'mention',
+            title: 'You were mentioned',
+            message: `@${session.user.name || 'Someone'} mentioned you in a forum post`,
+            relatedUserId: session.user.id,
+            relatedContentType: 'post',
+            relatedContentId: post.id,
+            linkUrl: `/community/forums/${slug}/${threadId}`,
+          }).catch(() => {});
+        }
+
+        if (mentionedUsers.length > 0) {
+          logger.info('Mention notifications queued', {
+            postId: post.id,
+            mentionedCount: mentionedUsers.length,
+          });
+        }
+      }
+    } catch (mentionError) {
+      logger.warn('Failed to process mentions', {
+        postId: post.id,
+        error: mentionError instanceof Error ? mentionError.message : String(mentionError),
+      });
     }
 
     logger.info('Forum post created', {

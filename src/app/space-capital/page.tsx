@@ -6,6 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 // ────────────────────────────────────────
 // Types
@@ -794,6 +795,10 @@ function SpaceCapitalInner() {
 
   return (
     <div className="min-h-screen bg-slate-900">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Space Capital' },
+      ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Capital"

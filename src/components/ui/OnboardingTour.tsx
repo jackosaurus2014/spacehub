@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 const STORAGE_KEY = 'spacenexus-onboarding-complete';
 const PERSONA_KEY = 'spacenexus-user-persona';
@@ -15,6 +15,23 @@ const PERSONAS: { id: UserPersona; icon: string; title: string; description: str
   { id: 'supply-chain', icon: '\u{1F517}', title: 'Supply Chain Professional', description: 'Map suppliers, track resources, procurement intelligence' },
   { id: 'legal', icon: '\u2696\uFE0F', title: 'Legal / Compliance', description: 'Space treaties, FCC/FAA filings, ITAR/EAR export controls' },
 ];
+
+/** Fire-and-forget POST to persist persona/onboarding state to the backend */
+async function syncPersonaToServer(data: {
+  persona?: string;
+  onboardingStep?: number;
+  onboardingCompleted?: boolean;
+}): Promise<void> {
+  try {
+    await fetch('/api/auth/update-persona', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+  } catch {
+    // Non-blocking: if the user isn't authenticated or the request fails, silently ignore
+  }
+}
 
 interface TourStep {
   title: string;
@@ -53,6 +70,34 @@ export default function OnboardingTour() {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(0); // 0 = persona selection, 1-3 = tour steps
   const [selectedPersona, setSelectedPersona] = useState<UserPersona | null>(null);
+  const syncedFromServer = useRef(false);
+
+  // On mount: sync persona from server if user is authenticated and localStorage is empty
+  useEffect(() => {
+    if (syncedFromServer.current) return;
+    syncedFromServer.current = true;
+
+    const existingPersona = localStorage.getItem(PERSONA_KEY);
+    if (!existingPersona) {
+      fetch('/api/auth/update-persona')
+        .then((res) => {
+          if (res.ok) return res.json();
+          return null;
+        })
+        .then((data) => {
+          if (data?.data?.persona) {
+            localStorage.setItem(PERSONA_KEY, data.data.persona);
+            window.dispatchEvent(new Event('persona-changed'));
+          }
+          if (data?.data?.onboardingCompleted) {
+            localStorage.setItem(STORAGE_KEY, 'true');
+          }
+        })
+        .catch(() => {
+          // Not authenticated or network error — ignore
+        });
+    }
+  }, []);
 
   useEffect(() => {
     const completed = localStorage.getItem(STORAGE_KEY);
@@ -66,6 +111,9 @@ export default function OnboardingTour() {
   const handleComplete = useCallback(() => {
     if (selectedPersona) {
       localStorage.setItem(PERSONA_KEY, selectedPersona);
+      syncPersonaToServer({ persona: selectedPersona, onboardingCompleted: true });
+    } else {
+      syncPersonaToServer({ onboardingCompleted: true });
     }
     localStorage.setItem(STORAGE_KEY, 'true');
     setIsOpen(false);
@@ -76,7 +124,15 @@ export default function OnboardingTour() {
   const handleNext = useCallback(() => {
     if (step === 0 && !selectedPersona) return; // Must select persona
     if (step < TOUR_STEPS.length) {
-      setStep(step + 1);
+      const nextStep = step + 1;
+      setStep(nextStep);
+      // Persist step progress (and persona on step 0 -> 1 transition)
+      if (step === 0 && selectedPersona) {
+        localStorage.setItem(PERSONA_KEY, selectedPersona);
+        syncPersonaToServer({ persona: selectedPersona, onboardingStep: nextStep });
+      } else {
+        syncPersonaToServer({ onboardingStep: nextStep });
+      }
     } else {
       handleComplete();
     }
@@ -88,6 +144,7 @@ export default function OnboardingTour() {
 
   const handleSkip = useCallback(() => {
     localStorage.setItem(STORAGE_KEY, 'true');
+    syncPersonaToServer({ onboardingCompleted: true });
     setIsOpen(false);
   }, []);
 

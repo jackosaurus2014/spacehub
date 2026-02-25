@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import EventSchema from '@/components/seo/EventSchema';
 import {
   SPACE_EVENTS,
   EVENT_TYPES,
@@ -782,6 +783,23 @@ function SpaceEventsPageInner() {
         { name: 'Home', href: '/' },
         { name: 'Space Events' },
       ]} />
+      {/* Event schema for first 5 upcoming events */}
+      {SPACE_EVENTS
+        .filter((e) => (e.endDate || e.startDate) >= nowStr)
+        .sort((a, b) => a.startDate.localeCompare(b.startDate))
+        .slice(0, 5)
+        .map((event) => (
+          <EventSchema
+            key={`schema-${event.id}`}
+            name={event.name}
+            description={event.description}
+            startDate={event.startDate}
+            endDate={event.endDate}
+            location={event.location}
+            organizer={event.organizer}
+            url={event.website || `https://spacenexus.us/space-events`}
+          />
+        ))}
       <AnimatedPageHeader
         title="Space Industry Events & Conferences"
         subtitle={`${SPACE_EVENTS.length} events across the global space industry for 2026-2027`}

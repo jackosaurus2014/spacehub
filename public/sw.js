@@ -176,6 +176,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Track last successful online timestamp
+  if (navigator.onLine) {
+    self.clients.matchAll().then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage({ type: 'LAST_ONLINE', timestamp: Date.now() });
+      });
+    });
+  }
+
   // Route to appropriate caching strategy
   if (isApiRequest(request)) {
     // Network-first for API calls

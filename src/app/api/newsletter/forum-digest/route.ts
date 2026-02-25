@@ -4,14 +4,15 @@ export const maxDuration = 120;
 import { NextRequest, NextResponse } from 'next/server';
 import { requireCronSecret, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
-import prisma from '@/lib/db';
-import { sendDailyDigest, filterSubscribersByPreferences } from '@/lib/newsletter/email-service';
+import { sendDailyDigest, getSubscribersWithPreference } from '@/lib/newsletter/email-service';
 import { generateForumDigestEmail } from '@/lib/newsletter/forum-digest';
 
 /**
  * POST /api/newsletter/forum-digest
  *
  * Generate and send the weekly forum digest to all verified newsletter subscribers.
+ * Respects NotificationPreference: skips subscribers whose linked User account
+ * has emailDigest=false or forumReplies=false.
  * Auth: CRON_SECRET header required.
  */
 export async function POST(request: NextRequest) {
@@ -22,20 +23,9 @@ export async function POST(request: NextRequest) {
     // 1. Generate the forum digest email
     const { html, plain, subject } = await generateForumDigestEmail();
 
-    // 2. Get verified, active newsletter subscribers and filter by preferences
-    const allSubscribers = await prisma.newsletterSubscriber.findMany({
-      where: {
-        verified: true,
-        unsubscribedAt: null,
-      },
-      select: {
-        email: true,
-        unsubscribeToken: true,
-        userId: true,
-      },
-    });
-
-    const subscribers = await filterSubscribersByPreferences(allSubscribers, 'forum');
+    // 2. Get verified, active subscribers filtered by forum notification preferences
+    //    Skips subscribers whose linked User has emailDigest=false or forumReplies=false
+    const subscribers = await getSubscribersWithPreference('forumReplies');
 
     if (subscribers.length === 0) {
       logger.info('Forum digest: no subscribers to send to');

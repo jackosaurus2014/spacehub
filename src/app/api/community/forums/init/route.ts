@@ -16,11 +16,16 @@ const FORUM_CATEGORIES = [
   { slug: 'announcements', name: 'Announcements', description: 'Official SpaceNexus announcements, platform updates, and community news.', icon: '📢', sortOrder: 8 },
 ];
 
+interface SeedReply {
+  content: string;
+}
+
 interface SeedThread {
   title: string;
   content: string;
   isPinned?: boolean;
   tags: string[];
+  replies?: SeedReply[];
 }
 
 const SEED_THREADS: Record<string, SeedThread[]> = {
@@ -382,6 +387,497 @@ We'd love your feedback on these new features. Drop your thoughts in the forums,
   ],
 };
 
+// Additional engagement-driving seed threads with replies
+const ADDITIONAL_SEED_THREADS: Record<string, SeedThread[]> = {
+  'general': [
+    {
+      title: "What's your favorite launch provider and why?",
+      content: `With so many active launch providers now operating globally, the market is more diverse and competitive than ever. From SpaceX dominating the cadence charts, to Rocket Lab carving out the dedicated small-sat niche, to newcomers like Blue Origin finally reaching orbit with New Glenn — there's never been more choice for getting payloads to space.
+
+I'm curious what the community thinks. Which launch provider do you admire the most, and what makes them stand out? Is it purely about price per kg, or do factors like schedule reliability, customer service, mission flexibility, and corporate culture play into your assessment?
+
+For me, I've always been impressed by Rocket Lab's ability to execute with a relatively small team. Peter Beck built a vertically integrated launch company from New Zealand and has consistently delivered on promises. The Electron vehicle is elegant in its simplicity, and the pivot to Neutron shows strategic ambition. But I know others will have different favorites — let's hear it!`,
+      tags: ['launch-providers', 'discussion', 'opinion', 'community'],
+      replies: [
+        { content: `SpaceX, no contest. Say what you will about the corporate culture, but the engineering execution is unmatched. They went from nearly going bankrupt after three Falcon 1 failures to launching more rockets than any nation on Earth. The Falcon 9 is the most reliable rocket flying today, and Starship — if they pull it off — will fundamentally change what's possible in space. The vertical integration, rapid iteration, and willingness to take risks that traditional aerospace companies won't is what sets them apart.` },
+        { content: `I'll throw in a vote for Arianespace / ArianeGroup. They don't get the hype of SpaceX or the memes, but Ariane 5 had one of the best reliability records in history — 117 consecutive successes before retirement. Ariane 6 had a rocky start but represents Europe's commitment to sovereign access to space. And the Vega-C program for smaller payloads shows they're thinking about the full market. Sometimes boring reliability is exactly what you want when you're launching a billion-dollar satellite.` },
+        { content: `Rocket Lab gets my vote. @ElonFan makes a good point about SpaceX's execution, but Rocket Lab is doing something arguably harder — building a competitive launch company without the benefit of billionaire founder capital (at least initially). Peter Beck bootstrapped much of the early development. The Electron is a beautiful piece of engineering, and the move into spacecraft buses with Photon shows real strategic thinking. Plus, they're the only Western small-launch provider that has actually delivered a reliable, operational vehicle.` },
+      ],
+    },
+    {
+      title: 'Best podcasts for space industry professionals',
+      content: `I've been building out my podcast rotation for commutes and gym sessions, and I'd love to get recommendations from this community. The space industry podcast landscape has expanded significantly in the past few years, and it's hard to know which ones are worth subscribing to.
+
+My current favorites:
+- **Off-Nominal** — Anthony Colangelo and Megan Bartels do a great job covering space news with nuance and humor. The "anomaly" deep dives are particularly good.
+- **Main Engine Cut Off** — Anthony's solo show goes deep on space policy and industry dynamics. The interviews are outstanding.
+- **The Space Show** — Dr. David Livingston's long-running interview show with space professionals. Can be long but always substantive.
+- **T-Minus Daily Space** — Quick daily briefings on space news from N2K.
+
+What am I missing? I'm particularly interested in podcasts that cover the business/investment side of space, international perspectives (I feel like most of my rotation is US-centric), and more technical deep dives on satellite engineering.`,
+      tags: ['podcasts', 'media', 'education', 'recommendations'],
+      replies: [
+        { content: `Great list! I'd add **The Payload** podcast — it's a companion to The Payload newsletter, which is one of the best daily space industry newsletters out there. They focus on the business and investment side, which sounds like what you're looking for. Also check out **Spaceflight Now**'s podcasts and **Orbital Mechanics** if you want more engineering-focused discussions. For international perspective, **Room: The Space Journal** podcast covers ESA and European commercial space well.` },
+        { content: `If you want the investment/business angle, **Space Capital** (the VC fund's podcast) is essential. Chad Anderson interviews founders, investors, and industry leaders with a focus on the business building side. Also **Brains Byte Back** occasionally has great space tech episodes. For really technical propulsion and engineering content, check out the **Everyday Astronaut** YouTube channel (Tim Dodd) — not a traditional podcast but the long-form interviews are incredible, especially the Elon Musk Starbase tours.` },
+      ],
+    },
+    {
+      title: 'Space documentaries and films worth watching in 2026',
+      content: `Between streaming platforms, traditional networks, and YouTube creators, there's been an explosion of high-quality space content in recent years. I wanted to start a thread where we can compile recommendations for documentaries, films, and series that the space community should watch.
+
+I'll start with some recent highlights:
+
+**Documentaries:**
+- "Return to Space" (Netflix) — Follows SpaceX's journey to return crew launch capability to the US. Well produced even if you already know the story.
+- "Good Night Oppy" (Amazon) — The Mars Opportunity rover documentary. Genuinely moving.
+- "The Space Race" (National Geographic) — Examines the contributions of Black Americans to the space program. Important and underreported history.
+
+**Series:**
+- "For All Mankind" (Apple TV+) — Alternate history where the space race never ended. The best space sci-fi on TV right now, in my opinion.
+- "Silo" (Apple TV+) — Not directly space-related but deals with themes relevant to long-duration habitat design.
+
+What would you add? I'm especially looking for lesser-known documentaries about specific missions or technologies.`,
+      tags: ['documentaries', 'media', 'entertainment', 'recommendations'],
+      replies: [
+        { content: `"The Farthest" about the Voyager missions is an absolute masterpiece — one of the best science documentaries ever made, in my opinion. For something more recent, NASA's YouTube channel has been putting out excellent short documentaries about the Artemis program. And if you haven't seen "In the Shadow of the Moon" (not the fiction film, the 2007 documentary about Apollo), it features incredible interviews with Apollo astronauts that are irreplaceable now that many of them have passed.` },
+        { content: `For fiction, I'd recommend "The Martian" if somehow anyone here hasn't seen it — Andy Weir's story holds up as one of the most technically accurate space films. Also "Gravity" for the visceral experience of orbital debris cascading (even if the orbital mechanics are questionable). And the classic "Apollo 13" which every space professional should watch at least once. For series, "The Expanse" is the gold standard for hard sci-fi that takes physics seriously.` },
+        { content: `A hidden gem: "Mission Control: The Unsung Heroes of Apollo" (2017). It focuses on the flight controllers rather than the astronauts, and the stories they tell about managing Apollo 12's lightning strike and Apollo 13's crisis are absolutely gripping. Also, YouTube creators like Scott Manley and Everyday Astronaut produce content that's better than most TV documentaries. Scott's video breakdowns of launch failures are incredibly educational.` },
+      ],
+    },
+  ],
+  'launch-tech': [
+    {
+      title: 'SpaceX Starship IFT-7: What to expect',
+      content: `With IFT-7 on the horizon, the Starship program continues to push boundaries with each integrated flight test. Looking back at the progression from IFT-1's launch pad destruction through IFT-6's increasingly successful demonstrations, the rate of improvement has been remarkable even by SpaceX standards.
+
+Key questions going into IFT-7:
+- **Orbital insertion and reentry**: Can Starship demonstrate a full orbital profile with controlled reentry and landing of both stages?
+- **Booster catch reliability**: The mechanical catch with chopsticks was one of the most audacious engineering demonstrations in spaceflight history. Can they do it consistently?
+- **Heat shield durability**: The ceramic hex tiles have been the Achilles heel, with some loss on every flight so far. Has the redesigned attachment system solved the problem?
+- **Payload deployment**: Will we see a demonstration of the payload door opening mechanism and satellite deployment in orbit?
+- **Propellant transfer**: This is critical for the lunar HLS variant. Even a basic fluid transfer demo between header and main tanks would be significant.
+
+What are you most watching for in IFT-7? And what's your prediction for the flight outcome?`,
+      tags: ['starship', 'spacex', 'ift-7', 'flight-test', 'predictions'],
+      replies: [
+        { content: `I'm most interested in the heat shield performance. Everything else SpaceX has demonstrated they can iterate on with ground testing and simulations, but the thermal protection system can really only be validated through actual reentry. If they've cracked the tile attachment problem and can reliably survive reentry without significant tile loss, that unlocks the rapid reusability that makes the Starship economics work. Without it, you're looking at extensive refurbishment between flights, which defeats the purpose of the design.` },
+        { content: `Propellant transfer demonstration is the sleeper story here. NASA's Artemis III depends on Starship HLS, and Starship HLS depends on orbital refueling — potentially 10+ tanker flights per lunar mission. If they can't demonstrate reliable propellant transfer, the entire Artemis architecture has a critical dependency gap. I think SpaceX knows this and will prioritize getting at least a basic demo done soon. It's less visually dramatic than a booster catch but arguably more important for the program's future.` },
+        { content: `My prediction: successful booster catch, Ship reaches orbit but has some heat shield tile loss on reentry — not catastrophic but enough to prevent landing at the intended site. I think they'll demonstrate payload door opening but not actual satellite deployment. No propellant transfer demo on this flight, that will be a dedicated mission later. Overall grade: B+ to A-, continuing the trend of each flight being better than the last.` },
+      ],
+    },
+    {
+      title: "ESA's Ariane 6 vs SpaceX Falcon 9: Cost comparison",
+      content: `The first Ariane 6 flight in 2024 marked Europe's return to launch after the gap between Ariane 5 retirement and Ariane 6 introduction. But the elephant in the room is the cost comparison with Falcon 9, which has been operational and iterating for over a decade.
+
+Let's look at the numbers as best we can:
+- **Falcon 9**: Estimated launch price of $67M for a new customer (published on SpaceX website), but likely much less for high-volume internal Starlink missions. Per-kg cost to LEO is roughly $2,700 with reuse.
+- **Ariane 62**: Estimated at approximately EUR 75M ($82M) per launch. Per-kg cost to LEO is roughly $5,000-6,000. The Ariane 64 (4-booster variant) targets GTO at higher cost but greater payload capacity.
+
+The gap is significant, but context matters. Ariane 6 is designed to be expendable (no reuse), so the comparison isn't entirely fair. ESA's argument is that sovereign access to space has strategic value beyond pure economics — depending on SpaceX (a US company subject to ITAR and US policy) for European government and military launches isn't acceptable from a sovereignty perspective.
+
+But can Ariane 6 compete for commercial customers? Will the institutional demand from ESA member states and Eumetsat be enough to sustain the production line? And what's the path to closing the cost gap — Prometheus reusable engine development, ArianeNext studies, or something else entirely?`,
+      tags: ['ariane-6', 'falcon-9', 'cost-comparison', 'esa', 'spacex', 'european-space'],
+      replies: [
+        { content: `The sovereignty argument is completely valid and I think it's the primary justification for Ariane 6. Look at what happened to Russian-dependent launch customers when sanctions hit — they were stranded. Europe cannot afford to be dependent on any single non-European launch provider for strategic assets. That said, the cost gap is a problem for commercial competitiveness. I think the answer is that Ariane 6 will primarily serve institutional customers (ESA, EU, European military) while commercial customers increasingly use Falcon 9 or Starship unless they need a non-US launch option for ITAR-free payloads.` },
+        { content: `The real question isn't Ariane 6 vs Falcon 9 — it's Ariane 6 vs Starship. By the time Ariane 6 reaches full operational cadence, Starship will likely be offering prices that make even Falcon 9 look expensive. ESA is already studying ArianeNext with reusability, but it won't fly until the mid-2030s at the earliest. That's a decade of operating an expendable vehicle against increasingly cheap reusable competitors. The European space industry needs to be honest about this timeline problem.` },
+      ],
+    },
+    {
+      title: 'Blue Origin New Glenn: Can Bezos catch up?',
+      content: `After years of development and multiple delays, Blue Origin's New Glenn heavy-lift launch vehicle has finally reached orbit. The vehicle represents a massive step up from the suborbital New Shepard — from a tourism rocket to a commercially competitive orbital launch vehicle with a reusable first stage.
+
+New Glenn's specifications are impressive on paper: 45 metric tons to LEO with an expendable second stage, 13 metric tons to GTO, and a 7-meter fairing that's significantly larger than Falcon 9's (and comparable to the retired Ariane 5 fairing). The BE-4 engine has finally reached operational maturity after powering both New Glenn and ULA's Vulcan Centaur.
+
+But the competitive landscape has shifted dramatically since New Glenn was first announced in 2016. At that time, the primary competitor was Falcon 9. Now, New Glenn enters a market where Starship is flying test missions and Falcon 9 has over a decade of flight heritage. Blue Origin needs to establish reliability, build production cadence, and secure commercial customers — all while competing against the most prolific launch provider in history.
+
+Key questions: Can Blue Origin achieve the rapid launch cadence needed to amortize development costs? Will the reusable first stage actually fly repeatedly, or will refurbishment prove more challenging than expected? And can they secure enough non-Amazon (Kuiper) commercial manifest to justify the vehicle's existence? What's your assessment of New Glenn's prospects?`,
+      tags: ['blue-origin', 'new-glenn', 'be-4', 'competition', 'bezos', 'heavy-lift'],
+      replies: [
+        { content: `Blue Origin's biggest advantage is patient capital. Jeff Bezos has been selling Amazon stock to fund Blue Origin at roughly $1B per year. That kind of sustained investment means they don't face the existential cash flow pressure that has killed other launch startups. They can afford to take time to get things right, fix problems between flights, and build cadence gradually. The risk isn't running out of money — it's institutional momentum and talent retention if progress remains slow compared to SpaceX.` },
+        { content: `I think people underestimate how important the Kuiper constellation contract is for New Glenn's business case. Amazon has committed to launching 3,236 satellites, and Blue Origin will handle a significant portion of that manifest. That's a guaranteed flight rate that provides the production cadence to climb the learning curve. It's the same playbook as SpaceX with Starlink — use your own constellation to guarantee demand for your rocket. Smart strategy, even if the timeline has been frustrating.` },
+        { content: `The 7-meter fairing is genuinely differentiating. There's a class of payload that simply cannot fly on Falcon 9 due to fairing constraints — large commercial GEO satellites, space station modules, certain national security payloads. New Glenn can serve this market immediately without competing head-to-head with Falcon 9 on the small-to-medium satellite segment where SpaceX has an unassailable cadence advantage. Focus on the niches that need your unique capability, and build from there.` },
+      ],
+    },
+  ],
+  'satellite-ops': [
+    {
+      title: 'Space sustainability: Debris removal technologies',
+      content: `Active debris removal (ADR) has moved from theoretical concept to active development, with several companies and agencies working on systems to remove defunct satellites and large debris objects from orbit. The economic case for ADR is becoming clearer as the orbital environment degrades and the collision risk to operational satellites increases.
+
+Current ADR approaches under development:
+- **ClearSpace-1** (ESA contract) — Robotic capture mission using a "space claw" to grab a defunct Vega upper stage. Planned for 2026.
+- **Astroscale ADRAS-J** — Demonstrated close proximity approach to a Japanese H-2A upper stage in 2024, paving the way for future capture missions.
+- **Electro Optic Systems (EOS)** — Developing ground-based laser tracking and potentially laser nudging to alter debris orbits.
+- **D-Orbit** — Ion beam deflection technology that could change debris trajectories without physical contact.
+
+The fundamental challenge remains: who pays? The "polluter pays" principle is difficult to apply when the debris was created decades ago by entities that may no longer exist or are state agencies with sovereign immunity. The insurance industry is starting to factor debris risk into premiums, which could create market incentives. And some have proposed a global "orbital use fee" similar to carbon credits.
+
+What ADR approach do you think is most promising? And how should the industry and governments structure the economics to make debris removal financially sustainable?`,
+      tags: ['debris-removal', 'adr', 'space-sustainability', 'clearspace', 'astroscale', 'orbital-debris'],
+      replies: [
+        { content: `Astroscale's approach of demonstrating inspection and proximity operations first before attempting capture is the right strategy. The ADRAS-J mission proved they can reliably approach and characterize a tumbling debris object, which is arguably the hardest part of the problem. Capture mechanisms are well-understood engineering — the challenge is getting close to an uncooperative, potentially tumbling object without creating more debris in the process. I think Astroscale is furthest along in solving this with real flight heritage.` },
+        { content: `The economics problem is solvable with the right regulatory framework. Imagine if the FCC (and equivalent regulators globally) required a debris bond — a deposit paid at launch that's returned when you successfully deorbit your satellite, or forfeited to fund ADR if you don't. This creates a direct financial incentive for operators to design for end-of-life disposal and a funding source for removing legacy debris. It's similar to mining reclamation bonds that already exist in the terrestrial resource industry.` },
+      ],
+    },
+    {
+      title: 'Direct-to-cell satellite connectivity: Game changer or overhyped?',
+      content: `AST SpaceMobile, SpaceX (via T-Mobile partnership), and Lynk Global are all racing to provide direct-to-cell satellite connectivity — the ability for standard, unmodified smartphones to connect to satellites for calls, texts, and even data. If it works at scale, this could be one of the most transformative applications of satellite technology in decades.
+
+The physics are challenging. Standard cell phones transmit at very low power (typically 0.2-2 watts) with small omnidirectional antennas. To close the link budget from LEO, you need enormous satellite antennas. AST SpaceMobile's BlueWalker 3 test satellite deployed a 64-square-meter antenna array — one of the largest commercial structures ever deployed in LEO. Their production BlueBird satellites will be even larger.
+
+SpaceX's approach with Starlink is more incremental: they've demonstrated text messaging and are working toward voice and data, leveraging the massive scale of the existing Starlink constellation. The advantage is faster deployment and global coverage; the challenge is that the existing Starlink satellites weren't designed from the ground up for direct-to-cell.
+
+The market opportunity is enormous. An estimated 3-4 billion people globally have cell phones but live in areas without reliable terrestrial coverage. Even in developed countries, vast rural and wilderness areas have zero coverage. Satellite-direct-to-cell could eliminate dead zones entirely.
+
+But there are concerns: spectrum sharing between terrestrial and satellite use, the regulatory complexity of operating across multiple countries, the revenue-sharing models with terrestrial MNOs, and whether the physics actually allow for meaningful data throughput. What's your assessment?`,
+      tags: ['direct-to-cell', 'ast-spacemobile', 'starlink', 'd2c', 'satellite-communications', 'spectrum'],
+      replies: [
+        { content: `Not overhyped at all — this is legitimately one of the biggest potential shifts in telecommunications since the introduction of 4G. The ability to provide universal connectivity without any ground infrastructure changes is profound. Think about emergency services, maritime safety, remote agriculture monitoring, and disaster response. These are applications where even low-bandwidth satellite connectivity (texts, SOS, basic voice) provides transformative value. The high-bandwidth use cases can come later as the technology matures.` },
+        { content: `The regulatory challenge is underappreciated. Spectrum is licensed on a country-by-country basis, and using terrestrial mobile spectrum from orbit creates interference issues that don't exist with traditional satellite bands. Each country needs to approve the service, negotiate spectrum sharing arrangements, and work out the regulatory framework. This is going to be a multi-year process in each market. The technology might work, but the regulatory and business model complexity could significantly slow deployment.` },
+        { content: `I'm cautiously optimistic but concerned about the economic model. AST SpaceMobile needs to build and launch a very large and expensive constellation. Their satellites are massive and complex — not cheap CubeSats. The revenue comes from MNO partnerships, which means AST gets a fraction of what the carriers charge. Can the unit economics work? SpaceX has the advantage of piggybacking on the existing Starlink constellation and business model. I think SpaceX's incremental approach wins out over AST's purpose-built approach in the long run, simply because of the cost structure.` },
+      ],
+    },
+  ],
+  'space-policy': [
+    {
+      title: "FCC's new spectrum allocation rules impact",
+      content: `The FCC's latest round of spectrum decisions has significant implications for the satellite communications industry. The Commission has been working to balance the competing demands of terrestrial 5G operators, satellite broadband providers, and legacy satellite services for access to increasingly crowded spectrum bands.
+
+Key developments:
+- **12 GHz band**: The contentious battle between MVDDS (multichannel video distribution) operators and satellite broadband providers (primarily SpaceX/Starlink) over sharing the 12 GHz band continues. The outcome will affect whether Starlink can use this spectrum for consumer downlinks without harmful interference.
+- **V-band and Ka-band**: New rules for NGSO (non-geostationary satellite orbit) operations in these bands are being finalized, including power flux density limits and coordination requirements between mega-constellation operators.
+- **CBRS-style sharing**: The FCC is exploring whether the successful Citizens Broadband Radio Service (CBRS) sharing framework could be adapted for satellite-terrestrial spectrum sharing in other bands.
+
+For the space industry, the stakes are enormous. Spectrum availability directly constrains constellation throughput and business models. Starlink's revenue potential, OneWeb's service capabilities, and Amazon Kuiper's launch timeline are all influenced by spectrum allocation decisions.
+
+How do you think the FCC should balance terrestrial and satellite spectrum demands? Is dynamic spectrum sharing the future, or do we need dedicated allocations for each service type?`,
+      tags: ['fcc', 'spectrum', 'regulation', '12ghz', 'v-band', 'policy'],
+      replies: [
+        { content: `Dynamic spectrum sharing is clearly the future. Static allocations are incredibly inefficient — spectrum sits unused much of the time in many locations. The CBRS model proved that a sophisticated spectrum access system (SAS) can coordinate between incumbent, priority, and general access users in near-real-time. Extending this to satellite-terrestrial sharing is the logical next step. The technology exists; it's the regulatory and political will that's the bottleneck.` },
+        { content: `The 12 GHz fight is a bellwether for the entire industry. If the FCC allows terrestrial 5G operations in 12 GHz without adequate protections for satellite downlinks, it sets a precedent that satellite operators' spectrum rights can be eroded by terrestrial demands. Starlink has invested billions based on their spectrum authorizations. There has to be regulatory certainty for companies to make these kinds of capital commitments. The FCC needs to find a sharing solution that works for both sides, or the investment climate for satellite broadband will deteriorate significantly.` },
+      ],
+    },
+  ],
+  'business-funding': [
+    {
+      title: 'SBIR/STTR grants: Tips for first-time applicants',
+      content: `The Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) programs are some of the best funding sources available for early-stage space technology companies. With over $4 billion awarded annually across all federal agencies, and NASA, DoD, and NOAA all running space-relevant topics, the opportunity is significant. But the application process can be daunting for first-time applicants.
+
+I've won several SBIR Phase I and Phase II awards over the past few years, and I wanted to share some lessons learned.
+
+**Phase I ($150K-250K, 6-12 months):**
+- The proposal is your product. Reviewers spend 2-4 hours per proposal, so clarity and structure are essential.
+- Lead with the problem and market need, not your technology. Reviewers want to know WHY this matters before they dig into HOW it works.
+- The technical approach should demonstrate feasibility, not completeness. Phase I is about proving the concept is worth further investment.
+- Commercialization potential is weighted heavily. Have a clear path from SBIR to revenue.
+
+**Phase II ($750K-1.5M, 24 months):**
+- Phase II is more competitive. Your Phase I results need to be compelling.
+- The commercialization plan needs to be specific: who are your customers, what's the pricing, what's the go-to-market strategy?
+- Letters of support from potential customers or partners significantly strengthen your application.
+
+**General tips:**
+- Start preparing 2-3 months before the deadline. Rushed proposals show.
+- Have someone outside your team review for clarity. Technical jargon that's obvious to you may be opaque to reviewers.
+- Don't try to boil the ocean. Scope your Phase I to a clear, achievable set of objectives.
+
+What questions do you have about SBIR/STTR? Happy to help first-time applicants navigate the process.`,
+      tags: ['sbir', 'sttr', 'grants', 'funding', 'small-business', 'tips'],
+      replies: [
+        { content: `This is incredibly helpful, thank you! One question: how important is it to have a prior relationship with the agency program manager? I've heard that reaching out before the solicitation drops to discuss your concept can significantly improve your chances. Is that true, or is it an urban legend?` },
+        { content: `Not the OP but I can answer this: yes, pre-solicitation engagement with the program manager (PM) is extremely valuable, but not for the reasons most people think. It's not about gaming the system — it's about understanding what the agency actually needs. A 15-minute conversation with a NASA PM can help you understand the context behind a topic, what previous work has been done, and what gaps they're trying to fill. This lets you write a more targeted, relevant proposal. Many agencies explicitly encourage pre-solicitation inquiries. Just be professional and respectful of their time.` },
+        { content: `Great thread! I'll add one more tip: the DoD SBIR program (through AFRL, DARPA, Space Force) tends to have faster award timelines and larger Phase II budgets than NASA SBIR. If your technology has dual-use (commercial + defense) potential, consider applying to both NASA and DoD topics. You can't submit the same proposal to both, but you can submit related proposals addressing different aspects of your technology. Also, the SBIR/STTR website (sbir.gov) has a search tool where you can look at past awards — this is gold for understanding what kinds of proposals win.` },
+      ],
+    },
+    {
+      title: 'Venture capital in space: 2026 funding landscape',
+      content: `After the SPAC hangover of 2022-2023 and the broader venture capital downturn of 2023-2024, the space investment landscape in 2026 is showing signs of recovery — but with significantly different characteristics than the boom years.
+
+Key trends I'm observing:
+- **Selectivity**: VCs are much more selective, favoring companies with clear revenue paths over pure-technology plays. The days of raising Series A on a PowerPoint and a CAD model are over.
+- **Defense tech crossover**: The rise of defense-focused VCs (Founders Fund, a16z, Lux Capital) investing in dual-use space companies. Space domain awareness, satellite communications, and ISR (intelligence, surveillance, reconnaissance) are hot sectors.
+- **Climate/ESG angle**: Earth observation companies positioned as climate monitoring solutions continue to attract capital from both traditional space VCs and climate-focused funds.
+- **Consolidation**: More M&A activity as well-capitalized companies acquire distressed startups for their technology and talent.
+
+Notable recent raises and their implications for the market? What sectors within space do you think will attract the most investment in 2026-2027? And for founders currently raising — what's the environment actually like from your perspective?`,
+      tags: ['venture-capital', 'funding', 'investment', '2026', 'startups', 'market-trends'],
+      replies: [
+        { content: `The defense tech crossover is the biggest story in space VC right now. Companies like Anduril, Shield AI, and the broader defense-tech wave have made investors comfortable with long sales cycles and government customers. Space companies benefit from this because many space capabilities (SAR imagery, SIGINT, space situational awareness) have obvious defense applications. The Palantir model — build for government, then expand to commercial — is becoming a template for space startups.` },
+        { content: `As a founder currently raising Series A in the Earth observation analytics space, I can tell you the environment is better than 2023 but still challenging. Investors want to see revenue (not just LOIs), clear unit economics, and a defensible moat. The bar for what constitutes a "fundable" space company has risen significantly. This is probably healthy for the ecosystem long-term, but it means many good companies with real technology will struggle to raise and may not survive. The consolidation trend mentioned in the OP is very real — I've had acquisition conversations with three larger companies just this quarter.` },
+      ],
+    },
+  ],
+  'deep-space': [
+    {
+      title: 'Lunar economy 2030: What businesses will thrive?',
+      content: `With the Artemis program establishing a sustained human presence on the Moon and commercial lunar payload services (CLPS) enabling regular cargo deliveries, the foundations of a lunar economy are being laid. But what does a lunar economy actually look like in practice by 2030?
+
+Let me propose some candidate business models:
+
+**Near-term (by 2028):**
+- Lunar cargo delivery (Intuitive Machines, Astrobotic, Firefly) — already operational
+- Lunar communications relay services (Nokia's lunar LTE network)
+- Lunar surface mobility (rovers for science instruments, prospecting)
+- Power generation and distribution on the lunar surface
+
+**Medium-term (by 2032):**
+- Lunar resource prospecting and early ISRU demonstrations
+- Habitat construction and maintenance
+- Lunar tourism (orbital flybys initially, then surface visits)
+- Lunar-derived propellant for cislunar transportation
+
+**Speculative:**
+- Helium-3 mining for future fusion reactors
+- Lunar telescope observatories (radio quiet on the far side)
+- Manufacturing in low gravity (certain pharmaceuticals, optical fibers)
+- Lunar regolith processing for construction materials
+
+The challenge is that almost all near-term lunar economic activity depends on government anchor customers (NASA, ESA, JAXA). A true self-sustaining lunar economy needs commercial demand that isn't dependent on government budgets. What business models do you think could achieve that? And what's the realistic timeline for a lunar economy that can sustain itself?`,
+      tags: ['lunar-economy', 'moon', 'business-models', 'artemis', 'isru', 'commercial-space'],
+      replies: [
+        { content: `I think the first truly self-sustaining commercial business on the Moon will be communications infrastructure. Every other activity — prospecting, construction, tourism, science — needs reliable communications. Build the lunar equivalent of cell towers and satellite relays, and you become a utility that everyone pays to use. Nokia's LTE initiative is a start, but there's room for commercial communication services that serve multiple customers. Think of it as the "picks and shovels" play for the lunar gold rush.` },
+        { content: `Propellant production is the killer app, but the timeline is further out than most people realize. If you can produce LOX/LH2 on the lunar surface from polar ice, you can refuel vehicles at a fraction of the cost of bringing propellant from Earth. A lunar gas station changes the entire cislunar economy — it makes GEO satellite servicing, lunar tourism, and even Mars mission architectures dramatically more affordable. But we're still years away from proving the ice deposits are accessible at useful concentrations, let alone building production infrastructure.` },
+        { content: `I'd bet on data services. The Moon is a unique platform for science: radio telescopes on the far side, cosmic ray observatories, geology sampling, and long-duration biology experiments. Scientific agencies worldwide would pay for hosted payload services — "we'll put your instrument on our lander and operate it for you." This model already works on ISS (NanoRacks, etc.) and would translate directly to the lunar surface. The key advantage is that you don't need ISRU or massive infrastructure — just reliable delivery and operations capability.` },
+      ],
+    },
+    {
+      title: 'Europa Clipper: What will we find?',
+      content: `NASA's Europa Clipper spacecraft is now on its way to Jupiter, beginning a multi-year journey to study one of the most intriguing targets in our solar system. Europa's subsurface ocean, protected beneath a kilometers-thick ice shell, is one of the most likely places in the solar system to harbor extraterrestrial life.
+
+The science payload is impressive: ice-penetrating radar to map the ice shell structure and locate the ocean, a thermal emission imaging system to identify warm spots and recent geological activity, a mass spectrometer to analyze particles ejected by Europa's plumes, and several other instruments designed to assess Europa's habitability.
+
+Key questions the mission aims to answer:
+- How thick is the ice shell, and are there pockets of liquid water within it?
+- What is the composition of the ocean? Is it salty? Acidic? Does it contain organic molecules?
+- Are the observed plumes (from Hubble data) real, and if so, what do they contain?
+- Is there active geology on the ocean floor — hydrothermal vents similar to those on Earth's seafloor?
+
+The mission won't look for life directly (that would require a lander), but it will determine whether Europa has the ingredients and conditions for life. If the answer is yes, it would dramatically strengthen the case for a future Europa lander mission.
+
+What are your predictions? Will Clipper find evidence of habitable conditions? And if it does, how should we prioritize a follow-up lander mission?`,
+      tags: ['europa-clipper', 'jupiter', 'astrobiology', 'nasa', 'ocean-worlds', 'planetary-science'],
+      replies: [
+        { content: `I'm cautiously optimistic that Clipper will find strong evidence for habitable conditions, including organic molecules in plume material and evidence of hydrothermal activity. The Cassini mission found all of this at Enceladus, and Europa is larger with more energy sources. The ice-penetrating radar will be game-changing — understanding the ice shell structure is key to designing any future lander or submarine mission. If Clipper finds thin ice regions or melt-through zones, that completely changes the engineering approach for accessing the ocean.` },
+        { content: `I think the biggest surprise will be the complexity of Europa's ice shell. We tend to think of it as a uniform slab, but it's probably a dynamic, geologically active layer with varying thickness, internal melt pockets, and possibly convective circulation. Think of it less like a frozen lake and more like a glacial system. If the radar reveals this complexity, it opens up new possibilities for accessing ocean material without having to drill through 20+ km of solid ice — you might be able to find locations where ocean water has been recently brought near the surface.` },
+      ],
+    },
+  ],
+  'careers': [
+    {
+      title: 'How to break into the satellite communications industry',
+      content: `Satellite communications (satcom) is one of the fastest-growing segments of the space industry, driven by mega-constellations, direct-to-device services, and the insatiable demand for global connectivity. If you're looking to enter this field, the opportunity landscape is excellent — but the path isn't always obvious.
+
+**Background that translates well:**
+- RF/microwave engineering (antenna design, link budgets, signal processing)
+- Telecommunications/networking (IP routing, network architecture, protocol design)
+- Electrical engineering (power systems, embedded systems, digital electronics)
+- Computer science (ground segment software, network management, automation)
+- Physics (particularly electromagnetic theory)
+
+**Companies actively hiring in satcom:**
+- SpaceX (Starlink operations, RF engineering, ground station development)
+- Amazon (Project Kuiper is building a massive team)
+- OneWeb/Eutelsat (operational constellation, expanding services)
+- Viasat (GEO + LEO hybrid architecture)
+- Telesat (Lightspeed constellation development)
+- SES (mPOWER MEO constellation)
+- Numerous ground equipment manufacturers (Hughes, Intellian, Kymeta)
+
+**Skills to develop:**
+- Learn link budget analysis — it's the fundamental tool of satcom engineering
+- Understand orbital mechanics basics (propagation, Doppler, beam footprints)
+- Get comfortable with spectrum regulation (ITU, FCC filing process)
+- Learn network simulation tools (STK, MATLAB, Python with relevant libraries)
+
+The satcom industry is also one of the more globally distributed segments of space — there are major operations in the US, UK, Luxembourg, Israel, Japan, and India. International experience is valued.
+
+What specific questions do you have about breaking into satcom? I've been in the field for 10 years and happy to share more detailed advice.`,
+      tags: ['satellite-communications', 'career-guide', 'rf-engineering', 'satcom', 'hiring'],
+      replies: [
+        { content: `Great overview! I'd add that for people coming from a traditional telecom background (terrestrial wireless), the transition to satcom is very natural. The fundamental principles of link budget analysis, modulation schemes, and network architecture are the same — the key differences are propagation delay, Doppler shift management, and the unique challenges of the space segment (thermal management, radiation tolerance, limited power budgets). Many satellite operators specifically value telecom industry experience because they want people who understand customer-facing service delivery, not just spacecraft engineering.` },
+        { content: `For anyone interested in the ground segment side (which is often overlooked), there's huge demand for systems integration engineers who can work at the intersection of satellite technology and IT infrastructure. Ground stations are becoming more software-defined, with virtualized modems and cloud-based processing. If you have a background in cloud computing (AWS, Azure), software-defined networking, or DevOps, there are satcom companies that will hire you and teach you the space-specific parts on the job. The industry desperately needs people who can bridge the gap between "space people" and "IT people."` },
+      ],
+    },
+    {
+      title: 'Best universities for space engineering?',
+      content: `For students (or professionals considering graduate school), choosing the right university for space engineering education is a major decision. The landscape has evolved significantly, with new programs emerging alongside the traditional powerhouses.
+
+I'll share my assessment of the top programs, but I'd love the community's input — especially from those who attended these schools or have hired their graduates.
+
+**Traditional powerhouses:**
+- MIT (Aeronautics and Astronautics) — research breadth, industry connections, the STAR Lab
+- Stanford (Aero/Astro) — strong in small satellites and autonomous systems
+- Caltech (Aerospace) — JPL partnership is unmatched for planetary science
+- Georgia Tech (Aerospace) — excellent value, strong propulsion and structures programs
+- Michigan (Aerospace) — comprehensive program, great industry ties
+- Purdue (AAE) — "Cradle of Astronauts," strong propulsion heritage
+- CU Boulder (Aerospace) — LASP partnership, excellent for space science and CubeSats
+- University of Texas at Austin (ASE) — growing rapidly, strong links to Austin's space startup scene
+
+**International:**
+- TU Delft (Netherlands) — Europe's leading space engineering program
+- ISAE-SUPAERO (France) — Toulouse is Europe's space capital
+- University of Tokyo — JAXA connections, strong small-sat program
+- University of Surrey (UK) — Surrey Space Centre pioneered the small satellite industry
+
+**Rising programs:**
+- Arizona State University — growing space programs and Interplanetary Initiative
+- Virginia Tech — proximity to DC/Northern Virginia defense space ecosystem
+- Florida Institute of Technology — proximity to Kennedy Space Center
+
+What's your experience with space engineering programs? Any hidden gems I'm missing?`,
+      tags: ['universities', 'education', 'graduate-school', 'aerospace-engineering', 'career-advice'],
+      replies: [
+        { content: `CU Boulder deserves even more emphasis than you gave it. The combination of LASP (Laboratory for Atmospheric and Space Physics), the aerospace department, and the proximity to Ball Aerospace, Lockheed Martin Space, and the growing Denver/Boulder space startup scene creates an incredible ecosystem. I did my MS there and had three job offers before I even graduated. The CubeSat and sounding rocket programs give hands-on experience that's hard to find elsewhere. Also, the quality of life in Boulder is outstanding, which matters when you're spending 2-6 years somewhere.` },
+        { content: `I want to advocate for non-traditional paths here. I hired someone last year who did a CS degree at a state school, built CubeSat ground station software as a personal project, and contributed to open-source satellite tracking tools. They're now one of our best ground segment engineers. The university name matters less than what you actually build and learn. If you can't get into MIT or Stanford, you can absolutely break into the space industry from a less prestigious program — you just need to demonstrate practical capability through projects, internships, or research.` },
+        { content: `For the international perspective, I'd add Cranfield University in the UK — their MSc in Astronautics and Space Engineering has produced a disproportionate number of people in leadership positions across the European space industry. It's a small program but very intensive and industry-connected. Also, the International Space University (ISU) in Strasbourg offers a unique interdisciplinary program that's excellent for building a global network in the space industry. It's not a traditional engineering degree, but the alumni network is extraordinary.` },
+      ],
+    },
+    {
+      title: 'Space industry salary expectations in 2026',
+      content: `One of the most common questions I get from people considering a transition into the space industry is about compensation. The perception is that space pays less than big tech, and while that's often true for equivalent roles, the gap has been closing rapidly — especially at commercial space companies competing for the same software and systems engineering talent.
+
+Here's my rough guide based on conversations with recruiters and industry peers:
+
+**Software Engineering:**
+- Junior (0-3 years): $90K-$130K at commercial space companies
+- Mid-level (3-7 years): $130K-$180K
+- Senior/Staff: $160K-$250K+ (SpaceX, Amazon Kuiper, and Blue Origin pay competitively with FAANG for senior roles)
+
+**Systems Engineering / Aerospace Engineering:**
+- Junior: $75K-$110K (often lower than software roles)
+- Mid-level: $110K-$150K
+- Senior/Principal: $140K-$200K+
+
+**RF/Communications Engineering:**
+- High demand has pushed salaries up significantly. Mid-career RF engineers at satellite companies often earn $140K-$180K.
+
+**Notes:**
+- Stock/equity can be significant at pre-IPO companies (Rocket Lab, SpaceX internal valuation)
+- Government contractor roles (Northrop, L3Harris, Raytheon) often have lower base salary but better benefits (pension, work-life balance)
+- Location matters enormously — same role in LA vs. Huntsville can differ by 30-40%
+
+What's been your experience with space industry compensation? Are there roles where you feel the market is particularly over or under-valued?`,
+      tags: ['salary', 'compensation', 'career-advice', 'hiring', 'software', 'engineering'],
+      replies: [
+        { content: `I'd add that the equity component at SpaceX is a huge part of total comp that's often overlooked. SpaceX shares are traded in periodic tender offers at increasing valuations. Several engineers I know who joined SpaceX 5+ years ago have seen their equity grow substantially. It's not liquid like public stock, but it's real compensation. The base salary at SpaceX is often 10-20% below market, but total comp with equity can be very competitive.` },
+        { content: `For the data science / ML side of things, space companies are starting to pay near-FAANG rates because the competition for talent is so fierce. I was recruited by a satellite imagery analytics company last year and the offer was within 5% of what Google was offering for a comparable role. The difference is that at a space company, you're applying ML to genuinely novel problems (automated satellite imagery analysis, orbit prediction, anomaly detection) rather than optimizing ad clicks. That intrinsic motivation is worth something too.` },
+      ],
+    },
+  ],
+};
+
+// Even more engagement threads for additional categories
+const MORE_SEED_THREADS: Record<string, SeedThread[]> = {
+  'launch-tech': [
+    {
+      title: 'Rotating detonation engines: The next propulsion revolution?',
+      content: `Rotating detonation engines (RDEs) have moved from laboratory curiosity to active flight testing, with multiple agencies and companies pursuing this technology. Unlike conventional rocket engines that rely on deflagration (subsonic combustion), RDEs use continuously rotating detonation waves that propagate supersonically around an annular combustion chamber.
+
+The theoretical advantages are significant. Detonation is thermodynamically more efficient than deflagration — the pressure gain from detonation means you get more work out of the same propellant. RDEs could potentially offer 5-15% improvement in specific impulse compared to equivalent conventional engines, with simpler mechanical design (no turbopumps in some configurations). The continuous detonation wave also means more compact combustion chambers.
+
+Recent developments:
+- AFRL and GE Aerospace successfully tested a full-scale RDE that ran for extended durations
+- Japan's JAXA has been testing RDE configurations for upper stage applications
+- Venus Aerospace is developing a rotating detonation ramjet for hypersonic flight
+- Several DARPA programs are funding RDE development for military applications
+
+The engineering challenges remain formidable: thermal management of the detonation wave, injection timing and mixing, acoustic coupling and instabilities, and material durability under extreme conditions. But the same was true of staged combustion engines 50 years ago.
+
+Do you think RDEs will reach operational rocket engines within the next decade? Which applications (upper stages, booster engines, in-space propulsion) make the most sense for this technology?`,
+      tags: ['rde', 'detonation-engine', 'propulsion', 'advanced-propulsion', 'afrl'],
+      replies: [
+        { content: `The 5-15% Isp improvement sounds modest, but compound it across a multi-stage vehicle and the payload mass fraction improvement is significant. The real game-changer, though, might be the mechanical simplicity. Eliminating turbopumps (using pressure-fed RDEs) removes the most failure-prone and expensive component of any rocket engine. If you can build an RDE that's cheaper and simpler to manufacture than a conventional engine while also being more efficient, that's a genuine revolution — not an incremental improvement.` },
+        { content: `I'm skeptical about the timeline. We've been hearing about detonation engines for 20+ years, and the fundamental physics challenges (detonation stability, thermal management, injector design) haven't gotten easier. Laboratory demonstrations are one thing; flight-qualified hardware that survives the vibration, thermal, and acoustic environment of an actual rocket is another. I think 15-20 years for an operational engine is more realistic. The current generation of methane engines (Raptor, BE-4) already offers a massive performance leap — RDEs need to compete with a rapidly advancing baseline.` },
+      ],
+    },
+    {
+      title: 'Space plane concepts: Skylon, Dawn Aerospace, and the dream of runway access',
+      content: `The dream of a single-stage-to-orbit (SSTO) space plane that takes off and lands on a runway has persisted for decades, and while traditional aerospace wisdom says it's not practical, several companies are taking credible approaches to various aspects of the problem.
+
+**Reaction Engines (Skylon/SABRE):** The UK company has been developing the SABRE (Synergetic Air-Breathing Rocket Engine) for years. SABRE switches from air-breathing mode at lower altitudes and speeds to closed-cycle rocket mode at higher altitudes. The key innovation is a precooler that chills incoming air from 1,000C to -150C in milliseconds. After years of component testing, they've demonstrated the precooler technology works. The question is whether the full engine can be built and whether the vehicle concept closes.
+
+**Dawn Aerospace (Mk-II Aurora):** The New Zealand company is taking a more incremental approach — suborbital space planes that can fly multiple times per day from conventional airports. They've completed powered test flights and are working toward higher altitudes. The goal is eventually a two-stage-to-orbit system with the first stage being a reusable space plane.
+
+**Sierra Space (Dream Chaser):** While not SSTO, Dream Chaser is a lifting body spacecraft that lands on a runway. It's the closest near-term example of a space plane in active development, with ISS cargo missions contracted.
+
+Is SSTO achievable with current materials and propulsion technology, or will we always need staging? And is the space plane form factor even necessary, given that vertical landing (SpaceX, Blue Origin) achieves similar reusability goals?`,
+      tags: ['spaceplane', 'ssto', 'skylon', 'sabre', 'dream-chaser', 'reusability'],
+      replies: [
+        { content: `SSTO is technically possible but economically irrational. The tyranny of the rocket equation means that an SSTO vehicle has almost zero payload fraction — you're burning almost all your propellant just to get the vehicle itself to orbit. Even with an air-breathing first phase (like SABRE), the mass penalty of carrying wings, landing gear, thermal protection, and air-breathing engine components through the entire flight means you can't carry much payload. A two-stage reusable system (like Falcon 9, or the SpaceX Starship architecture) will always be able to deliver more payload per unit of vehicle mass.` },
+        { content: `The space plane form factor has one genuine advantage that VTOL rockets don't: cross-range capability on reentry. A winged vehicle can maneuver laterally during reentry and land at a wide range of sites, regardless of the orbital inclination. This matters for military and rapid-response applications. For commercial cargo and crew, though, VTOL rockets at fixed spaceports make more economic sense. I think the future is specialized: rockets for routine access, space planes for niche military/responsive applications.` },
+      ],
+    },
+  ],
+  'satellite-ops': [
+    {
+      title: 'Software-defined satellites: How OneWeb, SES, and others are changing the game',
+      content: `The shift toward software-defined satellites is one of the most significant architectural changes in the satellite communications industry. Traditional GEO satellites had fixed beam patterns, fixed frequency plans, and fixed power allocations — designed for a specific mission and largely unchangeable once launched. Modern software-defined satellites can reconfigure their beams, power allocation, frequency use, and even coverage areas entirely through software commands from the ground.
+
+SES's mPOWER constellation in MEO uses fully software-defined payloads from Thales Alenia Space. Eutelsat OneWeb's second-generation satellites will be software-defined. Even traditional GEO operators like Intelsat and Telesat are moving toward flexible payloads.
+
+The implications are profound:
+- **Market responsiveness**: Operators can shift capacity to where demand is, rather than being locked into fixed coverage
+- **Asset lifetime**: Software-defined satellites can be repurposed for entirely different customers or markets during their operational life
+- **Resilience**: If a beam fails, capacity can be redistributed across remaining beams
+- **Multi-orbit architectures**: Ground systems can seamlessly manage capacity across GEO, MEO, and LEO assets
+
+The challenge is complexity. Software-defined payloads are more complex to design, test, and operate. The ground segment needs sophisticated orchestration software. And the analog RF components (amplifiers, filters) still have physical limitations that constrain what software can achieve.
+
+Is the software-defined satellite the future for all orbits and applications? Or are there use cases where fixed, optimized payloads still make more sense?`,
+      tags: ['software-defined', 'satellite-design', 'mpower', 'flexible-payload', 'ses', 'telesat'],
+      replies: [
+        { content: `Software-defined is absolutely the future for communications satellites, but the transition is harder than the marketing materials suggest. The analog components (high-power amplifiers, switches, filters) still impose constraints, and thermal management of a flexible payload that can concentrate power in different configurations is a real engineering challenge. I've worked on flexible payload designs, and the testing matrix is enormous — you need to verify performance across all possible configurations, not just a fixed operating point. That said, the operational flexibility is worth the added complexity for any operator planning a 15+ year mission life.` },
+        { content: `There's an interesting parallel to software-defined networking (SDN) in the terrestrial telecom world. The transition from fixed hardware configurations to software-controlled networks took about a decade and faced similar resistance from operators comfortable with the old way. Now SDN is standard. I think satellite will follow the same path, with a 5-7 year transition period where we see hybrid approaches (partially flexible payloads) before fully software-defined becomes the default. The ground segment orchestration challenge is actually harder than the space segment, in my opinion.` },
+      ],
+    },
+  ],
+  'deep-space': [
+    {
+      title: 'Commercial space stations: Who will succeed in the post-ISS era?',
+      content: `With ISS decommissioning planned for 2030-2031, NASA has invested in several commercial space station programs to ensure continued US presence in low Earth orbit. The competition is fierce, with at least four major concepts in development:
+
+**Axiom Space (Axiom Station):** Arguably the frontrunner, Axiom has already attached its first module to ISS and plans to detach a free-flying station before ISS deorbits. They've conducted multiple private astronaut missions to ISS, building operational experience. Strong NASA contract ($130M+ for commercial destination).
+
+**Vast (Haven-1 and Haven-2):** Founded by Jed McCaleb, Vast is taking an aggressive timeline approach with Haven-1 as a single-module station targeting launch in 2025-2026, followed by the larger Haven-2. The advantage is speed-to-market; the risk is whether a single-module station can sustain a business.
+
+**Blue Origin (Orbital Reef):** Partnered with Sierra Space, Boeing, and others for a multi-module station concept. The orbital-reef partnership has changed over time, and the timeline has slipped, but Blue Origin brings significant resources. The Dream Chaser crew/cargo vehicle from Sierra Space is a differentiator.
+
+**Northrop Grumman (Commercial Station):** Leveraging Cygnus heritage and ISS experience. Less public visibility than competitors but strong technical foundation.
+
+The fundamental business challenge for all of them: who are the customers, and will they pay enough to sustain station operations? NASA is one customer, but the goal is commercial self-sustainability. Pharmaceutical research, materials science, space tourism, media production, and national space agencies (especially countries without their own stations) are all potential revenue streams.
+
+Which commercial station program do you think will succeed? Can any of them be commercially sustainable without NASA as an anchor tenant?`,
+      tags: ['commercial-stations', 'axiom', 'vast', 'orbital-reef', 'post-iss', 'leo-economy'],
+      replies: [
+        { content: `Axiom has the biggest head start and the most credible path to a free-flying station. They've already built and launched hardware, conducted commercial missions, and have real operational experience. The module-by-module approach (attach to ISS, then detach) de-risks the transition. My concern is the business model — private astronaut missions at $50M+ per seat is a thin market. They need pharmaceutical and materials science customers to pay for dedicated research time, and that market hasn't materialized at the scale the business plans require.` },
+        { content: `I think Vast is the dark horse. They're moving faster than anyone expected, and the "minimum viable station" approach of Haven-1 (single module, artificial gravity via rotation) is smart. You don't need a massive multi-module complex to start generating revenue — a small, purpose-built platform can host specific experiments or serve as a short-duration destination. If Haven-1 flies and works, they can iterate and expand. The risk is whether the single-module approach provides enough capability to be useful to paying customers.` },
+      ],
+    },
+  ],
+  'space-policy': [
+    {
+      title: 'Space Force procurement reform: Is it working?',
+      content: `The US Space Force (USSF) has been making significant efforts to reform its procurement processes to be faster, more flexible, and more accessible to commercial and non-traditional companies. SpaceWERX (the Space Force innovation arm), commercial solutions openings (CSOs), and streamlined acquisition pathways are all designed to break away from the traditional DoD procurement timeline that can take 5-10 years from requirement to fielding.
+
+Recent developments:
+- SpaceWERX has awarded hundreds of small contracts to startups and non-traditional defense companies
+- The Proliferated Warfighter Space Architecture (PWSA) is using commercial-style procurement for LEO satellite constellations
+- Tactical ISR and missile warning capabilities are being acquired through fixed-price contracts rather than cost-plus
+- The Commercially Augmented Space Inter-networked Global (CASINO) program explores using commercial satellite networks for military communications
+
+The early results are promising but mixed. Some companies report that the cultural shift within USSF acquisitions is real — program managers are more willing to take risk, timelines are shorter, and the emphasis on commercial solutions is genuine. Others note that the underlying Federal Acquisition Regulations (FAR) still impose bureaucratic requirements that slow things down, and that large traditional contractors still dominate the biggest programs.
+
+Is Space Force procurement reform succeeding? What changes would make the biggest difference? And for commercial space companies considering defense work — what's your experience with USSF as a customer?`,
+      tags: ['space-force', 'procurement', 'defense', 'spacewerx', 'acquisition-reform', 'dod'],
+      replies: [
+        { content: `SpaceWERX has been genuinely good for small companies. The SBIR Phase I awards are processed faster than NASA or other DoD agencies, and the program managers are responsive and engaged. The challenge comes when you try to scale from a small SpaceWERX contract to a larger program of record. That transition often requires navigating the traditional acquisition bureaucracy, which can be jarring. The "valley of death" between innovation and procurement is still the biggest problem in defense space acquisition.` },
+        { content: `The PWSA approach is the most interesting experiment. By specifying performance requirements and using fixed-price contracts, Space Force is forcing contractors to take cost risk and innovate. The first tranches of PWSA have been awarded primarily to traditional contractors (L3Harris, Northrop, York Space Systems), but the competitive dynamics are real. Companies that can deliver capable, affordable satellites at scale will win future tranches. This is where commercial space companies have an advantage — they're already optimized for volume production in a way that traditional defense primes are not.` },
+      ],
+    },
+  ],
+};
+
 export async function POST(request: NextRequest) {
   const authError = requireCronSecret(request);
   if (authError) return authError;
@@ -490,10 +986,140 @@ export async function POST(request: NextRequest) {
       logger.info(`Seeded ${threads.length} threads in category ${categorySlug}`);
     }
 
+    // Step 3b: Seed additional engagement-driving threads with replies (upsert by title)
+    let repliesCreated = 0;
+
+    for (const [categorySlug, threads] of Object.entries(ADDITIONAL_SEED_THREADS)) {
+      const categoryId = categoryMap[categorySlug];
+      if (!categoryId) {
+        logger.warn(`Category not found for additional slug: ${categorySlug}`);
+        continue;
+      }
+
+      for (const thread of threads) {
+        try {
+          // Check for duplicate by title (upsert pattern)
+          const existing = await prisma.forumThread.findFirst({
+            where: { title: thread.title },
+          });
+
+          if (existing) {
+            logger.info(`Additional thread already exists: "${thread.title}", skipping`);
+            continue;
+          }
+
+          const createdThread = await prisma.forumThread.create({
+            data: {
+              categoryId,
+              authorId,
+              title: thread.title,
+              content: thread.content,
+              isPinned: thread.isPinned || false,
+              tags: thread.tags,
+            },
+          });
+
+          threadsCreated++;
+
+          // Create seed replies for this thread
+          if (thread.replies && thread.replies.length > 0) {
+            for (const reply of thread.replies) {
+              try {
+                await prisma.forumPost.create({
+                  data: {
+                    threadId: createdThread.id,
+                    authorId,
+                    content: reply.content,
+                  },
+                });
+                repliesCreated++;
+              } catch (replyErr) {
+                logger.warn(`Failed to create reply for "${thread.title}": ${replyErr}`);
+              }
+            }
+
+            // Update thread updatedAt to reflect last reply
+            await prisma.forumThread.update({
+              where: { id: createdThread.id },
+              data: { updatedAt: new Date() },
+            });
+          }
+        } catch (err) {
+          logger.warn(`Failed to create additional thread "${thread.title}": ${err}`);
+        }
+      }
+
+      logger.info(`Seeded additional threads in category ${categorySlug}`);
+    }
+
+    // Step 3c: Seed even more threads from MORE_SEED_THREADS (same upsert-by-title pattern)
+    for (const [categorySlug, threads] of Object.entries(MORE_SEED_THREADS)) {
+      const categoryId = categoryMap[categorySlug];
+      if (!categoryId) {
+        logger.warn(`Category not found for more slug: ${categorySlug}`);
+        continue;
+      }
+
+      for (const thread of threads) {
+        try {
+          const existing = await prisma.forumThread.findFirst({
+            where: { title: thread.title },
+          });
+
+          if (existing) {
+            logger.info(`More thread already exists: "${thread.title}", skipping`);
+            continue;
+          }
+
+          const createdThread = await prisma.forumThread.create({
+            data: {
+              categoryId,
+              authorId,
+              title: thread.title,
+              content: thread.content,
+              isPinned: thread.isPinned || false,
+              tags: thread.tags,
+            },
+          });
+
+          threadsCreated++;
+
+          if (thread.replies && thread.replies.length > 0) {
+            for (const reply of thread.replies) {
+              try {
+                await prisma.forumPost.create({
+                  data: {
+                    threadId: createdThread.id,
+                    authorId,
+                    content: reply.content,
+                  },
+                });
+                repliesCreated++;
+              } catch (replyErr) {
+                logger.warn(`Failed to create reply for "${thread.title}": ${replyErr}`);
+              }
+            }
+
+            await prisma.forumThread.update({
+              where: { id: createdThread.id },
+              data: { updatedAt: new Date() },
+            });
+          }
+        } catch (err) {
+          logger.warn(`Failed to create more thread "${thread.title}": ${err}`);
+        }
+      }
+
+      logger.info(`Seeded more threads in category ${categorySlug}`);
+    }
+
+    logger.info(`All seeding complete: ${threadsCreated} threads, ${repliesCreated} replies created`);
+
     // Step 4: Return stats
     return createSuccessResponse({
       categoriesCreated,
       threadsCreated,
+      repliesCreated,
       authorId,
     });
   } catch (error) {

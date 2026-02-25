@@ -109,6 +109,11 @@ model User {
 
   // Notification preferences
   notificationPreferences  NotificationPreference?
+
+  // Onboarding
+  persona              String?  // investor, entrepreneur, mission-planner, executive, supply-chain, legal
+  onboardingCompleted  Boolean  @default(false)
+  onboardingStep       Int      @default(0)
 }
 
 model PasswordResetToken {

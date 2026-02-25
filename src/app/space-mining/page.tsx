@@ -22,6 +22,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import { clientLogger } from '@/lib/client-logger';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 // ────────────────────────────────────────
 // Types
@@ -924,6 +925,10 @@ function SpaceMiningContent() {
 export default function SpaceMiningPage() {
   return (
     <div className="min-h-screen bg-slate-950">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Space Mining' },
+      ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Mining Intelligence"

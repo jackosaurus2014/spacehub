@@ -1,12 +1,15 @@
 /**
  * Space Defense module fetcher
- * Fetches live SAM.gov defense procurement and compiles defense news
+ * Fetches live SAM.gov defense procurement, compiles defense news,
+ * and pulls top defense RSS feeds directly.
  */
 
 import { fetchSAMOpportunities } from '@/lib/procurement/sam-gov';
 import { upsertContent } from '@/lib/dynamic-content';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import RSSParser from 'rss-parser';
+import sanitizeHtml from 'sanitize-html';
 
 const DEFENSE_AGENCIES = [
   'Department of Defense',
@@ -175,4 +178,129 @@ export async function fetchDefenseNews(): Promise<number> {
     });
     return 0;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Defense RSS Feeds — Top 5 sources (Tier 1 from SPACE-DEFENSE-DATA-SOURCES.md)
+// ---------------------------------------------------------------------------
+
+interface DefenseRSSSource {
+  /** Short key used in DynamicContent contentKey (e.g. space-defense:rss-spacenews) */
+  key: string;
+  name: string;
+  url: string;
+}
+
+const DEFENSE_RSS_FEEDS: DefenseRSSSource[] = [
+  {
+    key: 'spacenews',
+    name: 'SpaceNews Defense',
+    url: 'https://spacenews.com/section/military/feed/',
+  },
+  {
+    key: 'breaking-defense',
+    name: 'Breaking Defense Space',
+    url: 'https://breakingdefense.com/category/space/feed/',
+  },
+  {
+    key: 'dod-contracts',
+    name: 'DoD Contracts',
+    url: 'https://www.defense.gov/News/RSS/',
+  },
+  {
+    key: 'ussf',
+    name: 'US Space Force',
+    url: 'https://www.spaceforce.mil/RSS/',
+  },
+  {
+    key: 'c4isrnet',
+    name: 'C4ISRNET Space',
+    url: 'https://www.c4isrnet.com/arc/outboundfeeds/rss/category/space/?outputType=xml',
+  },
+];
+
+const defenseRssParser = new RSSParser({
+  timeout: 20000,
+  headers: {
+    'User-Agent': 'SpaceNexus/1.0 (Space Defense News Aggregator)',
+    Accept: 'application/rss+xml, application/xml, text/xml',
+  },
+});
+
+/**
+ * Fetch a single defense RSS feed and store items in DynamicContent.
+ * Returns the number of items stored, or 0 on failure.
+ */
+async function fetchSingleDefenseFeed(feed: DefenseRSSSource): Promise<number> {
+  try {
+    const parsed = await defenseRssParser.parseURL(feed.url);
+    const items = (parsed.items || []).slice(0, 20); // Top 20 items per feed
+
+    const feedItems = items
+      .filter((item) => item.title && item.link)
+      .map((item) => {
+        const rawSummary = item.contentSnippet || item.content || item.summary || '';
+        const summary = sanitizeHtml(rawSummary, {
+          allowedTags: [],
+          allowedAttributes: {},
+        }).slice(0, 500);
+
+        return {
+          title: item.title!,
+          url: item.link!,
+          publishedAt: item.pubDate
+            ? new Date(item.pubDate).toISOString()
+            : new Date().toISOString(),
+          source: feed.name,
+          summary,
+        };
+      });
+
+    if (feedItems.length > 0) {
+      await upsertContent(
+        `space-defense:rss-${feed.key}`,
+        'space-defense',
+        'rss-feeds',
+        feedItems,
+        {
+          sourceType: 'api',
+          sourceUrl: feed.url,
+        },
+      );
+    }
+
+    logger.info(`[Defense RSS] Fetched ${feed.name}`, {
+      itemCount: feedItems.length,
+    });
+
+    return feedItems.length;
+  } catch (error) {
+    logger.warn(`[Defense RSS] Failed to fetch ${feed.name}`, {
+      url: feed.url,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    // One feed failing should not break the others
+    return 0;
+  }
+}
+
+/**
+ * Fetch all defense RSS feeds.
+ * Each feed is fetched independently — failures are isolated per feed.
+ * Results are stored in DynamicContent under space-defense:rss-<key>.
+ */
+export async function fetchDefenseRSSFeeds(): Promise<number> {
+  const results = await Promise.all(
+    DEFENSE_RSS_FEEDS.map((feed) => fetchSingleDefenseFeed(feed)),
+  );
+
+  const totalItems = results.reduce((sum, count) => sum + count, 0);
+
+  logger.info('[Defense RSS] All feeds complete', {
+    feedCount: DEFENSE_RSS_FEEDS.length,
+    totalItems,
+    perFeed: DEFENSE_RSS_FEEDS.map((f, i) => `${f.name}: ${results[i]}`),
+  });
+
+  return totalItems;
 }

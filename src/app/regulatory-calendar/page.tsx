@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import PremiumGate from '@/components/PremiumGate';
+import EventSchema from '@/components/seo/EventSchema';
 import {
   REGULATORY_DEADLINES,
   AGENCY_COLORS,
@@ -610,8 +611,26 @@ export default function RegulatoryCalendarPage() {
 
   const activeFilterCount = [agencyFilter, typeFilter, priorityFilter].filter(Boolean).length;
 
+  // Upcoming regulatory deadlines for structured data (first 5)
+  const upcomingForSchema = REGULATORY_DEADLINES
+    .filter((d) => !isPast(d.date))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 5);
+
   return (
     <div className="min-h-screen bg-gray-900 py-8">
+      {upcomingForSchema.map((deadline) => (
+        <EventSchema
+          key={`schema-${deadline.id}`}
+          name={deadline.title}
+          description={deadline.description}
+          startDate={deadline.date}
+          endDate={deadline.endDate}
+          location="Online"
+          organizer={deadline.agency}
+          url={deadline.url || 'https://spacenexus.us/regulatory-calendar'}
+        />
+      ))}
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
         <AnimatedPageHeader

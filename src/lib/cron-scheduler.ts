@@ -1,5 +1,6 @@
 import cron from 'node-cron';
 import { logger } from './logger';
+import { sendFreshnessAlert } from './freshness-alerts';
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || `http://localhost:${process.env.PORT || 3000}`;
 
@@ -193,6 +194,9 @@ function startWatchdog() {
         maxStaleMinutes: status.maxStaleMinutes,
         consecutiveFailures: status.consecutiveFailures,
       });
+
+      // Fire a freshness alert (persists to DB, optionally emails admin)
+      await sendFreshnessAlert(label, status.lastSuccessAt, status.maxStaleMinutes);
 
       // Auto-recover critical jobs only (cap at 10 consecutive failures)
       if (CRITICAL_JOBS.has(label) && status.consecutiveFailures < 10) {

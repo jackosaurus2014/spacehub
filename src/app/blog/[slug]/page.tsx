@@ -212,10 +212,10 @@ export default function BlogPostPage({ params }: Props) {
           </Link>
         </div>
 
-        {/* Related Posts */}
+        {/* Related Articles */}
         {relatedPosts.length > 0 && (
           <div className="mt-12">
-            <h3 className="text-lg font-bold text-white mb-6">Related Posts</h3>
+            <h3 className="text-lg font-bold text-white mb-6">Related Articles</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {relatedPosts.map((rp) => (
                 <Link
@@ -223,10 +223,17 @@ export default function BlogPostPage({ params }: Props) {
                   href={`/blog/${rp.slug}`}
                   className="group block bg-slate-800/40 border border-slate-700/50 rounded-lg p-4 hover:border-nebula-500/50 transition-all"
                 >
-                  <h4 className="text-sm font-semibold text-white group-hover:text-nebula-400 transition-colors line-clamp-2 mb-2">
+                  <span className="text-xs text-nebula-400 font-medium">
+                    {BLOG_CATEGORIES.find((c) => c.value === rp.category)?.label || rp.category}
+                  </span>
+                  <h4 className="text-sm font-semibold text-white group-hover:text-nebula-400 transition-colors line-clamp-2 mt-1 mb-2">
                     {rp.title}
                   </h4>
-                  <span className="text-slate-500 text-xs">{rp.readingTime} min read</span>
+                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <span>{formatDate(rp.publishedAt)}</span>
+                    <span>&middot;</span>
+                    <span>{rp.readingTime} min read</span>
+                  </div>
                 </Link>
               ))}
             </div>

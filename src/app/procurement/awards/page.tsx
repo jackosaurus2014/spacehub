@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ExportButton from '@/components/ui/ExportButton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 interface SpaceContractAward {
   awardId: string;
@@ -190,6 +191,11 @@ export default function ContractAwardsPage() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Procurement', href: '/business-opportunities?tab=procurement' },
+        { name: 'Contract Awards' },
+      ]} />
       <AnimatedPageHeader
         title="Contract Awards"
         subtitle="Track federal contract awards in the space industry -- NASA, DoD, Space Force, and more"

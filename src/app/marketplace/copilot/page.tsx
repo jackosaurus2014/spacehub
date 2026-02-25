@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/lib/toast';
 import { getCategoryLabel, getCategoryIcon, formatPrice } from '@/lib/marketplace-types';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -161,6 +162,11 @@ export default function CopilotPage() {
 
   return (
     <div className="min-h-screen flex flex-col max-w-4xl mx-auto p-4">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Marketplace', href: '/marketplace' },
+        { name: 'AI Copilot' },
+      ]} />
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>

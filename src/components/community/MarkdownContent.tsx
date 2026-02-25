@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Image from 'next/image';
@@ -7,6 +8,52 @@ import Image from 'next/image';
 interface MarkdownContentProps {
   content: string;
   className?: string;
+}
+
+/**
+ * Process text content to highlight @mentions with styled spans
+ */
+function renderWithMentions(text: string): React.ReactNode {
+  const mentionRegex = /@([a-zA-Z0-9_-]+)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = mentionRegex.exec(text)) !== null) {
+    // Add text before the mention
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    // Add the styled mention
+    parts.push(
+      <span
+        key={`mention-${match.index}`}
+        className="text-cyan-400 font-medium cursor-pointer hover:underline"
+      >
+        @{match[1]}
+      </span>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : text;
+}
+
+/**
+ * Recursively process React children to apply mention highlighting to text nodes
+ */
+function processChildren(children: React.ReactNode): React.ReactNode {
+  return React.Children.map(children, (child) => {
+    if (typeof child === 'string') {
+      return renderWithMentions(child);
+    }
+    return child;
+  });
 }
 
 export default function MarkdownContent({ content, className = '' }: MarkdownContentProps) {
@@ -47,8 +94,11 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
           ),
           blockquote: ({ children }) => (
             <blockquote className="border-l-2 border-cyan-500/40 pl-3 my-3 text-slate-400 italic">
-              {children}
+              {processChildren(children)}
             </blockquote>
+          ),
+          li: ({ children }) => (
+            <li>{processChildren(children)}</li>
           ),
           ul: ({ children }) => (
             <ul className="list-disc list-inside space-y-1 my-2 text-slate-300">
@@ -70,7 +120,7 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
             <h3 className="text-base font-semibold text-slate-200 mt-3 mb-1">{children}</h3>
           ),
           p: ({ children }) => (
-            <p className="text-slate-300 my-2 leading-relaxed">{children}</p>
+            <p className="text-slate-300 my-2 leading-relaxed">{processChildren(children)}</p>
           ),
           table: ({ children }) => (
             <div className="overflow-x-auto my-3">
