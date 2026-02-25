@@ -44,6 +44,7 @@ const EXPLORE_MODULES: ModuleItem[] = [
   { icon: '📚', label: 'Resources & Podcasts', href: '/resources', description: 'Curated content, podcasts & newsletters' },
   { icon: '🔮', label: 'Mission Pipeline', href: '/mission-pipeline', description: 'Upcoming missions 2025-2030' },
   { icon: '📈', label: 'Mission Statistics', href: '/mission-stats', description: 'Launch provider leaderboards & data' },
+  { icon: '📑', label: 'Daily Digest', href: '/news-digest', description: 'Quick-scan daily space headlines' },
 ];
 
 const INTELLIGENCE_MODULES: ModuleItem[] = [
@@ -57,6 +58,7 @@ const INTELLIGENCE_MODULES: ModuleItem[] = [
   { icon: '🏛️', label: 'Government Budgets', href: '/government-budgets', description: 'Global space agency budget tracking' },
   { icon: '📋', label: 'Intelligence Brief', href: '/intelligence-brief', description: 'Weekly curated industry briefing' },
   { icon: '👤', label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes across the industry' },
+  { icon: '🚀', label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies & funding stages' },
 ];
 
 const BUSINESS_MODULES: ModuleItem[] = [

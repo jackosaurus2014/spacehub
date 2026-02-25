@@ -34,6 +34,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Asteroid Watch', href: '/asteroid-watch', description: 'NEOs, planetary defense, and mining' },
   { label: 'Space Glossary', href: '/glossary', description: 'Definitions of key space industry terms' },
   { label: 'Space Timeline', href: '/timeline', description: 'History and milestones of space exploration' },
+  { label: 'Daily Digest', href: '/news-digest', description: 'Quick-scan daily space headlines' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
@@ -53,6 +54,7 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Regulation Explainers', href: '/regulation-explainers', description: 'AI plain-English regulation summaries' },
   { label: 'Spectrum Management', href: '/spectrum', description: 'Allocations, auctions & filings' },
   { label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },
+  { label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies & funding stages' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [

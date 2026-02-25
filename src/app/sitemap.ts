@@ -180,6 +180,8 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/space-score`, changeFrequency: 'weekly' as const, priority: 0.5 },
     { url: `${BASE_URL}/supply-chain-map`, changeFrequency: 'weekly' as const, priority: 0.5 },
     { url: `${BASE_URL}/launch-cost-calculator`, changeFrequency: 'weekly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/news-digest`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/startup-tracker`, changeFrequency: 'weekly' as const, priority: 0.7 },
 
     // Developer pages
     { url: `${BASE_URL}/developer/docs`, changeFrequency: 'monthly' as const, priority: 0.5 },
