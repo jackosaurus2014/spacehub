@@ -65,25 +65,71 @@ Premium platforms cost $10K-50K+/yr. Free tools are shallow. We own the middle.
 | 4.3 | Fix light-theme form elements (bg-white, border-gray-*) in dark app | ✅ DONE |
 | 4.4 | Normalize filter/sort dropdowns across news, marketplace, company pages | ✅ DONE |
 
-### Wave 5: Design System Polish (IN PROGRESS)
+### Wave 5: Design System Polish
+**Commit:** `edf930d` — 19 files changed, 195 insertions
 | # | Task | Status |
 |---|------|--------|
-| 5.1 | Fix .btn-ghost dark theme hover (white → dark) | 🔄 IN PROGRESS |
-| 5.2 | Add glow + lift effect to .card:hover in globals.css | 🔄 IN PROGRESS |
-| 5.3 | Add table-row-hover class for data tables | 🔄 IN PROGRESS |
-| 5.4 | Migrate 24 pages from PageHeader → AnimatedPageHeader | 🔄 IN PROGRESS |
-| 5.5 | Replace 30+ manual animate-spin spinners with LoadingSpinner | 🔄 IN PROGRESS |
+| 5.1 | Fix .btn-ghost dark theme hover (white → dark) | ✅ DONE |
+| 5.2 | Add glow + lift effect to .card:hover in globals.css | ✅ DONE |
+| 5.3 | Add table-row-hover class for data tables | ✅ DONE |
+| 5.4 | Migrate 24 pages from PageHeader → AnimatedPageHeader | ✅ DONE |
+| 5.5 | Replace 30+ manual animate-spin spinners with LoadingSpinner | ✅ DONE |
 
-### Wave 6: Advanced Features (PLANNED)
+### Wave 6: Animations, Polish & New Features
+**Commit:** `1f62d63` — 21 files changed, 1230 insertions
 | # | Task | Status |
 |---|------|--------|
-| 6.1 | Add ScrollReveal animations to pages without motion | |
-| 6.2 | Fix 404 gradient text (slate→slate is invisible) | |
-| 6.3 | Add gradient text to policy page headings | |
-| 6.4 | Migrate inline card styles to semantic .card classes | |
-| 6.5 | Add CSV/Excel export to data tables | |
-| 6.6 | Enhance launch vehicle comparison page | |
-| 6.7 | Add "Why This Matters" AI context to news articles | |
+| 6.1 | Add ScrollReveal animations to 10 static pages | ✅ DONE |
+| 6.2 | Fix 404 gradient text (slate→slate → cyan-blue) | ✅ DONE |
+| 6.3 | Add gradient text to policy page headings | ✅ DONE |
+| 6.4 | Migrate inline card styles to semantic .card classes | ✅ DONE |
+| 6.5 | Create CSV export utility + ExportButton component | ✅ DONE |
+| 6.6 | Add CSV export to company-profiles, marketplace, launch-vehicles | ✅ DONE |
+| 6.7 | Create launch vehicle comparison page (/compare/launch-vehicles) with 15 vehicles | ✅ DONE |
+
+### Wave 7: Search, AI Context & Company Profiles
+**Commit:** `5760342` — 11 files changed, 907 insertions
+| # | Task | Status |
+|---|------|--------|
+| 7.1 | Create search autocomplete API + SearchSuggestions component | ✅ DONE |
+| 7.2 | Enhance SearchCommandPalette with grouped autocomplete results | ✅ DONE |
+| 7.3 | Create WhyThisMatters AI context for news articles | ✅ DONE |
+| 7.4 | Add "Why This Matters" button to all NewsCard instances | ✅ DONE |
+| 7.5 | Add Quick Stats hero section to company profile pages | ✅ DONE |
+| 7.6 | Add Related Companies section to company profiles | ✅ DONE |
+| 7.7 | Add Recent News section to company profiles | ✅ DONE |
+| 7.8 | Migrate more inline cards to .card class | ✅ DONE |
+
+### Wave 8: Calculators, Reading List & Alert Enhancements
+**Commit:** `dd0007b` — 15 files changed, 3499 insertions
+| # | Task | Status |
+|---|------|--------|
+| 8.1 | Create Orbital Mechanics Calculator (4 tabs: delta-v, period, escape, decay) | ✅ DONE |
+| 8.2 | Create Reading List / Bookmark feature with BookmarkButton | ✅ DONE |
+| 8.3 | Add Slack/Discord webhook alert integration | ✅ DONE |
+| 8.4 | Add smart alert batching (instant/hourly/daily/weekly digest) | ✅ DONE |
+| 8.5 | Add quiet hours with timezone support | ✅ DONE |
+
+### Wave 9: Engineering Tools Suite
+**Commit:** `f50b4dd` — 7 files changed, 2858 insertions
+| # | Task | Status |
+|---|------|--------|
+| 9.1 | Create Constellation Designer (Walker formulas, coverage, cost, presets) | ✅ DONE |
+| 9.2 | Create Power Budget Calculator (solar, battery, eclipse, margins) | ✅ DONE |
+| 9.3 | Create Link Budget Calculator (RF analysis, EIRP, Eb/N0, link margin) | ✅ DONE |
+| 9.4 | Create Space Engineering Tools hub (/tools) linking all 8 tools | ✅ DONE |
+| 9.5 | Add tools to navigation and module routes | ✅ DONE |
+
+### Wave 10: AI Intelligence & Business Tools
+**Commit:** `2fd409d` — 13 files changed, 2029 insertions
+| # | Task | Status |
+|---|------|--------|
+| 10.1 | Create Company Research AI Assistant (/company-research) | ✅ DONE |
+| 10.2 | Create Unit Economics Calculator (/unit-economics) with 7 presets | ✅ DONE |
+| 10.3 | Create ConfidenceBadge component (high/medium/low) | ✅ DONE |
+| 10.4 | Create SourceCitation component for AI transparency | ✅ DONE |
+| 10.5 | Add confidence + citations to WhyThisMatters, AI Insights, Investment Thesis | ✅ DONE |
+| 10.6 | Fix 2 failing account management tests | ✅ DONE |
 
 ---
 

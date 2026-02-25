@@ -16,6 +16,12 @@ import {
   type ModuleSize,
   type DashboardSection,
 } from '@/lib/dashboard-layouts';
+import {
+  getSelectedTemplate,
+  clearSelectedTemplate,
+  getWidgetTypeIcon,
+  type DashboardTemplate,
+} from '@/lib/dashboard/templates';
 
 interface ModuleItem {
   label: string;
