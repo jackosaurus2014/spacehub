@@ -44,6 +44,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   'launch-vehicles': '/launch-vehicles',
   'blueprints': '/blueprints',
   'orbital-costs': '/orbital-costs',
+  'orbital-calculator': '/orbital-calculator',
 
   // ── Space Operations children ──
   'satellite-tracker': '/satellites',

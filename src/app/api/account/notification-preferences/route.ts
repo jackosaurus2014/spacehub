@@ -18,6 +18,10 @@ const DEFAULT_PREFERENCES = {
   watchlistAlerts: true,
   newsDigest: true,
   digestFrequency: 'daily',
+  alertDigestMode: 'instant',
+  quietHoursStart: null,
+  quietHoursEnd: null,
+  quietHoursTimezone: 'UTC',
 };
 
 export async function GET() {
@@ -25,19 +29,9 @@ export async function GET() {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return unauthorizedError();
 
-    const preferences = await prisma.notificationPreference.findUnique({
+    // Use `as any` for new schema fields until prisma generate picks them up (EPERM on Windows)
+    const preferences = await (prisma.notificationPreference as any).findUnique({
       where: { userId: session.user.id },
-      select: {
-        emailDigest: true,
-        emailAlerts: true,
-        pushEnabled: true,
-        forumReplies: true,
-        directMessages: true,
-        marketplaceUpdates: true,
-        watchlistAlerts: true,
-        newsDigest: true,
-        digestFrequency: true,
-      },
     });
 
     return NextResponse.json({
@@ -65,24 +59,14 @@ export async function PATCH(req: NextRequest) {
 
     const data = validation.data!;
 
-    const preferences = await prisma.notificationPreference.upsert({
+    // Use `as any` for new schema fields until prisma generate picks them up (EPERM on Windows)
+    const preferences = await (prisma.notificationPreference as any).upsert({
       where: { userId: session.user.id },
       create: {
         userId: session.user.id,
         ...data,
       },
       update: data,
-      select: {
-        emailDigest: true,
-        emailAlerts: true,
-        pushEnabled: true,
-        forumReplies: true,
-        directMessages: true,
-        marketplaceUpdates: true,
-        watchlistAlerts: true,
-        newsDigest: true,
-        digestFrequency: true,
-      },
     });
 
     logger.info('Notification preferences updated', { userId: session.user.id });

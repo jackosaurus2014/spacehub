@@ -1712,6 +1712,11 @@ export const notificationPreferencesSchema = z.object({
   watchlistAlerts: z.boolean().optional(),
   newsDigest: z.boolean().optional(),
   digestFrequency: z.enum(['daily', 'weekly', 'none']).optional(),
+  // Smart batching & quiet hours
+  alertDigestMode: z.enum(['instant', 'hourly', 'daily', 'weekly']).optional(),
+  quietHoursStart: z.number().int().min(0).max(23).nullable().optional(),
+  quietHoursEnd: z.number().int().min(0).max(23).nullable().optional(),
+  quietHoursTimezone: z.string().max(100).optional(),
 });
 
 export type ChangePasswordData = z.infer<typeof changePasswordSchema>;

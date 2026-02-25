@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { NewsArticle, NewsArticleCompanyTag } from '@/types';
 import WhyThisMatters from '@/components/news/WhyThisMatters';
+import BookmarkButton from '@/components/ui/BookmarkButton';
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -92,12 +93,20 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
 
   if (featured) {
     return (
-      <Link
-        href={article.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="card-interactive group block overflow-hidden rounded-2xl"
-      >
+      <div className="card-interactive group block overflow-hidden rounded-2xl relative">
+        <BookmarkButton
+          title={article.title}
+          url={article.url}
+          source={article.source}
+          category={article.category}
+          className="absolute top-3 right-3 z-10 bg-black/40 backdrop-blur-sm rounded-lg"
+        />
+        <Link
+          href={article.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block"
+        >
         <div className="relative h-64 md:h-80">
           {article.imageUrl ? (
             <Image
@@ -162,11 +171,19 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
           </div>
         </div>
       </Link>
+      </div>
     );
   }
 
   return (
-    <div className="card-interactive group flex flex-col overflow-hidden rounded-2xl">
+    <div className="card-interactive group flex flex-col overflow-hidden rounded-2xl relative">
+      <BookmarkButton
+        title={article.title}
+        url={article.url}
+        source={article.source}
+        category={article.category}
+        className="absolute top-2 right-2 z-10 bg-black/40 backdrop-blur-sm rounded-lg"
+      />
       <a
         href={article.url}
         target="_blank"

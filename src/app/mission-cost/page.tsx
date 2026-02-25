@@ -954,6 +954,15 @@ function MissionCostContent() {
               </div>
               <p className="text-xs text-slate-400 mt-1">Optimal launch timing</p>
             </Link>
+            <Link
+              href="/orbital-calculator"
+              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+            >
+              <div className="text-sm font-medium text-white group-hover:text-nebula-200">
+                🌐 Orbital Calculator
+              </div>
+              <p className="text-xs text-slate-400 mt-1">Delta-v, periods & decay</p>
+            </Link>
           </div>
         </div></ScrollReveal>
       </div>

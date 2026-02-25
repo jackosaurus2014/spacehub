@@ -1,6 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 import { logger } from '@/lib/logger';
 import { dispatchWebhook } from '@/lib/webhook-dispatcher';
+import { sendToUserWebhooks } from '@/lib/alerts/webhook-delivery';
+import {
+  getNotificationPreferences,
+  shouldDeliverNow,
+  queueForDigest,
+  type DigestItem,
+} from '@/lib/alerts/alert-digest';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 
@@ -72,10 +79,61 @@ export async function deliverAlerts(prisma: PrismaClient): Promise<{
       count: pendingDeliveries.length,
     });
 
+    // Cache notification preferences per user to avoid repeated DB lookups
+    const prefsCache = new Map<string, Awaited<ReturnType<typeof getNotificationPreferences>>>();
+
     for (const delivery of pendingDeliveries) {
       stats.processed++;
 
       try {
+        // ---- Smart Batching & Quiet Hours Check ----
+        // Skip this check for deliveries already sourced from a digest batch
+        // (source === 'digest') to avoid re-queuing them infinitely.
+        const isDigestSourced = (delivery as any).source === 'digest';
+
+        if (!isDigestSourced) {
+          let prefs = prefsCache.get(delivery.userId);
+          if (!prefs) {
+            prefs = await getNotificationPreferences(delivery.userId, prisma);
+            prefsCache.set(delivery.userId, prefs);
+          }
+
+          const decision = shouldDeliverNow(prefs);
+
+          if (decision === 'queue') {
+            // Queue for later digest delivery instead of sending now
+            const digestItem: DigestItem = {
+              id: delivery.id,
+              title: delivery.title,
+              message: delivery.message,
+              type: delivery.channel,
+              createdAt: delivery.createdAt.toISOString(),
+              url: (delivery.data as any)?.url || undefined,
+            };
+
+            await queueForDigest(delivery.userId, digestItem, prisma);
+
+            // Mark as "queued" so it isn't picked up again by deliverAlerts
+            await prisma.alertDelivery.update({
+              where: { id: delivery.id },
+              data: {
+                status: 'sent',
+                sentAt: new Date(),
+                failReason: `Queued for ${prefs.alertDigestMode} digest`,
+              },
+            });
+
+            stats.succeeded++;
+            logger.debug('Alert queued for digest instead of immediate delivery', {
+              deliveryId: delivery.id,
+              userId: delivery.userId,
+              digestMode: prefs.alertDigestMode,
+              quietHours: decision === 'queue',
+            });
+            continue; // Skip to next delivery
+          }
+        }
+
         switch (delivery.channel) {
           case 'in_app': {
             // In-app notifications are already stored in DB;
@@ -234,6 +292,66 @@ export async function deliverAlerts(prisma: PrismaClient): Promise<{
           },
         });
         stats.failed++;
+      }
+    }
+
+    // --------------------------------------------------------
+    // Supplementary: deliver to Slack/Discord webhooks
+    // Group by user to avoid duplicate messages for the same alert
+    // --------------------------------------------------------
+    const webhookAlerts = new Map<string, { title: string; message: string; data: Record<string, unknown> | null; priority: string }[]>();
+    for (const delivery of pendingDeliveries) {
+      // Only send webhook notifications for deliveries that were successfully processed
+      if (!webhookAlerts.has(delivery.userId)) {
+        webhookAlerts.set(delivery.userId, []);
+      }
+      // Deduplicate by title to avoid sending the same alert multiple times
+      // (e.g. if the same alert goes to in_app + email, we only webhook once)
+      const existing = webhookAlerts.get(delivery.userId)!;
+      if (!existing.some(a => a.title === delivery.title && a.message === delivery.message)) {
+        existing.push({
+          title: delivery.title,
+          message: delivery.message,
+          data: delivery.data as Record<string, unknown> | null,
+          priority: delivery.alertRule?.priority || 'normal',
+        });
+      }
+    }
+
+    const userIds = Array.from(webhookAlerts.keys());
+    for (const userId of userIds) {
+      const alerts = webhookAlerts.get(userId)!;
+      for (const alert of alerts) {
+        try {
+          const alertUrl = alert.data?.url
+            ? `${APP_URL}${alert.data.url}`
+            : `${APP_URL}/alerts?tab=notifications`;
+
+          const priorityColors: Record<string, string> = {
+            low: '#64748b',
+            normal: '#06b6d4',
+            high: '#f97316',
+            critical: '#ef4444',
+          };
+
+          await sendToUserWebhooks(userId, {
+            title: alert.title,
+            description: alert.message,
+            url: alertUrl,
+            color: priorityColors[alert.priority] || '#06b6d4',
+            fields: [
+              { name: 'Priority', value: alert.priority, inline: true },
+              { name: 'Source', value: 'SpaceNexus Alerts', inline: true },
+            ],
+            timestamp: new Date().toISOString(),
+          }, prisma);
+        } catch (webhookError) {
+          // Webhook delivery is supplementary; never fail the main delivery
+          logger.warn('Supplementary webhook delivery failed', {
+            userId,
+            error: webhookError instanceof Error ? webhookError.message : String(webhookError),
+          });
+        }
       }
     }
 

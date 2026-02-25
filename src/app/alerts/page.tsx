@@ -69,7 +69,25 @@ interface SavedSearch {
   updatedAt: string;
 }
 
-type Tab = 'alerts' | 'notifications' | 'saved-searches';
+type Tab = 'alerts' | 'notifications' | 'saved-searches' | 'webhooks' | 'preferences';
+
+interface AlertPreferences {
+  alertDigestMode: 'instant' | 'hourly' | 'daily' | 'weekly';
+  quietHoursStart: number | null;
+  quietHoursEnd: number | null;
+  quietHoursTimezone: string;
+}
+
+interface WebhookConfig {
+  id: string;
+  name: string;
+  type: 'slack' | 'discord';
+  url: string;
+  enabled: boolean;
+  createdAt: string;
+  lastDeliveryAt?: string;
+  lastDeliverySuccess?: boolean;
+}
 
 // ============================================================
 // Constants
@@ -166,7 +184,27 @@ function AlertsPageInner() {
   const [deletingRuleId, setDeletingRuleId] = useState<string | null>(null);
   const [togglingRuleId, setTogglingRuleId] = useState<string | null>(null);
   const [deletingSavedSearchId, setDeletingSavedSearchId] = useState<string | null>(null);
+
+  // Webhook state
+  const [webhooks, setWebhooks] = useState<WebhookConfig[]>([]);
+  const [webhookName, setWebhookName] = useState('');
+  const [webhookType, setWebhookType] = useState<'slack' | 'discord'>('slack');
+  const [webhookUrl, setWebhookUrl] = useState('');
+  const [addingWebhook, setAddingWebhook] = useState(false);
+  const [testingWebhookId, setTestingWebhookId] = useState<string | null>(null);
+  const [deletingWebhookId, setDeletingWebhookId] = useState<string | null>(null);
   const [loadingMoreDeliveries, setLoadingMoreDeliveries] = useState(false);
+
+  // Preferences state
+  const [prefs, setPrefs] = useState<AlertPreferences>({
+    alertDigestMode: 'instant',
+    quietHoursStart: null,
+    quietHoursEnd: null,
+    quietHoursTimezone: 'UTC',
+  });
+  const [quietHoursEnabled, setQuietHoursEnabled] = useState(false);
+  const [savingPrefs, setSavingPrefs] = useState(false);
+  const [prefsLoaded, setPrefsLoaded] = useState(false);
 
   // ============================================================
   // Tab navigation
@@ -234,15 +272,47 @@ function AlertsPageInner() {
     }
   }, []);
 
+  const fetchWebhooks = useCallback(async () => {
+    try {
+      const res = await fetch('/api/alerts/webhooks');
+      if (res.ok) {
+        const json = await res.json();
+        setWebhooks(json.data.webhooks || []);
+      }
+    } catch {
+      // silently fail
+    }
+  }, []);
+
+  const fetchPreferences = useCallback(async () => {
+    try {
+      const res = await fetch('/api/account/notification-preferences');
+      if (res.ok) {
+        const json = await res.json();
+        const data = json.data;
+        setPrefs({
+          alertDigestMode: data.alertDigestMode || 'instant',
+          quietHoursStart: data.quietHoursStart ?? null,
+          quietHoursEnd: data.quietHoursEnd ?? null,
+          quietHoursTimezone: data.quietHoursTimezone || 'UTC',
+        });
+        setQuietHoursEnabled(data.quietHoursStart !== null && data.quietHoursEnd !== null);
+        setPrefsLoaded(true);
+      }
+    } catch {
+      // silently fail
+    }
+  }, []);
+
   useEffect(() => {
     if (sessionStatus === 'authenticated') {
-      Promise.all([fetchRules(), fetchDeliveries(), fetchSavedSearches()]).finally(() =>
+      Promise.all([fetchRules(), fetchDeliveries(), fetchSavedSearches(), fetchWebhooks(), fetchPreferences()]).finally(() =>
         setLoading(false)
       );
     } else if (sessionStatus === 'unauthenticated') {
       setLoading(false);
     }
-  }, [sessionStatus, fetchRules, fetchDeliveries, fetchSavedSearches]);
+  }, [sessionStatus, fetchRules, fetchDeliveries, fetchSavedSearches, fetchWebhooks, fetchPreferences]);
 
   // ============================================================
   // Alert rule actions
@@ -385,6 +455,134 @@ function AlertsPageInner() {
       toast.error('Network error');
     } finally {
       setDeletingSavedSearchId(null);
+    }
+  };
+
+  // ============================================================
+  // Webhook actions
+  // ============================================================
+
+  const addWebhook = async () => {
+    if (!webhookName.trim() || !webhookUrl.trim()) {
+      toast.error('Name and URL are required');
+      return;
+    }
+
+    setAddingWebhook(true);
+    try {
+      const res = await fetch('/api/alerts/webhooks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: webhookName.trim(),
+          type: webhookType,
+          url: webhookUrl.trim(),
+        }),
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        setWebhooks((prev) => [...prev, json.data.webhook]);
+        setWebhookName('');
+        setWebhookUrl('');
+        toast.success('Webhook added successfully');
+      } else {
+        toast.error(json.error?.message || 'Failed to add webhook');
+      }
+    } catch {
+      toast.error('Network error');
+    } finally {
+      setAddingWebhook(false);
+    }
+  };
+
+  const testWebhook = async (webhookId: string) => {
+    setTestingWebhookId(webhookId);
+    try {
+      const res = await fetch('/api/alerts/webhooks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'test', webhookId }),
+      });
+
+      const json = await res.json();
+      if (res.ok && json.data.delivered) {
+        setWebhooks((prev) =>
+          prev.map((w) =>
+            w.id === webhookId ? json.data.webhook : w
+          )
+        );
+        toast.success('Test message sent successfully!');
+      } else if (res.ok && !json.data.delivered) {
+        setWebhooks((prev) =>
+          prev.map((w) =>
+            w.id === webhookId ? json.data.webhook : w
+          )
+        );
+        toast.error('Test message failed to deliver. Check your webhook URL.');
+      } else {
+        toast.error(json.error?.message || 'Failed to test webhook');
+      }
+    } catch {
+      toast.error('Network error');
+    } finally {
+      setTestingWebhookId(null);
+    }
+  };
+
+  const deleteWebhook = async (webhookId: string) => {
+    setDeletingWebhookId(webhookId);
+    try {
+      const res = await fetch(`/api/alerts/webhooks?id=${webhookId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setWebhooks((prev) => prev.filter((w) => w.id !== webhookId));
+        toast.success('Webhook removed');
+      } else {
+        toast.error('Failed to delete webhook');
+      }
+    } catch {
+      toast.error('Network error');
+    } finally {
+      setDeletingWebhookId(null);
+    }
+  };
+
+  // ============================================================
+  // Preferences actions
+  // ============================================================
+
+  const savePreferences = async () => {
+    setSavingPrefs(true);
+    try {
+      const payload: Record<string, unknown> = {
+        alertDigestMode: prefs.alertDigestMode,
+        quietHoursTimezone: prefs.quietHoursTimezone,
+      };
+
+      if (quietHoursEnabled) {
+        payload.quietHoursStart = prefs.quietHoursStart ?? 22;
+        payload.quietHoursEnd = prefs.quietHoursEnd ?? 7;
+      } else {
+        payload.quietHoursStart = null;
+        payload.quietHoursEnd = null;
+      }
+
+      const res = await fetch('/api/account/notification-preferences', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        toast.success('Alert preferences saved');
+        fetchPreferences();
+      } else {
+        toast.error('Failed to save preferences');
+      }
+    } catch {
+      toast.error('Network error');
+    } finally {
+      setSavingPrefs(false);
     }
   };
 
@@ -1041,6 +1239,354 @@ function AlertsPageInner() {
   );
 
   // ============================================================
+  // Render: Tab — Preferences
+  // ============================================================
+
+  const DIGEST_MODE_OPTIONS: { value: AlertPreferences['alertDigestMode']; label: string; description: string }[] = [
+    { value: 'instant', label: 'Instant', description: 'Deliver alerts immediately as they trigger' },
+    { value: 'hourly', label: 'Hourly Digest', description: 'Bundle alerts into an hourly summary email' },
+    { value: 'daily', label: 'Daily Digest', description: 'Receive one daily summary of all alerts' },
+    { value: 'weekly', label: 'Weekly Digest', description: 'Receive a weekly summary every Monday' },
+  ];
+
+  const COMMON_TIMEZONES = [
+    'UTC',
+    'America/New_York',
+    'America/Chicago',
+    'America/Denver',
+    'America/Los_Angeles',
+    'America/Anchorage',
+    'Pacific/Honolulu',
+    'Europe/London',
+    'Europe/Berlin',
+    'Europe/Paris',
+    'Asia/Tokyo',
+    'Asia/Shanghai',
+    'Asia/Kolkata',
+    'Australia/Sydney',
+  ];
+
+  const formatHour = (hour: number): string => {
+    if (hour === 0) return '12:00 AM';
+    if (hour === 12) return '12:00 PM';
+    if (hour < 12) return `${hour}:00 AM`;
+    return `${hour - 12}:00 PM`;
+  };
+
+  const renderPreferencesTab = () => (
+    <div className="space-y-6 max-w-2xl">
+      {/* Delivery Mode */}
+      <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-white mb-1">Alert Delivery Mode</h3>
+        <p className="text-sm text-slate-400 mb-5">
+          Choose how you want to receive alert notifications. Digest modes batch multiple alerts into a single summary.
+        </p>
+        <div className="space-y-3">
+          {DIGEST_MODE_OPTIONS.map((option) => (
+            <label
+              key={option.value}
+              className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                prefs.alertDigestMode === option.value
+                  ? 'border-cyan-600 bg-cyan-950/20'
+                  : 'border-slate-700 hover:border-slate-600 bg-slate-800/40'
+              }`}
+            >
+              <input
+                type="radio"
+                name="alertDigestMode"
+                value={option.value}
+                checked={prefs.alertDigestMode === option.value}
+                onChange={() => setPrefs((p) => ({ ...p, alertDigestMode: option.value }))}
+                className="mt-0.5 accent-cyan-500"
+              />
+              <div>
+                <span className="text-sm font-medium text-white">{option.label}</span>
+                <p className="text-xs text-slate-400 mt-0.5">{option.description}</p>
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Quiet Hours */}
+      <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="text-lg font-semibold text-white">Quiet Hours</h3>
+          <button
+            onClick={() => {
+              setQuietHoursEnabled(!quietHoursEnabled);
+              if (!quietHoursEnabled) {
+                // Initialize defaults when enabling
+                setPrefs((p) => ({
+                  ...p,
+                  quietHoursStart: p.quietHoursStart ?? 22,
+                  quietHoursEnd: p.quietHoursEnd ?? 7,
+                }));
+              }
+            }}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+              quietHoursEnabled ? 'bg-cyan-600' : 'bg-slate-700'
+            }`}
+            aria-label={quietHoursEnabled ? 'Disable quiet hours' : 'Enable quiet hours'}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                quietHoursEnabled ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
+        </div>
+        <p className="text-sm text-slate-400 mb-5">
+          During quiet hours, all alerts are silently queued and delivered in the next digest. Ideal for avoiding notifications while you sleep.
+        </p>
+
+        {quietHoursEnabled && (
+          <div className="space-y-4 pt-2 border-t border-slate-700">
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">
+                  Start (Do Not Disturb from)
+                </label>
+                <select
+                  value={prefs.quietHoursStart ?? 22}
+                  onChange={(e) => setPrefs((p) => ({ ...p, quietHoursStart: parseInt(e.target.value) }))}
+                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                >
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={i}>
+                      {formatHour(i)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">
+                  End (Resume alerts at)
+                </label>
+                <select
+                  value={prefs.quietHoursEnd ?? 7}
+                  onChange={(e) => setPrefs((p) => ({ ...p, quietHoursEnd: parseInt(e.target.value) }))}
+                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                >
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={i}>
+                      {formatHour(i)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Quiet hours visual preview */}
+            <div className="bg-slate-800/60 rounded-lg p-3">
+              <p className="text-xs text-slate-500 mb-2">Preview</p>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-6 bg-slate-700 rounded-full overflow-hidden relative">
+                  {(() => {
+                    const start = prefs.quietHoursStart ?? 22;
+                    const end = prefs.quietHoursEnd ?? 7;
+                    if (start <= end) {
+                      // Same-day range
+                      const left = (start / 24) * 100;
+                      const width = ((end - start) / 24) * 100;
+                      return (
+                        <div
+                          className="absolute top-0 bottom-0 bg-indigo-800/60 border-x border-indigo-500/40"
+                          style={{ left: `${left}%`, width: `${width}%` }}
+                        />
+                      );
+                    }
+                    // Overnight range
+                    const leftWidth = ((24 - start) / 24) * 100;
+                    const rightWidth = (end / 24) * 100;
+                    return (
+                      <>
+                        <div
+                          className="absolute top-0 bottom-0 bg-indigo-800/60 border-l border-indigo-500/40 rounded-r-none"
+                          style={{ left: `${(start / 24) * 100}%`, width: `${leftWidth}%` }}
+                        />
+                        <div
+                          className="absolute top-0 bottom-0 left-0 bg-indigo-800/60 border-r border-indigo-500/40 rounded-l-none"
+                          style={{ width: `${rightWidth}%` }}
+                        />
+                      </>
+                    );
+                  })()}
+                  {/* Hour markers */}
+                  {[0, 6, 12, 18].map((h) => (
+                    <div
+                      key={h}
+                      className="absolute top-0 bottom-0 w-px bg-slate-600"
+                      style={{ left: `${(h / 24) * 100}%` }}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="flex justify-between mt-1 text-[10px] text-slate-600">
+                <span>12 AM</span>
+                <span>6 AM</span>
+                <span>12 PM</span>
+                <span>6 PM</span>
+                <span>12 AM</span>
+              </div>
+              <p className="text-xs text-indigo-300 mt-2 text-center">
+                Quiet from {formatHour(prefs.quietHoursStart ?? 22)} to {formatHour(prefs.quietHoursEnd ?? 7)}
+              </p>
+            </div>
+
+            {/* Timezone */}
+            <div>
+              <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">
+                Timezone
+              </label>
+              <select
+                value={prefs.quietHoursTimezone}
+                onChange={(e) => setPrefs((p) => ({ ...p, quietHoursTimezone: e.target.value }))}
+                className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              >
+                {COMMON_TIMEZONES.map((tz) => (
+                  <option key={tz} value={tz}>
+                    {tz.replace(/_/g, ' ')}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-slate-500 mt-1">
+                Quiet hours are based on your selected timezone.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Info Box */}
+      <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 flex gap-3">
+        <svg className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div className="text-sm text-slate-400">
+          <p className="font-medium text-slate-300 mb-1">How Smart Batching Works</p>
+          <ul className="space-y-1 text-xs list-disc list-inside">
+            <li><strong className="text-slate-300">Instant:</strong> Alerts are delivered immediately through all configured channels.</li>
+            <li><strong className="text-slate-300">Hourly/Daily/Weekly:</strong> Alerts are queued and sent as a consolidated digest email.</li>
+            <li><strong className="text-slate-300">Quiet Hours:</strong> During quiet hours, all alerts are silently queued regardless of delivery mode.</li>
+            <li><strong className="text-slate-300">In-App:</strong> In-app notifications are always delivered immediately for real-time visibility.</li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Save Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={savePreferences}
+          disabled={savingPrefs}
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+        >
+          {savingPrefs ? (
+            <>
+              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Saving...
+            </>
+          ) : (
+            <>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Save Preferences
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+
+  // ============================================================
+  // Render: Tab -- Webhooks
+  // ============================================================
+
+  const renderWebhooksTab = () => (
+    <div className="space-y-6">
+      <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-5">
+        <h3 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
+          <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add Webhook Integration
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label htmlFor="webhook-name" className="block text-sm text-slate-400 mb-1">Integration Name</label>
+            <input id="webhook-name" type="text" value={webhookName} onChange={(e) => setWebhookName(e.target.value)} placeholder="e.g. Launch Alerts Channel" className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent" maxLength={100} />
+          </div>
+          <div>
+            <label className="block text-sm text-slate-400 mb-1">Platform</label>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => setWebhookType('slack')} className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${webhookType === 'slack' ? 'bg-purple-900/20 border-purple-700 text-purple-300' : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'}`}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z" /></svg>
+                Slack
+              </button>
+              <button type="button" onClick={() => setWebhookType('discord')} className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${webhookType === 'discord' ? 'bg-indigo-900/20 border-indigo-700 text-indigo-300' : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'}`}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z" /></svg>
+                Discord
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="mb-4">
+          <label htmlFor="webhook-url" className="block text-sm text-slate-400 mb-1">Webhook URL</label>
+          <input id="webhook-url" type="url" value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} placeholder={webhookType === 'slack' ? 'https://hooks.slack.com/services/...' : 'https://discord.com/api/webhooks/...'} className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent font-mono" />
+          <p className="text-xs text-slate-500 mt-1">{webhookType === 'slack' ? 'Create an Incoming Webhook in your Slack workspace settings.' : 'Create a webhook in your Discord server\'s channel Integrations settings.'}</p>
+        </div>
+        <button onClick={addWebhook} disabled={addingWebhook || !webhookName.trim() || !webhookUrl.trim()} className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 disabled:text-slate-500 text-white font-medium rounded-lg transition-colors text-sm">
+          {addingWebhook ? (<span className="flex items-center gap-2"><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Adding...</span>) : (<span className="flex items-center gap-2"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>Add Webhook</span>)}
+        </button>
+      </div>
+      {webhooks.length === 0 ? (
+        <div className="text-center py-16 bg-slate-900/50 border border-slate-800 rounded-xl">
+          <svg className="w-14 h-14 text-slate-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+          <h3 className="text-lg font-semibold text-white mb-2">No webhooks configured</h3>
+          <p className="text-slate-400 max-w-sm mx-auto">Add a Slack or Discord webhook above to receive alert notifications in your team channels.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {webhooks.map((webhook) => (
+            <div key={webhook.id} className="bg-slate-900/80 border border-slate-700 rounded-xl p-4 hover:border-slate-600 transition-all">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2.5 mb-1.5">
+                    {webhook.type === 'slack' ? (
+                      <svg className="w-5 h-5 text-purple-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z" /></svg>
+                    ) : (
+                      <svg className="w-5 h-5 text-indigo-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z" /></svg>
+                    )}
+                    <h3 className="text-sm font-semibold text-white truncate">{webhook.name}</h3>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${webhook.type === 'slack' ? 'bg-purple-900/30 text-purple-300' : 'bg-indigo-900/30 text-indigo-300'}`}>{webhook.type === 'slack' ? 'Slack' : 'Discord'}</span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-mono truncate mb-2 ml-8">{webhook.url.length > 60 ? webhook.url.substring(0, 57) + '...' : webhook.url}</p>
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 ml-8">
+                    <span>Added {formatRelativeTime(webhook.createdAt)}</span>
+                    {webhook.lastDeliveryAt && (<><span className="text-slate-700">|</span><span className="flex items-center gap-1">Last delivery: {formatRelativeTime(webhook.lastDeliveryAt)}{webhook.lastDeliverySuccess ? (<span className="inline-block w-2 h-2 bg-green-400 rounded-full" title="Success" />) : (<span className="inline-block w-2 h-2 bg-red-400 rounded-full" title="Failed" />)}</span></>)}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button onClick={() => testWebhook(webhook.id)} disabled={testingWebhookId === webhook.id} className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-cyan-400 border border-slate-700 hover:border-cyan-700 hover:bg-cyan-900/20 rounded-lg transition-colors disabled:opacity-50" title="Send a test message" aria-label="Test webhook">
+                    {testingWebhookId === webhook.id ? (<span className="flex items-center gap-1"><svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Testing...</span>) : (<span className="flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>Test</span>)}
+                  </button>
+                  <button onClick={() => { if (confirm('Remove this webhook integration?')) deleteWebhook(webhook.id); }} disabled={deletingWebhookId === webhook.id} className={`p-1.5 text-slate-500 hover:text-red-400 transition-colors rounded-md hover:bg-red-900/20 ${deletingWebhookId === webhook.id ? 'opacity-50 cursor-not-allowed' : ''}`} title="Remove webhook" aria-label="Remove webhook">
+                    {deletingWebhookId === webhook.id ? (<svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>) : (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>)}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  // ============================================================
   // Main Render
   // ============================================================
 
@@ -1155,12 +1701,46 @@ function AlertsPageInner() {
               </span>
             )}
           </button>
+          <button
+            onClick={() => setTab('webhooks')}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              currentTab === 'webhooks'
+                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-900/30'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+            Webhooks
+            {webhooks.length > 0 && (
+              <span className="ml-1 text-xs bg-slate-700 text-slate-300 rounded-full px-1.5 py-0.5">
+                {webhooks.length}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setTab('preferences')}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              currentTab === 'preferences'
+                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-900/30'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Preferences
+          </button>
         </div>
 
         {/* Tab Content */}
         {currentTab === 'alerts' && renderAlertsTab()}
         {currentTab === 'notifications' && renderNotificationsTab()}
         {currentTab === 'saved-searches' && renderSavedSearchesTab()}
+        {currentTab === 'webhooks' && renderWebhooksTab()}
+        {currentTab === 'preferences' && renderPreferencesTab()}
 
         {/* Alert Rule Builder Modal */}
         {showRuleBuilder && (

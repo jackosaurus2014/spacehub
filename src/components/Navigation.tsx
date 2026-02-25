@@ -369,6 +369,28 @@ export default function Navigation() {
                 <path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor" />
               </svg>
             </button>
+            {/* Reading List */}
+            <Link
+              href="/reading-list"
+              className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-700/40 transition-colors"
+              aria-label="Reading List"
+              title="Reading List"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                />
+              </svg>
+            </Link>
             {/* Recently Viewed */}
             <RecentlyViewed />
             {/* Notification Center */}
@@ -537,6 +559,31 @@ export default function Navigation() {
                     </Link>
                   </div>
                 )}
+
+                {/* Reading List link (mobile) */}
+                <div className="pt-4 border-t border-slate-700/50">
+                  <Link
+                    href="/reading-list"
+                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors text-sm font-medium touch-target"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <svg
+                      className="w-4 h-4 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                      />
+                    </svg>
+                    Reading List
+                  </Link>
+                </div>
 
                 {/* Accessibility */}
                 <div className="pt-4 border-t border-slate-700/50">
