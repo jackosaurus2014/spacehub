@@ -106,8 +106,8 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
               className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-slate-200 to-nebula-200 flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-white/50 flex items-center justify-center">
+            <div className="w-full h-full bg-gradient-to-br from-space-800 to-nebula-600/30 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-slate-700/50 flex items-center justify-center">
                 <svg className="w-8 h-8 text-nebula-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
                 </svg>

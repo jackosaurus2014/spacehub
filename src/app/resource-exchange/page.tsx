@@ -53,12 +53,12 @@ function ResourceRow({
   const launchMultiplier = spacePriceKg / earthPriceKg;
 
   return (
-    <tr className="border-b border-space-700/50 hover:bg-slate-100/30 transition-colors">
+    <tr className="border-b border-space-700/50 hover:bg-slate-800/30 transition-colors">
       <td className="py-4 px-4">
         <div className="flex items-center gap-3">
           <span className="text-lg">{categoryInfo?.icon || '📦'}</span>
           <div>
-            <div className="font-semibold text-slate-900">{resource.name}</div>
+            <div className="font-semibold text-white">{resource.name}</div>
             <div className="text-xs text-slate-400">{categoryInfo?.label}</div>
           </div>
         </div>
@@ -92,7 +92,7 @@ function ResourceRow({
           {(resource.applications as string[]).slice(0, 2).map((app) => (
             <span
               key={app}
-              className="text-xs bg-slate-100/50 text-slate-600 px-2 py-0.5 rounded"
+              className="text-xs bg-slate-800/50 text-slate-400 px-2 py-0.5 rounded"
             >
               {app.replace(/_/g, ' ')}
             </span>
@@ -127,7 +127,7 @@ function LaunchProviderCard({
       }`}
     >
       <div className="flex items-center justify-between mb-2">
-        <div className="font-semibold text-slate-900 text-sm">{provider.vehicle}</div>
+        <div className="font-semibold text-white text-sm">{provider.vehicle}</div>
         {provider.reusable && (
           <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">
             Reusable
@@ -307,7 +307,7 @@ function ResourceExchangeContent() {
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.total}</div>
+                <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.total}</div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Resources Tracked</div>
               </div>
               <div className="card-elevated p-6 text-center">
@@ -332,7 +332,7 @@ function ResourceExchangeContent() {
 
             {/* Launch Providers */}
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4">
                 🚀 Select Launch Provider
               </h2>
               <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -363,8 +363,8 @@ function ResourceExchangeContent() {
                         onClick={() => handleDestinationChange(dest)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                           destination === dest
-                            ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                            : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                            ? 'bg-slate-700 text-white border-slate-600 shadow-glow-sm'
+                            : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
                         }`}
                       >
                         {dest === 'LEO' && '🌍 '}
@@ -384,7 +384,7 @@ function ResourceExchangeContent() {
                     onChange={(e) =>
                       setSelectedCategory(e.target.value as ResourceCategory | '')
                     }
-                    className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
                   >
                     <option value="">All Categories</option>
                     {RESOURCE_CATEGORIES.map((cat) => (
@@ -431,7 +431,7 @@ function ResourceExchangeContent() {
         ) : resources.length === 0 && !stats?.total ? (
           <div className="card p-12 text-center">
             <span className="text-6xl block mb-4">💰</span>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-2">No Resource Data</h2>
+            <h2 className="text-2xl font-semibold text-white mb-2">No Resource Data</h2>
             <p className="text-slate-400 mb-6">
               Initialize the database with space commodities and launch costs.
             </p>
@@ -455,7 +455,7 @@ function ResourceExchangeContent() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200">
+                  <tr className="bg-slate-800/50 border-b border-slate-700">
                     <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">
                       Resource
                     </th>
@@ -495,7 +495,7 @@ function ResourceExchangeContent() {
         <ScrollReveal><div className="card p-6 mt-8 border-dashed">
           <div className="text-center">
             <span className="text-4xl block mb-3">💡</span>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+            <h3 className="text-lg font-semibold text-white mb-2">
               Understanding Space Pricing
             </h3>
             <p className="text-slate-400 text-sm max-w-3xl mx-auto">
@@ -582,7 +582,7 @@ function DynamicResourceContent() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-xl">📊</span>
-                <h3 className="text-lg font-display font-bold text-slate-900">Live Price Updates</h3>
+                <h3 className="text-lg font-display font-bold text-white">Live Price Updates</h3>
               </div>
               {pricesFetchedAt && (
                 <span className="text-xs text-slate-400">
@@ -592,9 +592,9 @@ function DynamicResourceContent() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {priceUpdates.map((update) => (
-                <div key={update.slug} className="p-3 rounded-lg border border-slate-200">
+                <div key={update.slug} className="p-3 rounded-lg border border-slate-700">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-slate-900">{update.name}</span>
+                    <span className="text-sm font-medium text-white">{update.name}</span>
                     <span className={`text-xs font-bold ${update.changePercent > 0 ? 'text-green-500' : update.changePercent < 0 ? 'text-red-500' : 'text-slate-400'}`}>
                       {update.changePercent > 0 ? '+' : ''}{update.changePercent.toFixed(1)}%
                     </span>
@@ -618,20 +618,20 @@ function DynamicResourceContent() {
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl">🤖</span>
               <div>
-                <h3 className="text-lg font-display font-bold text-slate-900">{commentary.title}</h3>
+                <h3 className="text-lg font-display font-bold text-white">{commentary.title}</h3>
                 <p className="text-xs text-slate-400">
                   AI-generated analysis · {new Date(commentary.generatedAt).toLocaleDateString()}
                 </p>
               </div>
             </div>
-            <p className="text-slate-600 text-sm mb-4">{commentary.summary}</p>
+            <p className="text-slate-400 text-sm mb-4">{commentary.summary}</p>
 
             {commentary.keyTakeaways.length > 0 && (
               <div className="mb-4 p-4 bg-nebula-500/5 rounded-lg border border-nebula-500/20">
                 <h4 className="text-sm font-semibold text-nebula-300 mb-2">Key Takeaways</h4>
                 <ul className="space-y-1">
                   {commentary.keyTakeaways.map((t, i) => (
-                    <li key={i} className="text-sm text-slate-600 flex items-start gap-2">
+                    <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
                       <span className="text-nebula-300 mt-0.5">•</span>
                       {t}
                     </li>
@@ -641,7 +641,7 @@ function DynamicResourceContent() {
             )}
 
             {showFullCommentary && (
-              <div className="prose prose-sm max-w-none text-slate-600 mb-4">
+              <div className="prose prose-sm max-w-none text-slate-400 mb-4">
                 <div dangerouslySetInnerHTML={{ __html: commentary.content.replace(/\n/g, '<br/>').replace(/## /g, '<strong>').replace(/\n/g, '</strong><br/>') }} />
               </div>
             )}
@@ -663,7 +663,7 @@ function DynamicResourceContent() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-xl">📰</span>
-                <h3 className="text-lg font-display font-bold text-slate-900">Space Resources & Mining News</h3>
+                <h3 className="text-lg font-display font-bold text-white">Space Resources & Mining News</h3>
               </div>
               <span className="text-xs text-slate-400">{news.length} articles</span>
             </div>
@@ -674,9 +674,9 @@ function DynamicResourceContent() {
                   href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block p-3 rounded-lg border border-slate-200 hover:border-nebula-500/30 hover:bg-nebula-500/5 transition-all group"
+                  className="block p-3 rounded-lg border border-slate-700 hover:border-nebula-500/30 hover:bg-nebula-500/5 transition-all group"
                 >
-                  <h4 className="text-sm font-medium text-slate-900 group-hover:text-nebula-300 line-clamp-2 mb-1">
+                  <h4 className="text-sm font-medium text-white group-hover:text-nebula-300 line-clamp-2 mb-1">
                     {article.title}
                   </h4>
                   <p className="text-xs text-slate-400 line-clamp-2 mb-2">

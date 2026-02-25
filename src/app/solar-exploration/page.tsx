@@ -23,7 +23,7 @@ const PlanetaryScene = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[500px] flex items-center justify-center bg-slate-50 rounded-lg">
+      <div className="h-[500px] flex items-center justify-center bg-slate-800/50 rounded-lg">
         <div className="text-center">
           <div
             className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"
@@ -204,11 +204,11 @@ function SolarExplorationContent() {
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="card-elevated p-6 text-center">
-              <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.totalBodies}</div>
+              <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.totalBodies}</div>
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Bodies Explored</div>
             </div>
             <div className="card-elevated p-6 text-center">
-              <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.totalLanders}</div>
+              <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.totalLanders}</div>
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Missions</div>
             </div>
             <div className="card-elevated p-6 text-center">
@@ -230,8 +230,8 @@ function SolarExplorationContent() {
               onClick={() => setSelectedBodySlug(body.slug)}
               className={`px-5 py-3 rounded-lg font-medium transition-all ${
                 selectedBodySlug === body.slug
-                  ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                  : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                  ? 'bg-slate-700 text-white border-slate-600 shadow-glow-sm'
+                  : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
               }`}
             >
               {body.name}
@@ -251,7 +251,7 @@ function SolarExplorationContent() {
 
               {/* Body Info */}
               <div className="card p-6 mt-6">
-                <h2 className="text-2xl font-semibold text-slate-900 mb-2">{selectedBody.name}</h2>
+                <h2 className="text-2xl font-semibold text-white mb-2">{selectedBody.name}</h2>
                 <div className="flex flex-wrap gap-4 text-slate-400 text-sm mb-4">
                   <span className="capitalize">{selectedBody.type}</span>
                   <span>Diameter: {selectedBody.diameter.toLocaleString()} km</span>
@@ -269,7 +269,7 @@ function SolarExplorationContent() {
             <div className="xl:col-span-1">
               <div className="card p-4 sticky top-20">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-slate-900">
+                  <h3 className="text-lg font-semibold text-white">
                     Surface Missions ({filteredLanders.length})
                   </h3>
                   <ExportButton
@@ -304,7 +304,7 @@ function SolarExplorationContent() {
                   <select
                     value={statusFilter || ''}
                     onChange={(e) => setStatusFilter(e.target.value || null)}
-                    className="bg-slate-100 text-slate-600 text-sm rounded px-3 py-1.5 border border-slate-200"
+                    className="bg-slate-800 text-slate-300 text-sm rounded px-3 py-1.5 border border-slate-700"
                   >
                     <option value="">All Status</option>
                     {Object.entries(LANDER_STATUS_INFO).map(([value, info]) => (
@@ -318,7 +318,7 @@ function SolarExplorationContent() {
                   <select
                     value={typeFilter || ''}
                     onChange={(e) => setTypeFilter(e.target.value || null)}
-                    className="bg-slate-100 text-slate-600 text-sm rounded px-3 py-1.5 border border-slate-200"
+                    className="bg-slate-800 text-slate-300 text-sm rounded px-3 py-1.5 border border-slate-700"
                   >
                     <option value="">All Types</option>
                     {LANDER_MISSION_TYPES.map((type) => (
@@ -347,7 +347,7 @@ function SolarExplorationContent() {
         {/* Confirmed Exoplanets */}
         <ScrollReveal>
           <div className="card p-6 mt-8">
-            <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
               <span>🪐</span> Confirmed Exoplanets
             </h3>
 
@@ -365,7 +365,7 @@ function SolarExplorationContent() {
                 {/* Summary Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                   <div className="card-elevated p-4 text-center">
-                    <div className="text-3xl font-bold font-display tracking-tight text-slate-900">
+                    <div className="text-3xl font-bold font-display tracking-tight text-white">
                       {exoplanets.length.toLocaleString()}
                     </div>
                     <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Exoplanets</div>
@@ -377,7 +377,7 @@ function SolarExplorationContent() {
                     <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Habitable Zone</div>
                   </div>
                   <div className="card-elevated p-4 text-center col-span-2 md:col-span-1">
-                    <div className="text-lg font-bold font-display tracking-tight text-slate-900">
+                    <div className="text-lg font-bold font-display tracking-tight text-white">
                       {(() => {
                         const methods = exoplanets.reduce<Record<string, number>>((acc, p) => {
                           if (p.disc_method) acc[p.disc_method] = (acc[p.disc_method] || 0) + 1;
@@ -414,7 +414,7 @@ function SolarExplorationContent() {
                             planet.habitable_zone ? 'bg-green-500/10' : ''
                           }`}
                         >
-                          <td className="py-2 px-3 font-medium text-slate-900">
+                          <td className="py-2 px-3 font-medium text-white">
                             <span className="flex items-center gap-2">
                               {planet.pl_name}
                               {planet.habitable_zone && (
@@ -424,19 +424,19 @@ function SolarExplorationContent() {
                               )}
                             </span>
                           </td>
-                          <td className="py-2 px-3 text-slate-600">{planet.hostname}</td>
-                          <td className="py-2 px-3 text-slate-600">{planet.disc_year}</td>
-                          <td className="py-2 px-3 text-slate-600">{planet.disc_method}</td>
-                          <td className="py-2 px-3 text-right text-slate-600">
+                          <td className="py-2 px-3 text-slate-400">{planet.hostname}</td>
+                          <td className="py-2 px-3 text-slate-400">{planet.disc_year}</td>
+                          <td className="py-2 px-3 text-slate-400">{planet.disc_method}</td>
+                          <td className="py-2 px-3 text-right text-slate-400">
                             {planet.pl_rade != null ? planet.pl_rade.toFixed(2) : '—'}
                           </td>
-                          <td className="py-2 px-3 text-right text-slate-600">
+                          <td className="py-2 px-3 text-right text-slate-400">
                             {planet.pl_bmasse != null ? planet.pl_bmasse.toFixed(2) : '—'}
                           </td>
-                          <td className="py-2 px-3 text-right text-slate-600">
+                          <td className="py-2 px-3 text-right text-slate-400">
                             {planet.pl_eqt != null ? planet.pl_eqt.toLocaleString() : '—'}
                           </td>
-                          <td className="py-2 px-3 text-right text-slate-600">
+                          <td className="py-2 px-3 text-right text-slate-400">
                             {planet.sy_dist != null ? planet.sy_dist.toFixed(1) : '—'}
                           </td>
                         </tr>
@@ -451,24 +451,24 @@ function SolarExplorationContent() {
 
         {/* Related Modules */}
         <ScrollReveal><div className="card p-6 mt-6">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <span>🔗</span> Related Modules
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <Link href="/mission-control?type=moon_mission" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">🌙 Moon Missions</div>
+            <Link href="/mission-control?type=moon_mission" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
+              <div className="text-sm font-medium text-white group-hover:text-nebula-200">🌙 Moon Missions</div>
               <p className="text-xs text-slate-400 mt-1">Upcoming lunar launch schedule</p>
             </Link>
-            <Link href="/mission-control?type=mars_mission" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">🔴 Mars Missions</div>
+            <Link href="/mission-control?type=mars_mission" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
+              <div className="text-sm font-medium text-white group-hover:text-nebula-200">🔴 Mars Missions</div>
               <p className="text-xs text-slate-400 mt-1">Upcoming Mars launch windows</p>
             </Link>
-            <Link href="/resource-exchange" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">🚀 Launch Providers</div>
+            <Link href="/resource-exchange" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
+              <div className="text-sm font-medium text-white group-hover:text-nebula-200">🚀 Launch Providers</div>
               <p className="text-xs text-slate-400 mt-1">Vehicles and launch services</p>
             </Link>
-            <Link href="/space-insurance?tab=policies" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">🛡️ Mission Insurance</div>
+            <Link href="/space-insurance?tab=policies" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
+              <div className="text-sm font-medium text-white group-hover:text-nebula-200">🛡️ Mission Insurance</div>
               <p className="text-xs text-slate-400 mt-1">Coverage for exploration missions</p>
             </Link>
           </div>
@@ -490,10 +490,10 @@ function LanderCard({
   const missionTypeInfo = LANDER_MISSION_TYPES.find((t) => t.value === lander.missionType);
 
   return (
-    <div className="bg-slate-100/30 rounded-lg p-3 border border-slate-200/50 hover:border-space-500 transition-colors">
+    <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/50 hover:border-space-500 transition-colors">
       <div className="flex items-start justify-between mb-2">
         <div>
-          <h4 className="text-slate-900 font-medium">{lander.name}</h4>
+          <h4 className="text-white font-medium">{lander.name}</h4>
           <div className="flex items-center gap-2 text-slate-400 text-xs mt-0.5">
             {agencyInfo && <span>{agencyInfo.flag}</span>}
             <span>{lander.agency || lander.country}</span>

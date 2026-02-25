@@ -88,21 +88,21 @@ export default function ComparePage() {
               >
                 <div className="flex flex-col md:flex-row md:items-start gap-6">
                   <div className="flex-1">
-                    <h2 className="text-xl font-bold text-slate-900 group-hover:text-cyan-600 transition-colors mb-1">
+                    <h2 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors mb-1">
                       {comp.title}
                     </h2>
-                    <p className="text-sm text-cyan-600 font-medium mb-3">{comp.subtitle}</p>
+                    <p className="text-sm text-cyan-400 font-medium mb-3">{comp.subtitle}</p>
                     <p className="text-slate-400 text-sm leading-relaxed mb-4">{comp.description}</p>
                     <div className="flex flex-wrap items-center gap-2">
                       {comp.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full"
+                          className="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded-full"
                         >
                           {tag}
                         </span>
                       ))}
-                      <span className="text-xs bg-cyan-50 text-cyan-700 px-2 py-1 rounded-full font-medium">
+                      <span className="text-xs bg-cyan-900/30 text-cyan-300 px-2 py-1 rounded-full font-medium">
                         {comp.priceComparison}
                       </span>
                     </div>
@@ -125,12 +125,12 @@ export default function ComparePage() {
             <div className="card overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="py-4 px-4 text-left text-slate-700 font-semibold">Feature</th>
-                    <th className="py-4 px-4 text-center text-cyan-600 font-semibold">SpaceNexus</th>
-                    <th className="py-4 px-4 text-center text-slate-700 font-semibold">Bloomberg</th>
-                    <th className="py-4 px-4 text-center text-slate-700 font-semibold">Quilty Space</th>
-                    <th className="py-4 px-4 text-center text-slate-700 font-semibold">Payload</th>
+                  <tr className="border-b border-slate-700">
+                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">Feature</th>
+                    <th className="py-4 px-4 text-center text-cyan-400 font-semibold">SpaceNexus</th>
+                    <th className="py-4 px-4 text-center text-slate-300 font-semibold">Bloomberg</th>
+                    <th className="py-4 px-4 text-center text-slate-300 font-semibold">Quilty Space</th>
+                    <th className="py-4 px-4 text-center text-slate-300 font-semibold">Payload</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -147,12 +147,12 @@ export default function ComparePage() {
                     { feature: 'Mobile App', sn: true, bb: true, qu: false, pl: true },
                     { feature: 'Space-Specific', sn: true, bb: false, qu: true, pl: true },
                   ].map((row) => (
-                    <tr key={row.feature} className="border-b border-slate-100">
-                      <td className="py-3 px-4 text-slate-700 font-medium">{row.feature}</td>
+                    <tr key={row.feature} className="border-b border-slate-700">
+                      <td className="py-3 px-4 text-slate-300 font-medium">{row.feature}</td>
                       {[row.sn, row.bb, row.qu, row.pl].map((val, i) => (
                         <td key={i} className="py-3 px-4 text-center">
                           {typeof val === 'string' ? (
-                            <span className={i === 0 ? 'text-cyan-600 font-semibold' : 'text-slate-600'}>{val}</span>
+                            <span className={i === 0 ? 'text-cyan-400 font-semibold' : 'text-slate-400'}>{val}</span>
                           ) : val ? (
                             <span className="text-emerald-500 font-bold text-lg" aria-label="Yes">&#10003;</span>
                           ) : (
@@ -170,7 +170,7 @@ export default function ComparePage() {
           {/* CTA */}
           <section className="text-center">
             <div className="card p-10">
-              <h2 className="text-2xl font-bold text-slate-900 mb-3">Ready to try SpaceNexus?</h2>
+              <h2 className="text-2xl font-bold text-white mb-3">Ready to try SpaceNexus?</h2>
               <p className="text-slate-400 mb-6 max-w-xl mx-auto">
                 Join thousands of aerospace professionals using SpaceNexus to track launches,
                 monitor satellites, discover opportunities, and make smarter decisions in the

@@ -85,10 +85,10 @@ export default function PayloadComparisonPage() {
 
           {/* TL;DR */}
           <div className="card p-6 mb-10 border-l-4 border-cyan-500">
-            <h2 className="text-lg font-bold text-slate-900 mb-2">TL;DR</h2>
+            <h2 className="text-lg font-bold text-white mb-2">TL;DR</h2>
             <p className="text-slate-400 text-sm leading-relaxed">
-              <strong className="text-slate-700">Payload Space</strong> is an excellent curated newsletter
-              for staying current on space industry news. <strong className="text-slate-700">SpaceNexus</strong> is
+              <strong className="text-slate-300">Payload Space</strong> is an excellent curated newsletter
+              for staying current on space industry news. <strong className="text-slate-300">SpaceNexus</strong> is
               an interactive intelligence platform for doing work &mdash; tracking satellites, researching companies,
               finding procurement opportunities, and analyzing markets. They are complementary, not competitive:
               read Payload for your daily briefing, then use SpaceNexus to dig deeper and take action.
@@ -103,7 +103,7 @@ export default function PayloadComparisonPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="card p-6 ring-2 ring-cyan-500">
                 <div className="text-xs font-semibold text-cyan-600 uppercase tracking-wider mb-3">SpaceNexus</div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">Interactive Intelligence Platform</h3>
+                <h3 className="text-lg font-bold text-white mb-3">Interactive Intelligence Platform</h3>
                 <p className="text-slate-400 text-sm mb-4">
                   A full-featured platform where you explore data, track assets, research companies,
                   find opportunities, and make decisions.
@@ -118,7 +118,7 @@ export default function PayloadComparisonPage() {
               </div>
               <div className="card p-6">
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Payload Space</div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">Curated Newsletter &amp; Media</h3>
+                <h3 className="text-lg font-bold text-white mb-3">Curated Newsletter &amp; Media</h3>
                 <p className="text-slate-400 text-sm mb-4">
                   A daily newsletter that curates the most important space industry news, with
                   expert commentary and analysis delivered to your inbox.
@@ -142,16 +142,16 @@ export default function PayloadComparisonPage() {
             <div className="card overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="py-4 px-4 text-left text-slate-700 font-semibold">Feature</th>
+                  <tr className="border-b border-slate-700">
+                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">Feature</th>
                     <th className="py-4 px-4 text-left text-cyan-600 font-semibold">SpaceNexus</th>
-                    <th className="py-4 px-4 text-left text-slate-700 font-semibold">Payload Space</th>
+                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">Payload Space</th>
                   </tr>
                 </thead>
                 <tbody>
                   {FEATURE_COMPARISON.map((row) => (
                     <tr key={row.feature} className="border-b border-slate-100">
-                      <td className="py-3 px-4 text-slate-700 font-medium">{row.feature}</td>
+                      <td className="py-3 px-4 text-slate-300 font-medium">{row.feature}</td>
                       <td className="py-3 px-4 text-slate-500">
                         <div className="flex items-start gap-2">
                           {row.winner === 'spacenexus' && (
@@ -198,7 +198,7 @@ export default function PayloadComparisonPage() {
                   <li key={item.title} className="flex items-start gap-3">
                     <span className="text-cyan-500 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
-                      <strong className="text-slate-700">{item.title}:</strong>{' '}
+                      <strong className="text-slate-300">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
                     </div>
                   </li>
@@ -227,7 +227,7 @@ export default function PayloadComparisonPage() {
                   <li key={item.title} className="flex items-start gap-3">
                     <span className="text-slate-500 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
-                      <strong className="text-slate-700">{item.title}:</strong>{' '}
+                      <strong className="text-slate-300">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
                     </div>
                   </li>
@@ -247,25 +247,25 @@ export default function PayloadComparisonPage() {
                 industry professionals will use both:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center">
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-center">
                   <div className="text-2xl mb-2">&#9728;&#65039;</div>
-                  <h4 className="font-semibold text-slate-900 text-sm mb-1">Morning</h4>
+                  <h4 className="font-semibold text-white text-sm mb-1">Morning</h4>
                   <p className="text-slate-400 text-xs">
                     Read Payload newsletter for a curated overview of what happened yesterday and what
                     matters today.
                   </p>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center">
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-center">
                   <div className="text-2xl mb-2">&#9881;&#65039;</div>
-                  <h4 className="font-semibold text-slate-900 text-sm mb-1">Workday</h4>
+                  <h4 className="font-semibold text-white text-sm mb-1">Workday</h4>
                   <p className="text-slate-400 text-xs">
                     Use SpaceNexus to track launches, research companies, find procurement opportunities,
                     and monitor your satellite constellation.
                   </p>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center">
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-center">
                   <div className="text-2xl mb-2">&#128202;</div>
-                  <h4 className="font-semibold text-slate-900 text-sm mb-1">Strategic</h4>
+                  <h4 className="font-semibold text-white text-sm mb-1">Strategic</h4>
                   <p className="text-slate-400 text-xs">
                     Use SpaceNexus market intelligence and company profiles for deep research, competitive
                     analysis, and decision-making.
@@ -295,7 +295,7 @@ export default function PayloadComparisonPage() {
                   <li key={item.title} className="flex items-start gap-3">
                     <span className="text-cyan-500 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
-                      <strong className="text-slate-700">{item.title}:</strong>{' '}
+                      <strong className="text-slate-300">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
                     </div>
                   </li>
@@ -307,7 +307,7 @@ export default function PayloadComparisonPage() {
           {/* CTA */}
           <section className="mb-10">
             <div className="card p-10 text-center">
-              <h2 className="text-2xl font-bold text-slate-900 mb-3">
+              <h2 className="text-2xl font-bold text-white mb-3">
                 Go beyond the newsletter with interactive space intelligence
               </h2>
               <p className="text-slate-400 mb-6 max-w-xl mx-auto">

@@ -161,7 +161,7 @@ function ProviderCard({
       } ${isRecommended ? 'ring-2 ring-nebula-500/50' : ''}`}
     >
       {isRecommended && (
-        <div className="absolute -top-2 -right-2 px-2 py-1 bg-nebula-500 text-slate-900 text-xs font-bold rounded-full">
+        <div className="absolute -top-2 -right-2 px-2 py-1 bg-nebula-500 text-white text-xs font-bold rounded-full">
           Best Value
         </div>
       )}
@@ -170,7 +170,7 @@ function ProviderCard({
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-lg">{getCountryFlag(provider.country)}</span>
-            <h3 className="font-semibold text-slate-900">{provider.providerName}</h3>
+            <h3 className="font-semibold text-white">{provider.providerName}</h3>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <span className="text-slate-400">{provider.vehicleName}</span>
@@ -190,17 +190,17 @@ function ProviderCard({
       <div className="grid grid-cols-3 gap-3 mb-4 text-sm">
         <div>
           <span className="text-slate-400 text-xs block">Cost/kg</span>
-          <span className="text-slate-900 font-mono">
+          <span className="text-white font-mono">
             ${provider.costPerKg.min.toLocaleString()} - ${provider.costPerKg.max.toLocaleString()}
           </span>
         </div>
         <div>
           <span className="text-slate-400 text-xs block">Min Cost</span>
-          <span className="text-slate-900 font-mono">{formatCurrency(provider.minCost, true)}</span>
+          <span className="text-white font-mono">{formatCurrency(provider.minCost, true)}</span>
         </div>
         <div>
           <span className="text-slate-400 text-xs block">Max Cost</span>
-          <span className="text-slate-900 font-mono">{formatCurrency(provider.maxCost, true)}</span>
+          <span className="text-white font-mono">{formatCurrency(provider.maxCost, true)}</span>
         </div>
       </div>
 
@@ -228,7 +228,7 @@ function ProviderCard({
 
       {/* Notes */}
       {provider.notes.length > 0 && (
-        <div className="text-xs text-slate-400 border-t border-slate-200 pt-3 space-y-1">
+        <div className="text-xs text-slate-400 border-t border-slate-700/50 pt-3 space-y-1">
           {provider.notes.map((note, idx) => (
             <p key={idx}>{note}</p>
           ))}
@@ -251,7 +251,7 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
       <div className="flex items-center gap-3 mb-6">
         <span className="text-3xl">💰</span>
         <div>
-          <h3 className="text-xl font-display font-bold text-slate-900">Mission Cost Summary</h3>
+          <h3 className="text-xl font-display font-bold text-white">Mission Cost Summary</h3>
           <p className="text-slate-400 text-sm">
             {formatMass(input.payloadMass)} to {input.orbitType} | {PAYLOAD_OPTIONS.find(p => p.value === input.payloadType)?.label}
           </p>
@@ -273,16 +273,16 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
 
       {/* Cost breakdown */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between py-3 border-b border-slate-200">
+        <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
           <div className="flex items-center gap-3">
             <span className="text-xl">🚀</span>
             <div>
-              <span className="text-slate-900 font-medium">Launch Services</span>
+              <span className="text-white font-medium">Launch Services</span>
               <p className="text-slate-400 text-xs">{viableProviders.length} viable providers</p>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-slate-900 font-bold">{formatCurrency(summary.launchCost.typical, true)}</div>
+            <div className="text-white font-bold">{formatCurrency(summary.launchCost.typical, true)}</div>
             <div className="text-slate-400 text-xs">
               {formatCurrency(summary.launchCost.min, true)} - {formatCurrency(summary.launchCost.max, true)}
             </div>
@@ -290,16 +290,16 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
         </div>
 
         {summary.insurance && (
-          <div className="flex items-center justify-between py-3 border-b border-slate-200">
+          <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
             <div className="flex items-center gap-3">
               <span className="text-xl">🛡️</span>
               <div>
-                <span className="text-slate-900 font-medium">Insurance</span>
+                <span className="text-white font-medium">Insurance</span>
                 <p className="text-slate-400 text-xs">Launch + In-orbit + Liability</p>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-slate-900 font-bold">{formatCurrency(summary.insurance.totalInsurance.typical, true)}</div>
+              <div className="text-white font-bold">{formatCurrency(summary.insurance.totalInsurance.typical, true)}</div>
               <div className="text-slate-400 text-xs">
                 {formatCurrency(summary.insurance.totalInsurance.min, true)} - {formatCurrency(summary.insurance.totalInsurance.max, true)}
               </div>
@@ -308,23 +308,23 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
         )}
 
         {summary.regulatoryFees && (
-          <div className="flex items-center justify-between py-3 border-b border-slate-200">
+          <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
             <div className="flex items-center gap-3">
               <span className="text-xl">📋</span>
               <div>
-                <span className="text-slate-900 font-medium">Regulatory Fees</span>
+                <span className="text-white font-medium">Regulatory Fees</span>
                 <p className="text-slate-400 text-xs">FAA, FCC, NOAA, ITU</p>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-slate-900 font-bold">{formatCurrency(summary.regulatoryFees.totalFees, true)}</div>
+              <div className="text-white font-bold">{formatCurrency(summary.regulatoryFees.totalFees, true)}</div>
             </div>
           </div>
         )}
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-6 p-4 bg-slate-100/50 rounded-lg text-xs text-slate-500">
+      <div className="mt-6 p-4 bg-slate-700/50 rounded-lg text-xs text-slate-500">
         <p className="font-medium text-slate-400 mb-1">Important Notes:</p>
         <ul className="space-y-1">
           <li>Estimates based on publicly available pricing and industry benchmarks</li>
@@ -372,7 +372,7 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
         <div className="flex items-center gap-3 mb-4">
           <span className="text-2xl">🛡️</span>
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Insurance Cost Breakdown</h3>
+            <h3 className="text-lg font-semibold text-white">Insurance Cost Breakdown</h3>
             <p className="text-slate-400 text-sm">Based on payload value of {formatCurrency(payloadValue)}</p>
           </div>
         </div>
@@ -382,7 +382,7 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
             <div key={coverage.name} className="card p-4">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">{coverage.icon}</span>
-                <span className="text-slate-900 font-medium">{coverage.name}</span>
+                <span className="text-white font-medium">{coverage.name}</span>
               </div>
               <div className="text-2xl font-bold text-nebula-300 mb-1">
                 {formatCurrency(coverage.data.typical, true)}
@@ -396,9 +396,9 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
           ))}
         </div>
 
-        <div className="mt-4 p-4 bg-slate-100/50 rounded-lg">
+        <div className="mt-4 p-4 bg-slate-700/50 rounded-lg">
           <div className="flex items-center justify-between">
-            <span className="text-slate-900 font-medium">Total Insurance Premium</span>
+            <span className="text-white font-medium">Total Insurance Premium</span>
             <div className="text-right">
               <div className="text-xl font-bold text-nebula-300">
                 {formatCurrency(insurance.totalInsurance.typical, true)}
@@ -412,7 +412,7 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
       </div>
 
       <div className="card p-5">
-        <h4 className="font-semibold text-slate-900 mb-3">Major Space Insurance Providers</h4>
+        <h4 className="font-semibold text-white mb-3">Major Space Insurance Providers</h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
           {[
             { name: "Lloyd's of London", share: '25%' },
@@ -424,8 +424,8 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
             { name: 'Global Aerospace', share: '6%' },
             { name: 'Other', share: '10%' },
           ].map((provider) => (
-            <div key={provider.name} className="p-3 bg-slate-100/30 rounded-lg">
-              <div className="text-slate-900 font-medium truncate">{provider.name}</div>
+            <div key={provider.name} className="p-3 bg-slate-700/30 rounded-lg">
+              <div className="text-white font-medium truncate">{provider.name}</div>
               <div className="text-slate-400 text-xs">{provider.share} market share</div>
             </div>
           ))}
@@ -454,22 +454,22 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
         <div className="flex items-center gap-3 mb-4">
           <span className="text-2xl">📋</span>
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Regulatory Filing Fees</h3>
+            <h3 className="text-lg font-semibold text-white">Regulatory Filing Fees</h3>
             <p className="text-slate-400 text-sm">US-based mission regulatory requirements</p>
           </div>
         </div>
 
         <div className="space-y-3">
           {feeItems.map((item) => (
-            <div key={item.name} className="flex items-center justify-between py-3 border-b border-slate-200 last:border-0">
+            <div key={item.name} className="flex items-center justify-between py-3 border-b border-slate-700/50 last:border-0">
               <div className="flex items-center gap-3">
                 <span className="text-lg">{item.icon}</span>
                 <div>
-                  <span className="text-slate-900 font-medium">{item.name}</span>
+                  <span className="text-white font-medium">{item.name}</span>
                   <p className="text-slate-400 text-xs">{item.agency}</p>
                 </div>
               </div>
-              <div className="text-slate-900 font-bold font-mono">
+              <div className="text-white font-bold font-mono">
                 {formatCurrency(item.amount)}
               </div>
             </div>
@@ -478,7 +478,7 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
 
         <div className="mt-4 p-4 bg-gradient-to-r from-nebula-500/10 to-plasma-500/10 rounded-lg">
           <div className="flex items-center justify-between">
-            <span className="text-slate-900 font-semibold">Total Regulatory Fees</span>
+            <span className="text-white font-semibold">Total Regulatory Fees</span>
             <div className="text-xl font-bold text-nebula-300">{formatCurrency(fees.totalFees)}</div>
           </div>
         </div>
@@ -486,7 +486,7 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
 
       {fees.notes.length > 0 && (
         <div className="card p-5">
-          <h4 className="font-semibold text-slate-900 mb-3">Additional Requirements</h4>
+          <h4 className="font-semibold text-white mb-3">Additional Requirements</h4>
           <ul className="space-y-2">
             {fees.notes.map((note, idx) => (
               <li key={idx} className="flex items-start gap-2 text-sm text-slate-400">
@@ -499,7 +499,7 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
       )}
 
       <div className="card p-5 border-dashed">
-        <h4 className="font-semibold text-slate-900 mb-3">Typical Licensing Timeline</h4>
+        <h4 className="font-semibold text-white mb-3">Typical Licensing Timeline</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <h5 className="text-slate-400 font-medium mb-2">US Regulatory Path</h5>
@@ -651,7 +651,7 @@ function MissionCostContent() {
 
         {/* Input Form */}
         <ScrollReveal><div className="card p-6 mb-8">
-          <h2 className="text-lg font-semibold text-slate-900 mb-6 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
             <span>🎯</span> Mission Parameters
           </h2>
 
@@ -665,7 +665,7 @@ function MissionCostContent() {
                 type="number"
                 value={payloadMass}
                 onChange={(e) => setPayloadMass(Math.max(1, parseInt(e.target.value) || 0))}
-                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-nebula-500"
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-nebula-500"
                 min={1}
                 max={150000}
               />
@@ -676,8 +676,8 @@ function MissionCostContent() {
                     onClick={() => setPayloadMass(mass)}
                     className={`px-2 py-1 text-xs rounded ${
                       payloadMass === mass
-                        ? 'bg-nebula-500 text-slate-900'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        ? 'bg-nebula-500 text-white'
+                        : 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50'
                     }`}
                   >
                     {formatMass(mass)}
@@ -694,7 +694,7 @@ function MissionCostContent() {
               <select
                 value={orbitType}
                 onChange={(e) => setOrbitType(e.target.value as OrbitType)}
-                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-nebula-500"
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-nebula-500"
               >
                 {ORBIT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -712,7 +712,7 @@ function MissionCostContent() {
               <select
                 value={payloadType}
                 onChange={(e) => setPayloadType(e.target.value as PayloadType)}
-                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-nebula-500"
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-nebula-500"
               >
                 {PAYLOAD_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -731,7 +731,7 @@ function MissionCostContent() {
                 type="number"
                 value={payloadValue}
                 onChange={(e) => setPayloadValue(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full px-4 py-3 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-nebula-500"
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-nebula-500"
                 min={0}
               />
               <div className="mt-2 flex flex-wrap gap-1">
@@ -741,8 +741,8 @@ function MissionCostContent() {
                     onClick={() => setPayloadValue(val)}
                     className={`px-2 py-1 text-xs rounded ${
                       payloadValue === val
-                        ? 'bg-nebula-500 text-slate-900'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        ? 'bg-nebula-500 text-white'
+                        : 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50'
                     }`}
                   >
                     {formatCurrency(val, true)}
@@ -753,7 +753,7 @@ function MissionCostContent() {
           </div>
 
           {/* Options */}
-          <div className="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-slate-200">
+          <div className="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-slate-700/50">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -820,7 +820,7 @@ function MissionCostContent() {
                   onClick={() => handleTabChange(tab.id)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === tab.id
-                      ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
+                      ? 'bg-nebula-500 text-white shadow-glow-sm'
                       : 'bg-slate-800/60 text-slate-200 hover:bg-slate-700/70 hover:text-white border border-slate-600/30'
                   }`}
                 >
@@ -830,7 +830,7 @@ function MissionCostContent() {
                     <span
                       className={`text-xs px-1.5 py-0.5 rounded-full ${
                         activeTab === tab.id
-                          ? 'bg-slate-200 text-slate-900'
+                          ? 'bg-white/20 text-white'
                           : 'bg-slate-600/50 text-slate-200'
                       }`}
                     >
@@ -848,7 +848,7 @@ function MissionCostContent() {
               <div className="space-y-4">
                 <div className="card p-4 flex items-center justify-between">
                   <div>
-                    <span className="text-slate-900 font-medium">
+                    <span className="text-white font-medium">
                       {viableProviders.length} of {data.providers.length} providers can support this mission
                     </span>
                     <p className="text-slate-400 text-sm">
@@ -893,7 +893,7 @@ function MissionCostContent() {
         {!data && !loading && (
           <div className="card p-12 text-center">
             <span className="text-6xl block mb-4">🚀</span>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-2">
+            <h2 className="text-2xl font-semibold text-white mb-2">
               Configure Your Mission
             </h2>
             <p className="text-slate-400 mb-6 max-w-lg mx-auto">
@@ -916,40 +916,40 @@ function MissionCostContent() {
 
         {/* Related Links */}
         <ScrollReveal><div className="card p-5 mt-8 border border-nebula-500/20">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Related Resources</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Related Resources</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <Link
               href="/space-insurance"
-              className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group"
+              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">
+              <div className="text-sm font-medium text-white group-hover:text-nebula-200">
                 🛡️ Space Insurance
               </div>
               <p className="text-xs text-slate-400 mt-1">Market data and policy information</p>
             </Link>
             <Link
               href="/resource-exchange"
-              className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group"
+              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">
+              <div className="text-sm font-medium text-white group-hover:text-nebula-200">
                 💰 Resource Exchange
               </div>
               <p className="text-xs text-slate-400 mt-1">Space commodities pricing</p>
             </Link>
             <Link
               href="/compliance"
-              className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group"
+              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">
+              <div className="text-sm font-medium text-white group-hover:text-nebula-200">
                 ⚖️ Compliance
               </div>
               <p className="text-xs text-slate-400 mt-1">Export controls and regulations</p>
             </Link>
             <Link
               href="/launch-windows"
-              className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group"
+              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">
+              <div className="text-sm font-medium text-white group-hover:text-nebula-200">
                 🪟 Launch Windows
               </div>
               <p className="text-xs text-slate-400 mt-1">Optimal launch timing</p>

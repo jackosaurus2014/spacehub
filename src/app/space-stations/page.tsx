@@ -129,7 +129,7 @@ const STATUS_STYLES: Record<StationStatus, { label: string; color: string; bg: s
 const DEFAULT_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/30', border: 'border-slate-500/40' };
 
 const ROTATION_STATUS_STYLES: Record<string, { label: string; color: string; bg: string; dot: string }> = {
-  completed: { label: 'Completed', color: 'text-gray-400', bg: 'bg-gray-900/20', dot: 'bg-gray-500' },
+  completed: { label: 'Completed', color: 'text-slate-400', bg: 'bg-slate-900/20', dot: 'bg-slate-500' },
   current: { label: 'On Station', color: 'text-green-400', bg: 'bg-green-900/20', dot: 'bg-green-500 animate-pulse' },
   upcoming: { label: 'Upcoming', color: 'text-yellow-400', bg: 'bg-yellow-900/20', dot: 'bg-yellow-500' },
   planned: { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/20', dot: 'bg-blue-500' },

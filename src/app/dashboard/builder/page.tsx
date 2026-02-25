@@ -445,7 +445,7 @@ export default function DashboardBuilderPage() {
               </svg>
             </button>
             <div>
-              <h1 className="text-xl font-bold text-slate-900">{activeLayoutName}</h1>
+              <h1 className="text-xl font-bold text-white">{activeLayoutName}</h1>
               <p className="text-sm text-slate-500">
                 {useLocalStorage ? 'Saved locally' : `${tier} tier`}
                 {' | '}
@@ -456,7 +456,7 @@ export default function DashboardBuilderPage() {
 
           <button
             onClick={() => setShowLayoutSelector(true)}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 bg-white border border-slate-200 rounded-lg hover:border-cyan-400/50 hover:bg-cyan-50/20 transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 bg-slate-800 border border-slate-700 rounded-lg hover:border-cyan-400/50 hover:bg-cyan-900/30 transition-all shadow-sm"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -471,7 +471,7 @@ export default function DashboardBuilderPage() {
             <svg className="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
             </svg>
-            <h2 className="text-lg font-bold text-slate-900 mb-2">Build Your Dashboard</h2>
+            <h2 className="text-lg font-bold text-white mb-2">Build Your Dashboard</h2>
             <p className="text-slate-500 text-sm mb-6 max-w-md mx-auto">
               Create a personalized dashboard with widgets from any SpaceNexus module.
               Start from a template or build from scratch.
@@ -481,18 +481,18 @@ export default function DashboardBuilderPage() {
                 <button
                   key={index}
                   onClick={() => handleCreateFromPreset(preset)}
-                  className="px-5 py-3 rounded-xl border border-slate-200 hover:border-cyan-400/50 hover:bg-cyan-50/20 transition-all text-left max-w-xs"
+                  className="px-5 py-3 rounded-xl border border-slate-700 hover:border-cyan-400/50 hover:bg-cyan-900/30 transition-all text-left max-w-xs"
                 >
-                  <p className="text-sm font-semibold text-slate-900">{preset.name}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{preset.description}</p>
+                  <p className="text-sm font-semibold text-white">{preset.name}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{preset.description}</p>
                 </button>
               ))}
               <button
                 onClick={handleCreateBlank}
-                className="px-5 py-3 rounded-xl border border-dashed border-slate-300 hover:border-cyan-400/50 hover:bg-cyan-50/20 transition-all"
+                className="px-5 py-3 rounded-xl border border-dashed border-slate-600 hover:border-cyan-400/50 hover:bg-cyan-900/30 transition-all"
               >
-                <p className="text-sm font-semibold text-slate-900">Blank Dashboard</p>
-                <p className="text-xs text-slate-500 mt-0.5">Start from scratch</p>
+                <p className="text-sm font-semibold text-white">Blank Dashboard</p>
+                <p className="text-xs text-slate-400 mt-0.5">Start from scratch</p>
               </button>
             </div>
           </div>

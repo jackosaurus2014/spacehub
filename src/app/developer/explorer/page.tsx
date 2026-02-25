@@ -84,7 +84,7 @@ function CopyButton({ text, className = '' }: { text: string; className?: string
 function StatusBadge({ code }: { code: number | null }) {
   if (code === null) return null;
 
-  let color = 'bg-gray-500/20 text-gray-400';
+  let color = 'bg-slate-500/20 text-slate-400';
   if (code >= 200 && code < 300) color = 'bg-green-500/20 text-green-400';
   else if (code >= 300 && code < 400) color = 'bg-blue-500/20 text-blue-400';
   else if (code >= 400 && code < 500) color = 'bg-yellow-500/20 text-yellow-400';
@@ -377,7 +377,7 @@ function ApiExplorerPageInner() {
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1.5">Request URL</label>
                 <div className="relative">
-                  <div className="flex items-center gap-2 bg-gray-800 border border-slate-600 rounded-lg px-3 py-2 overflow-x-auto">
+                  <div className="flex items-center gap-2 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 overflow-x-auto">
                     <span className={`text-sm font-bold font-mono flex-shrink-0 ${METHOD_COLORS[selectedEndpoint.method] || 'text-white'}`}>
                       {selectedEndpoint.method}
                     </span>
@@ -624,7 +624,7 @@ function ApiExplorerPageInner() {
                 {/* Response body */}
                 {activeResponseTab === 'body' && (
                   <div className="relative">
-                    <pre className="p-4 text-sm overflow-auto max-h-[600px] bg-gray-800">
+                    <pre className="p-4 text-sm overflow-auto max-h-[600px] bg-slate-800">
                       <code
                         className={`whitespace-pre ${
                           response.statusCode >= 200 && response.statusCode < 300
@@ -672,7 +672,7 @@ function ApiExplorerPageInner() {
               <div>
                 <h3 className="text-sm font-semibold text-slate-400 mb-2">cURL Equivalent</h3>
                 <div className="relative">
-                  <pre className="bg-gray-800 rounded-lg p-3 text-xs overflow-x-auto border border-slate-600">
+                  <pre className="bg-slate-800 rounded-lg p-3 text-xs overflow-x-auto border border-slate-600">
                     <code className="text-green-400 whitespace-pre">
                       {`curl -X ${selectedEndpoint.method} "${requestUrl}" \\\n  -H "X-API-Key: ${showApiKey ? apiKey : 'snx_****'}"${selectedEndpoint.method !== 'GET' ? ' \\\n  -H "Content-Type: application/json"' : ''}`}
                     </code>

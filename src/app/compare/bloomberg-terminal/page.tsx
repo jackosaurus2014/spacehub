@@ -83,10 +83,10 @@ export default function BloombergComparisonPage() {
 
           {/* TL;DR */}
           <div className="card p-6 mb-10 border-l-4 border-cyan-500">
-            <h2 className="text-lg font-bold text-slate-900 mb-2">TL;DR</h2>
+            <h2 className="text-lg font-bold text-white mb-2">TL;DR</h2>
             <p className="text-slate-400 text-sm leading-relaxed">
-              <strong className="text-slate-700">Bloomberg Terminal</strong> excels at deep financial data across
-              all markets and has an unmatched trading ecosystem. <strong className="text-slate-700">SpaceNexus</strong> is
+              <strong className="text-slate-300">Bloomberg Terminal</strong> excels at deep financial data across
+              all markets and has an unmatched trading ecosystem. <strong className="text-slate-300">SpaceNexus</strong> is
               purpose-built for the space industry, offering satellite tracking, launch monitoring, procurement
               intelligence, orbital data, and 200+ company profiles at a fraction of the cost. If you need
               space-specific intelligence, SpaceNexus is the better tool. If you need broad financial market
@@ -104,16 +104,16 @@ export default function BloombergComparisonPage() {
                 <div className="text-xs font-semibold text-cyan-600 uppercase tracking-wider mb-2">SpaceNexus</div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-700 font-medium">Explorer</span>
+                    <span className="text-slate-300 font-medium">Explorer</span>
                     <span className="text-2xl font-bold text-cyan-600">Free</span>
                   </div>
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-700 font-medium">Professional</span>
-                    <span className="text-xl font-bold text-slate-900">$29<span className="text-sm text-slate-400 font-normal">/mo</span></span>
+                    <span className="text-slate-300 font-medium">Professional</span>
+                    <span className="text-xl font-bold text-white">$29<span className="text-sm text-slate-400 font-normal">/mo</span></span>
                   </div>
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-700 font-medium">Enterprise</span>
-                    <span className="text-xl font-bold text-slate-900">$99<span className="text-sm text-slate-400 font-normal">/mo</span></span>
+                    <span className="text-slate-300 font-medium">Enterprise</span>
+                    <span className="text-xl font-bold text-white">$99<span className="text-sm text-slate-400 font-normal">/mo</span></span>
                   </div>
                 </div>
                 <p className="text-xs text-slate-400 mt-3">API access included in Enterprise. No long-term contracts required.</p>
@@ -122,12 +122,12 @@ export default function BloombergComparisonPage() {
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Bloomberg Terminal</div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-700 font-medium">Single User</span>
-                    <span className="text-2xl font-bold text-slate-900">$25,000<span className="text-sm text-slate-400 font-normal">/yr</span></span>
+                    <span className="text-slate-300 font-medium">Single User</span>
+                    <span className="text-2xl font-bold text-white">$25,000<span className="text-sm text-slate-400 font-normal">/yr</span></span>
                   </div>
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-700 font-medium">Additional Seats</span>
-                    <span className="text-xl font-bold text-slate-900">$20,000<span className="text-sm text-slate-400 font-normal">/yr each</span></span>
+                    <span className="text-slate-300 font-medium">Additional Seats</span>
+                    <span className="text-xl font-bold text-white">$20,000<span className="text-sm text-slate-400 font-normal">/yr each</span></span>
                   </div>
                 </div>
                 <p className="text-xs text-slate-400 mt-3">2-year minimum contract typical. Bloomberg API billed separately.</p>
@@ -150,16 +150,16 @@ export default function BloombergComparisonPage() {
             <div className="card overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="py-4 px-4 text-left text-slate-700 font-semibold">Feature</th>
+                  <tr className="border-b border-slate-700">
+                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">Feature</th>
                     <th className="py-4 px-4 text-left text-cyan-600 font-semibold">SpaceNexus</th>
-                    <th className="py-4 px-4 text-left text-slate-700 font-semibold">Bloomberg Terminal</th>
+                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">Bloomberg Terminal</th>
                   </tr>
                 </thead>
                 <tbody>
                   {FEATURE_COMPARISON.map((row) => (
                     <tr key={row.feature} className="border-b border-slate-100">
-                      <td className="py-3 px-4 text-slate-700 font-medium">{row.feature}</td>
+                      <td className="py-3 px-4 text-slate-300 font-medium">{row.feature}</td>
                       <td className="py-3 px-4 text-slate-500">
                         <div className="flex items-start gap-2">
                           {row.winner === 'spacenexus' && (
@@ -210,7 +210,7 @@ export default function BloombergComparisonPage() {
                 </ul>
               </div>
               <div className="card p-6">
-                <h3 className="text-lg font-semibold text-slate-700 mb-4">Choose Bloomberg Terminal if you:</h3>
+                <h3 className="text-lg font-semibold text-slate-300 mb-4">Choose Bloomberg Terminal if you:</h3>
                 <ul className="space-y-3">
                   {[
                     'Need deep financial data across all markets (equities, bonds, FX)',
@@ -255,7 +255,7 @@ export default function BloombergComparisonPage() {
                   <li key={item.title} className="flex items-start gap-3">
                     <span className="text-cyan-500 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
-                      <strong className="text-slate-700">{item.title}:</strong>{' '}
+                      <strong className="text-slate-300">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
                     </div>
                   </li>
@@ -295,7 +295,7 @@ export default function BloombergComparisonPage() {
           {/* CTA */}
           <section className="mb-10">
             <div className="card p-10 text-center">
-              <h2 className="text-2xl font-bold text-slate-900 mb-3">
+              <h2 className="text-2xl font-bold text-white mb-3">
                 Get space industry intelligence without the $25,000 price tag
               </h2>
               <p className="text-slate-400 mb-6 max-w-xl mx-auto">

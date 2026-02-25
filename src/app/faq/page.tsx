@@ -291,7 +291,7 @@ export default function FAQPage() {
 
         {/* Still Have Questions */}
         <ScrollReveal><div className="max-w-2xl mx-auto mt-16">
-          <div className="card p-8 text-center bg-gradient-to-br from-slate-50 to-slate-100">
+          <div className="card p-8 text-center bg-gradient-to-br from-slate-800/50 to-slate-800">
             <div className="w-16 h-16 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg
                 className="w-8 h-8 text-cyan-400"
@@ -307,7 +307,7 @@ export default function FAQPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-3">Still Have Questions?</h2>
+            <h2 className="text-2xl font-bold text-white mb-3">Still Have Questions?</h2>
             <p className="text-slate-400 mb-6">
               Can&apos;t find what you&apos;re looking for? Our support team is here to help.
             </p>

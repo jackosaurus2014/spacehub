@@ -91,9 +91,9 @@ function PricingCard({
       )}
 
       <div className="text-center mb-6">
-        <h3 className="text-xl font-bold text-slate-900 mb-2">{plan.name}</h3>
+        <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
         <div className="flex items-baseline justify-center gap-1">
-          <span className="text-4xl font-bold text-slate-900">
+          <span className="text-4xl font-bold text-white">
             ${price === 0 ? '0' : price}
           </span>
           {price > 0 && (
@@ -413,7 +413,7 @@ function PricingPageContent() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
             <div className="card p-6">
-              <h3 className="font-semibold text-slate-900 mb-2">
+              <h3 className="font-semibold text-white mb-2">
                 Can I cancel anytime?
               </h3>
               <p className="text-slate-400 text-sm">
@@ -422,7 +422,7 @@ function PricingPageContent() {
               </p>
             </div>
             <div className="card p-6">
-              <h3 className="font-semibold text-slate-900 mb-2">
+              <h3 className="font-semibold text-white mb-2">
                 What payment methods do you accept?
               </h3>
               <p className="text-slate-400 text-sm">
@@ -431,7 +431,7 @@ function PricingPageContent() {
               </p>
             </div>
             <div className="card p-6">
-              <h3 className="font-semibold text-slate-900 mb-2">
+              <h3 className="font-semibold text-white mb-2">
                 Is there a free trial?
               </h3>
               <p className="text-slate-400 text-sm">
@@ -440,7 +440,7 @@ function PricingPageContent() {
               </p>
             </div>
             <div className="card p-6">
-              <h3 className="font-semibold text-slate-900 mb-2">
+              <h3 className="font-semibold text-white mb-2">
                 Do you offer team discounts?
               </h3>
               <p className="text-slate-400 text-sm">

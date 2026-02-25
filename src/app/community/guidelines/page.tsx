@@ -49,7 +49,7 @@ export default function CommunityGuidelinesPage() {
 
             {/* Code of Conduct */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">1. Code of Conduct</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">1. Code of Conduct</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 All community members are expected to conduct themselves professionally and
                 respectfully. The space industry depends on trust, collaboration, and precision,
@@ -81,7 +81,7 @@ export default function CommunityGuidelinesPage() {
 
             {/* Prohibited Content */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">2. Prohibited Content</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">2. Prohibited Content</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 The following content is strictly prohibited across all SpaceNexus community features,
                 including forums, messages, comments, profiles, and marketplace listings:
@@ -103,19 +103,19 @@ export default function CommunityGuidelinesPage() {
 
             {/* ITAR/EAR Export Control */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4">
                 3. ITAR/EAR Export Control Obligations
               </h2>
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
+              <div className="bg-amber-900/20 border border-amber-700/50 rounded-lg p-6">
                 <div className="flex items-start gap-3 mb-4">
-                  <svg className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <svg className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                   </svg>
-                  <p className="text-amber-800 font-semibold text-lg">
+                  <p className="text-amber-300 font-semibold text-lg">
                     Export Control Warning
                   </p>
                 </div>
-                <div className="space-y-4 text-amber-900">
+                <div className="space-y-4 text-amber-300">
                   <p className="leading-relaxed">
                     The space industry is heavily regulated by U.S. export control laws. All SpaceNexus
                     community members bear personal responsibility for ensuring their posts and
@@ -152,8 +152,8 @@ export default function CommunityGuidelinesPage() {
                     and/or the Bureau of Industry and Security (BIS) at the U.S. Department of
                     Commerce, as applicable.
                   </p>
-                  <div className="bg-amber-100 border border-amber-300 rounded p-4 mt-4">
-                    <p className="font-semibold text-amber-900">
+                  <div className="bg-amber-800/30 border border-amber-600/50 rounded p-4 mt-4">
+                    <p className="font-semibold text-amber-300">
                       Penalties: ITAR violations carry civil penalties up to $1,000,000 per violation
                       and criminal penalties including fines up to $1,000,000 and imprisonment for
                       up to 20 years per violation (22 U.S.C. Section 2778). EAR violations carry civil
@@ -172,7 +172,7 @@ export default function CommunityGuidelinesPage() {
 
             {/* Intellectual Property */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">4. Intellectual Property</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">4. Intellectual Property</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Respect the intellectual property rights of others. When sharing content in the
                 community:
@@ -202,7 +202,7 @@ export default function CommunityGuidelinesPage() {
 
             {/* Enforcement & Consequences */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4">
                 5. Enforcement &amp; Consequences
               </h2>
               <p className="text-slate-400 leading-relaxed mb-4">
@@ -212,16 +212,16 @@ export default function CommunityGuidelinesPage() {
               </p>
 
               <div className="space-y-3">
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <p className="text-slate-700 font-medium">First Violation: Written Warning</p>
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                  <p className="text-slate-300 font-medium">First Violation: Written Warning</p>
                   <p className="text-slate-400 text-sm mt-1">
                     A private written warning identifying the violation and the relevant guideline.
                     The offending content may be edited or removed.
                   </p>
                 </div>
 
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <p className="text-slate-700 font-medium">
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                  <p className="text-slate-300 font-medium">
                     Second Violation: Temporary Mute (24 hours to 30 days)
                   </p>
                   <p className="text-slate-400 text-sm mt-1">
@@ -230,8 +230,8 @@ export default function CommunityGuidelinesPage() {
                   </p>
                 </div>
 
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <p className="text-slate-700 font-medium">
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                  <p className="text-slate-300 font-medium">
                     Third Violation: Temporary Ban (7 to 90 days)
                   </p>
                   <p className="text-slate-400 text-sm mt-1">
@@ -240,11 +240,11 @@ export default function CommunityGuidelinesPage() {
                   </p>
                 </div>
 
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <p className="text-red-700 font-medium">
+                <div className="bg-red-900/20 border border-red-700/50 rounded-lg p-4">
+                  <p className="text-red-400 font-medium">
                     Severe Violations: Immediate Permanent Ban
                   </p>
-                  <p className="text-red-600 text-sm mt-1">
+                  <p className="text-red-400 text-sm mt-1">
                     The following offenses result in immediate permanent ban without prior warning:
                     ITAR/EAR export control violations, credible threats of violence, child sexual
                     abuse material (CSAM), and any content that constitutes a criminal offense.
@@ -263,7 +263,7 @@ export default function CommunityGuidelinesPage() {
 
             {/* Appeals Process */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">6. Appeals Process</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">6. Appeals Process</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 If you believe an enforcement action was taken against your account in error, you
                 may file an appeal:
@@ -292,7 +292,7 @@ export default function CommunityGuidelinesPage() {
 
             {/* Reporting */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">7. Reporting Violations</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">7. Reporting Violations</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 If you encounter content or behavior that violates these guidelines, please report
                 it promptly. Timely reporting helps us maintain a safe and professional community.
@@ -320,8 +320,8 @@ export default function CommunityGuidelinesPage() {
             </section>
 
             {/* Related Documents */}
-            <section className="pt-6 border-t border-slate-200">
-              <h3 className="text-lg font-medium text-slate-800 mb-4">Related Documents</h3>
+            <section className="pt-6 border-t border-slate-700">
+              <h3 className="text-lg font-medium text-slate-200 mb-4">Related Documents</h3>
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/terms"

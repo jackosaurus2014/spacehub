@@ -113,7 +113,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
   };
 
   return (
-    <tr className="border-b border-slate-700/50/50 hover:bg-slate-800/30 transition-colors">
+    <tr className="border-b border-slate-700/50 hover:bg-slate-800/30 transition-colors">
       <td className="py-4 px-4">
         <div className="flex items-center gap-3">
           <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
@@ -873,7 +873,7 @@ function MarketIntelContent() {
                           const isPositive = stock ? stock.changePercent >= 0 : true;
 
                           return (
-                            <tr key={company.id} className="border-b border-slate-700/50/50 hover:bg-slate-800/30 transition-colors">
+                            <tr key={company.id} className="border-b border-slate-700/50 hover:bg-slate-800/30 transition-colors">
                               <td className="py-4 px-4">
                                 <div className="flex items-center gap-3">
                                   <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
@@ -983,7 +983,7 @@ function MarketIntelContent() {
                           const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
 
                           return (
-                            <tr key={company.id} className="border-b border-slate-700/50/50 hover:bg-slate-800/30 transition-colors">
+                            <tr key={company.id} className="border-b border-slate-700/50 hover:bg-slate-800/30 transition-colors">
                               <td className="py-4 px-4">
                                 <div className="flex items-center gap-3">
                                   <span className="text-lg">{countryInfo?.flag || '🌐'}</span>

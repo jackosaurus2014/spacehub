@@ -152,7 +152,7 @@ function getStatusColor(status: string): string {
     case 'settled':
       return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
     default:
-      return 'bg-slate-100 text-slate-500';
+      return 'bg-slate-700/50 text-slate-500';
   }
 }
 
@@ -191,7 +191,7 @@ function MarketYearCard({
     <div className="card p-5">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h4 className="text-xl font-display font-bold text-slate-900">{year.year}</h4>
+          <h4 className="text-xl font-display font-bold text-white">{year.year}</h4>
           <span className="text-slate-400 text-xs">Fiscal Year</span>
         </div>
         <div className="text-right">
@@ -213,19 +213,19 @@ function MarketYearCard({
         </div>
         <div>
           <span className="text-slate-400 text-xs block">Market Capacity</span>
-          <span className="text-slate-900 font-bold text-sm">
+          <span className="text-white font-bold text-sm">
             ${year.marketCapacity.toFixed(1)}B
           </span>
         </div>
         <div>
           <span className="text-slate-400 text-xs block">Active Policies</span>
-          <span className="text-slate-900 font-bold text-sm">
+          <span className="text-white font-bold text-sm">
             {year.numberOfPolicies}
           </span>
         </div>
         <div>
           <span className="text-slate-400 text-xs block">Avg Rate</span>
-          <span className="text-slate-900 font-bold text-sm">
+          <span className="text-white font-bold text-sm">
             {year.avgPremiumRate.toFixed(1)}%
           </span>
         </div>
@@ -235,7 +235,7 @@ function MarketYearCard({
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-400 w-16">Premiums</span>
-          <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
+          <div className="flex-1 h-3 bg-slate-700/50 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-nebula-500 to-nebula-400 rounded-full transition-all"
               style={{ width: `${Math.min(premiumWidth, 100)}%` }}
@@ -247,7 +247,7 @@ function MarketYearCard({
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-400 w-16">Claims</span>
-          <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
+          <div className="flex-1 h-3 bg-slate-700/50 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all"
               style={{ width: `${Math.min(claimsWidth, 100)}%` }}
@@ -260,7 +260,7 @@ function MarketYearCard({
       </div>
 
       {/* Premium breakdown */}
-      <div className="flex flex-wrap gap-3 mt-4 pt-3 border-t border-slate-200 text-xs">
+      <div className="flex flex-wrap gap-3 mt-4 pt-3 border-t border-slate-700/50 text-xs">
         {year.launchPremiums !== null && (
           <span className="text-slate-400">
             Launch: <span className="text-slate-400 font-medium">{formatCurrency(year.launchPremiums)}</span>
@@ -299,12 +299,12 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-lg">{missionInfo?.icon || '🛡️'}</span>
-            <h4 className="font-semibold text-slate-900 text-sm truncate">
+            <h4 className="font-semibold text-white text-sm truncate">
               {policy.missionName || 'Unnamed Policy'}
             </h4>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+            <span className="px-2 py-0.5 rounded bg-slate-700/50 text-slate-300">
               {missionInfo?.label || policy.missionType}
             </span>
             <span className="text-slate-400">{policy.insurer}</span>
@@ -316,7 +316,7 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
           </div>
         </div>
         <div className="text-right flex-shrink-0 ml-3">
-          <div className="text-slate-900 font-bold text-sm">
+          <div className="text-white font-bold text-sm">
             {formatCurrency(policy.insuredValue)}
           </div>
           <div className="text-slate-400 text-xs">Insured Value</div>
@@ -332,24 +332,24 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
         </div>
         <div>
           <span className="text-slate-400 block">Rate</span>
-          <span className="text-slate-900 font-medium font-mono">
+          <span className="text-white font-medium font-mono">
             {policy.premiumRate.toFixed(2)}%
           </span>
         </div>
         <div>
           <span className="text-slate-400 block">Coverage</span>
-          <span className="text-slate-900 font-medium capitalize">
+          <span className="text-white font-medium capitalize">
             {policy.coverageType}
           </span>
         </div>
         <div>
           <span className="text-slate-400 block">Year</span>
-          <span className="text-slate-900 font-medium">{policy.yearWritten}</span>
+          <span className="text-white font-medium">{policy.yearWritten}</span>
         </div>
       </div>
 
       {/* Additional details + cross-module links */}
-      <div className="flex flex-wrap gap-4 mt-3 pt-3 border-t border-slate-200 text-xs text-slate-400">
+      <div className="flex flex-wrap gap-4 mt-3 pt-3 border-t border-slate-700/50 text-xs text-slate-400">
         {policy.operator && (
           <span>
             Operator:{' '}
@@ -558,7 +558,7 @@ function InsuranceContent() {
         ) : needsInit ? (
           <div className="card p-12 text-center">
             <span className="text-6xl block mb-4">🛡️</span>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-2">
+            <h2 className="text-2xl font-semibold text-white mb-2">
               No Insurance Data Available
             </h2>
             <p className="text-slate-400 mb-6 max-w-lg mx-auto">
@@ -595,7 +595,7 @@ function InsuranceContent() {
               <div className="card-elevated p-4 text-center">
                 <div
                   className={`text-2xl font-bold font-display ${
-                    stats ? getLossRatioColor(stats.avgLossRatio) : 'text-slate-900'
+                    stats ? getLossRatioColor(stats.avgLossRatio) : 'text-white'
                   }`}
                 >
                   {stats ? `${stats.avgLossRatio.toFixed(1)}%` : '--'}
@@ -613,7 +613,7 @@ function InsuranceContent() {
                 </div>
               </div>
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-slate-900">
+                <div className="text-2xl font-bold font-display text-white">
                   {policies.length > 0
                     ? formatCurrency(
                         policies.reduce((sum, p) => sum + p.insuredValue, 0)
@@ -638,8 +638,8 @@ function InsuranceContent() {
                   onClick={() => handleTabChange(tab.id)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === tab.id
-                      ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
-                      : 'bg-slate-100/50 text-slate-500 hover:bg-slate-100/50'
+                      ? 'bg-nebula-500 text-white shadow-glow-sm'
+                      : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
                   }`}
                 >
                   {tab.label}
@@ -647,8 +647,8 @@ function InsuranceContent() {
                     <span
                       className={`text-xs px-1.5 py-0.5 rounded-full ${
                         activeTab === tab.id
-                          ? 'bg-slate-200 text-slate-900'
-                          : 'bg-slate-100 text-slate-500'
+                          ? 'bg-white/20 text-white'
+                          : 'bg-slate-700/50 text-slate-500'
                       }`}
                     >
                       {tab.count}
@@ -668,7 +668,7 @@ function InsuranceContent() {
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">📊</span>
                         <div>
-                          <h3 className="text-lg font-semibold text-slate-900">
+                          <h3 className="text-lg font-semibold text-white">
                             {latestYear.year} Market Summary
                           </h3>
                           <p className="text-slate-400 text-sm">
@@ -706,19 +706,19 @@ function InsuranceContent() {
                       </div>
                       <div>
                         <span className="text-slate-400 text-xs block mb-1">Capacity</span>
-                        <span className="text-slate-900 font-bold text-lg">
+                        <span className="text-white font-bold text-lg">
                           ${latestYear.marketCapacity.toFixed(1)}B
                         </span>
                       </div>
                       <div>
                         <span className="text-slate-400 text-xs block mb-1">Policies</span>
-                        <span className="text-slate-900 font-bold text-lg">
+                        <span className="text-white font-bold text-lg">
                           {latestYear.numberOfPolicies}
                         </span>
                       </div>
                       <div>
                         <span className="text-slate-400 text-xs block mb-1">Avg Rate</span>
-                        <span className="text-slate-900 font-bold text-lg">
+                        <span className="text-white font-bold text-lg">
                           {latestYear.avgPremiumRate.toFixed(1)}%
                         </span>
                       </div>
@@ -728,7 +728,7 @@ function InsuranceContent() {
 
                 {/* Year-by-Year Cards */}
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                     <span>📈</span> Annual Market History
                   </h3>
                   <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -745,20 +745,20 @@ function InsuranceContent() {
 
                 {/* Risk Factor Links */}
                 <div className="card p-5">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                  <h3 className="text-lg font-semibold text-white mb-3">
                     Active Risk Factors
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                      <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">🛰️ Debris Monitor</div>
+                    <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                      <div className="text-sm font-medium text-white group-hover:text-nebula-200">🛰️ Debris Monitor</div>
                       <p className="text-xs text-slate-400 mt-1">Orbital debris increases collision risk and claims</p>
                     </Link>
-                    <Link href="/space-environment?tab=weather" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                      <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">☀️ Solar Activity</div>
+                    <Link href="/space-environment?tab=weather" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                      <div className="text-sm font-medium text-white group-hover:text-nebula-200">☀️ Solar Activity</div>
                       <p className="text-xs text-slate-400 mt-1">Solar storms affect satellite operations</p>
                     </Link>
-                    <Link href="/compliance?tab=regulations" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                      <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">📋 Compliance</div>
+                    <Link href="/compliance?tab=regulations" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                      <div className="text-sm font-medium text-white group-hover:text-nebula-200">📋 Compliance</div>
                       <p className="text-xs text-slate-400 mt-1">Liability regulations and requirements</p>
                     </Link>
                   </div>
@@ -767,12 +767,12 @@ function InsuranceContent() {
                 {/* Trend Insight Card */}
                 {marketHistory.length >= 2 && (
                   <div className="card p-5 border-dashed">
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                    <h3 className="text-lg font-semibold text-white mb-3">
                       Market Trend Insights
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                       <div>
-                        <h4 className="text-slate-900 font-medium mb-2">Premium Growth</h4>
+                        <h4 className="text-white font-medium mb-2">Premium Growth</h4>
                         <p className="text-slate-400">
                           Total premiums grew from {formatCurrency(marketHistory[0].totalPremiums)} in{' '}
                           {marketHistory[0].year} to{' '}
@@ -791,7 +791,7 @@ function InsuranceContent() {
                         </p>
                       </div>
                       <div>
-                        <h4 className="text-slate-900 font-medium mb-2">Market Capacity</h4>
+                        <h4 className="text-white font-medium mb-2">Market Capacity</h4>
                         <p className="text-slate-400">
                           Industry capacity expanded from ${marketHistory[0].marketCapacity.toFixed(1)}B
                           to ${marketHistory[marketHistory.length - 1].marketCapacity.toFixed(1)}B, reflecting
@@ -799,7 +799,7 @@ function InsuranceContent() {
                         </p>
                       </div>
                       <div>
-                        <h4 className="text-slate-900 font-medium mb-2">Loss Experience</h4>
+                        <h4 className="text-white font-medium mb-2">Loss Experience</h4>
                         <p className="text-slate-400">
                           The{' '}
                           {marketHistory.find((y) => y.lossRatio > 100)
@@ -824,8 +824,8 @@ function InsuranceContent() {
                       onClick={() => handleTypeFilterChange('')}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         policyTypeFilter === ''
-                          ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                          : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                          ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                          : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                       }`}
                     >
                       All ({policies.length})
@@ -841,8 +841,8 @@ function InsuranceContent() {
                           onClick={() => handleTypeFilterChange(type)}
                           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
                             policyTypeFilter === type
-                              ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                              : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                              ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                              : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                           }`}
                         >
                           <span>{info?.icon}</span>
@@ -864,7 +864,7 @@ function InsuranceContent() {
                 {/* Aggregate Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   <div className="card p-3 text-center">
-                    <div className="text-lg font-bold text-slate-900">{filteredPolicies.length}</div>
+                    <div className="text-lg font-bold text-white">{filteredPolicies.length}</div>
                     <div className="text-slate-400 text-xs">Policies Shown</div>
                   </div>
                   <div className="card p-3 text-center">
@@ -880,7 +880,7 @@ function InsuranceContent() {
                     <div className="text-slate-400 text-xs">Total Premiums</div>
                   </div>
                   <div className="card p-3 text-center">
-                    <div className="text-lg font-bold text-slate-900">
+                    <div className="text-lg font-bold text-white">
                       {filteredPolicies.length > 0
                         ? (
                             filteredPolicies.reduce((sum, p) => sum + p.premiumRate, 0) /
@@ -896,7 +896,7 @@ function InsuranceContent() {
                 {/* Policy Cards */}
                 {filteredPolicies.length === 0 ? (
                   <div className="text-center py-16">
-                    <h3 className="text-xl font-semibold text-slate-900 mb-2">No Policies Found</h3>
+                    <h3 className="text-xl font-semibold text-white mb-2">No Policies Found</h3>
                     <p className="text-slate-400">
                       {policyTypeFilter
                         ? `No ${getMissionTypeInfo(policyTypeFilter)?.label || policyTypeFilter} policies in the database.`
@@ -923,7 +923,7 @@ function InsuranceContent() {
                   <div className="flex items-center gap-3 mb-3">
                     <span className="text-2xl">🧮</span>
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900">
+                      <h3 className="text-lg font-semibold text-white">
                         Premium Rate Benchmarks
                       </h3>
                       <p className="text-slate-400 text-sm">
@@ -975,7 +975,7 @@ function InsuranceContent() {
                           <div className="flex items-center gap-3">
                             <span className="text-2xl">{benchmark.icon}</span>
                             <div>
-                              <h4 className="text-slate-900 font-semibold">
+                              <h4 className="text-white font-semibold">
                                 {benchmark.label} Insurance
                               </h4>
                               <p className="text-slate-400 text-xs mt-0.5 max-w-lg">
@@ -984,7 +984,7 @@ function InsuranceContent() {
                             </div>
                           </div>
                           <div className="text-right flex-shrink-0 ml-4">
-                            <span className={`text-sm font-bold px-2.5 py-1 rounded ${riskTextColor} bg-slate-100`}>
+                            <span className={`text-sm font-bold px-2.5 py-1 rounded ${riskTextColor} bg-slate-700/50`}>
                               {riskLabel}
                             </span>
                           </div>
@@ -993,13 +993,13 @@ function InsuranceContent() {
                         <div className="grid grid-cols-3 gap-4 mb-4">
                           <div>
                             <span className="text-slate-400 text-xs block">Base Rate</span>
-                            <span className="text-slate-900 font-bold text-lg font-mono">
+                            <span className="text-white font-bold text-lg font-mono">
                               {benchmark.baseRate.toFixed(1)}%
                             </span>
                           </div>
                           <div>
                             <span className="text-slate-400 text-xs block">Risk Multiplier</span>
-                            <span className="text-slate-900 font-bold text-lg font-mono">
+                            <span className="text-white font-bold text-lg font-mono">
                               {benchmark.riskMultiplier.toFixed(1)}x
                             </span>
                           </div>
@@ -1013,7 +1013,7 @@ function InsuranceContent() {
 
                         {/* Visual bar */}
                         <div className="flex items-center gap-3">
-                          <div className="flex-1 h-4 bg-slate-100 rounded-full overflow-hidden">
+                          <div className="flex-1 h-4 bg-slate-700/50 rounded-full overflow-hidden">
                             <div
                               className={`h-full bg-gradient-to-r ${riskColor} rounded-full transition-all`}
                               style={{ width: `${Math.min(barWidth, 100)}%` }}
@@ -1025,7 +1025,7 @@ function InsuranceContent() {
                         </div>
 
                         {/* Example calculation */}
-                        <div className="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-400">
+                        <div className="mt-3 pt-3 border-t border-slate-700/50 text-xs text-slate-400">
                           <span>
                             Example: $100M insured value ={' '}
                             <span className="text-nebula-300 font-bold">
@@ -1047,7 +1047,7 @@ function InsuranceContent() {
 
                 {/* Comparative Summary */}
                 <div className="card p-5">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                  <h3 className="text-lg font-semibold text-white mb-4">
                     Rate Comparison Overview
                   </h3>
                   <div className="overflow-x-auto">
@@ -1066,9 +1066,9 @@ function InsuranceContent() {
                         {PREMIUM_RATE_BENCHMARKS.map((b) => (
                           <tr
                             key={b.type}
-                            className="border-b border-space-700/50 hover:bg-slate-100/20"
+                            className="border-b border-space-700/50 hover:bg-slate-700/20"
                           >
-                            <td className="py-2.5 pr-4 text-slate-900 font-medium">
+                            <td className="py-2.5 pr-4 text-white font-medium">
                               <span className="mr-2">{b.icon}</span>
                               {b.label}
                             </td>
@@ -1098,7 +1098,7 @@ function InsuranceContent() {
                 <div className="card p-5 border border-nebula-500/20">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-slate-900 font-semibold mb-1">Need Insurance Expertise?</h3>
+                      <h3 className="text-white font-semibold mb-1">Need Insurance Expertise?</h3>
                       <p className="text-slate-400 text-sm">
                         Find space insurance underwriters, brokers, and risk assessment professionals.
                       </p>
@@ -1117,12 +1117,12 @@ function InsuranceContent() {
 
                 {/* Disclaimer */}
                 <div className="card p-5 border-dashed">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                  <h3 className="text-lg font-semibold text-white mb-3">
                     Methodology & Disclaimer
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
                     <div>
-                      <h4 className="text-slate-900 font-medium mb-2">Rate Derivation</h4>
+                      <h4 className="text-white font-medium mb-2">Rate Derivation</h4>
                       <ul className="space-y-1">
                         <li>Base rates derived from 5-year market averages</li>
                         <li>Risk multipliers reflect actuarial loss experience</li>
@@ -1131,7 +1131,7 @@ function InsuranceContent() {
                       </ul>
                     </div>
                     <div>
-                      <h4 className="text-slate-900 font-medium mb-2">Important Notes</h4>
+                      <h4 className="text-white font-medium mb-2">Important Notes</h4>
                       <ul className="space-y-1">
                         <li>Benchmark rates are indicative only</li>
                         <li>Actual premiums vary by mission specifics</li>
@@ -1220,20 +1220,20 @@ function DynamicInsuranceContent() {
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl">🤖</span>
               <div>
-                <h3 className="text-lg font-display font-bold text-slate-900">{commentary.title}</h3>
+                <h3 className="text-lg font-display font-bold text-white">{commentary.title}</h3>
                 <p className="text-xs text-slate-400">
                   AI-generated analysis · {new Date(commentary.generatedAt).toLocaleDateString()}
                 </p>
               </div>
             </div>
-            <p className="text-slate-600 text-sm mb-4">{commentary.summary}</p>
+            <p className="text-slate-300 text-sm mb-4">{commentary.summary}</p>
 
             {commentary.keyTakeaways.length > 0 && (
               <div className="mb-4 p-4 bg-nebula-500/5 rounded-lg border border-nebula-500/20">
                 <h4 className="text-sm font-semibold text-nebula-300 mb-2">Key Takeaways</h4>
                 <ul className="space-y-1">
                   {commentary.keyTakeaways.map((t, i) => (
-                    <li key={i} className="text-sm text-slate-600 flex items-start gap-2">
+                    <li key={i} className="text-sm text-slate-300 flex items-start gap-2">
                       <span className="text-nebula-300 mt-0.5">•</span>
                       {t}
                     </li>
@@ -1243,7 +1243,7 @@ function DynamicInsuranceContent() {
             )}
 
             {showFullCommentary ? (
-              <div className="prose prose-sm max-w-none text-slate-600 mb-4">
+              <div className="prose prose-sm max-w-none text-slate-300 mb-4">
                 <div dangerouslySetInnerHTML={{ __html: commentary.content.replace(/\n/g, '<br/>').replace(/## /g, '<strong>').replace(/\n/g, '</strong><br/>') }} />
               </div>
             ) : null}
@@ -1265,7 +1265,7 @@ function DynamicInsuranceContent() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="text-xl">📰</span>
-                <h3 className="text-lg font-display font-bold text-slate-900">Insurance Industry News</h3>
+                <h3 className="text-lg font-display font-bold text-white">Insurance Industry News</h3>
               </div>
               <span className="text-xs text-slate-400">{news.length} articles</span>
             </div>
@@ -1276,9 +1276,9 @@ function DynamicInsuranceContent() {
                   href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block p-3 rounded-lg border border-slate-200 hover:border-nebula-500/30 hover:bg-nebula-500/5 transition-all group"
+                  className="block p-3 rounded-lg border border-slate-700/50 hover:border-nebula-500/30 hover:bg-nebula-500/5 transition-all group"
                 >
-                  <h4 className="text-sm font-medium text-slate-900 group-hover:text-nebula-300 line-clamp-2 mb-1">
+                  <h4 className="text-sm font-medium text-white group-hover:text-nebula-300 line-clamp-2 mb-1">
                     {article.title}
                   </h4>
                   <p className="text-xs text-slate-400 line-clamp-2 mb-2">
@@ -1301,7 +1301,7 @@ function DynamicInsuranceContent() {
           <div className="card p-6">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-xl">📝</span>
-              <h3 className="text-lg font-display font-bold text-slate-900">Industry Analysis & Reports</h3>
+              <h3 className="text-lg font-display font-bold text-white">Industry Analysis & Reports</h3>
             </div>
             <div className="space-y-3">
               {blogs.slice(0, 5).map((post) => (
@@ -1310,15 +1310,15 @@ function DynamicInsuranceContent() {
                   href={post.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block p-3 rounded-lg border border-slate-200 hover:border-nebula-500/30 hover:bg-nebula-500/5 transition-all group"
+                  className="block p-3 rounded-lg border border-slate-700/50 hover:border-nebula-500/30 hover:bg-nebula-500/5 transition-all group"
                 >
-                  <h4 className="text-sm font-medium text-slate-900 group-hover:text-nebula-300 mb-1">
+                  <h4 className="text-sm font-medium text-white group-hover:text-nebula-300 mb-1">
                     {post.title}
                   </h4>
                   <div className="flex items-center gap-3 text-xs text-slate-400">
                     <span>{post.sourceName}</span>
                     <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
-                    <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">{post.topic}</span>
+                    <span className="px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-500">{post.topic}</span>
                   </div>
                 </a>
               ))}

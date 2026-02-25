@@ -32,7 +32,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Introduction */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Introduction</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Introduction</h2>
               <p className="text-slate-400 leading-relaxed">
                 SpaceNexus (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy.
                 This Privacy Policy explains how we collect, use, disclose, and safeguard your information
@@ -43,9 +43,9 @@ export default function PrivacyPolicyPage() {
 
             {/* Information Collection */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Information We Collect</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Information We Collect</h2>
 
-              <h3 className="text-lg font-medium text-slate-800 mb-3">Personal Data</h3>
+              <h3 className="text-lg font-medium text-slate-200 mb-3">Personal Data</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We may collect personally identifiable information that you voluntarily provide to us when you:
               </p>
@@ -61,7 +61,7 @@ export default function PrivacyPolicyPage() {
                 contact or identifying information you choose to provide.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-800 mb-3">Automatically Collected Data</h3>
+              <h3 className="text-lg font-medium text-slate-200 mb-3">Automatically Collected Data</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 When you access our platform, we automatically collect certain information, including:
               </p>
@@ -72,7 +72,7 @@ export default function PrivacyPolicyPage() {
                 <li>Location data (country/region based on IP address)</li>
               </ul>
 
-              <h3 className="text-lg font-medium text-slate-800 mb-3 mt-6">Mobile App Data</h3>
+              <h3 className="text-lg font-medium text-slate-200 mb-3 mt-6">Mobile App Data</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 When you use our mobile application (iOS or Android), we may additionally collect:
               </p>
@@ -83,7 +83,7 @@ export default function PrivacyPolicyPage() {
                 <li>App usage analytics and crash reports</li>
               </ul>
 
-              <h3 className="text-lg font-medium text-slate-800 mb-3 mt-6">Community Data</h3>
+              <h3 className="text-lg font-medium text-slate-200 mb-3 mt-6">Community Data</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 When you use our community features, we collect:
               </p>
@@ -99,7 +99,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Use of Data */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">How We Use Your Information</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">How We Use Your Information</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We use the information we collect for various purposes, including:
               </p>
@@ -126,30 +126,30 @@ export default function PrivacyPolicyPage() {
 
             {/* Data Sharing */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Information Sharing and Disclosure</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Information Sharing and Disclosure</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We may share your information in the following situations:
               </p>
 
-              <h3 className="text-lg font-medium text-slate-800 mb-3">Service Providers</h3>
+              <h3 className="text-lg font-medium text-slate-200 mb-3">Service Providers</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We may share your information with third-party service providers who perform services on our
                 behalf, such as hosting, analytics, email delivery, and customer support.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-800 mb-3">Business Transfers</h3>
+              <h3 className="text-lg font-medium text-slate-200 mb-3">Business Transfers</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 If we are involved in a merger, acquisition, or sale of assets, your information may be
                 transferred as part of that transaction.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-800 mb-3">Legal Requirements</h3>
+              <h3 className="text-lg font-medium text-slate-200 mb-3">Legal Requirements</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We may disclose your information if required to do so by law or in response to valid requests
                 by public authorities (e.g., a court or government agency).
               </p>
 
-              <h3 className="text-lg font-medium text-slate-800 mb-3">With Your Consent</h3>
+              <h3 className="text-lg font-medium text-slate-200 mb-3">With Your Consent</h3>
               <p className="text-slate-400 leading-relaxed">
                 We may share your information for other purposes with your explicit consent.
               </p>
@@ -157,7 +157,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Cookies */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Cookies and Tracking Technologies</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Cookies and Tracking Technologies</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We use cookies and similar tracking technologies to track activity on our platform and store
                 certain information. Cookies are files with a small amount of data that may include an
@@ -177,7 +177,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Security */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Data Security</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Data Security</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We implement appropriate technical and organizational security measures to protect your
                 personal information against unauthorized access, alteration, disclosure, or destruction.
@@ -198,7 +198,7 @@ export default function PrivacyPolicyPage() {
 
             {/* User Rights */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Your Rights and Choices</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Your Rights and Choices</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Depending on your location, you may have certain rights regarding your personal information:
               </p>
@@ -219,7 +219,7 @@ export default function PrivacyPolicyPage() {
                 </Link>{' '}page.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-800 mb-3 mt-6">Global Privacy Control (GPC)</h3>
+              <h3 className="text-lg font-medium text-slate-200 mb-3 mt-6">Global Privacy Control (GPC)</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We respect the Global Privacy Control (GPC) signal. When we detect a GPC signal from your
                 browser, we treat it as a valid opt-out request for the sale or sharing of your personal
@@ -238,7 +238,7 @@ export default function PrivacyPolicyPage() {
                 </a>.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-800 mb-3 mt-6">Account Deletion</h3>
+              <h3 className="text-lg font-medium text-slate-200 mb-3 mt-6">Account Deletion</h3>
               <p className="text-slate-400 leading-relaxed">
                 You can permanently delete your account and all associated data at any time through the{' '}
                 <a href="/account" className="text-cyan-600 hover:underline">Account Settings</a> page.
@@ -250,7 +250,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Data Retention */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Data Retention</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Data Retention</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We retain different types of data for different periods, depending on the purpose for which
                 it was collected and our legal obligations:
@@ -272,7 +272,7 @@ export default function PrivacyPolicyPage() {
 
             {/* International Transfers */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">International Data Transfers</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">International Data Transfers</h2>
               <p className="text-slate-400 leading-relaxed">
                 Your information may be transferred to and processed in countries other than your country
                 of residence. These countries may have data protection laws that are different from the
@@ -283,7 +283,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Children's Privacy */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Children&apos;s Privacy</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Children&apos;s Privacy</h2>
               <p className="text-slate-400 leading-relaxed">
                 Our services are not intended for individuals under the age of 16. We do not knowingly
                 collect personal information from children under 16. If you become aware that a child has
@@ -294,7 +294,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Changes */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Changes to This Privacy Policy</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Changes to This Privacy Policy</h2>
               <p className="text-slate-400 leading-relaxed">
                 We may update our Privacy Policy from time to time. We will notify you of any changes by
                 posting the new Privacy Policy on this page and updating the &quot;Last Updated&quot; date. You are
@@ -305,20 +305,20 @@ export default function PrivacyPolicyPage() {
 
             {/* Contact */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Contact Us</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Contact Us</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 If you have any questions about this Privacy Policy or our data practices, please contact us:
               </p>
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-6">
-                <p className="text-slate-700 font-medium">SpaceNexus Privacy Team</p>
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+                <p className="text-slate-300 font-medium">SpaceNexus Privacy Team</p>
                 <p className="text-slate-400 mt-2">Email: privacy@spacenexus.us</p>
                 <p className="text-slate-400">Address: 1234 Orbit Drive, Suite 500, Houston, TX 77058</p>
               </div>
             </section>
 
             {/* Related Links */}
-            <section className="pt-6 border-t border-slate-200">
-              <h3 className="text-lg font-medium text-slate-800 mb-4">Related Documents</h3>
+            <section className="pt-6 border-t border-slate-700">
+              <h3 className="text-lg font-medium text-slate-200 mb-4">Related Documents</h3>
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/terms"

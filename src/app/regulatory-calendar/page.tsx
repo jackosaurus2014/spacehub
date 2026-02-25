@@ -618,7 +618,7 @@ export default function RegulatoryCalendarPage() {
     .slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-gray-900 py-8">
+    <div className="min-h-screen bg-slate-900 py-8">
       {upcomingForSchema.map((deadline) => (
         <EventSchema
           key={`schema-${deadline.id}`}

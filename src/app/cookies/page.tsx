@@ -32,7 +32,7 @@ export default function CookiePolicyPage() {
 
             {/* Introduction */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">What Are Cookies?</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">What Are Cookies?</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Cookies are small text files that are placed on your computer or mobile device when you
                 visit a website. They are widely used to make websites work more efficiently, provide a
@@ -46,7 +46,7 @@ export default function CookiePolicyPage() {
 
             {/* How We Use Cookies */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">How SpaceNexus Uses Cookies</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">How SpaceNexus Uses Cookies</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We use cookies and similar tracking technologies for various purposes, including:
               </p>
@@ -62,13 +62,13 @@ export default function CookiePolicyPage() {
 
             {/* Types of Cookies */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Types of Cookies We Use</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Types of Cookies We Use</h2>
 
               {/* Essential Cookies */}
-              <div className="mb-6 p-6 bg-slate-50 border border-slate-200 rounded-lg">
+              <div className="mb-6 p-6 bg-slate-800/50 border border-slate-700 rounded-lg">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="w-3 h-3 rounded-full bg-green-500"></span>
-                  <h3 className="text-lg font-medium text-slate-800">Essential Cookies</h3>
+                  <h3 className="text-lg font-medium text-slate-200">Essential Cookies</h3>
                   <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Required</span>
                 </div>
                 <p className="text-slate-400 leading-relaxed mb-3">
@@ -87,10 +87,10 @@ export default function CookiePolicyPage() {
               </div>
 
               {/* Functional Cookies */}
-              <div className="mb-6 p-6 bg-slate-50 border border-slate-200 rounded-lg">
+              <div className="mb-6 p-6 bg-slate-800/50 border border-slate-700 rounded-lg">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-                  <h3 className="text-lg font-medium text-slate-800">Functional Cookies</h3>
+                  <h3 className="text-lg font-medium text-slate-200">Functional Cookies</h3>
                   <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Preferences</span>
                 </div>
                 <p className="text-slate-400 leading-relaxed mb-3">
@@ -109,10 +109,10 @@ export default function CookiePolicyPage() {
               </div>
 
               {/* Analytics Cookies */}
-              <div className="mb-6 p-6 bg-slate-50 border border-slate-200 rounded-lg">
+              <div className="mb-6 p-6 bg-slate-800/50 border border-slate-700 rounded-lg">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
-                  <h3 className="text-lg font-medium text-slate-800">Analytics Cookies</h3>
+                  <h3 className="text-lg font-medium text-slate-200">Analytics Cookies</h3>
                   <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">Performance</span>
                 </div>
                 <p className="text-slate-400 leading-relaxed mb-3">
@@ -131,10 +131,10 @@ export default function CookiePolicyPage() {
               </div>
 
               {/* Marketing Cookies */}
-              <div className="p-6 bg-slate-50 border border-slate-200 rounded-lg">
+              <div className="p-6 bg-slate-800/50 border border-slate-700 rounded-lg">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="w-3 h-3 rounded-full bg-purple-500"></span>
-                  <h3 className="text-lg font-medium text-slate-800">Marketing Cookies</h3>
+                  <h3 className="text-lg font-medium text-slate-200">Marketing Cookies</h3>
                   <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">Advertising</span>
                 </div>
                 <p className="text-slate-400 leading-relaxed mb-3">
@@ -155,20 +155,20 @@ export default function CookiePolicyPage() {
 
             {/* Cookie Duration */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Cookie Duration</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Cookie Duration</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Cookies can remain on your device for different periods of time:
               </p>
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
-                  <h4 className="font-medium text-slate-800 mb-2">Session Cookies</h4>
+                <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-lg">
+                  <h4 className="font-medium text-slate-200 mb-2">Session Cookies</h4>
                   <p className="text-sm text-slate-400">
                     These are temporary cookies that expire when you close your browser. They are used
                     to maintain your session while you navigate the site.
                   </p>
                 </div>
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
-                  <h4 className="font-medium text-slate-800 mb-2">Persistent Cookies</h4>
+                <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-lg">
+                  <h4 className="font-medium text-slate-200 mb-2">Persistent Cookies</h4>
                   <p className="text-sm text-slate-400">
                     These cookies remain on your device for a set period or until you delete them. They
                     are used to remember your preferences across visits.
@@ -179,7 +179,7 @@ export default function CookiePolicyPage() {
 
             {/* Third-Party Cookies */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Third-Party Cookies</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Third-Party Cookies</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 In addition to our own cookies, we may also use various third-party cookies to report
                 usage statistics, deliver advertisements, and provide other services. These third parties
@@ -200,12 +200,12 @@ export default function CookiePolicyPage() {
 
             {/* Managing Cookies */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">How to Manage Cookies</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">How to Manage Cookies</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 You have several options to control or limit how cookies are used:
               </p>
 
-              <h3 className="text-lg font-medium text-slate-800 mb-3">Browser Settings</h3>
+              <h3 className="text-lg font-medium text-slate-200 mb-3">Browser Settings</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Most web browsers allow you to control cookies through their settings. You can typically
                 find these settings in the &quot;Options&quot; or &quot;Preferences&quot; menu of your browser. The following
@@ -246,7 +246,7 @@ export default function CookiePolicyPage() {
                 </li>
               </ul>
 
-              <h3 className="text-lg font-medium text-slate-800 mb-3">Opt-Out Tools</h3>
+              <h3 className="text-lg font-medium text-slate-200 mb-3">Opt-Out Tools</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 You can opt out of certain third-party cookies using these tools:
               </p>
@@ -277,8 +277,8 @@ export default function CookiePolicyPage() {
                 </li>
               </ul>
 
-              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-yellow-800 text-sm">
+              <div className="p-4 bg-yellow-900/20 border border-yellow-700/50 rounded-lg">
+                <p className="text-yellow-300 text-sm">
                   <strong>Note:</strong> Disabling cookies may affect your experience on our website.
                   Some features may not function properly if cookies are disabled.
                 </p>
@@ -287,7 +287,7 @@ export default function CookiePolicyPage() {
 
             {/* Do Not Track */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Do Not Track Signals</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Do Not Track Signals</h2>
               <p className="text-slate-400 leading-relaxed">
                 Some browsers include a &quot;Do Not Track&quot; (DNT) feature that signals to websites that you
                 do not want your online activity tracked. Currently, there is no uniform standard for
@@ -298,7 +298,7 @@ export default function CookiePolicyPage() {
 
             {/* Updates */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Updates to This Policy</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Updates to This Policy</h2>
               <p className="text-slate-400 leading-relaxed">
                 We may update this Cookie Policy from time to time to reflect changes in our practices or
                 for other operational, legal, or regulatory reasons. We will notify you of any material
@@ -309,20 +309,20 @@ export default function CookiePolicyPage() {
 
             {/* Contact */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Contact Us</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Contact Us</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 If you have any questions about our use of cookies or this Cookie Policy, please contact us:
               </p>
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-6">
-                <p className="text-slate-700 font-medium">SpaceNexus Privacy Team</p>
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+                <p className="text-slate-300 font-medium">SpaceNexus Privacy Team</p>
                 <p className="text-slate-400 mt-2">Email: privacy@spacenexus.us</p>
                 <p className="text-slate-400">Address: 1234 Orbit Drive, Suite 500, Houston, TX 77058</p>
               </div>
             </section>
 
             {/* Related Links */}
-            <section className="pt-6 border-t border-slate-200">
-              <h3 className="text-lg font-medium text-slate-800 mb-4">Related Documents</h3>
+            <section className="pt-6 border-t border-slate-700">
+              <h3 className="text-lg font-medium text-slate-200 mb-4">Related Documents</h3>
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/privacy"

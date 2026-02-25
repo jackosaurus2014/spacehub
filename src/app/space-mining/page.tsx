@@ -86,11 +86,11 @@ const DEFAULT_CONFIDENCE_STYLE = { label: 'Unknown', color: 'text-slate-400' };
 const SPECTRAL_TYPE_INFO: Record<string, { label: string; description: string; color: string }> = {
   C: { label: 'C-type (Carbonaceous)', description: 'Water-rich, organic compounds', color: 'text-blue-400' },
   S: { label: 'S-type (Silicaceous)', description: 'Stony, silicate minerals', color: 'text-yellow-400' },
-  M: { label: 'M-type (Metallic)', description: 'Metal-rich, iron-nickel', color: 'text-gray-300' },
+  M: { label: 'M-type (Metallic)', description: 'Metal-rich, iron-nickel', color: 'text-slate-300' },
   V: { label: 'V-type (Vestoid)', description: 'Basaltic, pyroxene-rich', color: 'text-purple-400' },
-  X: { label: 'X-type', description: 'Metallic or enstatite', color: 'text-gray-400' },
-  D: { label: 'D-type', description: 'Dark, organic-rich', color: 'text-amber-600' },
-  P: { label: 'P-type', description: 'Primitive, low albedo', color: 'text-amber-700' },
+  X: { label: 'X-type', description: 'Metallic or enstatite', color: 'text-slate-400' },
+  D: { label: 'D-type', description: 'Dark, organic-rich', color: 'text-amber-400' },
+  P: { label: 'P-type', description: 'Primitive, low albedo', color: 'text-amber-500' },
   E: { label: 'E-type (Enstatite)', description: 'Enstatite achondrite', color: 'text-cyan-400' },
   B: { label: 'B-type', description: 'Blue, volatile-rich', color: 'text-blue-300' },
   Q: { label: 'Q-type', description: 'Ordinary chondrite', color: 'text-orange-400' },
@@ -324,7 +324,7 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
 function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
   const categoryLabels: Record<string, { label: string; color: string }> = {
     precious_metal: { label: 'Precious Metal', color: 'text-yellow-400' },
-    industrial_metal: { label: 'Industrial Metal', color: 'text-gray-400' },
+    industrial_metal: { label: 'Industrial Metal', color: 'text-slate-400' },
     rare_earth: { label: 'Rare Earth', color: 'text-purple-400' },
     volatile: { label: 'Volatile', color: 'text-blue-400' },
     mineral: { label: 'Mineral', color: 'text-amber-400' },

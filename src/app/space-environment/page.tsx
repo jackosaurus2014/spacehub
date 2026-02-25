@@ -114,7 +114,7 @@ function getEventCategoryColor(categoryTitle: string): string {
   for (const [key, value] of Object.entries(EARTH_EVENT_CATEGORY_COLORS)) {
     if (lower.includes(key)) return value;
   }
-  return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+  return 'bg-slate-800/500/20 text-slate-400 border-slate-500/30';
 }
 
 // ════════════════════════════════════════
@@ -362,20 +362,20 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
               })}
             </span>
             {isPast && (
-              <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded">Past</span>
+              <span className="text-xs bg-slate-700/50 text-slate-500 px-2 py-0.5 rounded">Past</span>
             )}
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-sm mt-2">
-            <div className="bg-slate-100/50 rounded px-3 py-1.5">
+            <div className="bg-slate-700/50 rounded px-3 py-1.5">
               <span className="text-slate-400 text-xs block">Primary</span>
-              <span className="text-slate-900 font-medium">{event.primaryObject}</span>
+              <span className="text-white font-medium">{event.primaryObject}</span>
               <span className="text-slate-400 text-xs ml-1">({event.primaryType})</span>
             </div>
             <span className="text-slate-400 font-bold">vs</span>
-            <div className="bg-slate-100/50 rounded px-3 py-1.5">
+            <div className="bg-slate-700/50 rounded px-3 py-1.5">
               <span className="text-slate-400 text-xs block">Secondary</span>
-              <span className="text-slate-900 font-medium">{event.secondaryObject}</span>
+              <span className="text-white font-medium">{event.secondaryObject}</span>
               <span className="text-slate-400 text-xs ml-1">({event.secondaryType})</span>
             </div>
           </div>
@@ -404,7 +404,7 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
 
         <div className="text-right flex-shrink-0 space-y-1">
           <div className="text-slate-400 text-sm">
-            Miss Distance: <span className="text-slate-900 font-bold">{event.missDistance.toFixed(1)} m</span>
+            Miss Distance: <span className="text-white font-bold">{event.missDistance.toFixed(1)} m</span>
           </div>
           <div className="text-slate-400 text-sm">
             Probability:{' '}
@@ -422,7 +422,7 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-slate-200 text-xs">
+      <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-slate-700/50 text-xs">
         <span className="text-slate-400">
           Altitude: <span className="text-slate-400 font-medium">{event.altitude.toFixed(0)} km</span>
         </span>
@@ -465,10 +465,10 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-lg">{typeInfo?.icon || '?'}</span>
-            <h4 className="font-semibold text-slate-900 text-sm truncate">{obj.name}</h4>
+            <h4 className="font-semibold text-white text-sm truncate">{obj.name}</h4>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className={`px-2 py-0.5 rounded bg-slate-100 ${typeColor}`}>
+            <span className={`px-2 py-0.5 rounded bg-slate-700/50 ${typeColor}`}>
               {typeInfo?.label || obj.objectType}
             </span>
             {obj.noradId && (
@@ -488,7 +488,7 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
           )}
         </div>
         <div className="text-right flex-shrink-0 ml-3">
-          <div className="text-slate-900 font-bold text-sm">{obj.altitude.toFixed(0)} km</div>
+          <div className="text-white font-bold text-sm">{obj.altitude.toFixed(0)} km</div>
           <div className="text-slate-400 text-xs">{obj.orbitType}</div>
         </div>
       </div>
@@ -496,19 +496,19 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
         <div>
           <span className="text-slate-400 block">Mass</span>
-          <span className="text-slate-900 font-medium">{formatMass(obj.mass)}</span>
+          <span className="text-white font-medium">{formatMass(obj.mass)}</span>
         </div>
         <div>
           <span className="text-slate-400 block">Size</span>
-          <span className="text-slate-900 font-medium capitalize">{obj.size || 'Unknown'}</span>
+          <span className="text-white font-medium capitalize">{obj.size || 'Unknown'}</span>
         </div>
         <div>
           <span className="text-slate-400 block">Origin</span>
-          <span className="text-slate-900 font-medium">{obj.originCountry || 'Unknown'}</span>
+          <span className="text-white font-medium">{obj.originCountry || 'Unknown'}</span>
         </div>
         <div>
           <span className="text-slate-400 block">Year</span>
-          <span className="text-slate-900 font-medium">{obj.originYear || 'Unknown'}</span>
+          <span className="text-white font-medium">{obj.originYear || 'Unknown'}</span>
         </div>
       </div>
 
@@ -878,7 +878,7 @@ function SpaceWeatherTab() {
             <div className="flex gap-6">
               <div className="text-center">
                 <div className="text-slate-400 text-sm">C-Class</div>
-                <div className="text-2xl font-bold text-slate-900">{todayForecast.probC}%</div>
+                <div className="text-2xl font-bold text-white">{todayForecast.probC}%</div>
               </div>
               <div className="text-center">
                 <div className="text-slate-400 text-sm">M-Class</div>
@@ -899,11 +899,11 @@ function SpaceWeatherTab() {
           {`Solar activity overview: ${data.stats.last30Days.xClass} X-class flares in the last 30 days, ${data.stats.last30Days.mClass} M-class flares in the last 30 days, ${data.stats.upcomingDangerDays} danger days forecasted in the next 90 days, solar wind speed ${data.activity ? Math.round(data.activity.solarWindSpeed || 0) + ' km/s' : 'unavailable'}, sunspot number ${data.activity ? (data.activity.sunspotNumber || 0) : 'unavailable'}`}
         </span>
         <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{data.stats.last30Days.xClass}</div>
+          <div className="text-4xl font-bold font-display tracking-tight text-white">{data.stats.last30Days.xClass}</div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">X-Class (30d)</div>
         </div>
         <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{data.stats.last30Days.mClass}</div>
+          <div className="text-4xl font-bold font-display tracking-tight text-white">{data.stats.last30Days.mClass}</div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">M-Class (30d)</div>
         </div>
         <div className="card-elevated p-6 text-center">
@@ -917,7 +917,7 @@ function SpaceWeatherTab() {
         <div className="card-elevated p-6 text-center">
           {data.activity ? (
             <>
-              <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{Math.round(data.activity.solarWindSpeed || 0)}</div>
+              <div className="text-4xl font-bold font-display tracking-tight text-white">{Math.round(data.activity.solarWindSpeed || 0)}</div>
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Solar Wind (km/s)</div>
             </>
           ) : (
@@ -930,7 +930,7 @@ function SpaceWeatherTab() {
         <div className="card-elevated p-6 text-center">
           {data.activity ? (
             <>
-              <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{data.activity.sunspotNumber || 0}</div>
+              <div className="text-4xl font-bold font-display tracking-tight text-white">{data.activity.sunspotNumber || 0}</div>
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Sunspot Number</div>
             </>
           ) : (
@@ -950,8 +950,8 @@ function SpaceWeatherTab() {
             onClick={() => setSelectedSubTab(tab)}
             className={`px-4 py-2 rounded-lg font-medium capitalize transition-all ${
               selectedSubTab === tab
-                ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                ? 'bg-slate-700/50 text-white border-slate-700/50 shadow-glow-sm'
+                : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
             }`}
           >
             {tab}
@@ -965,7 +965,7 @@ function SpaceWeatherTab() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 90-Day Danger Timeline */}
             <div className="card p-6">
-              <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                 <span>&#9888;&#65039;</span> 90-Day Danger Periods
               </h3>
               {dangerForecasts.length === 0 ? (
@@ -1014,7 +1014,7 @@ function SpaceWeatherTab() {
                           </div>
                         </div>
                         {forecast.notes && (
-                          <p className="text-slate-400 text-sm mt-2 border-t border-slate-200 pt-2">
+                          <p className="text-slate-400 text-sm mt-2 border-t border-slate-700/50 pt-2">
                             {forecast.notes}
                           </p>
                         )}
@@ -1027,7 +1027,7 @@ function SpaceWeatherTab() {
 
             {/* Recent Flares */}
             <div className="card p-6">
-              <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                 <span>&#128293;</span> Recent Solar Flares
               </h3>
               <div className="space-y-3 max-h-[400px] overflow-y-auto">
@@ -1035,14 +1035,14 @@ function SpaceWeatherTab() {
                   const classInfo = FLARE_CLASSIFICATIONS.find(c => c.value === flare.classification);
 
                   return (
-                    <div key={flare.id} className="p-4 bg-slate-100/30 rounded-lg">
+                    <div key={flare.id} className="p-4 bg-slate-700/30 rounded-lg">
                       <div className="flex items-start gap-4">
-                        <div className={`w-14 h-14 rounded-lg flex items-center justify-center text-slate-900 font-bold text-lg ${classInfo?.color || 'bg-gray-500'}`}>
+                        <div className={`w-14 h-14 rounded-lg flex items-center justify-center text-white font-bold text-lg ${classInfo?.color || 'bg-gray-500'}`}>
                           {flare.classification}{flare.intensity}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
-                            <div className="font-medium text-slate-900">
+                            <div className="font-medium text-white">
                               {flare.activeRegion || 'Unknown Region'}
                             </div>
                             {flare.linkedCME && (
@@ -1086,24 +1086,24 @@ function SpaceWeatherTab() {
 
           {/* Related Modules */}
           <div className="card p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
               <span>&#128279;</span> Related Modules
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">&#128752; Debris Monitor</div>
+              <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-nebula-200">&#128752; Debris Monitor</div>
                 <p className="text-xs text-slate-400 mt-1">Solar storms can alter debris orbits</p>
               </Link>
-              <Link href="/orbital-slots" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">&#128225; Orbital Slots</div>
+              <Link href="/orbital-slots" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-nebula-200">&#128225; Orbital Slots</div>
                 <p className="text-xs text-slate-400 mt-1">Check satellite exposure to solar events</p>
               </Link>
-              <Link href="/space-insurance" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">&#128737;&#65039; Space Insurance</div>
+              <Link href="/space-insurance" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-nebula-200">&#128737;&#65039; Space Insurance</div>
                 <p className="text-xs text-slate-400 mt-1">Solar activity affects insurance risk</p>
               </Link>
-              <Link href="/mission-control" className="p-3 rounded-lg bg-slate-100/30 hover:bg-slate-100/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-900 group-hover:text-nebula-200">&#127919; Mission Control</div>
+              <Link href="/mission-control" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                <div className="text-sm font-medium text-white group-hover:text-nebula-200">&#127919; Mission Control</div>
                 <p className="text-xs text-slate-400 mt-1">Solar weather impacts launch windows</p>
               </Link>
             </div>
@@ -1113,7 +1113,7 @@ function SpaceWeatherTab() {
 
       {selectedSubTab === 'forecast' && (
         <div className="card p-6">
-          <h3 className="text-xl font-semibold text-slate-900 mb-4">90-Day Forecast Timeline</h3>
+          <h3 className="text-xl font-semibold text-white mb-4">90-Day Forecast Timeline</h3>
           <div className="overflow-x-auto">
             <div className="flex gap-1 min-w-max pb-4">
               {data.forecasts.map((forecast, idx) => {
@@ -1137,8 +1137,8 @@ function SpaceWeatherTab() {
                       </div>
                     )}
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
-                      <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm whitespace-nowrap shadow-xl">
-                        <div className="font-medium text-slate-900">
+                      <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-3 text-sm whitespace-nowrap shadow-xl">
+                        <div className="font-medium text-white">
                           {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </div>
                         <div className={riskInfo.color}>{riskInfo.label} Risk</div>
@@ -1153,7 +1153,7 @@ function SpaceWeatherTab() {
             </div>
           </div>
           {/* Legend */}
-          <div className="flex flex-wrap gap-4 mt-8 pt-4 border-t border-slate-200">
+          <div className="flex flex-wrap gap-4 mt-8 pt-4 border-t border-slate-700/50">
             {Object.entries(RISK_LEVEL_INFO).map(([level, info]) => (
               <div key={level} className="flex items-center gap-2">
                 <div className={`w-4 h-4 rounded ${info.bgColor}`} />
@@ -1167,13 +1167,13 @@ function SpaceWeatherTab() {
       {selectedSubTab === 'history' && (
         <div className="card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-slate-900">Solar Flare History</h3>
+            <h3 className="text-xl font-semibold text-white">Solar Flare History</h3>
             <ExportButton data={data.flares} filename="solar-flare-history" columns={FLARE_EXPORT_COLUMNS} label="Export" />
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-slate-400 border-b border-slate-200">
+                <tr className="text-left text-slate-400 border-b border-slate-700/50">
                   <th className="pb-3 pr-4">Class</th>
                   <th className="pb-3 pr-4">Date/Time</th>
                   <th className="pb-3 pr-4">Region</th>
@@ -1187,9 +1187,9 @@ function SpaceWeatherTab() {
                   const classInfo = FLARE_CLASSIFICATIONS.find(c => c.value === flare.classification);
 
                   return (
-                    <tr key={flare.id} className="border-b border-slate-200">
+                    <tr key={flare.id} className="border-b border-slate-700/50">
                       <td className="py-3 pr-4">
-                        <span className={`px-2 py-1 rounded text-slate-900 font-bold ${classInfo?.color}`}>
+                        <span className={`px-2 py-1 rounded text-white font-bold ${classInfo?.color}`}>
                           {flare.classification}{flare.intensity}
                         </span>
                       </td>
@@ -1249,7 +1249,7 @@ function SpaceWeatherTab() {
           {/* Earth Natural Events - NASA EONET */}
           {earthEvents.length > 0 && (
             <div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                 <span>🌋</span> Earth Natural Events
                 <span className="ml-2 text-slate-400 text-sm font-normal">NASA EONET</span>
               </h3>
@@ -1264,7 +1264,7 @@ function SpaceWeatherTab() {
                     <div key={event.id} className="card p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-slate-900 font-semibold text-sm line-clamp-2">{event.title}</h4>
+                          <h4 className="text-white font-semibold text-sm line-clamp-2">{event.title}</h4>
                         </div>
                         <span className={`ml-2 flex-shrink-0 w-2.5 h-2.5 rounded-full mt-1 ${isOpen ? 'bg-green-500 animate-pulse' : 'bg-slate-400'}`} />
                       </div>
@@ -1272,7 +1272,7 @@ function SpaceWeatherTab() {
                         <span className={`text-xs px-2 py-0.5 rounded border ${categoryColor}`}>
                           {categoryTitle}
                         </span>
-                        <span className={`text-xs px-2 py-0.5 rounded ${isOpen ? 'bg-green-500/20 text-green-400' : 'bg-slate-500/20 text-slate-400'}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded ${isOpen ? 'bg-green-500/20 text-green-400' : 'bg-slate-800/500/20 text-slate-400'}`}>
                           {isOpen ? 'Active' : 'Closed'}
                         </span>
                       </div>
@@ -1295,7 +1295,7 @@ function SpaceWeatherTab() {
                         </div>
                       )}
                       {event.sources && event.sources.length > 0 && (
-                        <div className="mt-2 pt-2 border-t border-slate-200">
+                        <div className="mt-2 pt-2 border-t border-slate-700/50">
                           <a
                             href={event.sources[0].url}
                             target="_blank"
@@ -1316,7 +1316,7 @@ function SpaceWeatherTab() {
           {/* Solar Imagery - Helioviewer */}
           {solarImagery.length > 0 && (
             <div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                 <span>☀️</span> Solar Imagery
                 <span className="ml-2 text-slate-400 text-sm font-normal">SDO / SOHO</span>
               </h3>
@@ -1334,13 +1334,13 @@ function SpaceWeatherTab() {
                     </div>
                     <div className="p-3">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">
+                        <span className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded font-medium">
                           {img.instrument}
                         </span>
                         <span className="text-xs text-slate-400">{img.measurement}</span>
                       </div>
                       {img.name && (
-                        <h4 className="text-slate-900 text-sm font-medium line-clamp-1">{img.name}</h4>
+                        <h4 className="text-white text-sm font-medium line-clamp-1">{img.name}</h4>
                       )}
                       <div className="text-xs text-slate-400 mt-1">
                         {new Date(img.timestamp).toLocaleDateString('en-US', {
@@ -1365,15 +1365,15 @@ function SpaceWeatherTab() {
 
       {/* Flare Classification Legend */}
       <div className="card p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Solar Flare Classifications</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">Solar Flare Classifications</h3>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {FLARE_CLASSIFICATIONS.map((cls) => (
             <div key={cls.value} className="flex items-start gap-3">
-              <div className={`w-10 h-10 rounded flex items-center justify-center text-slate-900 font-bold ${cls.color}`}>
+              <div className={`w-10 h-10 rounded flex items-center justify-center text-white font-bold ${cls.color}`}>
                 {cls.value}
               </div>
               <div>
-                <div className="text-slate-900 font-medium">{cls.label}</div>
+                <div className="text-white font-medium">{cls.label}</div>
                 <div className="text-slate-400 text-xs">{cls.description}</div>
               </div>
             </div>
@@ -1474,7 +1474,7 @@ function DebrisTrackingTab() {
     return (
       <div className="card p-12 text-center">
         <span className="text-6xl block mb-4">&#128752;</span>
-        <h2 className="text-2xl font-semibold text-slate-900 mb-2">
+        <h2 className="text-2xl font-semibold text-white mb-2">
           No Debris Tracking Data Available
         </h2>
         <p className="text-slate-400 mb-6 max-w-lg mx-auto">
@@ -1517,7 +1517,7 @@ function DebrisTrackingTab() {
       <ScrollReveal>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <div className="card-elevated p-4 text-center">
-          <div className="text-2xl font-bold font-display text-slate-900">
+          <div className="text-2xl font-bold font-display text-white">
             {totalTracked.toLocaleString()}
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -1536,7 +1536,7 @@ function DebrisTrackingTab() {
           </div>
         </div>
         <div className="card-elevated p-4 text-center">
-          <div className="text-2xl font-bold font-display text-slate-900">
+          <div className="text-2xl font-bold font-display text-white">
             {(stats?.conjunctionsPerDay || 0).toFixed(1)}
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -1552,7 +1552,7 @@ function DebrisTrackingTab() {
           </div>
         </div>
         <div className="card-elevated p-4 text-center">
-          <div className="text-2xl font-bold font-display text-slate-900">
+          <div className="text-2xl font-bold font-display text-white">
             {conjunctions.length}
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -1585,15 +1585,15 @@ function DebrisTrackingTab() {
             onClick={() => handleSubTabChange(tab.id)}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeSubTab === tab.id
-                ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
-                : 'bg-slate-100/50 text-slate-500 hover:bg-slate-100/50'
+                ? 'bg-nebula-500 text-white shadow-glow-sm'
+                : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
             }`}
           >
             {tab.label}
             {tab.count !== undefined && tab.count > 0 && (
               <span
                 className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  activeSubTab === tab.id ? 'bg-slate-200 text-slate-900' : 'bg-slate-100 text-slate-500'
+                  activeSubTab === tab.id ? 'bg-white/20 text-white' : 'bg-slate-700/50 text-slate-500'
                 }`}
               >
                 {tab.count}
@@ -1609,7 +1609,7 @@ function DebrisTrackingTab() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Orbit Distribution */}
             <div className="card p-5">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Distribution by Orbit</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">Distribution by Orbit</h3>
               <div className="space-y-4">
                 {[
                   { label: 'LEO (Low Earth Orbit)', count: stats.leoCount, color: 'from-blue-500 to-blue-400', desc: '< 2,000 km' },
@@ -1628,7 +1628,7 @@ function DebrisTrackingTab() {
                           {orbit.count.toLocaleString()} ({pct.toFixed(1)}%)
                         </span>
                       </div>
-                      <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-3 bg-slate-700/50 rounded-full overflow-hidden">
                         <div
                           className={`h-full bg-gradient-to-r ${orbit.color} rounded-full transition-all`}
                           style={{ width: `${Math.min(pct, 100)}%` }}
@@ -1642,7 +1642,7 @@ function DebrisTrackingTab() {
 
             {/* Type Distribution */}
             <div className="card p-5">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Distribution by Type</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">Distribution by Type</h3>
               <div className="space-y-4">
                 {[
                   { label: 'Payloads (Active & Inactive)', count: stats.totalPayloads, color: 'from-green-500 to-green-400' },
@@ -1659,7 +1659,7 @@ function DebrisTrackingTab() {
                           {type.count.toLocaleString()} ({pct.toFixed(1)}%)
                         </span>
                       </div>
-                      <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-3 bg-slate-700/50 rounded-full overflow-hidden">
                         <div
                           className={`h-full bg-gradient-to-r ${type.color} rounded-full transition-all`}
                           style={{ width: `${Math.min(pct, 100)}%` }}
@@ -1676,7 +1676,7 @@ function DebrisTrackingTab() {
           <div className="card p-5">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h3 className="text-lg font-semibold text-slate-900">25-Year Deorbit Compliance</h3>
+                <h3 className="text-lg font-semibold text-white">25-Year Deorbit Compliance</h3>
                 <p className="text-slate-400 text-sm mt-1">
                   {(stats.compliant25Year || 0).toLocaleString()} compliant /{' '}
                   {((stats.compliant25Year || 0) + (stats.nonCompliant || 0)).toLocaleString()} total objects
@@ -1692,7 +1692,7 @@ function DebrisTrackingTab() {
                 <div className="text-slate-400 text-xs">Compliance Rate</div>
               </div>
             </div>
-            <div className="h-4 bg-slate-100 rounded-full overflow-hidden">
+            <div className="h-4 bg-slate-700/50 rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all ${
                   (overview?.complianceRate ?? 0) >= 0.8 ? 'bg-gradient-to-r from-green-500 to-green-400' :
@@ -1708,7 +1708,7 @@ function DebrisTrackingTab() {
           {sortedConjunctions.filter((c) => c.riskLevel === 'critical' || c.riskLevel === 'high').length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">Critical & High-Risk Events</h3>
+                <h3 className="text-lg font-semibold text-white">Critical & High-Risk Events</h3>
                 <button
                   onClick={() => handleSubTabChange('conjunctions')}
                   className="text-nebula-300 hover:text-nebula-200 text-sm transition-colors"
@@ -1729,10 +1729,10 @@ function DebrisTrackingTab() {
 
           {/* Data Sources */}
           <div className="card p-5 border-dashed">
-            <h3 className="text-lg font-semibold text-slate-900 mb-3">Data Sources & Methodology</h3>
+            <h3 className="text-lg font-semibold text-white mb-3">Data Sources & Methodology</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
               <div>
-                <h4 className="text-slate-900 font-medium mb-2">Tracking Data</h4>
+                <h4 className="text-white font-medium mb-2">Tracking Data</h4>
                 <ul className="space-y-1">
                   <li>US Space Surveillance Network (18th SDS)</li>
                   <li>CelesTrak public TLE catalog</li>
@@ -1741,7 +1741,7 @@ function DebrisTrackingTab() {
                 </ul>
               </div>
               <div>
-                <h4 className="text-slate-900 font-medium mb-2">Conjunction Assessment</h4>
+                <h4 className="text-white font-medium mb-2">Conjunction Assessment</h4>
                 <ul className="space-y-1">
                   <li>Space-Track.org CDM data</li>
                   <li>SOCRATES (Satellite Orbital Conjunction Reports)</li>
@@ -1777,8 +1777,8 @@ function DebrisTrackingTab() {
                 onClick={() => setRiskFilter('')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   riskFilter === ''
-                    ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                    : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                    ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                    : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                 }`}
               >
                 All ({conjunctions.length})
@@ -1793,7 +1793,7 @@ function DebrisTrackingTab() {
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       riskFilter === level
                         ? `${info.bg} ${info.text} border ${info.border}`
-                        : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                        : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                     }`}
                   >
                     {info.label} ({count})
@@ -1841,8 +1841,8 @@ function DebrisTrackingTab() {
                 onClick={() => setObjectTypeFilter('')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   objectTypeFilter === ''
-                    ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                    : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                    ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                    : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                 }`}
               >
                 All ({notableDebris.length})
@@ -1855,8 +1855,8 @@ function DebrisTrackingTab() {
                     onClick={() => setObjectTypeFilter(type.value)}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
                       objectTypeFilter === type.value
-                        ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                        : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                        ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                        : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                     }`}
                   >
                     <span>{type.icon}</span>
@@ -1877,7 +1877,7 @@ function DebrisTrackingTab() {
 
           {filteredObjects.length === 0 ? (
             <div className="text-center py-16">
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">No Objects Found</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">No Objects Found</h3>
               <p className="text-slate-400">
                 {objectTypeFilter
                   ? `No ${objectTypeFilter.replace('_', ' ')} objects in the database.`
@@ -2098,7 +2098,7 @@ function OperationsTab() {
             onClick={() => handleSubTabChange(tab.id)}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeSubTab === tab.id
-                ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
+                ? 'bg-nebula-500 text-white shadow-glow-sm'
                 : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50'
             }`}
           >
@@ -2106,7 +2106,7 @@ function OperationsTab() {
             {tab.count !== undefined && tab.count > 0 && (
               <span
                 className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  activeSubTab === tab.id ? 'bg-slate-200 text-slate-900' : 'bg-slate-700 text-slate-400'
+                  activeSubTab === tab.id ? 'bg-white/20 text-white' : 'bg-slate-700 text-slate-400'
                 }`}
               >
                 {tab.count}
@@ -2264,7 +2264,7 @@ function OperationsTab() {
                 onClick={() => setAlertLevelFilter('')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   alertLevelFilter === ''
-                    ? 'bg-nebula-500 text-slate-900'
+                    ? 'bg-nebula-500 text-white'
                     : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
                 }`}
               >
@@ -2335,7 +2335,7 @@ function OperationsTab() {
                 onClick={() => setGradeFilter('')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   gradeFilter === ''
-                    ? 'bg-nebula-500 text-slate-900'
+                    ? 'bg-nebula-500 text-white'
                     : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
                 }`}
               >
@@ -2426,7 +2426,7 @@ function OperationsTab() {
                 onClick={() => setSeverityFilter('')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   severityFilter === ''
-                    ? 'bg-nebula-500 text-slate-900'
+                    ? 'bg-nebula-500 text-white'
                     : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
                 }`}
               >

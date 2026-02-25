@@ -67,7 +67,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
         className="block"
       >
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-2xl flex-shrink-0">
+          <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-2xl flex-shrink-0">
             {authorIcon}
           </div>
           <div className="flex-1 min-w-0">
@@ -81,7 +81,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
                 {post.source.name}
               </span>
             </div>
-            <h3 className="font-semibold text-slate-900 text-lg group-hover:text-nebula-200 transition-colors line-clamp-2">
+            <h3 className="font-semibold text-white text-lg group-hover:text-nebula-200 transition-colors line-clamp-2">
               {post.title}
             </h3>
             {post.excerpt && (
@@ -101,7 +101,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
       </a>
       {/* Cross-module links */}
       {isComplianceRelated && (
-        <div className="mt-3 pt-3 border-t border-slate-200 flex items-center gap-2">
+        <div className="mt-3 pt-3 border-t border-slate-700 flex items-center gap-2">
           <span className="text-[10px] text-slate-400">Related:</span>
           <Link
             href="/compliance"
@@ -236,8 +236,8 @@ function BlogsContent() {
                 onClick={() => handleTopicChange(null)}
                 className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm ${
                   selectedTopic === null
-                    ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                    : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                    ? 'bg-slate-700 text-white border-slate-600 shadow-glow-sm'
+                    : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
                 }`}
               >
                 All Topics
@@ -248,8 +248,8 @@ function BlogsContent() {
                   onClick={() => handleTopicChange(topic.value)}
                   className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm flex items-center gap-1 ${
                     selectedTopic === topic.value
-                      ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                      : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                      ? 'bg-slate-700 text-white border-slate-600 shadow-glow-sm'
+                      : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
                   }`}
                 >
                   <span>{topic.icon}</span>
@@ -267,8 +267,8 @@ function BlogsContent() {
                 onClick={() => handleAuthorTypeChange(null)}
                 className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm ${
                   selectedAuthorType === null
-                    ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                    : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                    ? 'bg-slate-700 text-white border-slate-600 shadow-glow-sm'
+                    : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
                 }`}
               >
                 All Authors
@@ -279,8 +279,8 @@ function BlogsContent() {
                   onClick={() => handleAuthorTypeChange(type.value)}
                   className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm flex items-center gap-1 ${
                     selectedAuthorType === type.value
-                      ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-glow-sm'
-                      : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                      ? 'bg-slate-700 text-white border-slate-600 shadow-glow-sm'
+                      : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
                   }`}
                 >
                   <span>{type.icon}</span>
@@ -297,7 +297,7 @@ function BlogsContent() {
         <StaggerItem>
           <div className="card-elevated p-6 text-center">
             <div className="flex items-center justify-center gap-2">
-              <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{total}</div>
+              <div className="text-4xl font-bold font-display tracking-tight text-white">{total}</div>
             </div>
             <div className="flex items-center justify-center gap-2 mt-1">
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Articles</div>
@@ -338,7 +338,7 @@ function BlogsContent() {
       ) : posts.length === 0 ? (
         <div className="text-center py-20">
           <span className="text-6xl block mb-4">📚</span>
-          <h2 className="text-2xl font-semibold text-slate-900 mb-2">No Articles Found</h2>
+          <h2 className="text-2xl font-semibold text-white mb-2">No Articles Found</h2>
           <p className="text-slate-400 mb-6">
             {selectedTopic || selectedAuthorType
               ? 'Try adjusting your filters or fetch new articles.'
@@ -401,7 +401,7 @@ function BlogsContent() {
         <div className="card p-6 mt-12 border-dashed">
           <div className="text-center">
             <span className="text-4xl block mb-3">💡</span>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">About This Section</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">About This Section</h3>
             <p className="text-slate-400 text-sm max-w-2xl mx-auto">
               We aggregate articles and blog posts from 23 space industry sources including law firm
               blogs (StarLaw, Space Legal Issues, Sheppard Mullin), policy analysis (CSIS, Space Policy Online),

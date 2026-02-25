@@ -132,7 +132,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             >
               {typeInfo?.label}
             </span>
-            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded flex items-center gap-1">
+            <span className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded flex items-center gap-1">
               {categoryInfo?.icon} {categoryInfo?.label}
             </span>
             {opportunity.featured && (
@@ -147,7 +147,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             )}
           </div>
 
-          <h3 className="font-semibold text-slate-900 text-lg mb-2">
+          <h3 className="font-semibold text-white text-lg mb-2">
             {opportunity.title}
           </h3>
 
@@ -200,7 +200,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
                   return (
                     <span
                       key={audience}
-                      className="text-xs bg-slate-100/50 text-slate-600 px-2 py-1 rounded flex items-center gap-1"
+                      className="text-xs bg-slate-800/50 text-slate-400 px-2 py-1 rounded flex items-center gap-1"
                     >
                       {info?.icon} {info?.label}
                     </span>
@@ -247,10 +247,10 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
                 {expanded ? '▼ Hide Analysis' : '▶ Show Full Analysis'}
               </button>
               {expanded && (
-                <div className="mt-3 p-4 bg-slate-50 rounded-lg">
+                <div className="mt-3 p-4 bg-slate-800/50 rounded-lg">
                   {opportunity.fullAnalysis && (
                     <div className="mb-3">
-                      <h4 className="text-slate-900 font-medium mb-2">Full Analysis</h4>
+                      <h4 className="text-white font-medium mb-2">Full Analysis</h4>
                       <p className="text-slate-400 text-sm whitespace-pre-wrap">
                         {opportunity.fullAnalysis}
                       </p>
@@ -258,13 +258,13 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
                   )}
                   {opportunity.aiReasoning && (
                     <div>
-                      <h4 className="text-slate-900 font-medium mb-2">🤖 AI Reasoning</h4>
+                      <h4 className="text-white font-medium mb-2">🤖 AI Reasoning</h4>
                       <p className="text-slate-400 text-sm">{opportunity.aiReasoning}</p>
                     </div>
                   )}
                   {opportunity.relatedTrends && opportunity.relatedTrends.length > 0 && (
                     <div className="mt-3">
-                      <h4 className="text-slate-900 font-medium mb-2">Related Trends</h4>
+                      <h4 className="text-white font-medium mb-2">Related Trends</h4>
                       <div className="flex flex-wrap gap-1">
                         {(opportunity.relatedTrends as string[]).map((trend) => (
                           <span
@@ -441,7 +441,7 @@ function BusinessOpportunitiesContent() {
             <StaggerContainer className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
               <StaggerItem>
                 <div className="card-elevated p-6 text-center">
-                  <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.total}</div>
+                  <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.total}</div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Opportunities</div>
                 </div>
               </StaggerItem>
@@ -484,7 +484,7 @@ function BusinessOpportunitiesContent() {
                     id="opp-type-filter"
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value as OpportunityType | '')}
-                    className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
                   >
                     <option value="">All Types</option>
                     {OPPORTUNITY_TYPES.map((type) => (
@@ -503,7 +503,7 @@ function BusinessOpportunitiesContent() {
                     onChange={(e) =>
                       setSelectedCategory(e.target.value as OpportunityCategory | '')
                     }
-                    className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
                   >
                     <option value="">All Categories</option>
                     {OPPORTUNITY_CATEGORIES.map((cat) => (
@@ -522,7 +522,7 @@ function BusinessOpportunitiesContent() {
                     onChange={(e) =>
                       setSelectedAudience(e.target.value as TargetAudience | '')
                     }
-                    className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
                   >
                     <option value="">All Audiences</option>
                     <option value="entrepreneurs">💡 Entrepreneurs</option>
@@ -540,7 +540,7 @@ function BusinessOpportunitiesContent() {
                     onChange={(e) =>
                       setSelectedDifficulty(e.target.value as OpportunityDifficulty | '')
                     }
-                    className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
                   >
                     <option value="">All Difficulties</option>
                     {(Object.entries(DIFFICULTY_INFO) as [OpportunityDifficulty, { label: string; color: string }][]).map(([value, info]) => (
@@ -595,7 +595,7 @@ function BusinessOpportunitiesContent() {
         ) : opportunities.length === 0 && !stats?.total ? (
           <div className="card p-12 text-center">
             <span className="text-6xl block mb-4">💼</span>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-2">
+            <h2 className="text-2xl font-semibold text-white mb-2">
               No Opportunities Yet
             </h2>
             <p className="text-slate-400 mb-6">
@@ -619,7 +619,7 @@ function BusinessOpportunitiesContent() {
         ) : opportunities.length === 0 ? (
           <div className="card p-12 text-center">
             <span className="text-6xl block mb-4">🔍</span>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-2">No Results</h2>
+            <h2 className="text-2xl font-semibold text-white mb-2">No Results</h2>
             <p className="text-slate-400">
               No opportunities match your filters. Try adjusting your criteria.
             </p>
@@ -637,7 +637,7 @@ function BusinessOpportunitiesContent() {
               <div className="card p-6 mt-8 border-dashed">
                 <div className="text-center">
                   <span className="text-4xl block mb-3">🤖</span>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                  <h3 className="text-lg font-semibold text-white mb-2">
                     About AI-Powered Opportunities
                   </h3>
                   <p className="text-slate-400 text-sm max-w-3xl mx-auto">

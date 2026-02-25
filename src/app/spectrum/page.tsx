@@ -515,11 +515,11 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
     <div className="card p-5 hover:border-nebula-500/50 transition-all">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-lg shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center text-lg shrink-0">
             {allocation.filingStatus === 'congested' ? '!' : '~'}
           </div>
           <div>
-            <h4 className="font-semibold text-slate-900 text-base">
+            <h4 className="font-semibold text-white text-base">
               {bandInfo?.label || allocation.bandName}
             </h4>
             <span className="text-slate-400 text-sm">
@@ -540,19 +540,19 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <div>
           <span className="text-slate-400 text-xs block mb-1">Allocation</span>
-          <span className="text-slate-900 text-sm font-medium capitalize">{allocation.allocationType}</span>
+          <span className="text-white text-sm font-medium capitalize">{allocation.allocationType}</span>
         </div>
         <div>
           <span className="text-slate-400 text-xs block mb-1">Primary Service</span>
-          <span className="text-slate-900 text-sm font-medium">{SERVICE_LABELS[allocation.service] || allocation.service}</span>
+          <span className="text-white text-sm font-medium">{SERVICE_LABELS[allocation.service] || allocation.service}</span>
         </div>
         <div>
           <span className="text-slate-400 text-xs block mb-1">Region</span>
-          <span className="text-slate-900 text-sm font-medium">{allocation.region}</span>
+          <span className="text-white text-sm font-medium">{allocation.region}</span>
         </div>
         <div>
           <span className="text-slate-400 text-xs block mb-1">Active Filings</span>
-          <span className="text-slate-900 text-sm font-medium">{allocation.numberOfFilings}</span>
+          <span className="text-white text-sm font-medium">{allocation.numberOfFilings}</span>
         </div>
       </div>
 
@@ -564,7 +564,7 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
             congestion.percent > 70 ? 'text-red-400' : congestion.percent > 40 ? 'text-yellow-400' : 'text-green-400'
           }`}>{congestion.label}</span>
         </div>
-        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+        <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
           <div
             className={`h-full ${congestion.color} rounded-full transition-all duration-500`}
             style={{ width: `${congestion.percent}%`, opacity: 0.8 }}
@@ -573,7 +573,7 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between flex-wrap gap-2 pt-3 border-t border-slate-200">
+      <div className="flex items-center justify-between flex-wrap gap-2 pt-3 border-t border-slate-700/50">
         <div className="flex items-center gap-3 text-xs text-slate-400">
           {allocation.assignedTo && (
             <span>Assigned: <span className="text-slate-400">{allocation.assignedTo}</span></span>
@@ -593,7 +593,7 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
       </div>
 
       {/* Cross-module link: View regulatory framework */}
-      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-200">
+      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-700/50">
         <Link
           href="/compliance"
           className="text-xs text-nebula-300 hover:text-nebula-200 underline underline-offset-2 transition-colors"
@@ -616,14 +616,14 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
 
 function FilingCard({ filing }: { filing: SpectrumFiling }) {
   const statusEntry = OPERATOR_FILING_STATUSES.find((s) => s.value === filing.status);
-  const statusClass = statusEntry?.color || 'bg-slate-100 text-slate-500';
+  const statusClass = statusEntry?.color || 'bg-slate-700/50 text-slate-500';
   const statusLabel = statusEntry?.label || filing.status;
 
   return (
     <div className="card p-5 hover:border-nebula-500/50 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-slate-900 text-base">{filing.operator}</h4>
+          <h4 className="font-semibold text-white text-base">{filing.operator}</h4>
           <p className="text-slate-400 text-sm mt-0.5">{filing.system}</p>
         </div>
         <span className={`text-xs font-medium px-2.5 py-1 rounded whitespace-nowrap ${statusClass}`}>
@@ -634,21 +634,21 @@ function FilingCard({ filing }: { filing: SpectrumFiling }) {
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div>
           <span className="text-slate-400 text-xs block mb-0.5">Band</span>
-          <span className="text-slate-900 text-sm font-medium">{filing.bandName}</span>
+          <span className="text-white text-sm font-medium">{filing.bandName}</span>
         </div>
         <div>
           <span className="text-slate-400 text-xs block mb-0.5">Frequency Range</span>
-          <span className="text-slate-900 text-sm font-medium">
+          <span className="text-white text-sm font-medium">
             {formatFrequency(filing.frequencyMin)} - {formatFrequency(filing.frequencyMax)}
           </span>
         </div>
         <div>
           <span className="text-slate-400 text-xs block mb-0.5">Orbit Type</span>
-          <span className="text-slate-900 text-sm font-medium">{filing.orbitType}</span>
+          <span className="text-white text-sm font-medium">{filing.orbitType}</span>
         </div>
         <div>
           <span className="text-slate-400 text-xs block mb-0.5">Satellites</span>
-          <span className="text-slate-900 text-sm font-medium">
+          <span className="text-white text-sm font-medium">
             {filing.numberOfSatellites?.toLocaleString() || '--'}
           </span>
         </div>
@@ -664,7 +664,7 @@ function FilingCard({ filing }: { filing: SpectrumFiling }) {
         )}
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-slate-200">
+      <div className="flex items-center justify-between pt-3 border-t border-slate-700/50">
         <span className="text-xs text-slate-400">
           Agency: <span className="text-nebula-300 font-medium">{filing.agency}</span>
         </span>
@@ -673,7 +673,7 @@ function FilingCard({ filing }: { filing: SpectrumFiling }) {
 
       {/* Cross-module link: operator -> orbital slots */}
       {isKnownSatelliteOperator(filing.operator) && (
-        <div className="mt-3 pt-3 border-t border-slate-200">
+        <div className="mt-3 pt-3 border-t border-slate-700/50">
           <Link
             href="/orbital-slots?tab=operators"
             className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-nebula-500/10 text-nebula-300 hover:bg-nebula-500/20 transition-colors"
@@ -943,7 +943,7 @@ function SpectrumContent() {
           />
           <div className="card p-12 text-center max-w-lg mx-auto">
             <div className="text-5xl mb-4">~</div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">No Spectrum Data Available</h3>
+            <h3 className="text-xl font-semibold text-white mb-2">No Spectrum Data Available</h3>
             <p className="text-slate-400 mb-6">
               Load satellite frequency allocations, spectrum filings, and coordination data to get started.
             </p>
@@ -992,7 +992,7 @@ function SpectrumContent() {
         {!isAuctionTab ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="card-elevated p-6 text-center">
-              <div className="text-4xl font-bold font-display tracking-tight text-slate-900">
+              <div className="text-4xl font-bold font-display tracking-tight text-white">
                 {data.stats.totalBands}
               </div>
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -1076,8 +1076,8 @@ function SpectrumContent() {
               onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
-                  : 'bg-slate-100/50 text-slate-500 hover:bg-slate-100/50'
+                  ? 'bg-nebula-500 text-white shadow-glow-sm'
+                  : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
               }`}
             >
               {tab.label}
@@ -1085,8 +1085,8 @@ function SpectrumContent() {
                 <span
                   className={`text-xs px-1.5 py-0.5 rounded-full ${
                     activeTab === tab.id
-                      ? 'bg-white/20 text-slate-900'
-                      : 'bg-slate-100 text-slate-500'
+                      ? 'bg-white/20 text-white'
+                      : 'bg-slate-700/50 text-slate-500'
                   }`}
                 >
                   {tab.count}
@@ -1096,7 +1096,7 @@ function SpectrumContent() {
           ))}
 
           {/* Divider */}
-          <div className="w-px bg-slate-200 mx-1 self-stretch hidden md:block" />
+          <div className="w-px bg-slate-600 mx-1 self-stretch hidden md:block" />
           <span className="text-xs text-slate-400 uppercase tracking-widest font-medium self-center px-1 hidden md:inline">Auctions</span>
 
           {([
@@ -1111,8 +1111,8 @@ function SpectrumContent() {
               onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
-                  : 'bg-slate-100/50 text-slate-500 hover:bg-slate-100/50'
+                  ? 'bg-nebula-500 text-white shadow-glow-sm'
+                  : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
               }`}
             >
               {tab.label}
@@ -1120,8 +1120,8 @@ function SpectrumContent() {
                 <span
                   className={`text-xs px-1.5 py-0.5 rounded-full ${
                     activeTab === tab.id
-                      ? 'bg-white/20 text-slate-900'
-                      : 'bg-slate-100 text-slate-500'
+                      ? 'bg-white/20 text-white'
+                      : 'bg-slate-700/50 text-slate-500'
                   }`}
                 >
                   {tab.count}
@@ -1137,7 +1137,7 @@ function SpectrumContent() {
             {/* Spectrum Overview Bar */}
             <div className="card p-5 mb-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-slate-900 font-semibold">Spectrum Overview</h3>
+                <h3 className="text-white font-semibold">Spectrum Overview</h3>
                 <ExportButton
                   data={enrichedAllocations}
                   filename="spectrum-band-allocations"
@@ -1157,7 +1157,7 @@ function SpectrumContent() {
                       title={`${alloc.bandName}: ${formatFrequency(alloc.frequencyMin)} - ${formatFrequency(alloc.frequencyMax)}`}
                     >
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-[10px] font-bold text-slate-900/80 truncate px-1">
+                        <span className="text-[10px] font-bold text-white/80 truncate px-1">
                           {widthPercent > 8 ? alloc.bandName : ''}
                         </span>
                       </div>
@@ -1193,7 +1193,7 @@ function SpectrumContent() {
                 <select
                   value={statusFilter}
                   onChange={(e) => handleStatusFilterChange(e.target.value)}
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-nebula-500/50"
+                  className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-nebula-500/50"
                 >
                   <option value="">All Statuses</option>
                   {OPERATOR_FILING_STATUSES.map((s) => (
@@ -1204,7 +1204,7 @@ function SpectrumContent() {
                 <select
                   value={bandFilter}
                   onChange={(e) => handleBandFilterChange(e.target.value)}
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-nebula-500/50"
+                  className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-nebula-500/50"
                 >
                   <option value="">All Bands</option>
                   {filingBands.map((band) => {
@@ -1218,7 +1218,7 @@ function SpectrumContent() {
                 {(statusFilter || bandFilter) && (
                   <button
                     onClick={handleClearFilters}
-                    className="px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-slate-900 transition-colors"
+                    className="px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition-colors"
                   >
                     Clear Filters
                   </button>
@@ -1241,7 +1241,7 @@ function SpectrumContent() {
             {filteredFilings.length === 0 ? (
               <div className="text-center py-20">
                 <div className="text-5xl mb-4">~</div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-2">No filings found</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">No filings found</h3>
                 <p className="text-slate-400 mb-4">
                   {(statusFilter || bandFilter)
                     ? 'Try adjusting your filters to see more results.'
@@ -1271,7 +1271,7 @@ function SpectrumContent() {
           <div className="space-y-6">
             {/* Coordination Overview */}
             <div className="card p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-3">Spectrum Coordination Process</h3>
+              <h3 className="text-lg font-semibold text-white mb-3">Spectrum Coordination Process</h3>
               <p className="text-slate-400 text-sm leading-relaxed mb-4">
                 Satellite spectrum coordination is the process by which operators negotiate with existing
                 spectrum users to minimize interference. This is required before any new satellite system
@@ -1289,7 +1289,7 @@ function SpectrumContent() {
                     <div className="w-8 h-8 rounded-full bg-nebula-500/20 text-nebula-300 font-bold text-sm flex items-center justify-center mx-auto mb-3">
                       {item.step}
                     </div>
-                    <h4 className="text-slate-900 font-semibold text-sm mb-1">{item.title}</h4>
+                    <h4 className="text-white font-semibold text-sm mb-1">{item.title}</h4>
                     <p className="text-slate-400 text-xs leading-relaxed">{item.desc}</p>
                   </div>
                 ))}
@@ -1305,7 +1305,7 @@ function SpectrumContent() {
                     ITU
                   </div>
                   <div>
-                    <h4 className="text-slate-900 font-semibold">International Telecommunication Union</h4>
+                    <h4 className="text-white font-semibold">International Telecommunication Union</h4>
                     <p className="text-slate-400 text-sm">United Nations specialized agency</p>
                   </div>
                 </div>
@@ -1317,23 +1317,23 @@ function SpectrumContent() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-400">Coordination Framework</span>
-                    <span className="text-slate-900">Radio Regulations (RR)</span>
+                    <span className="text-white">Radio Regulations (RR)</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-400">Filing Database</span>
-                    <span className="text-slate-900">Space Network Systems (SNS)</span>
+                    <span className="text-white">Space Network Systems (SNS)</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-400">Key Conference</span>
-                    <span className="text-slate-900">World Radiocommunication Conference (WRC)</span>
+                    <span className="text-white">World Radiocommunication Conference (WRC)</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-400">Regions</span>
-                    <span className="text-slate-900">Region 1, 2, 3 (Global)</span>
+                    <span className="text-white">Region 1, 2, 3 (Global)</span>
                   </div>
                 </div>
                 {/* Cross-module link to compliance */}
-                <div className="mt-4 pt-3 border-t border-slate-200">
+                <div className="mt-4 pt-3 border-t border-slate-700/50">
                   <Link
                     href="/compliance?tab=regulations"
                     className="inline-flex items-center gap-1.5 text-xs text-nebula-300 hover:text-nebula-200 transition-colors"
@@ -1353,7 +1353,7 @@ function SpectrumContent() {
                     FCC
                   </div>
                   <div>
-                    <h4 className="text-slate-900 font-semibold">Federal Communications Commission</h4>
+                    <h4 className="text-white font-semibold">Federal Communications Commission</h4>
                     <p className="text-slate-400 text-sm">United States regulator</p>
                   </div>
                 </div>
@@ -1365,23 +1365,23 @@ function SpectrumContent() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-400">Satellite Bureau</span>
-                    <span className="text-slate-900">Space Bureau (est. 2023)</span>
+                    <span className="text-white">Space Bureau (est. 2023)</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-400">Filing System</span>
-                    <span className="text-slate-900">IBFS / MyIBFS</span>
+                    <span className="text-white">IBFS / MyIBFS</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-400">Key Dockets</span>
-                    <span className="text-slate-900">NGSO FSS, MSS, C-band transition</span>
+                    <span className="text-white">NGSO FSS, MSS, C-band transition</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-400">Jurisdiction</span>
-                    <span className="text-slate-900">United States (ITU Region 2)</span>
+                    <span className="text-white">United States (ITU Region 2)</span>
                   </div>
                 </div>
                 {/* Cross-module link to compliance */}
-                <div className="mt-4 pt-3 border-t border-slate-200">
+                <div className="mt-4 pt-3 border-t border-slate-700/50">
                   <Link
                     href="/compliance?tab=regulations"
                     className="inline-flex items-center gap-1.5 text-xs text-nebula-300 hover:text-nebula-200 transition-colors"
@@ -1397,11 +1397,11 @@ function SpectrumContent() {
 
             {/* Coordination Requirements Table */}
             <div className="card p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Bands Requiring Coordination</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">Bands Requiring Coordination</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-200">
+                    <tr className="border-b border-slate-700/50">
                       <th className="text-left text-slate-400 text-xs uppercase tracking-widest font-medium py-3 pr-4">Band</th>
                       <th className="text-left text-slate-400 text-xs uppercase tracking-widest font-medium py-3 pr-4">Range</th>
                       <th className="text-left text-slate-400 text-xs uppercase tracking-widest font-medium py-3 pr-4">Service</th>
@@ -1416,8 +1416,8 @@ function SpectrumContent() {
                       .map((alloc) => {
                         const statusInfo = FILING_STATUS_INFO[alloc.filingStatus] || FILING_STATUS_INFO.available;
                         return (
-                          <tr key={alloc.id} className="border-b border-slate-100 last:border-0">
-                            <td className="py-3 pr-4 text-slate-900 font-medium">{alloc.bandName}</td>
+                          <tr key={alloc.id} className="border-b border-slate-700/50 last:border-0">
+                            <td className="py-3 pr-4 text-white font-medium">{alloc.bandName}</td>
                             <td className="py-3 pr-4 text-slate-400">
                               {formatFrequency(alloc.frequencyMin)} - {formatFrequency(alloc.frequencyMax)}
                             </td>
@@ -1439,7 +1439,7 @@ function SpectrumContent() {
 
             {/* Additional Context */}
             <div className="card p-6 border-dashed">
-              <h3 className="text-slate-900 font-semibold mb-3">Key Considerations</h3>
+              <h3 className="text-white font-semibold mb-3">Key Considerations</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <h4 className="text-nebula-300 text-sm font-medium mb-2">NGSO/GSO Sharing</h4>
@@ -1470,7 +1470,7 @@ function SpectrumContent() {
 
             {/* Cross-module links for coordination resources */}
             <div className="card p-5 border border-nebula-500/20">
-              <h3 className="text-slate-900 font-semibold mb-3">Related Resources</h3>
+              <h3 className="text-white font-semibold mb-3">Related Resources</h3>
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/compliance?tab=regulations"

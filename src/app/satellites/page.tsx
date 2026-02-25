@@ -228,7 +228,7 @@ function SatelliteTrackerContent() {
             <ScrollReveal>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-slate-900">
+                <div className="text-2xl font-bold font-display text-white">
                   {stats?.total.toLocaleString() || 0}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -291,14 +291,14 @@ function SatelliteTrackerContent() {
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
-                      : 'bg-slate-100/50 text-slate-500 hover:bg-slate-100'
+                      : 'bg-slate-800/50 text-slate-500 hover:bg-slate-700'
                   }`}
                 >
                   {tab.label}
                   {tab.count !== undefined && tab.count > 0 && (
                     <span
                       className={`text-xs px-1.5 py-0.5 rounded-full ${
-                        activeTab === tab.id ? 'bg-slate-200 text-slate-900' : 'bg-slate-100 text-slate-500'
+                        activeTab === tab.id ? 'bg-slate-600 text-white' : 'bg-slate-700 text-slate-400'
                       }`}
                     >
                       {tab.count}
@@ -319,7 +319,7 @@ function SatelliteTrackerContent() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* By Orbit Type */}
                   <div className="card p-5">
-                    <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                       <span>🛰️</span> Distribution by Orbit Type
                     </h3>
                     <div className="space-y-4">
@@ -339,7 +339,7 @@ function SatelliteTrackerContent() {
                                 {count} ({pct.toFixed(1)}%)
                               </span>
                             </div>
-                            <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-gradient-to-r from-nebula-500 to-nebula-400 rounded-full transition-all"
                                 style={{ width: `${Math.min(pct, 100)}%` }}
@@ -353,7 +353,7 @@ function SatelliteTrackerContent() {
 
                   {/* By Purpose */}
                   <div className="card p-5">
-                    <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                       <span>🎯</span> Distribution by Purpose
                     </h3>
                     <div className="space-y-4">
@@ -379,7 +379,7 @@ function SatelliteTrackerContent() {
                                   {count} ({pct.toFixed(1)}%)
                                 </span>
                               </div>
-                              <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                              <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
                                 <div
                                   className={`h-full bg-gradient-to-r ${purposeColors[purpose] || 'from-slate-500 to-slate-400'} rounded-full transition-all`}
                                   style={{ width: `${Math.min(pct, 100)}%` }}
@@ -401,7 +401,7 @@ function SatelliteTrackerContent() {
                 {/* Notable Satellites */}
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                       <span>⭐</span> Notable Satellites
                     </h3>
                     <button
@@ -428,10 +428,10 @@ function SatelliteTrackerContent() {
                 {/* Data Sources */}
                 <ScrollReveal>
                 <div className="card p-5 border-dashed">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-3">Data Sources</h3>
+                  <h3 className="text-lg font-semibold text-white mb-3">Data Sources</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
                     <div>
-                      <h4 className="text-slate-900 font-medium mb-2">Tracking Data</h4>
+                      <h4 className="text-white font-medium mb-2">Tracking Data</h4>
                       <ul className="space-y-1">
                         <li>CelesTrak TLE Catalog</li>
                         <li>Space-Track.org Conjunction Data</li>
@@ -440,7 +440,7 @@ function SatelliteTrackerContent() {
                       </ul>
                     </div>
                     <div>
-                      <h4 className="text-slate-900 font-medium mb-2">Satellite Registries</h4>
+                      <h4 className="text-white font-medium mb-2">Satellite Registries</h4>
                       <ul className="space-y-1">
                         <li>UCS Satellite Database</li>
                         <li>NASA NSSDCA Master Catalog</li>
@@ -484,7 +484,7 @@ function SatelliteTrackerContent() {
                         placeholder="Search by name, NORAD ID, or operator..."
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-nebula-500 focus:ring-1 focus:ring-nebula-500 text-sm"
+                        className="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-nebula-500 focus:ring-1 focus:ring-nebula-500 text-sm"
                       />
                     </div>
 
@@ -495,7 +495,7 @@ function SatelliteTrackerContent() {
                         id="satellite-orbit-filter"
                         value={orbitFilter}
                         onChange={(e) => handleOrbitFilterChange(e.target.value as OrbitType | '')}
-                        className="px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-nebula-500"
+                        className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-nebula-500"
                       >
                         <option value="">All Orbits</option>
                         {ORBIT_TYPES.map((orbit) => (
@@ -513,7 +513,7 @@ function SatelliteTrackerContent() {
                         id="satellite-status-filter"
                         value={statusFilter}
                         onChange={(e) => handleStatusFilterChange(e.target.value as SatelliteStatus | '')}
-                        className="px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-nebula-500"
+                        className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-nebula-500"
                       >
                         <option value="">All Status</option>
                         {STATUS_OPTIONS.map((status) => (
@@ -548,7 +548,7 @@ function SatelliteTrackerContent() {
                 {satellites.length === 0 ? (
                   <div className="text-center py-16">
                     <span className="text-5xl block mb-3">🔍</span>
-                    <h3 className="text-xl font-semibold text-slate-900 mb-2">No Satellites Found</h3>
+                    <h3 className="text-xl font-semibold text-white mb-2">No Satellites Found</h3>
                     <p className="text-slate-400">
                       Try adjusting your search or filters.
                     </p>
@@ -570,7 +570,7 @@ function SatelliteTrackerContent() {
               <div className="space-y-6">
                 {/* Operator Summary */}
                 <div className="card p-5">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                     <span>🏢</span> Top Satellite Operators
                   </h3>
                   <div className="space-y-4">
@@ -582,13 +582,13 @@ function SatelliteTrackerContent() {
                           <div className="flex items-center justify-between mb-1">
                             <div className="flex items-center gap-2">
                               <span className="text-slate-400 text-sm font-mono">#{idx + 1}</span>
-                              <span className="text-slate-900 font-medium">{operator.name}</span>
+                              <span className="font-medium text-white">{operator.name}</span>
                             </div>
                             <span className="text-slate-400 text-sm font-medium">
                               {operator.count} satellites ({pct.toFixed(1)}%)
                             </span>
                           </div>
-                          <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                          <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
                             <div
                               className="h-full bg-gradient-to-r from-nebula-500 to-plasma-400 rounded-full transition-all"
                               style={{ width: `${Math.min(pct * 3, 100)}%` }}
@@ -604,7 +604,7 @@ function SatelliteTrackerContent() {
                 <div className="card p-5 border border-nebula-500/30 bg-gradient-to-br from-nebula-900/10 to-transparent">
                   <div className="flex items-center justify-between flex-wrap gap-4">
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 mb-1">
+                      <h3 className="text-lg font-semibold text-white mb-1">
                         Want more operator details?
                       </h3>
                       <p className="text-slate-400 text-sm">

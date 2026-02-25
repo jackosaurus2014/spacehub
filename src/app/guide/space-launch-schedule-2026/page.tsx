@@ -122,7 +122,7 @@ export default function SpaceLaunchSchedule2026Page() {
 
           {/* Table of Contents */}
           <nav className="card p-6 mb-10">
-            <h2 className="text-lg font-bold text-slate-900 mb-3">Table of Contents</h2>
+            <h2 className="text-lg font-bold text-white mb-3">Table of Contents</h2>
             <ol className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {TOC.map((item, i) => (
                 <li key={item.id}>
@@ -141,10 +141,10 @@ export default function SpaceLaunchSchedule2026Page() {
           <article className="card p-8 space-y-10">
             {/* Overview */}
             <section id="overview">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Launch Activity Overview</h2>
+              <h2 className="text-2xl font-bold text-white mb-4">Launch Activity Overview</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 2026 is shaping up to be the busiest year in spaceflight history. The global space industry
-                is projected to conduct <strong className="text-slate-700">over 250 orbital launches</strong>,
+                is projected to conduct <strong className="text-slate-300">over 250 orbital launches</strong>,
                 building on the record-breaking cadence of 2024 and 2025. SpaceX continues to dominate with
                 roughly 40% of global launches, while China maintains a robust 50+ launch campaign.
               </p>
@@ -154,11 +154,11 @@ export default function SpaceLaunchSchedule2026Page() {
                 for dedicated rideshare missions. The mega-constellation buildout continues with Starlink,
                 OneWeb, and Amazon&apos;s Project Kuiper all requiring dozens of flights.
               </p>
-              <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-4">
-                <p className="text-cyan-800 text-sm">
+              <div className="bg-cyan-900/20 border border-cyan-700/50 rounded-lg p-4">
+                <p className="text-cyan-300 text-sm">
                   <strong>Live tracking:</strong> SpaceNexus tracks every launch in real time with countdown
                   timers, mission details, and launch vehicle specs.{' '}
-                  <Link href="/launch" className="text-cyan-600 underline hover:text-cyan-500">
+                  <Link href="/launch" className="text-cyan-400 underline hover:text-cyan-500">
                     View the live launch dashboard &rarr;
                   </Link>
                 </p>
@@ -167,7 +167,7 @@ export default function SpaceLaunchSchedule2026Page() {
 
             {/* Providers */}
             <section id="providers">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Launch Providers in 2026</h2>
+              <h2 className="text-2xl font-bold text-white mb-4">Launch Providers in 2026</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 The global launch services market has expanded dramatically. Here are the major providers
                 and their expected 2026 launch cadence:
@@ -175,19 +175,19 @@ export default function SpaceLaunchSchedule2026Page() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="py-3 pr-4 text-left text-slate-700 font-semibold">Provider</th>
-                      <th className="py-3 pr-4 text-left text-slate-700 font-semibold">Vehicles</th>
-                      <th className="py-3 pr-4 text-left text-slate-700 font-semibold">Est. Missions</th>
-                      <th className="py-3 text-left text-slate-700 font-semibold">Country</th>
+                    <tr className="border-b border-slate-700">
+                      <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Provider</th>
+                      <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Vehicles</th>
+                      <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Est. Missions</th>
+                      <th className="py-3 text-left text-slate-300 font-semibold">Country</th>
                     </tr>
                   </thead>
                   <tbody>
                     {LAUNCH_PROVIDERS.map((provider) => (
-                      <tr key={provider.name} className="border-b border-slate-100">
-                        <td className="py-3 pr-4 text-slate-900 font-medium">{provider.name}</td>
+                      <tr key={provider.name} className="border-b border-slate-700/50">
+                        <td className="py-3 pr-4 text-white font-medium">{provider.name}</td>
                         <td className="py-3 pr-4 text-slate-400">{provider.vehicle}</td>
-                        <td className="py-3 pr-4 text-cyan-600 font-semibold">{provider.missions}</td>
+                        <td className="py-3 pr-4 text-cyan-400 font-semibold">{provider.missions}</td>
                         <td className="py-3 text-slate-400">{provider.country}</td>
                       </tr>
                     ))}
@@ -203,7 +203,7 @@ export default function SpaceLaunchSchedule2026Page() {
 
             {/* Monthly */}
             <section id="monthly">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Month-by-Month Launch Schedule</h2>
+              <h2 className="text-2xl font-bold text-white mb-4">Month-by-Month Launch Schedule</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Launch schedules are dynamic and subject to delays. SpaceNexus updates this data in real time
                 as providers announce schedule changes. For the most current information, visit our{' '}
@@ -211,9 +211,9 @@ export default function SpaceLaunchSchedule2026Page() {
               </p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month) => (
-                  <div key={month} className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
-                    <div className="text-sm font-semibold text-slate-700">{month} 2026</div>
-                    <div className="text-lg font-bold text-cyan-600 mt-1">20-25</div>
+                  <div key={month} className="bg-slate-800/50 border border-slate-700 rounded-lg p-3 text-center">
+                    <div className="text-sm font-semibold text-slate-300">{month} 2026</div>
+                    <div className="text-lg font-bold text-cyan-400 mt-1">20-25</div>
                     <div className="text-xs text-slate-400">expected launches</div>
                   </div>
                 ))}
@@ -222,32 +222,32 @@ export default function SpaceLaunchSchedule2026Page() {
 
             {/* Vehicles */}
             <section id="vehicles">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Launch Vehicles Active in 2026</h2>
+              <h2 className="text-2xl font-bold text-white mb-4">Launch Vehicles Active in 2026</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 The launch vehicle landscape in 2026 spans from small dedicated launchers (Electron, SSLV)
                 to super-heavy lift systems (Starship, SLS). Key vehicles to watch:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-slate-900 text-sm">SpaceX Starship</h3>
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                  <h3 className="font-semibold text-white text-sm">SpaceX Starship</h3>
                   <p className="text-slate-400 text-xs mt-1">
                     Super-heavy lift. 150t to LEO. Fully reusable target. Key for Artemis HLS and Starlink V2.
                   </p>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-slate-900 text-sm">Blue Origin New Glenn</h3>
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                  <h3 className="font-semibold text-white text-sm">Blue Origin New Glenn</h3>
                   <p className="text-slate-400 text-xs mt-1">
                     Heavy lift. 45t to LEO. Reusable first stage. Key for Project Kuiper constellation.
                   </p>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-slate-900 text-sm">Ariane 6</h3>
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                  <h3 className="font-semibold text-white text-sm">Ariane 6</h3>
                   <p className="text-slate-400 text-xs mt-1">
                     European heavy lift. A62 and A64 variants. Replacing Ariane 5 for institutional missions.
                   </p>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-slate-900 text-sm">Rocket Lab Neutron</h3>
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                  <h3 className="font-semibold text-white text-sm">Rocket Lab Neutron</h3>
                   <p className="text-slate-400 text-xs mt-1">
                     Medium lift. 13t to LEO. Reusable. Targeting constellation deployment and government missions.
                   </p>
@@ -262,20 +262,20 @@ export default function SpaceLaunchSchedule2026Page() {
 
             {/* Sites */}
             <section id="sites">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Global Launch Sites</h2>
+              <h2 className="text-2xl font-bold text-white mb-4">Global Launch Sites</h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="py-3 pr-4 text-left text-slate-700 font-semibold">Site</th>
-                      <th className="py-3 pr-4 text-left text-slate-700 font-semibold">Location</th>
-                      <th className="py-3 text-left text-slate-700 font-semibold">Active Pads</th>
+                    <tr className="border-b border-slate-700">
+                      <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Site</th>
+                      <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Location</th>
+                      <th className="py-3 text-left text-slate-300 font-semibold">Active Pads</th>
                     </tr>
                   </thead>
                   <tbody>
                     {LAUNCH_SITES.map((site) => (
-                      <tr key={site.name} className="border-b border-slate-100">
-                        <td className="py-3 pr-4 text-slate-900 font-medium">{site.name}</td>
+                      <tr key={site.name} className="border-b border-slate-700/50">
+                        <td className="py-3 pr-4 text-white font-medium">{site.name}</td>
                         <td className="py-3 pr-4 text-slate-400">{site.location}</td>
                         <td className="py-3 text-slate-400">{site.pads}</td>
                       </tr>
@@ -292,7 +292,7 @@ export default function SpaceLaunchSchedule2026Page() {
 
             {/* Milestones */}
             <section id="milestones">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Key Milestones to Watch in 2026</h2>
+              <h2 className="text-2xl font-bold text-white mb-4">Key Milestones to Watch in 2026</h2>
               <ul className="space-y-3">
                 {[
                   'SpaceX Starship crewed orbital mission (targeting Q3-Q4)',
@@ -314,7 +314,7 @@ export default function SpaceLaunchSchedule2026Page() {
 
             {/* How to Track */}
             <section id="track">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">How to Track Launches with SpaceNexus</h2>
+              <h2 className="text-2xl font-bold text-white mb-4">How to Track Launches with SpaceNexus</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 SpaceNexus provides the most comprehensive launch tracking experience available:
               </p>
@@ -349,11 +349,11 @@ export default function SpaceLaunchSchedule2026Page() {
 
             {/* FAQ */}
             <section id="faq">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
+              <h2 className="text-2xl font-bold text-white mb-4">Frequently Asked Questions</h2>
               <div className="space-y-4">
                 {FAQ_ITEMS.map((faq) => (
-                  <div key={faq.question} className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-slate-900 text-sm mb-2">{faq.question}</h3>
+                  <div key={faq.question} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                    <h3 className="font-semibold text-white text-sm mb-2">{faq.question}</h3>
                     <p className="text-slate-400 text-sm leading-relaxed">{faq.answer}</p>
                   </div>
                 ))}
@@ -361,8 +361,8 @@ export default function SpaceLaunchSchedule2026Page() {
             </section>
 
             {/* Related Content */}
-            <section className="pt-6 border-t border-slate-200">
-              <h3 className="text-lg font-bold text-slate-900 mb-4">Related Guides</h3>
+            <section className="pt-6 border-t border-slate-700">
+              <h3 className="text-lg font-bold text-white mb-4">Related Guides</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <Link href="/guide/space-industry" className="text-cyan-500 hover:text-cyan-400 text-sm transition-colors">
                   Complete Guide to the Space Industry &rarr;

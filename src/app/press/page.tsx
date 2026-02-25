@@ -50,7 +50,7 @@ export default function PressPage() {
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Company Overview</h2>
             <div className="card p-8 space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">About SpaceNexus</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">About SpaceNexus</h3>
                 <p className="text-slate-400 leading-relaxed">
                   SpaceNexus is a space industry intelligence platform that consolidates real-time data, market analytics,
                   and business tools into a single, accessible platform. With 10 integrated modules covering launches,
@@ -64,18 +64,18 @@ export default function PressPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-2">Quick Facts</h4>
+                  <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-2">Quick Facts</h4>
                   <ul className="text-slate-400 space-y-1 text-sm">
-                    <li><strong className="text-slate-600">Founded:</strong> 2024</li>
-                    <li><strong className="text-slate-600">Headquarters:</strong> Houston, TX</li>
-                    <li><strong className="text-slate-600">Company:</strong> SpaceNexus LLC</li>
-                    <li><strong className="text-slate-600">Industry:</strong> Space Intelligence / SaaS</li>
-                    <li><strong className="text-slate-600">Model:</strong> Freemium (Free / Pro $29/mo / Enterprise $99/mo)</li>
-                    <li><strong className="text-slate-600">Platforms:</strong> Web (PWA), Android, iOS</li>
+                    <li><strong className="text-slate-400">Founded:</strong> 2024</li>
+                    <li><strong className="text-slate-400">Headquarters:</strong> Houston, TX</li>
+                    <li><strong className="text-slate-400">Company:</strong> SpaceNexus LLC</li>
+                    <li><strong className="text-slate-400">Industry:</strong> Space Intelligence / SaaS</li>
+                    <li><strong className="text-slate-400">Model:</strong> Freemium (Free / Pro $29/mo / Enterprise $99/mo)</li>
+                    <li><strong className="text-slate-400">Platforms:</strong> Web (PWA), Android, iOS</li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-2">Key Differentiators</h4>
+                  <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-2">Key Differentiators</h4>
                   <ul className="text-slate-400 space-y-1 text-sm list-disc list-inside">
                     <li>Only platform combining 10 modules of space intelligence</li>
                     <li>Freemium model vs. $10K+ enterprise-only competitors</li>
@@ -96,7 +96,7 @@ export default function PressPage() {
               {KEY_STATS.map((stat) => (
                 <div key={stat.label} className="card p-6 text-center">
                   <div className="text-3xl font-bold text-cyan-400 mb-1">{stat.value}</div>
-                  <div className="text-sm font-semibold text-slate-900">{stat.label}</div>
+                  <div className="text-sm font-semibold text-white">{stat.label}</div>
                   <div className="text-xs text-slate-400 mt-1">{stat.description}</div>
                 </div>
               ))}
@@ -108,8 +108,8 @@ export default function PressPage() {
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Boilerplate Descriptions</h2>
             <div className="card p-8 space-y-6">
               <div>
-                <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-2">50 Words</h3>
-                <p className="text-slate-400 text-sm leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-2">50 Words</h3>
+                <p className="text-slate-400 text-sm leading-relaxed bg-slate-800/50 p-4 rounded-lg border border-slate-700">
                   SpaceNexus is a space industry intelligence platform that consolidates real-time launches,
                   satellite tracking, market analytics, procurement intelligence, and 200+ company profiles into one
                   accessible platform. Serving aerospace professionals, investors, and government agencies, SpaceNexus
@@ -118,8 +118,8 @@ export default function PressPage() {
               </div>
 
               <div>
-                <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-2">100 Words</h3>
-                <p className="text-slate-400 text-sm leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-2">100 Words</h3>
+                <p className="text-slate-400 text-sm leading-relaxed bg-slate-800/50 p-4 rounded-lg border border-slate-700">
                   SpaceNexus is a space industry intelligence platform that consolidates real-time data, market
                   analytics, and business tools into a single, accessible platform. With 10 integrated modules
                   covering launches, satellite tracking, market intelligence, procurement, company profiles, and
@@ -132,8 +132,8 @@ export default function PressPage() {
               </div>
 
               <div>
-                <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-2">250 Words</h3>
-                <p className="text-slate-400 text-sm leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-2">250 Words</h3>
+                <p className="text-slate-400 text-sm leading-relaxed bg-slate-800/50 p-4 rounded-lg border border-slate-700">
                   SpaceNexus is the most comprehensive space industry intelligence platform available, designed
                   to serve the rapidly growing $1.8 trillion global space economy. The platform integrates 10
                   core modules&mdash;Mission Control, News &amp; Media, Space Market Intelligence, Business
@@ -171,44 +171,44 @@ export default function PressPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 {LOGO_ASSETS.map((asset) => (
-                  <div key={asset.name} className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                  <div key={asset.name} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
                     <div className="bg-[#0f172a] rounded-lg p-4 mb-3 flex items-center justify-center h-24">
                       <span className="text-cyan-400 font-bold text-lg">SN</span>
                     </div>
-                    <h4 className="font-semibold text-slate-900 text-sm">{asset.name}</h4>
+                    <h4 className="font-semibold text-white text-sm">{asset.name}</h4>
                     <p className="text-slate-400 text-xs mt-1">{asset.description}</p>
                   </div>
                 ))}
               </div>
 
               <div>
-                <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-3">Brand Colors</h3>
+                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">Brand Colors</h3>
                 <div className="flex flex-wrap gap-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#0f172a] border border-slate-300" />
+                    <div className="w-8 h-8 rounded-lg bg-[#0f172a] border border-slate-600" />
                     <div>
-                      <div className="text-xs font-semibold text-slate-900">Space Navy</div>
+                      <div className="text-xs font-semibold text-white">Space Navy</div>
                       <div className="text-xs text-slate-400">#0f172a</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#06b6d4] border border-slate-300" />
+                    <div className="w-8 h-8 rounded-lg bg-[#06b6d4] border border-slate-600" />
                     <div>
-                      <div className="text-xs font-semibold text-slate-900">Cyan Accent</div>
+                      <div className="text-xs font-semibold text-white">Cyan Accent</div>
                       <div className="text-xs text-slate-400">#06b6d4</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#7c3aed] border border-slate-300" />
+                    <div className="w-8 h-8 rounded-lg bg-[#7c3aed] border border-slate-600" />
                     <div>
-                      <div className="text-xs font-semibold text-slate-900">Nebula Purple</div>
+                      <div className="text-xs font-semibold text-white">Nebula Purple</div>
                       <div className="text-xs text-slate-400">#7c3aed</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#10b981] border border-slate-300" />
+                    <div className="w-8 h-8 rounded-lg bg-[#10b981] border border-slate-600" />
                     <div>
-                      <div className="text-xs font-semibold text-slate-900">Success Green</div>
+                      <div className="text-xs font-semibold text-white">Success Green</div>
                       <div className="text-xs text-slate-400">#10b981</div>
                     </div>
                   </div>
@@ -225,25 +225,25 @@ export default function PressPage() {
                 High-resolution screenshots of the SpaceNexus platform for media use.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
                   <div className="bg-[#0f172a] rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                     <span className="text-slate-500 text-sm">Mission Control Dashboard</span>
                   </div>
                   <p className="text-xs text-slate-400">Real-time dashboard with launches, market data, and news</p>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
                   <div className="bg-[#0f172a] rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                     <span className="text-slate-500 text-sm">Satellite Tracker (3D Globe)</span>
                   </div>
                   <p className="text-xs text-slate-400">Interactive 3D globe tracking 19,000+ satellites</p>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
                   <div className="bg-[#0f172a] rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                     <span className="text-slate-500 text-sm">Company Profiles Directory</span>
                   </div>
                   <p className="text-xs text-slate-400">200+ company profiles with financial data and analysis</p>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
                   <div className="bg-[#0f172a] rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                     <span className="text-slate-500 text-sm">Market Intelligence Dashboard</span>
                   </div>
@@ -259,11 +259,11 @@ export default function PressPage() {
             <div className="card p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-4">Press Inquiries</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">Press Inquiries</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-slate-400"><strong className="text-slate-600">Email:</strong> press@spacenexus.us</p>
-                    <p className="text-slate-400"><strong className="text-slate-600">General:</strong> support@spacenexus.us</p>
-                    <p className="text-slate-400"><strong className="text-slate-600">Website:</strong>{' '}
+                    <p className="text-slate-400"><strong className="text-slate-400">Email:</strong> press@spacenexus.us</p>
+                    <p className="text-slate-400"><strong className="text-slate-400">General:</strong> support@spacenexus.us</p>
+                    <p className="text-slate-400"><strong className="text-slate-400">Website:</strong>{' '}
                       <a href="https://spacenexus.us" className="text-cyan-500 hover:underline">spacenexus.us</a>
                     </p>
                   </div>
@@ -273,15 +273,15 @@ export default function PressPage() {
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-4">Follow Us</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">Follow Us</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-slate-400"><strong className="text-slate-600">LinkedIn:</strong>{' '}
+                    <p className="text-slate-400"><strong className="text-slate-400">LinkedIn:</strong>{' '}
                       <a href="https://linkedin.com/company/spacenexus" className="text-cyan-500 hover:underline" target="_blank" rel="noopener noreferrer">SpaceNexus LLC</a>
                     </p>
-                    <p className="text-slate-400"><strong className="text-slate-600">Twitter/X:</strong>{' '}
+                    <p className="text-slate-400"><strong className="text-slate-400">Twitter/X:</strong>{' '}
                       <a href="https://twitter.com/spacenexus" className="text-cyan-500 hover:underline" target="_blank" rel="noopener noreferrer">@spacenexus</a>
                     </p>
-                    <p className="text-slate-400"><strong className="text-slate-600">GitHub:</strong>{' '}
+                    <p className="text-slate-400"><strong className="text-slate-400">GitHub:</strong>{' '}
                       <a href="https://github.com/jackosaurus2014/spacehub" className="text-cyan-500 hover:underline" target="_blank" rel="noopener noreferrer">jackosaurus2014/spacehub</a>
                     </p>
                   </div>

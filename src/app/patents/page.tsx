@@ -601,7 +601,7 @@ const GEOGRAPHIC_DISTRIBUTION = [
   { country: 'Japan', flag: 'JP', share: 5.2, totalPatents: 3200, trend: 'stable', color: 'bg-pink-500' },
   { country: 'India', flag: 'IN', share: 3.3, totalPatents: 2050, trend: 'up', color: 'bg-green-500' },
   { country: 'South Korea', flag: 'KR', share: 2.2, totalPatents: 1350, trend: 'up', color: 'bg-indigo-500' },
-  { country: 'Russia', flag: 'RU', share: 1.7, totalPatents: 1050, trend: 'down', color: 'bg-slate-500' },
+  { country: 'Russia', flag: 'RU', share: 1.7, totalPatents: 1050, trend: 'down', color: 'bg-slate-800/500' },
   { country: 'Other', flag: 'OT', share: 4.4, totalPatents: 2750, trend: 'up', color: 'bg-gray-500' },
 ];
 
@@ -636,7 +636,7 @@ function getAccelerationBadge(acc: string): { label: string; color: string; bg: 
     case 'moderate': return { label: 'Growing', color: 'text-yellow-400', bg: 'bg-yellow-500/20' };
     case 'steady': return { label: 'Steady', color: 'text-blue-400', bg: 'bg-blue-500/20' };
     case 'declining': return { label: 'Declining', color: 'text-red-400', bg: 'bg-red-500/20' };
-    default: return { label: acc, color: 'text-slate-400', bg: 'bg-slate-500/20' };
+    default: return { label: acc, color: 'text-slate-400', bg: 'bg-slate-800/500/20' };
   }
 }
 
@@ -645,8 +645,8 @@ function getStatusBadge(status: string): { label: string; color: string; bg: str
     case 'available': return { label: 'Available', color: 'text-green-400', bg: 'bg-green-500/20' };
     case 'licensed': return { label: 'Licensed', color: 'text-blue-400', bg: 'bg-blue-500/20' };
     case 'active': return { label: 'Active (Restricted)', color: 'text-yellow-400', bg: 'bg-yellow-500/20' };
-    case 'expired': return { label: 'Expired', color: 'text-slate-400', bg: 'bg-slate-500/20' };
-    default: return { label: status, color: 'text-slate-400', bg: 'bg-slate-500/20' };
+    case 'expired': return { label: 'Expired', color: 'text-slate-400', bg: 'bg-slate-800/500/20' };
+    default: return { label: status, color: 'text-slate-400', bg: 'bg-slate-800/500/20' };
   }
 }
 
@@ -654,9 +654,9 @@ function getLitigationBadge(status: string): { label: string; color: string; bg:
   switch (status) {
     case 'settled': return { label: 'Settled', color: 'text-blue-400', bg: 'bg-blue-500/20' };
     case 'ongoing': return { label: 'Ongoing', color: 'text-yellow-400', bg: 'bg-yellow-500/20' };
-    case 'dismissed': return { label: 'Dismissed', color: 'text-slate-400', bg: 'bg-slate-500/20' };
+    case 'dismissed': return { label: 'Dismissed', color: 'text-slate-400', bg: 'bg-slate-800/500/20' };
     case 'decided': return { label: 'Decided', color: 'text-green-400', bg: 'bg-green-500/20' };
-    default: return { label: status, color: 'text-slate-400', bg: 'bg-slate-500/20' };
+    default: return { label: status, color: 'text-slate-400', bg: 'bg-slate-800/500/20' };
   }
 }
 
@@ -684,7 +684,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
       {/* Hero Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{formatNumber(latestYear.total)}</div>
+          <div className="text-4xl font-bold font-display tracking-tight text-white">{formatNumber(latestYear.total)}</div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Patents Filed (2026)</div>
         </div>
         <div className="card-elevated p-6 text-center">
@@ -703,7 +703,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
 
       {/* Filing Trends Chart */}
       <div className="card p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-1 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
           <svg className="w-5 h-5 text-nebula-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
           </svg>
@@ -736,7 +736,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
           })}
         </div>
 
-        <div className="mt-4 pt-4 border-t border-slate-200/50 flex items-center justify-between">
+        <div className="mt-4 pt-4 border-t border-slate-700/50 flex items-center justify-between">
           <span className="text-xs text-slate-500">
             Cumulative: ~{formatNumber(totalAllTime)} filings tracked since 2015
           </span>
@@ -748,7 +748,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
 
       {/* Geographic Distribution */}
       <div className="card p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-1 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
           <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
           </svg>
@@ -759,14 +759,14 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
         <div className="space-y-3">
           {geoData.map((geo) => (
             <div key={geo.flag} className="flex items-center gap-4">
-              <div className="w-32 text-sm text-slate-900 font-medium truncate">{geo.country}</div>
+              <div className="w-32 text-sm text-white font-medium truncate">{geo.country}</div>
               <div className="flex-1">
-                <div className="w-full bg-slate-100 rounded-full h-6 relative overflow-hidden">
+                <div className="w-full bg-slate-700/50 rounded-full h-6 relative overflow-hidden">
                   <div
                     className={`h-full rounded-full ${geo.color} opacity-70 transition-all duration-700`}
                     style={{ width: `${(geo.share / 42) * 100}%` }}
                   />
-                  <span className="absolute inset-0 flex items-center px-3 text-xs font-medium text-slate-700">
+                  <span className="absolute inset-0 flex items-center px-3 text-xs font-medium text-slate-200">
                     {geo.share}% ({formatNumber(geo.totalPatents)})
                   </span>
                 </div>
@@ -780,7 +780,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
           ))}
         </div>
 
-        <div className="mt-4 pt-4 border-t border-slate-200/50">
+        <div className="mt-4 pt-4 border-t border-slate-700/50">
           <p className="text-xs text-slate-500">
             China has overtaken the US in raw filing volume since 2020, driven by state-sponsored programs (BeiDou, Tiangong, Chang&apos;e). The US leads in citation impact and international PCT filings.
           </p>
@@ -789,21 +789,21 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
 
       {/* Technology Category Overview */}
       <div className="card p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-1">Technology Category Breakdown</h3>
+        <h3 className="text-lg font-semibold text-white mb-1">Technology Category Breakdown</h3>
         <p className="text-slate-400 text-sm mb-4">Patent distribution across space technology domains</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[...categoriesData].sort((a, b) => b.totalPatents - a.totalPatents).map((cat) => {
             const accBadge = getAccelerationBadge(cat.acceleration);
             return (
-              <div key={cat.id} className="bg-slate-50/50 border border-slate-200/50 rounded-lg p-4 hover:border-nebula-500/30 transition-colors">
+              <div key={cat.id} className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 hover:border-nebula-500/30 transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <span className={`font-medium text-sm ${cat.color}`}>{cat.name}</span>
                   <span className={`text-xs px-2 py-0.5 rounded font-medium ${accBadge.color} ${accBadge.bg}`}>
                     {accBadge.label}
                   </span>
                 </div>
-                <div className="text-2xl font-bold text-slate-900 mb-1">{formatNumber(cat.totalPatents)}</div>
+                <div className="text-2xl font-bold text-white mb-1">{formatNumber(cat.totalPatents)}</div>
                 <div className="flex items-center gap-3 text-xs text-slate-400">
                   <span className="text-green-400 font-medium">+{cat.growthRate}% YoY</span>
                   <span>{formatNumber(cat.recentFilings)} recent</span>
@@ -816,13 +816,13 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
 
       {/* Top Patent Holders Quick View */}
       <div className="card p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-1">Top Patent Holders</h3>
+        <h3 className="text-lg font-semibold text-white mb-1">Top Patent Holders</h3>
         <p className="text-slate-400 text-sm mb-4">Ranked by total portfolio size</p>
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
+              <tr className="bg-slate-800/50 border-b border-slate-700/50">
                 <th className="text-left py-3 px-4 text-slate-400 font-medium">Rank</th>
                 <th className="text-left py-3 px-4 text-slate-400 font-medium">Organization</th>
                 <th className="text-right py-3 px-4 text-slate-400 font-medium">Portfolio Size</th>
@@ -836,13 +836,13 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
                 .sort((a, b) => b.portfolioSize - a.portfolioSize)
                 .slice(0, 10)
                 .map((holder, idx) => (
-                  <tr key={holder.id} className="border-b border-slate-200/50 hover:bg-slate-100/30 transition-colors">
+                  <tr key={holder.id} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
                     <td className="py-3 px-4 text-slate-400 font-mono">#{idx + 1}</td>
                     <td className="py-3 px-4">
-                      <div className="font-medium text-slate-900">{holder.name}</div>
+                      <div className="font-medium text-white">{holder.name}</div>
                       <div className="text-xs text-slate-400">{holder.country}</div>
                     </td>
-                    <td className="py-3 px-4 text-right font-medium text-slate-900">{formatNumber(holder.portfolioSize)}</td>
+                    <td className="py-3 px-4 text-right font-medium text-white">{formatNumber(holder.portfolioSize)}</td>
                     <td className="py-3 px-4 text-right text-slate-400">{formatNumber(holder.recentFilings)}</td>
                     <td className="py-3 px-4 text-right text-slate-400">{formatNumber(holder.citationCount)}</td>
                     <td className="py-3 px-4">
@@ -864,7 +864,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
 
       {/* Litigation Highlights */}
       <div className="card p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-1 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
           <svg className="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971z" />
           </svg>
@@ -876,10 +876,10 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
           {litigationData.map((lcase) => {
             const badge = getLitigationBadge(lcase.status);
             return (
-              <div key={lcase.id} className="bg-slate-50/50 border border-slate-200/50 rounded-lg p-4">
+              <div key={lcase.id} className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <h4 className="font-medium text-slate-900 text-sm">{lcase.title}</h4>
+                    <h4 className="font-medium text-white text-sm">{lcase.title}</h4>
                     <div className="text-xs text-slate-400">{lcase.parties}</div>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0 ml-4">
@@ -965,7 +965,7 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search organizations, technologies..."
-                className="w-full bg-slate-100 border border-slate-200 text-slate-900 rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:border-nebula-500 placeholder:text-slate-400"
+                className="w-full bg-slate-700/50 border border-slate-700/50 text-white rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:border-nebula-500 placeholder:text-slate-400"
               />
             </div>
           </div>
@@ -975,7 +975,7 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
             <select
               value={countryFilter}
               onChange={(e) => setCountryFilter(e.target.value)}
-              className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+              className="bg-slate-700/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
             >
               <option value="">All Countries</option>
               {countries.map(c => (
@@ -989,7 +989,7 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'portfolio' | 'recent' | 'citations' | 'growth')}
-              className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+              className="bg-slate-700/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
             >
               <option value="portfolio">Portfolio Size</option>
               <option value="recent">Recent Filings</option>
@@ -1025,7 +1025,7 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
           <svg className="w-16 h-16 mx-auto mb-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
           </svg>
-          <h2 className="text-xl font-semibold text-slate-900 mb-2">No Organizations Found</h2>
+          <h2 className="text-xl font-semibold text-white mb-2">No Organizations Found</h2>
           <p className="text-slate-400">No patent holders match your current filters.</p>
         </div>
       )}
@@ -1044,7 +1044,7 @@ function CompanyPortfolioCard({ holder }: { holder: PatentHolder }) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h4 className="font-semibold text-slate-900 truncate">{holder.name}</h4>
+            <h4 className="font-semibold text-white truncate">{holder.name}</h4>
             <svg className={`w-4 h-4 flex-shrink-0 ${getTrendColor(holder.trend)}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={getTrendIcon(holder.trend)} />
             </svg>
@@ -1057,23 +1057,23 @@ function CompanyPortfolioCard({ holder }: { holder: PatentHolder }) {
           </div>
         </div>
         <div className="text-right flex-shrink-0 ml-4">
-          <div className="text-2xl font-bold text-slate-900">{formatNumber(holder.portfolioSize)}</div>
+          <div className="text-2xl font-bold text-white">{formatNumber(holder.portfolioSize)}</div>
           <div className="text-xs text-slate-400">Patents</div>
         </div>
       </div>
 
       {/* Key Metrics */}
       <div className="grid grid-cols-3 gap-3 mb-3">
-        <div className="bg-slate-50/50 rounded-lg p-2.5 text-center">
-          <div className="text-slate-900 font-bold text-sm">{formatNumber(holder.recentFilings)}</div>
+        <div className="bg-slate-800/50 rounded-lg p-2.5 text-center">
+          <div className="text-white font-bold text-sm">{formatNumber(holder.recentFilings)}</div>
           <div className="text-slate-400 text-xs">Recent (2yr)</div>
         </div>
-        <div className="bg-slate-50/50 rounded-lg p-2.5 text-center">
-          <div className="text-slate-900 font-bold text-sm">{formatNumber(holder.citationCount)}</div>
+        <div className="bg-slate-800/50 rounded-lg p-2.5 text-center">
+          <div className="text-white font-bold text-sm">{formatNumber(holder.citationCount)}</div>
           <div className="text-slate-400 text-xs">Citations</div>
         </div>
-        <div className="bg-slate-50/50 rounded-lg p-2.5 text-center">
-          <div className="text-slate-900 font-bold text-sm">
+        <div className="bg-slate-800/50 rounded-lg p-2.5 text-center">
+          <div className="text-white font-bold text-sm">
             {((holder.citationCount || 0) / (holder.portfolioSize || 1)).toFixed(1)}
           </div>
           <div className="text-slate-400 text-xs">Cites/Patent</div>
@@ -1093,7 +1093,7 @@ function CompanyPortfolioCard({ holder }: { holder: PatentHolder }) {
       </div>
 
       {expanded && (
-        <div className="mt-3 pt-3 border-t border-slate-200/50">
+        <div className="mt-3 pt-3 border-t border-slate-700/50">
           <p className="text-sm text-slate-500 mb-3">{holder.description}</p>
 
           <div className="mb-3">
@@ -1144,7 +1144,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
     return (
       <div className="card p-12 text-center">
         <div className="text-5xl mb-4">📊</div>
-        <h3 className="text-lg font-semibold text-slate-900 mb-2">No Technology Trend Data Available</h3>
+        <h3 className="text-lg font-semibold text-white mb-2">No Technology Trend Data Available</h3>
         <p className="text-slate-400 text-sm">Technology category data is loading or has not been populated yet.</p>
       </div>
     );
@@ -1155,7 +1155,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
       {/* Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-slate-900">
+          <div className="text-4xl font-bold font-display tracking-tight text-white">
             {formatNumber(categoriesData.reduce((s, c) => s + (c.totalPatents || 0), 0))}
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Categorized</div>
@@ -1182,11 +1182,11 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
 
       {/* Sort Control */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-slate-900">Technology Domain Analysis</h3>
+        <h3 className="text-lg font-semibold text-white">Technology Domain Analysis</h3>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as 'patents' | 'growth' | 'recent')}
-          className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+          className="bg-slate-700/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
         >
           <option value="patents">Sort by Total Patents</option>
           <option value="growth">Sort by Growth Rate</option>
@@ -1213,14 +1213,14 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
                   <p className="text-sm text-slate-500 max-w-2xl">{cat.description}</p>
                 </div>
                 <div className="text-right flex-shrink-0 ml-6">
-                  <div className="text-2xl font-bold text-slate-900">{formatNumber(cat.totalPatents)}</div>
+                  <div className="text-2xl font-bold text-white">{formatNumber(cat.totalPatents)}</div>
                   <div className="text-xs text-green-400 font-medium">+{cat.growthRate}% YoY</div>
                 </div>
               </div>
 
               {/* Visual Bar */}
               <div className="mb-4">
-                <div className="w-full bg-slate-100 rounded-full h-3">
+                <div className="w-full bg-slate-700/50 rounded-full h-3">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-nebula-600 to-nebula-400 transition-all duration-700"
                     style={{ width: `${barWidth}%` }}
@@ -1234,7 +1234,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
                   <div className="text-xs text-slate-400 uppercase tracking-widest mb-1.5">Top Holders</div>
                   <div className="flex flex-wrap gap-1">
                     {(cat.topHolders || []).map((holder) => (
-                      <span key={holder} className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">
+                      <span key={holder} className="px-2 py-0.5 bg-slate-700/50 text-slate-300 rounded text-xs">
                         {holder}
                       </span>
                     ))}
@@ -1255,12 +1255,12 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
 
                 <div className="flex items-end">
                   <div className="grid grid-cols-2 gap-3 w-full">
-                    <div className="bg-slate-50/50 rounded-lg p-2.5 text-center">
-                      <div className="text-slate-900 font-bold text-sm">{formatNumber(cat.recentFilings)}</div>
+                    <div className="bg-slate-800/50 rounded-lg p-2.5 text-center">
+                      <div className="text-white font-bold text-sm">{formatNumber(cat.recentFilings)}</div>
                       <div className="text-slate-400 text-xs">Last 2yr</div>
                     </div>
-                    <div className="bg-slate-50/50 rounded-lg p-2.5 text-center">
-                      <div className="text-slate-900 font-bold text-sm">{cat.growthRate}%</div>
+                    <div className="bg-slate-800/50 rounded-lg p-2.5 text-center">
+                      <div className="text-white font-bold text-sm">{cat.growthRate}%</div>
                       <div className="text-slate-400 text-xs">Annual Growth</div>
                     </div>
                   </div>
@@ -1273,13 +1273,13 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
 
       {/* Country Filing Trends Over Time */}
       <div className="card p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-1">Filing Trends by Country</h3>
+        <h3 className="text-lg font-semibold text-white mb-1">Filing Trends by Country</h3>
         <p className="text-slate-400 text-sm mb-4">How patent filings have shifted across major jurisdictions</p>
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
+              <tr className="bg-slate-800/50 border-b border-slate-700/50">
                 <th className="text-left py-3 px-4 text-slate-400 font-medium">Year</th>
                 <th className="text-right py-3 px-4 text-slate-400 font-medium">Total</th>
                 <th className="text-right py-3 px-4 text-blue-400 font-medium">US</th>
@@ -1291,9 +1291,9 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
             </thead>
             <tbody>
               {filingsData.map((year) => (
-                <tr key={year.year} className="border-b border-slate-200/50 hover:bg-slate-100/30 transition-colors">
-                  <td className="py-2.5 px-4 font-medium text-slate-900">{year.year}</td>
-                  <td className="py-2.5 px-4 text-right font-medium text-slate-900">{formatNumber(year.total)}</td>
+                <tr key={year.year} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+                  <td className="py-2.5 px-4 font-medium text-white">{year.year}</td>
+                  <td className="py-2.5 px-4 text-right font-medium text-white">{formatNumber(year.total)}</td>
                   <td className="py-2.5 px-4 text-right text-blue-500">{formatNumber(year.us)}</td>
                   <td className="py-2.5 px-4 text-right text-red-500">{formatNumber(year.china)}</td>
                   <td className="py-2.5 px-4 text-right text-yellow-600">{formatNumber(year.europe)}</td>
@@ -1341,7 +1341,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
       {/* NASA Overview Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-slate-900">3,600+</div>
+          <div className="text-4xl font-bold font-display tracking-tight text-white">3,600+</div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Active Patents</div>
         </div>
         <div className="card-elevated p-6 text-center">
@@ -1360,7 +1360,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
 
       {/* NASA Technology Transfer Program */}
       <div className="card p-6 border-l-4 border-l-blue-500">
-        <h3 className="text-lg font-semibold text-slate-900 mb-2 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
           <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
           </svg>
@@ -1371,16 +1371,16 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
           The program has generated over 2,000 spinoff technologies and manages a portfolio of approximately 3,600 active patents across all 10 NASA centers.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-slate-50/50 rounded-lg p-4">
-            <div className="text-sm font-medium text-slate-900 mb-1">Startup Licensing</div>
+          <div className="bg-slate-800/50 rounded-lg p-4">
+            <div className="text-sm font-medium text-white mb-1">Startup Licensing</div>
             <p className="text-xs text-slate-400">Free evaluation license for first 3 years for qualifying startups. No upfront fees, only running royalties on commercialization.</p>
           </div>
-          <div className="bg-slate-50/50 rounded-lg p-4">
-            <div className="text-sm font-medium text-slate-900 mb-1">Patent Portfolio</div>
+          <div className="bg-slate-800/50 rounded-lg p-4">
+            <div className="text-sm font-medium text-white mb-1">Patent Portfolio</div>
             <p className="text-xs text-slate-400">Technologies span propulsion, materials science, robotics, sensors, life support, software, and medical devices. New patents added monthly.</p>
           </div>
-          <div className="bg-slate-50/50 rounded-lg p-4">
-            <div className="text-sm font-medium text-slate-900 mb-1">Spinoff Impact</div>
+          <div className="bg-slate-800/50 rounded-lg p-4">
+            <div className="text-sm font-medium text-white mb-1">Spinoff Impact</div>
             <p className="text-xs text-slate-400">Over 2,000 documented spinoff technologies. Annual economic impact estimated at $7+ billion across healthcare, agriculture, IT, and manufacturing.</p>
           </div>
         </div>
@@ -1394,7 +1394,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+              className="bg-slate-700/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
             >
               <option value="">All Categories</option>
               {categories.map(c => (
@@ -1408,7 +1408,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-100 border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
+              className="bg-slate-700/50 border border-slate-700/50 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"
             >
               <option value="">All Statuses</option>
               {statuses.map(s => (
@@ -1440,7 +1440,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
             <div key={patent.id} className="card p-5 hover:border-nebula-500/30 transition-all">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-slate-900 text-sm leading-tight mb-1">{patent.title}</h4>
+                  <h4 className="font-semibold text-white text-sm leading-tight mb-1">{patent.title}</h4>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-xs text-nebula-300 font-mono">{patent.patentNumber}</span>
                     <span className="text-xs text-slate-400">{patent.year}</span>
@@ -1455,8 +1455,8 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">{patent.center}</span>
-                  <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">{patent.category}</span>
+                  <span className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">{patent.center}</span>
+                  <span className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">{patent.category}</span>
                 </div>
                 {patent.licensable && (
                   <span className="text-xs text-green-400 font-medium flex items-center gap-1">
@@ -1474,7 +1474,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
 
       {/* NASA Centers */}
       <div className="card p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-1">NASA Centers Contributing Patents</h3>
+        <h3 className="text-lg font-semibold text-white mb-1">NASA Centers Contributing Patents</h3>
         <p className="text-slate-400 text-sm mb-4">Highlighted patents originate from these NASA field centers</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -1489,8 +1489,8 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
             { name: 'Ames Research Center', location: 'Mountain View, CA', focus: 'AI/ML, thermal protection, astrobiology', patents: 260 },
             { name: 'Stennis Space Center', location: 'Hancock County, MS', focus: 'Engine testing, propulsion validation', patents: 120 },
           ].map((center) => (
-            <div key={center.name} className="bg-slate-50/50 border border-slate-200/50 rounded-lg p-4 hover:border-nebula-500/30 transition-colors">
-              <div className="font-medium text-slate-900 text-sm mb-0.5">{center.name}</div>
+            <div key={center.name} className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 hover:border-nebula-500/30 transition-colors">
+              <div className="font-medium text-white text-sm mb-0.5">{center.name}</div>
               <div className="text-xs text-slate-400 mb-2">{center.location}</div>
               <div className="text-xs text-slate-500 mb-2">{center.focus}</div>
               <div className="text-xs text-nebula-300 font-medium">~{formatNumber(center.patents)} patents</div>
@@ -1501,7 +1501,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
 
       {/* Technology Transfer Opportunities */}
       <div className="card p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-1 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
           <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
           </svg>
@@ -1536,8 +1536,8 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
               potential: 'High',
             },
           ].map((opp) => (
-            <div key={opp.area} className="bg-slate-50/50 border border-slate-200/50 rounded-lg p-4">
-              <h4 className="font-medium text-slate-900 text-sm mb-1">{opp.area}</h4>
+            <div key={opp.area} className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4">
+              <h4 className="font-medium text-white text-sm mb-1">{opp.area}</h4>
               <p className="text-xs text-slate-500 mb-2">{opp.description}</p>
               <div className="flex items-center gap-3 text-xs">
                 <span className="text-nebula-300">Readiness: {opp.readiness}</span>
@@ -1677,7 +1677,7 @@ export default function PatentTrackerPage() {
             <svg className="w-10 h-10 mx-auto mb-3 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
             </svg>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">About Patent & IP Tracker</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">About Patent & IP Tracker</h3>
             <p className="text-slate-400 text-sm max-w-2xl mx-auto">
               Patent data is compiled from USPTO, WIPO, EPO, CNIPA, and other patent office databases.
               Portfolio sizes are approximate and include granted patents, pending applications, and utility models.

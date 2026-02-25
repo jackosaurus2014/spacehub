@@ -34,7 +34,7 @@ export default function DMCAPage() {
 
             {/* Introduction */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Introduction</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Introduction</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 SpaceNexus, LLC (&quot;SpaceNexus,&quot; &quot;we,&quot; &quot;us,&quot; or
                 &quot;our&quot;) respects the intellectual property rights of others and expects
@@ -52,13 +52,13 @@ export default function DMCAPage() {
 
             {/* Designated Agent */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Designated Copyright Agent</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Designated Copyright Agent</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Our designated agent for receiving notifications of claimed copyright infringement
                 is:
               </p>
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-6">
-                <p className="text-slate-700 font-medium">SpaceNexus DMCA Agent</p>
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+                <p className="text-slate-300 font-medium">SpaceNexus DMCA Agent</p>
                 <p className="text-slate-400 mt-2">
                   Email:{' '}
                   <a href="mailto:dmca@spacenexus.us" className="text-nebula-300 hover:text-nebula-200 underline">
@@ -73,7 +73,7 @@ export default function DMCAPage() {
 
             {/* Filing a DMCA Takedown Notice */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4">
                 Filing a DMCA Takedown Notice
               </h2>
               <p className="text-slate-400 leading-relaxed mb-4">
@@ -129,7 +129,7 @@ export default function DMCAPage() {
 
             {/* Counter-Notice Process */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Counter-Notice Process</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Counter-Notice Process</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 If you believe that material you posted on SpaceNexus was removed or disabled as a
                 result of a mistake or misidentification, you may submit a written counter-notice
@@ -166,8 +166,8 @@ export default function DMCAPage() {
                   dmca@spacenexus.us
                 </a>.
               </p>
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-4">
-                <p className="text-slate-700 font-medium mb-2">Restoration Timeline</p>
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 mt-4">
+                <p className="text-slate-300 font-medium mb-2">Restoration Timeline</p>
                 <p className="text-slate-400 text-sm">
                   Upon receipt of a valid counter-notice, SpaceNexus will forward it to the
                   original complaining party. If the copyright holder does not file a court action
@@ -179,7 +179,7 @@ export default function DMCAPage() {
 
             {/* Repeat Infringer Policy */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Repeat Infringer Policy</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Repeat Infringer Policy</h2>
               <p className="text-slate-400 leading-relaxed">
                 In accordance with the DMCA, SpaceNexus has adopted a policy of terminating, in
                 appropriate circumstances, the accounts of users who are deemed to be repeat
@@ -192,7 +192,7 @@ export default function DMCAPage() {
 
             {/* TAKE IT DOWN Act Compliance */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4">
                 TAKE IT DOWN Act Compliance
               </h2>
               <p className="text-slate-400 leading-relaxed mb-4">
@@ -200,8 +200,8 @@ export default function DMCAPage() {
                 which establishes federal requirements for the removal of non-consensual intimate
                 images (NCII), including AI-generated deepfakes.
               </p>
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 space-y-3">
-                <h3 className="text-lg font-medium text-slate-800">
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 space-y-3">
+                <h3 className="text-lg font-medium text-slate-200">
                   Reporting Non-Consensual Intimate Images
                 </h3>
                 <ul className="list-disc list-inside text-slate-400 space-y-2 ml-2">
@@ -227,8 +227,8 @@ export default function DMCAPage() {
                   </li>
                 </ul>
               </div>
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-                <p className="text-red-700 font-medium text-sm">
+              <div className="bg-red-900/20 border border-red-700/50 rounded-lg p-4 mt-4">
+                <p className="text-red-400 font-medium text-sm">
                   Warning: Knowingly filing a false NCII removal request is a federal crime
                   under the TAKE IT DOWN Act and may result in criminal prosecution.
                 </p>
@@ -237,9 +237,9 @@ export default function DMCAPage() {
 
             {/* Good Faith Warning */}
             <section>
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Good Faith Warning</h2>
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
-                <p className="text-amber-900 leading-relaxed">
+              <h2 className="text-xl font-semibold text-white mb-4">Good Faith Warning</h2>
+              <div className="bg-amber-900/20 border border-amber-700/50 rounded-lg p-6">
+                <p className="text-amber-300 leading-relaxed">
                   Please be advised that under 17 U.S.C. Section 512(f), any person who knowingly
                   materially misrepresents that material or activity is infringing, or that material
                   or activity was removed or disabled by mistake or misidentification, may be
@@ -253,8 +253,8 @@ export default function DMCAPage() {
             </section>
 
             {/* Related Documents */}
-            <section className="pt-6 border-t border-slate-200">
-              <h3 className="text-lg font-medium text-slate-800 mb-4">Related Documents</h3>
+            <section className="pt-6 border-t border-slate-700">
+              <h3 className="text-lg font-medium text-slate-200 mb-4">Related Documents</h3>
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/terms"

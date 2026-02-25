@@ -189,7 +189,7 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
     <div className="card p-5 hover:border-nebula-500/50 transition-all group">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-slate-900 text-base group-hover:text-nebula-200 transition-colors">
+          <h3 className="font-semibold text-white text-base group-hover:text-nebula-200 transition-colors">
             {job.title}
           </h3>
           <div className="flex items-center gap-2 mt-0.5">
@@ -220,7 +220,7 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
       <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
         <span className="text-slate-400">{job.location}</span>
         <span className="text-slate-300">|</span>
-        <span className={`px-2 py-0.5 rounded ${cat?.bg || 'bg-slate-100'} ${cat?.text || 'text-slate-500'}`}>
+        <span className={`px-2 py-0.5 rounded ${cat?.bg || 'bg-slate-700/50'} ${cat?.text || 'text-slate-500'}`}>
           {catLabel?.icon} {catLabel?.label || job.category}
         </span>
         <span className="text-slate-300">|</span>
@@ -291,7 +291,7 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
   return (
     <div className="card p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-slate-900 text-base">
+        <h3 className="font-semibold text-white text-base">
           Q{trend.quarter} {trend.year}
         </h3>
         <span
@@ -306,11 +306,11 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
           <span className="text-slate-400 text-xs block mb-1">Total Openings</span>
-          <div className="text-slate-900 font-bold text-lg">{trend.totalOpenings.toLocaleString()}</div>
+          <div className="text-white font-bold text-lg">{trend.totalOpenings.toLocaleString()}</div>
         </div>
         <div>
           <span className="text-slate-400 text-xs block mb-1">Total Hires</span>
-          <div className="text-slate-900 font-bold text-lg">{(trend.totalHires ?? 0).toLocaleString()}</div>
+          <div className="text-white font-bold text-lg">{(trend.totalHires ?? 0).toLocaleString()}</div>
         </div>
         <div>
           <span className="text-slate-400 text-xs block mb-1">Avg Salary</span>
@@ -323,7 +323,7 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
       </div>
 
       {/* Category breakdown */}
-      <div className="border-t border-slate-200 pt-3 mb-3">
+      <div className="border-t border-slate-700/50 pt-3 mb-3">
         <span className="text-slate-400 text-xs block mb-2">Openings by Category</span>
         <div className="grid grid-cols-4 gap-2">
           <div className="text-center">
@@ -347,11 +347,11 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
 
       {/* Top Skills */}
       {topSkills.length > 0 && (
-        <div className="border-t border-slate-200 pt-3 mb-3">
+        <div className="border-t border-slate-700/50 pt-3 mb-3">
           <span className="text-slate-400 text-xs block mb-2">Top Skills</span>
           <div className="flex flex-wrap gap-1.5">
             {topSkills.map((skill) => (
-              <span key={skill} className="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-500">
+              <span key={skill} className="text-[10px] px-2 py-0.5 rounded bg-slate-700/50 text-slate-500">
                 {skill}
               </span>
             ))}
@@ -361,7 +361,7 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
 
       {/* Top Companies */}
       {topCompanies.length > 0 && (
-        <div className="border-t border-slate-200 pt-3">
+        <div className="border-t border-slate-700/50 pt-3">
           <span className="text-slate-400 text-xs block mb-2">Top Hiring</span>
           <div className="flex flex-wrap gap-1.5">
             {topCompanies.map((company) => (
@@ -408,9 +408,9 @@ function BenchmarkBar({
         <span className="text-xs text-slate-400">{count} roles</span>
       </div>
 
-      <div className="relative h-4 bg-slate-50 rounded-full overflow-hidden mb-2">
+      <div className="relative h-4 bg-slate-800/50 rounded-full overflow-hidden mb-2">
         <div
-          className="absolute h-full bg-slate-100 rounded-full"
+          className="absolute h-full bg-slate-700/50 rounded-full"
           style={{ left: `${minPct}%`, width: `${Math.max(maxPct - minPct, 1)}%` }}
         />
         <div
@@ -1445,7 +1445,7 @@ function SpaceTalentHubContent() {
           {wfStats && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-slate-900">
+                <div className="text-2xl font-bold font-display text-white">
                   {wfStats.totalOpenings.toLocaleString()}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -1512,8 +1512,8 @@ function SpaceTalentHubContent() {
                 onClick={() => handleWfSubTabChange(tab.id)}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   wfSubTab === tab.id
-                    ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
-                    : 'bg-slate-100/50 text-slate-500 hover:bg-slate-100/50'
+                    ? 'bg-nebula-500 text-white shadow-glow-sm'
+                    : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
                 }`}
               >
                 {tab.label}
@@ -1521,8 +1521,8 @@ function SpaceTalentHubContent() {
                   <span
                     className={`text-xs px-1.5 py-0.5 rounded-full ${
                       wfSubTab === tab.id
-                        ? 'bg-white/20 text-slate-900'
-                        : 'bg-slate-100 text-slate-500'
+                        ? 'bg-white/20 text-white'
+                        : 'bg-slate-700/50 text-slate-500'
                     }`}
                   >
                     {tab.count}
@@ -1545,7 +1545,7 @@ function SpaceTalentHubContent() {
                       placeholder="Search jobs by title, company, location, or specialization..."
                       value={searchInput}
                       onChange={(e) => setSearchInput(e.target.value)}
-                      className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-900 placeholder-star-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
+                      className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-lg px-4 py-2.5 text-sm text-white placeholder-star-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
                     />
                     <button type="submit" className="btn-primary px-6">
                       Search
@@ -1559,7 +1559,7 @@ function SpaceTalentHubContent() {
                     aria-label="Filter by job category"
                     value={categoryFilter}
                     onChange={(e) => handleCategoryChange(e.target.value as JobCategory | '')}
-                    className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-nebula-500/50"
+                    className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-nebula-500/50"
                   >
                     <option value="">All Categories</option>
                     {JOB_CATEGORIES.map((c) => (
@@ -1574,7 +1574,7 @@ function SpaceTalentHubContent() {
                     aria-label="Filter by seniority level"
                     value={seniorityFilter}
                     onChange={(e) => handleSeniorityChange(e.target.value as SeniorityLevel | '')}
-                    className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-nebula-500/50"
+                    className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-nebula-500/50"
                   >
                     <option value="">All Levels</option>
                     {SENIORITY_LEVELS.map((s) => (
@@ -1590,7 +1590,7 @@ function SpaceTalentHubContent() {
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                       remoteOnly
                         ? 'bg-nebula-500/20 text-nebula-300 border border-nebula-500/30'
-                        : 'bg-slate-50 text-slate-500 border border-slate-200 hover:border-slate-200'
+                        : 'bg-slate-800/50 text-slate-500 border border-slate-700/50 hover:border-slate-700/50'
                     }`}
                   >
                     Remote Only
@@ -1600,7 +1600,7 @@ function SpaceTalentHubContent() {
                   {hasJobFilters && (
                     <button
                       onClick={clearJobFilters}
-                      className="px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-slate-900 transition-colors"
+                      className="px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition-colors"
                     >
                       Clear Filters
                     </button>
@@ -1627,7 +1627,7 @@ function SpaceTalentHubContent() {
                 </div>
               ) : jobs.length === 0 ? (
                 <div className="text-center py-20">
-                  <h3 className="text-xl font-semibold text-slate-900 mb-2">No jobs found</h3>
+                  <h3 className="text-xl font-semibold text-white mb-2">No jobs found</h3>
                   <p className="text-slate-400 mb-4">
                     {hasJobFilters
                       ? 'Try adjusting your filters or search terms.'
@@ -1679,7 +1679,7 @@ function SpaceTalentHubContent() {
                 </div>
               ) : trends.length === 0 ? (
                 <div className="text-center py-20">
-                  <h3 className="text-xl font-semibold text-slate-900 mb-2">No trend data available</h3>
+                  <h3 className="text-xl font-semibold text-white mb-2">No trend data available</h3>
                   <p className="text-slate-400">Workforce trends will appear once data is loaded.</p>
                 </div>
               ) : (
@@ -1687,7 +1687,7 @@ function SpaceTalentHubContent() {
                   {/* Summary banner */}
                   <div className="card p-5 mb-6">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-slate-900 font-semibold">Industry Overview</h3>
+                      <h3 className="text-white font-semibold">Industry Overview</h3>
                       <ExportButton
                         data={trends}
                         filename="spacehub-workforce-trends"
@@ -1698,7 +1698,7 @@ function SpaceTalentHubContent() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
                         <span className="text-slate-400 text-xs block mb-1">Latest Quarter</span>
-                        <span className="text-slate-900 font-bold">
+                        <span className="text-white font-bold">
                           Q{trends[trends.length - 1].quarter} {trends[trends.length - 1].year}
                         </span>
                       </div>
@@ -1720,7 +1720,7 @@ function SpaceTalentHubContent() {
                       </div>
                       <div>
                         <span className="text-slate-400 text-xs block mb-1">Total Hires (Latest)</span>
-                        <span className="text-slate-900 font-bold">
+                        <span className="text-white font-bold">
                           {(trends[trends.length - 1].totalHires ?? 0).toLocaleString()}
                         </span>
                       </div>
@@ -1746,7 +1746,7 @@ function SpaceTalentHubContent() {
                 </div>
               ) : benchmarksByCategory.length === 0 && benchmarksBySeniority.length === 0 ? (
                 <div className="text-center py-20">
-                  <h3 className="text-xl font-semibold text-slate-900 mb-2">No salary data available</h3>
+                  <h3 className="text-xl font-semibold text-white mb-2">No salary data available</h3>
                   <p className="text-slate-400">Salary benchmarks will appear once data is loaded.</p>
                 </div>
               ) : (
@@ -1757,8 +1757,8 @@ function SpaceTalentHubContent() {
                       onClick={() => handleSalaryViewChange('category')}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                         salaryView === 'category'
-                          ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                          : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-200'
+                          ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                          : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-700/50'
                       }`}
                     >
                       By Category
@@ -1767,8 +1767,8 @@ function SpaceTalentHubContent() {
                       onClick={() => handleSalaryViewChange('seniority')}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                         salaryView === 'seniority'
-                          ? 'bg-slate-100 text-slate-900 border border-slate-200 shadow-glow-sm'
-                          : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-200'
+                          ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                          : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-700/50'
                       }`}
                     >
                       By Seniority Level
@@ -1819,7 +1819,7 @@ function SpaceTalentHubContent() {
                   <div className="card p-4 mt-6 border-dashed">
                     <div className="flex items-center gap-6 text-xs text-slate-400">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-2 bg-slate-100 rounded-full" />
+                        <div className="w-8 h-2 bg-slate-700/50 rounded-full" />
                         <span>Salary Range (Min to Max)</span>
                       </div>
                       <div className="flex items-center gap-2">

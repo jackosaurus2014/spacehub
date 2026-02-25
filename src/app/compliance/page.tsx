@@ -148,7 +148,7 @@ const TREATY_STATUS_CONFIG: Record<TreatyStatus, { label: string; bg: string; te
   not_in_force: { label: 'Not Widely Ratified', bg: 'bg-yellow-500/20', text: 'text-yellow-400', border: 'border-yellow-500/30' },
 };
 
-const DEFAULT_TREATY_STATUS = { label: 'Unknown', bg: 'bg-slate-500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
+const DEFAULT_TREATY_STATUS = { label: 'Unknown', bg: 'bg-slate-800/500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
 
 const NATIONAL_STATUS_CONFIG: Record<NationalLawStatus, { label: string; bg: string; text: string; border: string }> = {
   enacted: { label: 'Enacted', bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/30' },
@@ -157,7 +157,7 @@ const NATIONAL_STATUS_CONFIG: Record<NationalLawStatus, { label: string; bg: str
   under_review: { label: 'Under Review', bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/30' },
 };
 
-const DEFAULT_NATIONAL_STATUS = { label: 'Unknown', bg: 'bg-slate-500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
+const DEFAULT_NATIONAL_STATUS = { label: 'Unknown', bg: 'bg-slate-800/500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
 
 const ARTEMIS_STATUS_CONFIG: Record<ArtemisStatus, { label: string; bg: string; text: string; border: string }> = {
   signatory: { label: 'Signatory', bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/30' },
@@ -165,7 +165,7 @@ const ARTEMIS_STATUS_CONFIG: Record<ArtemisStatus, { label: string; bg: string; 
   observer: { label: 'Observer', bg: 'bg-yellow-500/20', text: 'text-yellow-400', border: 'border-yellow-500/30' },
 };
 
-const DEFAULT_ARTEMIS_STATUS = { label: 'Unknown', bg: 'bg-slate-500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
+const DEFAULT_ARTEMIS_STATUS = { label: 'Unknown', bg: 'bg-slate-800/500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
 
 const PROCEEDING_STATUS_CONFIG: Record<ProceedingStatus, { label: string; bg: string; text: string; border: string }> = {
   active: { label: 'Active', bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/30' },
@@ -174,7 +174,7 @@ const PROCEEDING_STATUS_CONFIG: Record<ProceedingStatus, { label: string; bg: st
   advisory: { label: 'Advisory', bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30' },
 };
 
-const DEFAULT_PROCEEDING_STATUS = { label: 'Unknown', bg: 'bg-slate-500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
+const DEFAULT_PROCEEDING_STATUS = { label: 'Unknown', bg: 'bg-slate-800/500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
 
 const BODY_TYPE_CONFIG: Record<BodyType, { label: string; bg: string; text: string; border: string }> = {
   un: { label: 'UN Body', bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30' },
@@ -183,7 +183,7 @@ const BODY_TYPE_CONFIG: Record<BodyType, { label: string; bg: string; text: stri
   industry: { label: 'Industry', bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30' },
 };
 
-const DEFAULT_BODY_TYPE = { label: 'Unknown', bg: 'bg-slate-500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
+const DEFAULT_BODY_TYPE = { label: 'Unknown', bg: 'bg-slate-800/500/20', text: 'text-slate-400', border: 'border-slate-500/30' };
 
 let TREATIES: Treaty[] = [];
 let NATIONAL_LAWS: NationalLaw[] = [];
@@ -208,16 +208,16 @@ const FILING_STATUS_STYLES: Record<FilingStatus, { label: string; bg: string; te
   granted: { label: 'Granted', bg: 'bg-green-500/20', text: 'text-green-400' },
   pending: { label: 'Pending', bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
   denied: { label: 'Denied', bg: 'bg-red-500/20', text: 'text-red-400' },
-  dismissed: { label: 'Dismissed', bg: 'bg-slate-500/20', text: 'text-slate-400' },
+  dismissed: { label: 'Dismissed', bg: 'bg-slate-800/500/20', text: 'text-slate-400' },
   amended: { label: 'Amended', bg: 'bg-blue-500/20', text: 'text-blue-400' },
   active: { label: 'Active', bg: 'bg-green-500/20', text: 'text-green-400' },
-  expired: { label: 'Expired', bg: 'bg-slate-500/20', text: 'text-slate-400' },
+  expired: { label: 'Expired', bg: 'bg-slate-800/500/20', text: 'text-slate-400' },
   proposed: { label: 'Proposed', bg: 'bg-purple-500/20', text: 'text-purple-400' },
   final: { label: 'Final Rule', bg: 'bg-green-500/20', text: 'text-green-400' },
   comment: { label: 'Open for Comment', bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
 };
 
-const DEFAULT_FILING_STATUS_STYLE = { label: 'Unknown', bg: 'bg-slate-500/20', text: 'text-slate-400' };
+const DEFAULT_FILING_STATUS_STYLE = { label: 'Unknown', bg: 'bg-slate-800/500/20', text: 'text-slate-400' };
 
 const FILING_IMPACT_STYLES: Record<string, { bg: string; text: string }> = {
   high: { bg: 'bg-red-500/20', text: 'text-red-400' },
@@ -225,7 +225,7 @@ const FILING_IMPACT_STYLES: Record<string, { bg: string; text: string }> = {
   low: { bg: 'bg-green-500/20', text: 'text-green-400' },
 };
 
-const DEFAULT_FILING_IMPACT_STYLE = { bg: 'bg-slate-500/20', text: 'text-slate-400' };
+const DEFAULT_FILING_IMPACT_STYLE = { bg: 'bg-slate-800/500/20', text: 'text-slate-400' };
 
 const FILING_ORBIT_STYLES: Record<string, { bg: string; text: string }> = {
   NGSO: { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
@@ -234,7 +234,7 @@ const FILING_ORBIT_STYLES: Record<string, { bg: string; text: string }> = {
   MEO: { bg: 'bg-blue-500/20', text: 'text-blue-400' },
 };
 
-const DEFAULT_FILING_ORBIT_STYLE = { bg: 'bg-slate-500/20', text: 'text-slate-400' };
+const DEFAULT_FILING_ORBIT_STYLE = { bg: 'bg-slate-800/500/20', text: 'text-slate-400' };
 
 let FCC_FILINGS: FCCFiling[] = [];
 let FAA_LICENSES: FAALicense[] = [];
@@ -269,8 +269,8 @@ function PolicyCard({ policy }: { policy: PolicyChange }) {
     pending: 'bg-yellow-500/20 text-yellow-400',
     effective: 'bg-green-500/20 text-green-400',
     final: 'bg-green-500/20 text-green-400',
-    withdrawn: 'bg-slate-500/20 text-slate-400',
-    superseded: 'bg-slate-500/20 text-slate-400',
+    withdrawn: 'bg-slate-800/500/20 text-slate-400',
+    superseded: 'bg-slate-800/500/20 text-slate-400',
   };
   const agencyIcons: Record<string, string> = {
     FAA: '\u2708\uFE0F', FCC: '\uD83D\uDCE1', NOAA: '\uD83C\uDF0A', BIS: '\uD83D\uDCE6', DDTC: '\uD83D\uDD12', NASA: '\uD83D\uDE80', DOD: '\uD83C\uDF96\uFE0F', DOS: '\uD83C\uDFDB\uFE0F',
@@ -287,10 +287,10 @@ function PolicyCard({ policy }: { policy: PolicyChange }) {
         </div>
         <span className={`text-xs px-2 py-1 rounded border ${severityColors[policy.impactSeverity]}`}>{policy.impactSeverity.toUpperCase()} Impact</span>
       </div>
-      <h4 className="font-semibold text-slate-900 mb-2">{policy.title}</h4>
+      <h4 className="font-semibold text-white mb-2">{policy.title}</h4>
       <p className="text-slate-400 text-sm mb-3 line-clamp-3">{policy.summary}</p>
-      <div className="bg-slate-50 rounded-lg p-3 mb-3">
-        <h5 className="text-xs font-semibold text-slate-700 mb-1">Impact Analysis</h5>
+      <div className="bg-slate-800/50 rounded-lg p-3 mb-3">
+        <h5 className="text-xs font-semibold text-slate-300 mb-1">Impact Analysis</h5>
         <p className="text-xs text-slate-400 line-clamp-2">{policy.impactAnalysis}</p>
       </div>
       <div className="flex flex-wrap gap-1 mb-3">
@@ -357,7 +357,7 @@ function LicenseCard({ license }: { license: LicenseRequirement }) {
         <span className={`text-xs font-bold px-2 py-1 rounded border ${agencyColors[license.agency] || 'bg-slate-700/60 text-slate-300'}`}>{license.agency}</span>
         <span className="text-xs text-slate-400">{license.processingTimeMin}-{license.processingTimeMax} days</span>
       </div>
-      <h4 className="font-semibold text-slate-900 mb-2">{license.licenseType}</h4>
+      <h4 className="font-semibold text-white mb-2">{license.licenseType}</h4>
       <p className="text-slate-400 text-sm mb-3">{license.description}</p>
       <div className="flex items-center gap-4 text-xs text-slate-400 mb-3">
         {license.applicationFee && (<span>Application: ${license.applicationFee.toLocaleString()}</span>)}
@@ -366,12 +366,12 @@ function LicenseCard({ license }: { license: LicenseRequirement }) {
       </div>
       <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200 mb-3">{expanded ? 'Hide Requirements \u25B2' : 'Show Requirements \u25BC'}</button>
       {expanded && (
-        <div className="bg-slate-50 rounded-lg p-3 mt-2">
-          <h5 className="text-xs font-semibold text-slate-700 mb-2">Requirements Checklist</h5>
+        <div className="bg-slate-800/50 rounded-lg p-3 mt-2">
+          <h5 className="text-xs font-semibold text-slate-300 mb-2">Requirements Checklist</h5>
           <ul className="space-y-1">
             {(JSON.parse(JSON.stringify(license.requirements)) as string[]).map((req, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-400"><span className="text-nebula-300 mt-0.5">{'\u2610'}</span>{req}</li>))}
           </ul>
-          <div className="mt-3 pt-3 border-t border-slate-200"><h5 className="text-xs font-semibold text-slate-700 mb-1">Regulatory Basis</h5><p className="text-xs text-slate-400">{license.regulatoryBasis}</p></div>
+          <div className="mt-3 pt-3 border-t border-slate-700"><h5 className="text-xs font-semibold text-slate-300 mb-1">Regulatory Basis</h5><p className="text-xs text-slate-400">{license.regulatoryBasis}</p></div>
           {license.applicationUrl && (<a href={license.applicationUrl} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-xs text-nebula-300 hover:text-nebula-200">Apply Now &rarr;</a>)}
         </div>
       )}
@@ -399,11 +399,11 @@ function ComplianceWizardTab() {
       </div>
       <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-5">{filteredLicenses.map((license) => (<StaggerItem key={license.id}><LicenseCard license={license} /></StaggerItem>))}</StaggerContainer>
       <div className="mt-8">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">International Treaty Obligations</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">International Treaty Obligations</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {TREATY_OBLIGATIONS.map((treaty) => (
             <div key={treaty.id} className="card p-4">
-              <div className="flex items-start justify-between mb-2"><h4 className="font-semibold text-slate-900">{treaty.name}</h4>{treaty.usRatified && (<span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">US Ratified</span>)}</div>
+              <div className="flex items-start justify-between mb-2"><h4 className="font-semibold text-white">{treaty.name}</h4>{treaty.usRatified && (<span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">US Ratified</span>)}</div>
               <p className="text-xs text-slate-400 mb-2">{treaty.fullName}</p>
               <div className="text-xs text-slate-400"><p><strong>Parties:</strong> {treaty.parties} nations</p><p className="mt-1"><strong>US Implementation:</strong> {treaty.usImplementation}</p></div>
               <a href={treaty.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-xs text-nebula-300 hover:text-nebula-200">View Treaty Text &rarr;</a>
@@ -417,7 +417,7 @@ function ComplianceWizardTab() {
 
 function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
   const [expanded, setExpanded] = useState(false);
-  const outcomeColors = { plaintiff_victory: 'bg-green-500/20 text-green-400', defendant_victory: 'bg-red-500/20 text-red-400', settlement: 'bg-yellow-500/20 text-yellow-400', dismissed: 'bg-slate-500/20 text-slate-400', pending: 'bg-blue-500/20 text-blue-400', vacated: 'bg-purple-500/20 text-purple-400' };
+  const outcomeColors = { plaintiff_victory: 'bg-green-500/20 text-green-400', defendant_victory: 'bg-red-500/20 text-red-400', settlement: 'bg-yellow-500/20 text-yellow-400', dismissed: 'bg-slate-800/500/20 text-slate-400', pending: 'bg-blue-500/20 text-blue-400', vacated: 'bg-purple-500/20 text-purple-400' };
   const jurisdictionIcons = { federal: '\uD83C\uDFDB\uFE0F', international: '\uD83C\uDF0D', arbitration: '\u2696\uFE0F', state: '\uD83C\uDFE2', gao: '\uD83D\uDCCA' };
   return (
     <div className="card p-5 hover:border-nebula-500/50 transition-all">
@@ -425,7 +425,7 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
         <div className="flex items-center gap-2"><span className="text-xl">{jurisdictionIcons[lawCase.jurisdiction]}</span><span className="text-xs text-slate-400">{lawCase.year}</span></div>
         <span className={`text-xs px-2 py-1 rounded ${outcomeColors[lawCase.outcome]}`}>{lawCase.outcome.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
       </div>
-      <h4 className="font-semibold text-slate-900 mb-1">{lawCase.caseName}</h4>
+      <h4 className="font-semibold text-white mb-1">{lawCase.caseName}</h4>
       {lawCase.citation && (<p className="text-xs text-slate-400 mb-2 font-mono">{lawCase.citation}</p>)}
       <p className="text-slate-400 text-sm mb-3 line-clamp-3">{lawCase.summary}</p>
       <div className="flex flex-wrap gap-1 mb-3">{lawCase.subjectMatter.map((subject, i) => (<span key={i} className="text-xs bg-nebula-500/10 text-nebula-300 px-2 py-0.5 rounded">{subject.replace(/_/g, ' ')}</span>))}</div>
@@ -433,12 +433,12 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
       <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200">{expanded ? 'Show Less \u25B2' : 'Read More \u25BC'}</button>
       {expanded && (
         <div className="mt-4 space-y-4">
-          <div><h5 className="text-xs font-semibold text-slate-700 mb-1">Parties</h5><p className="text-xs text-slate-400"><strong>Plaintiff:</strong> {lawCase.parties.plaintiff}<br /><strong>Defendant:</strong> {lawCase.parties.defendant}</p></div>
-          <div><h5 className="text-xs font-semibold text-slate-700 mb-1">Facts</h5><p className="text-xs text-slate-400">{lawCase.facts}</p></div>
-          <div><h5 className="text-xs font-semibold text-slate-700 mb-1">Holdings</h5><ul className="text-xs text-slate-400 list-disc list-inside space-y-1">{lawCase.holdings.map((holding, i) => (<li key={i}>{holding}</li>))}</ul></div>
-          <div><h5 className="text-xs font-semibold text-slate-700 mb-1">Significance</h5><p className="text-xs text-slate-400">{lawCase.significance}</p></div>
-          <div><h5 className="text-xs font-semibold text-slate-700 mb-1">Precedent Value</h5><p className="text-xs text-slate-400">{lawCase.precedentValue}</p></div>
-          {lawCase.keyQuotes && lawCase.keyQuotes.length > 0 && (<div><h5 className="text-xs font-semibold text-slate-700 mb-1">Key Quotes</h5>{lawCase.keyQuotes.map((quote, i) => (<blockquote key={i} className="text-xs text-slate-400 italic border-l-2 border-nebula-500 pl-2 mb-1">&ldquo;{quote}&rdquo;</blockquote>))}</div>)}
+          <div><h5 className="text-xs font-semibold text-slate-300 mb-1">Parties</h5><p className="text-xs text-slate-400"><strong>Plaintiff:</strong> {lawCase.parties.plaintiff}<br /><strong>Defendant:</strong> {lawCase.parties.defendant}</p></div>
+          <div><h5 className="text-xs font-semibold text-slate-300 mb-1">Facts</h5><p className="text-xs text-slate-400">{lawCase.facts}</p></div>
+          <div><h5 className="text-xs font-semibold text-slate-300 mb-1">Holdings</h5><ul className="text-xs text-slate-400 list-disc list-inside space-y-1">{lawCase.holdings.map((holding, i) => (<li key={i}>{holding}</li>))}</ul></div>
+          <div><h5 className="text-xs font-semibold text-slate-300 mb-1">Significance</h5><p className="text-xs text-slate-400">{lawCase.significance}</p></div>
+          <div><h5 className="text-xs font-semibold text-slate-300 mb-1">Precedent Value</h5><p className="text-xs text-slate-400">{lawCase.precedentValue}</p></div>
+          {lawCase.keyQuotes && lawCase.keyQuotes.length > 0 && (<div><h5 className="text-xs font-semibold text-slate-300 mb-1">Key Quotes</h5>{lawCase.keyQuotes.map((quote, i) => (<blockquote key={i} className="text-xs text-slate-400 italic border-l-2 border-nebula-500 pl-2 mb-1">&ldquo;{quote}&rdquo;</blockquote>))}</div>)}
           {lawCase.sourceUrl && (<a href={lawCase.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-block text-xs text-nebula-300 hover:text-nebula-200">View Source &rarr;</a>)}
         </div>
       )}
@@ -455,7 +455,7 @@ function CaseLawArchiveTab() {
   return (
     <div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-slate-900">{filteredCases.length}</div><div className="text-xs text-slate-400">Cases</div></div>
+        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-white">{filteredCases.length}</div><div className="text-xs text-slate-400">Cases</div></div>
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-green-400">${(totalDamages / 1e9).toFixed(2)}B</div><div className="text-xs text-slate-400">Total Damages</div></div>
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-nebula-300">{filteredCases.filter(c => c.outcome === 'plaintiff_victory').length}</div><div className="text-xs text-slate-400">Plaintiff Wins</div></div>
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-yellow-400">{filteredCases.filter(c => c.outcome === 'settlement').length}</div><div className="text-xs text-slate-400">Settlements</div></div>
@@ -492,12 +492,12 @@ function ExportControlMonitorTab() {
           <div className="space-y-4">{filteredECCNs.map((eccn) => (
             <div key={eccn.id} className="card p-5">
               <div className="flex items-start justify-between mb-3"><span className="font-mono text-lg font-bold text-blue-400">{eccn.eccn}</span><span className="text-xs bg-slate-700/60 text-slate-300 px-2 py-1 rounded">{eccn.category}</span></div>
-              <h4 className="font-semibold text-slate-900 mb-2">{eccn.description}</h4><p className="text-sm text-slate-400 mb-3">{eccn.spaceRelevance}</p>
+              <h4 className="font-semibold text-white mb-2">{eccn.description}</h4><p className="text-sm text-slate-400 mb-3">{eccn.spaceRelevance}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div><h5 className="font-semibold text-slate-700 mb-1">Reason for Control</h5><div className="flex flex-wrap gap-1">{eccn.reasonForControl.map((r, i) => (<span key={i} className="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">{r}</span>))}</div></div>
-                <div><h5 className="font-semibold text-slate-700 mb-1">License Exceptions</h5><div className="flex flex-wrap gap-1">{eccn.licenseExceptions.map((e, i) => (<span key={i} className="bg-green-500/20 text-green-300 px-2 py-0.5 rounded">{e}</span>))}</div></div>
+                <div><h5 className="font-semibold text-slate-300 mb-1">Reason for Control</h5><div className="flex flex-wrap gap-1">{eccn.reasonForControl.map((r, i) => (<span key={i} className="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">{r}</span>))}</div></div>
+                <div><h5 className="font-semibold text-slate-300 mb-1">License Exceptions</h5><div className="flex flex-wrap gap-1">{eccn.licenseExceptions.map((e, i) => (<span key={i} className="bg-green-500/20 text-green-300 px-2 py-0.5 rounded">{e}</span>))}</div></div>
               </div>
-              <div className="mt-3"><h5 className="text-xs font-semibold text-slate-700 mb-1">Examples</h5><ul className="text-xs text-slate-400 list-disc list-inside">{eccn.examples.slice(0, 3).map((ex, i) => (<li key={i}>{ex}</li>))}</ul></div>
+              <div className="mt-3"><h5 className="text-xs font-semibold text-slate-300 mb-1">Examples</h5><ul className="text-xs text-slate-400 list-disc list-inside">{eccn.examples.slice(0, 3).map((ex, i) => (<li key={i}>{ex}</li>))}</ul></div>
             </div>
           ))}</div>
         </div>
@@ -508,10 +508,10 @@ function ExportControlMonitorTab() {
           <div className="space-y-4">{filteredUSML.map((usml) => (
             <div key={usml.id} className="card p-5">
               <div className="flex items-start justify-between mb-3"><span className="font-mono text-lg font-bold text-red-400">Category {usml.category}</span><span className="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded">ITAR</span></div>
-              <h4 className="font-semibold text-slate-900 mb-2">{usml.title}</h4><p className="text-sm text-slate-400 mb-3">{usml.description}</p>
-              <div className="mb-3"><h5 className="text-xs font-semibold text-slate-700 mb-1">Controlled Items</h5><ul className="text-xs text-slate-400 list-disc list-inside">{usml.items.map((item, i) => (<li key={i}>{item}</li>))}</ul></div>
-              <div className="bg-slate-50 rounded p-3"><h5 className="text-xs font-semibold text-slate-700 mb-1">Space Relevance</h5><p className="text-xs text-slate-400">{usml.spaceRelevance}</p></div>
-              {usml.exemptions && usml.exemptions.length > 0 && (<div className="mt-3"><h5 className="text-xs font-semibold text-slate-700 mb-1">Exemptions / Notes</h5><ul className="text-xs text-slate-400 list-disc list-inside">{usml.exemptions.map((ex, i) => (<li key={i}>{ex}</li>))}</ul></div>)}
+              <h4 className="font-semibold text-white mb-2">{usml.title}</h4><p className="text-sm text-slate-400 mb-3">{usml.description}</p>
+              <div className="mb-3"><h5 className="text-xs font-semibold text-slate-300 mb-1">Controlled Items</h5><ul className="text-xs text-slate-400 list-disc list-inside">{usml.items.map((item, i) => (<li key={i}>{item}</li>))}</ul></div>
+              <div className="bg-slate-800/50 rounded p-3"><h5 className="text-xs font-semibold text-slate-300 mb-1">Space Relevance</h5><p className="text-xs text-slate-400">{usml.spaceRelevance}</p></div>
+              {usml.exemptions && usml.exemptions.length > 0 && (<div className="mt-3"><h5 className="text-xs font-semibold text-slate-300 mb-1">Exemptions / Notes</h5><ul className="text-xs text-slate-400 list-disc list-inside">{usml.exemptions.map((ex, i) => (<li key={i}>{ex}</li>))}</ul></div>)}
             </div>
           ))}</div>
         </div>
@@ -537,8 +537,8 @@ function ExpertCommentaryTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredSources.map((source) => { const typeInfo = typeLabels[source.type]; return (
           <a key={source.id} href={source.url} target="_blank" rel="noopener noreferrer" className="card p-5 hover:border-nebula-500/50 transition-all group">
-            <div className="flex items-start justify-between mb-3"><span className="text-3xl">{typeInfo?.icon || '\uD83D\uDCCB'}</span><span className={`text-xs px-2 py-1 rounded ${typeInfo?.color || 'bg-slate-100'}`}>{typeInfo?.label || source.type}</span></div>
-            <h4 className="font-semibold text-slate-900 mb-1 group-hover:text-nebula-300 transition-colors">{source.name}</h4>
+            <div className="flex items-start justify-between mb-3"><span className="text-3xl">{typeInfo?.icon || '\uD83D\uDCCB'}</span><span className={`text-xs px-2 py-1 rounded ${typeInfo?.color || 'bg-slate-700'}`}>{typeInfo?.label || source.type}</span></div>
+            <h4 className="font-semibold text-white mb-1 group-hover:text-nebula-300 transition-colors">{source.name}</h4>
             {source.organization && (<p className="text-sm text-slate-400 mb-2">{source.organization}</p>)}
             <p className="text-xs text-slate-400 mb-3 line-clamp-2">{source.description}</p>
             <div className="flex flex-wrap gap-1">{source.topics.slice(0, 3).map((topic, i) => (<span key={i} className="text-xs bg-slate-700/60 text-slate-300 px-2 py-0.5 rounded">{topic.replace(/_/g, ' ')}</span>))}</div>
@@ -560,7 +560,7 @@ function TreatyCard({ treaty }: { treaty: Treaty }) {
   return (
     <div className="card p-5 hover:border-nebula-500/30 transition-all">
       <div className="flex items-start justify-between mb-3">
-        <div className="flex-1 min-w-0"><h4 className="font-semibold text-slate-900 text-lg">{treaty.name}</h4><p className="text-slate-400 text-xs mt-0.5 line-clamp-2">{treaty.fullName}</p></div>
+        <div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-lg">{treaty.name}</h4><p className="text-slate-400 text-xs mt-0.5 line-clamp-2">{treaty.fullName}</p></div>
         <span className={`text-xs font-bold px-2.5 py-1 rounded border flex-shrink-0 ml-3 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>{statusConfig.label}</span>
       </div>
       <div className="grid grid-cols-3 gap-3 mb-4">
@@ -571,9 +571,9 @@ function TreatyCard({ treaty }: { treaty: Treaty }) {
       <p className="text-slate-500 text-sm mb-3 line-clamp-3">{treaty.description}</p>
       <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors">{expanded ? 'Show Less' : 'View Key Provisions'}</button>
       {expanded && (
-        <div className="mt-4 pt-4 border-t border-slate-200/50 space-y-3">
-          <div><h5 className="text-xs font-semibold text-slate-700 mb-2 uppercase tracking-wider">Key Provisions</h5><ul className="space-y-1.5">{treaty.keyProvisions.map((provision, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><span className="text-cyan-400 mt-0.5 flex-shrink-0">*</span>{provision}</li>))}</ul></div>
-          <div><h5 className="text-xs font-semibold text-slate-700 mb-1 uppercase tracking-wider">Significance</h5><p className="text-xs text-slate-500">{treaty.significance}</p></div>
+        <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+          <div><h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Provisions</h5><ul className="space-y-1.5">{treaty.keyProvisions.map((provision, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><span className="text-cyan-400 mt-0.5 flex-shrink-0">*</span>{provision}</li>))}</ul></div>
+          <div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Significance</h5><p className="text-xs text-slate-500">{treaty.significance}</p></div>
           <div className="text-xs text-slate-400">Adopted: {treaty.adoptedYear} | Depositary: {treaty.depositary}</div>
         </div>
       )}
@@ -587,8 +587,8 @@ function SpaceLawTreatiesTab() {
       <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-6"><h4 className="font-semibold text-blue-400 mb-2">United Nations Space Treaty Framework</h4><p className="text-sm text-slate-400">Five core UN treaties form the foundation of international space law. The Outer Space Treaty (1967) serves as the cornerstone, with four supplementary treaties addressing specific aspects of space activities.</p></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{TREATIES.map((treaty) => (<TreatyCard key={treaty.id} treaty={treaty} />))}</div>
       <div className="card p-5 border-dashed mt-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-3">Treaty Ratification Overview</h3>
-        <div className="space-y-3">{TREATIES.map((treaty) => { const maxRatifications = 114; const pct = (treaty.ratifications / maxRatifications) * 100; return (<div key={treaty.id}><div className="flex items-center justify-between mb-1"><span className="text-sm text-slate-600 font-medium">{treaty.name}</span><span className="text-sm text-slate-400">{treaty.ratifications} ratifications</span></div><div className="h-3 bg-slate-100 rounded-full overflow-hidden"><div className={`h-full rounded-full transition-all ${treaty.status === 'not_in_force' ? 'bg-gradient-to-r from-yellow-500 to-yellow-400' : 'bg-gradient-to-r from-cyan-500 to-blue-400'}`} style={{ width: `${pct}%` }} /></div></div>); })}</div>
+        <h3 className="text-lg font-semibold text-white mb-3">Treaty Ratification Overview</h3>
+        <div className="space-y-3">{TREATIES.map((treaty) => { const maxRatifications = 114; const pct = (treaty.ratifications / maxRatifications) * 100; return (<div key={treaty.id}><div className="flex items-center justify-between mb-1"><span className="text-sm text-slate-400 font-medium">{treaty.name}</span><span className="text-sm text-slate-400">{treaty.ratifications} ratifications</span></div><div className="h-3 bg-slate-700 rounded-full overflow-hidden"><div className={`h-full rounded-full transition-all ${treaty.status === 'not_in_force' ? 'bg-gradient-to-r from-yellow-500 to-yellow-400' : 'bg-gradient-to-r from-cyan-500 to-blue-400'}`} style={{ width: `${pct}%` }} /></div></div>); })}</div>
         <p className="text-xs text-slate-400 mt-4">Data based on UNOOSA treaty status reports. Signatories that have not ratified are counted separately.</p>
       </div>
     </div>
@@ -602,8 +602,8 @@ function NationalLawCard({ law }: { law: NationalLaw }) {
     <div className="card p-5 hover:border-nebula-500/30 transition-all">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-slate-800/50 border border-slate-600/40 flex items-center justify-center text-sm font-bold text-slate-600">{law.countryCode}</div>
-          <div><h4 className="font-semibold text-slate-900">{law.country}</h4><span className="text-slate-400 text-xs">{law.agency}</span></div>
+          <div className="w-10 h-10 rounded-lg bg-slate-800/50 border border-slate-600/40 flex items-center justify-center text-sm font-bold text-slate-400">{law.countryCode}</div>
+          <div><h4 className="font-semibold text-white">{law.country}</h4><span className="text-slate-400 text-xs">{law.agency}</span></div>
         </div>
         <span className={`text-xs font-bold px-2.5 py-1 rounded border flex-shrink-0 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>{statusConfig.label}</span>
       </div>
@@ -612,7 +612,7 @@ function NationalLawCard({ law }: { law: NationalLaw }) {
       <p className="text-slate-500 text-sm mb-3 line-clamp-2">{law.description}</p>
       <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors">{expanded ? 'Show Less' : 'View Key Features'}</button>
       {expanded && (
-        <div className="mt-3 pt-3 border-t border-slate-200/50"><h5 className="text-xs font-semibold text-slate-700 mb-2 uppercase tracking-wider">Key Features</h5><ul className="space-y-1.5">{law.keyFeatures.map((feature, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><svg className="w-3 h-3 text-cyan-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{feature}</li>))}</ul></div>
+        <div className="mt-3 pt-3 border-t border-slate-700/50"><h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Features</h5><ul className="space-y-1.5">{law.keyFeatures.map((feature, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><svg className="w-3 h-3 text-cyan-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{feature}</li>))}</ul></div>
       )}
     </div>
   );
@@ -625,7 +625,7 @@ function SpaceLawNationalTab() {
   const filteredLaws = useMemo(() => { let result = [...NATIONAL_LAWS]; if (countryFilter) result = result.filter(l => l.country === countryFilter); if (statusFilter) result = result.filter(l => l.status === statusFilter); return result; }, [countryFilter, statusFilter]);
   return (
     <div>
-      <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4 mb-6"><h4 className="font-semibold text-cyan-600 mb-2">National Space Legislation Tracker</h4><p className="text-sm text-slate-400">As commercial space activities expand, nations are rapidly developing domestic legislation to regulate launches, satellite operations, space resources, and liability. This tracker monitors major national frameworks.</p></div>
+      <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4 mb-6"><h4 className="font-semibold text-cyan-400 mb-2">National Space Legislation Tracker</h4><p className="text-sm text-slate-400">As commercial space activities expand, nations are rapidly developing domestic legislation to regulate launches, satellite operations, space resources, and liability. This tracker monitors major national frameworks.</p></div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
         <div><label className="block text-slate-400 text-sm mb-1">Country</label><select value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"><option value="">All Countries</option>{countries.map(c => (<option key={c} value={c}>{c}</option>))}</select></div>
         <div><label className="block text-slate-400 text-sm mb-1">Status</label><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"><option value="">All Statuses</option><option value="enacted">Enacted</option><option value="amended">Amended</option><option value="proposed">Proposed</option><option value="under_review">Under Review</option></select></div>
@@ -645,7 +645,7 @@ function SpaceLawArtemisTab() {
   const regionCounts = useMemo(() => { const counts: Record<string, number> = {}; ARTEMIS_SIGNATORIES.forEach(s => { counts[s.region] = (counts[s.region] || 0) + 1; }); return counts; }, []);
   return (
     <div>
-      <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-slate-900 mb-2">About the Artemis Accords</h3><p className="text-slate-500 text-sm mb-4">The Artemis Accords are a set of bilateral agreements between the United States and partner nations, grounded in the Outer Space Treaty. Established in 2020 by NASA, they set principles for the responsible and peaceful exploration of the Moon, Mars, and other celestial bodies as part of the Artemis program.</p>
+      <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-white mb-2">About the Artemis Accords</h3><p className="text-slate-500 text-sm mb-4">The Artemis Accords are a set of bilateral agreements between the United States and partner nations, grounded in the Outer Space Treaty. Established in 2020 by NASA, they set principles for the responsible and peaceful exploration of the Moon, Mars, and other celestial bodies as part of the Artemis program.</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-green-400">{ARTEMIS_SIGNATORIES.length}</div><div className="text-slate-400 text-xs">Total Signatories</div></div>
           <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-cyan-400">{Object.keys(regionCounts).length}</div><div className="text-slate-400 text-xs">Regions</div></div>
@@ -653,15 +653,15 @@ function SpaceLawArtemisTab() {
           <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-purple-400">{ARTEMIS_PRINCIPLES.length}</div><div className="text-slate-400 text-xs">Core Principles</div></div>
         </div>
       </div>
-      <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-slate-900 mb-4">Core Principles</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-3">{ARTEMIS_PRINCIPLES.map((principle, i) => (<div key={i} className="bg-slate-50/50 border border-slate-200/30 rounded-lg p-4"><div className="flex items-center gap-2 mb-1"><span className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-600 text-xs font-bold flex items-center justify-center">{i + 1}</span><h5 className="font-medium text-slate-900 text-sm">{principle.title}</h5></div><p className="text-xs text-slate-500 ml-8">{principle.description}</p></div>))}</div></div>
-      <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-slate-900 mb-3">Regional Distribution</h3><div className="space-y-3">{Object.entries(regionCounts).sort((a, b) => b[1] - a[1]).map(([region, count]) => { const maxCount = Math.max(...Object.values(regionCounts)); const pct = (count / maxCount) * 100; return (<div key={region}><div className="flex items-center justify-between mb-1"><span className="text-sm text-slate-600 font-medium">{region}</span><span className="text-sm text-slate-400">{count} signatories</span></div><div className="h-3 bg-slate-100 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-cyan-500 to-blue-400 rounded-full transition-all" style={{ width: `${pct}%` }} /></div></div>); })}</div></div>
+      <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-white mb-4">Core Principles</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-3">{ARTEMIS_PRINCIPLES.map((principle, i) => (<div key={i} className="bg-slate-800/50/50 border border-slate-700/30 rounded-lg p-4"><div className="flex items-center gap-2 mb-1"><span className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold flex items-center justify-center">{i + 1}</span><h5 className="font-medium text-white text-sm">{principle.title}</h5></div><p className="text-xs text-slate-500 ml-8">{principle.description}</p></div>))}</div></div>
+      <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-white mb-3">Regional Distribution</h3><div className="space-y-3">{Object.entries(regionCounts).sort((a, b) => b[1] - a[1]).map(([region, count]) => { const maxCount = Math.max(...Object.values(regionCounts)); const pct = (count / maxCount) * 100; return (<div key={region}><div className="flex items-center justify-between mb-1"><span className="text-sm text-slate-400 font-medium">{region}</span><span className="text-sm text-slate-400">{count} signatories</span></div><div className="h-3 bg-slate-700 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-cyan-500 to-blue-400 rounded-full transition-all" style={{ width: `${pct}%` }} /></div></div>); })}</div></div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
         <div className="flex-1 min-w-[200px]"><label className="block text-slate-400 text-sm mb-1">Search</label><input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search countries, agencies..." className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500 placeholder:text-slate-400" /></div>
         <div><label className="block text-slate-400 text-sm mb-1">Region</label><select value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)} className="bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500"><option value="">All Regions</option>{regions.map(r => (<option key={r} value={r}>{r} ({regionCounts[r]})</option>))}</select></div>
         {(regionFilter || searchQuery) && (<button onClick={() => { setRegionFilter(''); setSearchQuery(''); }} className="text-sm text-nebula-300 hover:text-nebula-200 py-2">Clear Filters</button>)}
       </div></div>
       <div className="flex items-center justify-between mb-4"><span className="text-sm text-slate-400">Showing {filteredSignatories.length} of {ARTEMIS_SIGNATORIES.length} signatories</span></div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{filteredSignatories.map((signatory) => { const status = ARTEMIS_STATUS_CONFIG[signatory.implementationStatus] || DEFAULT_ARTEMIS_STATUS; return (<div key={signatory.id} className="card p-4 hover:border-cyan-500/30 transition-all"><div className="flex items-start justify-between mb-2"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-slate-800/50 border border-slate-600/40 flex items-center justify-center text-sm font-bold text-slate-600">{signatory.countryCode}</div><div><h4 className="font-semibold text-slate-900 text-sm">{signatory.country}</h4><span className="text-slate-400 text-xs">{signatory.spaceAgency}</span></div></div><span className={`text-xs px-2 py-0.5 rounded border ${status.bg} ${status.text} ${status.border}`}>{status.label}</span></div><div className="flex items-center gap-3 text-xs text-slate-400 mb-2"><span>Signed: {new Date(signatory.dateSigned).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</span><span>{signatory.region}</span></div><p className="text-xs text-slate-500 line-clamp-2">{signatory.notes}</p></div>); })}</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{filteredSignatories.map((signatory) => { const status = ARTEMIS_STATUS_CONFIG[signatory.implementationStatus] || DEFAULT_ARTEMIS_STATUS; return (<div key={signatory.id} className="card p-4 hover:border-cyan-500/30 transition-all"><div className="flex items-start justify-between mb-2"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-slate-800/50 border border-slate-600/40 flex items-center justify-center text-sm font-bold text-slate-400">{signatory.countryCode}</div><div><h4 className="font-semibold text-white text-sm">{signatory.country}</h4><span className="text-slate-400 text-xs">{signatory.spaceAgency}</span></div></div><span className={`text-xs px-2 py-0.5 rounded border ${status.bg} ${status.text} ${status.border}`}>{status.label}</span></div><div className="flex items-center gap-3 text-xs text-slate-400 mb-2"><span>Signed: {new Date(signatory.dateSigned).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</span><span>{signatory.region}</span></div><p className="text-xs text-slate-500 line-clamp-2">{signatory.notes}</p></div>); })}</div>
     </div>
   );
 }
@@ -672,10 +672,10 @@ function ProceedingCard({ proceeding }: { proceeding: LegalProceeding }) {
   return (
     <div className="card p-5 hover:border-nebula-500/30 transition-all">
       <div className="flex items-start justify-between mb-2"><div className="flex items-center gap-2"><span className="text-xs text-slate-400 bg-slate-800/50 border border-slate-600/40 px-2 py-0.5 rounded font-medium">{proceeding.type}</span><span className="text-xs text-slate-400">{proceeding.year}</span></div><span className={`text-xs font-bold px-2.5 py-1 rounded border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>{statusConfig.label}</span></div>
-      <h4 className="font-semibold text-slate-900 mb-1">{proceeding.title}</h4><p className="text-xs text-slate-400 mb-3">{proceeding.parties}</p>
+      <h4 className="font-semibold text-white mb-1">{proceeding.title}</h4><p className="text-xs text-slate-400 mb-3">{proceeding.parties}</p>
       <p className="text-slate-500 text-sm mb-3 line-clamp-3">{proceeding.description}</p>
       <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors">{expanded ? 'Show Less' : 'View Details'}</button>
-      {expanded && (<div className="mt-3 pt-3 border-t border-slate-200/50 space-y-3"><div><h5 className="text-xs font-semibold text-slate-700 mb-1 uppercase tracking-wider">Jurisdiction</h5><p className="text-xs text-slate-500">{proceeding.jurisdiction}</p></div><div><h5 className="text-xs font-semibold text-slate-700 mb-1 uppercase tracking-wider">Significance</h5><p className="text-xs text-slate-500">{proceeding.significance}</p></div><div><h5 className="text-xs font-semibold text-slate-700 mb-1 uppercase tracking-wider">Outcome</h5><p className="text-xs text-slate-500">{proceeding.outcome}</p></div></div>)}
+      {expanded && (<div className="mt-3 pt-3 border-t border-slate-700/50 space-y-3"><div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Jurisdiction</h5><p className="text-xs text-slate-500">{proceeding.jurisdiction}</p></div><div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Significance</h5><p className="text-xs text-slate-500">{proceeding.significance}</p></div><div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Outcome</h5><p className="text-xs text-slate-500">{proceeding.outcome}</p></div></div>)}
     </div>
   );
 }
@@ -689,7 +689,7 @@ function SpaceLawProceedingsTab() {
     <div>
       <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6"><h4 className="font-semibold text-red-400 mb-2">Space Law Cases and Legal Proceedings</h4><p className="text-sm text-slate-400">Tracking notable legal disputes, regulatory enforcement actions, and advisory opinions that shape the evolving body of space law. Includes both international and domestic proceedings.</p></div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-slate-900">{LEGAL_PROCEEDINGS.length}</div><div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Cases</div></div>
+        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-white">{LEGAL_PROCEEDINGS.length}</div><div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Cases</div></div>
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-red-400">{LEGAL_PROCEEDINGS.filter(p => p.status === 'active').length}</div><div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Active</div></div>
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-green-400">{LEGAL_PROCEEDINGS.filter(p => p.status === 'resolved').length}</div><div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Resolved</div></div>
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-yellow-400">{LEGAL_PROCEEDINGS.filter(p => p.status === 'pending').length}</div><div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Pending</div></div>
@@ -709,11 +709,11 @@ function BodyCard({ body }: { body: RegulatoryBody }) {
   const typeConfig = BODY_TYPE_CONFIG[body.type] || DEFAULT_BODY_TYPE;
   return (
     <div className="card p-5 hover:border-nebula-500/30 transition-all">
-      <div className="flex items-start justify-between mb-3"><div><div className="flex items-center gap-2 mb-1"><h4 className="font-semibold text-slate-900">{body.abbreviation}</h4><span className={`text-xs px-2 py-0.5 rounded border ${typeConfig.bg} ${typeConfig.text} ${typeConfig.border}`}>{typeConfig.label}</span></div><p className="text-slate-400 text-sm">{body.name}</p></div></div>
+      <div className="flex items-start justify-between mb-3"><div><div className="flex items-center gap-2 mb-1"><h4 className="font-semibold text-white">{body.abbreviation}</h4><span className={`text-xs px-2 py-0.5 rounded border ${typeConfig.bg} ${typeConfig.text} ${typeConfig.border}`}>{typeConfig.label}</span></div><p className="text-slate-400 text-sm">{body.name}</p></div></div>
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400 mb-3"><span>Est. {body.established}</span><span>{body.headquarters}</span><span>{body.members}</span></div>
       <p className="text-slate-500 text-sm mb-3 line-clamp-2">{body.mandate}</p>
       <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors">{expanded ? 'Show Less' : 'View Functions'}</button>
-      {expanded && (<div className="mt-3 pt-3 border-t border-slate-200/50"><h5 className="text-xs font-semibold text-slate-700 mb-2 uppercase tracking-wider">Key Functions</h5><ul className="space-y-1.5">{body.keyFunctions.map((func, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><svg className="w-3 h-3 text-cyan-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{func}</li>))}</ul><a href={body.website} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-xs text-nebula-300 hover:text-nebula-200">Visit Website</a></div>)}
+      {expanded && (<div className="mt-3 pt-3 border-t border-slate-700/50"><h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Functions</h5><ul className="space-y-1.5">{body.keyFunctions.map((func, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><svg className="w-3 h-3 text-cyan-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{func}</li>))}</ul><a href={body.website} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-xs text-nebula-300 hover:text-nebula-200">Visit Website</a></div>)}
     </div>
   );
 }
@@ -850,7 +850,7 @@ function FilingsSECTab() {
         <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Filing Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const typeColor = filingTypeColors[filing.filingType] || { bg: 'bg-slate-500/20', text: 'text-slate-400' }; return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const typeColor = filingTypeColors[filing.filingType] || { bg: 'bg-slate-800/500/20', text: 'text-slate-400' }; return (
         <div key={filing.id} className="card p-5 hover:border-nebula-500/50 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{filing.company}</h4><div className="flex items-center gap-2 mt-1"><span className="text-nebula-300 text-sm font-bold font-mono">${filing.ticker}</span>{filing.period && (<span className="text-star-300 text-xs">({filing.period})</span>)}</div></div><span className={`text-xs font-medium px-2.5 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{filing.filingType}</span></div>
           {filing.keyMetric && (<div className="flex items-center gap-4 mb-3"><div className="card-elevated px-4 py-2 rounded-lg"><span className="text-star-300 text-xs block">{filing.keyMetricLabel}</span><span className="text-white text-lg font-bold font-display">{filing.keyMetric}</span></div></div>)}
@@ -884,7 +884,7 @@ function FilingsFederalRegisterTab() {
         <select value={impactFilter} onChange={(e) => setImpactFilter(e.target.value)} className="bg-white/5 border border-white/10 text-star-300 rounded-lg px-3 py-2 text-sm"><option value="">All Impact Levels</option><option value="high">High Impact</option><option value="medium">Medium Impact</option><option value="low">Low Impact</option></select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} entries</span>
       </div></div>
-      <div className="space-y-4">{filtered.map((entry) => { const typeColor = docTypeColors[entry.documentType] || { bg: 'bg-slate-500/20', text: 'text-slate-400' }; const impactStyle = FILING_IMPACT_STYLES[entry.impact] || DEFAULT_FILING_IMPACT_STYLE; return (
+      <div className="space-y-4">{filtered.map((entry) => { const typeColor = docTypeColors[entry.documentType] || { bg: 'bg-slate-800/500/20', text: 'text-slate-400' }; const impactStyle = FILING_IMPACT_STYLES[entry.impact] || DEFAULT_FILING_IMPACT_STYLE; return (
         <div key={entry.id} className="card p-5 hover:border-nebula-500/50 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-nebula-300 shrink-0">{entry.agency}</div><div><h4 className="font-semibold text-white text-base">{entry.title}</h4><span className="text-star-300 text-xs font-mono">FR {entry.federalRegisterNumber}</span></div></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{entry.documentType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${impactStyle.bg} ${impactStyle.text}`}>{entry.impact.charAt(0).toUpperCase() + entry.impact.slice(1)} Impact</span></div></div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{entry.summary}</p>
@@ -927,7 +927,7 @@ interface BidProtest {
 const PROTEST_OUTCOME_STYLES: Record<ProtestOutcome, { bg: string; text: string; label: string }> = {
   denied: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Denied' },
   sustained: { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Sustained' },
-  dismissed: { bg: 'bg-slate-500/20', text: 'text-slate-400', label: 'Dismissed' },
+  dismissed: { bg: 'bg-slate-800/500/20', text: 'text-slate-400', label: 'Dismissed' },
   withdrawn: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', label: 'Withdrawn' },
   corrective_action: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Corrective Action' },
   settled: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'Settled' },
@@ -1557,7 +1557,7 @@ function RegulatoryHubContent() {
       <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-slate-900">{stats.totalPolicies}</div>
+          <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.totalPolicies}</div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Policy Changes</div>
         </div>
         <div className="card-elevated p-6 text-center">
@@ -1608,7 +1608,7 @@ function RegulatoryHubContent() {
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all whitespace-nowrap touch-target ${
                 activeSubTab === tab.id
                   ? 'bg-slate-700/80 text-slate-100 border-slate-500/50 shadow-glow-sm'
-                  : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                  : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
               }`}
             >
               <span>{tab.icon}</span>
@@ -1627,7 +1627,7 @@ function RegulatoryHubContent() {
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeSubTab === tab.id
                   ? 'bg-slate-700/80 text-slate-100 border border-slate-500/50 shadow-glow-sm'
-                  : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                  : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
               }`}
             >
               {tab.label}
@@ -1664,7 +1664,7 @@ function RegulatoryHubContent() {
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeSubTab === tab.id
                   ? 'bg-slate-700/80 text-slate-100 border border-slate-500/50 shadow-glow-sm'
-                  : 'bg-transparent text-slate-400 border border-slate-200 hover:border-slate-300'
+                  : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
               }`}
             >
               {tab.label}

@@ -157,7 +157,7 @@ export default function RegisterPage() {
               height={160}
               className="mx-auto w-full max-w-xs h-auto rounded-lg mb-4"
             />
-            <h1 className="text-2xl font-display font-bold text-slate-900">
+            <h1 className="text-2xl font-display font-bold text-white">
               Join SpaceNexus
             </h1>
             <p className="text-slate-400 mt-2">
