@@ -567,7 +567,7 @@ function LaunchWindowsContent() {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <ScrollReveal><div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-white">
               {data.stats.totalDestinations}
@@ -632,11 +632,11 @@ function LaunchWindowsContent() {
               </>
             )}
           </div>
-        </div>
+        </div></ScrollReveal>
 
         {/* Next Window Countdown */}
         {nextWindow && (
-          <div className="bg-gradient-to-r from-slate-800/80 to-slate-800/50 border border-cyan-500/20 rounded-xl p-6 mb-8">
+          <ScrollReveal delay={0.1}><div className="bg-gradient-to-r from-slate-800/80 to-slate-800/50 border border-cyan-500/20 rounded-xl p-6 mb-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
                 <h3 className="text-lg font-semibold text-white mb-1">Next Launch Window</h3>
@@ -648,7 +648,7 @@ function LaunchWindowsContent() {
               </div>
               <CountdownTimer targetDate={nextWindow.windowOpen} />
             </div>
-          </div>
+          </div></ScrollReveal>
         )}
 
         {/* Tab Navigation */}
@@ -752,7 +752,7 @@ function LaunchWindowsContent() {
             )}
 
             {/* Transfer Type Legend */}
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 mt-8 border-dashed">
+            <ScrollReveal><div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 mt-8 border-dashed">
               <h3 className="text-white font-semibold mb-4">Transfer Types</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {TRANSFER_TYPES.map((transfer) => {
@@ -765,7 +765,7 @@ function LaunchWindowsContent() {
                   );
                 })}
               </div>
-            </div>
+            </div></ScrollReveal>
           </div>
         )}
 
@@ -820,7 +820,7 @@ function LaunchWindowsContent() {
         )}
 
         {/* Data Sources Footer */}
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 mt-8 mb-8 border-dashed">
+        <ScrollReveal><div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 mt-8 mb-8 border-dashed">
           <h3 className="text-white font-semibold mb-3">Data Sources & Methodology</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
             <div>
@@ -846,7 +846,7 @@ function LaunchWindowsContent() {
             Launch windows are calculated based on orbital mechanics and represent optimal transfer opportunities.
             Actual mission planning requires detailed trajectory analysis and spacecraft-specific parameters.
           </p>
-        </div>
+        </div></ScrollReveal>
       </div>
     </div>
   );

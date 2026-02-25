@@ -627,7 +627,7 @@ function InsuranceContent() {
             </div></ScrollReveal>
 
             {/* ──────────── Tab Navigation ──────────── */}
-            <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+            <ScrollReveal delay={0.1}><div className="flex gap-2 mb-6 overflow-x-auto pb-1">
               {[
                 { id: 'market' as const, label: 'Market Overview', count: marketHistory.length },
                 { id: 'policies' as const, label: 'Active Policies', count: policies.length },
@@ -656,7 +656,7 @@ function InsuranceContent() {
                   )}
                 </button>
               ))}
-            </div>
+            </div></ScrollReveal>
 
             {/* ──────────── MARKET OVERVIEW TAB ──────────── */}
             {activeTab === 'market' && (
@@ -744,7 +744,7 @@ function InsuranceContent() {
                 </div>
 
                 {/* Risk Factor Links */}
-                <div className="card p-5">
+                <ScrollReveal><div className="card p-5">
                   <h3 className="text-lg font-semibold text-white mb-3">
                     Active Risk Factors
                   </h3>
@@ -762,7 +762,7 @@ function InsuranceContent() {
                       <p className="text-xs text-slate-400 mt-1">Liability regulations and requirements</p>
                     </Link>
                   </div>
-                </div>
+                </div></ScrollReveal>
 
                 {/* Trend Insight Card */}
                 {marketHistory.length >= 2 && (

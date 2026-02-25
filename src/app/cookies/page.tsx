@@ -33,7 +33,7 @@ export default function CookiePolicyPage() {
 
             {/* Introduction */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">What Are Cookies?</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">What Are Cookies?</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Cookies are small text files that are placed on your computer or mobile device when you
                 visit a website. They are widely used to make websites work more efficiently, provide a
@@ -47,7 +47,7 @@ export default function CookiePolicyPage() {
 
             {/* How We Use Cookies */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">How SpaceNexus Uses Cookies</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">How SpaceNexus Uses Cookies</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We use cookies and similar tracking technologies for various purposes, including:
               </p>
@@ -63,7 +63,7 @@ export default function CookiePolicyPage() {
 
             {/* Types of Cookies */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Types of Cookies We Use</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Types of Cookies We Use</h2>
 
               {/* Essential Cookies */}
               <div className="mb-6 p-6 bg-slate-800/50 border border-slate-700 rounded-lg">
@@ -156,7 +156,7 @@ export default function CookiePolicyPage() {
 
             {/* Cookie Duration */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Cookie Duration</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Cookie Duration</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Cookies can remain on your device for different periods of time:
               </p>
@@ -180,7 +180,7 @@ export default function CookiePolicyPage() {
 
             {/* Third-Party Cookies */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Third-Party Cookies</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Third-Party Cookies</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 In addition to our own cookies, we may also use various third-party cookies to report
                 usage statistics, deliver advertisements, and provide other services. These third parties
@@ -201,7 +201,7 @@ export default function CookiePolicyPage() {
 
             {/* Managing Cookies */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">How to Manage Cookies</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">How to Manage Cookies</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 You have several options to control or limit how cookies are used:
               </p>
@@ -288,7 +288,7 @@ export default function CookiePolicyPage() {
 
             {/* Do Not Track */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Do Not Track Signals</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Do Not Track Signals</h2>
               <p className="text-slate-400 leading-relaxed">
                 Some browsers include a &quot;Do Not Track&quot; (DNT) feature that signals to websites that you
                 do not want your online activity tracked. Currently, there is no uniform standard for
@@ -299,7 +299,7 @@ export default function CookiePolicyPage() {
 
             {/* Updates */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Updates to This Policy</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Updates to This Policy</h2>
               <p className="text-slate-400 leading-relaxed">
                 We may update this Cookie Policy from time to time to reflect changes in our practices or
                 for other operational, legal, or regulatory reasons. We will notify you of any material
@@ -310,7 +310,7 @@ export default function CookiePolicyPage() {
 
             {/* Contact */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Contact Us</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Contact Us</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 If you have any questions about our use of cookies or this Cookie Policy, please contact us:
               </p>

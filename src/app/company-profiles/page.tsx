@@ -9,6 +9,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
+import ExportButton from '@/components/ui/ExportButton';
 import AdSlot from '@/components/ads/AdSlot';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import SponsorBadge from '@/components/company/SponsorBadge';
@@ -315,6 +316,23 @@ export default function CompanyProfilesPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const PAGE_SIZE = 24;
 
+  const COMPANY_EXPORT_COLUMNS = [
+    { key: 'name', label: 'Name' },
+    { key: 'sector', label: 'Sector' },
+    { key: 'country', label: 'Country' },
+    { key: 'headquarters', label: 'Headquarters' },
+    { key: 'tier', label: 'Tier' },
+    { key: 'foundedYear', label: 'Founded' },
+    { key: 'status', label: 'Status' },
+    { key: 'employeeRange', label: 'Employees' },
+    { key: 'isPublic', label: 'Public' },
+    { key: 'ticker', label: 'Ticker' },
+    { key: 'totalFunding', label: 'Total Funding ($)' },
+    { key: 'marketCap', label: 'Market Cap ($)' },
+    { key: 'revenueEstimate', label: 'Revenue Estimate ($)' },
+    { key: 'website', label: 'Website' },
+  ];
+
   const buildParams = useCallback((offset = 0) => {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
@@ -503,6 +521,12 @@ export default function CompanyProfilesPage() {
                 searchType="company_directory"
                 filters={{ sector, tier, status: statusFilter, sortBy, sortOrder }}
                 query={search || undefined}
+              />
+              <ExportButton
+                data={companies}
+                filename="spacenexus-company-profiles"
+                columns={COMPANY_EXPORT_COLUMNS}
+                label="Export Companies"
               />
             </div>
             {stats && stats.sectors.length > 0 && (

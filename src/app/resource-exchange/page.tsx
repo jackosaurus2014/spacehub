@@ -305,7 +305,7 @@ function ResourceExchangeContent() {
         {stats && stats.total > 0 && (
           <>
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <ScrollReveal><div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="card-elevated p-6 text-center">
                 <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.total}</div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Resources Tracked</div>
@@ -328,7 +328,7 @@ function ResourceExchangeContent() {
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Launch Providers</div>
               </div>
-            </div>
+            </div></ScrollReveal>
 
             {/* Launch Providers */}
             <div className="mb-8">
@@ -352,7 +352,7 @@ function ResourceExchangeContent() {
             </div>
 
             {/* Destination & Filters */}
-            <div className="card p-4 mb-6">
+            <ScrollReveal delay={0.1}><div className="card p-4 mb-6">
               <div className="flex flex-wrap items-center gap-6">
                 <div>
                   <label className="block text-slate-400 text-sm mb-2">Destination</label>
@@ -419,7 +419,7 @@ function ResourceExchangeContent() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div></ScrollReveal>
           </>
         )}
 

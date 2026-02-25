@@ -123,7 +123,7 @@ function SponsorPageInner() {
         {/* ROI Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           {ROI_STATS.map((stat) => (
-            <div key={stat.label} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 text-center">
+            <div key={stat.label} className="card p-5 text-center">
               <div className="text-2xl font-bold text-amber-400">{stat.value}</div>
               <div className="text-sm font-medium text-slate-200 mt-1">{stat.label}</div>
               <div className="text-xs text-slate-500 mt-0.5">{stat.description}</div>

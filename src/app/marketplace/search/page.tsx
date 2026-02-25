@@ -10,6 +10,7 @@ import RFQCard from '@/components/marketplace/RFQCard';
 import { MARKETPLACE_CATEGORIES, CERTIFICATION_OPTIONS, VERIFICATION_LEVELS } from '@/lib/marketplace-types';
 import { clientLogger } from '@/lib/client-logger';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
+import ExportButton from '@/components/ui/ExportButton';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 function SearchContent() {
@@ -95,6 +96,30 @@ function SearchContent() {
     else fetchRFQs();
     resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [tab, fetchListings, fetchRFQs]);
+
+  const LISTING_EXPORT_COLUMNS = [
+    { key: 'name', label: 'Name' },
+    { key: 'company.name', label: 'Company' },
+    { key: 'category', label: 'Category' },
+    { key: 'subcategory', label: 'Subcategory' },
+    { key: 'pricingType', label: 'Pricing Type' },
+    { key: 'priceMin', label: 'Price Min' },
+    { key: 'priceMax', label: 'Price Max' },
+    { key: 'priceUnit', label: 'Price Unit' },
+    { key: 'certifications', label: 'Certifications' },
+    { key: 'status', label: 'Status' },
+    { key: 'description', label: 'Description' },
+  ];
+
+  const RFQ_EXPORT_COLUMNS = [
+    { key: 'title', label: 'Title' },
+    { key: 'category', label: 'Category' },
+    { key: 'budgetMin', label: 'Budget Min' },
+    { key: 'budgetMax', label: 'Budget Max' },
+    { key: 'deadline', label: 'Deadline' },
+    { key: 'status', label: 'Status' },
+    { key: 'description', label: 'Description' },
+  ];
 
   const toggleCert = (cert: string) => {
     setCertFilter((prev) =>
@@ -235,6 +260,12 @@ function SearchContent() {
                 <SaveSearchButton
                   searchType={tab === 'rfqs' ? 'marketplace_rfqs' : 'marketplace_listings'}
                   filters={{ category, priceMin, priceMax, certifications: certFilter.join(','), verification: verFilter, sort }}
+                />
+                <ExportButton
+                  data={tab === 'listings' ? listings : rfqs}
+                  filename={tab === 'listings' ? 'spacenexus-marketplace-listings' : 'spacenexus-marketplace-rfqs'}
+                  columns={tab === 'listings' ? LISTING_EXPORT_COLUMNS : RFQ_EXPORT_COLUMNS}
+                  label={tab === 'listings' ? 'Export Listings' : 'Export RFQs'}
                 />
                 {tab === 'listings' && (
                   <select

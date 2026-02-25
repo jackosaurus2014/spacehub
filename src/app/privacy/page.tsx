@@ -33,7 +33,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Introduction */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Introduction</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Introduction</h2>
               <p className="text-slate-400 leading-relaxed">
                 SpaceNexus (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy.
                 This Privacy Policy explains how we collect, use, disclose, and safeguard your information
@@ -44,7 +44,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Information Collection */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Information We Collect</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Information We Collect</h2>
 
               <h3 className="text-lg font-medium text-slate-200 mb-3">Personal Data</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
@@ -100,7 +100,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Use of Data */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">How We Use Your Information</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">How We Use Your Information</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We use the information we collect for various purposes, including:
               </p>
@@ -127,7 +127,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Data Sharing */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Information Sharing and Disclosure</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Information Sharing and Disclosure</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We may share your information in the following situations:
               </p>
@@ -158,7 +158,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Cookies */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Cookies and Tracking Technologies</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Cookies and Tracking Technologies</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We use cookies and similar tracking technologies to track activity on our platform and store
                 certain information. Cookies are files with a small amount of data that may include an
@@ -178,7 +178,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Security */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Data Security</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Data Security</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We implement appropriate technical and organizational security measures to protect your
                 personal information against unauthorized access, alteration, disclosure, or destruction.
@@ -199,7 +199,7 @@ export default function PrivacyPolicyPage() {
 
             {/* User Rights */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Your Rights and Choices</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Your Rights and Choices</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Depending on your location, you may have certain rights regarding your personal information:
               </p>
@@ -251,7 +251,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Data Retention */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Data Retention</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Data Retention</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We retain different types of data for different periods, depending on the purpose for which
                 it was collected and our legal obligations:
@@ -273,7 +273,7 @@ export default function PrivacyPolicyPage() {
 
             {/* International Transfers */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">International Data Transfers</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">International Data Transfers</h2>
               <p className="text-slate-400 leading-relaxed">
                 Your information may be transferred to and processed in countries other than your country
                 of residence. These countries may have data protection laws that are different from the
@@ -284,7 +284,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Children's Privacy */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Children&apos;s Privacy</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Children&apos;s Privacy</h2>
               <p className="text-slate-400 leading-relaxed">
                 Our services are not intended for individuals under the age of 16. We do not knowingly
                 collect personal information from children under 16. If you become aware that a child has
@@ -295,7 +295,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Changes */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Changes to This Privacy Policy</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Changes to This Privacy Policy</h2>
               <p className="text-slate-400 leading-relaxed">
                 We may update our Privacy Policy from time to time. We will notify you of any changes by
                 posting the new Privacy Policy on this page and updating the &quot;Last Updated&quot; date. You are
@@ -306,7 +306,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Contact */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">Contact Us</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Contact Us</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 If you have any questions about this Privacy Policy or our data practices, please contact us:
               </p>

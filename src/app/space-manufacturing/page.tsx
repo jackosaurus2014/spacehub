@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import ScrollReveal from '@/components/ui/ScrollReveal';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
 
@@ -818,7 +818,7 @@ function OverviewTab() {
   return (
     <div className="space-y-8">
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <ScrollReveal><div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {keyStats.map((stat) => (
           <div key={stat.label} className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
             <div className="flex items-center gap-3">
@@ -831,10 +831,10 @@ function OverviewTab() {
             </div>
           </div>
         ))}
-      </div>
+      </div></ScrollReveal>
 
       {/* Landscape Overview */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <ScrollReveal><div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🌐</span>
           In-Space Manufacturing Landscape
@@ -864,10 +864,10 @@ function OverviewTab() {
             for commercial-scale production.
           </p>
         </div>
-      </div>
+      </div></ScrollReveal>
 
       {/* Market Projection Chart */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <ScrollReveal><div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">📈</span>
           Market Growth Projections
@@ -920,10 +920,10 @@ function OverviewTab() {
             <span className="w-3 h-3 rounded bg-nebula-500/10" /> Optimistic
           </span>
         </div>
-      </div>
+      </div></ScrollReveal>
 
       {/* Key Product Categories Quick View */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <ScrollReveal><div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🔬</span>
           Key Product Categories
@@ -943,10 +943,10 @@ function OverviewTab() {
             </div>
           ))}
         </div>
-      </div>
+      </div></ScrollReveal>
 
       {/* Key Enablers */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <ScrollReveal><div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🚀</span>
           Key Market Enablers
@@ -990,7 +990,7 @@ function OverviewTab() {
             </div>
           ))}
         </div>
-      </div>
+      </div></ScrollReveal>
     </div>
   );
 }

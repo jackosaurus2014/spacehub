@@ -5,6 +5,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
+import ExportButton from '@/components/ui/ExportButton';
 import Link from 'next/link';
 import { clientLogger } from '@/lib/client-logger';
 import { getCompanyProfileUrl } from '@/lib/company-links';
@@ -1084,6 +1085,29 @@ export default function LaunchVehiclesPage() {
   const totalLaunchesAll = ACTIVE_VEHICLES.reduce((sum, v) => sum + v.totalLaunches, 0);
   const avgSuccessRate = ACTIVE_VEHICLES.filter(v => v.totalLaunches > 0).reduce((sum, v) => sum + v.successRate, 0) / (ACTIVE_VEHICLES.filter(v => v.totalLaunches > 0).length || 1);
 
+  const VEHICLE_EXPORT_COLUMNS = [
+    { key: 'name', label: 'Name' },
+    { key: 'manufacturer', label: 'Manufacturer' },
+    { key: 'country', label: 'Country' },
+    { key: 'status', label: 'Status' },
+    { key: 'heightM', label: 'Height (m)' },
+    { key: 'diameterM', label: 'Diameter (m)' },
+    { key: 'massKg', label: 'Mass (kg)' },
+    { key: 'payloadLeoKg', label: 'Payload LEO (kg)' },
+    { key: 'payloadGtoKg', label: 'Payload GTO (kg)' },
+    { key: 'costMillions', label: 'Cost ($M)' },
+    { key: 'costPerKgLeo', label: 'Cost/kg LEO ($)' },
+    { key: 'totalLaunches', label: 'Total Launches' },
+    { key: 'successes', label: 'Successes' },
+    { key: 'failures', label: 'Failures' },
+    { key: 'successRate', label: 'Success Rate (%)' },
+    { key: 'reusable', label: 'Reusable' },
+    { key: 'stages', label: 'Stages' },
+    { key: 'engines', label: 'Engines' },
+    { key: 'propellant', label: 'Propellant' },
+    { key: 'firstFlight', label: 'First Flight' },
+  ];
+
   const TABS: { id: TabId; label: string }[] = [
     { id: 'database', label: 'Vehicle Database' },
     { id: 'compare', label: 'Compare' },
@@ -1214,16 +1238,24 @@ export default function LaunchVehiclesPage() {
             </div>
 
             {/* Results Count */}
-            <div className="mb-4 text-star-300 text-sm">
-              Showing {filteredVehicles.length} of {ACTIVE_VEHICLES.length} launch vehicles
-              {(searchQuery || statusFilter || countryFilter) && (
-                <button
-                  onClick={() => { setSearchQuery(''); setStatusFilter(''); setCountryFilter(''); }}
-                  className="ml-2 text-cyan-400 hover:text-cyan-300"
-                >
-                  Clear filters
-                </button>
-              )}
+            <div className="mb-4 flex items-center justify-between">
+              <div className="text-star-300 text-sm">
+                Showing {filteredVehicles.length} of {ACTIVE_VEHICLES.length} launch vehicles
+                {(searchQuery || statusFilter || countryFilter) && (
+                  <button
+                    onClick={() => { setSearchQuery(''); setStatusFilter(''); setCountryFilter(''); }}
+                    className="ml-2 text-cyan-400 hover:text-cyan-300"
+                  >
+                    Clear filters
+                  </button>
+                )}
+              </div>
+              <ExportButton
+                data={filteredVehicles}
+                filename="spacenexus-launch-vehicles"
+                columns={VEHICLE_EXPORT_COLUMNS}
+                label="Export Vehicles"
+              />
             </div>
 
             {/* Vehicle Grid */}
@@ -1251,6 +1283,19 @@ export default function LaunchVehiclesPage() {
         {/* ──────────────── COMPARE TAB ──────────────── */}
         {activeTab === 'compare' && (
           <div>
+            {/* Link to dedicated compare page */}
+            <div className="mb-4 flex items-center gap-3">
+              <Link
+                href="/compare/launch-vehicles"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-sm text-cyan-400 hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                Open Dedicated Comparison Tool
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+              </Link>
+              <span className="text-xs text-star-300">Advanced comparison with preset groups and search</span>
+            </div>
+
             {/* Vehicle Selection */}
             <div className="card p-5 mb-6">
               <h3 className="text-lg font-semibold text-white mb-3">Select Vehicles to Compare (2-4)</h3>

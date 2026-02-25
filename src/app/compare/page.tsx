@@ -118,6 +118,43 @@ export default function ComparePage() {
             ))}
           </div>
 
+          {/* Comparison Tools */}
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              Comparison Tools
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Link
+                href="/compare/companies"
+                className="card p-6 hover:ring-2 hover:ring-cyan-500/50 transition-all group"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl">&#127970;</span>
+                  <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">
+                    Compare Companies
+                  </h3>
+                </div>
+                <p className="text-slate-400 text-sm">
+                  Side-by-side comparison of space industry companies — financials, contracts, satellites, and capabilities.
+                </p>
+              </Link>
+              <Link
+                href="/compare/launch-vehicles"
+                className="card p-6 hover:ring-2 hover:ring-cyan-500/50 transition-all group"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl">&#128640;</span>
+                  <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">
+                    Compare Launch Vehicles
+                  </h3>
+                </div>
+                <p className="text-slate-400 text-sm">
+                  Compare up to 4 launch vehicles side-by-side across payload capacity, cost, dimensions, and reliability.
+                </p>
+              </Link>
+            </div>
+          </section>
+
           {/* Summary Table */}
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">

@@ -315,7 +315,7 @@ function SpaceTourismContent() {
         ) : (
           <>
             {/* Filter Bar */}
-            <div
+            <ScrollReveal><div
               className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-4 mb-8"
               style={{
                 background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%)'
@@ -422,10 +422,10 @@ function SpaceTourismContent() {
                   </div>
                 </div>
               )}
-            </div>
+            </div></ScrollReveal>
 
             {/* Stats Summary */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <ScrollReveal delay={0.1}><div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div
                 className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-4 text-center"
                 style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%)' }}
@@ -470,7 +470,7 @@ function SpaceTourismContent() {
                   Providers
                 </div>
               </div>
-            </div>
+            </div></ScrollReveal>
 
             {/* Offerings Grid */}
             {offerings.length === 0 ? (

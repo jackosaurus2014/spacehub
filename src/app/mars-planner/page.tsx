@@ -561,10 +561,10 @@ export default function MarsPlannerPage() {
         )}
 
         {/* Hero Stats */}
-        <HeroStats activeMissions={ACTIVE_MISSIONS} upcomingMissions={UPCOMING_MISSIONS} />
+        <ScrollReveal><HeroStats activeMissions={ACTIVE_MISSIONS} upcomingMissions={UPCOMING_MISSIONS} /></ScrollReveal>
 
         {/* Tabs */}
-        <div className="border-b border-slate-700/50 mb-6">
+        <ScrollReveal delay={0.1}><div className="border-b border-slate-700/50 mb-6">
           <div className="flex gap-1 overflow-x-auto">
             {TABS.map((tab) => (
               <button
@@ -581,7 +581,7 @@ export default function MarsPlannerPage() {
               </button>
             ))}
           </div>
-        </div>
+        </div></ScrollReveal>
 
         {/* Tab Content */}
         {activeTab === 'active' && (

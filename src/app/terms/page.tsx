@@ -33,7 +33,7 @@ export default function TermsOfServicePage() {
 
             {/* Acceptance */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">1. Acceptance of Terms</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">1. Acceptance of Terms</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Welcome to SpaceNexus. By accessing or using our website, mobile applications, APIs, or any
                 other services we offer (collectively, the &quot;Services&quot;), you agree to be bound by these
@@ -49,7 +49,7 @@ export default function TermsOfServicePage() {
 
             {/* Service Description */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">2. Description of Services</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">2. Description of Services</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 SpaceNexus provides a platform for space industry intelligence, data analytics, and market
                 information. Our Services include, but are not limited to:
@@ -71,7 +71,7 @@ export default function TermsOfServicePage() {
 
             {/* User Accounts */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">3. User Accounts</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">3. User Accounts</h2>
 
               <h3 className="text-lg font-medium text-slate-200 mb-3">Account Registration</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
@@ -96,7 +96,7 @@ export default function TermsOfServicePage() {
 
             {/* Acceptable Use */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">4. Acceptable Use Policy</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">4. Acceptable Use Policy</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 You agree to use the Services only for lawful purposes and in accordance with these Terms.
                 You agree not to:
@@ -121,7 +121,7 @@ export default function TermsOfServicePage() {
 
             {/* Community Conduct */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">5. Community Conduct</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">5. Community Conduct</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 SpaceNexus provides community features including forums, direct messaging, and a professional
                 directory. By using these features, you agree to follow our{' '}
@@ -142,7 +142,7 @@ export default function TermsOfServicePage() {
 
             {/* Export Control Compliance */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">6. Export Control Compliance</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">6. Export Control Compliance</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Users are solely responsible for ensuring their use of the Services complies with all applicable
                 U.S. export control laws, including the International Traffic in Arms Regulations (ITAR, 22 CFR
@@ -166,7 +166,7 @@ export default function TermsOfServicePage() {
 
             {/* DMCA and Copyright */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">7. DMCA and Copyright</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">7. DMCA and Copyright</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 SpaceNexus complies with the Digital Millennium Copyright Act (17 U.S.C. Section 512).
                 If you believe that your copyrighted work has been copied in a way that constitutes
@@ -182,7 +182,7 @@ export default function TermsOfServicePage() {
 
             {/* TAKE IT DOWN Act */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">8. TAKE IT DOWN Act</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">8. TAKE IT DOWN Act</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 SpaceNexus complies with the TAKE IT DOWN Act for the removal of non-consensual intimate
                 images. If you need to report such content, please submit a report to{' '}
@@ -197,7 +197,7 @@ export default function TermsOfServicePage() {
 
             {/* Intellectual Property */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">9. Intellectual Property Rights</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">9. Intellectual Property Rights</h2>
 
               <h3 className="text-lg font-medium text-slate-200 mb-3">Our Content</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
@@ -225,7 +225,7 @@ export default function TermsOfServicePage() {
 
             {/* Third-Party Content */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">10. Third-Party Content and Services</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">10. Third-Party Content and Services</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Our Services may contain links to third-party websites, services, or content that are not
                 owned or controlled by SpaceNexus. We have no control over and assume no responsibility for
@@ -240,7 +240,7 @@ export default function TermsOfServicePage() {
 
             {/* Disclaimers */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">11. Disclaimers</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">11. Disclaimers</h2>
               <p className="text-slate-400 leading-relaxed mb-4 uppercase font-medium">
                 THE SERVICES ARE PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT ANY WARRANTIES OF ANY KIND,
                 EITHER EXPRESS OR IMPLIED.
@@ -265,7 +265,7 @@ export default function TermsOfServicePage() {
 
             {/* Limitation of Liability */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">12. Limitation of Liability</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">12. Limitation of Liability</h2>
               <p className="text-slate-400 leading-relaxed mb-4 uppercase font-medium">
                 TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL SPACENEXUS, ITS
                 AFFILIATES, OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, OR LICENSORS BE LIABLE FOR ANY
@@ -289,7 +289,7 @@ export default function TermsOfServicePage() {
 
             {/* Indemnification */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">13. Indemnification</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">13. Indemnification</h2>
               <p className="text-slate-400 leading-relaxed">
                 You agree to defend, indemnify, and hold harmless SpaceNexus and its affiliates, officers,
                 directors, employees, and agents from and against any claims, liabilities, damages,
@@ -300,7 +300,7 @@ export default function TermsOfServicePage() {
 
             {/* Changes to Terms */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">14. Changes to Terms</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">14. Changes to Terms</h2>
               <p className="text-slate-400 leading-relaxed">
                 We reserve the right to modify these Terms at any time. If we make material changes, we
                 will notify you by posting the updated Terms on our website and updating the &quot;Last Updated&quot;
@@ -311,7 +311,7 @@ export default function TermsOfServicePage() {
 
             {/* Governing Law */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">15. Governing Law and Jurisdiction</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">15. Governing Law and Jurisdiction</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 These Terms shall be governed by and construed in accordance with the laws of the State of
                 Texas, United States, without regard to its conflict of law provisions.
@@ -325,7 +325,7 @@ export default function TermsOfServicePage() {
 
             {/* Dispute Resolution */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">16. Dispute Resolution</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">16. Dispute Resolution</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Any dispute arising from these Terms or your use of the Services shall first be attempted
                 to be resolved through good-faith negotiations. If such negotiations fail, the dispute shall
@@ -340,7 +340,7 @@ export default function TermsOfServicePage() {
 
             {/* Severability */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">17. Severability</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">17. Severability</h2>
               <p className="text-slate-400 leading-relaxed">
                 If any provision of these Terms is held to be invalid or unenforceable, such provision shall
                 be struck and the remaining provisions shall be enforced to the fullest extent under law.
@@ -349,7 +349,7 @@ export default function TermsOfServicePage() {
 
             {/* Entire Agreement */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">18. Entire Agreement</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">18. Entire Agreement</h2>
               <p className="text-slate-400 leading-relaxed">
                 These Terms, together with our Privacy Policy and any other agreements expressly incorporated
                 by reference herein, constitute the entire agreement between you and SpaceNexus concerning
@@ -359,7 +359,7 @@ export default function TermsOfServicePage() {
 
             {/* Contact */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">19. Contact Information</h2>
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">19. Contact Information</h2>
               <p className="text-slate-400 leading-relaxed mb-4">
                 If you have any questions about these Terms, please contact us:
               </p>

@@ -202,7 +202,7 @@ function SolarExplorationContent() {
 
         {/* Stats Overview */}
         {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <ScrollReveal><div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="card-elevated p-6 text-center">
               <div className="text-4xl font-bold font-display tracking-tight text-white">{stats.totalBodies}</div>
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Bodies Explored</div>
@@ -219,11 +219,11 @@ function SolarExplorationContent() {
               <div className="text-4xl font-bold font-display tracking-tight text-blue-400">{stats.completedLanders}</div>
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Completed</div>
             </div>
-          </div>
+          </div></ScrollReveal>
         )}
 
         {/* Body Selector */}
-        <div className="flex flex-wrap gap-3 mb-6">
+        <ScrollReveal delay={0.1}><div className="flex flex-wrap gap-3 mb-6">
           {bodies.map((body) => (
             <button
               key={body.slug}
@@ -238,7 +238,7 @@ function SolarExplorationContent() {
               <span className="ml-2 text-sm opacity-70">({body.landers?.length || 0})</span>
             </button>
           ))}
-        </div>
+        </div></ScrollReveal>
 
         {/* Main Content */}
         {selectedBody && (

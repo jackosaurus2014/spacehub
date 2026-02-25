@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import ScrollReveal from '@/components/ui/ScrollReveal';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
 
@@ -1591,10 +1591,10 @@ function CislunarEcosystemContent() {
         )}
 
         {/* Hero Stats */}
-        <HeroStats />
+        <ScrollReveal><HeroStats /></ScrollReveal>
 
         {/* Tab Navigation */}
-        <div className="border-b border-slate-700/50 mb-8">
+        <ScrollReveal delay={0.1}><div className="border-b border-slate-700/50 mb-8">
           <div className="flex gap-1 overflow-x-auto">
             {TABS.map((tab) => (
               <button
@@ -1611,7 +1611,7 @@ function CislunarEcosystemContent() {
               </button>
             ))}
           </div>
-        </div>
+        </div></ScrollReveal>
 
         {/* Tab Content */}
         {activeTab === 'artemis' && <ArtemisTab />}

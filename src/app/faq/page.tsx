@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import ScrollReveal from '@/components/ui/ScrollReveal';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import FAQAccordion, { FAQItem } from '@/components/support/FAQAccordion';
 import FAQSchema from '@/components/seo/FAQSchema';
 
@@ -233,7 +233,7 @@ export default function FAQPage() {
         </AnimatedPageHeader>
 
         {/* Search Bar */}
-        <div className="max-w-xl mx-auto mb-10">
+        <ScrollReveal><div className="max-w-xl mx-auto mb-10">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <svg
@@ -278,7 +278,7 @@ export default function FAQPage() {
               </button>
             )}
           </div>
-        </div>
+        </div></ScrollReveal>
 
         {/* FAQ Accordion */}
         <ScrollReveal><div className="max-w-4xl mx-auto">
@@ -307,7 +307,7 @@ export default function FAQPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">Still Have Questions?</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-3">Still Have Questions?</h2>
             <p className="text-slate-400 mb-6">
               Can&apos;t find what you&apos;re looking for? Our support team is here to help.
             </p>

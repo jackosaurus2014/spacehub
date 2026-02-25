@@ -891,7 +891,7 @@ function MissionCostContent() {
 
         {/* Empty state */}
         {!data && !loading && (
-          <div className="card p-12 text-center">
+          <ScrollReveal><div className="card p-12 text-center">
             <span className="text-6xl block mb-4">🚀</span>
             <h2 className="text-2xl font-semibold text-white mb-2">
               Configure Your Mission
@@ -911,7 +911,7 @@ function MissionCostContent() {
                 <span>📋</span> Regulatory fees
               </div>
             </div>
-          </div>
+          </div></ScrollReveal>
         )}
 
         {/* Related Links */}
