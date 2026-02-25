@@ -7,6 +7,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PremiumGate from '@/components/PremiumGate';
+import ConfidenceBadge from '@/components/ui/ConfidenceBadge';
+import SourceCitation from '@/components/ui/SourceCitation';
 
 // ============================================================================
 // TYPES
@@ -638,12 +640,8 @@ export default function InvestmentThesisPage() {
                           </span>
                         </div>
                       )}
-                      {confConfig && (
-                        <div className={`px-3 py-2 rounded-xl ${confConfig.bg}`}>
-                          <span className={`text-xs font-medium ${confConfig.color}`}>
-                            {confConfig.label}
-                          </span>
-                        </div>
+                      {thesis.confidenceLevel && (
+                        <ConfidenceBadge level={thesis.confidenceLevel} />
                       )}
                     </div>
                   </div>
@@ -674,10 +672,18 @@ export default function InvestmentThesisPage() {
               {/* Executive Summary */}
               <StaggerItem>
                 <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 md:p-8">
-                  <h3 className="text-lg font-semibold text-slate-100 mb-4">Executive Summary</h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-slate-100">Executive Summary</h3>
+                    <ConfidenceBadge level={thesis.confidenceLevel || 'medium'} />
+                  </div>
                   <p className="text-slate-300 leading-relaxed whitespace-pre-line">
                     {thesis.executiveSummary}
                   </p>
+                  <SourceCitation sources={[
+                    { name: 'Claude AI', type: 'ai-generated' },
+                    { name: 'SpaceNexus Company Profiles', type: 'database' },
+                    { name: 'SpaceNexus Market Data', type: 'database' },
+                  ]} />
                 </div>
               </StaggerItem>
 
@@ -776,7 +782,10 @@ export default function InvestmentThesisPage() {
 
               {/* Financial Analysis */}
               <StaggerItem>
-                <h3 className="text-lg font-semibold text-slate-100 mb-4">Financial Analysis</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-slate-100">Financial Analysis</h3>
+                  <ConfidenceBadge level={thesis.confidenceLevel === 'high' ? 'high' : 'medium'} />
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
                     <h4 className="text-sm font-semibold text-amber-400 mb-3">Funding Efficiency</h4>
@@ -790,6 +799,13 @@ export default function InvestmentThesisPage() {
                     <h4 className="text-sm font-semibold text-purple-400 mb-3">Path to Profitability</h4>
                     <p className="text-sm text-slate-300 leading-relaxed">{thesis.financialAnalysis.pathToProfitability}</p>
                   </div>
+                </div>
+                <div className="mt-4">
+                  <SourceCitation sources={[
+                    { name: 'Claude AI', type: 'ai-generated' },
+                    { name: 'SpaceNexus Funding Data', type: 'database' },
+                    { name: 'Company Profile Analytics', type: 'calculation' },
+                  ]} />
                 </div>
               </StaggerItem>
 
@@ -894,7 +910,10 @@ export default function InvestmentThesisPage() {
               {/* Regulatory Outlook with Risk Gauge */}
               <StaggerItem>
                 <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
-                  <h3 className="text-lg font-semibold text-slate-100 mb-4">Regulatory Outlook</h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-slate-100">Regulatory Outlook</h3>
+                    <ConfidenceBadge level="medium" />
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="md:col-span-2">
                       <p className="text-sm text-slate-300 leading-relaxed mb-4">{thesis.regulatoryOutlook}</p>
@@ -912,6 +931,11 @@ export default function InvestmentThesisPage() {
                       />
                     </div>
                   </div>
+                  <SourceCitation sources={[
+                    { name: 'Claude AI', type: 'ai-generated' },
+                    { name: 'SpaceNexus Regulatory Data', type: 'database' },
+                    { name: 'Risk Scoring Engine', type: 'calculation' },
+                  ]} />
                 </div>
               </StaggerItem>
 

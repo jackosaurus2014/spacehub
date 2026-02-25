@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import GlassCard from '@/components/ui/GlassCard';
+import ConfidenceBadge from '@/components/ui/ConfidenceBadge';
+import SourceCitation from '@/components/ui/SourceCitation';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import { clientLogger } from '@/lib/client-logger';
 
@@ -75,6 +77,33 @@ function formatDate(dateString: string): string {
     year: 'numeric',
     timeZone: 'UTC',
   });
+}
+
+function getInsightConfidence(insight: Insight): 'high' | 'medium' | 'low' {
+  // Insights with parsed sources get higher confidence
+  try {
+    const parsed = JSON.parse(insight.sources);
+    if (Array.isArray(parsed) && parsed.length >= 3) return 'high';
+    if (Array.isArray(parsed) && parsed.length >= 1) return 'medium';
+  } catch {
+    // no parseable sources
+  }
+  return 'low';
+}
+
+function getInsightSourceTypes(insight: Insight): { name: string; type: 'database' | 'api' | 'rss' | 'calculation' | 'ai-generated'; url?: string }[] {
+  const sources: { name: string; type: 'database' | 'api' | 'rss' | 'calculation' | 'ai-generated'; url?: string }[] = [];
+  sources.push({ name: 'Claude AI', type: 'ai-generated' });
+  try {
+    const parsed = JSON.parse(insight.sources);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      sources.push({ name: `${parsed.length} reference${parsed.length !== 1 ? 's' : ''}`, type: 'rss' });
+    }
+  } catch {
+    // no external sources
+  }
+  sources.push({ name: 'SpaceNexus Data', type: 'database' });
+  return sources;
 }
 
 function SkeletonCard() {
@@ -197,12 +226,15 @@ export default function AIInsightsPage() {
                 return (
                   <StaggerItem key={insight.id}>
                     <GlassCard className="h-full flex flex-col">
-                      {/* Category Badge */}
-                      <span
-                        className={`inline-block self-start text-xs font-semibold px-2.5 py-1 rounded-full mb-3 ${colors.badge}`}
-                      >
-                        {insight.category.charAt(0).toUpperCase() + insight.category.slice(1)}
-                      </span>
+                      {/* Category Badge + Confidence */}
+                      <div className="flex items-center justify-between mb-3">
+                        <span
+                          className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${colors.badge}`}
+                        >
+                          {insight.category.charAt(0).toUpperCase() + insight.category.slice(1)}
+                        </span>
+                        <ConfidenceBadge level={getInsightConfidence(insight)} />
+                      </div>
 
                       {/* Title */}
                       <h3 className="text-lg font-semibold text-slate-100 mb-2">
@@ -213,6 +245,9 @@ export default function AIInsightsPage() {
                       <p className="text-slate-400 text-sm line-clamp-3 mb-4 flex-1">
                         {insight.summary}
                       </p>
+
+                      {/* Source Citations */}
+                      <SourceCitation sources={getInsightSourceTypes(insight)} />
 
                       {/* Footer */}
                       <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-700/50">

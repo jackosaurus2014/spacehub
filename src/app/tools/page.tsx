@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     'link budget calculator',
     'space insurance estimator',
     'space mission planning tools',
+    'space unit economics calculator',
   ],
   openGraph: {
     title: 'Space Engineering Tools — Interactive Calculators & Analysis',
@@ -144,6 +145,20 @@ const TOOLS = [
     borderColor: 'border-cyan-500/30',
     iconColor: 'text-cyan-400',
     hoverRing: 'hover:ring-cyan-500/50',
+  },
+  {
+    href: '/unit-economics',
+    title: 'Unit Economics Calculator',
+    description: 'Model space business economics — revenue, costs, margins, and break-even',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+    color: 'from-emerald-500/20 to-green-500/20',
+    borderColor: 'border-emerald-500/30',
+    iconColor: 'text-emerald-400',
+    hoverRing: 'hover:ring-emerald-500/50',
   },
 ];
 

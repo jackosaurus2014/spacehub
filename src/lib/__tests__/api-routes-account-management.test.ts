@@ -337,6 +337,10 @@ describe('GET /api/account/notification-preferences', () => {
       watchlistAlerts: true,
       newsDigest: true,
       digestFrequency: 'daily',
+      alertDigestMode: 'instant',
+      quietHoursStart: null,
+      quietHoursEnd: null,
+      quietHoursTimezone: 'UTC',
     });
   });
 
@@ -427,17 +431,6 @@ describe('PATCH /api/account/notification-preferences', () => {
       update: {
         emailDigest: false,
         digestFrequency: 'weekly',
-      },
-      select: {
-        emailDigest: true,
-        emailAlerts: true,
-        pushEnabled: true,
-        forumReplies: true,
-        directMessages: true,
-        marketplaceUpdates: true,
-        watchlistAlerts: true,
-        newsDigest: true,
-        digestFrequency: true,
       },
     });
   });

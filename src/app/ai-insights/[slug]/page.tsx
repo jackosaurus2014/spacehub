@@ -8,6 +8,9 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import GlassCard from '@/components/ui/GlassCard';
+import ConfidenceBadge from '@/components/ui/ConfidenceBadge';
+import SourceCitation from '@/components/ui/SourceCitation';
+import type { Source } from '@/components/ui/SourceCitation';
 import { clientLogger } from '@/lib/client-logger';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
@@ -75,6 +78,41 @@ function parseSources(sourcesRaw: string): SourceItem[] {
   } catch {
     return [];
   }
+}
+
+function getDetailConfidence(sourcesRaw: string): 'high' | 'medium' | 'low' {
+  try {
+    const parsed = JSON.parse(sourcesRaw);
+    if (Array.isArray(parsed) && parsed.length >= 3) return 'high';
+    if (Array.isArray(parsed) && parsed.length >= 1) return 'medium';
+  } catch {
+    // no parseable sources
+  }
+  return 'low';
+}
+
+function getDetailSourceCitations(sourcesRaw: string): Source[] {
+  const citationSources: Source[] = [{ name: 'Claude AI', type: 'ai-generated' }];
+  try {
+    const parsed = JSON.parse(sourcesRaw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      // Add individual named sources (up to 5) for the citation bar
+      parsed.slice(0, 5).forEach((item: string | { title?: string; name?: string; url?: string }) => {
+        const name = typeof item === 'string'
+          ? new URL(item).hostname.replace('www.', '')
+          : (item.title || item.name || 'External source');
+        citationSources.push({
+          name: typeof name === 'string' ? name : 'External source',
+          type: 'rss',
+          url: typeof item === 'string' ? item : item.url,
+        });
+      });
+    }
+  } catch {
+    // no external sources
+  }
+  citationSources.push({ name: 'SpaceNexus Data', type: 'database' });
+  return citationSources;
 }
 
 function SkeletonDetail() {
@@ -267,6 +305,7 @@ export default function AIInsightDetailPage() {
               <span className="text-slate-500 text-sm">
                 {formatDate(insight.generatedAt)}
               </span>
+              <ConfidenceBadge level={getDetailConfidence(insight.sources)} />
               <button
                 onClick={handleShare}
                 className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-cyan-400 transition-colors"
@@ -326,6 +365,15 @@ export default function AIInsightDetailPage() {
                   {insight.content}
                 </ReactMarkdown>
               </div>
+            </motion.div>
+
+            {/* Source Citation Summary */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.35 }}
+            >
+              <SourceCitation sources={getDetailSourceCitations(insight.sources)} />
             </motion.div>
 
             {/* Sources Section */}

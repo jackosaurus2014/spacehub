@@ -31,6 +31,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Market Intel', href: '/market-intel', description: 'Companies and stock tracking' },
+  { label: 'Research Assistant', href: '/company-research', description: 'AI-powered company research Q&A' },
   { label: 'Space Economy', href: '/space-economy', description: 'Market size, investment & budgets' },
   { label: 'Space Capital', href: '/space-capital', description: 'VC investors, startups & matchmaking' },
   { label: 'Investor Hub', href: '/investors', description: 'Due diligence tools & deal flow' },
