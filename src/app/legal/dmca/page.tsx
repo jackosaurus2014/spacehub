@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 
 export const metadata = {
   title: 'DMCA & Copyright Policy | SpaceNexus',
@@ -14,19 +14,17 @@ export default function DMCAPage() {
   return (
     <div className="min-h-screen bg-space-900">
       <div className="container mx-auto px-4 pb-16">
-        <PageHeader
+        <AnimatedPageHeader
           title="DMCA & Copyright Policy"
           subtitle="Our process for handling copyright infringement claims"
-          breadcrumbs={[
-            { label: 'Home', href: '/' },
-            { label: 'Legal' },
-            { label: 'DMCA & Copyright Policy' },
-          ]}
+          icon="🛡️"
+          accentColor="red"
+          breadcrumb="Home / Legal / DMCA & Copyright Policy"
         >
           <Link href="/" className="btn-secondary text-sm py-2 px-4">
             Back to Home
           </Link>
-        </PageHeader>
+        </AnimatedPageHeader>
 
         <div className="max-w-4xl mx-auto">
           <div className="card p-8 space-y-8">

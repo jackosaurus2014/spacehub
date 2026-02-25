@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import AlertRuleBuilder from '@/components/alerts/AlertRuleBuilder';
 import PremiumGate from '@/components/PremiumGate';
 import { toast } from '@/lib/toast';
@@ -1594,6 +1595,7 @@ function AlertsPageInner() {
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
+        <ScrollReveal delay={0.1}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2">
           <AnimatedPageHeader
             title="Smart Alerts"
@@ -1627,9 +1629,11 @@ function AlertsPageInner() {
             </button>
           </AnimatedPageHeader>
         </div>
+        </ScrollReveal>
 
         {/* Stats Cards */}
         {stats && (
+          <ScrollReveal delay={0.15}>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
             <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
               <p className="text-xs text-slate-400 uppercase tracking-wider">Active Rules</p>
@@ -1648,9 +1652,11 @@ function AlertsPageInner() {
               <p className="text-2xl font-bold text-white mt-1">{stats.totalDeliveries}</p>
             </div>
           </div>
+          </ScrollReveal>
         )}
 
         {/* Tab Navigation */}
+        <ScrollReveal delay={0.2}>
         <div className="flex gap-1 mb-6 bg-slate-900/60 rounded-lg p-1 w-fit border border-slate-800">
           <button
             onClick={() => setTab('alerts')}
@@ -1734,13 +1740,16 @@ function AlertsPageInner() {
             Preferences
           </button>
         </div>
+        </ScrollReveal>
 
         {/* Tab Content */}
+        <ScrollReveal delay={0.25}>
         {currentTab === 'alerts' && renderAlertsTab()}
         {currentTab === 'notifications' && renderNotificationsTab()}
         {currentTab === 'saved-searches' && renderSavedSearchesTab()}
         {currentTab === 'webhooks' && renderWebhooksTab()}
         {currentTab === 'preferences' && renderPreferencesTab()}
+        </ScrollReveal>
 
         {/* Alert Rule Builder Modal */}
         {showRuleBuilder && (

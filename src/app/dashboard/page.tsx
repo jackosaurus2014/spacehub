@@ -40,6 +40,10 @@ const EXPLORE_MODULES: ModuleItem[] = [
   { icon: '🔴', label: 'Mars Mission Planner', href: '/mars-planner', description: 'Mars missions and launch windows' },
   { icon: '🌙', label: 'Cislunar Ecosystem', href: '/cislunar', description: 'Gateway, Artemis & lunar economy' },
   { icon: '☄️', label: 'Asteroid Watch', href: '/asteroid-watch', description: 'NEOs, planetary defense, and mining' },
+  { icon: '🗺️', label: 'Market Map', href: '/market-map', description: 'Visual industry landscape by sector' },
+  { icon: '📚', label: 'Resources & Podcasts', href: '/resources', description: 'Curated content, podcasts & newsletters' },
+  { icon: '🔮', label: 'Mission Pipeline', href: '/mission-pipeline', description: 'Upcoming missions 2025-2030' },
+  { icon: '📈', label: 'Mission Statistics', href: '/mission-stats', description: 'Launch provider leaderboards & data' },
 ];
 
 const INTELLIGENCE_MODULES: ModuleItem[] = [
@@ -49,6 +53,10 @@ const INTELLIGENCE_MODULES: ModuleItem[] = [
   { icon: '⚖️', label: 'Regulatory Hub', href: '/compliance', description: 'Compliance, space law & filings' },
   { icon: '📡', label: 'Spectrum Management', href: '/spectrum', description: 'Allocations, auctions & filings' },
   { icon: '📋', label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },
+  { icon: '💰', label: 'Investment Tracker', href: '/investment-tracker', description: 'Funding trends, top deals & investors' },
+  { icon: '🏛️', label: 'Government Budgets', href: '/government-budgets', description: 'Global space agency budget tracking' },
+  { icon: '📋', label: 'Intelligence Brief', href: '/intelligence-brief', description: 'Weekly curated industry briefing' },
+  { icon: '👤', label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes across the industry' },
 ];
 
 const BUSINESS_MODULES: ModuleItem[] = [
@@ -58,6 +66,8 @@ const BUSINESS_MODULES: ModuleItem[] = [
   { icon: '⛏️', label: 'Space Mining', href: '/space-mining', description: 'Asteroid and planetary mining intelligence' },
   { icon: '🛡️', label: 'Space Insurance', href: '/space-insurance', description: 'Risk calculator and market data' },
   { icon: '🏭', label: 'Manufacturing & Imagery', href: '/space-manufacturing', description: 'In-space manufacturing & EO providers' },
+  { icon: '📊', label: 'Deal Flow', href: '/deal-flow', description: 'Investment deals, M&A & partnerships' },
+  { icon: '🗺️', label: 'Supply Chain Map', href: '/supply-chain-map', description: 'Interactive supplier relationship map' },
 ];
 
 const TOOLS_MODULES: ModuleItem[] = [
@@ -73,6 +83,7 @@ const TOOLS_MODULES: ModuleItem[] = [
   { icon: '🗓️', label: 'Launch Windows', href: '/launch-windows', description: 'Optimal launch timing' },
   { icon: '🌤️', label: 'Space Environment', href: '/space-environment', description: 'Weather, debris & operations' },
   { icon: '📐', label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
+  { icon: '🧮', label: 'Launch Cost Calculator', href: '/launch-cost-calculator', description: 'Estimate launch costs by vehicle & orbit' },
 ];
 
 function ModuleSection({ title, icon, modules, sizeClasses, delay }: {

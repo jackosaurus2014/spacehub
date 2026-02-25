@@ -113,7 +113,7 @@ export default function IntelligenceBriefPage() {
               <h3 className="text-sm font-bold text-white">Get the brief in your inbox every Monday</h3>
               <p className="text-xs text-slate-400 mt-0.5">Join 2,000+ space professionals. Free weekly delivery.</p>
             </div>
-            <Link href="/newsletter" className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+            <Link href="/news" className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
               Subscribe Free
             </Link>
           </div>

@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Constants
@@ -487,6 +488,7 @@ export default function ConstellationDesignerPage() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Breadcrumb */}
+        <ScrollReveal delay={0.1}>
         <nav className="text-sm text-slate-500 mb-4">
           <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
           <span className="mx-2">/</span>
@@ -500,8 +502,10 @@ export default function ConstellationDesignerPage() {
           subtitle="Design satellite constellations by specifying coverage requirements, orbit parameters, and mission constraints. Get optimized plane/satellite counts with cost estimates."
           accentColor="purple"
         />
+        </ScrollReveal>
 
         {/* ── Constellation Presets ── */}
+        <ScrollReveal delay={0.15}>
         <section className="mb-8">
           <h2 className="text-lg font-semibold text-slate-100 mb-4">Constellation Presets</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -544,8 +548,10 @@ export default function ConstellationDesignerPage() {
             </button>
           </div>
         </section>
+        </ScrollReveal>
 
         {/* ── Requirements Input Section ── */}
+        <ScrollReveal delay={0.2}>
         <section className="mb-8">
           <div className="card p-5">
             <h2 className="text-lg font-semibold text-slate-100 mb-1">Coverage Requirements</h2>
@@ -667,8 +673,10 @@ export default function ConstellationDesignerPage() {
             </div>
           </div>
         </section>
+        </ScrollReveal>
 
         {/* ── Results Section ── */}
+        <ScrollReveal delay={0.25}>
         <section className="mb-8">
           <h2 className="text-lg font-semibold text-slate-100 mb-4">Constellation Design Results</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -755,8 +763,10 @@ export default function ConstellationDesignerPage() {
             </div>
           </div>
         </section>
+        </ScrollReveal>
 
         {/* ── Cost Estimation Section ── */}
+        <ScrollReveal delay={0.3}>
         <section className="mb-8">
           <h2 className="text-lg font-semibold text-slate-100 mb-4">Cost Estimation</h2>
           <div className="card p-5 mb-4">
@@ -861,8 +871,10 @@ export default function ConstellationDesignerPage() {
             </div>
           </div>
         </section>
+        </ScrollReveal>
 
         {/* ── Formulas & Methodology ── */}
+        <ScrollReveal delay={0.35}>
         <section className="mb-8">
           <div className="card p-5">
             <h3 className="text-sm font-semibold text-slate-300 mb-3">Walker Constellation Formulas</h3>
@@ -896,8 +908,10 @@ export default function ConstellationDesignerPage() {
             </div>
           </div>
         </section>
+        </ScrollReveal>
 
         {/* ── Related Tools ── */}
+        <ScrollReveal delay={0.4}>
         <div className="card p-5 border border-purple-500/20">
           <h3 className="text-lg font-semibold text-white mb-4">Related Tools</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -939,6 +953,7 @@ export default function ConstellationDesignerPage() {
             </Link>
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

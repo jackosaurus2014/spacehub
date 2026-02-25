@@ -829,7 +829,7 @@ export default function GroundStationsPage() {
             <Link href="/spectrum" className="btn-secondary text-sm">
               {String.fromCodePoint(0x1F4E1)} Spectrum Tracker
             </Link>
-            <Link href="/orbital-services" className="btn-secondary text-sm">
+            <Link href="/orbital-slots" className="btn-secondary text-sm">
               {String.fromCodePoint(0x1F310)} Orbital Services
             </Link>
             <Link href="/space-environment?tab=debris" className="btn-secondary text-sm">

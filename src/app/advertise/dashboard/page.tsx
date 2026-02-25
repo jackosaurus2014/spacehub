@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { toast } from '@/lib/toast';
 
 interface Campaign {
@@ -153,7 +153,7 @@ export default function AdvertiserDashboard() {
   if (loading) {
     return (
       <main className="container mx-auto px-4 pb-20">
-        <PageHeader title="Advertiser Dashboard" />
+        <AnimatedPageHeader title="Advertiser Dashboard" icon="📊" accentColor="amber" />
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="card p-6 animate-pulse">
@@ -170,10 +170,10 @@ export default function AdvertiserDashboard() {
   if (!profile) {
     return (
       <main className="container mx-auto px-4 pb-20">
-        <PageHeader
+        <AnimatedPageHeader
           title="Advertiser Dashboard"
-          backLink="/advertise"
-          backLabel="Back to Advertise"
+          icon="📊"
+          accentColor="amber"
         />
         <div className="card p-8 text-center max-w-lg mx-auto">
           <h2 className="text-xl font-semibold text-white mb-2">Not Registered</h2>
@@ -190,14 +190,14 @@ export default function AdvertiserDashboard() {
 
   return (
     <main className="container mx-auto px-4 pb-20">
-      <PageHeader
+      <AnimatedPageHeader
         title="Advertiser Dashboard"
         subtitle={profile.companyName}
-        backLink="/advertise"
-        backLabel="Back to Advertise"
+        icon="📊"
+        accentColor="amber"
       >
         <StatusBadge status={profile.status} />
-      </PageHeader>
+      </AnimatedPageHeader>
 
       {/* Profile Status Warning */}
       {profile.status === 'pending' && (

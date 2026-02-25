@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import CompanySelector from '@/components/compare/CompanySelector';
 import CompanyComparisonTable from '@/components/compare/CompanyComparisonTable';
 
@@ -154,6 +155,7 @@ function CompareCompaniesContent() {
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
       {/* Breadcrumb */}
+      <ScrollReveal delay={0.1}>
       <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
         <Link href="/" className="hover:text-slate-300 transition-colors">
           Home
@@ -171,8 +173,10 @@ function CompareCompaniesContent() {
         subtitle="Side-by-side comparison of space industry companies — financials, government contracts, space assets, and capabilities"
         icon="📊"
       />
+      </ScrollReveal>
 
       {/* Company Selector Card */}
+      <ScrollReveal delay={0.15}>
       <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-5 mb-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-white">Select Companies</h2>
@@ -206,9 +210,11 @@ function CompareCompaniesContent() {
           maxCompanies={4}
         />
       </div>
+      </ScrollReveal>
 
       {/* Error messages */}
       {Object.keys(errors).length > 0 && (
+        <ScrollReveal delay={0.2}>
         <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-4 mb-6">
           {Object.entries(errors).map(([slug, msg]) => (
             <div key={slug} className="flex items-center gap-2 text-sm text-red-400">
@@ -219,6 +225,7 @@ function CompareCompaniesContent() {
             </div>
           ))}
         </div>
+        </ScrollReveal>
       )}
 
       {/* Loading state */}
@@ -248,6 +255,7 @@ function CompareCompaniesContent() {
 
       {/* Empty state */}
       {!loading && slugs.length === 0 && (
+        <ScrollReveal delay={0.2}>
         <div className="text-center py-20">
           <div className="text-6xl mb-4">📊</div>
           <h3 className="text-xl font-semibold text-white mb-2">No Companies Selected</h3>
@@ -265,10 +273,12 @@ function CompareCompaniesContent() {
             </svg>
           </Link>
         </div>
+        </ScrollReveal>
       )}
 
       {/* Need at least 2 companies */}
       {!loading && slugs.length === 1 && companies.length === 1 && (
+        <ScrollReveal delay={0.2}>
         <div className="text-center py-16">
           <div className="text-5xl mb-4">+</div>
           <h3 className="text-lg font-semibold text-white mb-2">Add Another Company</h3>
@@ -276,11 +286,14 @@ function CompareCompaniesContent() {
             Add at least one more company using the search above to start comparing.
           </p>
         </div>
+        </ScrollReveal>
       )}
 
       {/* Comparison table */}
       {!loading && companies.length >= 2 && (
+        <ScrollReveal delay={0.2}>
         <CompanyComparisonTable companies={companies} onRemove={handleRemove} />
+        </ScrollReveal>
       )}
     </div>
   );

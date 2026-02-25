@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 
 export const metadata = {
   title: 'Community Guidelines | SpaceNexus',
@@ -14,19 +14,17 @@ export default function CommunityGuidelinesPage() {
   return (
     <div className="min-h-screen bg-space-900">
       <div className="container mx-auto px-4 pb-16">
-        <PageHeader
+        <AnimatedPageHeader
           title="Community Guidelines"
           subtitle="Standards for participation in the SpaceNexus community"
-          breadcrumbs={[
-            { label: 'Home', href: '/' },
-            { label: 'Community', href: '/community' },
-            { label: 'Guidelines' },
-          ]}
+          icon="📜"
+          accentColor="purple"
+          breadcrumb="Home / Community / Guidelines"
         >
           <Link href="/community" className="btn-secondary text-sm py-2 px-4">
             Back to Community
           </Link>
-        </PageHeader>
+        </AnimatedPageHeader>
 
         <div className="max-w-4xl mx-auto">
           <div className="card p-8 space-y-8">

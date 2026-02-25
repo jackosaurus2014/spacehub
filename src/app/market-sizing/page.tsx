@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { LineChart } from '@/components/charts';
 import { DonutChart } from '@/components/charts';
@@ -795,7 +796,9 @@ export default function MarketSizingPage() {
       )}
 
       {/* Hero stats always visible */}
-      <HeroStats segments={allSegments} />
+      <ScrollReveal delay={0.1}>
+        <HeroStats segments={allSegments} />
+      </ScrollReveal>
 
       <AnimatePresence mode="wait">
         {selectedSegmentId && detailData && !detailLoading ? (
@@ -841,50 +844,54 @@ export default function MarketSizingPage() {
             <SegmentCards segments={allSegments} onSelect={selectSegment} />
 
             {/* Methodology note */}
-            <div className="card p-6 mb-8 border-slate-700/30">
-              <h3 className="text-sm font-semibold text-white mb-2">Data Sources & Methodology</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Market sizing data is sourced from the Satellite Industry Association (SIA) State of the Satellite Industry Report,
-                Morgan Stanley Space Economy Research, Euroconsult market reports, BryceTech industry analysis, NSR sector reports,
-                and publicly available government budget documents. Projected values use compound annual growth rates (CAGR) derived
-                from analyst consensus estimates. All values are in current USD billions. Last updated: February 2026.
-              </p>
-              <div className="flex flex-wrap gap-2 mt-3">
-                {['SIA', 'Morgan Stanley', 'Euroconsult', 'BryceTech', 'NSR', 'McKinsey', 'FAA'].map(src => (
-                  <span key={src} className="text-xs px-2 py-0.5 rounded bg-slate-800/50 text-slate-500 border border-slate-700/30">
-                    {src}
-                  </span>
-                ))}
+            <ScrollReveal delay={0.15}>
+              <div className="card p-6 mb-8 border-slate-700/30">
+                <h3 className="text-sm font-semibold text-white mb-2">Data Sources & Methodology</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Market sizing data is sourced from the Satellite Industry Association (SIA) State of the Satellite Industry Report,
+                  Morgan Stanley Space Economy Research, Euroconsult market reports, BryceTech industry analysis, NSR sector reports,
+                  and publicly available government budget documents. Projected values use compound annual growth rates (CAGR) derived
+                  from analyst consensus estimates. All values are in current USD billions. Last updated: February 2026.
+                </p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {['SIA', 'Morgan Stanley', 'Euroconsult', 'BryceTech', 'NSR', 'McKinsey', 'FAA'].map(src => (
+                    <span key={src} className="text-xs px-2 py-0.5 rounded bg-slate-800/50 text-slate-500 border border-slate-700/30">
+                      {src}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
 
             {/* CTA */}
-            <div className="text-center card p-8 bg-gradient-to-r from-cyan-900/30 to-purple-900/30 border-cyan-800/50">
-              <h2 className="text-lg font-semibold text-white mb-2">Deep Dive Into Space Market Intelligence</h2>
-              <p className="text-sm text-slate-400 mb-4 max-w-xl mx-auto">
-                Explore company profiles, financial data, and competitive analysis for 100+ space industry companies.
-              </p>
-              <div className="flex justify-center gap-3">
-                <Link href="/company-profiles">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-5 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg text-sm font-medium transition-all"
-                  >
-                    Company Profiles
-                  </motion.button>
-                </Link>
-                <Link href="/market-intel">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-5 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-all"
-                  >
-                    Market Intel Dashboard
-                  </motion.button>
-                </Link>
+            <ScrollReveal delay={0.2}>
+              <div className="text-center card p-8 bg-gradient-to-r from-cyan-900/30 to-purple-900/30 border-cyan-800/50">
+                <h2 className="text-lg font-semibold text-white mb-2">Deep Dive Into Space Market Intelligence</h2>
+                <p className="text-sm text-slate-400 mb-4 max-w-xl mx-auto">
+                  Explore company profiles, financial data, and competitive analysis for 100+ space industry companies.
+                </p>
+                <div className="flex justify-center gap-3">
+                  <Link href="/company-profiles">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-5 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg text-sm font-medium transition-all"
+                    >
+                      Company Profiles
+                    </motion.button>
+                  </Link>
+                  <Link href="/market-intel">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-5 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-all"
+                    >
+                      Market Intel Dashboard
+                    </motion.button>
+                  </Link>
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
           </motion.div>
         )}
       </AnimatePresence>

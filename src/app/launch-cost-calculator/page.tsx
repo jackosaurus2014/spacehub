@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import {
   LAUNCH_COST_DATA,
   INSURANCE_RATE_DATA,
@@ -647,6 +648,7 @@ export default function LaunchCostCalculatorPage() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
+        <ScrollReveal delay={0.1}>
         <div className="mb-8">
           <nav className="text-sm text-slate-500 mb-4">
             <Link href="/" className="hover:text-slate-300 transition-colors">
@@ -672,9 +674,11 @@ export default function LaunchCostCalculatorPage() {
             with real industry data.
           </p>
         </div>
+        </ScrollReveal>
 
         {/* Stats Row */}
         {stats && (
+          <ScrollReveal delay={0.15}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
             <StatCard
               label="Compatible Vehicles"
@@ -698,9 +702,11 @@ export default function LaunchCostCalculatorPage() {
               accent="amber"
             />
           </div>
+          </ScrollReveal>
         )}
 
         {/* Main Layout */}
+        <ScrollReveal delay={0.2}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* ─── Input Panel ─── */}
           <div className="lg:col-span-1">
@@ -994,6 +1000,7 @@ export default function LaunchCostCalculatorPage() {
             )}
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

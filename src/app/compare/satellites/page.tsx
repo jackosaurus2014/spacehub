@@ -1278,7 +1278,7 @@ export default function SatelliteConstellationComparePage() {
               Compare Companies
             </Link>
             <Link
-              href="/constellation-tracker"
+              href="/constellations"
               className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-cyan-500/40 hover:text-cyan-400 transition-all"
             >
               Constellation Tracker
