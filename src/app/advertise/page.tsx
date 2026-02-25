@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { toast } from '@/lib/toast';
 
 const AD_PRICING = [
@@ -121,10 +121,11 @@ export default function AdvertisePage() {
 
   return (
     <main className="container mx-auto px-4 pb-20">
-      <PageHeader
+      <AnimatedPageHeader
         title="Advertise on SpaceNexus"
-        subtitle="Reach Space Industry Decision Makers"
-        description="Connect your brand with the most engaged audience of space professionals, engineers, and executives."
+        subtitle="Reach space industry decision makers. Connect your brand with the most engaged audience of space professionals, engineers, and executives."
+        icon="📢"
+        accentColor="emerald"
       />
 
       {/* Audience Stats */}

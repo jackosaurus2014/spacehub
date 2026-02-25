@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -16,15 +16,16 @@ export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen bg-space-900">
       <div className="container mx-auto px-4 pb-16">
-        <PageHeader
+        <AnimatedPageHeader
           title="Terms of Service"
           subtitle="Please read these terms carefully before using our services"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Terms of Service' }]}
+          icon="📜"
+          accentColor="amber"
         >
           <Link href="/" className="btn-secondary text-sm py-2 px-4">
             Back to Home
           </Link>
-        </PageHeader>
+        </AnimatedPageHeader>
 
         <div className="max-w-4xl mx-auto">
           <div className="card p-8 space-y-8">

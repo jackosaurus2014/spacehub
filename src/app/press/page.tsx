@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 
 export const metadata: Metadata = {
   title: 'Press Kit & Media Resources',
@@ -37,10 +37,11 @@ export default function PressPage() {
   return (
     <div className="min-h-screen bg-space-900">
       <div className="container mx-auto px-4 pb-16">
-        <PageHeader
+        <AnimatedPageHeader
           title="Press Kit & Media Resources"
           subtitle="Everything journalists, analysts, and partners need to cover SpaceNexus"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Press' }]}
+          icon="📰"
+          accentColor="cyan"
         />
 
         <div className="max-w-5xl mx-auto space-y-12">

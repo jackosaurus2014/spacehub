@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from '@/lib/toast';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -283,7 +284,7 @@ function ReportsTab() {
       {/* Loading */}
       {loading && (
         <div className="flex justify-center py-16">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <LoadingSpinner size="md" />
         </div>
       )}
 
@@ -582,7 +583,7 @@ function UsersTab() {
       {/* Loading */}
       {loading && (
         <div className="flex justify-center py-16">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <LoadingSpinner size="md" />
         </div>
       )}
 
@@ -871,7 +872,7 @@ function ActionLogTab() {
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <LoadingSpinner size="md" />
       </div>
     );
   }

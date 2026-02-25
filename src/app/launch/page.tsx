@@ -4,12 +4,13 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import MultiLaunchTabs from '@/components/launch/MultiLaunchTabs';
 import CompactLaunchCard from '@/components/launch/CompactLaunchCard';
 import NotificationBell from '@/components/launch/NotificationBell';
 import EventSchema from '@/components/seo/EventSchema';
 import { getCompanyProfileUrl } from '@/lib/company-links';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 interface LaunchEvent {
   id: string;
@@ -229,22 +230,16 @@ export default function LaunchListPage() {
         />
       ))}
       <div className="container mx-auto px-4 py-8">
-        <PageHeader
+        <AnimatedPageHeader
           title="Launch Day"
           subtitle="Real-time launch coverage with live telemetry, mission timelines, and community chat"
-          breadcrumbs={[
-            { label: 'Home', href: '/' },
-            { label: 'Mission Control', href: '/mission-control' },
-            { label: 'Launch Day' },
-          ]}
+          icon="🚀"
+          accentColor="cyan"
         />
 
         {loading ? (
           <div className="flex justify-center py-20">
-            <div
-              className="w-12 h-12 border-3 border-cyan-500 border-t-transparent rounded-full animate-spin"
-              style={{ borderWidth: '3px' }}
-            />
+            <LoadingSpinner size="lg" />
           </div>
         ) : !hasAny ? (
           <div className="text-center py-20">

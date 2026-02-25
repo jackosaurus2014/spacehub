@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/lib/toast';
 import { getCategoryLabel, getCategoryIcon, formatPrice } from '@/lib/marketplace-types';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -146,7 +147,7 @@ export default function CopilotPage() {
   if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400" />
+        <LoadingSpinner size="md" />
       </div>
     );
   }

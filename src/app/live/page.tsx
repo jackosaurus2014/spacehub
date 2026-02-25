@@ -6,7 +6,7 @@ import StreamEmbed from '@/components/live/StreamEmbed';
 import TelemetryPanel from '@/components/live/TelemetryPanel';
 import LiveChat from '@/components/live/LiveChat';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { clientLogger } from '@/lib/client-logger';
 
 interface LiveStream {
@@ -113,10 +113,11 @@ function LiveHubContent() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <PageHeader
+        <AnimatedPageHeader
           title="Live Launch Hub"
           subtitle="Watch rocket launches live with real-time telemetry and community chat"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Live' }]}
+          icon="📡"
+          accentColor="cyan"
         />
 
         {error && (

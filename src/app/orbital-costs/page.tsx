@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import {
   ORBITAL_SYSTEMS,
   getAllCategories,
@@ -527,13 +527,11 @@ export default function OrbitalCostsPage() {
     <div className="min-h-screen bg-black text-white">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Page Header */}
-        <PageHeader
+        <AnimatedPageHeader
           title="Estimated Orbital System Costs"
           subtitle="Comprehensive cost analysis for next-generation orbital infrastructure. Select a system to explore detailed cost breakdowns, bill of materials, and insurance estimates."
-          breadcrumbs={[
-            { label: 'Mission Planning', href: '/mission-cost' },
-            { label: 'Orbital System Costs' },
-          ]}
+          icon="💰"
+          accentColor="emerald"
         />
 
         {/* Summary Stats */}

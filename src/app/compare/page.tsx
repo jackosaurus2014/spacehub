@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 
 export const metadata: Metadata = {
   title: 'SpaceNexus vs Competitors — Space Industry Platform Comparisons | SpaceNexus',
@@ -60,10 +60,11 @@ export default function ComparePage() {
   return (
     <div className="min-h-screen bg-space-900">
       <div className="container mx-auto px-4 pb-16">
-        <PageHeader
+        <AnimatedPageHeader
           title="SpaceNexus vs Competitors"
           subtitle="See how SpaceNexus compares to other space industry tools and platforms"
-          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Compare' }]}
+          icon="⚖️"
+          accentColor="cyan"
         />
 
         <div className="max-w-5xl mx-auto">

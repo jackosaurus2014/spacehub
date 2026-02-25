@@ -6,6 +6,7 @@ import { FEATURE_REQUEST_STATUSES, HELP_REQUEST_STATUSES } from '@/types';
 import { clientLogger } from '@/lib/client-logger';
 import type { FeatureRequest, HelpRequest } from '@/types';
 import { AVAILABLE_MODULES } from '@/types';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 type Tab = 'feature' | 'help' | 'data-status';
 
@@ -110,7 +111,7 @@ export default function AdminPage() {
   if (authStatus === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-nebula-500 border-t-transparent rounded-full animate-spin" />
+        <LoadingSpinner size="md" />
       </div>
     );
   }
@@ -169,7 +170,7 @@ export default function AdminPage() {
           <DataStatusPanel />
         ) : loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-nebula-500 border-t-transparent rounded-full animate-spin" />
+            <LoadingSpinner size="md" />
           </div>
         ) : tab === 'feature' ? (
           <FeatureRequestList items={featureRequests} onUpdate={fetchData} />
@@ -312,7 +313,7 @@ function DataStatusPanel() {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="w-8 h-8 border-2 border-nebula-500 border-t-transparent rounded-full animate-spin" />
+        <LoadingSpinner size="md" />
       </div>
     );
   }

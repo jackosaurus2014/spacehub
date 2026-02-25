@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import PageHeader from '@/components/ui/PageHeader';
+import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import type { SearchModule } from '@/lib/validations';
@@ -978,13 +978,11 @@ export default function SearchPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 pb-12">
-        <PageHeader
+        <AnimatedPageHeader
           title="Search"
           subtitle="Find anything across SpaceNexus"
-          breadcrumbs={[
-            { label: 'Home', href: '/' },
-            { label: 'Search' },
-          ]}
+          icon="🔍"
+          accentColor="cyan"
         />
 
         <Suspense

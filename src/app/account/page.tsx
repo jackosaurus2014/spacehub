@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from '@/lib/toast';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 type Section = 'profile' | 'security' | 'notifications' | 'data-privacy';
 
@@ -54,7 +55,7 @@ export default function AccountPage() {
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-cyan-500" />
+        <LoadingSpinner size="md" />
       </div>
     );
   }

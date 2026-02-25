@@ -8,6 +8,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 // ────────────────────────────────────────
 // Types
@@ -1183,10 +1184,7 @@ export default function AsteroidWatchPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center py-20">
-          <div
-            className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin"
-            style={{ borderWidth: '3px' }}
-          />
+          <LoadingSpinner size="lg" />
         </div>
       }
     >
