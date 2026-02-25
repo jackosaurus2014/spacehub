@@ -58,6 +58,7 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
 const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
   { label: 'Deal Flow', href: '/deal-flow', description: 'Investment deals, M&A & partnerships' },
+  { label: 'Contract Awards', href: '/contract-awards', description: 'Government & commercial contract tracker' },
   { label: 'Funding Opportunities', href: '/funding-opportunities', description: 'Grants, SBIR/STTR & government funding' },
   { label: 'Business Model Tools', href: '/business-models', description: 'Unit economics & revenue modeling' },
   { label: 'Customer Discovery', href: '/customer-discovery', description: 'Market segments & buyer personas' },

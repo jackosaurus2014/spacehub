@@ -67,6 +67,7 @@ const BUSINESS_MODULES: ModuleItem[] = [
   { icon: '🛡️', label: 'Space Insurance', href: '/space-insurance', description: 'Risk calculator and market data' },
   { icon: '🏭', label: 'Manufacturing & Imagery', href: '/space-manufacturing', description: 'In-space manufacturing & EO providers' },
   { icon: '📊', label: 'Deal Flow', href: '/deal-flow', description: 'Investment deals, M&A & partnerships' },
+  { icon: '📜', label: 'Contract Awards', href: '/contract-awards', description: 'Government & commercial contract tracker' },
   { icon: '🗺️', label: 'Supply Chain Map', href: '/supply-chain-map', description: 'Interactive supplier relationship map' },
 ];
 

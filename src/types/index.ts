@@ -290,7 +290,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 2,
     isParent: true,
-    subModuleIds: ['market-intel', 'space-economy', 'space-capital', 'company-profiles', 'funding-tracker', 'investor-directory'],
+    subModuleIds: ['market-intel', 'space-economy', 'space-capital', 'company-profiles', 'funding-tracker', 'investor-directory', 'startup-tracker'],
   },
 
   // 4. Business Opportunities (parent)
@@ -491,6 +491,16 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     defaultEnabled: true,
     defaultPosition: 18,
     isPremium: true,
+    parentModuleId: 'space-market-intelligence',
+  },
+  {
+    moduleId: 'startup-tracker',
+    name: 'Space Startup Tracker',
+    description: 'Track 40+ innovative space startups with funding stages, investor data, trending indicators, and ones to watch',
+    icon: '\u{1F680}',
+    section: 'intelligence',
+    defaultEnabled: true,
+    defaultPosition: 19,
     parentModuleId: 'space-market-intelligence',
   },
 
