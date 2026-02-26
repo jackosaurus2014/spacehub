@@ -39,6 +39,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Career Guide', href: '/career-guide', description: 'Space industry career paths & salary data' },
   { label: 'Acronyms', href: '/acronyms', description: 'A-Z space industry acronym reference' },
   { label: 'Space Weather', href: '/space-weather', description: 'Solar conditions & impact forecasts' },
+  { label: 'Space Agencies', href: '/space-agencies', description: 'World space agency profiles & budgets' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
@@ -103,6 +104,7 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Regulations Explorer', href: '/regulations', description: 'Searchable space regulations database' },
   { label: 'Satellite Bus Comparison', href: '/compare/satellite-buses', description: 'Compare satellite platform specs' },
   { label: 'Propulsion Database', href: '/propulsion-database', description: 'Engine & thruster specifications' },
+  { label: 'Launch Sites', href: '/launch-sites', description: 'Global spaceport database & capabilities' },
 ];
 
 function DropdownMenu({
