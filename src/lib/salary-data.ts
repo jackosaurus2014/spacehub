@@ -9,11 +9,39 @@ export type SalaryCategory =
   | 'business'
   | 'science'
   | 'executive'
-  | 'manufacturing';
+  | 'manufacturing'
+  | 'emerging';
 
 export type DemandLevel = 'high' | 'medium' | 'low';
 
 export type LocationRegion = 'US' | 'EU' | 'Remote';
+
+export type MetroLocation =
+  | 'la-bay-area'
+  | 'denver-cos'
+  | 'huntsville'
+  | 'dc-metro'
+  | 'seattle'
+  | 'houston'
+  | 'remote';
+
+export interface LocationModifier {
+  id: MetroLocation;
+  label: string;
+  shortLabel: string;
+  multiplier: number;
+  description: string;
+}
+
+export const LOCATION_MODIFIERS: LocationModifier[] = [
+  { id: 'la-bay-area', label: 'LA / Bay Area', shortLabel: 'LA/Bay', multiplier: 1.20, description: 'SpaceX, JPL, aerospace cluster in El Segundo and Bay Area tech companies' },
+  { id: 'seattle', label: 'Seattle / Kent', shortLabel: 'Seattle', multiplier: 1.15, description: 'Blue Origin, Amazon Project Kuiper, and Pacific Northwest aerospace' },
+  { id: 'dc-metro', label: 'DC Metro / Northern Virginia', shortLabel: 'DC Metro', multiplier: 1.10, description: 'Defense contractors, NASA HQ, regulatory agencies, and government affairs' },
+  { id: 'denver-cos', label: 'Denver / Colorado Springs', shortLabel: 'Denver/COS', multiplier: 1.00, description: 'Ball Aerospace, Lockheed Martin Space, United Launch Alliance, Space Force' },
+  { id: 'houston', label: 'Houston / Clear Lake', shortLabel: 'Houston', multiplier: 0.95, description: 'NASA Johnson Space Center, Axiom Space, Intuitive Machines' },
+  { id: 'remote', label: 'Remote / Distributed', shortLabel: 'Remote', multiplier: 0.95, description: 'Fully remote positions, typically data/software roles' },
+  { id: 'huntsville', label: 'Huntsville, AL', shortLabel: 'Huntsville', multiplier: 0.90, description: 'NASA Marshall, Dynetics/Leidos, ULA, Redstone Arsenal' },
+];
 
 export interface ExperienceLevelRange {
   min: number;
@@ -30,6 +58,7 @@ export interface SalaryRole {
     max: number;
     p25: number;
     p75: number;
+    p90: number;
   };
   locations: LocationRegion[];
   experienceLevels: {
@@ -104,8 +133,8 @@ export const SALARY_CATEGORIES: SalaryCategoryInfo[] = [
     id: 'executive',
     label: 'Executive',
     icon: 'X',
-    avgMedian: 310000,
-    roleCount: 5,
+    avgMedian: 320000,
+    roleCount: 6,
     description: 'C-suite, VP, and Director-level positions across the space industry.',
   },
   {
@@ -116,10 +145,18 @@ export const SALARY_CATEGORIES: SalaryCategoryInfo[] = [
     roleCount: 8,
     description: 'Technicians, quality engineers, test engineers, and machinists.',
   },
+  {
+    id: 'emerging',
+    label: 'Emerging Roles',
+    icon: 'N',
+    avgMedian: 132000,
+    roleCount: 4,
+    description: 'New and rapidly growing roles in space sustainability, in-space servicing, and habitat engineering.',
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Complete Salary Dataset (53 roles)
+// Complete Salary Dataset (57 roles)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const SALARY_ROLES: SalaryRole[] = [
@@ -130,7 +167,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'systems-engineer',
     title: 'Systems Engineer',
     category: 'engineering',
-    salaryRange: { min: 90000, median: 145000, max: 210000, p25: 115000, p75: 175000 },
+    salaryRange: { min: 85000, median: 145000, max: 210000, p25: 115000, p75: 175000, p90: 195000 },
     locations: ['US', 'EU', 'Remote'],
     experienceLevels: {
       junior: { min: 80000, max: 110000 },
@@ -147,7 +184,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'software-engineer',
     title: 'Software Engineer (Flight/Ground)',
     category: 'engineering',
-    salaryRange: { min: 95000, median: 155000, max: 245000, p25: 120000, p75: 195000 },
+    salaryRange: { min: 95000, median: 155000, max: 245000, p25: 120000, p75: 195000, p90: 225000 },
     locations: ['US', 'EU', 'Remote'],
     experienceLevels: {
       junior: { min: 85000, max: 125000 },
@@ -164,7 +201,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'propulsion-engineer',
     title: 'Propulsion Engineer',
     category: 'engineering',
-    salaryRange: { min: 95000, median: 160000, max: 240000, p25: 125000, p75: 195000 },
+    salaryRange: { min: 90000, median: 160000, max: 240000, p25: 125000, p75: 195000, p90: 220000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 85000, max: 120000 },
@@ -181,7 +218,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'thermal-engineer',
     title: 'Thermal Engineer',
     category: 'engineering',
-    salaryRange: { min: 85000, median: 140000, max: 195000, p25: 110000, p75: 165000 },
+    salaryRange: { min: 85000, median: 140000, max: 195000, p25: 110000, p75: 165000, p90: 182000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 80000, max: 105000 },
@@ -198,7 +235,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'structures-engineer',
     title: 'Structures Engineer',
     category: 'engineering',
-    salaryRange: { min: 85000, median: 138000, max: 200000, p25: 108000, p75: 168000 },
+    salaryRange: { min: 80000, median: 138000, max: 200000, p25: 108000, p75: 168000, p90: 185000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 78000, max: 108000 },
@@ -215,7 +252,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'rf-comms-engineer',
     title: 'RF & Communications Engineer',
     category: 'engineering',
-    salaryRange: { min: 95000, median: 150000, max: 210000, p25: 120000, p75: 180000 },
+    salaryRange: { min: 90000, median: 150000, max: 210000, p25: 120000, p75: 180000, p90: 198000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 85000, max: 115000 },
@@ -232,7 +269,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'adcs-engineer',
     title: 'ADCS/GNC Engineer',
     category: 'engineering',
-    salaryRange: { min: 100000, median: 158000, max: 220000, p25: 128000, p75: 188000 },
+    salaryRange: { min: 95000, median: 158000, max: 220000, p25: 128000, p75: 188000, p90: 208000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 90000, max: 125000 },
@@ -249,7 +286,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'avionics-engineer',
     title: 'Avionics Engineer',
     category: 'engineering',
-    salaryRange: { min: 95000, median: 155000, max: 225000, p25: 120000, p75: 185000 },
+    salaryRange: { min: 85000, median: 155000, max: 225000, p25: 120000, p75: 185000, p90: 210000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 85000, max: 115000 },
@@ -266,7 +303,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'power-systems-engineer',
     title: 'Power Systems Engineer',
     category: 'engineering',
-    salaryRange: { min: 85000, median: 135000, max: 185000, p25: 105000, p75: 160000 },
+    salaryRange: { min: 85000, median: 135000, max: 185000, p25: 105000, p75: 160000, p90: 175000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 78000, max: 105000 },
@@ -283,7 +320,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'optical-engineer',
     title: 'Optical/Photonics Engineer',
     category: 'engineering',
-    salaryRange: { min: 95000, median: 152000, max: 210000, p25: 120000, p75: 180000 },
+    salaryRange: { min: 95000, median: 152000, max: 210000, p25: 120000, p75: 180000, p90: 198000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 85000, max: 115000 },
@@ -300,7 +337,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'data-engineer-space',
     title: 'Data Engineer (Space Analytics)',
     category: 'engineering',
-    salaryRange: { min: 100000, median: 155000, max: 220000, p25: 125000, p75: 185000 },
+    salaryRange: { min: 100000, median: 155000, max: 220000, p25: 125000, p75: 185000, p90: 205000 },
     locations: ['US', 'Remote'],
     experienceLevels: {
       junior: { min: 90000, max: 120000 },
@@ -317,7 +354,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'eclss-engineer',
     title: 'ECLSS/Life Support Engineer',
     category: 'engineering',
-    salaryRange: { min: 100000, median: 155000, max: 210000, p25: 125000, p75: 180000 },
+    salaryRange: { min: 100000, median: 155000, max: 210000, p25: 125000, p75: 180000, p90: 198000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 90000, max: 120000 },
@@ -334,7 +371,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'integration-test-engineer',
     title: 'Integration & Test Engineer',
     category: 'engineering',
-    salaryRange: { min: 85000, median: 140000, max: 195000, p25: 110000, p75: 165000 },
+    salaryRange: { min: 80000, median: 140000, max: 195000, p25: 110000, p75: 165000, p90: 182000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 78000, max: 105000 },
@@ -351,7 +388,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'mechanical-engineer',
     title: 'Mechanical Engineer',
     category: 'engineering',
-    salaryRange: { min: 80000, median: 132000, max: 185000, p25: 100000, p75: 158000 },
+    salaryRange: { min: 80000, median: 132000, max: 185000, p25: 100000, p75: 158000, p90: 175000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 72000, max: 100000 },
@@ -372,7 +409,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'flight-dynamics-analyst',
     title: 'Flight Dynamics Analyst',
     category: 'mission-operations',
-    salaryRange: { min: 90000, median: 140000, max: 195000, p25: 112000, p75: 168000 },
+    salaryRange: { min: 90000, median: 140000, max: 195000, p25: 112000, p75: 168000, p90: 185000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 82000, max: 110000 },
@@ -389,7 +426,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'mission-planner',
     title: 'Mission Planner',
     category: 'mission-operations',
-    salaryRange: { min: 85000, median: 132000, max: 185000, p25: 105000, p75: 158000 },
+    salaryRange: { min: 85000, median: 132000, max: 185000, p25: 105000, p75: 158000, p90: 175000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 78000, max: 105000 },
@@ -406,7 +443,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'ground-systems-engineer',
     title: 'Ground Systems Engineer',
     category: 'mission-operations',
-    salaryRange: { min: 85000, median: 135000, max: 185000, p25: 108000, p75: 160000 },
+    salaryRange: { min: 85000, median: 135000, max: 185000, p25: 108000, p75: 160000, p90: 175000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 78000, max: 105000 },
@@ -423,10 +460,10 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'launch-operations-engineer',
     title: 'Launch Operations Engineer',
     category: 'mission-operations',
-    salaryRange: { min: 90000, median: 142000, max: 195000, p25: 112000, p75: 168000 },
+    salaryRange: { min: 75000, median: 142000, max: 195000, p25: 112000, p75: 168000, p90: 185000 },
     locations: ['US'],
     experienceLevels: {
-      junior: { min: 82000, max: 110000 },
+      junior: { min: 75000, max: 110000 },
       mid: { min: 108000, max: 155000 },
       senior: { min: 148000, max: 195000 },
     },
@@ -440,10 +477,10 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'satellite-operations-analyst',
     title: 'Satellite Operations Analyst',
     category: 'mission-operations',
-    salaryRange: { min: 80000, median: 125000, max: 170000, p25: 100000, p75: 148000 },
+    salaryRange: { min: 70000, median: 125000, max: 170000, p25: 100000, p75: 148000, p90: 162000 },
     locations: ['US', 'EU', 'Remote'],
     experienceLevels: {
-      junior: { min: 72000, max: 98000 },
+      junior: { min: 70000, max: 98000 },
       mid: { min: 95000, max: 140000 },
       senior: { min: 135000, max: 170000 },
     },
@@ -457,7 +494,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'fleet-manager',
     title: 'Satellite Fleet Manager',
     category: 'mission-operations',
-    salaryRange: { min: 110000, median: 160000, max: 215000, p25: 132000, p75: 188000 },
+    salaryRange: { min: 110000, median: 160000, max: 215000, p25: 132000, p75: 188000, p90: 205000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 100000, max: 130000 },
@@ -474,7 +511,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'mission-manager',
     title: 'Mission Manager',
     category: 'mission-operations',
-    salaryRange: { min: 120000, median: 168000, max: 225000, p25: 142000, p75: 195000 },
+    salaryRange: { min: 120000, median: 168000, max: 225000, p25: 142000, p75: 195000, p90: 215000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 110000, max: 138000 },
@@ -491,10 +528,10 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'space-traffic-management',
     title: 'Space Traffic Management Analyst',
     category: 'mission-operations',
-    salaryRange: { min: 90000, median: 135000, max: 180000, p25: 110000, p75: 158000 },
+    salaryRange: { min: 80000, median: 135000, max: 180000, p25: 110000, p75: 158000, p90: 172000 },
     locations: ['US', 'Remote'],
     experienceLevels: {
-      junior: { min: 82000, max: 108000 },
+      junior: { min: 80000, max: 108000 },
       mid: { min: 105000, max: 148000 },
       senior: { min: 140000, max: 180000 },
     },
@@ -512,7 +549,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'business-development',
     title: 'Business Development Manager',
     category: 'business',
-    salaryRange: { min: 100000, median: 155000, max: 225000, p25: 125000, p75: 188000 },
+    salaryRange: { min: 90000, median: 155000, max: 225000, p25: 125000, p75: 188000, p90: 210000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 85000, max: 115000 },
@@ -529,7 +566,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'program-manager',
     title: 'Program Manager',
     category: 'business',
-    salaryRange: { min: 110000, median: 165000, max: 235000, p25: 135000, p75: 198000 },
+    salaryRange: { min: 110000, median: 165000, max: 235000, p25: 135000, p75: 198000, p90: 220000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 95000, max: 128000 },
@@ -546,7 +583,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'contracts-manager',
     title: 'Contracts Manager',
     category: 'business',
-    salaryRange: { min: 95000, median: 145000, max: 200000, p25: 118000, p75: 172000 },
+    salaryRange: { min: 95000, median: 145000, max: 200000, p25: 118000, p75: 172000, p90: 190000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 80000, max: 108000 },
@@ -563,7 +600,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'financial-analyst-space',
     title: 'Financial Analyst (Space Programs)',
     category: 'business',
-    salaryRange: { min: 75000, median: 115000, max: 165000, p25: 92000, p75: 138000 },
+    salaryRange: { min: 75000, median: 115000, max: 165000, p25: 92000, p75: 138000, p90: 155000 },
     locations: ['US', 'Remote'],
     experienceLevels: {
       junior: { min: 68000, max: 90000 },
@@ -580,7 +617,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'marketing-manager-space',
     title: 'Marketing Manager',
     category: 'business',
-    salaryRange: { min: 80000, median: 125000, max: 175000, p25: 98000, p75: 148000 },
+    salaryRange: { min: 70000, median: 125000, max: 175000, p25: 98000, p75: 148000, p90: 165000 },
     locations: ['US', 'Remote'],
     experienceLevels: {
       junior: { min: 65000, max: 90000 },
@@ -597,7 +634,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'product-manager-space',
     title: 'Product Manager',
     category: 'business',
-    salaryRange: { min: 100000, median: 150000, max: 210000, p25: 122000, p75: 178000 },
+    salaryRange: { min: 100000, median: 150000, max: 210000, p25: 122000, p75: 178000, p90: 198000 },
     locations: ['US', 'Remote'],
     experienceLevels: {
       junior: { min: 88000, max: 118000 },
@@ -614,7 +651,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'government-relations',
     title: 'Government Relations Manager',
     category: 'business',
-    salaryRange: { min: 110000, median: 165000, max: 240000, p25: 135000, p75: 198000 },
+    salaryRange: { min: 110000, median: 165000, max: 240000, p25: 135000, p75: 198000, p90: 225000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 95000, max: 125000 },
@@ -631,7 +668,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'space-strategy-analyst',
     title: 'Strategy Analyst',
     category: 'business',
-    salaryRange: { min: 75000, median: 115000, max: 165000, p25: 92000, p75: 138000 },
+    salaryRange: { min: 75000, median: 115000, max: 165000, p25: 92000, p75: 138000, p90: 155000 },
     locations: ['US', 'Remote'],
     experienceLevels: {
       junior: { min: 68000, max: 92000 },
@@ -648,7 +685,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'space-regulatory-counsel',
     title: 'Space Regulatory Counsel',
     category: 'business',
-    salaryRange: { min: 120000, median: 185000, max: 275000, p25: 148000, p75: 225000 },
+    salaryRange: { min: 120000, median: 185000, max: 275000, p25: 148000, p75: 225000, p90: 255000 },
     locations: ['US', 'Remote'],
     experienceLevels: {
       junior: { min: 105000, max: 140000 },
@@ -665,7 +702,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'supply-chain-manager',
     title: 'Supply Chain Manager',
     category: 'business',
-    salaryRange: { min: 90000, median: 135000, max: 190000, p25: 110000, p75: 162000 },
+    salaryRange: { min: 90000, median: 135000, max: 190000, p25: 110000, p75: 162000, p90: 180000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 78000, max: 105000 },
@@ -686,7 +723,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'planetary-scientist',
     title: 'Planetary Scientist',
     category: 'science',
-    salaryRange: { min: 85000, median: 140000, max: 200000, p25: 110000, p75: 168000 },
+    salaryRange: { min: 80000, median: 140000, max: 200000, p25: 110000, p75: 168000, p90: 188000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 75000, max: 105000 },
@@ -703,7 +740,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'astrophysicist',
     title: 'Astrophysicist / Research Scientist',
     category: 'science',
-    salaryRange: { min: 80000, median: 135000, max: 195000, p25: 105000, p75: 165000 },
+    salaryRange: { min: 80000, median: 135000, max: 195000, p25: 105000, p75: 165000, p90: 182000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 70000, max: 100000 },
@@ -718,12 +755,12 @@ export const SALARY_ROLES: SalaryRole[] = [
   },
   {
     id: 'earth-observation-scientist',
-    title: 'Earth Observation Scientist',
+    title: 'Earth Observation / Remote Sensing Analyst',
     category: 'science',
-    salaryRange: { min: 90000, median: 145000, max: 205000, p25: 115000, p75: 175000 },
+    salaryRange: { min: 75000, median: 145000, max: 205000, p25: 115000, p75: 175000, p90: 192000 },
     locations: ['US', 'EU', 'Remote'],
     experienceLevels: {
-      junior: { min: 80000, max: 108000 },
+      junior: { min: 75000, max: 108000 },
       mid: { min: 105000, max: 158000 },
       senior: { min: 150000, max: 205000 },
     },
@@ -735,9 +772,9 @@ export const SALARY_ROLES: SalaryRole[] = [
   },
   {
     id: 'data-scientist-space',
-    title: 'Data Scientist (Space/Geospatial)',
+    title: 'Data Scientist / ML Engineer',
     category: 'science',
-    salaryRange: { min: 100000, median: 160000, max: 230000, p25: 128000, p75: 195000 },
+    salaryRange: { min: 100000, median: 160000, max: 230000, p25: 128000, p75: 195000, p90: 218000 },
     locations: ['US', 'Remote'],
     experienceLevels: {
       junior: { min: 88000, max: 120000 },
@@ -754,7 +791,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'ai-ml-scientist-space',
     title: 'AI/ML Scientist',
     category: 'science',
-    salaryRange: { min: 120000, median: 185000, max: 270000, p25: 148000, p75: 225000 },
+    salaryRange: { min: 120000, median: 185000, max: 270000, p25: 148000, p75: 225000, p90: 252000 },
     locations: ['US', 'Remote'],
     experienceLevels: {
       junior: { min: 105000, max: 140000 },
@@ -771,7 +808,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'materials-scientist',
     title: 'Materials Scientist (Space)',
     category: 'science',
-    salaryRange: { min: 90000, median: 142000, max: 195000, p25: 112000, p75: 168000 },
+    salaryRange: { min: 90000, median: 142000, max: 195000, p25: 112000, p75: 168000, p90: 185000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 78000, max: 108000 },
@@ -786,9 +823,9 @@ export const SALARY_ROLES: SalaryRole[] = [
   },
   {
     id: 'orbital-analyst',
-    title: 'Orbital Mechanics Analyst',
+    title: 'Astrodynamicist / Orbital Mechanics Analyst',
     category: 'science',
-    salaryRange: { min: 90000, median: 140000, max: 190000, p25: 112000, p75: 165000 },
+    salaryRange: { min: 90000, median: 140000, max: 190000, p25: 112000, p75: 165000, p90: 180000 },
     locations: ['US', 'EU'],
     experienceLevels: {
       junior: { min: 82000, max: 108000 },
@@ -805,7 +842,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'space-weather-scientist',
     title: 'Space Weather Scientist',
     category: 'science',
-    salaryRange: { min: 85000, median: 135000, max: 185000, p25: 108000, p75: 158000 },
+    salaryRange: { min: 85000, median: 135000, max: 185000, p25: 108000, p75: 158000, p90: 175000 },
     locations: ['US', 'EU', 'Remote'],
     experienceLevels: {
       junior: { min: 75000, max: 105000 },
@@ -823,13 +860,30 @@ export const SALARY_ROLES: SalaryRole[] = [
   // EXECUTIVE
   // ═══════════════════════════════════════════════════════════════
   {
+    id: 'ceo-space',
+    title: 'Chief Executive Officer',
+    category: 'executive',
+    salaryRange: { min: 180000, median: 400000, max: 600000, p25: 280000, p75: 500000, p90: 575000 },
+    locations: ['US'],
+    experienceLevels: {
+      junior: { min: 180000, max: 300000 },
+      mid: { min: 300000, max: 450000 },
+      senior: { min: 450000, max: 600000 },
+    },
+    topCompanies: ['SpaceX', 'Blue Origin', 'Rocket Lab', 'Planet Labs'],
+    growthRate: '+4% YoY',
+    demandLevel: 'low',
+    description: 'Set company vision, raise capital, manage board relationships, and drive overall strategy. Total comp often includes significant equity.',
+    skills: ['Strategic Leadership', 'Fundraising', 'Board Management', 'Industry Vision', 'Stakeholder Relations'],
+  },
+  {
     id: 'cto-space',
     title: 'Chief Technology Officer',
     category: 'executive',
-    salaryRange: { min: 250000, median: 375000, max: 550000, p25: 300000, p75: 450000 },
+    salaryRange: { min: 160000, median: 375000, max: 550000, p25: 300000, p75: 450000, p90: 520000 },
     locations: ['US'],
     experienceLevels: {
-      junior: { min: 200000, max: 280000 },
+      junior: { min: 160000, max: 280000 },
       mid: { min: 275000, max: 400000 },
       senior: { min: 380000, max: 550000 },
     },
@@ -843,10 +897,10 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'coo-space',
     title: 'Chief Operating Officer',
     category: 'executive',
-    salaryRange: { min: 240000, median: 350000, max: 500000, p25: 285000, p75: 425000 },
+    salaryRange: { min: 150000, median: 350000, max: 500000, p25: 285000, p75: 425000, p90: 475000 },
     locations: ['US'],
     experienceLevels: {
-      junior: { min: 195000, max: 270000 },
+      junior: { min: 150000, max: 270000 },
       mid: { min: 265000, max: 380000 },
       senior: { min: 370000, max: 500000 },
     },
@@ -860,10 +914,10 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'vp-engineering',
     title: 'VP of Engineering',
     category: 'executive',
-    salaryRange: { min: 220000, median: 310000, max: 450000, p25: 260000, p75: 375000 },
+    salaryRange: { min: 160000, median: 310000, max: 450000, p25: 260000, p75: 375000, p90: 420000 },
     locations: ['US'],
     experienceLevels: {
-      junior: { min: 185000, max: 250000 },
+      junior: { min: 160000, max: 250000 },
       mid: { min: 245000, max: 340000 },
       senior: { min: 330000, max: 450000 },
     },
@@ -877,7 +931,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'director-programs',
     title: 'Director of Programs',
     category: 'executive',
-    salaryRange: { min: 180000, median: 255000, max: 360000, p25: 215000, p75: 310000 },
+    salaryRange: { min: 180000, median: 255000, max: 360000, p25: 215000, p75: 310000, p90: 340000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 155000, max: 210000 },
@@ -892,12 +946,12 @@ export const SALARY_ROLES: SalaryRole[] = [
   },
   {
     id: 'director-business-dev',
-    title: 'Director of Business Development',
+    title: 'VP / Director of Business Development',
     category: 'executive',
-    salaryRange: { min: 180000, median: 260000, max: 380000, p25: 218000, p75: 325000 },
+    salaryRange: { min: 140000, median: 260000, max: 380000, p25: 218000, p75: 325000, p90: 358000 },
     locations: ['US'],
     experienceLevels: {
-      junior: { min: 155000, max: 210000 },
+      junior: { min: 140000, max: 210000 },
       mid: { min: 205000, max: 285000 },
       senior: { min: 278000, max: 380000 },
     },
@@ -915,7 +969,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'manufacturing-technician',
     title: 'Manufacturing Technician',
     category: 'manufacturing',
-    salaryRange: { min: 50000, median: 75000, max: 105000, p25: 60000, p75: 88000 },
+    salaryRange: { min: 50000, median: 75000, max: 105000, p25: 60000, p75: 88000, p90: 98000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 45000, max: 62000 },
@@ -932,7 +986,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'quality-engineer',
     title: 'Quality Assurance Engineer',
     category: 'manufacturing',
-    salaryRange: { min: 75000, median: 115000, max: 160000, p25: 92000, p75: 138000 },
+    salaryRange: { min: 75000, median: 115000, max: 160000, p25: 92000, p75: 138000, p90: 152000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 68000, max: 90000 },
@@ -949,7 +1003,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'test-engineer',
     title: 'Test Engineer',
     category: 'manufacturing',
-    salaryRange: { min: 80000, median: 120000, max: 165000, p25: 98000, p75: 142000 },
+    salaryRange: { min: 80000, median: 120000, max: 165000, p25: 98000, p75: 142000, p90: 158000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 72000, max: 95000 },
@@ -966,7 +1020,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'machinist-cnc',
     title: 'CNC Machinist',
     category: 'manufacturing',
-    salaryRange: { min: 50000, median: 78000, max: 110000, p25: 62000, p75: 92000 },
+    salaryRange: { min: 50000, median: 78000, max: 110000, p25: 62000, p75: 92000, p90: 102000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 45000, max: 62000 },
@@ -983,7 +1037,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'additive-manufacturing-engineer',
     title: 'Additive Manufacturing Engineer',
     category: 'manufacturing',
-    salaryRange: { min: 85000, median: 130000, max: 185000, p25: 105000, p75: 158000 },
+    salaryRange: { min: 85000, median: 130000, max: 185000, p25: 105000, p75: 158000, p90: 175000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 75000, max: 100000 },
@@ -1000,7 +1054,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'production-supervisor',
     title: 'Production Supervisor',
     category: 'manufacturing',
-    salaryRange: { min: 80000, median: 115000, max: 160000, p25: 95000, p75: 138000 },
+    salaryRange: { min: 80000, median: 115000, max: 160000, p25: 95000, p75: 138000, p90: 152000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 72000, max: 95000 },
@@ -1017,7 +1071,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'composites-technician',
     title: 'Composites Technician',
     category: 'manufacturing',
-    salaryRange: { min: 50000, median: 72000, max: 100000, p25: 58000, p75: 85000 },
+    salaryRange: { min: 50000, median: 72000, max: 100000, p25: 58000, p75: 85000, p90: 95000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 42000, max: 58000 },
@@ -1034,7 +1088,7 @@ export const SALARY_ROLES: SalaryRole[] = [
     id: 'spacecraft-integration-tech',
     title: 'Spacecraft Integration Technician',
     category: 'manufacturing',
-    salaryRange: { min: 55000, median: 80000, max: 110000, p25: 65000, p75: 95000 },
+    salaryRange: { min: 55000, median: 80000, max: 110000, p25: 65000, p75: 95000, p90: 105000 },
     locations: ['US'],
     experienceLevels: {
       junior: { min: 48000, max: 68000 },
@@ -1046,6 +1100,78 @@ export const SALARY_ROLES: SalaryRole[] = [
     demandLevel: 'medium',
     description: 'Integrate spacecraft subsystems, route harnesses, and prepare vehicles for environmental testing and launch.',
     skills: ['Spacecraft Assembly', 'Harnessing', 'Cleanroom Ops', 'ESD Handling', 'Torque Procedures'],
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // EMERGING ROLES
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'in-space-servicing-engineer',
+    title: 'In-Space Servicing Engineer',
+    category: 'emerging',
+    salaryRange: { min: 85000, median: 145000, max: 200000, p25: 112000, p75: 172000, p90: 190000 },
+    locations: ['US'],
+    experienceLevels: {
+      junior: { min: 85000, max: 115000 },
+      mid: { min: 112000, max: 158000 },
+      senior: { min: 152000, max: 200000 },
+    },
+    topCompanies: ['Northrop Grumman (MEV)', 'Astroscale', 'Orbit Fab', 'ClearSpace'],
+    growthRate: '+22% YoY',
+    demandLevel: 'high',
+    description: 'Design and operate systems for satellite servicing, refueling, and repair in orbit. Combines robotics, rendezvous/prox-ops, and systems engineering.',
+    skills: ['Robotics', 'Rendezvous & Prox Ops', 'GNC', 'Satellite Design', 'Mission Planning'],
+  },
+  {
+    id: 'space-sustainability-analyst',
+    title: 'Space Sustainability Analyst',
+    category: 'emerging',
+    salaryRange: { min: 75000, median: 125000, max: 175000, p25: 98000, p75: 150000, p90: 168000 },
+    locations: ['US', 'EU', 'Remote'],
+    experienceLevels: {
+      junior: { min: 75000, max: 100000 },
+      mid: { min: 98000, max: 138000 },
+      senior: { min: 132000, max: 175000 },
+    },
+    topCompanies: ['ESA', 'Space Sustainability Rating', 'Astroscale', 'ClearSpace'],
+    growthRate: '+25% YoY',
+    demandLevel: 'high',
+    description: 'Assess and mitigate environmental impacts of space activities. Develop debris mitigation plans, sustainability ratings, and end-of-life disposal strategies.',
+    skills: ['Debris Modeling', 'Policy Analysis', 'Orbital Mechanics', 'Environmental Assessment', 'Regulatory Compliance'],
+  },
+  {
+    id: 'lunar-mars-habitat-engineer',
+    title: 'Lunar / Mars Habitat Engineer',
+    category: 'emerging',
+    salaryRange: { min: 90000, median: 148000, max: 210000, p25: 118000, p75: 178000, p90: 198000 },
+    locations: ['US'],
+    experienceLevels: {
+      junior: { min: 90000, max: 120000 },
+      mid: { min: 118000, max: 162000 },
+      senior: { min: 155000, max: 210000 },
+    },
+    topCompanies: ['NASA JSC', 'ICON', 'AI SpaceFactory', 'Axiom Space'],
+    growthRate: '+20% YoY',
+    demandLevel: 'medium',
+    description: 'Design habitable structures for lunar and Martian environments. Combines ECLSS, structural engineering, ISRU, and radiation protection.',
+    skills: ['ISRU', 'Structural Design', 'ECLSS', 'Radiation Shielding', '3D Printing/Additive Construction'],
+  },
+  {
+    id: 'space-cybersecurity-engineer',
+    title: 'Space Cybersecurity Engineer',
+    category: 'emerging',
+    salaryRange: { min: 95000, median: 155000, max: 220000, p25: 125000, p75: 185000, p90: 208000 },
+    locations: ['US', 'Remote'],
+    experienceLevels: {
+      junior: { min: 90000, max: 120000 },
+      mid: { min: 118000, max: 168000 },
+      senior: { min: 160000, max: 220000 },
+    },
+    topCompanies: ['SpaceX', 'L3Harris', 'Northrop Grumman', 'CISA'],
+    growthRate: '+24% YoY',
+    demandLevel: 'high',
+    description: 'Secure satellite communication links, ground systems, and space networks against cyber threats. Growing priority for both commercial and defense sectors.',
+    skills: ['Cybersecurity', 'CCSDS Security', 'Encryption', 'Network Security', 'Threat Modeling'],
   },
 ];
 
@@ -1179,7 +1305,7 @@ export const SALARY_FAQS = [
   },
   {
     question: 'What are the highest paying jobs in the space industry?',
-    answer: 'The highest paying roles in space are C-suite executives ($250K-$550K+), followed by VP-level positions ($220K-$450K), AI/ML scientists ($120K-$270K), space regulatory counsel ($120K-$275K), and senior software engineers ($160K-$245K). Defense contractors with security clearance requirements often pay premium salaries, with clearance bonuses adding $5K-$15K annually.',
+    answer: 'The highest paying roles in space are C-suite executives ($250K-$600K+), followed by VP-level positions ($220K-$450K), AI/ML scientists ($120K-$270K), space regulatory counsel ($120K-$275K), and senior software engineers ($160K-$245K). Defense contractors with security clearance requirements often pay premium salaries, with clearance bonuses adding $5K-$15K annually.',
   },
   {
     question: 'How much does NASA pay compared to private space companies?',
@@ -1191,7 +1317,7 @@ export const SALARY_FAQS = [
   },
   {
     question: 'What skills are in highest demand in the space industry right now?',
-    answer: 'The fastest-growing skill demands in the space industry include AI/ML for satellite data processing (+20% YoY growth), space traffic management (+18% YoY), additive manufacturing for rocket components (+15% YoY), data science for geospatial analytics (+16% YoY), and ECLSS/life support engineering (+14% YoY) driven by commercial space stations.',
+    answer: 'The fastest-growing skill demands in the space industry include AI/ML for satellite data processing (+20% YoY growth), space cybersecurity (+24% YoY), space sustainability (+25% YoY), in-space servicing (+22% YoY), and additive manufacturing for rocket components (+15% YoY). ECLSS/life support engineering (+14% YoY) is also booming, driven by commercial space stations.',
   },
   {
     question: 'How do European space salaries compare to US space salaries?',
@@ -1200,6 +1326,10 @@ export const SALARY_FAQS = [
   {
     question: 'Are remote jobs available in the space industry?',
     answer: 'Remote work is increasingly available in the space industry, particularly for software engineering, data science, product management, marketing, and business analysis roles. However, hardware engineering, manufacturing, launch operations, and satellite integration typically require on-site presence. About 15-20% of space industry jobs now offer remote or hybrid arrangements.',
+  },
+  {
+    question: 'How does location affect space industry salaries?',
+    answer: 'Location significantly impacts compensation. LA/Bay Area roles pay approximately 20% above the national median due to SpaceX, JPL, and tech company competition. Seattle (Blue Origin, Kuiper) pays about 15% above. DC Metro (defense contractors, NASA HQ) adds roughly 10%. Denver/Colorado Springs is the baseline at market rate. Huntsville, AL and remote positions typically pay 5-10% below the national median, offset by lower cost of living.',
   },
 ];
 
@@ -1250,4 +1380,10 @@ export function filterRoles(options: {
   }
 
   return roles;
+}
+
+/** Apply a location multiplier to a salary value */
+export function applyLocationModifier(salary: number, locationId: MetroLocation): number {
+  const modifier = LOCATION_MODIFIERS.find((m) => m.id === locationId);
+  return Math.round((salary * (modifier?.multiplier ?? 1.0)) / 1000) * 1000;
 }

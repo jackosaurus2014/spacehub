@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Space Industry Salary Benchmarks 2026 | Aerospace Engineer Salary Guide',
   description:
-    'Comprehensive space industry salary data for 50+ roles. Compare aerospace engineer salaries at SpaceX, Blue Origin, Rocket Lab, Northrop Grumman, NASA/JPL and more. Median salaries, experience levels, and growth trends.',
+    'Comprehensive space industry salary data for 57 roles across 7 categories. Compare aerospace engineer salaries at SpaceX, Blue Origin, Rocket Lab, Northrop Grumman, NASA/JPL and more. Percentile ranges (25th-90th), location modifiers for LA, Denver, DC Metro, Houston, and more.',
   keywords: [
     'space industry salaries',
     'aerospace engineer salary',
@@ -18,11 +18,17 @@ export const metadata: Metadata = {
     'propulsion engineer salary',
     'flight software engineer salary',
     'space defense salary',
+    'space cybersecurity salary',
+    'in-space servicing engineer salary',
+    'aerospace salary by location',
+    'space industry salary Los Angeles',
+    'space industry salary Denver',
+    'space industry salary Houston',
   ],
   openGraph: {
     title: 'Space Industry Salary Benchmarks 2026 | SpaceNexus',
     description:
-      'Comprehensive salary data for 50+ space industry roles. Compare pay across SpaceX, Blue Origin, NASA, and defense contractors.',
+      'Salary data for 57 space industry roles with percentile ranges and location modifiers. Compare pay across SpaceX, Blue Origin, NASA, and defense contractors.',
     url: 'https://spacenexus.us/salary-benchmarks',
     type: 'website',
     images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Space Industry Salary Benchmarks' }],
@@ -31,7 +37,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Space Industry Salary Benchmarks 2026 | SpaceNexus',
     description:
-      'Comprehensive salary data for 50+ space industry roles. Compare pay across SpaceX, Blue Origin, NASA, and defense contractors.',
+      'Salary data for 57 space industry roles with percentile ranges and location modifiers. Compare pay across SpaceX, Blue Origin, NASA, and defense contractors.',
     images: ['/og-image.png'],
   },
   alternates: {
