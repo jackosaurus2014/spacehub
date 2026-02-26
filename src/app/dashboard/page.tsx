@@ -96,6 +96,8 @@ const TOOLS_MODULES: ModuleItem[] = [
   { icon: '🔬', label: 'Tech Readiness', href: '/tech-readiness', description: 'Emerging technology TRL tracking' },
   { icon: '🔥', label: 'Propulsion Database', href: '/propulsion-database', description: 'Engine & thruster specifications' },
   { icon: '📍', label: 'Launch Sites', href: '/launch-sites', description: 'Global spaceport database & capabilities' },
+  { icon: '📡', label: 'Frequency Bands', href: '/frequency-bands', description: 'Space communications RF spectrum reference' },
+  { icon: '🧪', label: 'Materials Database', href: '/materials-database', description: 'Spacecraft materials & properties reference' },
 ];
 
 function ModuleSection({ title, icon, modules, sizeClasses, delay }: {

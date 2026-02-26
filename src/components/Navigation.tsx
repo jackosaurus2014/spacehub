@@ -105,6 +105,8 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Satellite Bus Comparison', href: '/compare/satellite-buses', description: 'Compare satellite platform specs' },
   { label: 'Propulsion Database', href: '/propulsion-database', description: 'Engine & thruster specifications' },
   { label: 'Launch Sites', href: '/launch-sites', description: 'Global spaceport database & capabilities' },
+  { label: 'Frequency Bands', href: '/frequency-bands', description: 'Space communications RF spectrum reference' },
+  { label: 'Materials Database', href: '/materials-database', description: 'Spacecraft materials & properties reference' },
 ];
 
 function DropdownMenu({
