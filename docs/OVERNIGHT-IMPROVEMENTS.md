@@ -161,6 +161,62 @@ Premium platforms cost $10K-50K+/yr. Free tools are shallow. We own the middle.
 | 13.3 | Create Government Space Budgets tracker (15 agencies, per capita, programs) | ✅ DONE |
 | 13.4 | Create Mission Pipeline (future missions 2025-2030, confidence levels) | ✅ DONE |
 
+### Wave 14: Market Map, Resources & Intelligence Content
+**Commit:** `a11af38` — 6 files changed, 1614 insertions
+| # | Task | Status |
+|---|------|--------|
+| 14.1 | Create Market Map visualization (8 sectors, company cards, filters) | ✅ DONE |
+| 14.2 | Create Resources & Podcast directory (curated industry content) | ✅ DONE |
+| 14.3 | Create Weekly Intelligence Brief (3 sample weeks, expandable sections) | ✅ DONE |
+| 14.4 | Enhance Executive Moves tracker with more data and filters | ✅ DONE |
+| 14.5 | Update module routes for new pages | ✅ DONE |
+
+### Wave 15: Navigation Integration & Polish
+**Commit:** `b318784` — 14 files changed, 139 insertions
+| # | Task | Status |
+|---|------|--------|
+| 15.1 | Add 11 new pages to sidebar navigation | ✅ DONE |
+| 15.2 | Add 11 new modules to dashboard page | ✅ DONE |
+| 15.3 | Fix 4 broken internal links (constellation-tracker, orbital-services, newsletter) | ✅ DONE |
+| 15.4 | Upgrade 3 remaining PageHeader → AnimatedPageHeader | ✅ DONE |
+| 15.5 | Add ScrollReveal animations to 5 pages | ✅ DONE |
+
+### Wave 16: Deal Flow, Contract Awards & SEO
+**Commit:** `6fe4f15` — 15 files changed, 1962 insertions
+| # | Task | Status |
+|---|------|--------|
+| 16.1 | Create Deal Flow Database (38 deals: funding, M&A, SPACs, contracts) | ✅ DONE |
+| 16.2 | Create Contract Awards Feed (35 awards: NASA, DoD, USSF, NRO, ESA) | ✅ DONE |
+| 16.3 | Add 9 new pages to sitemap | ✅ DONE |
+| 16.4 | Create 12 layout.tsx files with SEO metadata | ✅ DONE |
+
+### Wave 17: News Digest, Startup Tracker & Workforce Intelligence
+**Commit:** `2ca9ea5` — 7 files changed, 2863 insertions
+| # | Task | Status |
+|---|------|--------|
+| 17.1 | Create Daily Space Digest page (3 days of headlines, category filters) | ✅ DONE |
+| 17.2 | Create Startup Tracker (46 startups, funding stages, trending badges) | ✅ DONE |
+| 17.3 | Enhance Space Talent workforce tab with sector, skills, geographic, salary data | ✅ DONE |
+| 17.4 | Add contract-awards to navigation and dashboard | ✅ DONE |
+
+### Wave 18: Report Cards, Tech Readiness & Regulations
+**Commit:** `f544823` — 6 files changed, 3135 insertions
+| # | Task | Status |
+|---|------|--------|
+| 18.1 | Create Industry Report Cards (15 companies, A+ to D grades) | ✅ DONE |
+| 18.2 | Create Technology Readiness Tracker (27 technologies, TRL 1-9) | ✅ DONE |
+| 18.3 | Create Space Regulations Explorer (32 regulations/treaties) | ✅ DONE |
+| 18.4 | Add news-digest and startup-tracker to nav/dashboard/sitemap | ✅ DONE |
+
+### Wave 19: Industry Trends, Orbit Guide & Career Guide
+**Commit:** `7fb88dc` — 6 files changed, 2440 insertions
+| # | Task | Status |
+|---|------|--------|
+| 19.1 | Create Industry Trends page (17 data-backed trends) | ✅ DONE |
+| 19.2 | Create Orbit Types Guide (12 orbits, altitude chart, key concepts) | ✅ DONE |
+| 19.3 | Create Career Guide (25 career paths, salary data, day-in-life) | ✅ DONE |
+| 19.4 | Add Wave 18 pages to nav/dashboard/sitemap | ✅ DONE |
+
 ---
 
 ## Deep Audit Findings (Wave 5+ Reference)

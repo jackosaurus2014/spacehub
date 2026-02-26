@@ -185,6 +185,9 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/report-cards`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/tech-readiness`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/regulations`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/industry-trends`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/orbit-guide`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/career-guide`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
     // Developer pages
     { url: `${BASE_URL}/developer/docs`, changeFrequency: 'monthly' as const, priority: 0.5 },

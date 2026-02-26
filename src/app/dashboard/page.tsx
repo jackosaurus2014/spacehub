@@ -45,6 +45,8 @@ const EXPLORE_MODULES: ModuleItem[] = [
   { icon: '🔮', label: 'Mission Pipeline', href: '/mission-pipeline', description: 'Upcoming missions 2025-2030' },
   { icon: '📈', label: 'Mission Statistics', href: '/mission-stats', description: 'Launch provider leaderboards & data' },
   { icon: '📑', label: 'Daily Digest', href: '/news-digest', description: 'Quick-scan daily space headlines' },
+  { icon: '🌍', label: 'Orbit Guide', href: '/orbit-guide', description: 'Visual guide to orbital mechanics & orbit types' },
+  { icon: '🎯', label: 'Career Guide', href: '/career-guide', description: 'Space industry career paths & salary data' },
 ];
 
 const INTELLIGENCE_MODULES: ModuleItem[] = [
@@ -60,6 +62,7 @@ const INTELLIGENCE_MODULES: ModuleItem[] = [
   { icon: '👤', label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes across the industry' },
   { icon: '🚀', label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies & funding stages' },
   { icon: '📊', label: 'Report Cards', href: '/report-cards', description: 'Quarterly company performance grades' },
+  { icon: '📈', label: 'Industry Trends', href: '/industry-trends', description: 'Data-backed space industry trend analysis' },
 ];
 
 const BUSINESS_MODULES: ModuleItem[] = [
