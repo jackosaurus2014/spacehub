@@ -878,6 +878,461 @@ Is Space Force procurement reform succeeding? What changes would make the bigges
   ],
 };
 
+// New engagement-driving seed threads (v1.3) — recent events, engagement, resources, career
+const ENGAGEMENT_SEED_THREADS_V2: Record<string, SeedThread[]> = {
+  'launch-tech': [
+    {
+      title: 'Starship Flight 8 Discussion: Full Orbital Attempt',
+      content: `SpaceX has officially confirmed Starship Flight 8 will attempt a full orbital insertion and de-orbit burn sequence, making it the most ambitious Starship test yet. After the incremental successes of Flights 5-7 (booster catch, improved heat shield survival, payload door operation), Flight 8 aims to close the loop on the full mission profile.
+
+Key milestones expected on this flight:
+- **Full orbital insertion**: Ship will perform a circularization burn to achieve a stable orbit for the first time, rather than the suborbital trajectories of previous flights.
+- **Extended on-orbit operations**: Multiple engine relights planned to demonstrate the restart capability needed for lunar and Mars missions.
+- **Controlled de-orbit and precision landing**: The ship will attempt a targeted splashdown or possibly a landing attempt at a designated site.
+- **Propellant transfer demonstration**: NASA has been pushing for a basic propellant transfer test to validate the Artemis HLS refueling architecture.
+
+The FAA license process has been smoother this time around, suggesting SpaceX's environmental and safety documentation has improved. The Boca Chica launch site has seen significant infrastructure upgrades since Flight 7, including a second launch tower nearing completion.
+
+What are your predictions for Flight 8? Do you think they'll achieve full orbit on this attempt?`,
+      tags: ['starship', 'spacex', 'flight-8', 'orbital', 'predictions'],
+      replies: [
+        { content: `I think Flight 8 will be the one where everything comes together. The progression from Flight 5 to 7 has been remarkably steady — each flight achieved its primary objectives and provided clear data for improvement. The heat shield redesign after Flight 6 seems to have addressed the tile adhesion issue. My prediction: successful orbit, successful de-orbit burn, but the landing attempt will be "close but not quite" — maybe an off-target splashdown. The propellant transfer demo will be basic but enough to satisfy NASA's initial requirements.` },
+        { content: `The propellant transfer aspect is what I'm watching most closely. Everything else is iterative improvement on demonstrated capabilities. But orbital refueling at the scale Starship needs (10-15 tanker flights per HLS mission) is completely uncharted territory. Even a simple demonstration of moving propellant between header and main tanks in microgravity would be significant. If they can show controlled fluid transfer with accurate metering, that de-risks the entire Artemis III architecture. Without it, we're still flying blind on the most critical path item for returning humans to the Moon.` },
+        { content: `One thing that doesn't get enough attention: the second launch tower. Once that's operational, SpaceX can theoretically sustain a much higher Starship launch cadence — potentially one flight every 2-3 weeks rather than monthly. That kind of tempo is what you need to iterate rapidly through the remaining challenges. The comparison to early Falcon 9 days is apt: SpaceX didn't really hit their stride until they had the infrastructure to fly frequently enough that each flight provided immediate feedback for the next one.` },
+      ],
+    },
+    {
+      title: 'Neutron vs Falcon 9: Will Rocket Lab close the gap?',
+      content: `Rocket Lab's Neutron medium-lift vehicle is arguably the most anticipated new rocket in development after Starship. With a planned payload capacity of 13,000 kg to LEO and a reusable first stage, Neutron is explicitly designed to compete with Falcon 9 in the medium-lift market that SpaceX has dominated for over a decade.
+
+Key design decisions that differentiate Neutron:
+- **Carbon composite structure**: Unlike Falcon 9's aluminum-lithium or Starship's stainless steel, Neutron uses carbon fiber composite for the first stage. This saves mass but adds manufacturing complexity.
+- **Hungry Hippo fairing**: The fairing is integrated into the second stage and opens like a clamshell, eliminating the need for separate fairing recovery. Clever and potentially cost-saving.
+- **Archimedes engine**: Rocket Lab's first gas generator cycle engine running on methane/LOX. Nine engines on the first stage (sound familiar?).
+- **Landing legs integrated into the stage**: Neutron lands on integrated legs rather than grid fins and deployable legs, simplifying the reuse turnaround.
+
+The big question is timeline. Rocket Lab has announced a first launch target, but new rocket development almost always takes longer than projected. Peter Beck has a strong track record of execution with Electron, but Neutron is an order of magnitude more complex.
+
+Can Neutron genuinely compete with a Falcon 9 that will have 15+ years of flight heritage and manufacturing optimization by the time Neutron flies? Or is the real competition Starship, which could make even Falcon 9 economics look dated?`,
+      tags: ['neutron', 'rocket-lab', 'falcon-9', 'competition', 'medium-lift'],
+      replies: [
+        { content: `The smartest thing about Neutron is that it's not trying to beat Falcon 9 on price alone. Rocket Lab is positioning it as a responsive, customer-friendly alternative. Many satellite operators want more control over their launch schedule, orbit, and integration process than SpaceX's "take it or leave it" rideshare model provides. Neutron with a 13t capacity can serve the sweet spot of dedicated launches for constellation deployment, medium GEO sats, and national security missions. There's absolutely a market for a reliable alternative to Falcon 9, even if it costs somewhat more per kg.` },
+        { content: `I worry about the carbon composite decision. SpaceX tried composite for early Starship prototypes and abandoned it in favor of stainless steel for good reasons — thermal performance, repairability, and manufacturing cost at scale. Carbon fiber is great for weight savings but every nick, scratch, or impact during landing and refurbishment requires careful inspection. Over dozens of flights, the cumulative inspection and repair burden could eat into the reuse cost savings. Time will tell if Rocket Lab's approach works better than SpaceX's experience suggests.` },
+      ],
+    },
+  ],
+  'deep-space': [
+    {
+      title: 'Artemis III Updates: When Are We Actually Going Back to the Moon?',
+      content: `The Artemis III mission — humanity's first return to the lunar surface since Apollo 17 in 1972 — has been subject to repeated schedule shifts. Originally targeting 2025, then 2026, the timeline continues to evolve as the technical challenges of the Human Landing System (SpaceX Starship HLS), next-generation spacesuits (Axiom Space), and the Orion/SLS integration are worked through.
+
+Let's assess the critical path items as of early 2026:
+
+**SLS/Orion**: The vehicle has flown successfully on Artemis I (uncrewed lunar flyby) and Artemis II (crewed lunar flyby) is in preparation. This piece of the architecture is arguably the most mature, though heat shield concerns from Artemis I required investigation.
+
+**Starship HLS**: This is the long pole in the tent. The HLS variant needs to demonstrate orbital refueling (10-15 tanker flights), lunar transit, powered descent to the lunar surface, surface operations, and ascent back to NRHO. None of these have been demonstrated yet. SpaceX is making rapid progress with Starship flight tests, but the HLS-specific requirements add substantial additional development.
+
+**Spacesuits (Axiom AxEMU)**: The next-generation EVA suits are in development but haven't been flight-tested. The old EMU suits on ISS have known issues (water intrusion, sizing limitations), and the new suits need to work in the lunar dust environment.
+
+**Ground Systems**: Kennedy Space Center's mobile launcher and Vehicle Assembly Building modifications for SLS are operational but have faced maintenance issues.
+
+What's your realistic assessment of when Artemis III will fly? And is the current architecture (SLS + Orion + Starship HLS) the right approach, or should NASA pivot?`,
+      tags: ['artemis', 'moon', 'nasa', 'starship-hls', 'sls', 'lunar-surface'],
+      replies: [
+        { content: `My realistic estimate is NET late 2028 for Artemis III, and even that assumes no major setbacks. The Starship HLS orbital refueling demo is the critical path, and we haven't even seen a basic propellant transfer test yet. I think NASA should be transparent about this timeline rather than maintaining increasingly unrealistic target dates. The program is important enough to get right — rushing it to meet a political deadline would be far worse than a delay. Apollo took nearly a decade with unlimited budget priority; expecting Artemis to go faster with a fraction of the relative investment is unrealistic.` },
+        { content: `The architecture debate is largely settled at this point — there's too much sunk cost in the current approach to pivot. But I do think NASA should be investing more heavily in alternative options for Artemis V and beyond. Blue Origin's Blue Moon lander is funded as a second HLS provider, and that competition is healthy. The real question is whether SLS survives beyond Artemis IV once Starship is fully operational. At that point, the cost differential becomes impossible to justify politically. I see SLS flying 4-6 missions total before being retired in favor of commercial alternatives.` },
+        { content: `One aspect that doesn't get enough discussion: the lunar surface EVA timeline. Even if everything goes perfectly, Artemis III astronauts will spend a very limited time on the surface — possibly as little as 24-48 hours with 1-2 EVAs. Compare that to Apollo 17's three days and three EVAs. The science return per mission will be modest until we have longer surface stays, which requires surface habitat development and more capable lander variants. Artemis III is important symbolically but the real science begins with Artemis V and the Surface Habitat.` },
+      ],
+    },
+    {
+      title: 'Mars Sample Return: Is it dead, or can it be saved?',
+      content: `NASA's Mars Sample Return (MSR) program has been in turmoil. After an independent review board estimated costs could reach $8-11 billion with a return date slipping to 2040, NASA solicited alternative architectures and dramatically scaled back the program. The Perseverance rover has already cached dozens of sample tubes on the Martian surface — some of the most scientifically valuable material ever collected off-Earth. But getting them back is proving to be one of the most challenging missions ever attempted.
+
+The fundamental problem is complexity. The original MSR architecture required: a lander to touch down near the cached samples, a fetch rover to collect them, a Mars Ascent Vehicle (MAV) to launch them into Mars orbit, an Earth Return Orbiter to capture the sample container in Mars orbit and bring it back to Earth, and an Earth entry vehicle to safely deliver the samples. That's at least four distinct spacecraft, each pushing the state of the art.
+
+Alternative approaches being studied:
+- **Commercial partnerships**: Could SpaceX's Starship dramatically simplify the mission by providing surplus mass and volume margins?
+- **Smaller sample set**: Reduce the number of samples returned to simplify the architecture
+- **Phased approach**: Multiple smaller missions rather than one complex campaign
+- **International partnership**: ESA has already invested heavily; could JAXA or other agencies contribute more?
+
+The scientific community considers MSR the highest priority planetary science mission. The samples Perseverance has collected could answer fundamental questions about whether life ever existed on Mars. Abandoning them on the surface would be a historic missed opportunity.
+
+What's the path forward? Can MSR be done for less than $5 billion? And should commercial launch and spacecraft capability be the centerpiece of a redesigned mission?`,
+      tags: ['mars-sample-return', 'msr', 'perseverance', 'nasa', 'planetary-science', 'mars'],
+      replies: [
+        { content: `Starship changes the calculus entirely. The mass and volume constraints that drive MSR complexity largely disappear if you can land 100+ tonnes on Mars. A Starship-based MSR could theoretically carry a large rover, sample collection equipment, AND the return vehicle all in a single landing. Yes, Starship Mars landing is undemonstrated, but it's being developed anyway for other reasons. Piggybacking MSR on Starship capability development could reduce the dedicated mission cost dramatically. NASA should be seriously engaging SpaceX on this architecture.` },
+        { content: `I think the phased approach is the most realistic near-term option. Instead of one mega-mission, do a series of smaller missions: first, demonstrate a Mars Ascent Vehicle (the hardest unique technology). Then send a lander with a fetch rover. Then the return orbiter. Each mission is individually fundable within a reasonable annual budget, and you can adjust the architecture based on what you learn at each step. The "one big mission" approach is what drove costs to $11B — disaggregating it makes each piece more manageable.` },
+      ],
+    },
+  ],
+  'general': [
+    {
+      title: 'Community Rules and Posting Guidelines',
+      content: `Welcome to the SpaceNexus Community Forums! To keep this a productive and respectful space for everyone, please review these guidelines before posting.
+
+**Core Principles:**
+
+1. **Be Respectful**: Treat all members with courtesy. Disagree with ideas, not people. No personal attacks, harassment, or discriminatory language.
+
+2. **Stay On Topic**: Each forum category has a specific focus. Post in the appropriate category, and keep discussions relevant. Off-topic posts may be moved or removed.
+
+3. **No ITAR/Export-Controlled Content**: Never share export-controlled technical data, classified information, or proprietary content. This is not just a forum rule — it's a legal requirement. When in doubt, don't post it.
+
+4. **Cite Your Sources**: When making factual claims, provide references. Speculation is welcome but should be clearly labeled as such. Misinformation undermines the community's credibility.
+
+5. **No Spam or Self-Promotion**: Occasional sharing of relevant content you've created is fine. Repetitive promotion of products, services, or external links is not. Contact us about advertising opportunities instead.
+
+6. **Quality Over Quantity**: We value thoughtful, substantive contributions. Take the time to write clear, well-reasoned posts. Low-effort comments like "this" or "+1" add noise without value.
+
+7. **Use Tags Appropriately**: Tag your threads with relevant topics to help others find discussions that interest them. Misleading tags will be corrected by moderators.
+
+8. **Report, Don't Retaliate**: If you see content that violates these guidelines, use the report button. Don't engage with trolls or respond to harassment — let the moderation team handle it.
+
+**Moderation**: Violations will result in warnings, temporary mutes, or permanent bans depending on severity. Moderator decisions are final but can be appealed via the contact form.
+
+Thank you for helping make SpaceNexus a welcoming and valuable community!`,
+      isPinned: true,
+      tags: ['rules', 'guidelines', 'moderation', 'community', 'pinned'],
+      replies: [
+        { content: `Thanks for laying these out clearly. The ITAR point is especially important and I'm glad it's highlighted prominently. I've seen other space forums get into serious trouble when well-meaning people share technical details that cross the export control line. Better to be overly cautious than to create legal liability for the community.` },
+        { content: `Appreciate the emphasis on citing sources. One of the things that makes space industry discussions frustrating on social media is the constant repetition of outdated or inaccurate information. Having a culture of "back up your claims" from the start will make this forum much more valuable than the alternatives. Looking forward to substantive discussions here.` },
+      ],
+    },
+    {
+      title: 'Must-read space industry reports for 2026',
+      content: `Every year, the space industry produces a number of comprehensive reports that provide essential data, analysis, and forecasts. I wanted to compile a thread of the must-read reports for 2026, so we can all benefit from shared knowledge.
+
+Here are the reports I'd recommend starting with:
+
+**Free Reports:**
+- **Bryce Tech / Space Foundation: The Space Report** — Annual comprehensive overview of the global space economy. Excellent for market sizing and trend data.
+- **FAA Annual Compendium of Commercial Space Transportation** — Detailed US launch activity data, forecasts, and regulatory information.
+- **ESA Space Environment Report** — Definitive source for orbital debris statistics, conjunction data, and space sustainability metrics.
+- **CSIS Aerospace Security Project Reports** — Free policy papers on space security, deterrence, and military space issues.
+
+**Paid Reports (worth the investment):**
+- **Euroconsult: Satellites to Be Built & Launched** — The industry standard forecast for satellite manufacturing and launch demand.
+- **Northern Sky Research (NSR) Reports** — Deep dives into satellite communications, Earth observation, and other vertical markets.
+- **SpaceTec Partners** — European-focused market analysis.
+
+**Industry Newsletters (daily/weekly):**
+- **The Payload** — Best daily newsletter for space industry business news
+- **SpaceNews** — The newspaper of record for the space industry
+- **Ars Technica (Eric Berger)** — Excellent long-form journalism on launch and human spaceflight
+- **Payload Research** — Deep-dive weekly analysis
+
+What reports or sources would you add to this list? Are there region-specific reports (Asia, Middle East, Latin America) that cover emerging space markets?`,
+      tags: ['reports', 'resources', 'industry-analysis', 'market-research', 'reading-list'],
+      replies: [
+        { content: `Great list! I'd add the **Satellite Industry Association (SIA) State of the Satellite Industry Report** — it's free and provides excellent data on the satellite services, manufacturing, launch, and ground equipment markets. Also, the **Union of Concerned Scientists Satellite Database** is an invaluable free resource for tracking all operational satellites by country, purpose, and orbit. And for startup/VC-focused analysis, **Space Capital's quarterly reports** break down investment trends by technology layer (pick & shovel, launch, satellites, analytics).` },
+        { content: `For those interested in the defense/national security space angle, the **CSIS Space Threat Assessment** is essential reading — it covers the counterspace capabilities being developed by major powers. Also, the **Mitchell Institute's Spacepower Advantage** papers provide strategic perspective on US military space posture. Both are free and publicly available. On the commercial side, **Quilty Space** produces excellent research if you can afford the subscription — their launch market analysis is particularly good.` },
+        { content: `Don't sleep on the **ITU World Radiocommunication Conference (WRC) proceedings** if you're in the satcom business. WRC-23 decisions on spectrum allocation for NGSO systems, direct-to-device services, and Ka/V-band sharing rules will shape the industry for the next decade. The documents are dense but the decisions are critically important for anyone working in satellite communications or spectrum management. GSMA and Access Partnership both publish good summaries if you don't want to wade through the full ITU documentation.` },
+      ],
+    },
+    {
+      title: 'Free satellite tracking tools and resources',
+      content: `For anyone interested in tracking satellites, monitoring orbital activity, or just watching the ISS pass overhead, there are some excellent free tools available. I've been collecting these for years and wanted to share my favorites.
+
+**Web-Based Tracking:**
+- **Celestrak (celestrak.org)** — Dr. T.S. Kelso's site is the primary public source for Two-Line Element (TLE) data. Essential for any satellite tracking application.
+- **N2YO.com** — Real-time 3D satellite tracking with pass predictions for any location. Great for visual satellite observing.
+- **SatNOGS (satnogs.org)** — Open-source global ground station network. You can receive signals from satellites using community-built ground stations.
+- **Heavens-Above (heavens-above.com)** — Excellent pass prediction tool, especially for ISS and bright satellites.
+
+**Desktop Software:**
+- **GMAT (General Mission Analysis Tool)** — NASA's free, open-source mission analysis and trajectory design tool. Professional-grade software.
+- **STK Free (Systems Tool Kit)** — Ansys/AGI offers a free version of their industry-standard satellite analysis tool.
+- **Orbitron** — Lightweight Windows satellite tracking application.
+
+**Mobile Apps:**
+- **ISS Detector** (Android/iOS) — Best app for predicting visible satellite passes.
+- **Star Walk / Stellarium** — Augmented reality sky viewing with satellite overlays.
+
+**Data Sources:**
+- **Space-Track.org** — US Space Force's public satellite catalog. Requires free registration.
+- **LeoLabs (leolabs.space)** — Commercial SSA provider with free visualization tools.
+
+What tools am I missing? Especially interested in open-source orbit determination and conjunction assessment tools.`,
+      tags: ['tools', 'satellite-tracking', 'resources', 'open-source', 'tle', 'free-tools'],
+      replies: [
+        { content: `Excellent list! For orbit determination and conjunction assessment, check out **Orekit** — it's a free, open-source Java library for space dynamics. It handles orbit propagation, maneuver computation, and conjunction analysis at professional quality. Many European space companies use it in production systems. The learning curve is steep but the documentation has improved significantly.
+
+Also, **poliastro** is a great Python library for orbital mechanics — lighter weight than Orekit but perfect for quick analysis, visualization, and educational purposes. It integrates well with Jupyter notebooks for interactive exploration.` },
+        { content: `For the radio/RF crowd, **SDR# (SDR Sharp)** with a cheap RTL-SDR dongle ($25) lets you receive signals from weather satellites (NOAA APT imagery), amateur radio satellites, and even some commercial spacecraft beacons. There's something magical about pulling a live satellite image out of the sky with $25 of hardware. The r/RTLSDR subreddit has great beginner guides. SatNOGS mentioned above is the natural next step once you want to contribute your ground station to a global network.` },
+      ],
+    },
+    {
+      title: 'What are you most excited about in space right now?',
+      content: `We're living in what many people call a second Space Age. The pace of innovation, investment, and activity across the space industry is unprecedented. From Starship flight tests to lunar landers to mega-constellations to commercial space stations — there's so much happening that it's hard to keep up.
+
+So I want to ask this community: what are you most excited about in space right now? Not what you think is most important (though those might be the same thing), but what genuinely excites you and keeps you checking the news?
+
+For me, it's direct-to-cell satellite connectivity. The idea that within a few years, every cell phone on Earth will have satellite backup connectivity — no special hardware, no additional subscription required — is transformative. It's the kind of space application that will affect billions of people who never think about space at all. Emergency SOS from anywhere on the planet. Connectivity for farmers in remote areas. Maritime safety for fishermen. That's the promise of space technology making everyday life better.
+
+What's your pick? And don't feel limited to one thing — this industry has enough excitement to go around.`,
+      tags: ['discussion', 'excitement', 'space-industry', 'opinions', 'community'],
+      replies: [
+        { content: `JWST continues to blow my mind. Every data release reveals something unexpected — galaxies forming earlier than our models predicted, atmospheric characterization of exoplanets showing signs of potential biosignatures, incredible detail in nearby nebulae and star-forming regions. It's easy to get caught up in the commercial and human spaceflight narratives, but the pure science coming from JWST is historic. We're rewriting astronomy textbooks in real-time.` },
+        { content: `Commercial space stations. The ISS has been incredible but it's showing its age and was never designed for commercial use. The next generation — Axiom, Vast, Orbital Reef — will be purpose-built for research, manufacturing, and eventually tourism. I think the first products "Made in Space" that regular consumers can buy (ZBLAN fiber optics, protein crystals for drug development) will come from these stations. That's the inflection point where space stops being an exotic destination and becomes a production environment.` },
+        { content: `Starship. Full stop. If Starship delivers even half of its promised capability — 100+ tonnes to LEO at dramatically reduced cost — it changes everything. Mars missions become possible. Lunar bases become affordable. Space telescopes can be bigger than JWST. Orbital construction becomes practical. The entire space industry's future trajectory changes depending on whether Starship succeeds or not. That's not hype, it's just physics and economics. Lower launch costs unlock everything.` },
+      ],
+    },
+  ],
+  'careers': [
+    {
+      title: 'Breaking into the space industry: A practical guide',
+      content: `I get asked this question a lot: "How do I break into the space industry?" After 12 years in the field and hiring dozens of people, I've put together a practical guide that goes beyond the usual "get an aerospace engineering degree" advice.
+
+**Step 1: Identify Your Transferable Skills**
+The space industry needs way more than rocket scientists. Software engineers, data scientists, project managers, RF engineers, mechanical engineers, supply chain specialists, financial analysts, regulatory experts, marketing professionals — all are in high demand. Map your current skills to space industry roles.
+
+**Step 2: Build Space-Specific Knowledge**
+You don't need a degree in aerospace to understand the fundamentals. Free resources:
+- MIT OpenCourseWare: Introduction to Aerospace Engineering
+- NASA's free online courses and webinars
+- The Space Show podcast for industry perspectives
+- SpaceNews, The Payload, Ars Technica for current events
+- This forum! Ask questions, engage in discussions
+
+**Step 3: Get Hands-On Experience**
+- Contribute to open-source space projects (SatNOGS, OpenMCT, GMAT)
+- Join SEDS, AIAA, or local space society chapters
+- Participate in CubeSat or high-altitude balloon projects
+- Build a ground station (RTL-SDR + antenna = $50)
+- Enter competitions (NASA challenges, Space Apps hackathon)
+
+**Step 4: Network Strategically**
+- Attend conferences (SmallSat, Space Symposium, SATELLITE, IAC)
+- Join LinkedIn groups focused on space industry
+- Engage with space professionals on Twitter/X and here on SpaceNexus
+- Informational interviews are underutilized — most space professionals love talking about their work
+
+**Step 5: Apply Broadly and Strategically**
+- Don't limit yourself to SpaceX. Hundreds of space companies are hiring.
+- Consider government roles (NASA, Space Force, NOAA) as an entry point
+- Consulting firms (Bryce Tech, Aerospace Corp, RAND) value analytical skills
+- Startups offer faster learning curves and broader responsibilities
+
+What would you add to this guide? What worked (or didn't work) for you?`,
+      tags: ['career-guide', 'breaking-in', 'advice', 'networking', 'skills'],
+      replies: [
+        { content: `This is outstanding advice. I'd emphasize Step 4 even more — networking got me my current role. I attended a SmallSat conference, had a 5-minute conversation with an engineer from a company I admired, followed up on LinkedIn, and six months later they reached out when they had an opening. The space industry is surprisingly small and relationship-driven. People hire people they know and trust, especially for positions that require security clearances or access to sensitive programs.` },
+        { content: `For software engineers specifically: the barrier to entry is lower than you think. I came from a web development background with zero aerospace knowledge, applied to a ground systems software role at a satellite operator, and got hired. They taught me the space-specific domain knowledge on the job. What they couldn't easily teach was clean code architecture, CI/CD pipeline experience, and the ability to debug complex distributed systems. If you're a good software engineer, space companies want you — and they'll invest in teaching you the domain. Don't self-select out because you don't know orbital mechanics yet.` },
+        { content: `I want to add something about non-US perspectives. The advice above is somewhat US-centric. If you're outside the US, also look at ESA (and national agencies like CNES, DLR, UKSA, ISRO, JAXA), European commercial space companies (Airbus Defence & Space, Thales Alenia Space, OHB), and the growing commercial sectors in Japan, India, South Korea, and the UAE. ITAR restrictions actually create opportunities for non-US companies to serve international customers who want to avoid US export control complications. The global space industry is much broader than Silicon Valley and the Space Coast.` },
+      ],
+    },
+    {
+      title: 'Space engineering salary benchmarks 2026',
+      content: `I've been compiling salary data from job postings, recruiter conversations, and community reports to create an updated benchmark for space industry compensation in 2026. This supplements the existing salary thread with more granular data.
+
+**Compensation by Role (US, total cash comp excluding equity):**
+
+| Role | Junior (0-3yr) | Mid (3-7yr) | Senior (7-15yr) | Principal/Lead (15yr+) |
+|------|-------|-----|-------|-----------|
+| Aerospace/Mechanical Eng | $80K-$110K | $110K-$145K | $145K-$185K | $175K-$230K |
+| Software Engineering | $95K-$135K | $135K-$180K | $170K-$240K | $220K-$300K+ |
+| RF/Communications Eng | $85K-$120K | $120K-$160K | $155K-$200K | $190K-$250K |
+| Systems Engineering | $80K-$115K | $115K-$155K | $150K-$195K | $185K-$240K |
+| Data Science/ML | $90K-$130K | $130K-$175K | $165K-$230K | $210K-$280K |
+| GNC (Guidance, Nav, Control) | $85K-$120K | $120K-$160K | $155K-$200K | $190K-$250K |
+| Program/Project Manager | $80K-$115K | $115K-$150K | $145K-$190K | $180K-$240K |
+| Thermal/Structural Engineer | $78K-$108K | $108K-$140K | $140K-$180K | $170K-$220K |
+
+**Key Observations:**
+- Software engineering commands a 15-25% premium over equivalent-experience hardware engineering roles
+- RF/Communications engineers have seen the fastest salary growth (15-20% over 2 years) due to mega-constellation demand
+- Location premium: LA/Bay Area/Seattle roles pay 20-30% more than Huntsville/Denver/Florida
+- Startup equity can add 10-40% to total compensation at well-funded companies
+
+**Government vs Commercial:**
+- NASA GS-13 equivalent (7-10yr experience): ~$120K-$150K depending on locality
+- DoD contractor equivalent: $130K-$170K with benefits
+- Commercial equivalent: $150K-$200K but typically fewer benefits
+
+Caveat: These are ranges based on available data and my network. Your mileage may vary. Please share your own data points to help calibrate!`,
+      tags: ['salary', 'compensation', 'benchmarks', '2026', 'engineering', 'hiring'],
+      replies: [
+        { content: `These numbers look about right for the US market. One thing I'd add: the equity component at pre-IPO companies can be significant but is hard to value. I have friends at SpaceX whose equity is worth more than their cumulative salary over the same period, based on recent tender offer prices. But I also know people at space startups that went under where equity ended up worthless. Factor equity into your decision, but don't count on it for your financial planning.` },
+        { content: `Important note on the government contractor numbers: while the base salary is lower, don't overlook the benefits package. Many defense contractors offer 6-8% 401(k) match (vs 3-4% at startups), pensions (becoming rare but still exist at legacy primes), and better work-life balance with defined 40-hour weeks. When you factor in the total benefits package and quality of life, the effective compensation gap between contractors and commercial companies narrows considerably. Not everyone optimizes purely for maximum salary, and that's totally valid.` },
+      ],
+    },
+  ],
+  'satellite-ops': [
+    {
+      title: 'LEO vs MEO vs GEO: Which orbit wins for broadband?',
+      content: `The satellite broadband battle is playing out across all three major orbital regimes, with fundamentally different approaches to solving the global connectivity challenge:
+
+**LEO (Low Earth Orbit, 300-2000km):**
+- Starlink (~7000 satellites, rapidly growing)
+- OneWeb/Eutelsat (~600 satellites)
+- Amazon Kuiper (deployment beginning)
+- Pros: Low latency (20-40ms), lower power user terminals, good for real-time applications
+- Cons: Massive constellation needed, complex handover management, orbital debris concerns
+
+**MEO (Medium Earth Orbit, 2000-35000km):**
+- SES mPOWER (MEO constellation)
+- O3b/SES (existing MEO constellation)
+- Pros: Fewer satellites needed than LEO, moderate latency (100-150ms), excellent throughput per beam
+- Cons: Higher terminal cost, less coverage flexibility than LEO
+
+**GEO (Geostationary Orbit, 35786km):**
+- Viasat (ViaSat-3 constellation)
+- Hughes (Jupiter systems)
+- SES, Intelsat, Telesat (traditional operators)
+- Pros: Three satellites can cover most of Earth, proven technology, simple tracking
+- Cons: High latency (600ms+), expensive satellites, capacity shared across large regions
+
+The market seems to be consolidating around a multi-orbit strategy for many operators. SES operates both GEO and MEO. Telesat Lightspeed targets LEO. And many enterprise and government customers want the resilience of connectivity across multiple orbital regimes.
+
+For different use cases — consumer broadband, enterprise connectivity, maritime, aviation, government/military — which orbit is the best fit? And will LEO mega-constellations eventually make GEO broadband obsolete?`,
+      tags: ['leo', 'meo', 'geo', 'broadband', 'satellite-internet', 'constellation-design'],
+      replies: [
+        { content: `GEO isn't going anywhere for broadcast applications (TV, content distribution) and for serving regions where you need guaranteed coverage without the complexity of tracking LEO/MEO satellites. But for interactive broadband, LEO wins hands down. The latency advantage is decisive for modern internet usage — video calls, gaming, real-time collaboration, and financial transactions all suffer badly with 600ms round-trip times. I think GEO broadband will gradually transition to backup/hybrid roles while LEO becomes the primary delivery mechanism for satellite internet.` },
+        { content: `MEO is the underrated middle ground. SES's mPOWER constellation can deliver very high throughput per beam with moderate latency — perfectly acceptable for enterprise and backhaul applications. You need far fewer satellites than LEO (dozens vs thousands), which means lower constellation deployment and maintenance costs. For applications where 100-150ms latency is acceptable (most enterprise use cases), MEO might actually be the most cost-effective approach. Not everything needs the 20ms latency of LEO, and the cost of building and maintaining a LEO mega-constellation is enormous.` },
+      ],
+    },
+    {
+      title: 'Satellite cybersecurity: Are we ready for the threats?',
+      content: `The Viasat hack at the beginning of the Ukraine conflict in 2022 was a wake-up call for the entire satellite industry. A cyberattack on ground-based network equipment disabled tens of thousands of KA-SAT terminals across Europe, disrupting both military communications and civilian services like wind farm management. It demonstrated that satellite systems are vulnerable not just through exotic space-based attacks, but through conventional cybersecurity weaknesses in the ground segment.
+
+Since then, the threat landscape has only intensified:
+
+**Known Threat Vectors:**
+- Ground segment attacks (modems, gateways, network management systems)
+- Supply chain compromise (malicious firmware in satellite components)
+- Signal jamming and spoofing (GPS spoofing is already widespread)
+- Command injection (unauthorized commands to spacecraft)
+- Data interception (downlink eavesdropping)
+
+**Industry Response:**
+- NIST Cybersecurity Framework for satellite systems
+- Space ISAC (Information Sharing and Analysis Center) established
+- SpaceX, SDA, and other operators implementing encryption on command links
+- European Space Agency CYSEC initiative for space system security
+
+**Ongoing Challenges:**
+- Many legacy satellites have no encryption or authentication on command links
+- Long satellite lifespans mean decades of vulnerability management
+- The software-defined satellite trend increases attack surface
+- International norm-setting for responsible behavior in space cyber operations barely exists
+
+How should the industry approach satellite cybersecurity? Is self-regulation sufficient, or do we need mandatory security standards? And for satellites already in orbit without modern security features — what can be done?`,
+      tags: ['cybersecurity', 'security', 'viasat', 'threats', 'ground-segment', 'encryption'],
+      replies: [
+        { content: `Mandatory security standards are coming whether the industry likes it or not. The US government is already moving in this direction — the Space Policy Directive-5 on space cybersecurity, combined with CMMC requirements for defense contractors, will eventually translate into binding requirements for all operators licensed in the US. The industry should get ahead of this by developing and adopting strong voluntary standards now, rather than waiting for regulators to impose requirements that may not be well-suited to the unique challenges of space systems. The Space ISAC is a good start but needs broader participation.` },
+        { content: `The legacy satellite problem is largely unsolvable — you can't patch a satellite that wasn't designed to be updated. But for new satellites, there's no excuse for not implementing encryption on command links, secure boot processes, and over-the-air update capability. The marginal cost of these features is tiny compared to the total satellite cost. The real vulnerability is in the ground segment and supply chain, where standard IT security practices are often woefully inadequate. Many satellite operators still run ground systems on outdated operating systems with minimal network segmentation. That's where the next Viasat-style attack will come from.` },
+      ],
+    },
+  ],
+  'business-funding': [
+    {
+      title: 'Space industry market map 2026: Who are the key players?',
+      content: `I've been putting together a comprehensive market map of the space industry as it stands in 2026. The ecosystem has grown enormously and it's hard to keep track of all the players. I wanted to share my draft and get the community's input on companies I might be missing.
+
+**Launch:**
+- Heavy: SpaceX (Starship, Falcon Heavy), Blue Origin (New Glenn), ULA (Vulcan), Arianespace (Ariane 6), CASC (Long March 5)
+- Medium: SpaceX (Falcon 9), Rocket Lab (Neutron), Firefly (Alpha MLV), Relativity (Terran R), ISRO (SSLV/LVM3)
+- Small: Rocket Lab (Electron), Virgin Orbit (defunct), ABL (RS1), Galactic Energy, LandSpace
+
+**Satellite Manufacturing:**
+- Large: Airbus, Thales Alenia Space, Lockheed Martin, Northrop Grumman, Boeing, Maxar, Ball Aerospace
+- Medium/SmallSat: York Space Systems, Terran Orbital, Loft Orbital, AAC Clyde Space, NanoAvionics
+- Components: Ball Aerospace (instruments), L3Harris (sensors), Honeywell (avionics), Rocket Lab (Photon bus)
+
+**Satellite Services:**
+- Broadband: SpaceX (Starlink), Amazon (Kuiper), OneWeb/Eutelsat, SES, Viasat, Telesat, Hughes
+- Earth Observation: Planet, Maxar, Airbus, BlackSky, Capella, Umbra, Satellogic, Spire
+- IoT/M2M: Swarm (SpaceX), Kineis, Myriota, Orbcomm, Astrocast
+
+**Ground Segment:**
+- Antennas/Terminals: Kymeta, Intellian, ThinKom, Hughes
+- Ground Station Networks: AWS Ground Station, Azure Orbital, KSAT, SSC, Leaf Space
+
+**Software & Analytics:**
+- LeoLabs, Slingshot Aerospace, ExoAnalytic, Kayhan Space, Muon Space
+
+**In-Space Services:**
+- Astroscale (debris removal), Orbit Fab (fuel depots), ClearSpace, D-Orbit (transport)
+
+Who am I missing? Especially interested in companies outside the US and Europe that are becoming significant players.`,
+      tags: ['market-map', 'industry-overview', 'companies', 'ecosystem', '2026'],
+      replies: [
+        { content: `Great map! For the East Asian market, you're missing some important players: **iQPS** (Japan, SAR smallsats), **Synspective** (Japan, SAR constellation), **Spacety** (China, SAR/optical), **GalaxySpace** (China, broadband LEO), and **Innospace** (South Korea, launch). The Japanese commercial space sector in particular is growing rapidly with significant government support. Also, the Middle East is emerging: **Thuraya/Yahsat** (UAE, satcom), **Saudi Space Commission** is investing heavily, and the UAE's Mohammed Bin Rashid Space Centre is supporting commercial ventures.` },
+        { content: `On the ground segment side, I'd add **Atlas Space Operations** (cloud-based ground station scheduling), **RBC Signals** (ground network aggregation), and **Infostellar** (Japanese ground station network). The ground segment is increasingly becoming a software/cloud play rather than a hardware play, with virtualized modems and cloud-based signal processing. This is where the terrestrial tech industry is most directly overlapping with space, and I expect to see more big tech involvement (Google already has ground stations for its own purposes).` },
+      ],
+    },
+  ],
+  'space-policy': [
+    {
+      title: 'Space debris liability: Who pays when satellites collide?',
+      content: `The legal framework for space debris liability was established in 1972 with the Liability Convention, which makes launching states liable for damage caused by their space objects. But the convention was written for an era of a few hundred satellites operated by governments — not thousands of commercial satellites operated by companies across multiple jurisdictions.
+
+**Current legal framework:**
+- The Liability Convention imposes absolute liability for damage on Earth and fault-based liability for damage in orbit
+- The launching state (not the operator) is liable
+- Only one successful claim has ever been made (Cosmos 954 crash in Canada, 1978)
+- No in-orbit collision has ever resulted in a liability claim
+
+**The problem:**
+- With 10,000+ active satellites and growing, collisions are statistically inevitable
+- Determining "fault" for an in-orbit collision is extremely difficult — both operators may have been following established best practices
+- The launching state concept doesn't map well to commercial operators who may be incorporated in one country, licensed in another, and launching from a third
+- There's no binding obligation for operators to share conjunction data or coordinate maneuvers
+
+**Proposed solutions:**
+- Mandatory third-party liability insurance for satellite operators
+- A supranational space traffic coordination authority
+- Expanded FCC/ITU requirements for conjunction data sharing
+- "No-fault" insurance pools similar to nuclear liability conventions
+
+As the orbital environment gets more congested, this isn't a theoretical problem — it's an inevitable one. How should the legal framework evolve to handle the reality of 21st-century space operations?`,
+      tags: ['liability', 'space-law', 'debris', 'collision', 'regulation', 'insurance'],
+      replies: [
+        { content: `The mandatory insurance approach makes the most sense to me. It works in aviation, maritime, and automotive — operators carry liability insurance, and insurers develop expertise in risk assessment. This creates market incentives for responsible behavior (better operators get lower premiums) without requiring a heavy-handed regulatory apparatus. The Space Sustainability Rating system being developed by WEF/ESA could feed directly into insurance risk models. The key is making it truly mandatory — voluntary insurance doesn't solve the free-rider problem of operators who cut costs by going uninsured.` },
+        { content: `We need a space traffic coordination function before we need better liability rules. If you have real-time conjunction assessment, standardized maneuver coordination protocols, and mandatory data sharing, you dramatically reduce the probability of collision in the first place. Prevention is better than compensation. The FAA's NextGen air traffic management system provides a useful model — it's not perfect, but it handles thousands of aircraft movements per day in congested airspace with an excellent safety record. Space is a much simpler traffic environment (no terrain, no weather routing), but the relative velocities are higher and the consequences of collision more permanent.` },
+      ],
+    },
+  ],
+  'announcements': [
+    {
+      title: 'Welcome & FAQ: How to Get the Most from SpaceNexus Forums',
+      content: `Welcome to SpaceNexus Community Forums! Whether you're a space industry veteran or just starting to explore, this thread will help you get the most out of the community.
+
+**Frequently Asked Questions:**
+
+**Q: Do I need to be a space professional to participate?**
+A: Absolutely not! We welcome everyone — professionals, students, enthusiasts, investors, journalists, and curious minds. The only requirement is a genuine interest in space and a willingness to engage constructively.
+
+**Q: How do I start a new discussion?**
+A: Navigate to the relevant category (Launch Technology, Satellite Operations, etc.) and click "New Thread." Choose a descriptive title, write your post, and add relevant tags. The more specific and thoughtful your initial post, the better the discussion will be.
+
+**Q: What are tags and how should I use them?**
+A: Tags help categorize and discover discussions. Choose up to 5 relevant tags from the available list. Good tags are specific (e.g., "starship" rather than "rocket") and help others find threads on topics they care about.
+
+**Q: How does the voting system work?**
+A: Upvote posts that are insightful, well-researched, or contribute meaningfully to the discussion. Downvote posts that are off-topic, misleading, or low-effort. Votes help surface the best content and build contributor reputation.
+
+**Q: Can I share proprietary or export-controlled information?**
+A: No. Never share ITAR-controlled data, classified information, NDA-protected content, or proprietary documents. This is both a forum rule and a legal requirement. See our Community Guidelines for details.
+
+**Q: How do I report a problem or provide feedback?**
+A: Use the report button on any post to flag content for moderator review. For platform feedback, start a thread in the Announcements category or use the SpaceNexus contact form.
+
+**Q: Are there plans for additional forum features?**
+A: Yes! We're working on user reputation badges, expert verification, private messaging, and topic-specific newsletters. Stay tuned to the Announcements category for updates.
+
+See you in the discussions!`,
+      isPinned: true,
+      tags: ['faq', 'welcome', 'getting-started', 'help', 'pinned'],
+      replies: [
+        { content: `Great to see this platform launching! One suggestion: it would be helpful to have a "Resources" or "Wiki" section where the community can collaboratively maintain lists of useful tools, reports, and references. The individual threads are great for discussion, but a curated knowledge base would add a lot of value. Something like a community-maintained space industry glossary would also help newcomers get up to speed on the jargon.` },
+        { content: `Thanks for the warm welcome! I'm a systems engineer at a satellite manufacturer and have been looking for a space-specific community that's more professional than Reddit but less formal than industry conferences. This looks like it could fill that niche perfectly. Looking forward to contributing, especially in the Satellite Operations and Business & Funding categories.` },
+      ],
+    },
+  ],
+};
+
 export async function POST(request: NextRequest) {
   const authError = requireCronSecret(request);
   if (authError) return authError;
@@ -1111,6 +1566,67 @@ export async function POST(request: NextRequest) {
       }
 
       logger.info(`Seeded more threads in category ${categorySlug}`);
+    }
+
+    // Step 3d: Seed engagement threads v2 (recent events, resources, career, pinned)
+    for (const [categorySlug, threads] of Object.entries(ENGAGEMENT_SEED_THREADS_V2)) {
+      const categoryId = categoryMap[categorySlug];
+      if (!categoryId) {
+        logger.warn(`Category not found for engagement v2 slug: ${categorySlug}`);
+        continue;
+      }
+
+      for (const thread of threads) {
+        try {
+          const existing = await prisma.forumThread.findFirst({
+            where: { title: thread.title },
+          });
+
+          if (existing) {
+            logger.info(`Engagement v2 thread already exists: "${thread.title}", skipping`);
+            continue;
+          }
+
+          const createdThread = await prisma.forumThread.create({
+            data: {
+              categoryId,
+              authorId,
+              title: thread.title,
+              content: thread.content,
+              isPinned: thread.isPinned || false,
+              tags: thread.tags,
+            },
+          });
+
+          threadsCreated++;
+
+          if (thread.replies && thread.replies.length > 0) {
+            for (const reply of thread.replies) {
+              try {
+                await prisma.forumPost.create({
+                  data: {
+                    threadId: createdThread.id,
+                    authorId,
+                    content: reply.content,
+                  },
+                });
+                repliesCreated++;
+              } catch (replyErr) {
+                logger.warn(`Failed to create reply for "${thread.title}": ${replyErr}`);
+              }
+            }
+
+            await prisma.forumThread.update({
+              where: { id: createdThread.id },
+              data: { updatedAt: new Date() },
+            });
+          }
+        } catch (err) {
+          logger.warn(`Failed to create engagement v2 thread "${thread.title}": ${err}`);
+        }
+      }
+
+      logger.info(`Seeded engagement v2 threads in category ${categorySlug}`);
     }
 
     logger.info(`All seeding complete: ${threadsCreated} threads, ${repliesCreated} replies created`);

@@ -179,11 +179,24 @@ export default function ThreadDetailPage() {
       });
 
       if (res.ok) {
-        const data = await res.json();
+        const json = await res.json();
         toast.success('Reply posted');
         setReplyContent('');
-        if (data.reply) {
-          setReplies((prev) => [...prev, data.reply]);
+        // API returns { success, data: post } — map to our ForumPost shape
+        const newPost = json.data || json.reply;
+        if (newPost) {
+          setReplies((prev) => [...prev, {
+            id: newPost.id,
+            content: newPost.content,
+            authorId: newPost.author?.id || newPost.authorId || '',
+            authorName: newPost.author?.name || newPost.authorName || 'Unknown',
+            createdAt: newPost.createdAt,
+            updatedAt: newPost.updatedAt || newPost.createdAt,
+            upvoteCount: newPost.upvoteCount || 0,
+            downvoteCount: newPost.downvoteCount || 0,
+            isAccepted: false,
+            userVote: null,
+          }]);
         }
       } else {
         const data = await res.json();
@@ -429,12 +442,12 @@ export default function ThreadDetailPage() {
               <textarea
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
-                placeholder="Share your thoughts... (Markdown supported)"
+                placeholder="Share your thoughts... (Markdown supported, use @username to mention someone)"
                 rows={4}
                 className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none mb-1"
                 required
               />
-              <p className="text-xs text-slate-500 mb-3">Supports **bold**, *italic*, `code`, [links](url), and more Markdown formatting</p>
+              <p className="text-xs text-slate-500 mb-3">Supports **bold**, *italic*, `code`, [links](url), @mentions, and more Markdown formatting</p>
               <div className="flex justify-end">
                 <button
                   type="submit"

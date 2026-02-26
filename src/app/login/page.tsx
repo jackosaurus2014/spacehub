@@ -26,11 +26,12 @@ function getFieldError(field: string, value: string): string | null {
 function ResendVerificationBanner() {
   const searchParams = useSearchParams();
   const isRegistered = searchParams.get('registered') === 'true';
+  const isUnverified = searchParams.get('unverified') === 'true';
   const [showResend, setShowResend] = useState(false);
   const [resendEmail, setResendEmail] = useState('');
   const [resendLoading, setResendLoading] = useState(false);
 
-  if (!isRegistered) return null;
+  if (!isRegistered && !isUnverified) return null;
 
   const handleResend = async () => {
     if (!resendEmail.trim() || !isValidEmail(resendEmail)) {
@@ -60,16 +61,22 @@ function ResendVerificationBanner() {
     }
   };
 
+  const bgClass = isUnverified ? 'bg-yellow-500/10 border-yellow-500/50 text-yellow-400' : 'bg-green-500/10 border-green-500/50 text-green-400';
+  const linkClass = isUnverified ? 'text-yellow-300 hover:text-yellow-200' : 'text-green-300 hover:text-green-200';
+  const bannerMessage = isUnverified
+    ? 'Your email address has not been verified. Please check your inbox for a verification email.'
+    : 'Registration successful! Please check your email to verify your account before signing in.';
+
   return (
-    <div className="bg-green-500/10 border border-green-500/50 text-green-400 px-4 py-3 rounded-lg text-sm mb-6">
-      <p>Registration successful! Please check your email to verify your account before signing in.</p>
+    <div className={`${bgClass} border px-4 py-3 rounded-lg text-sm mb-6`}>
+      <p>{bannerMessage}</p>
       {!showResend ? (
         <button
           type="button"
           onClick={() => setShowResend(true)}
-          className="mt-2 text-green-300 hover:text-green-200 underline text-xs transition-colors"
+          className={`mt-2 ${linkClass} underline text-xs transition-colors`}
         >
-          Didn&apos;t receive the email? Resend verification
+          Didn&apos;t receive the verification email? Resend
         </button>
       ) : (
         <div className="mt-3 flex items-center gap-2">

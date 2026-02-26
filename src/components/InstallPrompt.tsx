@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -19,20 +20,29 @@ declare global {
 
 const STORAGE_KEY = 'spacenexus-install-dismissed';
 const DISMISS_COOLDOWN = 7 * 24 * 60 * 60 * 1000; // 7 days
-const SHOW_DELAY = 30000; // 30 seconds
 
 export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
+  const [animateIn, setAnimateIn] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
 
   const isStandalone = useCallback(() => {
     if (typeof window === 'undefined') return true;
-    // Check if already in standalone/TWA mode
+    // Already running as installed PWA
     if (window.matchMedia('(display-mode: standalone)').matches) return true;
+    // iOS standalone mode
     if ((window.navigator as Navigator & { standalone?: boolean }).standalone) return true;
+    // TWA (Trusted Web Activity) mode
+    if (document.referrer.includes('android-app://')) return true;
     return false;
+  }, []);
+
+  const isMobileWeb = useCallback(() => {
+    if (typeof window === 'undefined') return false;
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
   }, []);
 
   const isDismissed = useCallback(() => {
@@ -48,8 +58,8 @@ export default function InstallPrompt() {
   }, []);
 
   useEffect(() => {
-    // Don't show if already installed or recently dismissed
-    if (isStandalone() || isDismissed()) return;
+    // Only show on mobile web browsers, not in standalone/TWA mode
+    if (isStandalone() || !isMobileWeb() || isDismissed()) return;
 
     let showTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -57,15 +67,24 @@ export default function InstallPrompt() {
       e.preventDefault();
       setDeferredPrompt(e);
 
-      // Show after 30-second delay
+      // Brief delay so it doesn't appear instantly on page load
       showTimer = setTimeout(() => {
         setVisible(true);
-      }, SHOW_DELAY);
+        // Trigger CSS transition after mount
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setAnimateIn(true);
+          });
+        });
+      }, 3000);
     };
 
     const handleAppInstalled = () => {
-      setVisible(false);
-      setDeferredPrompt(null);
+      setAnimateIn(false);
+      setTimeout(() => {
+        setVisible(false);
+        setDeferredPrompt(null);
+      }, 300);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -76,7 +95,7 @@ export default function InstallPrompt() {
       window.removeEventListener('appinstalled', handleAppInstalled);
       if (showTimer) clearTimeout(showTimer);
     };
-  }, [isStandalone, isDismissed]);
+  }, [isStandalone, isMobileWeb, isDismissed]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
@@ -86,7 +105,7 @@ export default function InstallPrompt() {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
-        handleClose();
+        closePrompt();
       }
       setDeferredPrompt(null);
     } catch {
@@ -96,11 +115,10 @@ export default function InstallPrompt() {
     }
   };
 
-  const handleClose = () => {
-    setIsClosing(true);
+  const closePrompt = () => {
+    setAnimateIn(false);
     setTimeout(() => {
       setVisible(false);
-      setIsClosing(false);
     }, 300);
   };
 
@@ -110,81 +128,50 @@ export default function InstallPrompt() {
     } catch {
       // localStorage unavailable
     }
-    handleClose();
+    closePrompt();
   };
 
   if (!visible || !deferredPrompt) return null;
 
   return (
     <div
-      className={`fixed left-0 right-0 z-[60] px-4 transition-all duration-300 ease-out ${
-        isClosing
-          ? 'opacity-0 translate-y-full'
-          : 'opacity-100 translate-y-0'
+      className={`fixed bottom-0 left-0 right-0 z-[60] transition-transform duration-300 ease-out ${
+        animateIn ? 'translate-y-0' : 'translate-y-full'
       }`}
-      style={{
-        bottom: 'calc(4.5rem + env(safe-area-inset-bottom, 0px))',
-      }}
       role="dialog"
       aria-label="Install SpaceNexus application"
     >
-      <div
-        className="max-w-lg mx-auto rounded-xl border border-cyan-500/30 overflow-hidden"
-        style={{
-          background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.97) 0%, rgba(30, 41, 59, 0.95) 100%)',
-          backdropFilter: 'blur(16px)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.08)',
-        }}
-      >
-        <div className="flex items-center gap-3 p-3">
-          {/* App icon */}
-          <div
-            className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
-            style={{
-              background: 'linear-gradient(135deg, #0c4a6e 0%, #164e63 100%)',
-              border: '1px solid rgba(6, 182, 212, 0.25)',
-            }}
-          >
-            <svg
-              className="w-6 h-6 text-cyan-400"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z" />
-              <path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z" />
-              <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
-              <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
-            </svg>
+      <div className="bg-slate-900 border-t border-cyan-500/30 px-4 py-3 safe-area-bottom">
+        <div className="max-w-lg mx-auto flex items-center gap-3">
+          {/* SpaceNexus icon */}
+          <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-cyan-500/20">
+            <Image
+              src="/icons/icon-192x192.png"
+              alt="SpaceNexus"
+              width={40}
+              height={40}
+              className="w-full h-full object-cover"
+            />
           </div>
 
-          {/* Text */}
-          <div className="flex-1 min-w-0">
-            <p className="text-slate-200 text-sm font-medium leading-tight">
-              Install SpaceNexus for offline access &amp; faster loading
-            </p>
-          </div>
+          {/* Message */}
+          <p className="flex-1 text-white text-sm font-medium min-w-0">
+            Install SpaceNexus for the best experience
+          </p>
 
-          {/* Buttons */}
+          {/* Action buttons */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={handleDismiss}
-              className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-700/50 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white rounded-lg hover:bg-slate-700/60 transition-colors"
               aria-label="Dismiss install prompt"
             >
-              Not now
+              Dismiss
             </button>
             <button
               onClick={handleInstall}
               disabled={isInstalling}
-              className="px-4 py-1.5 text-xs font-semibold text-white rounded-lg transition-all disabled:opacity-50 flex items-center gap-1.5"
-              style={{
-                background: 'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)',
-                boxShadow: '0 2px 8px rgba(6, 182, 212, 0.3)',
-              }}
+              className="px-4 py-1.5 text-xs font-semibold text-white bg-cyan-600 hover:bg-cyan-500 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
             >
               {isInstalling ? (
                 <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -193,16 +180,13 @@ export default function InstallPrompt() {
                 </svg>
               ) : (
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4" />
                 </svg>
               )}
               Install
             </button>
           </div>
         </div>
-
-        {/* Bottom accent line */}
-        <div className="h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
       </div>
     </div>
   );

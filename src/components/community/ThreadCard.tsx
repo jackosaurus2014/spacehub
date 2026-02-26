@@ -53,7 +53,7 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
       <Link href={`/community/forums/${categorySlug}/${thread.id}`}>
         <div
           className={`card px-5 py-4 group cursor-pointer transition-colors hover:border-cyan-500/30 ${
-            thread.isPinned ? 'border-l-2 border-l-amber-500/50' : ''
+            thread.isPinned ? 'border-l-2 border-l-cyan-400/50' : ''
           }`}
         >
           <div className="flex items-start gap-3">
@@ -82,10 +82,8 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 {/* Indicators */}
                 {thread.isPinned && (
-                  <span className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded font-medium flex-shrink-0 flex items-center gap-0.5">
-                    <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                    </svg>
+                  <span className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded font-medium flex-shrink-0 flex items-center gap-1">
+                    <span aria-hidden="true" className="text-[10px]">{String.fromCodePoint(0x1F4CC)}</span>
                     Pinned
                   </span>
                 )}
