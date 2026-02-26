@@ -14,7 +14,7 @@ import { clientLogger } from '@/lib/client-logger';
 // ────────────────────────────────────────
 
 type TopTabId = 'manufacturing' | 'imagery';
-type MfgTabId = 'overview' | 'companies' | 'iss-lab' | 'products';
+type MfgTabId = 'overview' | 'companies' | 'iss-lab' | 'products' | 'processes';
 
 interface ManufacturingCompany {
   id: string;
@@ -59,6 +59,30 @@ interface MarketProjection {
   low: number;
   mid: number;
   high: number;
+}
+
+interface ManufacturingProcess {
+  id: string;
+  name: string;
+  icon: string;
+  category: 'additive' | 'crystal-growth' | 'fiber-optics' | 'bioprinting' | 'regolith' | 'assembly';
+  description: string;
+  microgravityAdvantage: string;
+  techniques: string[];
+  materials: string[];
+  trl: number;
+  keyPlayers: string[];
+  applications: string[];
+  challenges: string[];
+}
+
+interface SpaceEnvironmentAdvantage {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  enabledProducts: string[];
+  physicsExplanation: string;
 }
 
 // ────────────────────────────────────────
@@ -118,6 +142,8 @@ interface MfgDataContextType {
   ISS_EXPERIMENT_CATEGORIES: ISSExperimentCategory[];
   PRODUCT_CATEGORIES: ProductCategory[];
   MARKET_PROJECTIONS: MarketProjection[];
+  MANUFACTURING_PROCESSES: ManufacturingProcess[];
+  SPACE_ENVIRONMENT_ADVANTAGES: SpaceEnvironmentAdvantage[];
   IMG_PROVIDERS: ImageryProvider[];
   IMG_USE_CASES: UseCase[];
   IMG_MARKET_TRENDS: MarketTrend[];
@@ -130,6 +156,8 @@ const MfgDataContext = createContext<MfgDataContextType>({
   ISS_EXPERIMENT_CATEGORIES: [],
   PRODUCT_CATEGORIES: [],
   MARKET_PROJECTIONS: [],
+  MANUFACTURING_PROCESSES: [],
+  SPACE_ENVIRONMENT_ADVANTAGES: [],
   IMG_PROVIDERS: [],
   IMG_USE_CASES: [],
   IMG_MARKET_TRENDS: [],
@@ -399,6 +427,156 @@ const FALLBACK_COMPANIES: ManufacturingCompany[] = [
     description: 'yuri provides turnkey microgravity research services for biotechnology and pharmaceutical companies, focusing on the European market. Their standardized lab kits simplify the process of conducting experiments in space, handling hardware development, launch integration, and data analysis. Key research areas include stem cell biology, tissue engineering, protein crystallization, and drug formulation optimization in microgravity.',
     website: 'https://yurigravity.com',
   },
+  {
+    id: 'relativity-space',
+    name: 'Relativity Space',
+    hq: 'Long Beach, CA',
+    founded: 2015,
+    ticker: null,
+    funding: '$1.3B+',
+    trl: 7,
+    technologyFocus: 'Largest 3D-printed rockets using proprietary Stargate metal 3D printers, autonomous manufacturing',
+    keyProducts: ['Terran R (reusable, medium-lift)', 'Stargate 4th-gen metal 3D printer', 'AI-driven factory automation'],
+    status: 'development',
+    milestones: [
+      'Terran 1: first 3D-printed rocket to reach space (March 2023, reached max-Q but did not achieve orbit)',
+      'Pivoted from Terran 1 (small-lift) to Terran R (medium-lift reusable) for commercial viability',
+      'Stargate is the world\'s largest metal 3D printer -- prints rocket structures in days vs. months',
+      '85%+ of Terran 1 by mass was 3D-printed, aiming for 95%+ on Terran R',
+      'Secured multiple launch contracts including with OneWeb and Impulse Space',
+      'Terran R first flight targeting 2026-2027 timeframe',
+    ],
+    description: 'Relativity Space is revolutionizing rocket manufacturing through extreme 3D printing. Their proprietary Stargate system is the world\'s largest metal 3D printer, capable of producing entire rocket structures using directed energy deposition with metal wire feedstock. Terran 1 became the first 3D-printed rocket to reach space in March 2023. The company has pivoted focus to Terran R, a fully reusable medium-lift vehicle designed to compete with Falcon 9, with dramatically reduced part counts (fewer than 1,000 parts vs. 100,000+ in traditional rockets). Their manufacturing approach reduces tooling, lead times, and factory footprint by 10x compared to conventional aerospace fabrication.',
+    website: 'https://relativityspace.com',
+  },
+  {
+    id: 'icon',
+    name: 'ICON',
+    hq: 'Austin, TX',
+    founded: 2017,
+    ticker: null,
+    funding: '$451M+ (Series B)',
+    trl: 6,
+    technologyFocus: 'Large-scale 3D-printed construction for Earth and space, lunar surface construction using ISRU',
+    keyProducts: ['Olympus lunar construction system', 'Vulcan 3D-printed building system', 'Project Artemis habitat prototypes'],
+    status: 'development',
+    milestones: [
+      'Awarded $57.2M NASA contract for Olympus lunar construction technology development',
+      'Built first 3D-printed homes for sale in Austin, TX (Community First! Village and Wolf Ranch)',
+      'Mars Dune Alpha: 3D-printed simulated Mars habitat at Johnson Space Center for year-long crew missions',
+      'Vulcan construction system prints structures using locally-sourced concrete/regolith materials',
+      'Developing Olympus system to print landing pads, roads, and habitats on the lunar surface',
+      'Partnership with BIG (Bjarke Ingels Group) for space architecture design',
+    ],
+    description: 'ICON is the leading construction technology company bridging terrestrial 3D-printed buildings with lunar and Mars surface construction. Their Vulcan system has produced the first permitted 3D-printed homes in the US. The Olympus system, funded by NASA, is being developed for autonomous construction on the Moon using in-situ regolith as feedstock -- potentially printing landing pads, blast shields, roads, and habitats without requiring materials from Earth. Mars Dune Alpha, their 1,700-sq-ft simulated Mars habitat at NASA JSC, is hosting year-long analog missions to prepare for crewed Mars missions.',
+    website: 'https://iconbuild.com',
+  },
+  {
+    id: 'ai-spacefactory',
+    name: 'AI SpaceFactory',
+    hq: 'New York, NY',
+    founded: 2017,
+    ticker: null,
+    funding: '~$15M',
+    trl: 5,
+    technologyFocus: 'Autonomous robotic construction for Mars and lunar habitats using bio-composite and ISRU materials',
+    keyProducts: ['MARSHA Mars habitat', 'LINA lunar habitat', 'TERA terrestrial 3D-printed structures', 'Autonomous robotic construction platform'],
+    status: 'development',
+    milestones: [
+      'Won NASA 3D-Printed Habitat Challenge (Phase 3, Level 5) with MARSHA habitat design',
+      'MARSHA: autonomously 3D-printed habitat using basalt fiber/PLA bio-composite, demonstrated full-scale construction',
+      'LINA lunar habitat design using sintered regolith -- selected for NASA architectural studies',
+      'TERA: commercially available Earth-based 3D-printed structure derived from space technology',
+      'Developing autonomous construction robotics that operate without human intervention',
+    ],
+    description: 'AI SpaceFactory designs and builds habitats for Mars, the Moon, and Earth using advanced robotics and novel materials. Their MARSHA concept won the NASA 3D-Printed Habitat Challenge, demonstrating a vertically-oriented Mars habitat autonomously printed from a basalt fiber and PLA bio-composite derived from Martian resources. LINA is their lunar habitat concept using sintered regolith. The company\'s Earth-based TERA structures commercialize space construction technology for sustainable terrestrial building, while their autonomous construction platform is designed to operate on planetary surfaces without human oversight.',
+    website: 'https://aispacefactory.com',
+  },
+  {
+    id: 'orbital-composites',
+    name: 'Orbital Composites',
+    hq: 'San Jose, CA',
+    founded: 2016,
+    ticker: null,
+    funding: '~$10M',
+    trl: 5,
+    technologyFocus: 'Continuous fiber composite manufacturing in space, including fiber optic cable production',
+    keyProducts: ['In-space fiber optic manufacturing', 'Continuous composite structures', 'Orbital manufacturing platform'],
+    status: 'development',
+    milestones: [
+      'Developing fiber optic cable manufacturing process for microgravity production',
+      'Continuous fiber composite printing technology demonstrated terrestrially',
+      'NASA SBIR contracts for in-space manufacturing research',
+      'Working on specialty optical fibers that benefit from microgravity production',
+    ],
+    description: 'Orbital Composites is developing continuous fiber composite manufacturing technology for space applications, with a focus on producing specialty fiber optic cables in microgravity. Their approach leverages the benefits of the space environment -- absence of convection currents and containerless processing -- to produce optical fibers with dramatically improved transmission properties. The company also develops continuous composite printing technology for building large structures in orbit using carbon fiber and other advanced materials.',
+    website: 'https://orbitalcomposites.com',
+  },
+  {
+    id: 'techshot',
+    name: 'TechShot Inc.',
+    hq: 'Greenville, IN',
+    founded: 1988,
+    ticker: null,
+    funding: 'Private (revenue-generating)',
+    trl: 8,
+    technologyFocus: 'BioFabrication Facility on ISS for organ and tissue bioprinting, life science payloads',
+    keyProducts: ['BioFabrication Facility (BFF)', 'Multi-use Variable-g Platform (MVP)', '3D BioFabrication Facility upgrade', 'ADvanced Space Experiment Processor (ADSEP)'],
+    status: 'operational',
+    milestones: [
+      'BioFabrication Facility operational on ISS since 2019 (in partnership with Redwire for operations)',
+      'Successfully printed meniscus tissue, cardiac tissue, and partial knee constructs in orbit',
+      'BFF demonstrates scaffold-free bioprinting -- tissues maintain 3D shape without gravitational collapse',
+      'Multi-use Variable-g Platform provides controlled centrifugal gravity on ISS for comparative research',
+      '35+ years of spaceflight hardware development for NASA and commercial customers',
+      'Upgraded BFF with enhanced resolution and multi-material printing capabilities',
+    ],
+    description: 'TechShot is a veteran spaceflight hardware company that developed the BioFabrication Facility (BFF), a sophisticated bioprinter operating aboard the International Space Station. The BFF has successfully printed human tissue constructs including meniscus, cardiac, and partial knee tissue in microgravity. The key advantage of bioprinting in space is that soft tissue constructs maintain their 3D shape without requiring artificial scaffolding, as they don\'t collapse under their own weight. TechShot also operates the Multi-use Variable-g Platform, a centrifuge facility on ISS that enables experiments at variable gravity levels from microgravity to 2g.',
+    website: 'https://techshot.com',
+  },
+  {
+    id: 'tethers-unlimited',
+    name: 'Tethers Unlimited (AMERGINT Technologies)',
+    hq: 'Bothell, WA',
+    founded: 1994,
+    ticker: null,
+    funding: 'Acquired by AMERGINT Technologies',
+    trl: 6,
+    technologyFocus: 'In-space manufacturing of large structures, antennas, and trusses via Firmamentum SpiderFab technology',
+    keyProducts: ['Firmamentum (in-space manufacturing division)', 'SpiderFab robotic fabrication', 'Trusselator truss manufacturing', 'MakerSat deployment platform', 'Refabricator recycling system'],
+    status: 'development',
+    milestones: [
+      'NASA-funded SpiderFab program for autonomous in-space fabrication of large structures',
+      'Trusselator: demonstrated manufacturing of carbon fiber trusses in simulated space conditions',
+      'Refabricator: ISS-bound recycling system to convert plastic waste into 3D printing feedstock',
+      'MakerSat: platform for deploying in-space manufactured structures from a CubeSat-class vehicle',
+      'Developing km-scale antenna reflectors manufactured on-orbit (impossible to launch pre-assembled)',
+      'Acquired by AMERGINT Technologies, continuing in-space manufacturing development',
+    ],
+    description: 'Tethers Unlimited (now part of AMERGINT Technologies) developed the Firmamentum division for in-space manufacturing of structures too large to launch pre-assembled. Their SpiderFab technology uses robotic systems to manufacture and assemble large truss structures, antenna reflectors, and solar arrays directly in orbit. The Trusselator demonstrated the ability to fabricate carbon fiber composite trusses in space conditions. Their Refabricator system was developed to recycle plastic waste into 3D printer feedstock on the ISS, enabling a closed-loop manufacturing cycle in space. The company envisions manufacturing km-scale structures on-orbit that would be impossible to launch from Earth.',
+    website: 'https://amergint.com',
+  },
+  {
+    id: 'lunar-resources',
+    name: 'Lunar Resources',
+    hq: 'Houston, TX',
+    founded: 2018,
+    ticker: null,
+    funding: '~$12M',
+    trl: 4,
+    technologyFocus: 'ISRU (In-Situ Resource Utilization) for lunar construction -- extracting metals and manufacturing from regolith',
+    keyProducts: ['Molten regolith electrolysis (MRE) system', 'Lunar metal extraction', 'In-situ construction materials', 'Solar cell manufacturing from lunar regolith'],
+    status: 'development',
+    milestones: [
+      'Developing molten regolith electrolysis to extract iron, aluminum, silicon, and oxygen from lunar soil',
+      'NASA SBIR/STTR contracts for ISRU technology development',
+      'Demonstrated metal extraction from simulated lunar regolith in laboratory conditions',
+      'Working on manufacturing solar cells and structural metals directly from lunar materials',
+      'Partnership with NASA for Artemis program resource utilization studies',
+    ],
+    description: 'Lunar Resources is developing In-Situ Resource Utilization (ISRU) technology to extract useful metals and manufacturing materials directly from lunar regolith. Their molten regolith electrolysis (MRE) system heats lunar soil to ~1,600\u00B0C and uses electrolysis to separate it into oxygen (for breathing and propellant) and metals including iron, aluminum, silicon, and titanium (for construction and manufacturing). This approach could enable lunar bases to manufacture solar cells, structural beams, wiring, and other components from local materials rather than launching everything from Earth, dramatically reducing the cost of sustained lunar presence.',
+    website: 'https://lunarresources.space',
+  },
 ];
 
 const FALLBACK_ISS_EXPERIMENT_CATEGORIES: ISSExperimentCategory[] = [
@@ -567,6 +745,164 @@ const FALLBACK_MARKET_PROJECTIONS: MarketProjection[] = [
   { year: 2035, low: 35.0, mid: 70.0, high: 140.0 },
 ];
 
+const FALLBACK_MANUFACTURING_PROCESSES: ManufacturingProcess[] = [
+  {
+    id: '3d-printing-metals',
+    name: '3D Printing -- Metals (Additive Manufacturing)',
+    icon: '🔥',
+    category: 'additive',
+    description: 'Metal additive manufacturing in space uses directed energy deposition, powder bed fusion, or wire-fed processes to build metallic parts layer by layer. In microgravity, melt pool dynamics differ significantly -- surface tension dominates over gravity-driven convection, producing more uniform microstructures. Techniques like Direct Metal Laser Sintering (DMLS) and Electron Beam Melting (EBM) are adapted for space environments.',
+    microgravityAdvantage: 'Elimination of gravity-driven convection in melt pools produces more uniform grain structures and reduced porosity. Containerless processing via electromagnetic or acoustic levitation enables ultra-pure alloys free from crucible contamination. Immiscible metal mixing becomes possible, creating novel alloy compositions.',
+    techniques: ['Direct Metal Laser Sintering (DMLS)', 'Electron Beam Melting (EBM)', 'Directed Energy Deposition (DED)', 'Wire Arc Additive Manufacturing (WAAM)', 'Cold Spray Additive'],
+    materials: ['Titanium alloys (Ti-6Al-4V)', 'Inconel / Nickel superalloys', 'Stainless steels', 'Aluminum alloys', 'Copper alloys', 'Refractory metals (tungsten, molybdenum)'],
+    trl: 7,
+    keyPlayers: ['Relativity Space', 'Redwire (AMF)', 'Made In Space', 'NASA MSFC'],
+    applications: ['Structural spacecraft components', 'Replacement parts on-demand', 'Large truss structures', 'Engine components', 'Radiation shielding'],
+    challenges: ['Powder containment in microgravity', 'Heat dissipation without convection', 'Quality control and inspection in orbit', 'Feedstock resupply logistics'],
+  },
+  {
+    id: '3d-printing-polymers',
+    name: '3D Printing -- Polymers & Composites',
+    icon: '🖨️',
+    category: 'additive',
+    description: 'Polymer and composite 3D printing was the first additive manufacturing process demonstrated in space, with the Made In Space printer producing the first 3D-printed object on the ISS in 2014. Fused Deposition Modeling (FDM) and continuous fiber composite printing are now routine on the ISS, enabling on-demand production of tools, fixtures, and experimental hardware.',
+    microgravityAdvantage: 'Reduced sagging and warping of overhanging features allows more complex geometries without support structures. Layer adhesion can be improved due to more uniform thermal gradients. Continuous fiber composites can be oriented in any direction without gravity-induced fiber settling.',
+    techniques: ['Fused Deposition Modeling (FDM)', 'Stereolithography (SLA)', 'Continuous Fiber Reinforced Printing', 'Multi-material Extrusion'],
+    materials: ['ABS / ULTEM / PEEK polymers', 'PLA bio-composites', 'Carbon fiber reinforced polymers', 'PETG and specialty engineering plastics', 'Recycled feedstock (from Refabricator)'],
+    trl: 9,
+    keyPlayers: ['Redwire (AMF on ISS)', 'Made In Space', 'Tethers Unlimited (Refabricator)', 'ICON (regolith composites)'],
+    applications: ['On-demand tools and spare parts', 'Experimental fixtures and housings', 'CubeSat structures', 'Medical devices for crew', 'Habitat interior components'],
+    challenges: ['Outgassing in enclosed habitats', 'Limited material selection vs. terrestrial printers', 'Part size constraints of current ISS printers', 'Fire safety with polymer feedstocks'],
+  },
+  {
+    id: '3d-printing-ceramics',
+    name: '3D Printing -- Ceramics',
+    icon: '🏺',
+    category: 'additive',
+    description: 'Ceramic additive manufacturing in space produces high-temperature components such as turbine blades, electronic substrates, and thermal protection systems. Redwire\'s Ceramic Manufacturing Module on the ISS has demonstrated sintering of ceramic parts in microgravity, achieving more uniform density distribution than terrestrial equivalents.',
+    microgravityAdvantage: 'More uniform particle distribution during sintering (no gravity-induced settling). Reduced density gradients in final parts. Possibility of containerless sintering for ultra-pure ceramics. More uniform pore structures in porous ceramics.',
+    techniques: ['Powder Bed Sintering', 'Binder Jetting', 'Direct Ink Writing', 'Stereolithography of ceramic slurries'],
+    materials: ['Alumina (Al2O3)', 'Silicon carbide (SiC)', 'Zirconia (ZrO2)', 'Barium titanate (piezoelectric)', 'Lunar regolith simulants'],
+    trl: 6,
+    keyPlayers: ['Redwire (Ceramic Manufacturing Module)', 'NASA', 'ESA'],
+    applications: ['Turbine engine components', 'Electronic substrates', 'Thermal protection tiles', 'Biomedical implants', 'Sensor housings'],
+    challenges: ['High sintering temperatures in space', 'Powder handling in microgravity', 'Quality assurance of sintered parts', 'Shrinkage control'],
+  },
+  {
+    id: 'crystal-growth',
+    name: 'Crystal Growth (Protein & Semiconductor)',
+    icon: '💎',
+    category: 'crystal-growth',
+    description: 'Crystal growth in microgravity eliminates buoyancy-driven convection and sedimentation, producing larger, more perfect crystals with fewer defects. This applies to protein crystals for pharmaceutical structure determination, semiconductor crystals for electronics, and optical crystals for photonics. Protein crystals grown in space can be 10-100x larger than Earth-grown counterparts.',
+    microgravityAdvantage: 'Elimination of sedimentation allows crystals to grow uniformly in all directions. Absence of buoyancy-driven convection creates a more stable depletion zone around the growing crystal, resulting in fewer defects. Diffusion-dominated transport produces superior crystal quality. Access to unique polymorphic forms not achievable under gravity.',
+    techniques: ['Vapor Diffusion (hanging drop / sitting drop)', 'Counter-diffusion', 'Bridgman Growth (semiconductors)', 'Czochralski Growth (adapted for microgravity)', 'Float-zone processing'],
+    materials: ['Protein crystals (enzymes, antibodies, drug targets)', 'Gallium arsenide (GaAs)', 'Indium gallium arsenide (InGaAs)', 'Silicon (ultra-pure)', 'Cadmium zinc telluride (CZT)', 'Ritonavir and other drug compounds'],
+    trl: 8,
+    keyPlayers: ['Varda Space Industries', 'SpacePharma', 'Redwire', 'Space Forge', 'JAXA / Mitsubishi'],
+    applications: ['Drug structure determination (X-ray crystallography)', 'Pharmaceutical production (superior polymorphs)', 'High-efficiency solar cells', 'Infrared detectors', 'High-power RF electronics', 'Radiation detectors'],
+    challenges: ['Sample containment and handling', 'Temperature control precision', 'Return to Earth without damaging crystals', 'Scale-up from research to production quantities'],
+  },
+  {
+    id: 'fiber-optics',
+    name: 'Fiber Optics (ZBLAN & Specialty Fibers)',
+    icon: '🔮',
+    category: 'fiber-optics',
+    description: 'ZBLAN (ZrF4-BaF2-LaF3-AlF3-NaF) and other fluoride glass optical fibers are among the most near-term commercially viable space manufacturing products. When drawn in microgravity, these fibers avoid the crystallization that plagues terrestrial production, achieving attenuation rates 10-100x lower than Earth-made equivalents. At $150-300+/meter for specialty fibers, even small production quantities are economically viable.',
+    microgravityAdvantage: 'Suppression of crystallization during fiber drawing due to absence of convection currents and gravity-driven density variations. The fiber preform maintains uniform temperature distribution during drawing, resulting in an amorphous (non-crystalline) structure with dramatically lower signal loss. Containerless processing eliminates surface contamination.',
+    techniques: ['Preform Drawing', 'Double-Crucible Method', 'Containerless Fiber Drawing', 'Continuous Pull in Microgravity'],
+    materials: ['ZBLAN fluoride glass', 'Fluoroindate glass', 'Chalcogenide glass', 'Heavy metal fluoride glass', 'Specialty photonic crystal fiber preforms'],
+    trl: 7,
+    keyPlayers: ['Redwire', 'FOMS Inc.', 'Flawless Photonics', 'Orbital Composites', 'Thorlabs (terrestrial competitor)'],
+    applications: ['Long-haul telecommunications (lower signal loss = fewer repeaters)', 'Submarine fiber optic cables', 'Mid-infrared spectroscopy', 'Medical laser delivery systems', 'Military/defense sensing', 'Quantum communication networks'],
+    challenges: ['Scaling from meters to kilometers of production', 'Preform manufacturing and delivery', 'Splicing space-made fibers to terrestrial networks', 'Competing with improving terrestrial silica fiber technology'],
+  },
+  {
+    id: 'bioprinting',
+    name: 'Bioprinting & Tissue Engineering',
+    icon: '🧬',
+    category: 'bioprinting',
+    description: 'Bioprinting in microgravity enables scaffold-free fabrication of complex 3D tissue constructs that would collapse under their own weight on Earth. The BioFabrication Facility on the ISS has printed cardiac tissue, meniscus, and other constructs that maintain their shape in microgravity. This technology could eventually address the organ transplant shortage and revolutionize regenerative medicine.',
+    microgravityAdvantage: 'Soft tissue constructs maintain 3D shape without artificial scaffolding -- cells and bioinks don\'t sag or collapse under gravity. More uniform cell distribution throughout the construct. Spherical organoid formation (perfect geometry) instead of flattened structures. Vascularization patterns can develop more naturally in 3D without directional gravity bias.',
+    techniques: ['Extrusion Bioprinting', 'Magnetic Levitation Bioprinting', 'Droplet-on-Demand Bioprinting', 'Light-Assisted Bioprinting (DLP)', 'Organoid Self-Assembly'],
+    materials: ['Collagen bioinks', 'Gelatin methacrylate (GelMA)', 'Alginate hydrogels', 'Decellularized extracellular matrix (dECM)', 'Stem cells (iPSC, MSC)', 'Patient-derived cell suspensions'],
+    trl: 5,
+    keyPlayers: ['Redwire (BFF)', 'TechShot', 'nScrypt', 'Aspect Biosystems', 'Organaut (Russian ISS experiment)'],
+    applications: ['Patient-specific organ transplants', 'Meniscus and cartilage repair', 'Cardiac tissue patches', 'Retinal tissue for vision restoration', 'Drug testing tissue models', 'Bone and skeletal tissue grafts'],
+    challenges: ['Cell viability during launch and processing', 'Maintaining sterility in orbit', 'Returning living tissue constructs to Earth', 'Maturation and vascularization timelines', 'Regulatory pathway for space-made implants'],
+  },
+  {
+    id: 'regolith-processing',
+    name: 'Regolith Processing (ISRU)',
+    icon: '🌑',
+    category: 'regolith',
+    description: 'In-Situ Resource Utilization (ISRU) transforms lunar or Martian regolith into usable construction materials, metals, and oxygen. Processes include sintering (heating regolith into solid blocks), molten regolith electrolysis (extracting metals and oxygen), and 3D printing with regolith feedstock. ISRU is considered essential for sustainable lunar and Mars presence, as launching all construction materials from Earth is prohibitively expensive.',
+    microgravityAdvantage: 'On planetary surfaces (Moon/Mars), reduced gravity (1/6g and 1/3g respectively) changes sintering and casting dynamics. The primary advantage is economic: using local materials eliminates ~$1M/kg launch costs to the lunar surface. Vacuum environment on the Moon enables high-purity metal processing. Absence of atmosphere prevents oxidation during metalworking.',
+    techniques: ['Sintering / Microwave Sintering', 'Molten Regolith Electrolysis (MRE)', 'Regolith 3D Printing (binder jetting)', 'Solar Thermal Processing', 'Carbothermal Reduction', 'Ice Electrolysis (for propellant)'],
+    materials: ['Lunar regolith (basaltic)', 'Mars regolith (iron-rich)', 'Extracted metals (iron, aluminum, titanium, silicon)', 'Oxygen (as byproduct)', 'Water ice (polar regions)', 'Regolith-derived glass and ceramics'],
+    trl: 4,
+    keyPlayers: ['ICON (Olympus)', 'AI SpaceFactory', 'Lunar Resources', 'Redwire', 'NASA (ISRU program)', 'ESA'],
+    applications: ['Lunar landing pads and blast shields', 'Habitat structures and radiation shielding', 'Roads and infrastructure', 'Solar cells from lunar silicon', 'Oxygen for life support and propellant', 'Metal stock for further manufacturing'],
+    challenges: ['Abrasive and electrostatically-charged regolith', 'High energy requirements for processing', 'Equipment durability in harsh environments', 'Varying regolith composition across sites', 'Long-duration autonomous operation requirements'],
+  },
+  {
+    id: 'large-structure-assembly',
+    name: 'Large Structure Assembly & In-Space Construction',
+    icon: '🏗️',
+    category: 'assembly',
+    description: 'Manufacturing and assembling structures in orbit that are too large to fit within any launch vehicle fairing. This includes massive antenna reflectors, solar arrays, space station components, and trusses that can be fabricated and assembled by robotic systems directly in space. This approach overcomes the fundamental launch constraint -- structures manufactured in zero-g need not survive launch loads.',
+    microgravityAdvantage: 'Structures manufactured in space don\'t need to survive launch vibration and acceleration loads, enabling much lighter and more efficient designs. No fairing size constraints -- structures can be arbitrarily large. Assembly in zero-g requires minimal structural support during construction. Welding and joining in vacuum produces high-quality bonds.',
+    techniques: ['Robotic Truss Assembly', 'Autonomous Additive Construction', 'Composite Pultrusion in Orbit', 'Electron Beam Welding in Vacuum', 'Friction Stir Welding', 'Inflatable Structure Deployment'],
+    materials: ['Carbon fiber composites', 'Aluminum alloys', 'Titanium structures', 'CFRP trusses', 'Metallic meshes (antenna reflectors)', 'Inflatable Kevlar/Vectran (LIFE habitat)'],
+    trl: 6,
+    keyPlayers: ['Redwire (Archinaut)', 'Made In Space', 'Tethers Unlimited (SpiderFab)', 'GITAI', 'Maxar (robotic arms)', 'Sierra Space (LIFE)'],
+    applications: ['Kilometer-scale antenna reflectors', 'Large solar power arrays', 'Space station modules and trusses', 'Orbital fuel depots', 'Space-based solar power infrastructure', 'Deep space communication arrays'],
+    challenges: ['Autonomous robotic reliability', 'Thermal cycling during construction', 'Inspection and quality verification at scale', 'Debris collision risk for large structures', 'Power requirements for manufacturing'],
+  },
+];
+
+const FALLBACK_SPACE_ENVIRONMENT_ADVANTAGES: SpaceEnvironmentAdvantage[] = [
+  {
+    id: 'microgravity',
+    name: 'Microgravity (~10^-6 g)',
+    icon: '🪶',
+    description: 'Near-weightlessness eliminates buoyancy-driven convection, sedimentation, and hydrostatic pressure. Diffusion becomes the dominant transport mechanism, enabling processes impossible under gravity.',
+    enabledProducts: ['ZBLAN fiber optics', 'Protein crystals', 'Semiconductor wafers', 'Bioprinted tissues', 'Uniform alloys', 'Scaffold-free organoids'],
+    physicsExplanation: 'In microgravity, there is no density-driven stratification of materials. Heavier components don\'t sink and lighter ones don\'t float. This means metals with different densities can be uniformly mixed, crystals grow symmetrically in all directions, and biological tissues maintain 3D shape without scaffolding. The Rayleigh number approaches zero, suppressing convection and enabling diffusion-limited growth -- the key to superior crystal quality.',
+  },
+  {
+    id: 'vacuum',
+    name: 'Ultra-High Vacuum',
+    icon: '🌌',
+    description: 'The vacuum of space (~10^-12 torr in LEO shadow) is far more pure than any vacuum achievable on Earth. This enables containerless processing, ultra-pure material synthesis, and contamination-free surfaces.',
+    enabledProducts: ['Ultra-pure semiconductors', 'Contamination-free alloys', 'Thin film deposition', 'Electron beam welding', 'Atomic layer deposition'],
+    physicsExplanation: 'Earth\'s best vacuum chambers achieve ~10^-10 torr with enormous pumping systems. Space provides ~10^-12 torr (in Earth\'s shadow) for free. This eliminates oxide formation on metal surfaces during processing, enables containerless levitation processing of reactive metals, and provides an ideal environment for thin film deposition and surface treatments. The free vacuum extends essentially infinitely, unlike bounded terrestrial chambers.',
+  },
+  {
+    id: 'temperature',
+    name: 'Extreme Temperature Range',
+    icon: '🌡️',
+    description: 'Objects in LEO experience temperatures from -157 degrees C (shadow) to +121 degrees C (direct sunlight), with deep space approaching -270 degrees C. This free thermal gradient can be harnessed for manufacturing processes.',
+    enabledProducts: ['Directional solidification', 'Cryogenic processing', 'Thermal gradient crystal growth', 'Freeze-casting of ceramics'],
+    physicsExplanation: 'The Sun provides ~1,361 W/m2 of thermal energy for free in LEO. The cold of Earth\'s shadow and deep space provides an infinite heat sink. This temperature differential can drive Czochralski crystal growth, directional solidification of alloys, and other thermal processes without requiring active heating or cooling systems. Thermal management becomes a design advantage rather than a constraint.',
+  },
+  {
+    id: 'radiation',
+    name: 'Radiation Environment',
+    icon: '☢️',
+    description: 'While often considered a hazard, space radiation can be harnessed for specialized material modification including radiation crosslinking, sterilization, and semiconductor doping.',
+    enabledProducts: ['Radiation-crosslinked polymers', 'Sterilized biomedical products', 'Modified semiconductor properties', 'Radiation-hardened electronics testing'],
+    physicsExplanation: 'The space radiation environment includes galactic cosmic rays, solar particle events, and trapped radiation (Van Allen belts). While damaging to electronics and biology, controlled exposure can be used for crosslinking polymers to improve their thermal and mechanical properties, sterilizing biomedical products, and studying radiation effects on materials for space qualification -- all without the cost of terrestrial radiation facilities.',
+  },
+  {
+    id: 'unlimited-volume',
+    name: 'Unlimited Processing Volume',
+    icon: '♾️',
+    description: 'Space provides essentially infinite volume for manufacturing processes and product storage. There are no walls, floors, or ceilings constraining the size of manufactured structures.',
+    enabledProducts: ['Kilometer-scale antennas', 'Massive solar arrays', 'Space station structures', 'Tethered systems', 'Solar sails'],
+    physicsExplanation: 'On Earth, manufacturing is constrained by factory size, clean room dimensions, and transportation infrastructure. In space, a robotic manufacturing system can build structures of arbitrary size -- limited only by material supply and construction time. This fundamentally changes what is possible: antenna reflectors hundreds of meters across, solar arrays spanning kilometers, and habitats much larger than any launch fairing. Structures designed for zero-g also require far less material, as they need not support their own weight.',
+  },
+];
+
 const STATUS_STYLES: Record<string, { label: string; color: string; bg: string }> = {
   operational: { label: 'Operational', color: 'text-green-400', bg: 'bg-green-900/30' },
   active: { label: 'Operational', color: 'text-green-400', bg: 'bg-green-900/30' },
@@ -579,6 +915,7 @@ const DEFAULT_STATUS_STYLE = { label: 'Unknown', color: 'text-star-400', bg: 'bg
 const MFG_TABS: { id: MfgTabId; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: '🏭' },
   { id: 'companies', label: 'Companies', icon: '🏢' },
+  { id: 'processes', label: 'Processes', icon: '⚙️' },
   { id: 'iss-lab', label: 'ISS Lab', icon: '🧪' },
   { id: 'products', label: 'Products & Markets', icon: '📦' },
 ];
@@ -804,15 +1141,15 @@ function formatMarketValue(value: number): string {
 // ────────────────────────────────────────
 
 function OverviewTab() {
-  const { COMPANIES, ISS_EXPERIMENT_CATEGORIES, PRODUCT_CATEGORIES, MARKET_PROJECTIONS } = useMfgData();
+  const { COMPANIES, ISS_EXPERIMENT_CATEGORIES, PRODUCT_CATEGORIES, MARKET_PROJECTIONS, MANUFACTURING_PROCESSES, SPACE_ENVIRONMENT_ADVANTAGES } = useMfgData();
   const totalExperiments = ISS_EXPERIMENT_CATEGORIES.reduce((sum, cat) => sum + cat.count, 0);
   const operationalCompanies = COMPANIES.filter(c => c.status === 'operational').length;
 
   const keyStats = [
-    { label: 'Market Size (2030 est.)', value: '$15B+', icon: '📈', sub: 'Mid-range projection' },
+    { label: 'Market Size (2030 est.)', value: '$7B+', icon: '📈', sub: '~$18B mid-range by 2030' },
     { label: 'Active Companies', value: `${COMPANIES.length}+`, icon: '🏢', sub: `${operationalCompanies} operational` },
     { label: 'ISS Experiments', value: `${totalExperiments.toLocaleString()}+`, icon: '🧪', sub: 'Across all categories' },
-    { label: 'Product Categories', value: `${PRODUCT_CATEGORIES.length}`, icon: '📦', sub: 'Active market segments' },
+    { label: 'Mfg Processes', value: `${MANUFACTURING_PROCESSES.length}`, icon: '⚙️', sub: `${PRODUCT_CATEGORIES.length} product categories` },
   ];
 
   return (
@@ -991,6 +1328,69 @@ function OverviewTab() {
           ))}
         </div>
       </div></ScrollReveal>
+
+      {/* Space Environment Advantages */}
+      <ScrollReveal><div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🌌</span>
+          Why Manufacture in Space?
+        </h2>
+        <p className="text-star-300 text-sm mb-6 leading-relaxed">
+          The space environment offers unique physical conditions that enable manufacturing processes impossible
+          or impractical on Earth. These advantages drive the entire in-space manufacturing industry.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {SPACE_ENVIRONMENT_ADVANTAGES.map((advantage) => (
+            <div key={advantage.id} className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30 hover:border-nebula-500/30 transition-all">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-2xl">{advantage.icon}</span>
+                <h3 className="text-white font-semibold text-sm">{advantage.name}</h3>
+              </div>
+              <p className="text-star-300 text-xs mb-3 leading-relaxed">{advantage.description}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {advantage.enabledProducts.slice(0, 4).map((product) => (
+                  <span key={product} className="px-1.5 py-0.5 bg-nebula-500/10 text-nebula-300 rounded text-xs">
+                    {product}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div></ScrollReveal>
+
+      {/* In-Space Manufacturing Market Snapshot */}
+      <ScrollReveal><div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">💰</span>
+          Market Snapshot
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="bg-slate-700/30 rounded-lg p-4 border border-green-500/20">
+            <div className="text-green-400 font-bold text-2xl">~$7B</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest mt-1">By 2030 (Conservative)</div>
+            <p className="text-star-300 text-xs mt-2">Focused on near-term products: ZBLAN fiber optics, pharmaceutical crystallization, and bioprinting research services.</p>
+          </div>
+          <div className="bg-slate-700/30 rounded-lg p-4 border border-nebula-500/20">
+            <div className="text-nebula-400 font-bold text-2xl">~$18B</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest mt-1">By 2030 (Mid-range)</div>
+            <p className="text-star-300 text-xs mt-2">Includes commercial station manufacturing, semiconductor production, and early ISRU operations on the Moon.</p>
+          </div>
+          <div className="bg-slate-700/30 rounded-lg p-4 border border-purple-500/20">
+            <div className="text-purple-400 font-bold text-2xl">~$70B+</div>
+            <div className="text-star-400 text-xs uppercase tracking-widest mt-1">By 2035 (Optimistic)</div>
+            <p className="text-star-300 text-xs mt-2">Full-scale commercial manufacturing, bioprinted organs, space-based solar power construction, and lunar industrial base.</p>
+          </div>
+        </div>
+        <div className="bg-slate-700/20 rounded-lg p-3 border border-slate-600/30">
+          <p className="text-star-400 text-xs leading-relaxed">
+            <span className="text-white font-semibold">Key growth drivers:</span> Declining launch costs (SpaceX Starship targeting $200-500/kg to LEO),
+            commercial space station deployment (4+ stations planned for late 2020s), returnable capsule technology for product recovery,
+            and proven product-market fit for ZBLAN, pharmaceuticals, and bioprinting. The in-space manufacturing market is
+            projected to grow at 25-35% CAGR through 2035.
+          </p>
+        </div>
+      </div></ScrollReveal>
     </div>
   );
 }
@@ -1134,6 +1534,350 @@ function CompaniesTab() {
             </div>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function ProcessesTab() {
+  const { MANUFACTURING_PROCESSES, SPACE_ENVIRONMENT_ADVANTAGES } = useMfgData();
+  const [selectedProcess, setSelectedProcess] = useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
+
+  const categories = Array.from(new Set(MANUFACTURING_PROCESSES.map(p => p.category)));
+  const categoryLabels: Record<string, string> = {
+    'additive': 'Additive Manufacturing',
+    'crystal-growth': 'Crystal Growth',
+    'fiber-optics': 'Fiber Optics',
+    'bioprinting': 'Bioprinting',
+    'regolith': 'Regolith / ISRU',
+    'assembly': 'Assembly & Construction',
+  };
+  const categoryColors: Record<string, string> = {
+    'additive': 'text-orange-400 bg-orange-500/10 border-orange-500/30',
+    'crystal-growth': 'text-blue-400 bg-blue-500/10 border-blue-500/30',
+    'fiber-optics': 'text-purple-400 bg-purple-500/10 border-purple-500/30',
+    'bioprinting': 'text-green-400 bg-green-500/10 border-green-500/30',
+    'regolith': 'text-amber-400 bg-amber-500/10 border-amber-500/30',
+    'assembly': 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30',
+  };
+
+  const filteredProcesses = categoryFilter
+    ? MANUFACTURING_PROCESSES.filter(p => p.category === categoryFilter)
+    : MANUFACTURING_PROCESSES;
+
+  return (
+    <div className="space-y-8">
+      {/* Introduction */}
+      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">⚙️</span>
+          Manufacturing Processes for Space
+        </h2>
+        <p className="text-star-300 leading-relaxed">
+          In-space manufacturing encompasses a diverse range of processes, from additive manufacturing (3D printing) of
+          metals, polymers, and ceramics to crystal growth, fiber optic production, bioprinting, and regolith processing
+          for lunar/Mars construction. Each process leverages specific advantages of the space environment --
+          <span className="text-nebula-400"> microgravity</span>, <span className="text-nebula-400">ultra-vacuum</span>,
+          and <span className="text-nebula-400">extreme temperatures</span> -- to produce materials and products with
+          properties unachievable on Earth.
+        </p>
+      </div>
+
+      {/* Summary Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+          <div className="text-white font-bold text-2xl">{MANUFACTURING_PROCESSES.length}</div>
+          <div className="text-star-400 text-xs uppercase tracking-widest mt-1">Manufacturing Processes</div>
+        </div>
+        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+          <div className="text-white font-bold text-2xl">{categories.length}</div>
+          <div className="text-star-400 text-xs uppercase tracking-widest mt-1">Process Categories</div>
+        </div>
+        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+          <div className="text-green-400 font-bold text-2xl">
+            {MANUFACTURING_PROCESSES.filter(p => p.trl >= 7).length}
+          </div>
+          <div className="text-star-400 text-xs uppercase tracking-widest mt-1">Flight Demonstrated</div>
+        </div>
+        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+          <div className="text-white font-bold text-2xl">{SPACE_ENVIRONMENT_ADVANTAGES.length}</div>
+          <div className="text-star-400 text-xs uppercase tracking-widest mt-1">Environment Advantages</div>
+        </div>
+      </div>
+
+      {/* Category Filters */}
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="text-star-400 text-sm">Filter by category:</span>
+        <button
+          onClick={() => setCategoryFilter('')}
+          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+            categoryFilter === ''
+              ? 'bg-nebula-500/20 text-nebula-300 border border-nebula-500/50'
+              : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'
+          }`}
+        >
+          All ({MANUFACTURING_PROCESSES.length})
+        </button>
+        {categories.map((cat) => {
+          const count = MANUFACTURING_PROCESSES.filter(p => p.category === cat).length;
+          return (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(cat)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                categoryFilter === cat
+                  ? 'bg-nebula-500/20 text-nebula-300 border border-nebula-500/50'
+                  : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'
+              }`}
+            >
+              {categoryLabels[cat] || cat} ({count})
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Process Cards */}
+      <div className="space-y-4">
+        {filteredProcesses.map((process) => {
+          const isExpanded = selectedProcess === process.id;
+          const catColor = categoryColors[process.category] || 'text-star-400 bg-slate-500/10 border-slate-500/30';
+          return (
+            <div
+              key={process.id}
+              className="card border border-slate-700/50 bg-slate-800/50 backdrop-blur overflow-hidden hover:border-nebula-500/30 transition-all"
+            >
+              <button
+                onClick={() => setSelectedProcess(isExpanded ? null : process.id)}
+                className="w-full p-5 text-left"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
+                    <span className="text-3xl">{process.icon}</span>
+                    <div>
+                      <h3 className="text-white font-semibold text-lg">{process.name}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded border ${catColor}`}>
+                          {categoryLabels[process.category] || process.category}
+                        </span>
+                        <span className={`text-xs font-medium ${getTRLColor(process.trl)}`}>
+                          TRL {process.trl} - {getTRLLabel(process.trl)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <svg
+                    className={`w-5 h-5 text-star-400 transition-transform flex-shrink-0 ml-3 ${isExpanded ? 'rotate-180' : ''}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+                <p className="text-star-300 text-sm mt-3 leading-relaxed line-clamp-2">{process.description}</p>
+              </button>
+
+              {isExpanded && (
+                <div className="px-5 pb-5 space-y-4">
+                  <div className="border-t border-slate-700/50 pt-4">
+                    <p className="text-star-300 text-sm leading-relaxed">{process.description}</p>
+                  </div>
+
+                  {/* Microgravity Advantage */}
+                  <div className="bg-gradient-to-r from-nebula-500/10 to-purple-500/10 rounded-lg p-4 border border-nebula-500/20">
+                    <h4 className="text-nebula-300 font-semibold text-sm mb-2 flex items-center gap-2">
+                      <span>🪶</span> Microgravity / Space Advantage
+                    </h4>
+                    <p className="text-star-300 text-sm leading-relaxed">{process.microgravityAdvantage}</p>
+                  </div>
+
+                  {/* TRL Progress */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-star-400 text-xs uppercase tracking-widest">Technology Readiness</span>
+                      <span className={`text-sm font-bold ${getTRLColor(process.trl)}`}>
+                        TRL {process.trl} - {getTRLLabel(process.trl)}
+                      </span>
+                    </div>
+                    <div className="w-full bg-slate-700/50 rounded-full h-3 flex">
+                      {Array.from({ length: 9 }, (_, i) => (
+                        <div
+                          key={i}
+                          className={`flex-1 h-3 ${i === 0 ? 'rounded-l-full' : ''} ${i === 8 ? 'rounded-r-full' : ''} ${
+                            i < process.trl
+                              ? process.trl >= 8
+                                ? 'bg-green-500/60'
+                                : process.trl >= 6
+                                ? 'bg-yellow-500/60'
+                                : process.trl >= 4
+                                ? 'bg-orange-500/60'
+                                : 'bg-red-500/60'
+                              : 'bg-slate-700/30'
+                          } ${i > 0 ? 'border-l border-slate-600/30' : ''}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Techniques & Materials */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                      <h4 className="text-white font-semibold text-sm mb-2">Manufacturing Techniques</h4>
+                      <ul className="space-y-1.5">
+                        {process.techniques.map((technique, i) => (
+                          <li key={i} className="text-star-300 text-xs flex items-start gap-2">
+                            <span className="text-nebula-400 mt-0.5">&#9656;</span>
+                            {technique}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                      <h4 className="text-white font-semibold text-sm mb-2">Materials</h4>
+                      <div className="flex flex-wrap gap-1.5">
+                        {process.materials.map((material) => (
+                          <span
+                            key={material}
+                            className="px-2 py-0.5 bg-nebula-500/10 text-nebula-300 rounded text-xs"
+                          >
+                            {material}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Applications & Key Players */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                      <h4 className="text-white font-semibold text-sm mb-2">Applications</h4>
+                      <ul className="space-y-1.5">
+                        {process.applications.map((app, i) => (
+                          <li key={i} className="text-star-300 text-xs flex items-start gap-2">
+                            <span className="text-green-400 mt-0.5">&#9656;</span>
+                            {app}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                      <h4 className="text-white font-semibold text-sm mb-2">Key Players</h4>
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {process.keyPlayers.map((player) => (
+                          <span
+                            key={player}
+                            className="px-2 py-0.5 bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 rounded text-xs font-medium"
+                          >
+                            {player}
+                          </span>
+                        ))}
+                      </div>
+                      <h4 className="text-white font-semibold text-sm mb-2 mt-3">Challenges</h4>
+                      <ul className="space-y-1.5">
+                        {process.challenges.map((challenge, i) => (
+                          <li key={i} className="text-star-300 text-xs flex items-start gap-2">
+                            <span className="text-amber-400 mt-0.5">&#9888;</span>
+                            {challenge}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Process Comparison Matrix */}
+      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">📋</span>
+          Process Comparison Matrix
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-700/50">
+              <tr>
+                <th className="text-left px-4 py-3 text-star-300 text-sm font-medium">Process</th>
+                <th className="text-center px-4 py-3 text-star-300 text-sm font-medium">Category</th>
+                <th className="text-center px-4 py-3 text-star-300 text-sm font-medium">TRL</th>
+                <th className="text-center px-4 py-3 text-star-300 text-sm font-medium">Techniques</th>
+                <th className="text-left px-4 py-3 text-star-300 text-sm font-medium">Key Players</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-700/50">
+              {MANUFACTURING_PROCESSES.map((process) => {
+                const catColor = categoryColors[process.category] || 'text-star-400 bg-slate-500/10 border-slate-500/30';
+                return (
+                  <tr key={process.id} className="hover:bg-slate-700/30">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span>{process.icon}</span>
+                        <span className="text-white font-medium text-sm">{process.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded border ${catColor}`}>
+                        {categoryLabels[process.category] || process.category}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`font-bold ${getTRLColor(process.trl)}`}>{process.trl}</span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className="text-star-300 text-sm">{process.techniques.length}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-star-400 text-xs">{process.keyPlayers.slice(0, 3).join(', ')}</span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Space Environment Physics */}
+      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🔬</span>
+          Space Environment Advantages -- The Physics
+        </h2>
+        <p className="text-star-300 text-sm mb-6 leading-relaxed">
+          Understanding <em>why</em> space manufacturing produces superior results requires understanding the
+          fundamental physics of the space environment. Each advantage enables specific manufacturing processes.
+        </p>
+        <div className="space-y-4">
+          {SPACE_ENVIRONMENT_ADVANTAGES.map((advantage) => (
+            <div key={advantage.id} className="bg-slate-700/30 rounded-lg p-5 border border-slate-600/30">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-3xl">{advantage.icon}</span>
+                <div>
+                  <h3 className="text-white font-semibold text-lg">{advantage.name}</h3>
+                  <p className="text-star-400 text-sm">{advantage.description}</p>
+                </div>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-600/20 mb-3">
+                <h4 className="text-nebula-300 text-xs uppercase tracking-widest mb-2">Physics Explanation</h4>
+                <p className="text-star-300 text-sm leading-relaxed">{advantage.physicsExplanation}</p>
+              </div>
+              <div>
+                <h4 className="text-star-400 text-xs uppercase tracking-widest mb-2">Enabled Products</h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {advantage.enabledProducts.map((product) => (
+                    <span key={product} className="px-2 py-0.5 bg-green-500/10 text-green-300 border border-green-500/20 rounded text-xs font-medium">
+                      {product}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -1845,6 +2589,8 @@ function ManufacturingAndImageryContent() {
     ISS_EXPERIMENT_CATEGORIES: FALLBACK_ISS_EXPERIMENT_CATEGORIES,
     PRODUCT_CATEGORIES: FALLBACK_PRODUCT_CATEGORIES,
     MARKET_PROJECTIONS: FALLBACK_MARKET_PROJECTIONS,
+    MANUFACTURING_PROCESSES: FALLBACK_MANUFACTURING_PROCESSES,
+    SPACE_ENVIRONMENT_ADVANTAGES: FALLBACK_SPACE_ENVIRONMENT_ADVANTAGES,
     IMG_PROVIDERS: FALLBACK_IMG_PROVIDERS,
     IMG_USE_CASES: FALLBACK_IMG_USE_CASES,
     IMG_MARKET_TRENDS: FALLBACK_IMG_MARKET_TRENDS,
@@ -1979,6 +2725,7 @@ function ManufacturingAndImageryContent() {
 
             {mfgTab === 'overview' && <OverviewTab />}
             {mfgTab === 'companies' && <CompaniesTab />}
+            {mfgTab === 'processes' && <ProcessesTab />}
             {mfgTab === 'iss-lab' && <ISSLabTab />}
             {mfgTab === 'products' && <ProductsTab />}
           </>

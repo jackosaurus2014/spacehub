@@ -41,6 +41,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Space Weather', href: '/space-weather', description: 'Solar conditions & impact forecasts' },
   { label: 'Space Agencies', href: '/space-agencies', description: 'World space agency profiles & budgets' },
   { label: '🎙️ Space Podcasts', href: '/podcasts', description: '25+ space industry podcasts directory' },
+  { label: 'Debris Remediation', href: '/debris-remediation', description: 'Active debris removal efforts and space sustainability' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [

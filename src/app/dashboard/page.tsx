@@ -50,6 +50,7 @@ const EXPLORE_MODULES: ModuleItem[] = [
   { icon: '🔤', label: 'Acronyms', href: '/acronyms', description: 'A-Z space industry acronym reference' },
   { icon: '🏛️', label: 'Space Agencies', href: '/space-agencies', description: 'World space agency profiles & budgets' },
   { icon: '🎙️', label: 'Space Podcasts', href: '/podcasts', description: '25+ space industry podcasts directory' },
+  { icon: '🧹', label: 'Debris Remediation', href: '/debris-remediation', description: 'Active debris removal efforts and space sustainability' },
 ];
 
 const INTELLIGENCE_MODULES: ModuleItem[] = [
