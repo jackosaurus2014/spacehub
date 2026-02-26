@@ -40,6 +40,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Acronyms', href: '/acronyms', description: 'A-Z space industry acronym reference' },
   { label: 'Space Weather', href: '/space-weather', description: 'Solar conditions & impact forecasts' },
   { label: 'Space Agencies', href: '/space-agencies', description: 'World space agency profiles & budgets' },
+  { label: '🎙️ Space Podcasts', href: '/podcasts', description: '25+ space industry podcasts directory' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [

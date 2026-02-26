@@ -49,6 +49,7 @@ const EXPLORE_MODULES: ModuleItem[] = [
   { icon: '🎯', label: 'Career Guide', href: '/career-guide', description: 'Space industry career paths & salary data' },
   { icon: '🔤', label: 'Acronyms', href: '/acronyms', description: 'A-Z space industry acronym reference' },
   { icon: '🏛️', label: 'Space Agencies', href: '/space-agencies', description: 'World space agency profiles & budgets' },
+  { icon: '🎙️', label: 'Space Podcasts', href: '/podcasts', description: '25+ space industry podcasts directory' },
 ];
 
 const INTELLIGENCE_MODULES: ModuleItem[] = [

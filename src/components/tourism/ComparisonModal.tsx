@@ -62,6 +62,14 @@ export default function ComparisonModal({
       getValue: (o: SpaceTourismOffering) => o.altitudeDisplay
     },
     {
+      label: 'G-Forces',
+      getValue: (o: SpaceTourismOffering) => o.gForces
+    },
+    {
+      label: 'Weightlessness',
+      getValue: (o: SpaceTourismOffering) => o.weightlessDuration
+    },
+    {
       label: 'Max Passengers',
       getValue: (o: SpaceTourismOffering) => `${o.maxPassengers} people`
     },
@@ -80,6 +88,18 @@ export default function ComparisonModal({
     {
       label: 'First Flight',
       getValue: (o: SpaceTourismOffering) => o.firstFlight || 'TBD'
+    },
+    {
+      label: 'Completed Flights',
+      getValue: (o: SpaceTourismOffering) => o.totalFlights !== null ? `${o.totalFlights}` : 'N/A'
+    },
+    {
+      label: 'Safety Record',
+      getValue: (o: SpaceTourismOffering) => o.safetyRecord
+    },
+    {
+      label: 'Headquarters',
+      getValue: (o: SpaceTourismOffering) => o.headquarters
     },
     {
       label: 'Status',

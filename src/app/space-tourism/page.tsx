@@ -14,7 +14,12 @@ import {
   EXPERIENCE_TYPES,
   TOURISM_PROVIDERS,
   TOURISM_STATUS_LABELS,
+  TOURISM_STATS,
+  TOURISM_MILESTONES,
+  QUICK_COMPARISON_TABLE,
+  FUTURE_DESTINATIONS,
   ExperienceType,
+  TourismStatus,
 } from '@/lib/space-tourism-data';
 
 // Price range options
@@ -25,6 +30,22 @@ const PRICE_RANGES = [
   { label: '$10M - $60M', min: 10000000, max: 60000000 },
   { label: 'Over $50M', min: 50000000, max: undefined },
 ];
+
+// Glass card style helper
+const glassCard = {
+  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%)'
+};
+
+// Active tab sections
+const TAB_SECTIONS = [
+  { id: 'providers', label: 'Providers', icon: '🚀' },
+  { id: 'comparison', label: 'Comparison Table', icon: '📊' },
+  { id: 'statistics', label: 'Industry Stats', icon: '📈' },
+  { id: 'timeline', label: 'Timeline', icon: '🕐' },
+  { id: 'destinations', label: 'Future Destinations', icon: '🌌' },
+] as const;
+
+type TabSection = typeof TAB_SECTIONS[number]['id'];
 
 // Detail Modal Component
 function DetailModal({
@@ -119,6 +140,18 @@ function DetailModal({
             </div>
           </div>
 
+          {/* G-Forces & Weightlessness */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/5 rounded-lg p-4 border border-amber-500/20">
+              <p className="text-amber-400 text-xs font-medium mb-1">G-Forces Experienced</p>
+              <p className="text-white font-semibold">{offering.gForces}</p>
+            </div>
+            <div className="bg-gradient-to-br from-purple-500/10 to-indigo-500/5 rounded-lg p-4 border border-purple-500/20">
+              <p className="text-purple-400 text-xs font-medium mb-1">Weightlessness Duration</p>
+              <p className="text-white font-semibold">{offering.weightlessDuration}</p>
+            </div>
+          </div>
+
           {/* Description */}
           <div>
             <h3 className="text-white font-semibold mb-2">About This Experience</h3>
@@ -175,6 +208,24 @@ function DetailModal({
                 <span className="text-slate-400">First Flight:</span>
                 <span className="text-white ml-2">{offering.firstFlight || 'TBD'}</span>
               </div>
+              <div>
+                <span className="text-slate-400">Completed Flights:</span>
+                <span className="text-white ml-2">{offering.totalFlights !== null ? offering.totalFlights : 'N/A'}</span>
+              </div>
+              <div>
+                <span className="text-slate-400">Headquarters:</span>
+                <span className="text-white ml-2">{offering.headquarters}</span>
+              </div>
+              {offering.founded && (
+                <div>
+                  <span className="text-slate-400">Founded:</span>
+                  <span className="text-white ml-2">{offering.founded}</span>
+                </div>
+              )}
+              <div className="col-span-2">
+                <span className="text-slate-400">Safety:</span>
+                <span className="text-white ml-2">{offering.safetyRecord}</span>
+              </div>
             </div>
           </div>
 
@@ -193,6 +244,480 @@ function DetailModal({
   );
 }
 
+// Industry Statistics Section
+function IndustryStatisticsSection() {
+  const stats = TOURISM_STATS;
+
+  const statCards = [
+    { label: 'Space Tourists to Date', value: stats.totalTouristsLabel, color: 'text-cyan-400', subtext: 'Since Dennis Tito (2001)' },
+    { label: 'Revenue Projection (2030)', value: stats.revenueProjection2030, color: 'text-green-400', subtext: `Growing at ${stats.marketGrowthRate}` },
+    { label: 'Total Industry Investment', value: stats.totalInvestment, color: 'text-purple-400', subtext: 'Across all providers' },
+    { label: 'Active Providers', value: `${stats.activeProviders}`, color: 'text-blue-400', subtext: `${stats.plannedProviders} more planned` },
+    { label: 'Countries Represented', value: `${stats.countriesRepresented}`, color: 'text-amber-400', subtext: 'Nations with space tourists' },
+    { label: 'First Space Tourist Cost', value: stats.firstSpaceTouristCost, color: 'text-rose-400', subtext: stats.firstSpaceTourist },
+  ];
+
+  const experienceStats = [
+    { label: 'Suborbital Training', value: stats.averageSuborbitalTraining, icon: '🚀' },
+    { label: 'Orbital Training', value: stats.averageOrbitalTraining, icon: '🛰️' },
+    { label: 'G-Forces Range', value: stats.gForcesRange, icon: '💪' },
+    { label: 'Suborbital Weightlessness', value: stats.weightlessnessSuborbital, icon: '🪶' },
+    { label: 'Orbital Weightlessness', value: stats.weightlessnessOrbital, icon: '✨' },
+    { label: 'Youngest Tourist', value: stats.youngestTourist, icon: '👦' },
+    { label: 'Oldest Tourist', value: stats.oldestTourist, icon: '👵' },
+  ];
+
+  return (
+    <div className="space-y-8">
+      {/* Key Metrics */}
+      <ScrollReveal>
+        <h3 className="text-xl font-display font-bold text-white mb-6">Space Tourism by the Numbers</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {statCards.map((stat) => (
+            <div
+              key={stat.label}
+              className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-5"
+              style={glassCard}
+            >
+              <div className={`text-3xl font-display font-bold ${stat.color} mb-1`}>
+                {stat.value}
+              </div>
+              <div className="text-white text-sm font-medium mb-1">{stat.label}</div>
+              <div className="text-slate-400 text-xs">{stat.subtext}</div>
+            </div>
+          ))}
+        </div>
+      </ScrollReveal>
+
+      {/* Experience Details */}
+      <ScrollReveal delay={0.15}>
+        <h3 className="text-xl font-display font-bold text-white mb-6">The Space Tourism Experience</h3>
+        <div
+          className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-6"
+          style={glassCard}
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {experienceStats.map((stat) => (
+              <div key={stat.label} className="flex items-start gap-3 bg-slate-800/40 rounded-lg p-4">
+                <span className="text-2xl">{stat.icon}</span>
+                <div>
+                  <p className="text-white font-semibold text-sm">{stat.value}</p>
+                  <p className="text-slate-400 text-xs">{stat.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </ScrollReveal>
+
+      {/* Market Trajectory */}
+      <ScrollReveal delay={0.2}>
+        <div
+          className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-6"
+          style={glassCard}
+        >
+          <h3 className="text-lg font-display font-bold text-white mb-4">Market Growth Trajectory</h3>
+          <div className="space-y-4">
+            {[
+              { year: '2020', value: '$0.3B', width: '10%', color: 'from-slate-500 to-slate-600' },
+              { year: '2023', value: '$0.8B', width: '27%', color: 'from-blue-500 to-blue-600' },
+              { year: '2025', value: '$1.2B', width: '40%', color: 'from-cyan-500 to-cyan-600' },
+              { year: '2027', value: '$1.8B', width: '60%', color: 'from-purple-500 to-purple-600' },
+              { year: '2030', value: '$3.0B', width: '100%', color: 'from-green-500 to-green-600' },
+            ].map((bar) => (
+              <div key={bar.year} className="flex items-center gap-4">
+                <span className="text-slate-400 text-sm font-mono w-12">{bar.year}</span>
+                <div className="flex-1 bg-slate-800/50 rounded-full h-8 overflow-hidden">
+                  <div
+                    className={`h-full bg-gradient-to-r ${bar.color} rounded-full flex items-center justify-end pr-3 transition-all duration-1000`}
+                    style={{ width: bar.width }}
+                  >
+                    <span className="text-white text-xs font-bold">{bar.value}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-slate-400 text-xs mt-4">
+            Source: Industry estimates. Space tourism market projected to reach $3B+ by 2030 at 17.1% CAGR.
+          </p>
+        </div>
+      </ScrollReveal>
+    </div>
+  );
+}
+
+// Comparison Table Section
+function ComparisonTableSection() {
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortAsc, setSortAsc] = useState(true);
+  const [filterType, setFilterType] = useState<ExperienceType | ''>('');
+  const [filterStatus, setFilterStatus] = useState<TourismStatus | ''>('');
+
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      setSortAsc(!sortAsc);
+    } else {
+      setSortColumn(column);
+      setSortAsc(true);
+    }
+  };
+
+  let filteredData = [...QUICK_COMPARISON_TABLE];
+  if (filterType) {
+    filteredData = filteredData.filter((row) => row.type === filterType);
+  }
+  if (filterStatus) {
+    filteredData = filteredData.filter((row) => row.status === filterStatus);
+  }
+
+  if (sortColumn) {
+    filteredData.sort((a, b) => {
+      const aVal = a[sortColumn as keyof typeof a];
+      const bVal = b[sortColumn as keyof typeof b];
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return sortAsc ? aVal - bVal : bVal - aVal;
+      }
+      return sortAsc
+        ? String(aVal).localeCompare(String(bVal))
+        : String(bVal).localeCompare(String(aVal));
+    });
+  }
+
+  const statusColors: Record<TourismStatus, string> = {
+    active: 'text-green-400',
+    upcoming: 'text-blue-400',
+    sold_out: 'text-yellow-400',
+    future: 'text-purple-400',
+  };
+
+  return (
+    <ScrollReveal>
+      <div
+        className="backdrop-blur-xl rounded-xl border border-slate-700/50 overflow-hidden"
+        style={glassCard}
+      >
+        {/* Table Header */}
+        <div className="p-6 border-b border-slate-700/50">
+          <h3 className="text-xl font-display font-bold text-white mb-2">
+            Complete Experience Comparison
+          </h3>
+          <p className="text-slate-400 text-sm mb-4">
+            Compare all {QUICK_COMPARISON_TABLE.length} space tourism offerings side by side. Click column headers to sort.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value as ExperienceType | '')}
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-cyan-500 outline-none"
+            >
+              <option value="">All Types</option>
+              {EXPERIENCE_TYPES.map((type) => (
+                <option key={type.value} value={type.value}>{type.icon} {type.label}</option>
+              ))}
+            </select>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as TourismStatus | '')}
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-cyan-500 outline-none"
+            >
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="upcoming">Coming Soon</option>
+              <option value="future">Future</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-slate-800/60">
+                {[
+                  { key: 'provider', label: 'Provider' },
+                  { key: 'vehicle', label: 'Vehicle' },
+                  { key: 'type', label: 'Type' },
+                  { key: 'altitude', label: 'Altitude' },
+                  { key: 'duration', label: 'Duration' },
+                  { key: 'gForces', label: 'G-Forces' },
+                  { key: 'training', label: 'Training' },
+                  { key: 'price', label: 'Price' },
+                  { key: 'seats', label: 'Seats' },
+                  { key: 'status', label: 'Status' },
+                ].map((col) => (
+                  <th
+                    key={col.key}
+                    onClick={() => handleSort(col.key)}
+                    className="px-4 py-3 text-left text-slate-300 font-medium cursor-pointer hover:text-cyan-400 transition-colors whitespace-nowrap"
+                  >
+                    <span className="flex items-center gap-1">
+                      {col.label}
+                      {sortColumn === col.key && (
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d={sortAsc ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'} />
+                        </svg>
+                      )}
+                    </span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.map((row, idx) => {
+                const expInfo = EXPERIENCE_TYPES.find((e) => e.value === row.type);
+                return (
+                  <tr
+                    key={`${row.provider}-${row.vehicle}-${idx}`}
+                    className={`border-t border-slate-700/30 hover:bg-slate-800/40 transition-colors ${
+                      idx % 2 === 0 ? 'bg-slate-800/20' : ''
+                    }`}
+                  >
+                    <td className="px-4 py-3 text-white font-medium whitespace-nowrap">{row.provider}</td>
+                    <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{row.vehicle}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1 text-slate-300">
+                        <span>{expInfo?.icon}</span>
+                        {expInfo?.label}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{row.altitude}</td>
+                    <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{row.duration}</td>
+                    <td className="px-4 py-3 text-amber-400 font-medium whitespace-nowrap">{row.gForces}</td>
+                    <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{row.training}</td>
+                    <td className="px-4 py-3 text-cyan-400 font-bold whitespace-nowrap">{row.price}</td>
+                    <td className="px-4 py-3 text-white text-center">{row.seats}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className={`font-medium ${statusColors[row.status]}`}>
+                        {(TOURISM_STATUS_LABELS[row.status] || { label: 'Unknown' }).label}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {filteredData.length === 0 && (
+          <div className="p-12 text-center">
+            <p className="text-slate-400">No offerings match the selected filters.</p>
+          </div>
+        )}
+
+        <div className="p-4 border-t border-slate-700/50">
+          <p className="text-slate-400 text-xs">
+            Showing {filteredData.length} of {QUICK_COMPARISON_TABLE.length} offerings. Prices are estimates and subject to change.
+          </p>
+        </div>
+      </div>
+    </ScrollReveal>
+  );
+}
+
+// Timeline Section
+function TimelineSection() {
+  return (
+    <ScrollReveal>
+      <div
+        className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-6"
+        style={glassCard}
+      >
+        <h3 className="text-xl font-display font-bold text-white mb-2">
+          Space Tourism Timeline
+        </h3>
+        <p className="text-slate-400 text-sm mb-8">
+          Key milestones in the evolution of commercial space tourism, from the first space tourist to the future of orbital hotels.
+        </p>
+
+        <div className="relative">
+          {/* Vertical line */}
+          <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-cyan-500/50 via-purple-500/50 to-slate-700/50" />
+
+          <div className="space-y-8">
+            {TOURISM_MILESTONES.map((milestone, idx) => {
+              const isPast = milestone.year <= 2025;
+              const isCurrent = milestone.year === 2026;
+              return (
+                <div key={`${milestone.year}-${idx}`} className="relative flex gap-6">
+                  {/* Timeline dot */}
+                  <div className={`relative z-10 w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center text-xl border-2 ${
+                    isCurrent
+                      ? 'bg-cyan-500/20 border-cyan-400 shadow-lg shadow-cyan-500/30'
+                      : isPast
+                        ? 'bg-slate-800 border-slate-600'
+                        : 'bg-purple-500/10 border-purple-500/30'
+                  }`}>
+                    {milestone.icon}
+                  </div>
+
+                  {/* Content */}
+                  <div className={`flex-1 pb-2 ${isCurrent ? '' : ''}`}>
+                    <div className="flex items-center gap-3 mb-1">
+                      <span className={`text-sm font-mono font-bold ${
+                        isCurrent ? 'text-cyan-400' : isPast ? 'text-slate-300' : 'text-purple-400'
+                      }`}>
+                        {milestone.year}
+                      </span>
+                      {isCurrent && (
+                        <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-medium border border-cyan-500/30">
+                          Current
+                        </span>
+                      )}
+                      {!isPast && !isCurrent && (
+                        <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 text-xs font-medium border border-purple-500/20">
+                          Upcoming
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="text-white font-semibold mb-1">{milestone.event}</h4>
+                    <p className="text-slate-400 text-sm leading-relaxed">{milestone.significance}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </ScrollReveal>
+  );
+}
+
+// Future Destinations Section
+function FutureDestinationsSection() {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const statusColors = {
+    in_development: { bg: 'bg-blue-500/10 border-blue-500/20', text: 'text-blue-400', label: 'In Development' },
+    conceptual: { bg: 'bg-amber-500/10 border-amber-500/20', text: 'text-amber-400', label: 'Conceptual' },
+    far_future: { bg: 'bg-purple-500/10 border-purple-500/20', text: 'text-purple-400', label: 'Far Future' },
+  };
+
+  return (
+    <div className="space-y-6">
+      <ScrollReveal>
+        <div
+          className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-6"
+          style={glassCard}
+        >
+          <h3 className="text-xl font-display font-bold text-white mb-2">
+            Future Destinations
+          </h3>
+          <p className="text-slate-400 text-sm">
+            Beyond today&apos;s suborbital hops and ISS visits, the future of space tourism holds incredible destinations.
+            From lunar flybys to orbital hotels, Mars expeditions to asteroid visits -- here is what awaits.
+          </p>
+        </div>
+      </ScrollReveal>
+
+      <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {FUTURE_DESTINATIONS.map((dest) => {
+          const isExpanded = expandedId === dest.id;
+          const status = statusColors[dest.status];
+          return (
+            <StaggerItem key={dest.id}>
+              <div
+                className="backdrop-blur-xl rounded-xl border border-slate-700/50 overflow-hidden transition-all duration-300 hover:border-slate-600/50"
+                style={glassCard}
+              >
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-400/30 to-transparent" />
+
+                <div className="p-6">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-4xl">{dest.icon}</span>
+                      <div>
+                        <h4 className="text-white font-display font-bold text-lg">{dest.name}</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-slate-400 text-xs font-mono">{dest.timeline}</span>
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${status.bg} ${status.text}`}>
+                            {status.label}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <p className={`text-slate-300 text-sm leading-relaxed mb-4 ${!isExpanded ? 'line-clamp-3' : ''}`}>
+                    {dest.description}
+                  </p>
+
+                  {/* Key Info */}
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="bg-slate-800/50 rounded-lg p-3">
+                      <p className="text-slate-400 text-xs mb-1">Estimated Cost</p>
+                      <p className="text-cyan-400 font-semibold text-sm">{dest.estimatedCost}</p>
+                    </div>
+                    <div className="bg-slate-800/50 rounded-lg p-3">
+                      <p className="text-slate-400 text-xs mb-1">Distance</p>
+                      <p className="text-white font-semibold text-sm">{dest.distance}</p>
+                    </div>
+                  </div>
+
+                  {/* Expandable Details */}
+                  {isExpanded && (
+                    <div className="space-y-4 animate-fade-in">
+                      {/* Key Players */}
+                      <div>
+                        <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wide">Key Players</p>
+                        <div className="flex flex-wrap gap-2">
+                          {dest.keyPlayers.map((player) => (
+                            <span
+                              key={player}
+                              className="px-2.5 py-1 rounded-lg bg-slate-800/60 text-slate-300 text-xs border border-slate-700/50"
+                            >
+                              {player}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Challenges */}
+                      <div>
+                        <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wide">Key Challenges</p>
+                        <div className="space-y-2">
+                          {dest.challenges.map((challenge, i) => (
+                            <div key={i} className="flex items-start gap-2 text-sm">
+                              <svg className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                              </svg>
+                              <span className="text-slate-400">{challenge}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Toggle Button */}
+                  <button
+                    onClick={() => setExpandedId(isExpanded ? null : dest.id)}
+                    className="mt-4 text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors flex items-center gap-1"
+                  >
+                    {isExpanded ? 'Show Less' : 'Learn More'}
+                    <svg
+                      className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </StaggerItem>
+          );
+        })}
+      </StaggerContainer>
+    </div>
+  );
+}
+
+
 // Main Content Component
 function SpaceTourismContent() {
   const searchParams = useSearchParams();
@@ -206,11 +731,20 @@ function SpaceTourismContent() {
   const [showComparison, setShowComparison] = useState(false);
   const [detailOffering, setDetailOffering] = useState<SpaceTourismOffering | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabSection>('providers');
 
   // Filters from URL
   const providerFilter = searchParams.get('provider') || '';
   const experienceFilter = (searchParams.get('experience') || '') as ExperienceType | '';
   const priceRangeIndex = parseInt(searchParams.get('priceRange') || '0');
+  const tabParam = searchParams.get('tab') as TabSection | null;
+
+  // Sync tab from URL
+  useEffect(() => {
+    if (tabParam && TAB_SECTIONS.some((t) => t.id === tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
 
   // URL update helper
   const updateUrl = useCallback(
@@ -228,6 +762,12 @@ function SpaceTourismContent() {
     },
     [searchParams, router, pathname]
   );
+
+  // Tab handler
+  const handleTabChange = (tab: TabSection) => {
+    setActiveTab(tab);
+    updateUrl({ tab: tab === 'providers' ? '' : tab });
+  };
 
   // Filter handlers
   const handleProviderChange = (provider: string) => {
@@ -297,7 +837,7 @@ function SpaceTourismContent() {
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
           title="Space Tourism Marketplace"
-          subtitle="Compare and explore commercial space travel experiences from leading providers"
+          subtitle="The comprehensive guide to commercial space travel -- compare providers, explore experiences, and discover the future of tourism beyond Earth"
           icon="🎫"
           accentColor="purple"
         />
@@ -314,215 +854,242 @@ function SpaceTourismContent() {
           </div>
         ) : (
           <>
-            {/* Filter Bar */}
-            <ScrollReveal><div
-              className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-4 mb-8"
-              style={{
-                background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%)'
-              }}
-            >
-              <div className="flex flex-wrap items-center gap-4">
-                {/* Provider Filter */}
-                <div className="flex-1 min-w-[200px]">
-                  <label className="block text-slate-400 text-xs mb-1.5">Provider</label>
-                  <select
-                    value={providerFilter}
-                    onChange={(e) => handleProviderChange(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            {/* Hero Stats Bar */}
+            <ScrollReveal>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8">
+                {[
+                  { label: 'Total Offerings', value: offerings.length.toString(), color: 'text-cyan-400' },
+                  { label: 'Active Programs', value: offerings.filter((o) => o.status === 'active').length.toString(), color: 'text-green-400' },
+                  { label: 'Providers', value: TOURISM_PROVIDERS.length.toString(), color: 'text-purple-400' },
+                  { label: 'Starting From', value: '$50K', color: 'text-white' },
+                  { label: 'Space Tourists', value: TOURISM_STATS.totalTouristsLabel, color: 'text-amber-400' },
+                  { label: 'Market (2030)', value: TOURISM_STATS.revenueProjection2030, color: 'text-green-400' },
+                ].map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-4 text-center"
+                    style={glassCard}
                   >
-                    <option value="">All Providers</option>
-                    {TOURISM_PROVIDERS.map((provider) => (
-                      <option key={provider} value={provider}>
-                        {provider}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Experience Type Filter */}
-                <div className="flex-1 min-w-[200px]">
-                  <label className="block text-slate-400 text-xs mb-1.5">Experience Type</label>
-                  <select
-                    value={experienceFilter}
-                    onChange={(e) => handleExperienceChange(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
-                  >
-                    <option value="">All Types</option>
-                    {EXPERIENCE_TYPES.map((type) => (
-                      <option key={type.value} value={type.value}>
-                        {type.icon} {type.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Price Range Filter */}
-                <div className="flex-1 min-w-[200px]">
-                  <label className="block text-slate-400 text-xs mb-1.5">Price Range</label>
-                  <select
-                    value={priceRangeIndex}
-                    onChange={(e) => handlePriceRangeChange(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
-                  >
-                    {PRICE_RANGES.map((range, i) => (
-                      <option key={i} value={i}>
-                        {range.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Compare Button */}
-                <div className="flex items-end">
-                  <button
-                    onClick={() => setShowComparison(true)}
-                    disabled={selectedForCompare.length < 2}
-                    className={`px-5 py-2 rounded-lg font-semibold text-sm transition-all ${
-                      selectedForCompare.length >= 2
-                        ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40'
-                        : 'bg-slate-700 text-slate-400 cursor-not-allowed'
-                    }`}
-                  >
-                    Compare ({selectedForCompare.length})
-                  </button>
-                </div>
-              </div>
-
-              {/* Selected for comparison indicator */}
-              {selectedForCompare.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-slate-700/50">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-slate-400 text-sm">Selected:</span>
-                    {selectedForCompare.map((id) => {
-                      const offering = offerings.find((o) => o.id === id);
-                      if (!offering) return null;
-                      return (
-                        <span
-                          key={id}
-                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-medium border border-cyan-500/30"
-                        >
-                          {offering.name}
-                          <button
-                            onClick={() => handleToggleCompare(id)}
-                            className="hover:text-white transition-colors"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </span>
-                      );
-                    })}
-                    <button
-                      onClick={() => setSelectedForCompare([])}
-                      className="text-slate-400 hover:text-white text-xs transition-colors"
-                    >
-                      Clear all
-                    </button>
+                    <div className={`text-2xl font-display font-bold ${stat.color}`}>
+                      {stat.value}
+                    </div>
+                    <div className="text-slate-400 text-xs uppercase tracking-wide">
+                      {stat.label}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div></ScrollReveal>
-
-            {/* Stats Summary */}
-            <ScrollReveal delay={0.1}><div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div
-                className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-4 text-center"
-                style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%)' }}
-              >
-                <div className="text-2xl font-display font-bold text-cyan-400">
-                  {offerings.length}
-                </div>
-                <div className="text-slate-400 text-xs uppercase tracking-wide">
-                  Experiences
-                </div>
-              </div>
-              <div
-                className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-4 text-center"
-                style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%)' }}
-              >
-                <div className="text-2xl font-display font-bold text-green-400">
-                  {offerings.filter((o) => o.status === 'active').length}
-                </div>
-                <div className="text-slate-400 text-xs uppercase tracking-wide">
-                  Active Programs
-                </div>
-              </div>
-              <div
-                className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-4 text-center"
-                style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%)' }}
-              >
-                <div className="text-2xl font-display font-bold text-white">
-                  $125K
-                </div>
-                <div className="text-slate-400 text-xs uppercase tracking-wide">
-                  Starting From
-                </div>
-              </div>
-              <div
-                className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-4 text-center"
-                style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%)' }}
-              >
-                <div className="text-2xl font-display font-bold text-purple-400">
-                  5
-                </div>
-                <div className="text-slate-400 text-xs uppercase tracking-wide">
-                  Providers
-                </div>
-              </div>
-            </div></ScrollReveal>
-
-            {/* Offerings Grid */}
-            {offerings.length === 0 ? (
-              <div
-                className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-12 text-center"
-                style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%)' }}
-              >
-                <span className="text-6xl block mb-4">🚀</span>
-                <h3 className="text-xl font-semibold text-white mb-2">No Experiences Found</h3>
-                <p className="text-slate-400">
-                  Try adjusting your filters to see more space tourism options.
-                </p>
-              </div>
-            ) : (
-              <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {offerings.map((offering) => (
-                  <StaggerItem key={offering.id}>
-                    <TourismCard
-                      offering={offering}
-                      isSelected={selectedForCompare.includes(offering.id)}
-                      onToggleCompare={handleToggleCompare}
-                      onLearnMore={setDetailOffering}
-                    />
-                  </StaggerItem>
                 ))}
-              </StaggerContainer>
+              </div>
+            </ScrollReveal>
+
+            {/* Tab Navigation */}
+            <ScrollReveal delay={0.05}>
+              <div
+                className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-2 mb-8"
+                style={glassCard}
+              >
+                <div className="flex flex-wrap gap-1">
+                  {TAB_SECTIONS.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => handleTabChange(tab.id)}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                        activeTab === tab.id
+                          ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30'
+                          : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                      }`}
+                    >
+                      <span>{tab.icon}</span>
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* === PROVIDERS TAB === */}
+            {activeTab === 'providers' && (
+              <>
+                {/* Filter Bar */}
+                <ScrollReveal><div
+                  className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-4 mb-8"
+                  style={glassCard}
+                >
+                  <div className="flex flex-wrap items-center gap-4">
+                    {/* Provider Filter */}
+                    <div className="flex-1 min-w-[200px]">
+                      <label className="block text-slate-400 text-xs mb-1.5">Provider</label>
+                      <select
+                        value={providerFilter}
+                        onChange={(e) => handleProviderChange(e.target.value)}
+                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                      >
+                        <option value="">All Providers ({TOURISM_PROVIDERS.length})</option>
+                        {TOURISM_PROVIDERS.map((provider) => (
+                          <option key={provider} value={provider}>
+                            {provider}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Experience Type Filter */}
+                    <div className="flex-1 min-w-[200px]">
+                      <label className="block text-slate-400 text-xs mb-1.5">Experience Type</label>
+                      <select
+                        value={experienceFilter}
+                        onChange={(e) => handleExperienceChange(e.target.value)}
+                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                      >
+                        <option value="">All Types</option>
+                        {EXPERIENCE_TYPES.map((type) => (
+                          <option key={type.value} value={type.value}>
+                            {type.icon} {type.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Price Range Filter */}
+                    <div className="flex-1 min-w-[200px]">
+                      <label className="block text-slate-400 text-xs mb-1.5">Price Range</label>
+                      <select
+                        value={priceRangeIndex}
+                        onChange={(e) => handlePriceRangeChange(e.target.value)}
+                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                      >
+                        {PRICE_RANGES.map((range, i) => (
+                          <option key={i} value={i}>
+                            {range.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Compare Button */}
+                    <div className="flex items-end">
+                      <button
+                        onClick={() => setShowComparison(true)}
+                        disabled={selectedForCompare.length < 2}
+                        className={`px-5 py-2 rounded-lg font-semibold text-sm transition-all ${
+                          selectedForCompare.length >= 2
+                            ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40'
+                            : 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                        }`}
+                      >
+                        Compare ({selectedForCompare.length})
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Selected for comparison indicator */}
+                  {selectedForCompare.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-slate-700/50">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-slate-400 text-sm">Selected:</span>
+                        {selectedForCompare.map((id) => {
+                          const offering = offerings.find((o) => o.id === id);
+                          if (!offering) return null;
+                          return (
+                            <span
+                              key={id}
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-medium border border-cyan-500/30"
+                            >
+                              {offering.name}
+                              <button
+                                onClick={() => handleToggleCompare(id)}
+                                className="hover:text-white transition-colors"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </span>
+                          );
+                        })}
+                        <button
+                          onClick={() => setSelectedForCompare([])}
+                          className="text-slate-400 hover:text-white text-xs transition-colors"
+                        >
+                          Clear all
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div></ScrollReveal>
+
+                {/* Offerings Grid */}
+                {offerings.length === 0 ? (
+                  <div
+                    className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-12 text-center"
+                    style={glassCard}
+                  >
+                    <span className="text-6xl block mb-4">🚀</span>
+                    <h3 className="text-xl font-semibold text-white mb-2">No Experiences Found</h3>
+                    <p className="text-slate-400">
+                      Try adjusting your filters to see more space tourism options.
+                    </p>
+                  </div>
+                ) : (
+                  <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {offerings.map((offering) => (
+                      <StaggerItem key={offering.id}>
+                        <TourismCard
+                          offering={offering}
+                          isSelected={selectedForCompare.includes(offering.id)}
+                          onToggleCompare={handleToggleCompare}
+                          onLearnMore={setDetailOffering}
+                        />
+                      </StaggerItem>
+                    ))}
+                  </StaggerContainer>
+                )}
+
+                {/* Experience Type Guide */}
+                <ScrollReveal><div
+                  className="mt-12 backdrop-blur-xl rounded-xl border border-slate-700/50 p-6"
+                  style={glassCard}
+                >
+                  <h3 className="text-lg font-display font-bold text-white mb-4">
+                    Understanding Space Tourism Options
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    {EXPERIENCE_TYPES.map((type) => (
+                      <div key={type.value} className="bg-slate-800/50 rounded-lg p-4">
+                        <div className="text-2xl mb-2">{type.icon}</div>
+                        <h4 className="text-white font-semibold text-sm mb-1">{type.label}</h4>
+                        <p className="text-slate-400 text-xs">{type.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div></ScrollReveal>
+              </>
             )}
 
-            {/* Experience Type Guide */}
-            <ScrollReveal><div
-              className="mt-12 backdrop-blur-xl rounded-xl border border-slate-700/50 p-6"
-              style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%)' }}
-            >
-              <h3 className="text-lg font-display font-bold text-white mb-4">
-                Understanding Space Tourism Options
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                {EXPERIENCE_TYPES.map((type) => (
-                  <div key={type.value} className="bg-slate-800/50 rounded-lg p-4">
-                    <div className="text-2xl mb-2">{type.icon}</div>
-                    <h4 className="text-white font-semibold text-sm mb-1">{type.label}</h4>
-                    <p className="text-slate-400 text-xs">{type.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div></ScrollReveal>
+            {/* === COMPARISON TABLE TAB === */}
+            {activeTab === 'comparison' && (
+              <ComparisonTableSection />
+            )}
+
+            {/* === STATISTICS TAB === */}
+            {activeTab === 'statistics' && (
+              <IndustryStatisticsSection />
+            )}
+
+            {/* === TIMELINE TAB === */}
+            {activeTab === 'timeline' && (
+              <TimelineSection />
+            )}
+
+            {/* === FUTURE DESTINATIONS TAB === */}
+            {activeTab === 'destinations' && (
+              <FutureDestinationsSection />
+            )}
 
             {/* Disclaimer */}
             <div className="mt-8 text-center">
               <p className="text-slate-400 text-sm">
                 Prices and availability are subject to change. All information is provided for educational purposes.
-                Please visit official provider websites for the most current details.
+                Please visit official provider websites for the most current details. Data current as of February 2026.
               </p>
             </div>
           </>

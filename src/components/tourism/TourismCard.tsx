@@ -101,6 +101,18 @@ export default function TourismCard({
           </div>
         </div>
 
+        {/* G-Forces & Weightlessness */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="bg-slate-800/50 rounded-lg p-3">
+            <p className="text-slate-400 text-xs mb-1">G-Forces</p>
+            <p className="text-amber-400 font-semibold text-sm">{offering.gForces.split(',')[0].split('(')[0].trim()}</p>
+          </div>
+          <div className="bg-slate-800/50 rounded-lg p-3">
+            <p className="text-slate-400 text-xs mb-1">Weightlessness</p>
+            <p className="text-purple-400 font-semibold text-sm">{offering.weightlessDuration.split('(')[0].trim()}</p>
+          </div>
+        </div>
+
         {/* Quick features preview */}
         <div className="mb-5">
           <p className="text-slate-300 text-sm line-clamp-2">
@@ -122,6 +134,14 @@ export default function TourismCard({
             </svg>
             {offering.trainingDuration} training
           </span>
+          {offering.totalFlights !== null && (
+            <span className="flex items-center gap-1">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {offering.totalFlights} flights
+            </span>
+          )}
         </div>
 
         {/* Learn More Button */}
