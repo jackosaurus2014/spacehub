@@ -101,6 +101,8 @@ const TOOLS_MODULES: ModuleItem[] = [
   { icon: '📍', label: 'Launch Sites', href: '/launch-sites', description: 'Global spaceport database & capabilities' },
   { icon: '📡', label: 'Frequency Bands', href: '/frequency-bands', description: 'Space communications RF spectrum reference' },
   { icon: '🧪', label: 'Materials Database', href: '/materials-database', description: 'Spacecraft materials & properties reference' },
+  { icon: '🏗️', label: 'ISRU Resource Utilization', href: '/isru', description: 'In-situ resource utilization analysis' },
+  { icon: '📡', label: 'Space Communications', href: '/space-comms', description: 'Satellite link budgets & communication systems' },
 ];
 
 function ModuleSection({ title, icon, modules, sizeClasses, delay }: {
