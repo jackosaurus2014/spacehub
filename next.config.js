@@ -232,7 +232,7 @@ const nextConfig = {
       { source: '/space-law', destination: '/compliance?tab=treaties', permanent: true },
       { source: '/regulatory-filings', destination: '/compliance?tab=filings', permanent: true },
       { source: '/orbital-services', destination: '/orbital-slots?tab=services', permanent: true },
-      { source: '/space-comms', destination: '/spaceports?tab=communications', permanent: true },
+      // /space-comms now has its own standalone page
       { source: '/imagery-marketplace', destination: '/space-manufacturing?tab=imagery', permanent: true },
       { source: '/bid-protests', destination: '/compliance?tab=protests-overview', permanent: true },
       { source: '/startups', destination: '/space-capital', permanent: true },

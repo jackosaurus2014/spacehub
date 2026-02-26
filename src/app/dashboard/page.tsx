@@ -58,6 +58,7 @@ const INTELLIGENCE_MODULES: ModuleItem[] = [
   { icon: '💹', label: 'Space Economy', href: '/space-economy', description: 'Market size, investment & budgets' },
   { icon: '💸', label: 'Space Capital', href: '/space-capital', description: 'VC investors, startups & matchmaking' },
   { icon: '⚖️', label: 'Regulatory Hub', href: '/compliance', description: 'Compliance, space law & filings' },
+  { icon: '⚖️', label: 'Space Law & Treaties', href: '/space-law', description: '20+ international treaties and regulatory frameworks' },
   { icon: '📡', label: 'Spectrum Management', href: '/spectrum', description: 'Allocations, auctions & filings' },
   { icon: '📋', label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },
   { icon: '💰', label: 'Investment Tracker', href: '/investment-tracker', description: 'Funding trends, top deals & investors' },
