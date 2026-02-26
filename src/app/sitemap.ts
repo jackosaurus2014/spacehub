@@ -201,6 +201,11 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/debris-remediation`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/isru`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-comms`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/constellation-designer`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/unit-economics`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/orbital-calculator`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/reading-list`, changeFrequency: 'daily' as const, priority: 0.5 },
+    { url: `${BASE_URL}/debris-tracker`, changeFrequency: 'daily' as const, priority: 0.7 },
 
     // Developer pages
     { url: `${BASE_URL}/developer/docs`, changeFrequency: 'monthly' as const, priority: 0.5 },

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
+import { internalError } from '@/lib/errors';
 import {
   getFilteredDeals,
   getDealStats,
@@ -65,9 +66,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     logger.error('Failed to fetch deals', { error });
-    return NextResponse.json(
-      { error: 'Failed to fetch deal data' },
-      { status: 500 }
-    );
+    return internalError('Failed to fetch deal data');
   }
 }

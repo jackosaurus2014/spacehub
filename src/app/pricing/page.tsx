@@ -63,7 +63,7 @@ function PricingCard({
       className={`card p-6 relative ${
         plan.highlighted
           ? 'border-nebula-500 glow-border'
-          : 'border-slate-200'
+          : 'border-slate-700/50'
       } ${isCurrentPlan ? 'ring-2 ring-green-500' : ''}`}
     >
       {plan.highlighted && (

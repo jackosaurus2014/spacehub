@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { internalError, validationError } from '@/lib/errors';
+import { internalError, validationError, forbiddenError, notFoundError } from '@/lib/errors';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { validateBody, marketplaceVerifyAdminSchema } from '@/lib/validations';
@@ -13,7 +13,7 @@ export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user || !(session.user as any).isAdmin) {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+      return forbiddenError('Admin access required');
     }
 
     const body = await request.json();
@@ -25,7 +25,7 @@ export async function PUT(request: NextRequest) {
 
     const company = await prisma.companyProfile.findUnique({ where: { id: companyId } });
     if (!company) {
-      return NextResponse.json({ error: 'Company not found' }, { status: 404 });
+      return notFoundError('Company');
     }
 
     const updated = await prisma.companyProfile.update({

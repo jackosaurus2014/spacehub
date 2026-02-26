@@ -51,6 +51,8 @@ const EXPLORE_MODULES: ModuleItem[] = [
   { icon: '🏛️', label: 'Space Agencies', href: '/space-agencies', description: 'World space agency profiles & budgets' },
   { icon: '🎙️', label: 'Space Podcasts', href: '/podcasts', description: '25+ space industry podcasts directory' },
   { icon: '🧹', label: 'Debris Remediation', href: '/debris-remediation', description: 'Active debris removal efforts and space sustainability' },
+  { icon: '🛸', label: 'Debris Tracker', href: '/debris-tracker', description: 'Track orbital debris' },
+  { icon: '🚀', label: 'Space Tourism', href: '/space-tourism', description: 'Space tourism providers' },
 ];
 
 const INTELLIGENCE_MODULES: ModuleItem[] = [
@@ -68,6 +70,8 @@ const INTELLIGENCE_MODULES: ModuleItem[] = [
   { icon: '🚀', label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies & funding stages' },
   { icon: '📊', label: 'Report Cards', href: '/report-cards', description: 'Quarterly company performance grades' },
   { icon: '📈', label: 'Industry Trends', href: '/industry-trends', description: 'Data-backed space industry trend analysis' },
+  { icon: '📜', label: 'Contract Awards', href: '/contract-awards', description: 'Government contract feed' },
+  { icon: '🔬', label: 'Tech Readiness', href: '/tech-readiness', description: 'Technology readiness levels' },
 ];
 
 const BUSINESS_MODULES: ModuleItem[] = [
@@ -103,6 +107,10 @@ const TOOLS_MODULES: ModuleItem[] = [
   { icon: '🧪', label: 'Materials Database', href: '/materials-database', description: 'Spacecraft materials & properties reference' },
   { icon: '🏗️', label: 'ISRU Resource Utilization', href: '/isru', description: 'In-situ resource utilization analysis' },
   { icon: '📡', label: 'Space Communications', href: '/space-comms', description: 'Satellite link budgets & communication systems' },
+  { icon: '✨', label: 'Constellation Designer', href: '/constellation-designer', description: 'Design satellite constellations' },
+  { icon: '💵', label: 'Unit Economics', href: '/unit-economics', description: 'Revenue modeling calculator' },
+  { icon: '🌍', label: 'Orbital Calculator', href: '/orbital-calculator', description: 'Orbital mechanics calculator' },
+  { icon: '📖', label: 'Reading List', href: '/reading-list', description: 'Your saved articles' },
 ];
 
 function ModuleSection({ title, icon, modules, sizeClasses, delay }: {

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { unauthorizedError, validationError, notFoundError, internalError } from '@/lib/errors';
 
 // GET: Fetch user's reading list
 export async function GET() {
@@ -33,15 +34,12 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return unauthorizedError();
     }
 
     const { title, url, source, category } = await request.json();
     if (!title || !url) {
-      return NextResponse.json(
-        { error: 'Title and URL required' },
-        { status: 400 }
-      );
+      return validationError('Title and URL required');
     }
 
     const contentKey = `reading-list:${session.user.id}`;
@@ -97,7 +95,7 @@ export async function POST(request: NextRequest) {
     logger.error('Reading list POST error', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return NextResponse.json({ error: 'Failed to save' }, { status: 500 });
+    return internalError('Failed to save');
   }
 }
 
@@ -106,15 +104,12 @@ export async function PATCH(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return unauthorizedError();
     }
 
     const { id } = await request.json();
     if (!id) {
-      return NextResponse.json(
-        { error: 'Item ID required' },
-        { status: 400 }
-      );
+      return validationError('Item ID required');
     }
 
     const contentKey = `reading-list:${session.user.id}`;
@@ -124,13 +119,13 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!record) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      return notFoundError('Reading list');
     }
 
     const items = JSON.parse(record.data);
     const item = items.find((i: any) => i.id === id);
     if (!item) {
-      return NextResponse.json({ error: 'Item not found' }, { status: 404 });
+      return notFoundError('Reading list item');
     }
 
     item.read = !item.read;
@@ -151,10 +146,7 @@ export async function PATCH(request: NextRequest) {
     logger.error('Reading list PATCH error', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return NextResponse.json(
-      { error: 'Failed to update' },
-      { status: 500 }
-    );
+    return internalError('Failed to update');
   }
 }
 
@@ -163,15 +155,12 @@ export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return unauthorizedError();
     }
 
     const { id } = await request.json();
     if (!id) {
-      return NextResponse.json(
-        { error: 'Item ID required' },
-        { status: 400 }
-      );
+      return validationError('Item ID required');
     }
 
     const contentKey = `reading-list:${session.user.id}`;
@@ -201,9 +190,6 @@ export async function DELETE(request: NextRequest) {
     logger.error('Reading list DELETE error', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return NextResponse.json(
-      { error: 'Failed to remove' },
-      { status: 500 }
-    );
+    return internalError('Failed to remove');
   }
 }

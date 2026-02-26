@@ -42,6 +42,8 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Space Agencies', href: '/space-agencies', description: 'World space agency profiles & budgets' },
   { label: '🎙️ Space Podcasts', href: '/podcasts', description: '25+ space industry podcasts directory' },
   { label: 'Debris Remediation', href: '/debris-remediation', description: 'Active debris removal efforts and space sustainability' },
+  { label: 'Debris Tracker', href: '/debris-tracker', description: 'Track orbital debris' },
+  { label: 'Space Tourism', href: '/space-tourism', description: 'Space tourism providers' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
@@ -65,6 +67,8 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies & funding stages' },
   { label: 'Report Cards', href: '/report-cards', description: 'Quarterly company performance grades' },
   { label: 'Industry Trends', href: '/industry-trends', description: 'Data-backed space industry trend analysis' },
+  { label: 'Contract Awards', href: '/contract-awards', description: 'Government contract feed' },
+  { label: 'Tech Readiness', href: '/tech-readiness', description: 'Technology readiness levels' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
@@ -112,6 +116,10 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Materials Database', href: '/materials-database', description: 'Spacecraft materials & properties reference' },
   { label: '🏗️ ISRU Resource Utilization', href: '/isru', description: 'In-situ resource utilization analysis' },
   { label: '📡 Space Communications', href: '/space-comms', description: 'Satellite link budgets & communication systems' },
+  { label: 'Constellation Designer', href: '/constellation-designer', description: 'Design satellite constellations' },
+  { label: 'Unit Economics', href: '/unit-economics', description: 'Revenue modeling calculator' },
+  { label: 'Orbital Calculator', href: '/orbital-calculator', description: 'Orbital mechanics calculator' },
+  { label: 'Reading List', href: '/reading-list', description: 'Your saved articles' },
 ];
 
 function DropdownMenu({

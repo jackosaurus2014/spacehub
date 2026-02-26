@@ -5,7 +5,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { isTrialActive } from '@/lib/subscription';
 import { validateBody, subscriptionActionSchema } from '@/lib/validations';
-import { validationError } from '@/lib/errors';
+import { validationError, internalError, notFoundError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -103,10 +103,7 @@ export async function GET() {
     });
   } catch (error) {
     logger.error('Failed to fetch subscription', { error: error instanceof Error ? error.message : String(error) });
-    return NextResponse.json(
-      { error: 'Failed to fetch subscription' },
-      { status: 500 }
-    );
+    return internalError('Failed to fetch subscription');
   }
 }
 
@@ -161,10 +158,7 @@ export async function POST(request: Request) {
     if (body.action === 'start-trial') {
       const tier = body.tier;
       if (tier !== 'pro' && tier !== 'enterprise') {
-        return NextResponse.json(
-          { error: 'Invalid trial tier. Must be "pro" or "enterprise".' },
-          { status: 400 }
-        );
+        return validationError('Invalid trial tier. Must be "pro" or "enterprise".');
       }
 
       const user = await prisma.user.findUnique({
@@ -177,23 +171,17 @@ export async function POST(request: Request) {
       });
 
       if (!user) {
-        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        return notFoundError('User');
       }
 
       // Don't allow trial if user already has a paid subscription
       if (user.subscriptionTier !== 'free') {
-        return NextResponse.json(
-          { error: 'You already have an active paid subscription.' },
-          { status: 400 }
-        );
+        return validationError('You already have an active paid subscription.');
       }
 
       // Don't allow trial if user has an active trial
       if (user.trialTier && user.trialEndDate && isTrialActive(user.trialEndDate)) {
-        return NextResponse.json(
-          { error: 'You already have an active trial.' },
-          { status: 400 }
-        );
+        return validationError('You already have an active trial.');
       }
 
       // Start the 14-day trial

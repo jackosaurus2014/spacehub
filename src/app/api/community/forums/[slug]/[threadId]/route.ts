@@ -167,16 +167,10 @@ export async function POST(
     // Check if user is banned or muted
     const banStatus = await checkUserBanStatus(session.user.id);
     if (banStatus.isBanned) {
-      return NextResponse.json(
-        { error: 'Your account has been suspended' + (banStatus.banReason ? `: ${banStatus.banReason}` : '') },
-        { status: 403 }
-      );
+      return forbiddenError('Your account has been suspended' + (banStatus.banReason ? `: ${banStatus.banReason}` : ''));
     }
     if (banStatus.isMuted) {
-      return NextResponse.json(
-        { error: 'Your account has been temporarily muted. You cannot create new content at this time.' },
-        { status: 403 }
-      );
+      return forbiddenError('Your account has been temporarily muted. You cannot create new content at this time.');
     }
 
     const { slug, threadId } = await params;

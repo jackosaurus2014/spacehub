@@ -47,6 +47,9 @@ export async function GET() {
       spaceLawCases,
       featureRequests,
       helpRequests,
+      companyProfiles,
+      serviceListings,
+      forumThreads,
     ] = await Promise.all([
       prisma.spaceCompany.count(),
       prisma.newsArticle.count(),
@@ -87,6 +90,9 @@ export async function GET() {
       prisma.spaceLawCase.count(),
       prisma.featureRequest.count(),
       prisma.helpRequest.count(),
+      prisma.companyProfile.count(),
+      prisma.serviceListing.count(),
+      prisma.forumThread.count(),
     ]);
 
     return NextResponse.json({
@@ -130,6 +136,9 @@ export async function GET() {
         spaceLawCases,
         featureRequests,
         helpRequests,
+        companyProfiles,
+        serviceListings,
+        forumThreads,
       },
       timestamp: new Date().toISOString(),
     });

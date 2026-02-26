@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { validateBody, serviceListingCreateSchema, marketplaceSearchSchema, validateSearchParams } from '@/lib/validations';
-import { validationError, internalError } from '@/lib/errors';
+import { validationError, internalError, unauthorizedError, forbiddenError } from '@/lib/errors';
 import { generateSlug } from '@/lib/marketplace-types';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return unauthorizedError('Authentication required');
     }
 
     // Check if user has claimed a company
@@ -91,10 +91,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user?.claimedCompanyId) {
-      return NextResponse.json(
-        { error: 'You must claim a company profile before creating listings. Visit a company profile page and click "Claim This Profile".' },
-        { status: 403 }
-      );
+      return forbiddenError('You must claim a company profile before creating listings. Visit a company profile page and click "Claim This Profile".');
     }
 
     const body = await request.json();

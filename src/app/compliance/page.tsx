@@ -430,7 +430,7 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
       {lawCase.citation && (<p className="text-xs text-slate-400 mb-2 font-mono">{lawCase.citation}</p>)}
       <p className="text-slate-400 text-sm mb-3 line-clamp-3">{lawCase.summary}</p>
       <div className="flex flex-wrap gap-1 mb-3">{lawCase.subjectMatter.map((subject, i) => (<span key={i} className="text-xs bg-nebula-500/10 text-nebula-300 px-2 py-0.5 rounded">{subject.replace(/_/g, ' ')}</span>))}</div>
-      {lawCase.damages && (<div className="text-sm font-semibold text-green-600 mb-3">Damages: ${lawCase.damages.toLocaleString()}</div>)}
+      {lawCase.damages && (<div className="text-sm font-semibold text-green-400 mb-3">Damages: ${lawCase.damages.toLocaleString()}</div>)}
       <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200">{expanded ? 'Show Less \u25B2' : 'Read More \u25BC'}</button>
       {expanded && (
         <div className="mt-4 space-y-4">
@@ -543,7 +543,7 @@ function ExpertCommentaryTab() {
             {source.organization && (<p className="text-sm text-slate-400 mb-2">{source.organization}</p>)}
             <p className="text-xs text-slate-400 mb-3 line-clamp-2">{source.description}</p>
             <div className="flex flex-wrap gap-1">{source.topics.slice(0, 3).map((topic, i) => (<span key={i} className="text-xs bg-slate-700/60 text-slate-300 px-2 py-0.5 rounded">{topic.replace(/_/g, ' ')}</span>))}</div>
-            {source.keyContributors && source.keyContributors.length > 0 && (<div className="mt-3 pt-3 border-t border-slate-100"><p className="text-xs text-slate-400"><strong>Contributors:</strong> {source.keyContributors.join(', ')}</p></div>)}
+            {source.keyContributors && source.keyContributors.length > 0 && (<div className="mt-3 pt-3 border-t border-slate-700/50"><p className="text-xs text-slate-400"><strong>Contributors:</strong> {source.keyContributors.join(', ')}</p></div>)}
           </a>
         ); })}
       </div>
@@ -725,7 +725,7 @@ function SpaceLawBodiesTab() {
   const filteredBodies = useMemo(() => { let result = [...REGULATORY_BODIES]; if (typeFilter) result = result.filter(b => b.type === typeFilter); if (searchQuery) { const query = searchQuery.toLowerCase(); result = result.filter(b => b.name.toLowerCase().includes(query) || b.abbreviation.toLowerCase().includes(query) || b.mandate.toLowerCase().includes(query) || b.headquarters.toLowerCase().includes(query)); } return result; }, [typeFilter, searchQuery]);
   return (
     <div>
-      <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4 mb-6"><h4 className="font-semibold text-purple-600 mb-2">Space Regulatory Bodies Directory</h4><p className="text-sm text-slate-400">Comprehensive directory of international, regional, and national regulatory bodies governing space activities. From UN organizations to national licensing authorities and industry coordination groups.</p></div>
+      <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4 mb-6"><h4 className="font-semibold text-purple-400 mb-2">Space Regulatory Bodies Directory</h4><p className="text-sm text-slate-400">Comprehensive directory of international, regional, and national regulatory bodies governing space activities. From UN organizations to national licensing authorities and industry coordination groups.</p></div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
         <div className="flex-1 min-w-[200px]"><label className="block text-slate-400 text-sm mb-1">Search</label><input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search bodies, functions..." className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500 placeholder:text-slate-400" /></div>
         <div><label className="block text-slate-400 text-sm mb-1">Type</label><select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Types</option><option value="un">UN Bodies</option><option value="national">National</option><option value="regional">Regional</option><option value="industry">Industry</option></select></div>
