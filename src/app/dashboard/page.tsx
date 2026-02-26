@@ -59,6 +59,7 @@ const INTELLIGENCE_MODULES: ModuleItem[] = [
   { icon: '📋', label: 'Intelligence Brief', href: '/intelligence-brief', description: 'Weekly curated industry briefing' },
   { icon: '👤', label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes across the industry' },
   { icon: '🚀', label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies & funding stages' },
+  { icon: '📊', label: 'Report Cards', href: '/report-cards', description: 'Quarterly company performance grades' },
 ];
 
 const BUSINESS_MODULES: ModuleItem[] = [
@@ -87,6 +88,7 @@ const TOOLS_MODULES: ModuleItem[] = [
   { icon: '🌤️', label: 'Space Environment', href: '/space-environment', description: 'Weather, debris & operations' },
   { icon: '📐', label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
   { icon: '🧮', label: 'Launch Cost Calculator', href: '/launch-cost-calculator', description: 'Estimate launch costs by vehicle & orbit' },
+  { icon: '🔬', label: 'Tech Readiness', href: '/tech-readiness', description: 'Emerging technology TRL tracking' },
 ];
 
 function ModuleSection({ title, icon, modules, sizeClasses, delay }: {

@@ -55,6 +55,8 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Spectrum Management', href: '/spectrum', description: 'Allocations, auctions & filings' },
   { label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },
   { label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies & funding stages' },
+  { label: 'Report Cards', href: '/report-cards', description: 'Quarterly company performance grades' },
+  { label: 'Industry Trends', href: '/industry-trends', description: 'Data-backed space industry trend analysis' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
@@ -93,6 +95,8 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Deal Rooms', href: '/deal-rooms', description: 'Secure document sharing for deals' },
   { label: 'My Watchlists', href: '/my-watchlists', description: 'Watched companies & saved searches' },
   { label: 'Dashboard', href: '/dashboard', description: 'Your personalized hub' },
+  { label: 'Tech Readiness', href: '/tech-readiness', description: 'Emerging technology TRL tracking' },
+  { label: 'Regulations Explorer', href: '/regulations', description: 'Searchable space regulations database' },
 ];
 
 function DropdownMenu({
