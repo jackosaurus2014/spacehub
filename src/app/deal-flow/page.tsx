@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -597,6 +598,10 @@ export default function DealFlowPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Deal Flow' },
+      ]} />
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* ── Header ─────────────────────────────────────────────── */}
         <AnimatedPageHeader

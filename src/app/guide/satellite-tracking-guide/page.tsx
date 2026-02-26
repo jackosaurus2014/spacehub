@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import FAQSchema from '@/components/seo/FAQSchema';
+import GuideNavigation from '@/components/guide/GuideNavigation';
 
 export const revalidate = 3600;
 
@@ -570,6 +571,9 @@ export default function SatelliteTrackingGuidePage() {
                 </Link>
               </div>
             </section>
+
+            {/* Guide Navigation */}
+            <GuideNavigation currentSlug="satellite-tracking-guide" />
           </article>
 
           {/* FAQ Schema */}

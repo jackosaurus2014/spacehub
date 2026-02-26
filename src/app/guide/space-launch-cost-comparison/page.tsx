@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import GuideNavigation from '@/components/guide/GuideNavigation';
 
 export const revalidate = 3600; // ISR: revalidate every hour
 
@@ -899,6 +900,9 @@ export default function SpaceLaunchCostComparisonPage() {
                   </Link>
                 </div>
               </section>
+
+              {/* Guide Navigation */}
+              <GuideNavigation currentSlug="space-launch-cost-comparison" />
             </article>
           </div>
         </div>

@@ -26,6 +26,13 @@ const COMPARISON_TOOLS = [
     icon: '🏢',
     stats: '100+ companies',
   },
+  {
+    title: 'Satellite Bus Comparison',
+    description: 'Compare satellite platforms by mass, power, pointing accuracy, lifespan, and payload accommodation across 22 buses.',
+    href: '/compare/satellite-buses',
+    icon: '📡',
+    stats: '22 buses',
+  },
 ];
 
 const COMPETITOR_COMPARISONS = [
@@ -59,7 +66,7 @@ export default function ComparisonHubPage() {
           accentColor="cyan"
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
           {COMPARISON_TOOLS.map((tool, index) => (
             <ScrollReveal key={tool.href} delay={0.1 + index * 0.1}>
               <Link

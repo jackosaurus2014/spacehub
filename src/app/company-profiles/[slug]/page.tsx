@@ -1406,6 +1406,11 @@ export default function CompanyProfileDetailPage() {
         employeeCount={company.employeeRange || (company.employeeCount ? String(company.employeeCount) : undefined)}
         industry={company.sector || undefined}
         parentOrganization={company.parentCompany || undefined}
+        websiteUrl={company.website || undefined}
+        linkedinUrl={company.linkedinUrl || undefined}
+        twitterUrl={company.twitterUrl || undefined}
+        ticker={company.ticker || undefined}
+        exchange={company.exchange || undefined}
       />
       {/* Breadcrumb Navigation */}
       <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">

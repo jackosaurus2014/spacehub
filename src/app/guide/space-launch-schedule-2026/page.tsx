@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import GuideNavigation from '@/components/guide/GuideNavigation';
 
 export const revalidate = 3600;
 
@@ -378,6 +379,9 @@ export default function SpaceLaunchSchedule2026Page() {
                 </Link>
               </div>
             </section>
+
+            {/* Guide Navigation */}
+            <GuideNavigation currentSlug="space-launch-schedule-2026" />
           </article>
 
           {/* FAQ Schema */}

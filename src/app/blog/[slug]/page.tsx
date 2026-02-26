@@ -87,10 +87,27 @@ export default function BlogPostPage({ params }: Props) {
 
   const categoryLabel = BLOG_CATEGORIES.find((c) => c.value === post.category)?.label || post.category;
 
-  // Get related posts (same category, different slug)
-  const relatedPosts = BLOG_POSTS.filter(
+  // Get related posts: prefer same category, fall back to keyword overlap
+  const sameCategoryPosts = BLOG_POSTS.filter(
     (p) => p.category === post.category && p.slug !== post.slug
-  ).slice(0, 3);
+  );
+  let relatedPosts = sameCategoryPosts.slice(0, 3);
+
+  // If fewer than 3 same-category posts, fill with keyword-matched posts
+  if (relatedPosts.length < 3) {
+    const postKeywords = new Set(post.keywords.map((k) => k.toLowerCase()));
+    const remaining = BLOG_POSTS.filter(
+      (p) => p.slug !== post.slug && !relatedPosts.some((rp) => rp.slug === p.slug)
+    )
+      .map((p) => ({
+        post: p,
+        overlap: p.keywords.filter((k) => postKeywords.has(k.toLowerCase())).length,
+      }))
+      .sort((a, b) => b.overlap - a.overlap)
+      .slice(0, 3 - relatedPosts.length)
+      .map((r) => r.post);
+    relatedPosts = [...relatedPosts, ...remaining];
+  }
 
   // Article structured data
   const articleSchema = {
@@ -215,24 +232,35 @@ export default function BlogPostPage({ params }: Props) {
         {/* Related Articles */}
         {relatedPosts.length > 0 && (
           <div className="mt-12">
-            <h3 className="text-lg font-bold text-white mb-6">Related Articles</h3>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-px flex-1 bg-slate-700/50" />
+              <h3 className="text-lg font-bold text-white whitespace-nowrap">Related Articles</h3>
+              <div className="h-px flex-1 bg-slate-700/50" />
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {relatedPosts.map((rp) => (
                 <Link
                   key={rp.slug}
                   href={`/blog/${rp.slug}`}
-                  className="group block bg-slate-800/40 border border-slate-700/50 rounded-lg p-4 hover:border-nebula-500/50 transition-all"
+                  className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-nebula-500/40 hover:bg-slate-800/70 transition-all"
                 >
-                  <span className="text-xs text-nebula-400 font-medium">
-                    {BLOG_CATEGORIES.find((c) => c.value === rp.category)?.label || rp.category}
-                  </span>
-                  <h4 className="text-sm font-semibold text-white group-hover:text-nebula-400 transition-colors line-clamp-2 mt-1 mb-2">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-nebula-500/15 text-nebula-300 border border-nebula-500/20">
+                      {BLOG_CATEGORIES.find((c) => c.value === rp.category)?.label || rp.category}
+                    </span>
+                    <span className="text-[11px] text-slate-500">{rp.readingTime} min</span>
+                  </div>
+                  <h4 className="text-sm font-semibold text-white group-hover:text-nebula-400 transition-colors line-clamp-2 mb-2">
                     {rp.title}
                   </h4>
-                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <p className="text-xs text-slate-400 line-clamp-2 mb-3 flex-1">
+                    {rp.excerpt}
+                  </p>
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-700/30">
                     <span>{formatDate(rp.publishedAt)}</span>
-                    <span>&middot;</span>
-                    <span>{rp.readingTime} min read</span>
+                    <span className="text-nebula-400 group-hover:text-nebula-300 transition-colors font-medium">
+                      Read more &rarr;
+                    </span>
                   </div>
                 </Link>
               ))}
