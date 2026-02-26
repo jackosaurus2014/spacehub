@@ -98,6 +98,163 @@ const SPECTRAL_TYPE_INFO: Record<string, { label: string; description: string; c
 
 const DEFAULT_SPECTRAL_TYPE = { label: 'Unknown', description: 'Unknown spectral type', color: 'text-slate-400' };
 
+// ────────────────────────────────────────
+// Fallback Mining Targets
+// ────────────────────────────────────────
+
+const FALLBACK_MINING_TARGETS: MiningTarget[] = [
+  {
+    full_name: '16 Psyche',
+    spec_B: 'Xk',
+    spec_T: 'M',
+    profit: 10000000000000000,
+    price: 12500,
+    closeness: 0.82,
+    accessibility: 1.58,
+    score: 9.8,
+    moid: 1.5412,
+    a: 2.9215,
+    e: 0.1339,
+    i: 3.0946,
+    diameter: 226,
+  },
+  {
+    full_name: '3554 Amun',
+    spec_B: null,
+    spec_T: 'M',
+    profit: 20000000000000,
+    price: 8200,
+    closeness: 1.45,
+    accessibility: 1.82,
+    score: 9.1,
+    moid: 0.0904,
+    a: 0.9737,
+    e: 0.2814,
+    i: 23.36,
+    diameter: 2.48,
+  },
+  {
+    full_name: '241 Germania',
+    spec_B: 'Cb',
+    spec_T: 'C',
+    profit: 95000000000000,
+    price: 1850,
+    closeness: 0.55,
+    accessibility: 0.98,
+    score: 8.5,
+    moid: 1.7834,
+    a: 3.0512,
+    e: 0.1023,
+    i: 5.5107,
+    diameter: 169,
+  },
+  {
+    full_name: '162173 Ryugu',
+    spec_B: 'Cg',
+    spec_T: 'C',
+    profit: 83000000000,
+    price: 6300,
+    closeness: 1.72,
+    accessibility: 1.95,
+    score: 8.2,
+    moid: 0.0601,
+    a: 1.1896,
+    e: 0.1902,
+    i: 5.8837,
+    diameter: 0.896,
+  },
+  {
+    full_name: '101955 Bennu',
+    spec_B: 'B',
+    spec_T: 'B',
+    profit: 669000000,
+    price: 4800,
+    closeness: 1.81,
+    accessibility: 2.01,
+    score: 7.9,
+    moid: 0.0032,
+    a: 1.1264,
+    e: 0.2037,
+    i: 6.0349,
+    diameter: 0.4897,
+  },
+  {
+    full_name: '1 Ceres',
+    spec_B: 'C',
+    spec_T: 'G',
+    profit: 72000000000000,
+    price: 980,
+    closeness: 0.42,
+    accessibility: 0.75,
+    score: 7.6,
+    moid: 1.5926,
+    a: 2.7691,
+    e: 0.0758,
+    i: 10.5934,
+    diameter: 939.4,
+  },
+  {
+    full_name: '433 Eros',
+    spec_B: 'S',
+    spec_T: 'S',
+    profit: 1200000000000,
+    price: 3100,
+    closeness: 1.35,
+    accessibility: 1.67,
+    score: 7.3,
+    moid: 0.1491,
+    a: 1.4583,
+    e: 0.2227,
+    i: 10.8289,
+    diameter: 16.84,
+  },
+  {
+    full_name: '2011 UW158',
+    spec_B: null,
+    spec_T: null,
+    profit: 5400000000000,
+    price: 15200,
+    closeness: 1.56,
+    accessibility: 1.74,
+    score: 7.0,
+    moid: 0.0174,
+    a: 1.6197,
+    e: 0.3755,
+    i: 4.7862,
+    diameter: 0.457,
+  },
+  {
+    full_name: '1986 DA',
+    spec_B: null,
+    spec_T: 'M',
+    profit: 27000000000000,
+    price: 9700,
+    closeness: 0.91,
+    accessibility: 1.12,
+    score: 6.8,
+    moid: 0.3512,
+    a: 2.8165,
+    e: 0.5854,
+    i: 4.2971,
+    diameter: 2.3,
+  },
+  {
+    full_name: 'Moon (Lunar Regolith)',
+    spec_B: null,
+    spec_T: null,
+    profit: 500000000000,
+    price: 2500,
+    closeness: 2.0,
+    accessibility: 2.5,
+    score: 6.5,
+    moid: 0.0026,
+    a: null,
+    e: null,
+    i: null,
+    diameter: 3474.8,
+  },
+];
+
 const BODY_EXPORT_COLUMNS = [
   { key: 'name', label: 'Name' },
   { key: 'designation', label: 'Designation' },
@@ -500,8 +657,8 @@ function SpaceMiningContent() {
   const [error, setError] = useState<string | null>(null);
 
   // Mining targets from DynamicContent system
-  const [miningTargets, setMiningTargets] = useState<MiningTarget[]>([]);
-  const [miningTargetsLoading, setMiningTargetsLoading] = useState(true);
+  const [miningTargets, setMiningTargets] = useState<MiningTarget[]>(FALLBACK_MINING_TARGETS);
+  const [miningTargetsLoading, setMiningTargetsLoading] = useState(false);
 
   // Filters
   const [bodyType, setBodyType] = useState<MiningBodyType | ''>('');
@@ -583,6 +740,7 @@ function SpaceMiningContent() {
   // Fetch mining targets from DynamicContent system
   useEffect(() => {
     async function fetchMiningTargets() {
+      setMiningTargetsLoading(true);
       try {
         const res = await fetch('/api/content/space-mining?section=mining-targets');
         if (!res.ok) throw new Error('Failed to fetch mining targets');
@@ -595,9 +753,10 @@ function SpaceMiningContent() {
           if (scoreB !== scoreA) return scoreB - scoreA;
           return (b.profit ?? 0) - (a.profit ?? 0);
         });
-        setMiningTargets(targets);
+        setMiningTargets(targets.length >= 5 ? targets : FALLBACK_MINING_TARGETS);
       } catch (err) {
         clientLogger.error('Failed to fetch mining targets', { error: err instanceof Error ? err.message : String(err) });
+        setMiningTargets(FALLBACK_MINING_TARGETS);
       } finally {
         setMiningTargetsLoading(false);
       }

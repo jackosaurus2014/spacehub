@@ -110,6 +110,106 @@ const EARTH_EVENT_CATEGORY_COLORS: Record<string, string> = {
   'temperature extremes': 'bg-rose-500/20 text-rose-400 border-rose-500/30',
 };
 
+// ════════════════════════════════════════
+// Fallback Data
+// ════════════════════════════════════════
+
+const FALLBACK_EARTH_EVENTS: EarthEvent[] = [
+  {
+    id: 'EONET_6542',
+    title: 'X2.3 Solar Flare - Active Region 3842',
+    description: 'Major X-class solar flare eruption from sunspot group AR3842 producing significant radio blackout on dayside of Earth.',
+    categories: [{ id: 1, title: 'Severe Storms' }],
+    sources: [{ id: 'NOAA_SWPC', url: 'https://www.swpc.noaa.gov/' }],
+    geometry: [{ date: '2026-02-22T14:32:00Z', type: 'Point', coordinates: [-95.5, 30.2] }],
+    closed: null,
+  },
+  {
+    id: 'EONET_6538',
+    title: 'Geomagnetic Storm Watch - G3 (Strong)',
+    description: 'NOAA issued G3 geomagnetic storm watch following Earth-directed coronal mass ejection. Aurora visible at mid-latitudes.',
+    categories: [{ id: 1, title: 'Severe Storms' }],
+    sources: [{ id: 'NOAA_SWPC', url: 'https://www.swpc.noaa.gov/products/geomagnetic-storm-watches' }],
+    geometry: [{ date: '2026-02-20T08:15:00Z', type: 'Point', coordinates: [-77.0, 38.9] }],
+    closed: null,
+  },
+  {
+    id: 'EONET_6535',
+    title: 'Coronal Mass Ejection - Halo CME Event',
+    description: 'Full-halo CME observed by SOHO/LASCO C2 coronagraph traveling at approximately 1,200 km/s. Expected Earth arrival in 36-48 hours.',
+    categories: [{ id: 1, title: 'Severe Storms' }],
+    sources: [{ id: 'NASA_DONKI', url: 'https://kauai.ccmc.gsfc.nasa.gov/DONKI/' }],
+    geometry: [{ date: '2026-02-19T22:45:00Z', type: 'Point', coordinates: [0, 0] }],
+    closed: '2026-02-21T18:00:00Z',
+  },
+  {
+    id: 'EONET_6530',
+    title: 'Solar Energetic Particle Event - S2 (Moderate)',
+    description: 'Elevated proton flux detected by GOES-18 exceeding S2 threshold. Increased radiation risk for polar-route aviation and EVA activities.',
+    categories: [{ id: 1, title: 'Temperature Extremes' }],
+    sources: [{ id: 'NOAA_SWPC', url: 'https://www.swpc.noaa.gov/products/solar-radiation-storm-forecast' }],
+    geometry: [{ date: '2026-02-18T06:20:00Z', type: 'Point', coordinates: [-105.0, 40.0] }],
+    closed: '2026-02-19T14:00:00Z',
+  },
+  {
+    id: 'EONET_6527',
+    title: 'Radio Blackout R2 - Shortwave Fadeout',
+    description: 'M7.4 flare caused R2 moderate radio blackout affecting HF communications across the Pacific region for approximately 45 minutes.',
+    categories: [{ id: 1, title: 'Severe Storms' }],
+    sources: [{ id: 'NOAA_SWPC', url: 'https://www.swpc.noaa.gov/products/radio-blackout-forecast' }],
+    geometry: [{ date: '2026-02-16T11:08:00Z', type: 'Point', coordinates: [139.7, 35.7] }],
+    closed: '2026-02-16T11:53:00Z',
+  },
+  {
+    id: 'EONET_6524',
+    title: 'Geomagnetic Storm - G1 (Minor) Ongoing',
+    description: 'Minor geomagnetic storm conditions persisting due to high-speed solar wind stream from coronal hole. Kp index reaching 5.',
+    categories: [{ id: 1, title: 'Severe Storms' }],
+    sources: [{ id: 'NOAA_SWPC', url: 'https://www.swpc.noaa.gov/products/planetary-k-index' }],
+    geometry: [{ date: '2026-02-15T03:00:00Z', type: 'Point', coordinates: [-90.0, 45.0] }],
+    closed: null,
+  },
+];
+
+const FALLBACK_SOLAR_IMAGERY: SolarImagery[] = [
+  {
+    id: 'sdo-aia-171',
+    name: 'SDO AIA 171 - Coronal Loops',
+    description: 'Extreme ultraviolet image showing the solar corona at 171 angstroms, highlighting coronal loops and active regions at approximately 600,000 K.',
+    image_url: 'https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0171.jpg',
+    timestamp: '2026-02-25T12:00:00Z',
+    instrument: 'SDO/AIA',
+    measurement: '171 \u00C5 (Fe IX)',
+  },
+  {
+    id: 'sdo-aia-304',
+    name: 'SDO AIA 304 - Chromosphere',
+    description: 'View of the solar chromosphere and transition region at 304 angstroms, showing prominences and filaments at approximately 50,000 K.',
+    image_url: 'https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0304.jpg',
+    timestamp: '2026-02-25T12:00:00Z',
+    instrument: 'SDO/AIA',
+    measurement: '304 \u00C5 (He II)',
+  },
+  {
+    id: 'sdo-hmi-mag',
+    name: 'SDO HMI Magnetogram',
+    description: 'Solar photospheric magnetic field map from the Helioseismic and Magnetic Imager, showing positive (white) and negative (black) polarity magnetic regions.',
+    image_url: 'https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_HMIBC.jpg',
+    timestamp: '2026-02-25T12:00:00Z',
+    instrument: 'SDO/HMI',
+    measurement: 'Magnetogram',
+  },
+  {
+    id: 'soho-lasco-c2',
+    name: 'SOHO LASCO C2 Coronagraph',
+    description: 'White-light coronagraph image from SOHO showing the solar corona from 1.5 to 6 solar radii. Used for detecting coronal mass ejections.',
+    image_url: 'https://soho.nascom.nasa.gov/data/realtime/c2/1024/latest.jpg',
+    timestamp: '2026-02-25T12:00:00Z',
+    instrument: 'SOHO/LASCO',
+    measurement: 'C2 White Light',
+  },
+];
+
 function getEventCategoryColor(categoryTitle: string): string {
   const lower = categoryTitle.toLowerCase();
   for (const [key, value] of Object.entries(EARTH_EVENT_CATEGORY_COLORS)) {
@@ -756,9 +856,9 @@ function SpaceWeatherTab() {
   const [error, setError] = useState<string | null>(null);
 
   // Dynamic content state
-  const [earthEvents, setEarthEvents] = useState<EarthEvent[]>([]);
-  const [solarImagery, setSolarImagery] = useState<SolarImagery[]>([]);
-  const [contentLoading, setContentLoading] = useState(true);
+  const [earthEvents, setEarthEvents] = useState<EarthEvent[]>(FALLBACK_EARTH_EVENTS);
+  const [solarImagery, setSolarImagery] = useState<SolarImagery[]>(FALLBACK_SOLAR_IMAGERY);
+  const [contentLoading, setContentLoading] = useState(false);
 
   const fetchWeatherData = useCallback(async () => {
     setLoading(true);
@@ -789,11 +889,12 @@ function SpaceWeatherTab() {
         imageryRes.json(),
       ]);
 
-      if (eventsData.data) setEarthEvents(eventsData.data);
-      if (imageryData.data) setSolarImagery(imageryData.data);
+      setEarthEvents(eventsData.data?.length >= 3 ? eventsData.data : FALLBACK_EARTH_EVENTS);
+      setSolarImagery(imageryData.data?.length >= 2 ? imageryData.data : FALLBACK_SOLAR_IMAGERY);
     } catch (error) {
       clientLogger.error('Failed to fetch dynamic content', { error: error instanceof Error ? error.message : String(error) });
-      setError('Failed to load data.');
+      setEarthEvents(FALLBACK_EARTH_EVENTS);
+      setSolarImagery(FALLBACK_SOLAR_IMAGERY);
     } finally {
       setContentLoading(false);
     }

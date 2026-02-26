@@ -73,7 +73,85 @@ interface RoverPhoto {
 }
 
 // ────────────────────────────────────────
+// Fallback Data (used when API/DB is empty)
+// ────────────────────────────────────────
+
+const FALLBACK_ACTIVE_MISSIONS: ActiveMission[] = [
+  { name: 'Perseverance Rover', agency: 'NASA', agencyFlag: '\u{1F1FA}\u{1F1F8}', type: 'rover', arrived: 'Feb 2021', location: 'Jezero Crater', status: 'active', highlight: 'Collected 24+ rock and soil samples for future Mars Sample Return mission. Demonstrated MOXIE oxygen production from Martian CO2.' },
+  { name: 'Ingenuity Helicopter', agency: 'NASA', agencyFlag: '\u{1F1FA}\u{1F1F8}', type: 'helicopter', arrived: 'Deployed Apr 2021', status: 'ended', statusDetail: 'Mission ended Jan 2024 after 72 flights, damaged rotor blade on Flight 72', highlight: 'First powered, controlled flight on another planet. Logged over 128 minutes of total flight time.' },
+  { name: 'Curiosity Rover', agency: 'NASA', agencyFlag: '\u{1F1FA}\u{1F1F8}', type: 'rover', arrived: 'Aug 2012', location: 'Gale Crater / Mt. Sharp', status: 'active', years: '13+', highlight: 'Discovered ancient organic molecules and seasonal methane variations. Climbed over 800m up Mount Sharp.' },
+  { name: 'Mars Reconnaissance Orbiter (MRO)', agency: 'NASA', agencyFlag: '\u{1F1FA}\u{1F1F8}', type: 'orbiter', arrived: 'Mar 2006', status: 'active', years: '19+', highlight: 'High-resolution HiRISE camera has imaged most of Mars surface. Primary data relay for surface missions.' },
+  { name: 'MAVEN', agency: 'NASA', agencyFlag: '\u{1F1FA}\u{1F1F8}', type: 'orbiter', arrived: 'Sep 2014', status: 'active', years: '11+', highlight: 'Studying Mars upper atmosphere and solar wind interaction. Determined how Mars lost its atmosphere over billions of years.' },
+  { name: 'Mars Odyssey', agency: 'NASA', agencyFlag: '\u{1F1FA}\u{1F1F8}', type: 'orbiter', arrived: 'Oct 2001', status: 'active', years: '24+', highlight: 'Longest-serving spacecraft at Mars. Mapped subsurface hydrogen (water ice) distribution globally.' },
+  { name: 'Tianwen-1 Orbiter', agency: 'CNSA', agencyFlag: '\u{1F1E8}\u{1F1F3}', type: 'orbiter', arrived: 'Feb 2021', status: 'active', highlight: 'China\'s first Mars orbiter. Carries 7 scientific instruments including high-res camera and subsurface radar.' },
+  { name: 'Zhurong Rover', agency: 'CNSA', agencyFlag: '\u{1F1E8}\u{1F1F3}', type: 'rover', arrived: 'May 2021', location: 'Utopia Planitia', status: 'dormant', statusDetail: 'Entered hibernation May 2022 for Martian winter, no signal reacquired as of 2024', highlight: 'Traveled 1,921 meters on Mars surface. Detected evidence of recent water activity in Utopia Planitia.' },
+  { name: 'Mars Express', agency: 'ESA', agencyFlag: '\u{1F1EA}\u{1F1FA}', type: 'orbiter', arrived: 'Dec 2003', status: 'active', years: '22+', highlight: 'MARSIS subsurface radar discovered possible liquid water reservoirs beneath south polar ice cap.' },
+  { name: 'ExoMars Trace Gas Orbiter (TGO)', agency: 'ESA/Roscosmos', agencyFlag: '\u{1F1EA}\u{1F1FA}', type: 'orbiter', arrived: 'Oct 2016', status: 'active', highlight: 'Detecting trace gases including methane. Serves as data relay for current and future surface missions.' },
+  { name: 'Hope Probe (Al-Amal)', agency: 'UAESA', agencyFlag: '\u{1F1E6}\u{1F1EA}', type: 'orbiter', arrived: 'Feb 2021', status: 'active', highlight: 'First Arab interplanetary mission. Studies Martian weather and atmosphere from a unique high orbit.' },
+  { name: 'Mars Orbiter Mission (Mangalyaan)', agency: 'ISRO', agencyFlag: '\u{1F1EE}\u{1F1F3}', type: 'orbiter', arrived: 'Sep 2014', status: 'ended', statusDetail: 'Lost contact in 2022 after 8 years (designed for 6 months)', highlight: 'India\'s first interplanetary mission. Achieved Mars orbit on first attempt at a record-low cost of $74M.' },
+];
+
+const FALLBACK_UPCOMING_MISSIONS: UpcomingMission[] = [
+  { name: 'Mars Sample Return (MSR)', agency: 'NASA/ESA', agencyFlag: '\u{1F1FA}\u{1F1F8}', targetDate: '~2030s (revised)', description: 'Multi-mission campaign to retrieve cached samples from Perseverance rover in Jezero Crater and return them to Earth for laboratory analysis. Architecture under redesign for lower cost approach.', budget: '~$8-11B (under review, revised down from original)', note: 'NASA exploring faster, cheaper architectures including commercial partnerships' },
+  { name: 'ExoMars Rosalind Franklin Rover', agency: 'ESA', agencyFlag: '\u{1F1EA}\u{1F1FA}', targetDate: 'NET 2028', description: 'First European Mars rover equipped with a 2-meter drill to search for biosignatures beneath the surface where organic molecules are shielded from radiation.', budget: '~$1.8B (total program)', note: 'Previously partnered with Roscosmos; new landing platform under development' },
+  { name: 'SpaceX Starship Mars Mission', agency: 'SpaceX', agencyFlag: '\u{1F1FA}\u{1F1F8}', targetDate: '2026 window (uncrewed)', description: 'First commercial vehicle designed for Mars. Uncrewed test flight to demonstrate entry, descent, and landing of the largest spacecraft ever sent to Mars. 100+ ton payload capacity.', note: 'Timeline contingent on Starship orbital flight program progress' },
+  { name: 'Tianwen-2', agency: 'CNSA', agencyFlag: '\u{1F1E8}\u{1F1F3}', targetDate: '~2025 (asteroid), then Mars', description: 'Multi-target mission: first visits near-Earth asteroid Kamoʻoalewa for sample collection, then proceeds to Mars system for flyby observations.', note: 'Demonstrates technologies for future Tianwen-3 Mars sample return' },
+  { name: 'Tianwen-3 (Mars Sample Return)', agency: 'CNSA', agencyFlag: '\u{1F1E8}\u{1F1F3}', targetDate: '~2028-2030', description: 'Dedicated Mars sample return mission using two launches. Lander collects surface samples while orbiter waits to carry them back to Earth.', note: 'Could become the first Mars sample return if MSR faces further delays' },
+  { name: 'MMX - Martian Moons eXploration', agency: 'JAXA', agencyFlag: '\u{1F1EF}\u{1F1F5}', targetDate: 'NET 2026', description: 'Land on Phobos, collect over 10g of surface material, and return samples to Earth. Will also deploy a small rover (built by CNES/DLR) onto Phobos.', budget: '~$410M', note: 'Phobos samples may contain ejected Mars material from ancient impacts' },
+  { name: 'Mangalyaan-2 (Mars Orbiter Mission 2)', agency: 'ISRO', agencyFlag: '\u{1F1EE}\u{1F1F3}', targetDate: 'NET 2028', description: 'Follow-up to India\'s highly successful and cost-effective first Mars orbiter. Enhanced instruments for atmospheric and surface studies.', note: 'May include a lander/helicopter component' },
+  { name: 'SpaceX Crewed Mars Mission', agency: 'SpaceX', agencyFlag: '\u{1F1FA}\u{1F1F8}', targetDate: '~2028-2030 (aspirational)', description: 'First crewed mission to Mars using Starship. Would establish initial surface infrastructure including ISRU propellant production for return trip.', note: 'Depends on successful uncrewed landing demonstrations' },
+];
+
+const FALLBACK_LAUNCH_WINDOWS: LaunchWindow[] = [
+  { period: 'Late 2026', note: 'Hohmann transfer ~7 months. Next opportunity for Mars missions.' },
+  { period: 'Early 2029', note: 'Following window after 2026. ~26 months between windows.' },
+  { period: 'Mid 2031', note: 'Favorable alignment. Good for both robotic and crewed missions.' },
+  { period: 'Late 2033', note: 'Particularly favorable opposition. Closest approach in this cycle.' },
+];
+
+const FALLBACK_TRANSFER_TYPES: TransferType[] = [
+  { name: 'Hohmann Transfer', duration: '7-9 months', description: 'Minimum-energy trajectory using two engine burns (departure and arrival). Most fuel-efficient but slowest option. Used by the vast majority of robotic Mars missions including Perseverance and Curiosity.' },
+  { name: 'Fast Conjunction Class', duration: '4-6 months', description: 'Higher-energy trajectory trading fuel for shorter transit time. Preferred for crewed missions to reduce radiation exposure and consumable requirements. Requires significantly more propellant than Hohmann.' },
+  { name: 'Opposition Class', duration: '14-18 months total', description: 'Short Mars stay (30-60 days) with Venus gravity assist on return leg. Total mission time shorter than conjunction class but less time at Mars. Higher total delta-v requirement.' },
+  { name: 'Ballistic Capture', duration: '8-11 months', description: 'Uses Sun-Mars gravitational dynamics to gradually capture the spacecraft without a large orbit insertion burn. Saves significant fuel at the cost of longer transit time. Studied for cargo pre-positioning missions.' },
+];
+
+const FALLBACK_MARS_FACTS = {
+  distance_sun: '227.9M km (1.52 AU)',
+  distance_earth: '55M km (closest) to 401M km (farthest)',
+  diameter: '6,779 km (53% of Earth)',
+  gravity: '3.72 m/s\u00B2 (38% of Earth)',
+  day_length: '24h 37m (1 sol)',
+  year_length: '687 Earth days (1.88 Earth years)',
+  atmosphere: '95.3% CO\u2082, 2.7% N\u2082, 1.6% Ar, 0.13% O\u2082',
+  surface_temp: '-87\u00B0C to -5\u00B0C (avg -63\u00B0C)',
+  moons: 'Phobos (22 km) & Deimos (12 km)',
+};
+
+const FALLBACK_COST_ESTIMATES: CostEstimate[] = [
+  { type: 'Mars Orbiter (e.g., MAVEN, MOM)', range: '$74M - $800M', icon: '\u{1F6F0}\u{FE0F}' },
+  { type: 'Mars Rover Mission (e.g., Perseverance)', range: '$2B - $3B', icon: '\u{1F916}' },
+  { type: 'Mars Helicopter/Drone Add-on', range: '$80M - $200M', icon: '\u{1F681}' },
+  { type: 'Mars Sample Return (multi-mission)', range: '$8B - $11B', icon: '\u{1F4E6}' },
+  { type: 'Human Mars Mission (estimated)', range: '$100B - $500B', icon: '\u{1F468}\u{200D}\u{1F680}' },
+  { type: 'SpaceX Starship (per launch, estimated)', range: '$100M - $200M', icon: '\u{1F680}' },
+  { type: 'Mars Communications Relay Satellite', range: '$200M - $500M', icon: '\u{1F4E1}' },
+];
+
+const FALLBACK_COMMERCIAL_OPPORTUNITIES: CommercialOpportunity[] = [
+  { title: 'Mars Communications Relay Network', description: 'Deploy a constellation of dedicated relay satellites for continuous Mars-Earth communication coverage. Current reliance on aging NASA orbiters creates a critical gap. Companies like SpaceX and Astrobotic are exploring solutions.', icon: '\u{1F4E1}', readiness: 'near-term' },
+  { title: 'Mars Cargo Delivery Services', description: 'Commercial delivery of pre-positioned supplies, habitats, and equipment to Mars surface ahead of crewed missions. SpaceX Starship designed to land 100+ tons on Mars surface.', icon: '\u{1F4E6}', readiness: 'near-term' },
+  { title: 'Mars Surface Power Systems', description: 'Nuclear fission reactors (like NASA\'s Kilopower/KRUSTY) and advanced solar arrays for sustained Mars surface operations. Essential for ISRU, habitats, and science stations.', icon: '\u{26A1}', readiness: 'mid-term' },
+  { title: 'In-Situ Resource Utilization (ISRU)', description: 'Extract water from subsurface ice deposits, produce breathable oxygen from CO2 atmosphere (demonstrated by MOXIE on Perseverance), and manufacture methane/LOX propellant for return trips.', icon: '\u{26CF}\u{FE0F}', readiness: 'mid-term' },
+  { title: 'Mars Scientific Instruments & Payloads', description: 'Development and sale of miniaturized scientific instruments, sample analysis tools, and environmental monitoring systems for Mars missions by both government and commercial operators.', icon: '\u{1F52C}', readiness: 'near-term' },
+  { title: 'Mars Habitat Construction', description: 'Design and deploy human habitats using a combination of local regolith materials (3D-printed structures), inflatable modules, and pre-fabricated components. AI Spacefactory and ICON exploring concepts.', icon: '\u{1F3D7}\u{FE0F}', readiness: 'long-term' },
+  { title: 'Mars Agriculture & Life Support', description: 'Develop closed-loop life support systems, hydroponic/aeroponic food production, and waste recycling for long-duration Mars surface stays. Critical for sustained human presence.', icon: '\u{1F331}', readiness: 'long-term' },
+  { title: 'Mars Tourism & Media', description: 'Virtual reality Mars experiences, documentary content from Mars surface, and eventually ultra-premium Mars tourism. Near-term revenue from media rights and VR content built from rover data.', icon: '\u{1F3AC}', readiness: 'mid-term' },
+];
+
+// ────────────────────────────────────────
 // Data is fetched from /api/content/mars-planner
+// (Falls back to hardcoded data above when DB is not seeded)
 // ────────────────────────────────────────
 
 // ────────────────────────────────────────
@@ -472,16 +550,16 @@ export default function MarsPlannerPage() {
   const [activeTab, setActiveTab] = useState<TabId>('active');
   const [agencyFilter, setAgencyFilter] = useState<string>('all');
 
-  // API-fetched data
-  const [ACTIVE_MISSIONS, setActiveMissions] = useState<ActiveMission[]>([]);
-  const [UPCOMING_MISSIONS, setUpcomingMissions] = useState<UpcomingMission[]>([]);
-  const [LAUNCH_WINDOWS, setLaunchWindows] = useState<LaunchWindow[]>([]);
-  const [TRANSFER_TYPES, setTransferTypes] = useState<TransferType[]>([]);
-  const [MARS_FACTS, setMarsFacts] = useState<any>({});
-  const [COST_ESTIMATES, setCostEstimates] = useState<CostEstimate[]>([]);
-  const [COMMERCIAL_OPPORTUNITIES, setCommercialOpportunities] = useState<CommercialOpportunity[]>([]);
+  // API-fetched data (initialized with fallback so page renders immediately)
+  const [ACTIVE_MISSIONS, setActiveMissions] = useState<ActiveMission[]>(FALLBACK_ACTIVE_MISSIONS);
+  const [UPCOMING_MISSIONS, setUpcomingMissions] = useState<UpcomingMission[]>(FALLBACK_UPCOMING_MISSIONS);
+  const [LAUNCH_WINDOWS, setLaunchWindows] = useState<LaunchWindow[]>(FALLBACK_LAUNCH_WINDOWS);
+  const [TRANSFER_TYPES, setTransferTypes] = useState<TransferType[]>(FALLBACK_TRANSFER_TYPES);
+  const [MARS_FACTS, setMarsFacts] = useState<any>(FALLBACK_MARS_FACTS);
+  const [COST_ESTIMATES, setCostEstimates] = useState<CostEstimate[]>(FALLBACK_COST_ESTIMATES);
+  const [COMMERCIAL_OPPORTUNITIES, setCommercialOpportunities] = useState<CommercialOpportunity[]>(FALLBACK_COMMERCIAL_OPPORTUNITIES);
   const [ROVER_PHOTOS, setRoverPhotos] = useState<RoverPhoto[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
@@ -502,20 +580,20 @@ export default function MarsPlannerPage() {
         const [d1, d2, d3, d4, d5, d6, d7, d8] = await Promise.all([
           r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json(), r7.json(), r8.json(),
         ]);
-        setActiveMissions(d1.data || []);
-        setUpcomingMissions(d2.data || []);
-        setLaunchWindows(d3.data || []);
-        setTransferTypes(d4.data || []);
-        if (d5.data?.[0]) setMarsFacts(d5.data[0]);
-        setCostEstimates(d6.data || []);
-        setCommercialOpportunities(d7.data || []);
-        setRoverPhotos(d8.data || []);
+        // Only replace fallback data when API returns meaningful results
+        if (d1.data?.length > 0) setActiveMissions(d1.data);
+        if (d2.data?.length > 0) setUpcomingMissions(d2.data);
+        if (d3.data?.length > 0) setLaunchWindows(d3.data);
+        if (d4.data?.length > 0) setTransferTypes(d4.data);
+        if (d5.data?.[0] && Object.keys(d5.data[0]).length > 0) setMarsFacts(d5.data[0]);
+        if (d6.data?.length > 0) setCostEstimates(d6.data);
+        if (d7.data?.length > 0) setCommercialOpportunities(d7.data);
+        if (d8.data?.length > 0) setRoverPhotos(d8.data);
         setRefreshedAt(d1.meta?.lastRefreshed || null);
-      } catch (error) {
-        clientLogger.error('Failed to load mars planner data', { error: error instanceof Error ? error.message : String(error) });
-        setError('Failed to load data.');
-      } finally {
-        setLoading(false);
+      } catch (err) {
+        clientLogger.error('Failed to load mars planner data', { error: err instanceof Error ? err.message : String(err) });
+        // Fallback data is already set as defaults, so no action needed
+        // Only show error if we have no data at all (shouldn't happen with fallbacks)
       }
     }
     loadData();

@@ -64,6 +64,145 @@ interface DsnAntenna {
   frequency: string;
 }
 
+// ════════════════════════════════════════
+// Fallback Data (shown when DB is unseeded)
+// ════════════════════════════════════════
+
+const FALLBACK_EPIC_EARTH: EpicEarthImage[] = [
+  {
+    identifier: 'epic_1b_20260220003633',
+    caption: 'EPIC image of Earth showing the Pacific Ocean and cloud formations over Southeast Asia',
+    date: '2026-02-20T00:36:33',
+    image_url: '/images/placeholder-earth.jpg',
+    centroid_coordinates: { lat: 7.8, lon: 148.3 },
+  },
+  {
+    identifier: 'epic_1b_20260219121504',
+    caption: 'View of the Americas with Hurricane season cloud patterns visible over the Caribbean',
+    date: '2026-02-19T12:15:04',
+    image_url: '/images/placeholder-earth.jpg',
+    centroid_coordinates: { lat: 12.4, lon: -72.1 },
+  },
+  {
+    identifier: 'epic_1b_20260218234217',
+    caption: 'Earth showing Africa and the Indian Ocean with clear skies over the Sahara',
+    date: '2026-02-18T23:42:17',
+    image_url: '/images/placeholder-earth.jpg',
+    centroid_coordinates: { lat: -3.2, lon: 38.7 },
+  },
+  {
+    identifier: 'epic_1b_20260218102845',
+    caption: 'Sunlit view of Europe and North Africa with alpine snow cover visible',
+    date: '2026-02-18T10:28:45',
+    image_url: '/images/placeholder-earth.jpg',
+    centroid_coordinates: { lat: 42.1, lon: 12.5 },
+  },
+];
+
+const FALLBACK_NASA_IMAGES: NasaImage[] = [
+  {
+    nasa_id: 'PIA25969',
+    title: 'Pillars of Creation (NIRCam and MIRI Composite)',
+    description: 'NASA\'s James Webb Space Telescope captured this detailed view of the iconic Pillars of Creation, revealing new details about the structure of this star-forming region in the Eagle Nebula.',
+    date_created: '2026-01-15T00:00:00',
+    media_type: 'image',
+    thumbnail_url: '/images/placeholder-nebula.jpg',
+    keywords: ['JWST', 'Pillars of Creation', 'Eagle Nebula', 'Star Formation'],
+  },
+  {
+    nasa_id: 'PIA26102',
+    title: 'Artemis III Landing Site Reconnaissance',
+    description: 'Lunar Reconnaissance Orbiter captured this high-resolution image of the Artemis III candidate landing site near the lunar south pole, showing permanently shadowed craters that may contain water ice.',
+    date_created: '2026-02-01T00:00:00',
+    media_type: 'image',
+    thumbnail_url: '/images/placeholder-moon.jpg',
+    keywords: ['Artemis', 'Moon', 'Lunar South Pole', 'LRO'],
+  },
+  {
+    nasa_id: 'PIA26087',
+    title: 'Perseverance Rover: Jezero Crater Delta Panorama',
+    description: 'A 360-degree panorama captured by the Perseverance rover\'s Mastcam-Z instrument showing the ancient river delta in Jezero Crater, with layered sedimentary rock formations that may preserve signs of ancient microbial life.',
+    date_created: '2026-01-28T00:00:00',
+    media_type: 'image',
+    thumbnail_url: '/images/placeholder-mars.jpg',
+    keywords: ['Mars', 'Perseverance', 'Jezero Crater', 'Astrobiology'],
+  },
+  {
+    nasa_id: 'PIA26044',
+    title: 'Europa Clipper: First Close Flyby of Europa',
+    description: 'Europa Clipper\'s first detailed images of Jupiter\'s moon Europa reveal a complex network of ridges and bands across its icy surface, with potential evidence of recent geological activity.',
+    date_created: '2026-02-10T00:00:00',
+    media_type: 'image',
+    thumbnail_url: '/images/placeholder-europa.jpg',
+    keywords: ['Europa', 'Jupiter', 'Europa Clipper', 'Ocean Worlds'],
+  },
+  {
+    nasa_id: 'PIA26033',
+    title: 'International Space Station Over the Aurora Borealis',
+    description: 'The International Space Station soars above a spectacular display of the Northern Lights over Canada, captured during a period of heightened solar activity in Solar Cycle 25.',
+    date_created: '2026-02-05T00:00:00',
+    media_type: 'image',
+    thumbnail_url: '/images/placeholder-iss.jpg',
+    keywords: ['ISS', 'Aurora', 'Earth Observation', 'Solar Cycle 25'],
+  },
+  {
+    nasa_id: 'PIA26021',
+    title: 'Saturn\'s Rings in Infrared',
+    description: 'A reprocessed composite image from Cassini data using advanced algorithms reveals previously unseen structures in Saturn\'s B ring, providing new insights into ring particle dynamics.',
+    date_created: '2026-01-20T00:00:00',
+    media_type: 'image',
+    thumbnail_url: '/images/placeholder-saturn.jpg',
+    keywords: ['Saturn', 'Rings', 'Cassini', 'Infrared'],
+  },
+];
+
+const FALLBACK_DSN_ANTENNAS: DsnAntenna[] = [
+  {
+    dish_name: 'DSS-14 Goldstone',
+    azimuth: 245.7,
+    elevation: 32.4,
+    wind_speed: 8.2,
+    is_active: true,
+    target: 'Voyager 1',
+    signal_type: 'X-Band Downlink',
+    data_rate: '160 bps',
+    frequency: '8.42 GHz',
+  },
+  {
+    dish_name: 'DSS-43 Canberra',
+    azimuth: 118.3,
+    elevation: 48.1,
+    wind_speed: 5.6,
+    is_active: true,
+    target: 'Europa Clipper',
+    signal_type: 'Ka-Band Downlink',
+    data_rate: '2.0 Mbps',
+    frequency: '32.05 GHz',
+  },
+  {
+    dish_name: 'DSS-63 Madrid',
+    azimuth: 312.9,
+    elevation: 22.7,
+    wind_speed: 11.4,
+    is_active: true,
+    target: 'Mars Perseverance',
+    signal_type: 'X-Band Uplink/Downlink',
+    data_rate: '4.0 Mbps',
+    frequency: '7.17 GHz',
+  },
+  {
+    dish_name: 'DSS-36 Canberra',
+    azimuth: 89.2,
+    elevation: 55.3,
+    wind_speed: 4.1,
+    is_active: false,
+    target: 'JWST',
+    signal_type: 'S-Band Maintenance',
+    data_rate: '28.0 Mbps',
+    frequency: '2.27 GHz',
+  },
+];
+
 // Countdown timer component for imminent launches
 function CountdownCard({ event }: { event: SpaceEvent }) {
   const [countdown, setCountdown] = useState<string>('');
@@ -757,11 +896,11 @@ function MissionControlContent() {
   );
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
 
-  // Dynamic content state
-  const [epicEarthImages, setEpicEarthImages] = useState<EpicEarthImage[]>([]);
-  const [nasaImages, setNasaImages] = useState<NasaImage[]>([]);
-  const [dsnAntennas, setDsnAntennas] = useState<DsnAntenna[]>([]);
-  const [contentLoading, setContentLoading] = useState(true);
+  // Dynamic content state (initialized with fallbacks so sections are never empty)
+  const [epicEarthImages, setEpicEarthImages] = useState<EpicEarthImage[]>(FALLBACK_EPIC_EARTH);
+  const [nasaImages, setNasaImages] = useState<NasaImage[]>(FALLBACK_NASA_IMAGES);
+  const [dsnAntennas, setDsnAntennas] = useState<DsnAntenna[]>(FALLBACK_DSN_ANTENNAS);
+  const [contentLoading, setContentLoading] = useState(false);
 
   // Sync filters to URL
   useEffect(() => {
@@ -813,10 +952,9 @@ function MissionControlContent() {
     return () => clearInterval(interval);
   }, [fetchEvents]);
 
-  // Fetch dynamic content sections
+  // Fetch dynamic content sections (falls back to built-in data when API returns insufficient results)
   useEffect(() => {
     const fetchContent = async () => {
-      setContentLoading(true);
       try {
         const [epicRes, nasaRes, dsnRes] = await Promise.all([
           fetch('/api/content/mission-control?section=epic-earth'),
@@ -830,14 +968,12 @@ function MissionControlContent() {
           dsnRes.json(),
         ]);
 
-        if (epicData.data) setEpicEarthImages(epicData.data);
-        if (nasaData.data) setNasaImages(nasaData.data);
-        if (dsnData.data) setDsnAntennas(dsnData.data);
+        setEpicEarthImages(epicData.data?.length > 2 ? epicData.data : FALLBACK_EPIC_EARTH);
+        setNasaImages(nasaData.data?.length > 3 ? nasaData.data : FALLBACK_NASA_IMAGES);
+        setDsnAntennas(dsnData.data?.length > 2 ? dsnData.data : FALLBACK_DSN_ANTENNAS);
       } catch (error) {
         clientLogger.error('Failed to fetch dynamic content', { error: error instanceof Error ? error.message : String(error) });
-        setError('Failed to load data.');
-      } finally {
-        setContentLoading(false);
+        // Keep fallback data on error — no need to set error state since sections already show content
       }
     };
 

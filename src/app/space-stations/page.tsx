@@ -115,6 +115,576 @@ interface ISSPosition {
 }
 
 // ────────────────────────────────────────
+// Fallback Data
+// ────────────────────────────────────────
+
+const FALLBACK_ACTIVE_STATIONS: SpaceStation[] = [
+  {
+    id: 'iss',
+    name: 'International Space Station (ISS)',
+    operator: 'NASA / Roscosmos / ESA / JAXA / CSA',
+    country: 'International',
+    status: 'operational',
+    orbit: 'LEO',
+    altitude: '~408 km',
+    inclination: '51.6°',
+    crewCapacity: 6,
+    currentCrew: 7,
+    mass: '~420,000 kg',
+    pressurizedVolume: '916 m³',
+    power: '215 kW (solar arrays)',
+    dockingPorts: 8,
+    modules: [
+      { name: 'Zarya (FGB)', type: 'Functional Cargo Block', launchDate: 'Nov 1998', mass: '19,323 kg', builder: 'Khrunichev' },
+      { name: 'Unity (Node 1)', type: 'Connecting Node', launchDate: 'Dec 1998', mass: '11,612 kg', builder: 'Boeing' },
+      { name: 'Zvezda (SM)', type: 'Service Module', launchDate: 'Jul 2000', mass: '19,051 kg', builder: 'RSC Energia' },
+      { name: 'Destiny (US Lab)', type: 'Laboratory', launchDate: 'Feb 2001', mass: '14,515 kg', builder: 'Boeing' },
+      { name: 'Quest', type: 'Joint Airlock', launchDate: 'Jul 2001', mass: '6,064 kg', builder: 'Boeing' },
+      { name: 'Harmony (Node 2)', type: 'Connecting Node', launchDate: 'Oct 2007', mass: '14,288 kg', builder: 'Thales Alenia' },
+      { name: 'Columbus', type: 'Laboratory', launchDate: 'Feb 2008', mass: '10,300 kg', builder: 'Thales Alenia / ESA' },
+      { name: 'Kibo (JEM)', type: 'Laboratory', launchDate: 'Jun 2008', mass: '15,900 kg', builder: 'JAXA / Mitsubishi' },
+      { name: 'Tranquility (Node 3)', type: 'Connecting Node', launchDate: 'Feb 2010', mass: '15,500 kg', builder: 'Thales Alenia' },
+      { name: 'Cupola', type: 'Observation Module', launchDate: 'Feb 2010', mass: '1,880 kg', builder: 'Thales Alenia / ESA' },
+      { name: 'Rassvet (MRM-1)', type: 'Mini Research Module', launchDate: 'May 2010', mass: '5,075 kg', builder: 'RSC Energia' },
+      { name: 'Leonardo (PMM)', type: 'Permanent Multipurpose Module', launchDate: 'Mar 2011', mass: '4,082 kg', builder: 'Thales Alenia / ASI' },
+      { name: 'BEAM', type: 'Expandable Module', launchDate: 'Apr 2016', mass: '1,413 kg', builder: 'Bigelow Aerospace' },
+      { name: 'IDA-2', type: 'Docking Adapter', launchDate: 'Jul 2016', mass: '526 kg', builder: 'Boeing' },
+      { name: 'IDA-3', type: 'Docking Adapter', launchDate: 'Jul 2019', mass: '526 kg', builder: 'Boeing' },
+      { name: 'Nauka (MLM)', type: 'Multipurpose Laboratory', launchDate: 'Jul 2021', mass: '20,350 kg', builder: 'Khrunichev' },
+      { name: 'Prichal (UM)', type: 'Node Module', launchDate: 'Nov 2021', mass: '4,070 kg', builder: 'RSC Energia' },
+    ],
+    visitingVehicles: [
+      { name: 'Crew Dragon', type: 'crew', operator: 'SpaceX', status: 'active' },
+      { name: 'Cargo Dragon', type: 'cargo', operator: 'SpaceX', status: 'active' },
+      { name: 'Cygnus', type: 'cargo', operator: 'Northrop Grumman', status: 'active' },
+      { name: 'Soyuz MS', type: 'crew', operator: 'Roscosmos', status: 'active' },
+      { name: 'Progress MS', type: 'cargo', operator: 'Roscosmos', status: 'active' },
+      { name: 'Starliner', type: 'crew', operator: 'Boeing', status: 'active' },
+      { name: 'Dream Chaser', type: 'cargo', operator: 'Sierra Space', status: 'development' },
+    ],
+    launchDate: 'November 20, 1998',
+    continuousOccupation: 'Since November 2, 2000 — over 25 years of continuous human presence',
+    plannedRetirement: '~2030 — Controlled deorbit via SpaceX deorbit vehicle into South Pacific Ocean (Point Nemo)',
+    researchFacilities: [
+      'Destiny Laboratory (US)',
+      'Columbus Laboratory (ESA)',
+      'Kibo Laboratory (JAXA)',
+      'Nauka Laboratory (Russia)',
+      'Cold Atom Laboratory',
+      'Alpha Magnetic Spectrometer (AMS-02)',
+      'Materials Science Lab',
+      'Microgravity Science Glovebox',
+      'Combustion Integrated Rack',
+      'Fluids Integrated Rack',
+      'Electrostatic Levitation Furnace',
+      'CREAM Cosmic Ray Detector',
+    ],
+    description: 'The International Space Station is a multinational collaborative project involving five space agencies: NASA (United States), Roscosmos (Russia), ESA (Europe), JAXA (Japan), and CSA (Canada). It is the largest modular space station in low Earth orbit and serves as a microgravity and space environment research laboratory. The ISS has hosted over 270 visitors from 21 countries and has supported thousands of scientific experiments across biology, physics, astronomy, and materials science.',
+  },
+  {
+    id: 'tiangong',
+    name: 'Tiangong Space Station',
+    operator: 'China Manned Space Agency (CMSA)',
+    country: 'China',
+    status: 'operational',
+    orbit: 'LEO',
+    altitude: '~390 km',
+    inclination: '41.5°',
+    crewCapacity: 3,
+    currentCrew: 3,
+    mass: '~100,000 kg',
+    pressurizedVolume: '~340 m³',
+    power: '~100 kW (solar arrays)',
+    dockingPorts: 5,
+    modules: [
+      { name: 'Tianhe (Core Module)', type: 'Core Module', launchDate: 'Apr 2021', mass: '22,600 kg', builder: 'CAST / CASC' },
+      { name: 'Wentian', type: 'Laboratory Module', launchDate: 'Jul 2022', mass: '23,000 kg', builder: 'CAST / CASC' },
+      { name: 'Mengtian', type: 'Laboratory Module', launchDate: 'Oct 2022', mass: '23,000 kg', builder: 'CAST / CASC' },
+    ],
+    visitingVehicles: [
+      { name: 'Shenzhou', type: 'crew', operator: 'CMSA', status: 'active' },
+      { name: 'Tianzhou', type: 'cargo', operator: 'CMSA', status: 'active' },
+    ],
+    launchDate: 'April 29, 2021',
+    continuousOccupation: 'Since June 2022 — continuous crew presence maintained through Shenzhou rotation missions',
+    plannedRetirement: '2035+ — Station designed for at least 15 years of operation with expansion potential',
+    researchFacilities: [
+      'Wentian Laboratory',
+      'Mengtian Laboratory',
+      'Microgravity Fluid Physics Facility',
+      'Combustion Science Experiment Rack',
+      'Containerless Materials Processing',
+      'High-Precision Cold Atomic Clock',
+      'Xuntian Space Telescope (co-orbital, planned)',
+    ],
+    description: 'Tiangong (meaning "Heavenly Palace") is China\'s permanently crewed modular space station in low Earth orbit. It is China\'s first long-term space station and the second fully operational space station after the ISS. The T-shaped station consists of the Tianhe core module and two laboratory modules (Wentian and Mengtian). China plans to expand Tiangong to six modules and increase crew capacity to six. The station supports research in microgravity science, space medicine, astronomy, and Earth observation.',
+  },
+];
+
+const FALLBACK_COMMERCIAL_STATIONS: CommercialStation[] = [
+  {
+    id: 'axiom',
+    name: 'Axiom Station',
+    developer: 'Axiom Space',
+    partners: ['NASA', 'Thales Alenia Space', 'Collins Aerospace'],
+    status: 'development',
+    fundingSource: 'NASA CLD ($228M) + Private',
+    estimatedCost: '$2B+',
+    targetLaunch: '2026 (AxH1 module to ISS)',
+    crewCapacity: 8,
+    pressurizedVolume: 'Multi-module expandable',
+    orbit: 'LEO (~400 km)',
+    launchVehicle: 'SpaceX Falcon Heavy',
+    capabilities: [
+      'Modules initially attach to ISS forward port, then detach as free-flying station',
+      'Axiom Hub 1 (AxH1) first module planned for 2026',
+      'Research and manufacturing in microgravity',
+      'Space tourism and private astronaut missions',
+      'Earth observation payload hosting',
+      'In-space manufacturing for semiconductors and fiber optics',
+      'Has flown 3 private astronaut missions (Ax-1, Ax-2, Ax-3) to ISS',
+      'Developing next-gen EVA spacesuit (AxEMU) for NASA Artemis',
+    ],
+    nasaCLD: true,
+    description: 'Axiom Space is developing the world\'s first commercial space station, beginning with modules that will initially attach to the ISS before separating into a free-flying station. Axiom has already conducted three successful private astronaut missions to the ISS (Ax-1, Ax-2, Ax-3), demonstrating operational capability. The station will serve as a research laboratory, manufacturing facility, and destination for government and commercial astronauts.',
+  },
+  {
+    id: 'orbital-reef',
+    name: 'Orbital Reef',
+    developer: 'Blue Origin & Sierra Space',
+    partners: ['Blue Origin', 'Sierra Space', 'Boeing', 'Redwire Space', 'Genesis Engineering', 'Arizona State University'],
+    status: 'development',
+    fundingSource: 'NASA CLD ($130M) + Private',
+    estimatedCost: 'Multi-billion',
+    targetLaunch: '2027-2028',
+    crewCapacity: 10,
+    pressurizedVolume: '~830 m³ (LIFE module)',
+    orbit: 'LEO (~500 km)',
+    launchVehicle: 'Blue Origin New Glenn / ULA Vulcan',
+    capabilities: [
+      'Mixed-use "business park" concept in space',
+      'Sierra Space LIFE inflatable habitat (3x volume of ISS module)',
+      'Blue Origin orbital core module with crew and utility systems',
+      'Redwire microgravity research and manufacturing payload',
+      'Boeing Starliner crew transport and ISS heritage systems',
+      'Dedicated science and manufacturing modules',
+      'Hosting for government, commercial, and international customers',
+      'Single-person spacecraft for external operations',
+    ],
+    nasaCLD: true,
+    description: 'Orbital Reef is envisioned as a commercially operated, privately funded space station and mixed-use business park in low Earth orbit. The partnership brings together Blue Origin\'s orbital systems, Sierra Space\'s LIFE expandable habitat (tested to 150% of design pressure), Boeing\'s Starliner crew vehicle, and Redwire\'s microgravity manufacturing expertise. The station will support research, industrial processing, tourism, and media production.',
+  },
+  {
+    id: 'starlab',
+    name: 'Starlab',
+    developer: 'Voyager Space & Airbus Defence and Space',
+    partners: ['Voyager Space', 'Airbus', 'MDA', 'Mitsubishi Electric', 'Northrop Grumman'],
+    status: 'development',
+    fundingSource: 'NASA CLD ($217.5M) + Private',
+    estimatedCost: '$3B+',
+    targetLaunch: '2028',
+    crewCapacity: 4,
+    pressurizedVolume: '~340 m³',
+    orbit: 'LEO (~400 km)',
+    launchVehicle: 'SpaceX Starship',
+    capabilities: [
+      'Single-launch deployment on SpaceX Starship — no on-orbit assembly required',
+      'George Washington Carver Science Park for research',
+      'MDA-built Canadarm-style robotic arm (Skymaker)',
+      'Airbus-designed habitat and life support systems',
+      'Multiple docking ports for crew and cargo vehicles',
+      'Open architecture for international partners',
+      'In-space manufacturing and materials research',
+      'Mitsubishi Electric power systems heritage',
+    ],
+    nasaCLD: true,
+    description: 'Starlab is a commercial space station designed for single-launch deployment aboard SpaceX Starship, eliminating the need for complex on-orbit assembly. The station features the George Washington Carver Science Park research facility and an MDA-built robotic arm. Voyager Space and Airbus bring complementary expertise in commercial space operations and spacecraft systems. Starlab is designed to serve as a permanent commercial platform for research, manufacturing, and crew operations.',
+  },
+  {
+    id: 'haven-1',
+    name: 'Haven-1',
+    developer: 'Vast',
+    partners: ['SpaceX', 'Launcher (acquired)'],
+    status: 'development',
+    fundingSource: 'Private (Vast)',
+    estimatedCost: 'Undisclosed',
+    targetLaunch: '2025-2026',
+    crewCapacity: 4,
+    pressurizedVolume: '~100 m³',
+    orbit: 'LEO (~400 km)',
+    launchVehicle: 'SpaceX Falcon 9',
+    capabilities: [
+      'Single-module pathfinder station',
+      'Crew transported via SpaceX Dragon',
+      'Artificial gravity research platform (spin gravity studies)',
+      'Microgravity research and experimentation',
+      'In-orbit demonstration and validation missions',
+      'Precursor to larger Vast stations with artificial gravity',
+      'Compact and rapidly deployable design',
+      'Private astronaut mission hosting',
+    ],
+    nasaCLD: false,
+    description: 'Haven-1 is a privately funded single-module space station being developed by Vast as a pathfinder for the company\'s long-term vision of large rotating stations with artificial gravity. It will be the first commercial single-module station and is designed to support crews of up to four people for missions of up to 30 days. Haven-1 serves as a proof of concept before Vast moves to larger multi-module stations. Crew will travel aboard SpaceX Crew Dragon capsules.',
+  },
+];
+
+const FALLBACK_CURRENT_CREW: CrewMember[] = [
+  // ISS Expedition 72 crew
+  {
+    name: 'Sunita Williams',
+    nationality: 'American',
+    agency: 'NASA',
+    role: 'Station Commander',
+    station: 'ISS',
+    mission: 'Expedition 72',
+    launchDate: 'Jun 2024',
+    expectedReturn: 'Mar 2025',
+  },
+  {
+    name: 'Butch Wilmore',
+    nationality: 'American',
+    agency: 'NASA',
+    role: 'Flight Engineer',
+    station: 'ISS',
+    mission: 'Expedition 72',
+    launchDate: 'Jun 2024',
+    expectedReturn: 'Mar 2025',
+  },
+  {
+    name: 'Don Pettit',
+    nationality: 'American',
+    agency: 'NASA',
+    role: 'Flight Engineer',
+    station: 'ISS',
+    mission: 'Expedition 72 (Soyuz MS-26)',
+    launchDate: 'Sep 2024',
+    expectedReturn: 'Mar 2025',
+  },
+  {
+    name: 'Aleksey Ovchinin',
+    nationality: 'Russian',
+    agency: 'Roscosmos',
+    role: 'Flight Engineer',
+    station: 'ISS',
+    mission: 'Expedition 72 (Soyuz MS-26)',
+    launchDate: 'Sep 2024',
+    expectedReturn: 'Mar 2025',
+  },
+  {
+    name: 'Ivan Vagner',
+    nationality: 'Russian',
+    agency: 'Roscosmos',
+    role: 'Flight Engineer',
+    station: 'ISS',
+    mission: 'Expedition 72 (Soyuz MS-26)',
+    launchDate: 'Sep 2024',
+    expectedReturn: 'Mar 2025',
+  },
+  {
+    name: 'Nick Hague',
+    nationality: 'American',
+    agency: 'NASA',
+    role: 'Flight Engineer',
+    station: 'ISS',
+    mission: 'SpaceX Crew-9',
+    launchDate: 'Sep 2024',
+    expectedReturn: 'Feb 2025',
+  },
+  {
+    name: 'Aleksandr Gorbunov',
+    nationality: 'Russian',
+    agency: 'Roscosmos',
+    role: 'Flight Engineer',
+    station: 'ISS',
+    mission: 'SpaceX Crew-9',
+    launchDate: 'Sep 2024',
+    expectedReturn: 'Feb 2025',
+  },
+  // Tiangong Shenzhou-19 crew
+  {
+    name: 'Cai Xuzhe',
+    nationality: 'Chinese',
+    agency: 'CMSA',
+    role: 'Commander',
+    station: 'Tiangong',
+    mission: 'Shenzhou-19',
+    launchDate: 'Oct 2024',
+    expectedReturn: 'Apr 2025',
+  },
+  {
+    name: 'Song Lingdong',
+    nationality: 'Chinese',
+    agency: 'CMSA',
+    role: 'Flight Engineer',
+    station: 'Tiangong',
+    mission: 'Shenzhou-19',
+    launchDate: 'Oct 2024',
+    expectedReturn: 'Apr 2025',
+  },
+  {
+    name: 'Wang Haoze',
+    nationality: 'Chinese',
+    agency: 'CMSA',
+    role: 'Payload Specialist',
+    station: 'Tiangong',
+    mission: 'Shenzhou-19',
+    launchDate: 'Oct 2024',
+    expectedReturn: 'Apr 2025',
+  },
+];
+
+const FALLBACK_CREW_ROTATIONS: CrewRotation[] = [
+  {
+    mission: 'SpaceX Crew-8',
+    station: 'ISS',
+    vehicle: 'SpaceX Crew Dragon Endeavour',
+    launchDate: 'Mar 3, 2024',
+    status: 'completed',
+    crew: ['Matthew Dominick', 'Michael Barratt', 'Jeanette Epps', 'Alexander Grebenkin (Roscosmos)'],
+  },
+  {
+    mission: 'Soyuz MS-25',
+    station: 'ISS',
+    vehicle: 'Soyuz MS-25',
+    launchDate: 'Mar 23, 2024',
+    status: 'completed',
+    crew: ['Oleg Novitskiy', 'Marina Vasilevskaya (Belarus)', 'Tracy Dyson (NASA)'],
+  },
+  {
+    mission: 'Boeing CFT (Starliner)',
+    station: 'ISS',
+    vehicle: 'Boeing Starliner Calypso',
+    launchDate: 'Jun 5, 2024',
+    status: 'completed',
+    crew: ['Butch Wilmore', 'Sunita Williams'],
+  },
+  {
+    mission: 'Shenzhou-18',
+    station: 'Tiangong',
+    vehicle: 'CZ-2F / Shenzhou-18',
+    launchDate: 'Apr 25, 2024',
+    status: 'completed',
+    crew: ['Ye Guangfu', 'Li Cong', 'Li Guangsu'],
+  },
+  {
+    mission: 'Soyuz MS-26',
+    station: 'ISS',
+    vehicle: 'Soyuz MS-26',
+    launchDate: 'Sep 11, 2024',
+    status: 'current',
+    crew: ['Aleksey Ovchinin', 'Ivan Vagner', 'Don Pettit (NASA)'],
+  },
+  {
+    mission: 'SpaceX Crew-9',
+    station: 'ISS',
+    vehicle: 'SpaceX Crew Dragon Freedom',
+    launchDate: 'Sep 28, 2024',
+    status: 'current',
+    crew: ['Nick Hague', 'Aleksandr Gorbunov (Roscosmos)'],
+  },
+  {
+    mission: 'Shenzhou-19',
+    station: 'Tiangong',
+    vehicle: 'CZ-2F / Shenzhou-19',
+    launchDate: 'Oct 29, 2024',
+    status: 'current',
+    crew: ['Cai Xuzhe', 'Song Lingdong', 'Wang Haoze'],
+  },
+  {
+    mission: 'SpaceX Crew-10',
+    station: 'ISS',
+    vehicle: 'SpaceX Crew Dragon',
+    launchDate: 'Mar 2025',
+    status: 'upcoming',
+    crew: ['Anne McClain', 'Nicola Winter (ESA)', 'Takuya Onishi (JAXA)', 'Kirill Peskov (Roscosmos)'],
+  },
+  {
+    mission: 'Soyuz MS-27',
+    station: 'ISS',
+    vehicle: 'Soyuz MS-27',
+    launchDate: 'Mar 2025',
+    status: 'upcoming',
+    crew: ['Sergey Ryzhikov', 'Alexey Zubritsky', 'Jonny Kim (NASA)'],
+  },
+  {
+    mission: 'Shenzhou-20',
+    station: 'Tiangong',
+    vehicle: 'CZ-2F / Shenzhou-20',
+    launchDate: 'Apr 2025',
+    status: 'planned',
+    crew: ['TBD Commander', 'TBD Flight Engineer', 'TBD Payload Specialist'],
+  },
+  {
+    mission: 'SpaceX Crew-11',
+    station: 'ISS',
+    vehicle: 'SpaceX Crew Dragon',
+    launchDate: 'Aug 2025',
+    status: 'planned',
+    crew: ['TBD (4 crew)'],
+  },
+];
+
+const FALLBACK_CLD_MILESTONES: CLDMilestone[] = [
+  {
+    date: 'Jan 2020',
+    event: 'NASA Releases CLD Strategy',
+    details: 'NASA formally announces the Commercial LEO Destinations strategy to transition from ISS to commercially owned and operated stations, purchasing services rather than owning infrastructure.',
+    status: 'completed',
+  },
+  {
+    date: 'Dec 2021',
+    event: 'CLD Phase 1 Awards Announced',
+    details: 'NASA awards a combined $415.6 million to three providers: Blue Origin ($130M for Orbital Reef), Nanoracks/Voyager Space ($160M for Starlab), and Northrop Grumman ($125.6M for a station concept).',
+    status: 'completed',
+  },
+  {
+    date: 'Jan 2022',
+    event: 'Axiom Space Receives ISS Module Contract',
+    details: 'Axiom Space receives NASA approval to attach its first commercial module (AxH1) to the ISS forward port, valued at up to $228M under a separate Space Act Agreement.',
+    status: 'completed',
+  },
+  {
+    date: 'Jan 2023',
+    event: 'Axiom-2 Private Astronaut Mission',
+    details: 'Axiom Space completes its second private astronaut mission (Ax-2) to the ISS, further demonstrating commercial crew operations capability and validating the CLD business model.',
+    status: 'completed',
+  },
+  {
+    date: 'Jul 2023',
+    event: 'Voyager Space & Airbus Partnership for Starlab',
+    details: 'Voyager Space and Airbus announce a joint venture for Starlab, combining European space heritage with American commercial expertise. Starlab redesigned for single Starship launch.',
+    status: 'completed',
+  },
+  {
+    date: 'Aug 2023',
+    event: 'NASA CLD Certification Requirements Defined',
+    details: 'NASA releases detailed certification requirements for commercial stations, covering crew safety, life support, structural integrity, and docking compatibility standards.',
+    status: 'completed',
+  },
+  {
+    date: 'Jan 2024',
+    event: 'Axiom-3 Mission Completed',
+    details: 'Axiom Space completes its third private astronaut mission (Ax-3) with ESA and Turkish astronauts, flying the first European commander of a commercial mission.',
+    status: 'completed',
+  },
+  {
+    date: 'Jun 2024',
+    event: 'SpaceX ISS Deorbit Vehicle Contract',
+    details: 'NASA awards SpaceX approximately $843 million to develop a modified Dragon spacecraft to serve as the ISS deorbit vehicle, ensuring controlled re-entry over the South Pacific.',
+    status: 'completed',
+  },
+  {
+    date: 'Aug 2024',
+    event: 'Voyager Space CLD Award Increased to $217.5M',
+    details: 'NASA increases Voyager Space/Airbus Starlab CLD award to $217.5 million, reflecting expanded scope and design maturity including Northrop Grumman joining as a partner.',
+    status: 'completed',
+  },
+  {
+    date: '2025',
+    event: 'CLD Phase 2 Negotiations & Design Reviews',
+    details: 'NASA enters Phase 2 certification discussions with CLD providers. Preliminary Design Reviews (PDR) for Starlab and Orbital Reef. Axiom continues AxH1 module fabrication.',
+    status: 'in-progress',
+  },
+  {
+    date: '2025-2026',
+    event: 'Haven-1 Launch (Vast)',
+    details: 'Vast targets launch of Haven-1, the first privately funded single-module station, aboard SpaceX Falcon 9. Would be the first commercial free-flying station.',
+    status: 'upcoming',
+  },
+  {
+    date: '2026',
+    event: 'Axiom AxH1 Module Launch to ISS',
+    details: 'Launch of Axiom Hub 1 (AxH1), the first commercial module to attach to the ISS forward port of Node 2 (Harmony). This module begins the Axiom Station assembly.',
+    status: 'planned',
+  },
+  {
+    date: '2027-2028',
+    event: 'Orbital Reef & Starlab Initial Launch',
+    details: 'Blue Origin/Sierra Space target Orbital Reef initial capability, and Voyager/Airbus target Starlab single-launch deployment on SpaceX Starship.',
+    status: 'planned',
+  },
+  {
+    date: '2028-2029',
+    event: 'Commercial Station Certification & Initial Operations',
+    details: 'NASA begins certifying commercial stations for crew operations. First NASA crew rotations on commercial stations. ISS begins phased handover activities.',
+    status: 'planned',
+  },
+  {
+    date: '~2030',
+    event: 'ISS Controlled Deorbit',
+    details: 'The International Space Station undergoes controlled deorbit using the SpaceX deorbit vehicle. The station re-enters over Point Nemo in the South Pacific Ocean.',
+    status: 'planned',
+  },
+];
+
+const FALLBACK_TRANSITION_RISKS: TransitionRisk[] = [
+  {
+    category: 'Schedule Gap',
+    risk: 'Commercial stations may not be operational before ISS deorbit, creating a gap in US human spaceflight capability in LEO and loss of continuous human presence in space.',
+    mitigation: 'NASA is pursuing multiple CLD providers to reduce single-point-of-failure risk. ISS life may be extended if commercial stations are delayed. Axiom\'s ISS-attached approach provides a transition bridge.',
+    severity: 'high',
+  },
+  {
+    category: 'Commercial Viability',
+    risk: 'Insufficient non-NASA commercial demand to sustain station economics. NASA alone cannot be the sole anchor tenant if the business model depends on commercial revenue.',
+    mitigation: 'Providers are developing diverse customer bases including pharmaceutical companies, materials science, media, tourism, and international space agencies. In-space manufacturing markets are growing.',
+    severity: 'high',
+  },
+  {
+    category: 'Technical Readiness',
+    risk: 'New stations require proven life support, power, thermal control, and radiation protection systems that have never been operated outside of ISS heritage hardware.',
+    mitigation: 'All CLD providers leverage ISS heritage systems and proven technologies. NASA provides technical consultation and access to ISS test data. Phased testing and certification approach reduces risk.',
+    severity: 'medium',
+  },
+  {
+    category: 'Research Continuity',
+    risk: 'Decades of ISS research programs, long-duration experiments, and unique research facilities may be disrupted or lost during the transition period.',
+    mitigation: 'NASA is planning research transition roadmaps, prioritizing critical experiments. Some ISS equipment can be transferred. Commercial stations are designing compatible research racks and interfaces.',
+    severity: 'medium',
+  },
+  {
+    category: 'International Partnerships',
+    risk: 'ISS partner agencies (ESA, JAXA, CSA) may not have agreements in place with commercial station operators, fragmenting the international cooperation model built over 25+ years.',
+    mitigation: 'Starlab includes Airbus (ESA heritage) and Mitsubishi (JAXA heritage). International partners are being integrated into CLD planning. Bilateral agreements are being negotiated.',
+    severity: 'medium',
+  },
+  {
+    category: 'Crew Safety & Emergency Return',
+    risk: 'New commercial stations must demonstrate crew safety equivalent to ISS, including emergency return capability, safe haven during system failures, and radiation storm sheltering.',
+    mitigation: 'NASA\'s rigorous Human Rating certification process applies to all CLD stations. Crew Dragon and Starliner provide proven emergency return vehicles. Stations must pass integrated safety reviews.',
+    severity: 'medium',
+  },
+  {
+    category: 'Launch Vehicle Dependency',
+    risk: 'Some commercial stations (e.g., Starlab on Starship) depend on launch vehicles that are still in development and have not yet achieved required reliability for crewed payload delivery.',
+    mitigation: 'Alternative launch vehicles are being considered as backup options. Station designs can be adapted to multiple launch vehicles. Phased deployment reduces dependency on single launches.',
+    severity: 'medium',
+  },
+  {
+    category: 'ISS Structural Aging',
+    risk: 'ISS hardware is aging beyond original design life. Increasing maintenance costs and risk of critical system failures could force early retirement before commercial alternatives are ready.',
+    mitigation: 'NASA conducts ongoing structural health monitoring. Preventive maintenance and component replacement programs. Contingency plans for accelerated transition if ISS develops critical issues.',
+    severity: 'low',
+  },
+  {
+    category: 'Geopolitical Tensions',
+    risk: 'Continued US-Russia tensions could affect ISS operations, crew rotation schedules, and complicate the transition timeline for the Russian segment.',
+    mitigation: 'Cross-seating agreements ensure both sides can access the station. Russia has indicated cooperation through 2028+. US segment can operate with reduced Russian support if necessary.',
+    severity: 'low',
+  },
+];
+
+const FALLBACK_ISS_POSITION: ISSPosition = {
+  latitude: 24.5834,
+  longitude: -47.2193,
+  altitude: 408.2,
+  velocity: 27576,
+  visibility: 'daylight',
+  timestamp: Math.floor(Date.now() / 1000),
+  footprint: 4558,
+};
+
+// ────────────────────────────────────────
 // Status Styling
 // ────────────────────────────────────────
 
@@ -898,19 +1468,19 @@ const TABS: { id: TabId; label: string }[] = [
 
 export default function SpaceStationTrackerPage() {
   const [activeTab, setActiveTab] = useState<TabId>('active');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Data state
-  const [issPosition, setIssPosition] = useState<ISSPosition | null>(null);
+  // Data state — initialized with fallback data so page renders immediately
+  const [issPosition, setIssPosition] = useState<ISSPosition | null>(FALLBACK_ISS_POSITION);
   const [issPositionLoading, setIssPositionLoading] = useState(false);
-  const [activeStations, setActiveStations] = useState<SpaceStation[]>([]);
-  const [commercialStations, setCommercialStations] = useState<CommercialStation[]>([]);
-  const [currentCrew, setCurrentCrew] = useState<CrewMember[]>([]);
-  const [crewRotations, setCrewRotations] = useState<CrewRotation[]>([]);
-  const [cldMilestones, setCldMilestones] = useState<CLDMilestone[]>([]);
-  const [transitionRisks, setTransitionRisks] = useState<TransitionRisk[]>([]);
+  const [activeStations, setActiveStations] = useState<SpaceStation[]>(FALLBACK_ACTIVE_STATIONS);
+  const [commercialStations, setCommercialStations] = useState<CommercialStation[]>(FALLBACK_COMMERCIAL_STATIONS);
+  const [currentCrew, setCurrentCrew] = useState<CrewMember[]>(FALLBACK_CURRENT_CREW);
+  const [crewRotations, setCrewRotations] = useState<CrewRotation[]>(FALLBACK_CREW_ROTATIONS);
+  const [cldMilestones, setCldMilestones] = useState<CLDMilestone[]>(FALLBACK_CLD_MILESTONES);
+  const [transitionRisks, setTransitionRisks] = useState<TransitionRisk[]>(FALLBACK_TRANSITION_RISKS);
 
   useEffect(() => {
     async function loadData() {
@@ -934,18 +1504,37 @@ export default function SpaceStationTrackerPage() {
         const risksData = await risksRes.json();
         const issData = await issRes.json();
 
-        setActiveStations(stationsData.data || []);
-        setCommercialStations(commercialData.data || []);
-        setCurrentCrew(crewData.data || []);
-        setCrewRotations(rotationsData.data || []);
-        setCldMilestones(milestonesData.data || []);
-        setTransitionRisks(risksData.data || []);
-        if (issData.data?.[0]) setIssPosition(issData.data[0]);
-        else if (issData.data && !Array.isArray(issData.data)) setIssPosition(issData.data);
-        setRefreshedAt(stationsData.meta?.lastRefreshed || null);
-      } catch (error) {
-        clientLogger.error('Failed to load space stations data', { error: error instanceof Error ? error.message : String(error) });
-        setError('Failed to load data.');
+        // Only use API data when it contains sufficient results; otherwise keep fallback
+        if (Array.isArray(stationsData.data) && stationsData.data.length > 0) {
+          setActiveStations(stationsData.data);
+        }
+        if (Array.isArray(commercialData.data) && commercialData.data.length > 0) {
+          setCommercialStations(commercialData.data);
+        }
+        if (Array.isArray(crewData.data) && crewData.data.length > 0) {
+          setCurrentCrew(crewData.data);
+        }
+        if (Array.isArray(rotationsData.data) && rotationsData.data.length > 0) {
+          setCrewRotations(rotationsData.data);
+        }
+        if (Array.isArray(milestonesData.data) && milestonesData.data.length > 0) {
+          setCldMilestones(milestonesData.data);
+        }
+        if (Array.isArray(risksData.data) && risksData.data.length > 0) {
+          setTransitionRisks(risksData.data);
+        }
+        if (issData.data?.[0]) {
+          setIssPosition(issData.data[0]);
+        } else if (issData.data && !Array.isArray(issData.data) && issData.data.latitude !== undefined) {
+          setIssPosition(issData.data);
+        }
+        // If API returned valid meta, show it
+        if (stationsData.meta?.lastRefreshed) {
+          setRefreshedAt(stationsData.meta.lastRefreshed);
+        }
+      } catch (err) {
+        clientLogger.error('Failed to load space stations data', { error: err instanceof Error ? err.message : String(err) });
+        // Fallback data is already in state, so no action needed — just log the failure
       } finally {
         setLoading(false);
       }

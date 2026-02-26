@@ -1564,7 +1564,7 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
 
 export default function PatentTrackerPage() {
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -1591,12 +1591,12 @@ export default function PatentTrackerPage() {
         const [d1, d2, d3, d4, d5, d6] = await Promise.all([
           r1.json(), r2.json(), r3.json(), r4.json(), r5.json(), r6.json(),
         ]);
-        if (d1.data?.length) setFilingsData(d1.data);
-        if (d2.data?.length) setHoldersData(d2.data);
-        if (d3.data?.length) setCategoriesData(d3.data);
-        if (d4.data?.length) setNasaData(d4.data);
-        if (d5.data?.length) setLitigationData(d5.data);
-        if (d6.data?.length) setGeoData(d6.data);
+        setFilingsData(d1.data?.length > 5 ? d1.data : FILINGS_BY_YEAR);
+        setHoldersData(d2.data?.length > 5 ? d2.data : PATENT_HOLDERS);
+        setCategoriesData(d3.data?.length > 3 ? d3.data : TECH_CATEGORIES);
+        setNasaData(d4.data?.length > 3 ? d4.data : NASA_PATENTS);
+        setLitigationData(d5.data?.length > 2 ? d5.data : LITIGATION_CASES);
+        setGeoData(d6.data?.length > 3 ? d6.data : GEOGRAPHIC_DISTRIBUTION);
         setRefreshedAt(d1.meta?.lastRefreshed || null);
       } catch (error) {
         clientLogger.error('Failed to load patent data', { error: error instanceof Error ? error.message : String(error) });

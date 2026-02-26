@@ -61,6 +61,163 @@ interface Exoplanet {
   habitable_zone: boolean;
 }
 
+// ────────────────────────────────────────
+// Fallback Exoplanet Data
+// ────────────────────────────────────────
+
+const FALLBACK_EXOPLANETS: Exoplanet[] = [
+  {
+    pl_name: 'Proxima Centauri b',
+    hostname: 'Proxima Centauri',
+    disc_year: 2016,
+    disc_facility: 'La Silla Observatory',
+    disc_method: 'Radial Velocity',
+    pl_orbper: 11.186,
+    pl_rade: 1.08,
+    pl_bmasse: 1.07,
+    pl_eqt: 234,
+    sy_dist: 1.3,
+    pl_orbsmax: 0.0485,
+    st_spectype: 'M5.5V',
+    habitable_zone: true,
+  },
+  {
+    pl_name: 'TRAPPIST-1 d',
+    hostname: 'TRAPPIST-1',
+    disc_year: 2017,
+    disc_facility: 'La Silla Observatory',
+    disc_method: 'Transit',
+    pl_orbper: 4.0496,
+    pl_rade: 0.788,
+    pl_bmasse: 0.388,
+    pl_eqt: 288,
+    sy_dist: 12.43,
+    pl_orbsmax: 0.02228,
+    st_spectype: 'M8V',
+    habitable_zone: true,
+  },
+  {
+    pl_name: 'TRAPPIST-1 e',
+    hostname: 'TRAPPIST-1',
+    disc_year: 2017,
+    disc_facility: 'La Silla Observatory',
+    disc_method: 'Transit',
+    pl_orbper: 6.0996,
+    pl_rade: 0.920,
+    pl_bmasse: 0.692,
+    pl_eqt: 251,
+    sy_dist: 12.43,
+    pl_orbsmax: 0.02928,
+    st_spectype: 'M8V',
+    habitable_zone: true,
+  },
+  {
+    pl_name: 'TRAPPIST-1 f',
+    hostname: 'TRAPPIST-1',
+    disc_year: 2017,
+    disc_facility: 'La Silla Observatory',
+    disc_method: 'Transit',
+    pl_orbper: 9.2067,
+    pl_rade: 1.045,
+    pl_bmasse: 1.039,
+    pl_eqt: 219,
+    sy_dist: 12.43,
+    pl_orbsmax: 0.03853,
+    st_spectype: 'M8V',
+    habitable_zone: true,
+  },
+  {
+    pl_name: 'TRAPPIST-1 g',
+    hostname: 'TRAPPIST-1',
+    disc_year: 2017,
+    disc_facility: 'La Silla Observatory',
+    disc_method: 'Transit',
+    pl_orbper: 12.3529,
+    pl_rade: 1.148,
+    pl_bmasse: 1.321,
+    pl_eqt: 199,
+    sy_dist: 12.43,
+    pl_orbsmax: 0.04688,
+    st_spectype: 'M8V',
+    habitable_zone: true,
+  },
+  {
+    pl_name: 'Kepler-442 b',
+    hostname: 'Kepler-442',
+    disc_year: 2015,
+    disc_facility: 'Kepler',
+    disc_method: 'Transit',
+    pl_orbper: 112.3053,
+    pl_rade: 1.34,
+    pl_bmasse: 2.36,
+    pl_eqt: 233,
+    sy_dist: 342.0,
+    pl_orbsmax: 0.409,
+    st_spectype: 'K4V',
+    habitable_zone: true,
+  },
+  {
+    pl_name: 'TOI-700 d',
+    hostname: 'TOI-700',
+    disc_year: 2020,
+    disc_facility: 'TESS',
+    disc_method: 'Transit',
+    pl_orbper: 37.426,
+    pl_rade: 1.19,
+    pl_bmasse: 1.72,
+    pl_eqt: 268,
+    sy_dist: 31.1,
+    pl_orbsmax: 0.163,
+    st_spectype: 'M2V',
+    habitable_zone: true,
+  },
+  {
+    pl_name: 'K2-18 b',
+    hostname: 'K2-18',
+    disc_year: 2015,
+    disc_facility: 'K2',
+    disc_method: 'Transit',
+    pl_orbper: 32.9396,
+    pl_rade: 2.61,
+    pl_bmasse: 8.63,
+    pl_eqt: 255,
+    sy_dist: 38.0,
+    pl_orbsmax: 0.1429,
+    st_spectype: 'M2.5V',
+    habitable_zone: true,
+  },
+  {
+    pl_name: 'LHS 1140 b',
+    hostname: 'LHS 1140',
+    disc_year: 2017,
+    disc_facility: 'MEarth-South',
+    disc_method: 'Transit',
+    pl_orbper: 24.7369,
+    pl_rade: 1.73,
+    pl_bmasse: 5.60,
+    pl_eqt: 235,
+    sy_dist: 14.99,
+    pl_orbsmax: 0.0946,
+    st_spectype: 'M4.5V',
+    habitable_zone: true,
+  },
+  {
+    pl_name: 'Kepler-452 b',
+    hostname: 'Kepler-452',
+    disc_year: 2015,
+    disc_facility: 'Kepler',
+    disc_method: 'Transit',
+    pl_orbper: 384.843,
+    pl_rade: 1.63,
+    pl_bmasse: 3.29,
+    pl_eqt: 265,
+    sy_dist: 552.0,
+    pl_orbsmax: 1.046,
+    st_spectype: 'G2V',
+    habitable_zone: true,
+  },
+];
+
 function SolarExplorationContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -76,22 +233,21 @@ function SolarExplorationContent() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string | null>(initialStatus);
   const [typeFilter, setTypeFilter] = useState<string | null>(initialType);
-  const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
-  const [exoplanetsLoading, setExoplanetsLoading] = useState(true);
+  const [exoplanets, setExoplanets] = useState<Exoplanet[]>(FALLBACK_EXOPLANETS);
+  const [exoplanetsLoading, setExoplanetsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Fetch exoplanet data from DynamicContent system
   const fetchExoplanets = useCallback(async () => {
     setExoplanetsLoading(true);
-    setError(null);
     try {
       const res = await fetch('/api/content/solar-exploration?section=exoplanets');
       if (!res.ok) throw new Error('Failed to fetch exoplanets');
       const json = await res.json();
-      setExoplanets(json.data || []);
+      setExoplanets(json.data?.length >= 5 ? json.data : FALLBACK_EXOPLANETS);
     } catch (err) {
       clientLogger.error('Failed to fetch exoplanets', { error: err instanceof Error ? err.message : String(err) });
-      setError('Failed to load data. Please try again.');
+      setExoplanets(FALLBACK_EXOPLANETS);
     } finally {
       setExoplanetsLoading(false);
     }

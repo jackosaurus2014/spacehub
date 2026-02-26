@@ -946,9 +946,9 @@ export default function LaunchVehiclesPage() {
   const [sortBy, setSortBy] = useState<string>('payloadLeo');
   const [compareSelection, setCompareSelection] = useState<string[]>([]);
 
-  // API-fetched data
-  const [vehicles, setVehicles] = useState<LaunchVehicle[]>([]);
-  const [loading, setLoading] = useState(true);
+  // API-fetched data (initialized with hardcoded fallback)
+  const [vehicles, setVehicles] = useState<LaunchVehicle[]>(VEHICLES);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
 
