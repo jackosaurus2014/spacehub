@@ -188,6 +188,10 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/industry-trends`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/orbit-guide`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/career-guide`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/acronyms`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/space-weather`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/compare/satellite-buses`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/propulsion-database`, changeFrequency: 'monthly' as const, priority: 0.6 },
 
     // Developer pages
     { url: `${BASE_URL}/developer/docs`, changeFrequency: 'monthly' as const, priority: 0.5 },

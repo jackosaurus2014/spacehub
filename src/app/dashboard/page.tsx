@@ -47,6 +47,7 @@ const EXPLORE_MODULES: ModuleItem[] = [
   { icon: '📑', label: 'Daily Digest', href: '/news-digest', description: 'Quick-scan daily space headlines' },
   { icon: '🌍', label: 'Orbit Guide', href: '/orbit-guide', description: 'Visual guide to orbital mechanics & orbit types' },
   { icon: '🎯', label: 'Career Guide', href: '/career-guide', description: 'Space industry career paths & salary data' },
+  { icon: '🔤', label: 'Acronyms', href: '/acronyms', description: 'A-Z space industry acronym reference' },
 ];
 
 const INTELLIGENCE_MODULES: ModuleItem[] = [
@@ -92,6 +93,7 @@ const TOOLS_MODULES: ModuleItem[] = [
   { icon: '📐', label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
   { icon: '🧮', label: 'Launch Cost Calculator', href: '/launch-cost-calculator', description: 'Estimate launch costs by vehicle & orbit' },
   { icon: '🔬', label: 'Tech Readiness', href: '/tech-readiness', description: 'Emerging technology TRL tracking' },
+  { icon: '🔥', label: 'Propulsion Database', href: '/propulsion-database', description: 'Engine & thruster specifications' },
 ];
 
 function ModuleSection({ title, icon, modules, sizeClasses, delay }: {

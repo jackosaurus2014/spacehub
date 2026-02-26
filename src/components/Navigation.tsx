@@ -37,6 +37,8 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Daily Digest', href: '/news-digest', description: 'Quick-scan daily space headlines' },
   { label: 'Orbit Guide', href: '/orbit-guide', description: 'Visual guide to orbital mechanics & orbit types' },
   { label: 'Career Guide', href: '/career-guide', description: 'Space industry career paths & salary data' },
+  { label: 'Acronyms', href: '/acronyms', description: 'A-Z space industry acronym reference' },
+  { label: 'Space Weather', href: '/space-weather', description: 'Solar conditions & impact forecasts' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
@@ -99,6 +101,8 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Dashboard', href: '/dashboard', description: 'Your personalized hub' },
   { label: 'Tech Readiness', href: '/tech-readiness', description: 'Emerging technology TRL tracking' },
   { label: 'Regulations Explorer', href: '/regulations', description: 'Searchable space regulations database' },
+  { label: 'Satellite Bus Comparison', href: '/compare/satellite-buses', description: 'Compare satellite platform specs' },
+  { label: 'Propulsion Database', href: '/propulsion-database', description: 'Engine & thruster specifications' },
 ];
 
 function DropdownMenu({
