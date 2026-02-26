@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getCircuitBreakerStatus } from '@/lib/circuit-breaker';
 import { getAllModuleFreshness } from '@/lib/dynamic-content';
+import { getFreshnessAlerts } from '@/lib/freshness-alerts';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { unauthorizedError, internalError, requireCronSecret } from '@/lib/errors';
@@ -51,6 +52,7 @@ export async function GET(request: NextRequest) {
       latestNews,
       latestEvent,
       latestBlog,
+      freshnessAlerts,
     ] = await Promise.all([
       getAllModuleFreshness().catch(() => ({})),
       Promise.resolve(getCircuitBreakerStatus()),
@@ -70,6 +72,7 @@ export async function GET(request: NextRequest) {
         orderBy: { fetchedAt: 'desc' },
         select: { fetchedAt: true },
       }),
+      getFreshnessAlerts().catch(() => []),
     ]);
 
     const newsAgeMinutes = latestNews
@@ -82,12 +85,26 @@ export async function GET(request: NextRequest) {
       ? Math.floor((now.getTime() - latestBlog.fetchedAt.getTime()) / 1000 / 60)
       : null;
 
+    const activeAlerts = freshnessAlerts.filter(a => !a.resolved);
+    const resolvedAlerts = freshnessAlerts.filter(a => a.resolved);
+
     return NextResponse.json({
       success: true,
       data: {
         dynamicContent,
         circuitBreakers,
         recentRefreshLogs,
+        freshnessAlerts: {
+          active: activeAlerts,
+          resolved: resolvedAlerts,
+          summary: {
+            total: freshnessAlerts.length,
+            activeCount: activeAlerts.length,
+            resolvedCount: resolvedAlerts.length,
+            criticalCount: activeAlerts.filter(a => a.severity === 'critical').length,
+            warningCount: activeAlerts.filter(a => a.severity === 'warning').length,
+          },
+        },
         tableTimestamps: {
           news: {
             lastFetchedAt: latestNews?.fetchedAt ?? null,

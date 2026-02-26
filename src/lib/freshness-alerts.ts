@@ -10,11 +10,52 @@ export interface FreshnessCheckResult {
 }
 
 export interface CronFreshnessAlert {
-  jobLabel: string;
-  lastRunAt: string | null;
-  expectedIntervalMinutes: number;
-  detectedAt: string;
+  jobName: string;
+  lastRun: string | null;
+  expectedInterval: string;
+  alertedAt: string;
+  resolved: boolean;
   severity: 'warning' | 'critical';
+}
+
+/**
+ * Format minutes into a human-readable interval string.
+ */
+function formatInterval(minutes: number): string {
+  if (minutes < 60) return `${minutes}m`;
+  if (minutes < 1440) return `${Math.round(minutes / 60)}h`;
+  return `${Math.round(minutes / 1440)}d`;
+}
+
+/**
+ * Read persisted freshness alerts from DynamicContent.
+ */
+async function readPersistedAlerts(): Promise<CronFreshnessAlert[]> {
+  try {
+    const existing = await prisma.dynamicContent.findUnique({
+      where: { contentKey: 'system:freshness-alerts' },
+    });
+    if (existing) {
+      return JSON.parse(existing.data) as CronFreshnessAlert[];
+    }
+  } catch {
+    // First time — no record yet
+  }
+  return [];
+}
+
+/**
+ * Write persisted freshness alerts to DynamicContent, capped at 50.
+ */
+async function writePersistedAlerts(alerts: CronFreshnessAlert[]): Promise<void> {
+  const capped = alerts.slice(0, 50);
+  await upsertContent(
+    'system:freshness-alerts',
+    'system',
+    'freshness-alerts',
+    capped,
+    { sourceType: 'manual' },
+  );
 }
 
 /**
@@ -25,53 +66,35 @@ export interface CronFreshnessAlert {
  * 3. Logs with structured logger — never throws so the watchdog keeps running
  */
 export async function sendFreshnessAlert(
-  jobLabel: string,
+  jobName: string,
   lastRunAt: number | null,
   expectedIntervalMinutes: number,
 ): Promise<void> {
   try {
     const alert: CronFreshnessAlert = {
-      jobLabel,
-      lastRunAt: lastRunAt ? new Date(lastRunAt).toISOString() : null,
-      expectedIntervalMinutes,
-      detectedAt: new Date().toISOString(),
+      jobName,
+      lastRun: lastRunAt ? new Date(lastRunAt).toISOString() : null,
+      expectedInterval: formatInterval(expectedIntervalMinutes),
+      alertedAt: new Date().toISOString(),
+      resolved: false,
       severity: lastRunAt === null ? 'critical' : 'warning',
     };
 
     // --- 1. Persist to DynamicContent ---
-    // Read existing alerts, append, and cap at 50 entries
-    let existingAlerts: CronFreshnessAlert[] = [];
-    try {
-      const existing = await prisma.dynamicContent.findUnique({
-        where: { contentKey: 'system:freshness-alerts' },
-      });
-      if (existing) {
-        existingAlerts = JSON.parse(existing.data) as CronFreshnessAlert[];
-      }
-    } catch {
-      // First time — no record yet, start fresh
-    }
+    let existingAlerts = await readPersistedAlerts();
 
-    // Remove any previous alert for the same job (keep latest only)
-    existingAlerts = existingAlerts.filter(a => a.jobLabel !== jobLabel);
-    existingAlerts.unshift(alert);
-    // Cap at 50 most recent alerts
-    if (existingAlerts.length > 50) {
-      existingAlerts = existingAlerts.slice(0, 50);
-    }
-
-    await upsertContent(
-      'system:freshness-alerts',
-      'system',
-      'freshness-alerts',
-      existingAlerts,
-      { sourceType: 'manual' },
+    // Remove any previous unresolved alert for the same job (keep latest only)
+    existingAlerts = existingAlerts.filter(
+      a => !(a.jobName === jobName && !a.resolved)
     );
+    existingAlerts.unshift(alert);
+
+    await writePersistedAlerts(existingAlerts);
 
     logger.warn('Cron freshness alert recorded', {
-      jobLabel,
-      lastRunAt: alert.lastRunAt,
-      expectedIntervalMinutes,
+      jobName,
+      lastRun: alert.lastRun,
+      expectedInterval: alert.expectedInterval,
       severity: alert.severity,
     });
 
@@ -88,25 +111,25 @@ export async function sendFreshnessAlert(
           await resend.emails.send({
             from: fromEmail,
             to: adminEmail,
-            subject: `[SpaceNexus] Stale cron job: ${jobLabel}`,
+            subject: `[SpaceNexus] Stale cron job: ${jobName}`,
             html: `
               <h2>Cron Job Freshness Alert</h2>
-              <p><strong>Job:</strong> ${jobLabel}</p>
-              <p><strong>Last successful run:</strong> ${alert.lastRunAt || 'Never'}</p>
-              <p><strong>Expected interval:</strong> ${expectedIntervalMinutes} minutes</p>
+              <p><strong>Job:</strong> ${jobName}</p>
+              <p><strong>Last successful run:</strong> ${alert.lastRun || 'Never'}</p>
+              <p><strong>Expected interval:</strong> ${alert.expectedInterval}</p>
               <p><strong>Severity:</strong> ${alert.severity}</p>
-              <p><strong>Detected at:</strong> ${alert.detectedAt}</p>
+              <p><strong>Detected at:</strong> ${alert.alertedAt}</p>
               <hr/>
               <p style="color:#666;font-size:12px">This is an automated alert from SpaceNexus data pipeline monitoring.</p>
             `,
           });
 
-          logger.info('Freshness alert email sent', { jobLabel, to: adminEmail });
+          logger.info('Freshness alert email sent', { jobName, to: adminEmail });
         }
       } catch (emailError) {
         // Email is best-effort — don't crash the watchdog
         logger.warn('Failed to send freshness alert email', {
-          jobLabel,
+          jobName,
           error: emailError instanceof Error ? emailError.message : String(emailError),
         });
       }
@@ -114,9 +137,52 @@ export async function sendFreshnessAlert(
   } catch (error) {
     // Never crash the watchdog — log and move on
     logger.error('Failed to record freshness alert', {
-      jobLabel,
+      jobName,
       error: error instanceof Error ? error.message : String(error),
     });
+  }
+}
+
+/**
+ * Resolve any outstanding freshness alert for a job that has recovered.
+ * Called when a cron job succeeds after previously being stale.
+ * Never throws so the caller keeps running.
+ */
+export async function resolveFreshnessAlert(jobName: string): Promise<void> {
+  try {
+    const alerts = await readPersistedAlerts();
+    let changed = false;
+
+    for (const alert of alerts) {
+      if (alert.jobName === jobName && !alert.resolved) {
+        alert.resolved = true;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      await writePersistedAlerts(alerts);
+      logger.info('Cron freshness alert resolved', { jobName });
+    }
+  } catch (error) {
+    logger.error('Failed to resolve freshness alert', {
+      jobName,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
+/**
+ * Get all persisted freshness alerts. Safe for monitoring endpoints.
+ */
+export async function getFreshnessAlerts(): Promise<CronFreshnessAlert[]> {
+  try {
+    return await readPersistedAlerts();
+  } catch (error) {
+    logger.error('Failed to read freshness alerts', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return [];
   }
 }
 

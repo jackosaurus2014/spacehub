@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { logger } from './logger';
-import { sendFreshnessAlert } from './freshness-alerts';
+import { sendFreshnessAlert, resolveFreshnessAlert } from './freshness-alerts';
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || `http://localhost:${process.env.PORT || 3000}`;
 
@@ -124,6 +124,10 @@ async function triggerEndpoint(path: string, label: string, retries: number = 3)
           tracker.consecutiveFailures = 0;
           tracker.lastError = null;
         }
+        // Resolve any outstanding freshness alert for this job
+        resolveFreshnessAlert(label).catch(() => {
+          // Best-effort — don't block the cron job result
+        });
         return true;
       }
 
@@ -202,7 +206,11 @@ function startWatchdog() {
       if (CRITICAL_JOBS.has(label) && status.consecutiveFailures < 10) {
         logger.info(`Cron watchdog: auto-recovering [${label}]`);
         const success = await triggerEndpoint(status.path, label, 2);
-        if (success) recoveredCount++;
+        if (success) {
+          recoveredCount++;
+          // Mark the freshness alert as resolved now that the job succeeded
+          await resolveFreshnessAlert(label);
+        }
       }
     }
 

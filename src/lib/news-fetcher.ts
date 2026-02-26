@@ -57,55 +57,127 @@ export function categorizeArticle(title: string, summary: string): string {
 
 /**
  * Normalize a title for deduplication comparison:
- * lowercase, strip punctuation/extra whitespace.
+ * lowercase, strip punctuation/extra whitespace, take first 50 chars.
  */
 function normalizeTitle(title: string): string {
   return title
     .toLowerCase()
     .replace(/[^\w\s]/g, '')  // remove punctuation
     .replace(/\s+/g, ' ')     // collapse whitespace
-    .trim();
+    .trim()
+    .slice(0, 50);            // compare first 50 chars
 }
 
 /**
- * Check if an article is a duplicate by exact URL or normalized title match.
- * Returns true if a duplicate exists (and the insert should be skipped).
+ * In-memory deduplication cache that loads existing articles once per fetch batch.
+ * Avoids repeated DB queries for every individual article check.
  */
-async function isDuplicateArticle(url: string, title: string): Promise<boolean> {
-  // 1. Exact URL match — fast unique index lookup
-  const byUrl = await prisma.newsArticle.findUnique({
-    where: { url },
-    select: { id: true },
-  });
-  if (byUrl) return true;
+class DeduplicationCache {
+  private urlSet: Set<string> = new Set();
+  private normalizedTitleSet: Set<string> = new Set();
+  private normalizedTitleList: string[] = [];
+  private loaded = false;
 
-  // 2. Normalized title match — search recent articles (last 14 days)
-  const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
-  const normalizedTarget = normalizeTitle(title);
-  if (!normalizedTarget) return false;
+  /**
+   * Load existing articles from the last 7 days into memory.
+   * Call once before processing a batch of articles.
+   */
+  async load(): Promise<void> {
+    if (this.loaded) return;
 
-  const candidates = await prisma.newsArticle.findMany({
-    where: {
-      publishedAt: { gte: fourteenDaysAgo },
-    },
-    select: { id: true, title: true },
-    orderBy: { publishedAt: 'desc' },
-    take: 500,
-  });
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const existing = await prisma.newsArticle.findMany({
+      where: { publishedAt: { gte: sevenDaysAgo } },
+      select: { title: true, url: true },
+    });
 
-  for (const candidate of candidates) {
-    if (normalizeTitle(candidate.title) === normalizedTarget) {
-      return true;
+    for (const article of existing) {
+      this.urlSet.add(article.url);
+      const normalized = normalizeTitle(article.title);
+      if (normalized) {
+        this.normalizedTitleSet.add(normalized);
+        this.normalizedTitleList.push(normalized);
+      }
     }
+
+    this.loaded = true;
+    logger.info(`[Dedup] Loaded ${existing.length} existing articles into cache`);
   }
 
-  return false;
+  /**
+   * Check if an article is a duplicate by exact URL or similar title.
+   *
+   * Title comparison: normalized titles are compared for exact match
+   * or containment (one title containing the other), which catches
+   * the same story published under slightly different headlines.
+   *
+   * Returns { isDuplicate: boolean, reason?: string }
+   */
+  isDuplicate(title: string, url: string): { isDuplicate: boolean; reason?: string } {
+    // 1. Exact URL match
+    if (this.urlSet.has(url)) {
+      return { isDuplicate: true, reason: 'exact-url' };
+    }
+
+    // 2. Normalized title match
+    const normalizedTarget = normalizeTitle(title);
+    if (!normalizedTarget) {
+      return { isDuplicate: false };
+    }
+
+    // Exact normalized title match
+    if (this.normalizedTitleSet.has(normalizedTarget)) {
+      return { isDuplicate: true, reason: 'exact-title' };
+    }
+
+    // Containment check: one title contains the other
+    for (const existing of this.normalizedTitleList) {
+      if (
+        (normalizedTarget.length >= 20 && existing.includes(normalizedTarget)) ||
+        (existing.length >= 20 && normalizedTarget.includes(existing))
+      ) {
+        return { isDuplicate: true, reason: 'title-containment' };
+      }
+    }
+
+    return { isDuplicate: false };
+  }
+
+  /**
+   * Register a newly inserted article so subsequent checks in the same
+   * batch will detect it as existing.
+   */
+  trackInserted(title: string, url: string): void {
+    this.urlSet.add(url);
+    const normalized = normalizeTitle(title);
+    if (normalized) {
+      this.normalizedTitleSet.add(normalized);
+      this.normalizedTitleList.push(normalized);
+    }
+  }
+}
+
+// Module-level cache instance, reset per fetch cycle
+let dedupCache: DeduplicationCache | null = null;
+
+async function getDeduplicationCache(): Promise<DeduplicationCache> {
+  if (!dedupCache) {
+    dedupCache = new DeduplicationCache();
+    await dedupCache.load();
+  }
+  return dedupCache;
+}
+
+function resetDeduplicationCache(): void {
+  dedupCache = null;
 }
 
 // --- SNAPI (Spaceflight News API) fetching ---
 
 async function fetchSNAPIEndpoint(endpoint: string, limit: number): Promise<number> {
   return snapiBreaker.execute(async () => {
+    const cache = await getDeduplicationCache();
+
     const response = await fetch(
       `https://api.spaceflightnewsapi.net/v4/${endpoint}/?limit=${limit}&ordering=-published_at`,
       { cache: 'no-store' }
@@ -119,27 +191,26 @@ async function fetchSNAPIEndpoint(endpoint: string, limit: number): Promise<numb
     const articles: SpaceflightNewsArticle[] = data.results;
 
     let savedCount = 0;
+    let skippedCount = 0;
 
     for (const article of articles) {
       const category = categorizeArticle(article.title, article.summary || '');
 
       try {
-        // Deduplication: skip if a duplicate exists by normalized title
-        // (exact URL match is handled by the upsert below)
-        const duplicate = await isDuplicateArticle(article.url, article.title);
-        if (duplicate) {
-          // URL match is fine (upsert would update), but title-only match means
-          // the same story from a different source — skip the insert
-          const byUrl = await prisma.newsArticle.findUnique({
-            where: { url: article.url },
-            select: { id: true },
-          });
-          if (!byUrl) {
-            logger.debug('[SNAPI] Skipping duplicate article (title match)', {
+        const { isDuplicate, reason } = cache.isDuplicate(article.title, article.url);
+
+        if (isDuplicate) {
+          // If the URL already exists, let the upsert update it.
+          // If only the title matched, it's the same story from a different
+          // source — skip the insert entirely.
+          if (reason !== 'exact-url') {
+            logger.debug('[SNAPI] Skipping duplicate article', {
               title: article.title,
               url: article.url,
               source: article.news_site,
+              reason,
             });
+            skippedCount++;
             continue;
           }
         }
@@ -165,10 +236,15 @@ async function fetchSNAPIEndpoint(endpoint: string, limit: number): Promise<numb
             publishedAt: new Date(article.published_at),
           },
         });
+        cache.trackInserted(article.title, article.url);
         savedCount++;
       } catch {
         continue;
       }
+    }
+
+    if (skippedCount > 0) {
+      logger.info(`[SNAPI] ${endpoint}: skipped ${skippedCount} duplicate articles`);
     }
 
     return savedCount;
@@ -177,6 +253,10 @@ async function fetchSNAPIEndpoint(endpoint: string, limit: number): Promise<numb
 
 export async function fetchSpaceflightNews(): Promise<number> {
   try {
+    // Reset the deduplication cache at the start of each fetch cycle
+    // so it loads fresh data from the DB
+    resetDeduplicationCache();
+
     // Fetch articles, blogs, and reports from SNAPI in parallel
     const [articlesCount, blogsCount, reportsCount] = await Promise.all([
       fetchSNAPIEndpoint('articles', 100),
@@ -196,9 +276,13 @@ export async function fetchSpaceflightNews(): Promise<number> {
       logger.error('[RSS] Error fetching RSS feeds', { error: rssError instanceof Error ? rssError.message : String(rssError) });
     }
 
+    // Clean up the cache after the fetch cycle completes
+    resetDeduplicationCache();
+
     return totalSNAPI + rssCount;
   } catch (error) {
     logger.error('Error fetching spaceflight news', { error: error instanceof Error ? error.message : String(error) });
+    resetDeduplicationCache();
     throw error;
   }
 }
@@ -303,8 +387,10 @@ const rssParser = new RSSParser({
 async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
   return rssBreaker.execute(async () => {
     try {
+      const cache = await getDeduplicationCache();
       const parsed = await rssParser.parseURL(feed.url);
       let savedCount = 0;
+      let skippedCount = 0;
 
       const items = (parsed.items || []).slice(0, 25); // Max 25 per feed
 
@@ -328,19 +414,20 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
         const imageUrl = extractImageFromRSS(item);
 
         try {
-          // Deduplication: skip if a duplicate exists by normalized title
-          const duplicate = await isDuplicateArticle(item.link, item.title);
-          if (duplicate) {
-            const byUrl = await prisma.newsArticle.findUnique({
-              where: { url: item.link },
-              select: { id: true },
-            });
-            if (!byUrl) {
-              logger.debug('[RSS] Skipping duplicate article (title match)', {
+          const { isDuplicate, reason } = cache.isDuplicate(item.title, item.link);
+
+          if (isDuplicate) {
+            // If the URL already exists, let the upsert update it.
+            // If only the title matched, it's the same story from a different
+            // source — skip the insert entirely.
+            if (reason !== 'exact-url') {
+              logger.debug('[RSS] Skipping duplicate article', {
                 title: item.title,
                 url: item.link,
                 source: feed.name,
+                reason,
               });
+              skippedCount++;
               continue;
             }
           }
@@ -366,10 +453,15 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
               publishedAt,
             },
           });
+          cache.trackInserted(item.title, item.link);
           savedCount++;
         } catch {
           continue;
         }
+      }
+
+      if (skippedCount > 0) {
+        logger.info(`[RSS] ${feed.name}: skipped ${skippedCount} duplicate articles`);
       }
 
       return savedCount;

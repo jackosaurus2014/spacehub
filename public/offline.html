@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0f172a">
+  <meta name="theme-color" content="#0B0F1A">
   <title>Offline - SpaceNexus</title>
   <style>
-    * {
+    *, *::before, *::after {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -14,17 +14,19 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      min-height: 100dvh;
+      background: #0B0F1A;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      overflow: hidden;
+      overflow-x: hidden;
+      color: #fff;
     }
 
-    /* Starfield background */
-    .stars {
+    /* ---- Animated starfield background ---- */
+    .starfield {
       position: fixed;
       top: 0;
       left: 0;
@@ -32,126 +34,175 @@
       height: 100%;
       pointer-events: none;
       overflow: hidden;
+      z-index: 0;
     }
 
+    /* Three layers of stars at different sizes and speeds */
+    .starfield-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background-repeat: repeat;
+    }
+
+    .starfield-layer--1 {
+      background-image:
+        radial-gradient(1px 1px at  50px  80px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 160px 200px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 320px  60px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 420px 280px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 580px 140px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 700px  40px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 100px 350px, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 250px 420px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 450px 380px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 640px 320px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 780px 180px, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at  30px 460px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 500px 500px, rgba(255,255,255,0.5), transparent);
+      background-size: 800px 550px;
+      animation: drift 120s linear infinite;
+    }
+
+    .starfield-layer--2 {
+      background-image:
+        radial-gradient(1.5px 1.5px at 120px 160px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1.5px 1.5px at 340px  90px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1.5px 1.5px at 560px 340px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 200px 440px, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1.5px 1.5px at 680px 220px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1.5px 1.5px at  80px 300px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1.5px 1.5px at 420px 180px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 750px 400px, rgba(255,255,255,0.4), transparent);
+      background-size: 850px 500px;
+      animation: drift 90s linear infinite reverse;
+    }
+
+    .starfield-layer--3 {
+      background-image:
+        radial-gradient(2px 2px at 260px 120px, rgba(6,182,212,0.6), transparent),
+        radial-gradient(2px 2px at 480px 360px, rgba(99,102,241,0.5), transparent),
+        radial-gradient(2px 2px at 140px 480px, rgba(6,182,212,0.4), transparent),
+        radial-gradient(2px 2px at 600px  80px, rgba(99,102,241,0.6), transparent),
+        radial-gradient(2px 2px at 380px 240px, rgba(6,182,212,0.5), transparent);
+      background-size: 750px 560px;
+      animation: drift 150s linear infinite, twinkle-layer 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes drift {
+      from { transform: translate(0, 0); }
+      to   { transform: translate(-50%, -50%); }
+    }
+
+    @keyframes twinkle-layer {
+      0%   { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    /* Also generate procedural stars via JS */
     .star {
       position: absolute;
       width: 2px;
       height: 2px;
       background: white;
       border-radius: 50%;
-      opacity: 0.5;
-      animation: twinkle 3s infinite ease-in-out;
+      animation: twinkle-star 3s infinite ease-in-out;
     }
 
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.3; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.2); }
+    @keyframes twinkle-star {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50%      { opacity: 1;   transform: scale(1.3); }
     }
 
+    /* ---- Container ---- */
     .container {
       position: relative;
       z-index: 10;
       text-align: center;
-      max-width: 480px;
+      max-width: 520px;
+      width: 100%;
     }
 
-    .icon-container {
-      margin-bottom: 32px;
-    }
-
-    .offline-icon {
-      width: 120px;
-      height: 120px;
-      margin: 0 auto;
+    /* ---- Satellite icon ---- */
+    .icon-wrap {
+      margin-bottom: 28px;
       position: relative;
+      display: inline-block;
     }
 
-    .satellite {
-      width: 80px;
-      height: 80px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    .satellite-icon {
+      font-size: 80px;
+      line-height: 1;
+      display: block;
       animation: float 4s ease-in-out infinite;
+      filter: drop-shadow(0 0 24px rgba(6,182,212,0.35));
     }
 
     @keyframes float {
-      0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-      50% { transform: translate(-50%, -50%) translateY(-10px); }
+      0%, 100% { transform: translateY(0) rotate(-8deg); }
+      50%      { transform: translateY(-14px) rotate(8deg); }
     }
 
-    .signal-waves {
+    /* Pulsing ring behind the icon */
+    .icon-ring {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .wave {
-      position: absolute;
-      border: 2px solid rgba(239, 68, 68, 0.3);
+      width: 130px;
+      height: 130px;
+      margin-left: -65px;
+      margin-top: -65px;
       border-radius: 50%;
-      animation: wave 2s infinite ease-out;
+      border: 2px solid rgba(239,68,68,0.25);
+      animation: ring-pulse 3s ease-out infinite;
+    }
+    .icon-ring:nth-child(2) { animation-delay: 1s; }
+    .icon-ring:nth-child(3) { animation-delay: 2s; }
+
+    @keyframes ring-pulse {
+      0%   { transform: scale(0.7); opacity: 0.7; }
+      100% { transform: scale(1.6); opacity: 0; }
     }
 
-    .wave:nth-child(1) {
-      width: 100px;
-      height: 100px;
-      margin-left: -50px;
-      margin-top: -50px;
-      animation-delay: 0s;
-    }
-
-    .wave:nth-child(2) {
-      width: 140px;
-      height: 140px;
-      margin-left: -70px;
-      margin-top: -70px;
-      animation-delay: 0.5s;
-    }
-
-    .wave:nth-child(3) {
-      width: 180px;
-      height: 180px;
-      margin-left: -90px;
-      margin-top: -90px;
-      animation-delay: 1s;
-    }
-
-    @keyframes wave {
-      0% { opacity: 0.6; transform: scale(0.8); }
-      100% { opacity: 0; transform: scale(1.2); }
-    }
-
+    /* ---- Heading with glow animation ---- */
     h1 {
-      color: #f1f5f9;
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      letter-spacing: -0.025em;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+      animation: glow-text 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow-text {
+      0%   { text-shadow: 0 0  6px rgba(6,182,212,0.3); color: #f1f5f9; }
+      100% { text-shadow: 0 0 20px rgba(6,182,212,0.55), 0 0 40px rgba(6,182,212,0.15); color: #ffffff; }
     }
 
     .subtitle {
       color: #94a3b8;
-      font-size: 16px;
-      line-height: 1.6;
-      margin-bottom: 32px;
+      font-size: 15px;
+      line-height: 1.65;
+      margin-bottom: 28px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
+    /* ---- Status badge ---- */
     .status-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 16px;
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 8px 18px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
       border-radius: 9999px;
       color: #f87171;
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 32px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 28px;
     }
 
     .status-dot {
@@ -163,29 +214,31 @@
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.6); }
+      50%      { opacity: 0.6; box-shadow: 0 0 0 6px rgba(239,68,68,0); }
     }
 
+    /* ---- Retry button ---- */
     .retry-button {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 14px 28px;
+      gap: 10px;
+      padding: 14px 32px;
       background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
       color: white;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       border: none;
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4);
+      box-shadow: 0 4px 18px rgba(6,182,212,0.4);
+      font-family: inherit;
     }
 
     .retry-button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+      box-shadow: 0 6px 24px rgba(6,182,212,0.55);
     }
 
     .retry-button:active {
@@ -193,203 +246,237 @@
     }
 
     .retry-button svg {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
     }
 
     .retry-button.loading svg {
-      animation: spin 1s linear infinite;
+      animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin {
       from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      to   { transform: rotate(360deg); }
     }
 
-    .tips {
-      margin-top: 48px;
-      padding-top: 32px;
-      border-top: 1px solid rgba(148, 163, 184, 0.2);
-    }
-
-    .tips h2 {
-      color: #cbd5e1;
-      font-size: 14px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 16px;
-    }
-
-    .tips ul {
-      list-style: none;
-      text-align: left;
-    }
-
-    .tips li {
-      color: #64748b;
-      font-size: 14px;
-      padding: 8px 0;
-      padding-left: 24px;
-      position: relative;
-    }
-
-    .tips li::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 6px;
-      height: 6px;
-      background: #06b6d4;
-      border-radius: 50%;
-    }
-
-    .logo {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #475569;
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-    }
-
-    .logo span {
-      color: #06b6d4;
-    }
-
-    /* Quick-access links section */
-    .cached-section {
-      margin-top: 40px;
+    /* ---- Quick-access section ---- */
+    .quick-section {
+      margin-top: 36px;
       padding-top: 28px;
-      border-top: 1px solid rgba(148, 163, 184, 0.15);
+      border-top: 1px solid rgba(148,163,184,0.12);
     }
 
-    .cached-section h2 {
+    .quick-section h2 {
       color: #cbd5e1;
-      font-size: 14px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 16px;
-    }
-
-    .cached-note {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: #64748b;
       font-size: 12px;
-      margin-bottom: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
     }
 
-    .cached-note svg {
-      width: 14px;
-      height: 14px;
-      flex-shrink: 0;
+    .quick-note {
+      color: #475569;
+      font-size: 12px;
+      margin-bottom: 14px;
     }
 
-    .quick-links {
-      display: flex;
-      flex-direction: column;
+    .quick-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
 
     .quick-link {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      background: rgba(30, 41, 59, 0.6);
-      border: 1px solid rgba(148, 163, 184, 0.1);
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(30,41,59,0.55);
+      border: 1px solid rgba(148,163,184,0.08);
       border-radius: 10px;
       color: #e2e8f0;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       transition: all 0.2s ease;
     }
 
     .quick-link:hover {
-      background: rgba(30, 41, 59, 0.9);
-      border-color: rgba(6, 182, 212, 0.3);
-      transform: translateX(4px);
+      background: rgba(30,41,59,0.9);
+      border-color: rgba(6,182,212,0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
+
+    .quick-link-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+
+    .quick-link-icon--dashboard  { background: rgba(99,102,241,0.15); }
+    .quick-link-icon--news       { background: rgba(6,182,212,0.15); }
+    .quick-link-icon--market     { background: rgba(16,185,129,0.15); }
+    .quick-link-icon--companies  { background: rgba(245,158,11,0.15); }
+    .quick-link-icon--glossary   { background: rgba(168,85,247,0.15); }
+    .quick-link-icon--timeline   { background: rgba(236,72,153,0.15); }
 
     .quick-link svg {
-      width: 20px;
-      height: 20px;
-      color: #06b6d4;
-      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
     }
 
-    .quick-link-text {
-      flex: 1;
+    .quick-link-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .quick-link-sub {
-      font-size: 12px;
-      color: #64748b;
-      font-weight: 400;
-    }
-
-    .quick-link-arrow {
-      color: #475569;
-      width: 16px;
-      height: 16px;
-    }
-
-    /* Last online timestamp */
-    .last-online {
+    /* ---- Last cached timestamp ---- */
+    .last-cached {
       margin-top: 20px;
       text-align: center;
       color: #475569;
       font-size: 12px;
     }
 
-    .last-online span {
+    .last-cached span {
       color: #64748b;
+    }
+
+    /* ---- Troubleshooting tips ---- */
+    .tips {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(148,163,184,0.1);
+    }
+
+    .tips h2 {
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .tips ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .tips li {
+      color: #64748b;
+      font-size: 12px;
+      padding: 6px 14px;
+      background: rgba(30,41,59,0.4);
+      border-radius: 8px;
+      border: 1px solid rgba(148,163,184,0.06);
+    }
+
+    /* ---- Branding footer ---- */
+    .brand-footer {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #334155;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    .brand-footer span {
+      color: #06b6d4;
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 480px) {
+      body {
+        padding: 16px;
+        padding-bottom: 60px;
+      }
+
+      .satellite-icon {
+        font-size: 64px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+
+      .quick-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .icon-ring {
+        width: 100px;
+        height: 100px;
+        margin-left: -50px;
+        margin-top: -50px;
+      }
+    }
+
+    @media (min-width: 481px) and (max-width: 768px) {
+      .quick-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .quick-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Starfield background -->
-  <div class="stars" id="stars"></div>
+
+  <!-- Animated starfield background -->
+  <div class="starfield" id="starfield">
+    <div class="starfield-layer starfield-layer--1"></div>
+    <div class="starfield-layer starfield-layer--2"></div>
+    <div class="starfield-layer starfield-layer--3"></div>
+  </div>
 
   <div class="container">
-    <div class="icon-container">
-      <div class="offline-icon">
-        <div class="signal-waves">
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-        </div>
-        <svg class="satellite" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M2 12H22" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M12 2C14.5013 4.73835 15.9228 8.29203 16 12C15.9228 15.708 14.5013 19.2616 12 22C9.49872 19.2616 8.07725 15.708 8 12C8.07725 8.29203 9.49872 4.73835 12 2Z" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- X mark for offline -->
-          <line x1="8" y1="8" x2="16" y2="16" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
-          <line x1="16" y1="8" x2="8" y2="16" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </div>
+    <!-- Satellite icon with pulsing rings -->
+    <div class="icon-wrap">
+      <div class="icon-ring"></div>
+      <div class="icon-ring"></div>
+      <div class="icon-ring"></div>
+      <span class="satellite-icon" role="img" aria-label="Satellite">&#x1F6F0;&#xFE0F;</span>
     </div>
 
-    <h1>Lost in Space</h1>
+    <h1>You're Offline</h1>
 
     <p class="subtitle">
-      Houston, we have a problem. It looks like your connection to mission control has been interrupted.
+      SpaceNexus requires an internet connection for live space data.
+      Some previously visited pages may still be available from cache.
     </p>
 
     <div class="status-badge">
       <span class="status-dot"></span>
-      No Internet Connection
+      No Connection
     </div>
 
-    <button class="retry-button" onclick="retryConnection()">
+    <br>
+
+    <button class="retry-button" onclick="retryConnection()" aria-label="Retry connection">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M23 4v6h-6"></path>
         <path d="M1 20v-6h6"></path>
@@ -398,194 +485,203 @@
       Retry Connection
     </button>
 
-    <div class="tips">
-      <h2>Troubleshooting Tips</h2>
-      <ul>
-        <li>Check your Wi-Fi or mobile data connection</li>
-        <li>Try moving to an area with better signal</li>
-        <li>Restart your device if the problem persists</li>
-        <li>Some content may be available offline</li>
-      </ul>
+    <!-- Quick-access cached sections -->
+    <div class="quick-section">
+      <h2>Previously Visited Pages</h2>
+      <p class="quick-note">These may load if you visited them before going offline</p>
+      <div class="quick-grid">
+        <a href="/mission-control" class="quick-link">
+          <div class="quick-link-icon quick-link-icon--dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+          </div>
+          <span class="quick-link-label">Dashboard</span>
+        </a>
+        <a href="/news" class="quick-link">
+          <div class="quick-link-icon quick-link-icon--news">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2"></path>
+            </svg>
+          </div>
+          <span class="quick-link-label">News</span>
+        </a>
+        <a href="/market-intel" class="quick-link">
+          <div class="quick-link-icon quick-link-icon--market">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="20" x2="12" y2="10"></line>
+              <line x1="18" y1="20" x2="18" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="16"></line>
+            </svg>
+          </div>
+          <span class="quick-link-label">Market Intel</span>
+        </a>
+        <a href="/company-profiles" class="quick-link">
+          <div class="quick-link-icon quick-link-icon--companies">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 21h18"></path>
+              <path d="M5 21V7l8-4v18"></path>
+              <path d="M19 21V11l-6-4"></path>
+              <path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"></path>
+            </svg>
+          </div>
+          <span class="quick-link-label">Companies</span>
+        </a>
+        <a href="/glossary" class="quick-link">
+          <div class="quick-link-icon quick-link-icon--glossary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"></path>
+            </svg>
+          </div>
+          <span class="quick-link-label">Glossary</span>
+        </a>
+        <a href="/timeline" class="quick-link">
+          <div class="quick-link-icon quick-link-icon--timeline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <span class="quick-link-label">Timeline</span>
+        </a>
+      </div>
+
+      <div class="last-cached" id="lastCached"></div>
     </div>
 
-    <div class="cached-section">
-      <h2>Quick Access</h2>
-      <div class="cached-note">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="16" x2="12" y2="12"></line>
-          <line x1="12" y1="8" x2="12.01" y2="8"></line>
-        </svg>
-        Cached content may be available for previously visited pages
-      </div>
-      <div class="quick-links">
-        <a href="/news" class="quick-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2"></path>
-          </svg>
-          <div class="quick-link-text">
-            View Cached News
-            <div class="quick-link-sub">Space industry headlines</div>
-          </div>
-          <svg class="quick-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </a>
-        <a href="/mission-control" class="quick-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="7"></rect>
-            <rect x="14" y="3" width="7" height="7"></rect>
-            <rect x="14" y="14" width="7" height="7"></rect>
-            <rect x="3" y="14" width="7" height="7"></rect>
-          </svg>
-          <div class="quick-link-text">
-            Mission Control
-            <div class="quick-link-sub">Dashboard overview</div>
-          </div>
-          <svg class="quick-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </a>
-        <a href="/account" class="quick-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <div class="quick-link-text">
-            Saved Searches
-            <div class="quick-link-sub">Your saved preferences</div>
-          </div>
-          <svg class="quick-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </a>
-      </div>
-      <div class="last-online" id="lastOnline"></div>
+    <!-- Tips -->
+    <div class="tips">
+      <h2>Quick Tips</h2>
+      <ul>
+        <li>Check your Wi-Fi or mobile data</li>
+        <li>Move to a stronger signal area</li>
+        <li>Try restarting your device</li>
+      </ul>
     </div>
   </div>
 
-  <div class="logo">SPACE<span>NEXUS</span></div>
+  <!-- Branding -->
+  <div class="brand-footer">SPACE<span>NEXUS</span></div>
 
   <script>
-    // Generate random stars
-    function generateStars() {
-      const starsContainer = document.getElementById('stars');
-      const starCount = 100;
-
-      for (let i = 0; i < starCount; i++) {
-        const star = document.createElement('div');
-        star.className = 'star';
-        star.style.left = Math.random() * 100 + '%';
-        star.style.top = Math.random() * 100 + '%';
-        star.style.animationDelay = Math.random() * 3 + 's';
-        star.style.opacity = Math.random() * 0.5 + 0.3;
-        starsContainer.appendChild(star);
+    // ---- Procedural star generation ---- //
+    (function generateStars() {
+      var container = document.getElementById('starfield');
+      var count = 70;
+      for (var i = 0; i < count; i++) {
+        var s = document.createElement('div');
+        s.className = 'star';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        s.style.animationDelay = (Math.random() * 5).toFixed(2) + 's';
+        s.style.animationDuration = (2 + Math.random() * 4).toFixed(2) + 's';
+        var size = (1 + Math.random() * 1.5).toFixed(1);
+        s.style.width = size + 'px';
+        s.style.height = size + 'px';
+        container.appendChild(s);
       }
-    }
+    })();
 
-    // Retry connection
+    // ---- Retry connection ---- //
     function retryConnection() {
-      const button = document.querySelector('.retry-button');
+      var button = document.querySelector('.retry-button');
       button.classList.add('loading');
       button.disabled = true;
 
-      // Try to fetch the home page
       fetch('/', { method: 'HEAD', cache: 'no-store' })
-        .then(response => {
+        .then(function(response) {
           if (response.ok) {
-            // Connection restored, reload the page
             window.location.reload();
           } else {
-            throw new Error('Still offline');
+            throw new Error('offline');
           }
         })
-        .catch(() => {
-          // Still offline
+        .catch(function() {
           button.classList.remove('loading');
           button.disabled = false;
 
-          // Show a temporary message
-          const subtitle = document.querySelector('.subtitle');
-          const originalText = subtitle.textContent;
-          subtitle.textContent = 'Still unable to connect. Please check your internet connection.';
+          var subtitle = document.querySelector('.subtitle');
+          var original = subtitle.textContent;
+          subtitle.textContent = 'Still unable to reach SpaceNexus. Please check your connection and try again.';
           subtitle.style.color = '#f87171';
 
-          setTimeout(() => {
-            subtitle.textContent = originalText;
+          setTimeout(function() {
+            subtitle.textContent = original;
             subtitle.style.color = '#94a3b8';
-          }, 3000);
+          }, 3500);
         });
     }
 
-    // Check for online status periodically
-    function checkOnlineStatus() {
-      if (navigator.onLine) {
-        // Try to actually fetch something to confirm
+    // ---- Auto-detect when connection comes back ---- //
+    window.addEventListener('online', function() {
+      setTimeout(function() {
         fetch('/', { method: 'HEAD', cache: 'no-store' })
-          .then(response => {
-            if (response.ok) {
-              window.location.reload();
-            }
-          })
-          .catch(() => {
-            // Network says online but can't reach server
-          });
-      }
-    }
-
-    // Listen for online event
-    window.addEventListener('online', () => {
-      setTimeout(checkOnlineStatus, 1000);
+          .then(function(r) { if (r.ok) window.location.reload(); })
+          .catch(function() {});
+      }, 1500);
     });
 
-    // Display last online timestamp from localStorage
-    function displayLastOnline() {
-      var container = document.getElementById('lastOnline');
-      if (!container) return;
+    // Periodic check every 30 seconds
+    setInterval(function() {
+      if (navigator.onLine) {
+        fetch('/', { method: 'HEAD', cache: 'no-store' })
+          .then(function(r) { if (r.ok) window.location.reload(); })
+          .catch(function() {});
+      }
+    }, 30000);
+
+    // ---- Display last cached / last online timestamp ---- //
+    function displayLastCached() {
+      var el = document.getElementById('lastCached');
+      if (!el) return;
       try {
         var ts = localStorage.getItem('spacenexus-last-online');
-        if (ts) {
-          var date = new Date(parseInt(ts, 10));
-          var now = new Date();
-          var diff = now - date;
-          var text = '';
-          if (diff < 60000) {
-            text = 'just now';
-          } else if (diff < 3600000) {
-            var mins = Math.floor(diff / 60000);
-            text = mins + ' minute' + (mins > 1 ? 's' : '') + ' ago';
-          } else if (diff < 86400000) {
-            var hrs = Math.floor(diff / 3600000);
-            text = hrs + ' hour' + (hrs > 1 ? 's' : '') + ' ago';
-          } else {
-            var days = Math.floor(diff / 86400000);
-            text = days + ' day' + (days > 1 ? 's' : '') + ' ago';
-          }
-          container.innerHTML = 'Last online: <span>' + text + '</span>';
+        if (!ts) return;
+
+        // Support both ISO string and integer timestamp formats
+        var date = isNaN(Number(ts)) ? new Date(ts) : new Date(Number(ts));
+        if (isNaN(date.getTime())) return;
+
+        var now = new Date();
+        var diff = now - date;
+        var text = '';
+
+        if (diff < 60000) {
+          text = 'just now';
+        } else if (diff < 3600000) {
+          var mins = Math.floor(diff / 60000);
+          text = mins + ' minute' + (mins > 1 ? 's' : '') + ' ago';
+        } else if (diff < 86400000) {
+          var hrs = Math.floor(diff / 3600000);
+          text = hrs + ' hour' + (hrs > 1 ? 's' : '') + ' ago';
+        } else {
+          var days = Math.floor(diff / 86400000);
+          text = days + ' day' + (days > 1 ? 's' : '') + ' ago';
         }
+
+        el.innerHTML = 'Last cached: <span>' + text + '</span> &middot; <span>' + date.toLocaleString() + '</span>';
       } catch (e) {
-        // localStorage unavailable
+        // localStorage may be unavailable
       }
     }
 
-    // Listen for service worker messages to update lastOnline
+    // Listen for service worker messages updating the timestamp
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('message', function(event) {
         if (event.data && event.data.type === 'LAST_ONLINE') {
           try {
-            localStorage.setItem('spacenexus-last-online', String(event.data.timestamp));
+            localStorage.setItem('spacenexus-last-online', new Date(event.data.timestamp).toISOString());
           } catch (e) {}
-          displayLastOnline();
+          displayLastCached();
         }
       });
     }
 
-    // Initialize
-    generateStars();
-    displayLastOnline();
-
-    // Periodically check connection
-    setInterval(checkOnlineStatus, 30000);
+    displayLastCached();
   </script>
 </body>
 </html>

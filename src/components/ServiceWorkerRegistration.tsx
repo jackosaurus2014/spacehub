@@ -7,16 +7,46 @@ export default function ServiceWorkerRegistration() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
+    // Store last-online timestamp immediately and periodically while online.
+    // The offline fallback page reads this from localStorage to show "Last cached".
+    const storeLastOnline = () => {
+      if (navigator.onLine) {
+        try {
+          localStorage.setItem('spacenexus-last-online', new Date().toISOString());
+        } catch {
+          // localStorage may be unavailable
+        }
+      }
+    };
+    storeLastOnline();
+    const lastOnlineInterval = setInterval(storeLastOnline, 60_000); // every 60s
+
+    // Also store on visibilitychange (user returns to tab) and online event
+    const handleOnline = () => storeLastOnline();
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') storeLastOnline();
+    };
+    window.addEventListener('online', handleOnline);
+    document.addEventListener('visibilitychange', handleVisibility);
+
     // In Capacitor native shell, initialize native features instead of SW
     if (isNativePlatform()) {
       initCapacitorFeatures();
-      return;
+      return () => {
+        clearInterval(lastOnlineInterval);
+        window.removeEventListener('online', handleOnline);
+        document.removeEventListener('visibilitychange', handleVisibility);
+      };
     }
 
     // Check if service workers are supported
     if (!('serviceWorker' in navigator)) {
       console.log('[PWA] Service workers are not supported');
-      return;
+      return () => {
+        clearInterval(lastOnlineInterval);
+        window.removeEventListener('online', handleOnline);
+        document.removeEventListener('visibilitychange', handleVisibility);
+      };
     }
 
     // Register service worker
@@ -78,7 +108,12 @@ export default function ServiceWorkerRegistration() {
       registerServiceWorker();
     } else {
       window.addEventListener('load', registerServiceWorker);
-      return () => window.removeEventListener('load', registerServiceWorker);
+      return () => {
+        window.removeEventListener('load', registerServiceWorker);
+        clearInterval(lastOnlineInterval);
+        window.removeEventListener('online', handleOnline);
+        document.removeEventListener('visibilitychange', handleVisibility);
+      };
     }
 
     // Handle controller change (new service worker activated)
@@ -90,6 +125,9 @@ export default function ServiceWorkerRegistration() {
 
     return () => {
       navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
+      clearInterval(lastOnlineInterval);
+      window.removeEventListener('online', handleOnline);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
 

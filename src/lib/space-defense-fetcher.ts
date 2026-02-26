@@ -1,15 +1,30 @@
 /**
  * Space Defense module fetcher
  * Fetches live SAM.gov defense procurement, compiles defense news,
- * and pulls top defense RSS feeds directly.
+ * and pulls top defense RSS feeds directly from 5 high-priority sources.
+ *
+ * RSS Sources (Tier 1):
+ *   1. SpaceNews Defense section
+ *   2. Breaking Defense Space section
+ *   3. Defense.gov Contracts RSS
+ *   4. US Space Force official news
+ *   5. C4ISRNET Space section
  */
 
 import { fetchSAMOpportunities } from '@/lib/procurement/sam-gov';
-import { upsertContent } from '@/lib/dynamic-content';
+import { upsertContent, getContentItem } from '@/lib/dynamic-content';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { createCircuitBreaker } from '@/lib/circuit-breaker';
 import RSSParser from 'rss-parser';
 import sanitizeHtml from 'sanitize-html';
+
+// Circuit breaker for defense RSS feeds — tolerates individual feed failures
+// without tripping on transient errors from any single source
+const defenseRssBreaker = createCircuitBreaker('defense-rss', {
+  failureThreshold: 8, // High threshold: 5 feeds x ~1-2 transient failures each
+  resetTimeout: 120_000, // 2 minutes
+});
 
 const DEFENSE_AGENCIES = [
   'Department of Defense',
@@ -200,17 +215,21 @@ const DEFENSE_RSS_FEEDS: DefenseRSSSource[] = [
   {
     key: 'breaking-defense',
     name: 'Breaking Defense Space',
-    url: 'https://breakingdefense.com/category/space/feed/',
+    // Breaking Defense uses /tag/ for topic-based feeds
+    url: 'https://breakingdefense.com/tag/space/feed/',
   },
   {
     key: 'dod-contracts',
-    name: 'DoD Contracts',
-    url: 'https://www.defense.gov/News/RSS/',
+    name: 'Defense.gov Contracts',
+    // Defense.gov RSS for contract announcements (ContentType=1 = press releases / contracts, Site=945 = Contracts)
+    url: 'https://www.defense.gov/DesktopModules/ArticleCS/RSS.ashx?max=20&ContentType=1&Site=945',
   },
   {
     key: 'ussf',
     name: 'US Space Force',
-    url: 'https://www.spaceforce.mil/RSS/',
+    // Space Force official news feed — DesktopModules RSS endpoint (Site=1060 = USSF)
+    // Falls back to /RSS/ if this endpoint changes
+    url: 'https://www.spaceforce.mil/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&Site=1060&max=20',
   },
   {
     key: 'c4isrnet',
@@ -227,80 +246,236 @@ const defenseRssParser = new RSSParser({
   },
 });
 
+/** Shape of a single defense RSS article after parsing */
+export interface DefenseRSSArticle {
+  title: string;
+  url: string;
+  publishedAt: string; // ISO 8601
+  source: string;
+  summary: string;
+  feedKey: string;
+}
+
+/** Result of fetching a single feed */
+interface SingleFeedResult {
+  feedKey: string;
+  feedName: string;
+  items: DefenseRSSArticle[];
+  error?: string;
+}
+
 /**
- * Fetch a single defense RSS feed and store items in DynamicContent.
- * Returns the number of items stored, or 0 on failure.
+ * Fetch a single defense RSS feed, store items in DynamicContent, and return
+ * the parsed articles. Uses the defense-rss circuit breaker so that repeated
+ * failures across feeds eventually stop outbound requests.
+ *
+ * Returns the parsed items (empty array on failure) so the aggregator can
+ * combine them.
  */
-async function fetchSingleDefenseFeed(feed: DefenseRSSSource): Promise<number> {
-  try {
-    const parsed = await defenseRssParser.parseURL(feed.url);
-    const items = (parsed.items || []).slice(0, 20); // Top 20 items per feed
+async function fetchSingleDefenseFeed(feed: DefenseRSSSource): Promise<SingleFeedResult> {
+  return defenseRssBreaker.execute(
+    async () => {
+      const parsed = await defenseRssParser.parseURL(feed.url);
+      const rawItems = (parsed.items || []).slice(0, 20); // Top 20 items per feed
 
-    const feedItems = items
-      .filter((item) => item.title && item.link)
-      .map((item) => {
-        const rawSummary = item.contentSnippet || item.content || item.summary || '';
-        const summary = sanitizeHtml(rawSummary, {
-          allowedTags: [],
-          allowedAttributes: {},
-        }).slice(0, 500);
+      const feedItems: DefenseRSSArticle[] = rawItems
+        .filter((item) => item.title && item.link)
+        .map((item) => {
+          const rawSummary = item.contentSnippet || item.content || item.summary || '';
+          const summary = sanitizeHtml(rawSummary, {
+            allowedTags: [],
+            allowedAttributes: {},
+          }).slice(0, 500);
 
-        return {
-          title: item.title!,
-          url: item.link!,
-          publishedAt: item.pubDate
-            ? new Date(item.pubDate).toISOString()
-            : new Date().toISOString(),
-          source: feed.name,
-          summary,
-        };
+          return {
+            title: item.title!,
+            url: item.link!,
+            publishedAt: item.pubDate
+              ? new Date(item.pubDate).toISOString()
+              : new Date().toISOString(),
+            source: feed.name,
+            summary,
+            feedKey: feed.key,
+          };
+        });
+
+      if (feedItems.length > 0) {
+        await upsertContent(
+          `space-defense:rss-${feed.key}`,
+          'space-defense',
+          'rss-feeds',
+          feedItems,
+          {
+            sourceType: 'api',
+            sourceUrl: feed.url,
+          },
+        );
+      }
+
+      logger.info(`[Defense RSS] Fetched ${feed.name}`, {
+        itemCount: feedItems.length,
       });
 
-    if (feedItems.length > 0) {
-      await upsertContent(
-        `space-defense:rss-${feed.key}`,
-        'space-defense',
-        'rss-feeds',
-        feedItems,
-        {
-          sourceType: 'api',
-          sourceUrl: feed.url,
-        },
-      );
-    }
-
-    logger.info(`[Defense RSS] Fetched ${feed.name}`, {
-      itemCount: feedItems.length,
-    });
-
-    return feedItems.length;
-  } catch (error) {
-    logger.warn(`[Defense RSS] Failed to fetch ${feed.name}`, {
-      url: feed.url,
-      error: error instanceof Error ? error.message : String(error),
-    });
-    // One feed failing should not break the others
-    return 0;
-  }
+      return { feedKey: feed.key, feedName: feed.name, items: feedItems };
+    },
+    // Fallback when circuit breaker is open or call fails:
+    // return empty result with error note so aggregator can report it
+    { feedKey: feed.key, feedName: feed.name, items: [], error: 'circuit-breaker-fallback' } as SingleFeedResult,
+  );
 }
 
 /**
  * Fetch all defense RSS feeds.
- * Each feed is fetched independently — failures are isolated per feed.
- * Results are stored in DynamicContent under space-defense:rss-<key>.
+ * Each feed is fetched independently via circuit breaker — failures are
+ * isolated per feed. Results are stored in DynamicContent under
+ * space-defense:rss-<key>.
+ *
+ * Returns the total number of items stored across all feeds.
  */
 export async function fetchDefenseRSSFeeds(): Promise<number> {
   const results = await Promise.all(
     DEFENSE_RSS_FEEDS.map((feed) => fetchSingleDefenseFeed(feed)),
   );
 
-  const totalItems = results.reduce((sum, count) => sum + count, 0);
+  const totalItems = results.reduce((sum, r) => sum + r.items.length, 0);
+  const succeeded = results.filter((r) => !r.error);
+  const failed = results.filter((r) => !!r.error);
 
   logger.info('[Defense RSS] All feeds complete', {
     feedCount: DEFENSE_RSS_FEEDS.length,
+    succeeded: succeeded.length,
+    failed: failed.length,
     totalItems,
-    perFeed: DEFENSE_RSS_FEEDS.map((f, i) => `${f.name}: ${results[i]}`),
+    perFeed: results.map((r) => `${r.feedName}: ${r.items.length}${r.error ? ' (failed)' : ''}`),
   });
 
+  if (failed.length > 0) {
+    logger.warn('[Defense RSS] Some feeds failed', {
+      failedFeeds: failed.map((r) => r.feedName),
+    });
+  }
+
   return totalItems;
+}
+
+// ---------------------------------------------------------------------------
+// Aggregator — combines all defense RSS feeds into a single sorted list
+// ---------------------------------------------------------------------------
+
+/** Summary returned by the aggregator */
+export interface DefenseFeedAggregation {
+  /** All articles from all feeds, sorted newest-first */
+  articles: DefenseRSSArticle[];
+  /** Per-feed stats */
+  feedStats: Array<{
+    key: string;
+    name: string;
+    count: number;
+    status: 'ok' | 'failed' | 'stale-cache';
+  }>;
+  /** Total articles across all feeds */
+  totalArticles: number;
+  /** ISO timestamp of when the aggregation ran */
+  aggregatedAt: string;
+}
+
+/**
+ * Fetch all 5 defense RSS feeds, combine the results into a single list
+ * sorted by publishedAt (newest first), and store the combined result in
+ * DynamicContent under `space-defense:rss-combined`.
+ *
+ * If a feed fails, its previously-cached items from DynamicContent are used
+ * as a fallback so the aggregation is never empty due to transient errors.
+ *
+ * Returns the full aggregation including articles and per-feed stats.
+ */
+export async function fetchAllDefenseFeeds(): Promise<DefenseFeedAggregation> {
+  // Fetch all feeds in parallel
+  const results = await Promise.all(
+    DEFENSE_RSS_FEEDS.map((feed) => fetchSingleDefenseFeed(feed)),
+  );
+
+  const allArticles: DefenseRSSArticle[] = [];
+  const feedStats: DefenseFeedAggregation['feedStats'] = [];
+
+  for (const result of results) {
+    if (result.items.length > 0) {
+      // Feed returned fresh items
+      allArticles.push(...result.items);
+      feedStats.push({
+        key: result.feedKey,
+        name: result.feedName,
+        count: result.items.length,
+        status: 'ok',
+      });
+    } else if (result.error) {
+      // Feed failed — try to load previously-cached items from DynamicContent
+      const cached = await getContentItem<DefenseRSSArticle[]>(
+        `space-defense:rss-${result.feedKey}`,
+      );
+      if (cached && Array.isArray(cached.data) && cached.data.length > 0) {
+        allArticles.push(...cached.data);
+        feedStats.push({
+          key: result.feedKey,
+          name: result.feedName,
+          count: cached.data.length,
+          status: 'stale-cache',
+        });
+        logger.info(`[Defense RSS] Using cached data for ${result.feedName}`, {
+          cachedItems: cached.data.length,
+          cachedAt: cached.refreshedAt.toISOString(),
+        });
+      } else {
+        feedStats.push({
+          key: result.feedKey,
+          name: result.feedName,
+          count: 0,
+          status: 'failed',
+        });
+      }
+    } else {
+      // Feed returned 0 items but no error (feed may be legitimately empty)
+      feedStats.push({
+        key: result.feedKey,
+        name: result.feedName,
+        count: 0,
+        status: 'ok',
+      });
+    }
+  }
+
+  // Sort combined articles by publishedAt, newest first
+  allArticles.sort((a, b) => {
+    const dateA = new Date(a.publishedAt).getTime();
+    const dateB = new Date(b.publishedAt).getTime();
+    return dateB - dateA;
+  });
+
+  const aggregation: DefenseFeedAggregation = {
+    articles: allArticles,
+    feedStats,
+    totalArticles: allArticles.length,
+    aggregatedAt: new Date().toISOString(),
+  };
+
+  // Store combined aggregation in DynamicContent for downstream consumers
+  if (allArticles.length > 0) {
+    await upsertContent(
+      'space-defense:rss-combined',
+      'space-defense',
+      'rss-feeds',
+      aggregation,
+      {
+        sourceType: 'api',
+        sourceUrl: 'multiple-defense-rss-feeds',
+      },
+    );
+  }
+
+  logger.info('[Defense RSS] Aggregation complete', {
+    totalArticles: allArticles.length,
+    feedStats: feedStats.map((s) => `${s.name}: ${s.count} (${s.status})`),
+  });
+
+  return aggregation;
 }
