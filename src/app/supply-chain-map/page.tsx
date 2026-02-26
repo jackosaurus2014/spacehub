@@ -7,6 +7,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PremiumGate from '@/components/PremiumGate';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import {
   GRAPH_NODES,
   GRAPH_EDGES,

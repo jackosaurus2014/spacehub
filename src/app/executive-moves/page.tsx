@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PremiumGate from '@/components/PremiumGate';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 interface ExecutiveMove {
   id: string;

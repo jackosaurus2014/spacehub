@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import { DonutChart } from '@/components/charts';
 import { BUSINESS_MODELS, type BusinessModelTemplate } from '@/lib/business-model-data';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';

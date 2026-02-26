@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import EventSchema from '@/components/seo/EventSchema';
 import {
   SPACE_EVENTS,
