@@ -744,6 +744,33 @@ export default function SpaceTimelinePage() {
           </ScrollReveal>
         ))}
       </div>
+
+      {/* ----------------------------------------------------------------- */}
+      {/* Explore More                                                      */}
+      {/* ----------------------------------------------------------------- */}
+      <ScrollReveal delay={0.15}>
+        <section className="mt-16 border-t border-slate-800 pt-8">
+          <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="/glossary" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Space Industry Glossary</h3>
+              <p className="text-slate-400 text-sm mt-1">Comprehensive reference of key terms, acronyms, and concepts.</p>
+            </a>
+            <a href="/mission-heritage" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Mission Heritage</h3>
+              <p className="text-slate-400 text-sm mt-1">Explore the legacy and lineage of historic space missions.</p>
+            </a>
+            <a href="/space-agencies" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Space Agencies</h3>
+              <p className="text-slate-400 text-sm mt-1">Profiles of government space agencies from around the world.</p>
+            </a>
+            <a href="/mission-stats" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Mission Statistics</h3>
+              <p className="text-slate-400 text-sm mt-1">Launch data, success rates, and orbital mission analytics.</p>
+            </a>
+          </div>
+        </section>
+      </ScrollReveal>
     </div>
   );
 }

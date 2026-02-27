@@ -172,7 +172,7 @@ export default function PressPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 {LOGO_ASSETS.map((asset) => (
-                  <div key={asset.name} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                  <div key={asset.name} className="card p-4">
                     <div className="bg-[#0f172a] rounded-lg p-4 mb-3 flex items-center justify-center h-24">
                       <span className="text-cyan-400 font-bold text-lg">SN</span>
                     </div>
@@ -226,25 +226,25 @@ export default function PressPage() {
                 High-resolution screenshots of the SpaceNexus platform for media use.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div className="card p-4">
                   <div className="bg-[#0f172a] rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                     <span className="text-slate-500 text-sm">Mission Control Dashboard</span>
                   </div>
                   <p className="text-xs text-slate-400">Real-time dashboard with launches, market data, and news</p>
                 </div>
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div className="card p-4">
                   <div className="bg-[#0f172a] rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                     <span className="text-slate-500 text-sm">Satellite Tracker (3D Globe)</span>
                   </div>
                   <p className="text-xs text-slate-400">Interactive 3D globe tracking 19,000+ satellites</p>
                 </div>
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div className="card p-4">
                   <div className="bg-[#0f172a] rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                     <span className="text-slate-500 text-sm">Company Profiles Directory</span>
                   </div>
                   <p className="text-xs text-slate-400">200+ company profiles with financial data and analysis</p>
                 </div>
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div className="card p-4">
                   <div className="bg-[#0f172a] rounded-lg p-4 mb-3 h-32 flex items-center justify-center">
                     <span className="text-slate-500 text-sm">Market Intelligence Dashboard</span>
                   </div>

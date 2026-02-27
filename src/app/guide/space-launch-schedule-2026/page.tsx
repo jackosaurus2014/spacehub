@@ -210,7 +210,7 @@ export default function SpaceLaunchSchedule2026Page() {
               </p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month) => (
-                  <div key={month} className="bg-slate-800/50 border border-slate-700 rounded-lg p-3 text-center">
+                  <div key={month} className="card p-3 text-center">
                     <div className="text-sm font-semibold text-slate-300">{month} 2026</div>
                     <div className="text-lg font-bold text-cyan-400 mt-1">20-25</div>
                     <div className="text-xs text-slate-400">expected launches</div>
@@ -227,25 +227,25 @@ export default function SpaceLaunchSchedule2026Page() {
                 to super-heavy lift systems (Starship, SLS). Key vehicles to watch:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div className="card p-4">
                   <h3 className="font-semibold text-white text-sm">SpaceX Starship</h3>
                   <p className="text-slate-400 text-xs mt-1">
                     Super-heavy lift. 150t to LEO. Fully reusable target. Key for Artemis HLS and Starlink V2.
                   </p>
                 </div>
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div className="card p-4">
                   <h3 className="font-semibold text-white text-sm">Blue Origin New Glenn</h3>
                   <p className="text-slate-400 text-xs mt-1">
                     Heavy lift. 45t to LEO. Reusable first stage. Key for Project Kuiper constellation.
                   </p>
                 </div>
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div className="card p-4">
                   <h3 className="font-semibold text-white text-sm">Ariane 6</h3>
                   <p className="text-slate-400 text-xs mt-1">
                     European heavy lift. A62 and A64 variants. Replacing Ariane 5 for institutional missions.
                   </p>
                 </div>
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div className="card p-4">
                   <h3 className="font-semibold text-white text-sm">Rocket Lab Neutron</h3>
                   <p className="text-slate-400 text-xs mt-1">
                     Medium lift. 13t to LEO. Reusable. Targeting constellation deployment and government missions.
@@ -351,7 +351,7 @@ export default function SpaceLaunchSchedule2026Page() {
               <h2 className="text-2xl font-bold text-white mb-4">Frequently Asked Questions</h2>
               <div className="space-y-4">
                 {FAQ_ITEMS.map((faq) => (
-                  <div key={faq.question} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                  <div key={faq.question} className="card p-4">
                     <h3 className="font-semibold text-white text-sm mb-2">{faq.question}</h3>
                     <p className="text-slate-400 text-sm leading-relaxed">{faq.answer}</p>
                   </div>

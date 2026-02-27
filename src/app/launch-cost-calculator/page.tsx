@@ -275,7 +275,7 @@ function StatCard({
   };
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+    <div className="card p-4 text-center">
       <div className="text-xs text-slate-400 uppercase tracking-wider mb-1">
         {label}
       </div>
@@ -340,7 +340,7 @@ function CostBreakdownCard({
   ];
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+    <div className="card p-6">
       <h3 className="text-lg font-semibold text-slate-100 mb-1">
         Cost Breakdown
       </h3>
@@ -710,7 +710,7 @@ export default function LaunchCostCalculatorPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* ─── Input Panel ─── */}
           <div className="lg:col-span-1">
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 sticky top-8 space-y-5">
+            <div className="card p-6 sticky top-8 space-y-5">
               <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
                 <svg
                   className="w-5 h-5 text-cyan-400"
@@ -931,7 +931,7 @@ export default function LaunchCostCalculatorPage() {
               <>
                 {/* Bar Chart - $/kg comparison */}
                 {chartData.length > 0 && (
-                  <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+                  <div className="card p-6">
                     <BarChart
                       data={chartData}
                       title={`Cost per kg to ${orbit} (${compatibleVehicles.length} vehicles)`}

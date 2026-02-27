@@ -107,7 +107,7 @@ export default function GovernmentBudgetsPage() {
               { label: 'Largest Spender', value: 'DoD Space', sub: '$30.1B (Military)' },
               { label: 'Fastest Growing', value: 'Australia', sub: '+25% YoY' },
             ].map((stat) => (
-              <div key={stat.label} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+              <div key={stat.label} className="card p-4 text-center">
                 <p className="text-2xl font-bold text-white">{stat.value}</p>
                 <p className="text-xs text-slate-400 mt-1">{stat.label}</p>
                 <p className="text-xs text-cyan-400 mt-0.5">{stat.sub}</p>
@@ -196,7 +196,7 @@ export default function GovernmentBudgetsPage() {
         {/* Regional Breakdown + Category Split */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <ScrollReveal delay={0.25}>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+            <div className="card p-6">
               <h3 className="text-lg font-bold text-white mb-4">Regional Distribution</h3>
               <div className="space-y-3">
                 {regionBreakdown.map(r => (
@@ -216,7 +216,7 @@ export default function GovernmentBudgetsPage() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.3}>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+            <div className="card p-6">
               <h3 className="text-lg font-bold text-white mb-4">Spending Category</h3>
               <div className="space-y-4">
                 {[
@@ -267,7 +267,7 @@ export default function GovernmentBudgetsPage() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {KEY_PROGRAMS.map(prog => (
-                <div key={prog.name} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 hover:border-cyan-400/30 transition-colors">
+                <div key={prog.name} className="card p-4 hover:border-cyan-400/30 transition-colors">
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="text-sm font-bold text-white">{prog.name}</h4>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${

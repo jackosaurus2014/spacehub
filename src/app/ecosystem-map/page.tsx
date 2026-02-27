@@ -424,7 +424,7 @@ export default function EcosystemMapPage() {
         </ScrollReveal>
 
         {/* Search */}
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 mb-8">
+        <div className="card p-4 mb-8">
           <input
             type="text"
             aria-label="Search companies across the ecosystem"
@@ -505,7 +505,7 @@ export default function EcosystemMapPage() {
         <div className="mt-12 pt-8 border-t border-slate-700/50">
           <h2 className="text-xl font-bold text-white mb-6">How the Space Value Chain Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
+            <div className="card p-5">
               <h3 className="text-amber-400 font-semibold mb-2">Upstream to Midstream</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
                 Component manufacturers like Moog and Aerojet Rocketdyne supply reaction wheels, thrusters,
@@ -514,7 +514,7 @@ export default function EcosystemMapPage() {
                 semiconductors, and composite materials.
               </p>
             </div>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
+            <div className="card p-5">
               <h3 className="text-cyan-400 font-semibold mb-2">Midstream to Downstream</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
                 Launch providers deliver satellites to orbit for operators like SES and Planet Labs. Ground
@@ -522,7 +522,7 @@ export default function EcosystemMapPage() {
                 control these assets. Satellite data then flows to analytics platforms serving end users.
               </p>
             </div>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
+            <div className="card p-5">
               <h3 className="text-purple-400 font-semibold mb-2">Downstream Value Creation</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
                 Downstream companies transform raw satellite data into actionable intelligence. Planet Labs
@@ -530,7 +530,7 @@ export default function EcosystemMapPage() {
                 Spire Global data feeds weather forecasting. This is where most commercial revenue is generated.
               </p>
             </div>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
+            <div className="card p-5">
               <h3 className="text-emerald-400 font-semibold mb-2">Cross-Cutting Enablers</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
                 The ecosystem depends on cross-cutting services: insurance underwriters assess and cover launch

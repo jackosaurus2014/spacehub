@@ -901,19 +901,19 @@ function CompaniesTab() {
       {/* Summary Stats */}
       <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-cyan-400">{ADR_COMPANIES.length}</div>
             <div className="text-sm text-slate-400 mt-1">Companies/Missions</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-green-400">{ADR_COMPANIES.filter(c => c.status === 'operational').length}</div>
             <div className="text-sm text-slate-400 mt-1">Operational</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-amber-400">{ADR_COMPANIES.filter(c => ['planned', 'in-development'].includes(c.status)).length}</div>
             <div className="text-sm text-slate-400 mt-1">In Development</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-blue-400">{ADR_COMPANIES.filter(c => c.status === 'launched').length}</div>
             <div className="text-sm text-slate-400 mt-1">Launched</div>
           </div>

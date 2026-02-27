@@ -197,7 +197,7 @@ function EndpointSection({ endpoint }: { endpoint: OpenAPIEndpoint }) {
 
   return (
     <section id={sectionId} className="scroll-mt-24">
-      <div className="bg-slate-800/50 border border-slate-700 rounded-lg overflow-hidden">
+      <div className="card overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-700 flex flex-wrap items-center gap-3">
           <MethodBadge method={endpoint.method} />
@@ -494,7 +494,7 @@ function ApiDocsPageInner() {
               market data, regulatory filings, and more. All endpoints return JSON and follow RESTful conventions.
             </p>
 
-            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 mb-6">
+            <div className="card p-4 mb-6">
               <p className="text-sm text-slate-300">
                 <span className="font-semibold text-white">Base URL:</span>{' '}
                 <code className="text-cyan-400 font-mono">https://spacenexus.us/api/v1</code>
@@ -529,7 +529,7 @@ function ApiDocsPageInner() {
           {/* Authentication */}
           <section id="authentication" data-section="authentication" className="scroll-mt-24">
             <h2 className="text-2xl font-bold mb-4">Authentication</h2>
-            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 space-y-4">
+            <div className="card p-6 space-y-4">
               <p className="text-slate-300">
                 All API requests must include a valid API key. You can pass it using either of these methods:
               </p>
@@ -574,7 +574,7 @@ function ApiDocsPageInner() {
           {/* Response Format */}
           <section data-section="authentication" className="scroll-mt-24">
             <h2 className="text-2xl font-bold mb-4">Response Format</h2>
-            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 space-y-4">
+            <div className="card p-6 space-y-4">
               <p className="text-slate-300">All responses follow a consistent JSON structure:</p>
 
               <div className="grid md:grid-cols-2 gap-4">
@@ -607,7 +607,7 @@ function ApiDocsPageInner() {
           {/* Rate Limits */}
           <section id="rate-limits" data-section="rate-limits" className="scroll-mt-24">
             <h2 className="text-2xl font-bold mb-4">Rate Limits</h2>
-            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 space-y-4">
+            <div className="card p-6 space-y-4">
               <p className="text-slate-300">
                 Rate limits are enforced per API key. Every response includes rate limit headers:
               </p>
@@ -674,7 +674,7 @@ function ApiDocsPageInner() {
             <h2 className="text-2xl font-bold mb-4">Error Codes</h2>
             <div className="space-y-3">
               {COMMON_ERRORS.map((err) => (
-                <div key={err.status} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div key={err.status} className="card p-4">
                   <div className="flex items-center gap-3 mb-2">
                     <span
                       className={`text-sm font-bold font-mono px-2 py-0.5 rounded ${

@@ -800,6 +800,35 @@ export default function MissionSimulatorPage() {
             )}
           </div>
         </div>
+
+        {/* ── Explore More ── */}
+        <ScrollReveal className="mt-12">
+          <section className="mt-16 border-t border-slate-800 pt-8">
+            <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <a href="/orbital-calculator" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Orbital Calculator</h3>
+                <p className="text-slate-400 text-sm mt-1">Calculate orbital parameters, transfer orbits, and delta-V budgets.</p>
+              </a>
+              <a href="/thermal-calculator" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Thermal Calculator</h3>
+                <p className="text-slate-400 text-sm mt-1">Model spacecraft thermal environments and heat dissipation requirements.</p>
+              </a>
+              <a href="/radiation-calculator" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Radiation Calculator</h3>
+                <p className="text-slate-400 text-sm mt-1">Estimate radiation exposure across orbital regimes and shielding levels.</p>
+              </a>
+              <a href="/launch-economics" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Launch Economics</h3>
+                <p className="text-slate-400 text-sm mt-1">Cost analysis and market trends for orbital launch vehicles.</p>
+              </a>
+              <a href="/constellation-designer" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Constellation Designer</h3>
+                <p className="text-slate-400 text-sm mt-1">Design satellite constellations with coverage analysis and optimization.</p>
+              </a>
+            </div>
+          </section>
+        </ScrollReveal>
       </div>
     </div>
   );

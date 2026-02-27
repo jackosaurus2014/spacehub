@@ -980,23 +980,23 @@ function TechnologiesTab() {
       {/* Summary Stats */}
       <ScrollReveal>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-white">{ISRU_TECHNOLOGIES.length}</div>
             <div className="text-xs text-slate-400 mt-1">Technologies Tracked</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-emerald-400">
               {ISRU_TECHNOLOGIES.filter((t) => t.trl >= 6).length}
             </div>
             <div className="text-xs text-slate-400 mt-1">TRL 6+ (Demonstrated)</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-cyan-400">
               {ISRU_TECHNOLOGIES.filter((t) => t.trl >= 4 && t.trl < 6).length}
             </div>
             <div className="text-xs text-slate-400 mt-1">TRL 4-5 (Lab Validated)</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-amber-400">
               {ISRU_TECHNOLOGIES.filter((t) => t.trl < 4).length}
             </div>
@@ -1349,23 +1349,23 @@ function CompaniesTab() {
       {/* Industry Overview */}
       <ScrollReveal>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-white">{ISRU_COMPANIES.length}</div>
             <div className="text-xs text-slate-400 mt-1">Organizations Tracked</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-blue-400">
               {ISRU_COMPANIES.filter((c) => c.type === 'government').length}
             </div>
             <div className="text-xs text-slate-400 mt-1">Government Programs</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-emerald-400">
               {ISRU_COMPANIES.filter((c) => c.type === 'commercial').length}
             </div>
             <div className="text-xs text-slate-400 mt-1">Commercial Companies</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-purple-400">
               {ISRU_COMPANIES.filter((c) => c.type === 'startup').length}
             </div>
@@ -1397,7 +1397,7 @@ function CompaniesTab() {
       <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4" staggerDelay={0.08}>
         {filtered.map((company) => (
           <StaggerItem key={company.name}>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-slate-600/50 transition-all h-full flex flex-col">
+            <div className="card p-5 hover:border-slate-600/50 transition-all h-full flex flex-col">
               {/* Header */}
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex-1 min-w-0">
@@ -1528,7 +1528,7 @@ function EconomicsTab() {
 
       {/* Scenario Detail */}
       <ScrollReveal delay={0.15}>
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl overflow-hidden">
+        <div className="card overflow-hidden">
           <div className="p-6">
             <h3 className="text-xl font-semibold text-white mb-2">{scenario.label}</h3>
             <p className="text-sm text-slate-400 mb-6">{scenario.description}</p>
@@ -1677,7 +1677,7 @@ function EconomicsTab() {
 
       {/* Propellant Production Potential */}
       <ScrollReveal delay={0.2}>
-        <div className="mt-8 bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+        <div className="mt-8 card p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Propellant Production Potential</h3>
           <p className="text-sm text-slate-400 mb-4">
             ISRU-produced propellant is the highest-value product because it directly enables missions that would
@@ -1732,7 +1732,7 @@ function EconomicsTab() {
 
       {/* Timeline */}
       <ScrollReveal delay={0.25}>
-        <div className="mt-8 bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+        <div className="mt-8 card p-6">
           <h3 className="text-lg font-semibold text-white mb-4">ISRU Development Roadmap</h3>
           <div className="space-y-0">
             {[

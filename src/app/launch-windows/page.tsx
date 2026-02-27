@@ -170,7 +170,7 @@ function DestinationCard({ destination }: { destination: CelestialDestination })
   const successColor = getSuccessRateColor(successRate);
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-cyan-500/30 transition-all">
+    <div className="card p-5 hover:border-cyan-500/30 transition-all">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -520,7 +520,7 @@ function LaunchWindowsContent() {
             subtitle="Optimal launch windows and mission planning for planetary destinations"
             breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Launch Windows' }]}
           />
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-12 text-center max-w-lg mx-auto">
+          <div className="card p-12 text-center max-w-lg mx-auto">
             <div className="text-5xl mb-4">🚀</div>
             <h3 className="text-xl font-semibold text-white mb-2">No Launch Window Data Available</h3>
             <p className="text-slate-400 mb-6">
@@ -568,7 +568,7 @@ function LaunchWindowsContent() {
 
         {/* Stats Cards */}
         <ScrollReveal><div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 text-center">
+          <div className="card p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-white">
               {data.stats.totalDestinations}
             </div>
@@ -576,7 +576,7 @@ function LaunchWindowsContent() {
               Destinations
             </div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 text-center">
+          <div className="card p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-cyan-400">
               {data.stats.upcomingWindows}
             </div>
@@ -584,7 +584,7 @@ function LaunchWindowsContent() {
               Upcoming Windows
             </div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 text-center">
+          <div className="card p-6 text-center">
             {nextWindow ? (
               <>
                 <div className="text-2xl font-bold font-display tracking-tight text-green-400">
@@ -608,7 +608,7 @@ function LaunchWindowsContent() {
               </>
             )}
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 text-center">
+          <div className="card p-6 text-center">
             {data.stats.mostAccessible ? (
               <>
                 <div className="text-2xl font-bold font-display tracking-tight text-purple-400">
@@ -686,7 +686,7 @@ function LaunchWindowsContent() {
         {activeTab === 'windows' && (
           <div>
             {/* Destination Filter */}
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 mb-6">
+            <div className="card p-4 mb-6">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="text-slate-400 text-sm">Filter by destination:</span>
                 <button
@@ -752,7 +752,7 @@ function LaunchWindowsContent() {
             )}
 
             {/* Transfer Type Legend */}
-            <ScrollReveal><div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 mt-8 border-dashed">
+            <ScrollReveal><div className="card p-5 mt-8 border-dashed">
               <h3 className="text-white font-semibold mb-4">Transfer Types</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {TRANSFER_TYPES.map((transfer) => {
@@ -820,7 +820,7 @@ function LaunchWindowsContent() {
         )}
 
         {/* Data Sources Footer */}
-        <ScrollReveal><div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 mt-8 mb-8 border-dashed">
+        <ScrollReveal><div className="card p-5 mt-8 mb-8 border-dashed">
           <h3 className="text-white font-semibold mb-3">Data Sources & Methodology</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
             <div>

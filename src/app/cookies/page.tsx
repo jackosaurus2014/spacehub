@@ -66,7 +66,7 @@ export default function CookiePolicyPage() {
               <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">Types of Cookies We Use</h2>
 
               {/* Essential Cookies */}
-              <div className="mb-6 p-6 bg-slate-800/50 border border-slate-700 rounded-lg">
+              <div className="mb-6 p-6 card">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="w-3 h-3 rounded-full bg-green-500"></span>
                   <h3 className="text-lg font-medium text-slate-200">Essential Cookies</h3>
@@ -88,7 +88,7 @@ export default function CookiePolicyPage() {
               </div>
 
               {/* Functional Cookies */}
-              <div className="mb-6 p-6 bg-slate-800/50 border border-slate-700 rounded-lg">
+              <div className="mb-6 p-6 card">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="w-3 h-3 rounded-full bg-blue-500"></span>
                   <h3 className="text-lg font-medium text-slate-200">Functional Cookies</h3>
@@ -110,7 +110,7 @@ export default function CookiePolicyPage() {
               </div>
 
               {/* Analytics Cookies */}
-              <div className="mb-6 p-6 bg-slate-800/50 border border-slate-700 rounded-lg">
+              <div className="mb-6 p-6 card">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
                   <h3 className="text-lg font-medium text-slate-200">Analytics Cookies</h3>
@@ -132,7 +132,7 @@ export default function CookiePolicyPage() {
               </div>
 
               {/* Marketing Cookies */}
-              <div className="p-6 bg-slate-800/50 border border-slate-700 rounded-lg">
+              <div className="p-6 card">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="w-3 h-3 rounded-full bg-purple-500"></span>
                   <h3 className="text-lg font-medium text-slate-200">Marketing Cookies</h3>
@@ -161,14 +161,14 @@ export default function CookiePolicyPage() {
                 Cookies can remain on your device for different periods of time:
               </p>
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-lg">
+                <div className="p-4 card">
                   <h4 className="font-medium text-slate-200 mb-2">Session Cookies</h4>
                   <p className="text-sm text-slate-400">
                     These are temporary cookies that expire when you close your browser. They are used
                     to maintain your session while you navigate the site.
                   </p>
                 </div>
-                <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-lg">
+                <div className="p-4 card">
                   <h4 className="font-medium text-slate-200 mb-2">Persistent Cookies</h4>
                   <p className="text-sm text-slate-400">
                     These cookies remain on your device for a set period or until you delete them. They
@@ -314,7 +314,7 @@ export default function CookiePolicyPage() {
               <p className="text-slate-400 leading-relaxed mb-4">
                 If you have any questions about our use of cookies or this Cookie Policy, please contact us:
               </p>
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
+              <div className="card p-6">
                 <p className="text-slate-300 font-medium">SpaceNexus Privacy Team</p>
                 <p className="text-slate-400 mt-2">Email: privacy@spacenexus.us</p>
                 <p className="text-slate-400">Address: 1234 Orbit Drive, Suite 500, Houston, TX 77058</p>

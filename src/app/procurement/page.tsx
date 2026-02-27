@@ -7,7 +7,7 @@ import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import PullToRefresh from '@/components/ui/PullToRefresh';
-import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import EmptyState from '@/components/ui/EmptyState';
 
@@ -194,15 +194,17 @@ function StatsOverview({ stats }: { stats: ProcurementStats | null }) {
     { label: 'Total Award Value', value: formatCurrency(stats.overview.totalAwardValue, true), icon: '💰' },
   ];
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" staggerDelay={0.1}>
       {cards.map((card, i) => (
-        <div key={i} className="card p-4 text-center">
-          <div className="text-2xl mb-1">{card.icon}</div>
-          <div className="text-2xl font-bold text-cyan-400">{card.value}</div>
-          <div className="text-xs text-slate-400 mt-1">{card.label}</div>
-        </div>
+        <StaggerItem key={i}>
+          <div className="card p-4 text-center">
+            <div className="text-2xl mb-1">{card.icon}</div>
+            <div className="text-2xl font-bold text-cyan-400">{card.value}</div>
+            <div className="text-xs text-slate-400 mt-1">{card.label}</div>
+          </div>
+        </StaggerItem>
       ))}
-    </div>
+    </StaggerContainer>
   );
 }
 
@@ -706,9 +708,12 @@ function ProcurementContent() {
           icon="📋"
         />
 
-        <StatsOverview stats={stats} />
+        <ScrollReveal>
+          <StatsOverview stats={stats} />
+        </ScrollReveal>
 
         {/* Tabs */}
+        <ScrollReveal delay={0.1}>
         <div className="flex flex-wrap gap-1 mb-6 bg-slate-900 p-1 rounded-lg">
           {tabs.map(tab => (
             <button
@@ -730,6 +735,7 @@ function ProcurementContent() {
             </button>
           ))}
         </div>
+        </ScrollReveal>
 
         {/* Tab Content */}
         {currentTab === 'opportunities' && (

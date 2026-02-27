@@ -943,6 +943,29 @@ export default function LaunchEconomicsPage() {
           </div>
         </section>
 
+        {/* ── Explore More ── */}
+        <section className="mt-16 border-t border-slate-800 pt-8">
+          <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="/launch-vehicles" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Launch Vehicle Database</h3>
+              <p className="text-slate-400 text-sm mt-1">Detailed specs, success rates, and comparisons for active and historical rockets.</p>
+            </a>
+            <a href="/funding-rounds" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Funding Rounds</h3>
+              <p className="text-slate-400 text-sm mt-1">Track venture capital and investment activity across the space industry.</p>
+            </a>
+            <a href="/mission-simulator" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Mission Simulator</h3>
+              <p className="text-slate-400 text-sm mt-1">Configure missions, calculate delta-V, and estimate costs with real vehicle data.</p>
+            </a>
+            <a href="/market-segments" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Market Segments</h3>
+              <p className="text-slate-400 text-sm mt-1">Analysis of space market segments including communications, EO, and defense.</p>
+            </a>
+          </div>
+        </section>
+
         {/* Data disclaimer */}
         <p className="text-xs text-slate-600 text-center mt-8 mb-4">
           Data sourced from publicly available launch contracts, SEC filings, and industry estimates.

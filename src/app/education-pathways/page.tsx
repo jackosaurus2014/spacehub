@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
@@ -813,31 +812,29 @@ export default function EducationPathwaysPage() {
           </div>
         </ScrollReveal>
 
-        {/* ───────────────── Related Links ───────────────── */}
+        {/* ───────────────── Explore More ───────────────── */}
         <ScrollReveal delay={0.15}>
-          <div className="card p-6 mb-8">
-            <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Continue Exploring</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {[
-                { href: '/career-guide', label: 'Career Guide', desc: '25 detailed career paths with salary data', icon: '\u{1F3AF}' },
-                { href: '/space-talent', label: 'Space Talent Hub', desc: 'Browse open positions and workforce analytics', icon: '\u{1F4BC}' },
-                { href: '/salary-benchmarks', label: 'Salary Benchmarks', desc: 'Detailed compensation data by role and level', icon: '\u{1F4B0}' },
-                { href: '/glossary', label: 'Space Glossary', desc: 'Terminology and acronyms decoded', icon: '\u{1F4D6}' },
-              ].map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="flex items-start gap-3 p-3 rounded-lg bg-slate-900/40 border border-slate-700/30 hover:border-cyan-500/40 hover:bg-slate-800/60 transition-colors group"
-                >
-                  <span className="text-2xl">{link.icon}</span>
-                  <div>
-                    <p className="text-sm font-medium text-slate-200 group-hover:text-cyan-400 transition-colors">{link.label}</p>
-                    <p className="text-xs text-slate-400">{link.desc}</p>
-                  </div>
-                </Link>
-              ))}
+          <section className="mt-16 border-t border-slate-800 pt-8 mb-8">
+            <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <a href="/salary-benchmarks" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Salary Benchmarks</h3>
+                <p className="text-slate-400 text-sm mt-1">Detailed compensation data by role, level, and location across the space sector.</p>
+              </a>
+              <a href="/workforce-analytics" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Workforce Analytics</h3>
+                <p className="text-slate-400 text-sm mt-1">Trends in space industry hiring, skills demand, and workforce demographics.</p>
+              </a>
+              <a href="/space-talent" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Space Talent Hub</h3>
+                <p className="text-slate-400 text-sm mt-1">Browse open positions and connect with space industry employers.</p>
+              </a>
+              <a href="/career-guide" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Career Guide</h3>
+                <p className="text-slate-400 text-sm mt-1">25 detailed career paths with progression steps and salary ranges.</p>
+              </a>
             </div>
-          </div>
+          </section>
         </ScrollReveal>
 
         {/* Disclaimer */}

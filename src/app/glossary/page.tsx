@@ -823,6 +823,31 @@ export default function GlossaryPage() {
             </div>
           </div>
         </ScrollReveal>
+
+        {/* ---- Explore More ---- */}
+        <ScrollReveal delay={0.15}>
+          <section className="mt-16 border-t border-slate-800 pt-8">
+            <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <a href="/timeline" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Space Industry Timeline</h3>
+                <p className="text-slate-400 text-sm mt-1">68+ years of milestones from Sputnik to Artemis and the commercial era.</p>
+              </a>
+              <a href="/faq" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Frequently Asked Questions</h3>
+                <p className="text-slate-400 text-sm mt-1">Answers to common questions about the space industry and SpaceNexus.</p>
+              </a>
+              <a href="/education-pathways" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Education Pathways</h3>
+                <p className="text-slate-400 text-sm mt-1">Career tracks, top university programs, certifications, and salary data.</p>
+              </a>
+              <a href="/standards-reference" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Standards Reference</h3>
+                <p className="text-slate-400 text-sm mt-1">Technical standards and specifications used across the space industry.</p>
+              </a>
+            </div>
+          </section>
+        </ScrollReveal>
       </div>
     </div>
   );

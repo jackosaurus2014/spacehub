@@ -208,7 +208,7 @@ export default function ContractAwardsPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4"
+            className="card p-4"
           >
             <div className="text-xs text-slate-400 mb-1">Total Results</div>
             <div className="text-xl font-bold text-white">
@@ -219,7 +219,7 @@ export default function ContractAwardsPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.05 }}
-            className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4"
+            className="card p-4"
           >
             <div className="text-xs text-slate-400 mb-1">
               Showing on Page
@@ -230,7 +230,7 @@ export default function ContractAwardsPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 }}
-            className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4"
+            className="card p-4"
           >
             <div className="text-xs text-slate-400 mb-1">
               Page Total Value
@@ -243,7 +243,7 @@ export default function ContractAwardsPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.15 }}
-            className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4"
+            className="card p-4"
           >
             <div className="text-xs text-slate-400 mb-1">Date Range</div>
             <div className="text-xl font-bold text-cyan-400">

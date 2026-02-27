@@ -8,6 +8,8 @@ import { SUBSCRIPTION_PLANS, SubscriptionTier } from '@/types';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import { toast } from '@/lib/toast';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 
 const PRICING_FAQ = [
@@ -336,16 +338,18 @@ function PricingPageContent() {
         <AnimatedPageHeader title="Choose Your Plan" subtitle="Unlock the full power of space intelligence" icon="💎" accentColor="purple" />
 
         {/* Audience strip */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
-          {['Entrepreneurs', 'Executives', 'Mission Planners', 'Lawyers', 'Investors', 'Enthusiasts'].map((audience) => (
-            <span
-              key={audience}
-              className="px-3 py-1 rounded-full text-xs font-medium border border-cyan-400/30 text-cyan-300 bg-cyan-400/5"
-            >
-              {audience}
-            </span>
-          ))}
-        </div>
+        <ScrollReveal>
+          <div className="flex flex-wrap justify-center gap-3 mb-10">
+            {['Entrepreneurs', 'Executives', 'Mission Planners', 'Lawyers', 'Investors', 'Enthusiasts'].map((audience) => (
+              <span
+                key={audience}
+                className="px-3 py-1 rounded-full text-xs font-medium border border-cyan-400/30 text-cyan-300 bg-cyan-400/5"
+              >
+                {audience}
+              </span>
+            ))}
+          </div>
+        </ScrollReveal>
 
         {/* Manage Subscription button for existing paid subscribers */}
         {isPaidSubscriber && (
@@ -361,54 +365,61 @@ function PricingPageContent() {
         )}
 
         {/* Billing Toggle */}
-        <div className="flex items-center justify-center gap-4 mb-12">
-          <span className={`text-sm font-medium ${!isYearly ? 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]' : 'text-slate-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'}`}>
-            Monthly
-          </span>
-          <button
-            onClick={() => setIsYearly(!isYearly)}
-            className={`relative w-14 h-7 rounded-full transition-colors overflow-hidden ${
-              isYearly ? 'bg-nebula-500' : 'bg-slate-500'
-            }`}
-          >
-            <span
-              className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                isYearly ? 'translate-x-7' : 'translate-x-0'
+        <ScrollReveal delay={0.1}>
+          <div className="flex items-center justify-center gap-4 mb-12">
+            <span className={`text-sm font-medium ${!isYearly ? 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]' : 'text-slate-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'}`}>
+              Monthly
+            </span>
+            <button
+              onClick={() => setIsYearly(!isYearly)}
+              className={`relative w-14 h-7 rounded-full transition-colors overflow-hidden ${
+                isYearly ? 'bg-nebula-500' : 'bg-slate-500'
               }`}
-            />
-          </button>
-          <span className={`text-sm font-medium ${isYearly ? 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]' : 'text-slate-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'}`}>
-            Yearly
-            <span className="ml-1 text-green-400 text-xs drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">Save up to 17%</span>
-          </span>
-        </div>
+            >
+              <span
+                className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
+                  isYearly ? 'translate-x-7' : 'translate-x-0'
+                }`}
+              />
+            </button>
+            <span className={`text-sm font-medium ${isYearly ? 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]' : 'text-slate-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'}`}>
+              Yearly
+              <span className="ml-1 text-green-400 text-xs drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">Save up to 17%</span>
+            </span>
+          </div>
+        </ScrollReveal>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" staggerDelay={0.15}>
           {SUBSCRIPTION_PLANS.map((plan) => (
-            <PricingCard
-              key={plan.id}
-              plan={plan}
-              isYearly={isYearly}
-              currentTier={tier}
-              isTrialing={isTrialing}
-              trialEndsAt={trialEndsAt}
-              onStartTrial={handleStartTrial}
-              onSubscribe={handleSubscribe}
-              isStartingTrial={isStartingTrial}
-              isCheckingOut={isCheckingOut}
-              isLoggedIn={!!session?.user}
-              hasPaymentMethod={hasPaymentMethod}
-            />
+            <StaggerItem key={plan.id}>
+              <PricingCard
+                plan={plan}
+                isYearly={isYearly}
+                currentTier={tier}
+                isTrialing={isTrialing}
+                trialEndsAt={trialEndsAt}
+                onStartTrial={handleStartTrial}
+                onSubscribe={handleSubscribe}
+                isStartingTrial={isStartingTrial}
+                isCheckingOut={isCheckingOut}
+                isLoggedIn={!!session?.user}
+                hasPaymentMethod={hasPaymentMethod}
+              />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* FAQ / Trust Section */}
-        <div className="mt-16 text-center">
-          <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-            Frequently Asked Questions
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
+        <ScrollReveal className="mt-16">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              Frequently Asked Questions
+            </h2>
+          </div>
+        </ScrollReveal>
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left" staggerDelay={0.1}>
+          <StaggerItem>
             <div className="card p-6">
               <h3 className="font-semibold text-white mb-2">
                 Can I cancel anytime?
@@ -418,6 +429,8 @@ function PricingPageContent() {
                 to have access until the end of your billing period.
               </p>
             </div>
+          </StaggerItem>
+          <StaggerItem>
             <div className="card p-6">
               <h3 className="font-semibold text-white mb-2">
                 What payment methods do you accept?
@@ -427,6 +440,8 @@ function PricingPageContent() {
                 our secure payment processor, Stripe.
               </p>
             </div>
+          </StaggerItem>
+          <StaggerItem>
             <div className="card p-6">
               <h3 className="font-semibold text-white mb-2">
                 Is there a free trial?
@@ -436,6 +451,8 @@ function PricingPageContent() {
                 full access before you subscribe &mdash; no credit card required.
               </p>
             </div>
+          </StaggerItem>
+          <StaggerItem>
             <div className="card p-6">
               <h3 className="font-semibold text-white mb-2">
                 Do you offer team discounts?
@@ -445,21 +462,23 @@ function PricingPageContent() {
                 features and volume discounts.
               </p>
             </div>
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
 
         {/* CTA */}
-        <div className="mt-16 text-center">
-          <p className="text-slate-200 mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
-            Have questions? We&apos;re here to help.
-          </p>
-          <Link
-            href="mailto:support@spacenexus.us"
-            className="text-nebula-300 hover:text-nebula-200 transition-colors"
-          >
-            Contact Support &rarr;
-          </Link>
-        </div>
+        <ScrollReveal className="mt-16">
+          <div className="text-center">
+            <p className="text-slate-200 mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+              Have questions? We&apos;re here to help.
+            </p>
+            <Link
+              href="mailto:support@spacenexus.us"
+              className="text-nebula-300 hover:text-nebula-200 transition-colors"
+            >
+              Contact Support &rarr;
+            </Link>
+          </div>
+        </ScrollReveal>
       </div>
     </div>
   );

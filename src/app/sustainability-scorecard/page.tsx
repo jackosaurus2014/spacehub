@@ -788,6 +788,27 @@ export default function SustainabilityScorecardPage() {
             </p>
           </div>
         </ScrollReveal>
+
+        {/* Explore More */}
+        <ScrollReveal delay={0.25}>
+          <section className="mt-16 border-t border-slate-800 pt-8">
+            <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <a href="/debris-catalog" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Debris Catalog</h3>
+                <p className="text-slate-400 text-sm mt-1">Tracked orbital debris objects, fragmentation events, and catalog statistics.</p>
+              </a>
+              <a href="/space-environment" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Space Environment</h3>
+                <p className="text-slate-400 text-sm mt-1">Solar weather, debris tracking, and space operations awareness in real time.</p>
+              </a>
+              <a href="/regulatory-tracker" className="card p-4 hover:border-cyan-500/50 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Regulatory Tracker</h3>
+                <p className="text-slate-400 text-sm mt-1">Track space regulations, licensing requirements, and compliance frameworks.</p>
+              </a>
+            </div>
+          </section>
+        </ScrollReveal>
       </div>
     </div>
   );
