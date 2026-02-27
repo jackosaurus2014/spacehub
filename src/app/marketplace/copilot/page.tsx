@@ -10,6 +10,7 @@ import { getCategoryLabel, getCategoryIcon, formatPrice } from '@/lib/marketplac
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -175,16 +176,18 @@ export default function CopilotPage() {
       ]} />
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white mt-1 flex items-center gap-2">
-            <span className="text-3xl">🤖</span> Procurement Copilot
-          </h1>
-          <p className="text-slate-400 text-sm mt-1">
-            Describe what you need in plain language. I&apos;ll help you find providers and create RFQs.
-          </p>
+      <ScrollReveal>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-2xl font-bold text-white mt-1 flex items-center gap-2">
+              <span className="text-3xl">🤖</span> Procurement Copilot
+            </h1>
+            <p className="text-slate-400 text-sm mt-1">
+              Describe what you need in plain language. I&apos;ll help you find providers and create RFQs.
+            </p>
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto mb-4 space-y-4 min-h-[400px] max-h-[calc(100vh-280px)]">
@@ -199,17 +202,18 @@ export default function CopilotPage() {
             <p className="text-slate-400 mb-6 max-w-md mx-auto">
               Tell me what you need — a launch, satellite imagery, ground stations, components — and I&apos;ll find matching providers and draft an RFQ for you.
             </p>
-            <div className="flex flex-wrap gap-2 justify-center">
+            <StaggerContainer className="flex flex-wrap gap-2 justify-center">
               {SUGGESTIONS.map((s, i) => (
-                <button
-                  key={i}
-                  onClick={() => { setInput(s); inputRef.current?.focus(); }}
-                  className="text-xs px-3 py-2 rounded-lg bg-space-800/50 border border-space-600/30 text-slate-300 hover:border-cyan-500/40 hover:text-cyan-300 transition-colors text-left"
-                >
-                  {s}
-                </button>
+                <StaggerItem key={i}>
+                  <button
+                    onClick={() => { setInput(s); inputRef.current?.focus(); }}
+                    className="text-xs px-3 py-2 rounded-lg bg-space-800/50 border border-space-600/30 text-slate-300 hover:border-cyan-500/40 hover:text-cyan-300 transition-colors text-left"
+                  >
+                    {s}
+                  </button>
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           </motion.div>
         )}
 

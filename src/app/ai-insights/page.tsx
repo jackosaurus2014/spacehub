@@ -6,7 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import GlassCard from '@/components/ui/GlassCard';
 import ConfidenceBadge from '@/components/ui/ConfidenceBadge';
 import SourceCitation from '@/components/ui/SourceCitation';
-import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import { clientLogger } from '@/lib/client-logger';
 
 interface Insight {
@@ -178,24 +178,26 @@ export default function AIInsightsPage() {
         />
 
         {/* Category Filter Tabs */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {CATEGORIES.map((cat) => {
-            const isActive = selectedCategory === cat.value;
-            return (
-              <button
-                key={cat.value}
-                onClick={() => handleCategoryChange(cat.value)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
-                  isActive
-                    ? CATEGORY_TAB_ACTIVE[cat.value]
-                    : 'border-slate-600/50 text-slate-400 hover:border-slate-500 hover:text-slate-300'
-                }`}
-              >
-                {cat.label}
-              </button>
-            );
-          })}
-        </div>
+        <ScrollReveal>
+          <div className="flex flex-wrap gap-2 mb-8">
+            {CATEGORIES.map((cat) => {
+              const isActive = selectedCategory === cat.value;
+              return (
+                <button
+                  key={cat.value}
+                  onClick={() => handleCategoryChange(cat.value)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
+                    isActive
+                      ? CATEGORY_TAB_ACTIVE[cat.value]
+                      : 'border-slate-600/50 text-slate-400 hover:border-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              );
+            })}
+          </div>
+        </ScrollReveal>
 
         {/* Loading State */}
         {loading ? (
@@ -269,6 +271,7 @@ export default function AIInsightsPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
+              <ScrollReveal>
               <div className="flex items-center justify-center gap-2 mt-10">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -304,6 +307,7 @@ export default function AIInsightsPage() {
                   Next
                 </button>
               </div>
+              </ScrollReveal>
             )}
 
             {/* Total count */}

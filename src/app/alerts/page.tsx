@@ -5,7 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import ScrollReveal from '@/components/ui/ScrollReveal';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import AlertRuleBuilder from '@/components/alerts/AlertRuleBuilder';
 import PremiumGate from '@/components/PremiumGate';
 import { toast } from '@/lib/toast';
@@ -1634,24 +1634,32 @@ function AlertsPageInner() {
         {/* Stats Cards */}
         {stats && (
           <ScrollReveal delay={0.15}>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-            <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
-              <p className="text-xs text-slate-400 uppercase tracking-wider">Active Rules</p>
-              <p className="text-2xl font-bold text-cyan-400 mt-1">{stats.activeRules}</p>
-            </div>
-            <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
-              <p className="text-xs text-slate-400 uppercase tracking-wider">Total Rules</p>
-              <p className="text-2xl font-bold text-white mt-1">{stats.totalRules}</p>
-            </div>
-            <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
-              <p className="text-xs text-slate-400 uppercase tracking-wider">Triggered Today</p>
-              <p className="text-2xl font-bold text-orange-400 mt-1">{stats.deliveriesToday}</p>
-            </div>
-            <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
-              <p className="text-xs text-slate-400 uppercase tracking-wider">Total Notifications</p>
-              <p className="text-2xl font-bold text-white mt-1">{stats.totalDeliveries}</p>
-            </div>
-          </div>
+          <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <StaggerItem>
+              <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+                <p className="text-xs text-slate-400 uppercase tracking-wider">Active Rules</p>
+                <p className="text-2xl font-bold text-cyan-400 mt-1">{stats.activeRules}</p>
+              </div>
+            </StaggerItem>
+            <StaggerItem>
+              <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+                <p className="text-xs text-slate-400 uppercase tracking-wider">Total Rules</p>
+                <p className="text-2xl font-bold text-white mt-1">{stats.totalRules}</p>
+              </div>
+            </StaggerItem>
+            <StaggerItem>
+              <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+                <p className="text-xs text-slate-400 uppercase tracking-wider">Triggered Today</p>
+                <p className="text-2xl font-bold text-orange-400 mt-1">{stats.deliveriesToday}</p>
+              </div>
+            </StaggerItem>
+            <StaggerItem>
+              <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+                <p className="text-xs text-slate-400 uppercase tracking-wider">Total Notifications</p>
+                <p className="text-2xl font-bold text-white mt-1">{stats.totalDeliveries}</p>
+              </div>
+            </StaggerItem>
+          </StaggerContainer>
           </ScrollReveal>
         )}
 

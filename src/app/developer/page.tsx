@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { toast } from '@/lib/toast';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ============================================================
 // Types
@@ -404,6 +405,7 @@ export default function DeveloperPortalPage() {
       <div className="relative overflow-hidden border-b border-slate-800">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-blue-500/10" />
         <div className="max-w-6xl mx-auto px-4 py-16 relative">
+          <ScrollReveal>
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               SpaceNexus{' '}
@@ -445,6 +447,7 @@ export default function DeveloperPortalPage() {
               </Link>
             </div>
           </div>
+          </ScrollReveal>
         </div>
       </div>
 
@@ -475,9 +478,10 @@ export default function DeveloperPortalPage() {
         {activeTab === 'overview' && (
           <div className="space-y-12">
             {/* Get Started Steps */}
+            <ScrollReveal>
             <section>
               <h2 className="text-2xl font-bold mb-6">Get Started in 3 Steps</h2>
-              <div className="grid md:grid-cols-3 gap-6">
+              <StaggerContainer className="grid md:grid-cols-3 gap-6">
                 {[
                   {
                     step: '1',
@@ -495,21 +499,25 @@ export default function DeveloperPortalPage() {
                     description: 'Use your API key in the Authorization header to access any v1 endpoint.',
                   },
                 ].map((item) => (
-                  <div key={item.step} className="card p-6">
-                    <div className="w-10 h-10 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-lg mb-4">
-                      {item.step}
+                  <StaggerItem key={item.step}>
+                    <div className="card p-6">
+                      <div className="w-10 h-10 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-lg mb-4">
+                        {item.step}
+                      </div>
+                      <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
+                      <p className="text-slate-400 text-sm">{item.description}</p>
                     </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
-                    <p className="text-slate-400 text-sm">{item.description}</p>
-                  </div>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             </section>
+            </ScrollReveal>
 
             {/* Key Features */}
+            <ScrollReveal>
             <section>
               <h2 className="text-2xl font-bold mb-6">API Features</h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[
                   { title: '10 Core Endpoints', desc: 'News, launches, companies, satellites, regulatory, market, weather, contracts, vehicles, opportunities' },
                   { title: 'RESTful JSON API', desc: 'Standard REST conventions with consistent JSON response format' },
@@ -518,62 +526,68 @@ export default function DeveloperPortalPage() {
                   { title: 'Usage Analytics', desc: 'Track your API usage by endpoint, status code, and time period' },
                   { title: 'Key Rotation', desc: 'Seamlessly rotate API keys without downtime' },
                 ].map((f) => (
-                  <div key={f.title} className="card p-4">
-                    <h3 className="font-semibold text-cyan-400 mb-1">{f.title}</h3>
-                    <p className="text-sm text-slate-400">{f.desc}</p>
-                  </div>
+                  <StaggerItem key={f.title}>
+                    <div className="card p-4">
+                      <h3 className="font-semibold text-cyan-400 mb-1">{f.title}</h3>
+                      <p className="text-sm text-slate-400">{f.desc}</p>
+                    </div>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             </section>
+            </ScrollReveal>
 
             {/* Pricing Table */}
+            <ScrollReveal>
             <section>
               <h2 className="text-2xl font-bold mb-6">API Pricing Tiers</h2>
-              <div className="grid md:grid-cols-3 gap-6">
+              <StaggerContainer className="grid md:grid-cols-3 gap-6">
                 {API_TIERS.map((tier) => (
-                  <div
-                    key={tier.tier}
-                    className={`border rounded-lg p-6 ${
-                      tier.highlighted
-                        ? 'border-cyan-500 bg-cyan-500/5 relative'
-                        : 'border-slate-700 bg-slate-800/30'
-                    }`}
-                  >
-                    {tier.highlighted && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span className="bg-cyan-500 text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
-                          Recommended
-                        </span>
+                  <StaggerItem key={tier.tier}>
+                    <div
+                      className={`border rounded-lg p-6 ${
+                        tier.highlighted
+                          ? 'border-cyan-500 bg-cyan-500/5 relative'
+                          : 'border-slate-700 bg-slate-800/30'
+                      }`}
+                    >
+                      {tier.highlighted && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <span className="bg-cyan-500 text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
+                            Recommended
+                          </span>
+                        </div>
+                      )}
+                      <h3 className="text-xl font-bold mb-1">{tier.name}</h3>
+                      <p className="text-sm text-cyan-400 mb-4">{tier.price}</p>
+                      <div className="mb-4">
+                        <div className="text-3xl font-bold">
+                          {tier.monthlyLimit}
+                          <span className="text-sm text-slate-400 font-normal"> calls/mo</span>
+                        </div>
+                        <div className="text-sm text-slate-400">
+                          {tier.perMinute} calls/min burst
+                        </div>
                       </div>
-                    )}
-                    <h3 className="text-xl font-bold mb-1">{tier.name}</h3>
-                    <p className="text-sm text-cyan-400 mb-4">{tier.price}</p>
-                    <div className="mb-4">
-                      <div className="text-3xl font-bold">
-                        {tier.monthlyLimit}
-                        <span className="text-sm text-slate-400 font-normal"> calls/mo</span>
-                      </div>
-                      <div className="text-sm text-slate-400">
-                        {tier.perMinute} calls/min burst
-                      </div>
+                      <ul className="space-y-2">
+                        {tier.features.map((f) => (
+                          <li key={f} className="flex items-start gap-2 text-sm text-slate-300">
+                            <svg className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            {f}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <ul className="space-y-2">
-                      {tier.features.map((f) => (
-                        <li key={f} className="flex items-start gap-2 text-sm text-slate-300">
-                          <svg className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
               <p className="text-sm text-slate-500 mt-4 text-center">
                 API access is included with your SpaceNexus subscription. <Link href="/pricing" className="text-cyan-400 hover:text-cyan-300">View subscription plans</Link>
               </p>
             </section>
+            </ScrollReveal>
           </div>
         )}
 
@@ -661,7 +675,8 @@ export default function DeveloperPortalPage() {
             ) : (
               <>
                 {/* Summary Cards */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <ScrollReveal>
+                <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     { label: 'Total Calls', value: usage.totalCalls.toLocaleString() },
                     { label: 'Avg Response', value: `${usage.avgResponseTimeMs}ms` },
@@ -679,12 +694,15 @@ export default function DeveloperPortalPage() {
                     },
                     { label: 'Top Endpoint', value: usage.byEndpoint[0]?.endpoint.replace('/api/v1/', '/') || 'N/A' },
                   ].map((card) => (
-                    <div key={card.label} className="card p-4">
-                      <div className="text-sm text-slate-400">{card.label}</div>
-                      <div className="text-2xl font-bold text-white">{card.value}</div>
-                    </div>
+                    <StaggerItem key={card.label}>
+                      <div className="card p-4">
+                        <div className="text-sm text-slate-400">{card.label}</div>
+                        <div className="text-2xl font-bold text-white">{card.value}</div>
+                      </div>
+                    </StaggerItem>
                   ))}
-                </div>
+                </StaggerContainer>
+                </ScrollReveal>
 
                 {/* Daily Usage Chart (simple bar representation) */}
                 {usage.dailyBreakdown.length > 0 && (
@@ -751,6 +769,7 @@ export default function DeveloperPortalPage() {
             <h2 className="text-2xl font-bold">API Documentation</h2>
 
             {/* Authentication */}
+            <ScrollReveal>
             <section className="card p-6">
               <h3 className="text-lg font-semibold text-cyan-400 mb-3">Authentication</h3>
               <p className="text-slate-300 mb-3">
@@ -766,8 +785,10 @@ export default function DeveloperPortalPage() {
                 </div>
               </div>
             </section>
+            </ScrollReveal>
 
             {/* Response Format */}
+            <ScrollReveal>
             <section className="card p-6">
               <h3 className="text-lg font-semibold text-cyan-400 mb-3">Response Format</h3>
               <p className="text-slate-300 mb-3">
@@ -795,8 +816,10 @@ export default function DeveloperPortalPage() {
 }`}</code>
               </pre>
             </section>
+            </ScrollReveal>
 
             {/* Rate Limit Headers */}
+            <ScrollReveal>
             <section className="card p-6">
               <h3 className="text-lg font-semibold text-cyan-400 mb-3">Rate Limit Headers</h3>
               <p className="text-slate-300 mb-3">
@@ -809,8 +832,10 @@ export default function DeveloperPortalPage() {
                 <li><code className="text-yellow-400">X-RateLimit-Reset</code> -- Seconds until the rate limit resets (on 429 responses)</li>
               </ul>
             </section>
+            </ScrollReveal>
 
             {/* Available Endpoints */}
+            <ScrollReveal>
             <section className="card p-6">
               <h3 className="text-lg font-semibold text-cyan-400 mb-3">Available Endpoints</h3>
               <div className="overflow-x-auto">
@@ -851,8 +876,10 @@ export default function DeveloperPortalPage() {
                 </table>
               </div>
             </section>
+            </ScrollReveal>
 
             {/* Code Examples */}
+            <ScrollReveal>
             <section className="card p-6">
               <h3 className="text-lg font-semibold text-cyan-400 mb-3">Code Examples</h3>
               <div className="flex gap-2 mb-4">
@@ -879,8 +906,10 @@ export default function DeveloperPortalPage() {
                 </div>
               </div>
             </section>
+            </ScrollReveal>
 
             {/* Full Docs + Explorer Links */}
+            <ScrollReveal>
             <section className="card p-6 text-center">
               <h3 className="text-lg font-semibold mb-2">Full API Reference</h3>
               <p className="text-slate-400 mb-4">
@@ -910,6 +939,7 @@ export default function DeveloperPortalPage() {
                 </a>
               </div>
             </section>
+            </ScrollReveal>
           </div>
         )}
       </div>

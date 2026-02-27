@@ -252,7 +252,7 @@ function HeroStats() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       {stats.map((stat) => (
-        <div key={stat.label} className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <div key={stat.label} className="card p-5">
           <div className="flex items-center gap-3">
             <span className="text-2xl">{stat.icon}</span>
             <div>
@@ -277,7 +277,7 @@ function ArtemisTab() {
   return (
     <div className="space-y-8">
       {/* SLS/Orion Overview */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🚀</span>
           SLS & Orion Status
@@ -345,7 +345,7 @@ function ArtemisTab() {
       </div>
 
       {/* HLS Status */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🛬</span>
           Human Landing Systems
@@ -393,7 +393,7 @@ function ArtemisTab() {
       </div>
 
       {/* Mission Timeline */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">📅</span>
           Artemis Mission Timeline
@@ -534,7 +534,7 @@ function CommercialLunarTab() {
       </div>
 
       {/* CLPS Overview */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">📋</span>
           CLPS Program Overview
@@ -556,7 +556,7 @@ function CommercialLunarTab() {
           return (
             <div
               key={mission.id}
-              className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all"
+              className="card p-5 hover:border-nebula-500/40"
             >
               <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                 <div>
@@ -657,7 +657,7 @@ function ISRUTab() {
   return (
     <div className="space-y-6">
       {/* Overview */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🏭</span>
           Lunar ISRU Overview
@@ -713,7 +713,7 @@ function ISRUTab() {
           return (
             <div
               key={program.id}
-              className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all"
+              className="card p-5 hover:border-nebula-500/40"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -804,7 +804,7 @@ function InfrastructureTab() {
           return (
             <div
               key={item.id}
-              className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all"
+              className="card p-5 hover:border-nebula-500/40"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -881,7 +881,7 @@ function InvestmentTab() {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <div className="card p-5">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🇺🇸</span>
             <div>
@@ -891,7 +891,7 @@ function InvestmentTab() {
             </div>
           </div>
         </div>
-        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <div className="card p-5">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🌐</span>
             <div>
@@ -901,7 +901,7 @@ function InvestmentTab() {
             </div>
           </div>
         </div>
-        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <div className="card p-5">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🏢</span>
             <div>
@@ -943,7 +943,7 @@ function InvestmentTab() {
           return (
             <div
               key={investment.id}
-              className={`card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur border-l-4 ${typeBg} hover:border-nebula-500/40 transition-all`}
+              className={`card p-5 border-l-4 ${typeBg} hover:border-nebula-500/40`}
             >
               <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
                 <div>
@@ -976,7 +976,7 @@ function GatewayModuleCard({ module }: { module: GatewayModule }) {
   const statusStyle = GATEWAY_MODULE_STATUS_STYLES[module.status] || DEFAULT_GATEWAY_MODULE_STATUS_STYLE;
 
   return (
-    <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
+    <div className="card p-5 hover:border-nebula-500/40">
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div>
@@ -1164,7 +1164,7 @@ function GatewayTab() {
       {/* Gateway Hero Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {gatewayHeroStats.map((stat) => (
-          <div key={stat.label} className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+          <div key={stat.label} className="card p-5">
             <div className="flex items-center gap-3">
               <span className="text-2xl">{stat.icon}</span>
               <div>
@@ -1202,7 +1202,7 @@ function GatewayTab() {
       {gatewaySubTab === 'overview' && (
         <div className="space-y-8">
           {/* Gateway Overview */}
-          <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+          <div className="card p-6">
             <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
               <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🏗️</span>
               Gateway Overview
@@ -1244,7 +1244,7 @@ function GatewayTab() {
           </div>
 
           {/* Commercial Opportunities */}
-          <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+          <div className="card p-6">
             <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
               <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">💼</span>
               Commercial Opportunities
@@ -1267,7 +1267,7 @@ function GatewayTab() {
           </div>
 
           {/* NRHO Explainer */}
-          <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+          <div className="card p-6">
             <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
               <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🌑</span>
               Near-Rectilinear Halo Orbit (NRHO)
@@ -1316,7 +1316,7 @@ function GatewayTab() {
           </div>
 
           {/* Assembly order visualization */}
-          <div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur mb-6">
+          <div className="card p-4 mb-6">
             <h3 className="text-white font-semibold text-sm mb-3">Assembly Sequence</h3>
             <div className="flex flex-wrap items-center gap-2">
               {GATEWAY_MODULES.map((module, index) => {
@@ -1347,7 +1347,7 @@ function GatewayTab() {
 
       {/* Timeline Sub-tab */}
       {gatewaySubTab === 'timeline' && (
-        <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <div className="card p-6">
           <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
             <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🚀</span>
             Artemis Mission Timeline
@@ -1391,7 +1391,7 @@ function GatewayTab() {
 
       {/* Partners Sub-tab */}
       {gatewaySubTab === 'partners' && (
-        <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <div className="card p-6">
           <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
             <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🤝</span>
             International Partners
@@ -1439,7 +1439,7 @@ function GatewayTab() {
 
       {/* Orbit Sub-tab */}
       {gatewaySubTab === 'orbit' && (
-        <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <div className="card p-6">
           <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
             <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🌑</span>
             Near-Rectilinear Halo Orbit (NRHO)
@@ -1622,7 +1622,7 @@ function CislunarEcosystemContent() {
         {activeTab === 'gateway' && <GatewayTab />}
 
         {/* Related Modules */}
-        <ScrollReveal><div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur mt-8">
+        <ScrollReveal><div className="card p-4 mt-8">
           <h3 className="text-sm font-semibold text-white mb-3">Related Modules</h3>
           <div className="flex flex-wrap gap-3">
             <Link href="/solar-exploration" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">

@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ConversationList, { Conversation } from '@/components/community/ConversationList';
 import MessageThread, { Message } from '@/components/community/MessageThread';
 import { toast } from '@/lib/toast';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 function MessagesPageInner() {
   const searchParams = useSearchParams();
@@ -162,16 +163,19 @@ function MessagesPageInner() {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header - only show on mobile when list is visible */}
-        <div className="sm:block">
-          <AnimatedPageHeader
-            title="Messages"
-            subtitle="Direct conversations with space industry professionals."
-            icon={<span>{"✉️"}</span>}
-            breadcrumb="Community"
-          />
-        </div>
+        <ScrollReveal>
+          <div className="sm:block">
+            <AnimatedPageHeader
+              title="Messages"
+              subtitle="Direct conversations with space industry professionals."
+              icon={<span>{"✉️"}</span>}
+              breadcrumb="Community"
+            />
+          </div>
+        </ScrollReveal>
 
         {/* Chat layout */}
+        <ScrollReveal delay={0.1}>
         <div className="card overflow-hidden" style={{ height: 'calc(100vh - 260px)', minHeight: '500px' }}>
           <div className="flex h-full">
             {/* Conversation list — left panel */}
@@ -239,6 +243,7 @@ function MessagesPageInner() {
             </div>
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

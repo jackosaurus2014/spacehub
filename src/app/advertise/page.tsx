@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import { toast } from '@/lib/toast';
 
 const AD_PRICING = [
@@ -129,129 +130,146 @@ export default function AdvertisePage() {
       />
 
       {/* Audience Stats */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+      <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
         {AUDIENCE_STATS.map((stat) => (
-          <div key={stat.label} className="card p-6 text-center">
-            <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
-            <p className="text-star-300 text-sm">{stat.label}</p>
-          </div>
+          <StaggerItem key={stat.label}>
+            <div className="card p-6 text-center">
+              <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
+              <p className="text-star-300 text-sm">{stat.label}</p>
+            </div>
+          </StaggerItem>
         ))}
-      </section>
+      </StaggerContainer>
 
       {/* Value Proposition */}
-      <section className="mb-16">
-        <h2 className="text-2xl font-bold text-white mb-6">Why Advertise With Us</h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="card p-6">
-            <div className="w-10 h-10 rounded-lg bg-nebula-500/20 flex items-center justify-center mb-4">
-              <svg className="w-5 h-5 text-nebula-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Niche B2B Audience</h3>
-            <p className="text-star-300 text-sm">
-              Reach space industry professionals, government contractors, and decision-makers
-              actively researching space technology and business opportunities.
-            </p>
-          </div>
+      <ScrollReveal>
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold text-white mb-6">Why Advertise With Us</h2>
+          <StaggerContainer className="grid md:grid-cols-3 gap-6">
+            <StaggerItem>
+              <div className="card p-6">
+                <div className="w-10 h-10 rounded-lg bg-nebula-500/20 flex items-center justify-center mb-4">
+                  <svg className="w-5 h-5 text-nebula-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Niche B2B Audience</h3>
+                <p className="text-star-300 text-sm">
+                  Reach space industry professionals, government contractors, and decision-makers
+                  actively researching space technology and business opportunities.
+                </p>
+              </div>
+            </StaggerItem>
 
-          <div className="card p-6">
-            <div className="w-10 h-10 rounded-lg bg-plasma-500/20 flex items-center justify-center mb-4">
-              <svg className="w-5 h-5 text-plasma-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Module Targeting</h3>
-            <p className="text-star-300 text-sm">
-              Target your ads to specific modules -- show launch vehicle ads in Mission Planning,
-              or talent recruitment ads in the Space Talent Hub.
-            </p>
-          </div>
+            <StaggerItem>
+              <div className="card p-6">
+                <div className="w-10 h-10 rounded-lg bg-plasma-500/20 flex items-center justify-center mb-4">
+                  <svg className="w-5 h-5 text-plasma-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Module Targeting</h3>
+                <p className="text-star-300 text-sm">
+                  Target your ads to specific modules -- show launch vehicle ads in Mission Planning,
+                  or talent recruitment ads in the Space Talent Hub.
+                </p>
+              </div>
+            </StaggerItem>
 
-          <div className="card p-6">
-            <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center mb-4">
-              <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Transparent Analytics</h3>
-            <p className="text-star-300 text-sm">
-              Real-time dashboard with impressions, clicks, CTR, and spend tracking.
-              Full visibility into campaign performance by module and day.
-            </p>
-          </div>
-        </div>
-      </section>
+            <StaggerItem>
+              <div className="card p-6">
+                <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center mb-4">
+                  <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Transparent Analytics</h3>
+                <p className="text-star-300 text-sm">
+                  Real-time dashboard with impressions, clicks, CTR, and spend tracking.
+                  Full visibility into campaign performance by module and day.
+                </p>
+              </div>
+            </StaggerItem>
+          </StaggerContainer>
+        </section>
+      </ScrollReveal>
 
       {/* Targetable Modules */}
-      <section className="mb-16">
-        <h2 className="text-2xl font-bold text-white mb-4">Targetable Modules</h2>
-        <p className="text-star-300 mb-6">
-          Place your ads in the exact context where your audience is most engaged.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          {TARGET_MODULES.map((mod) => (
-            <span
-              key={mod}
-              className="px-4 py-2 rounded-full bg-slate-800/50 border border-slate-700/50 text-slate-300 text-sm"
-            >
-              {mod}
-            </span>
-          ))}
-        </div>
-      </section>
+      <ScrollReveal>
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold text-white mb-4">Targetable Modules</h2>
+          <p className="text-star-300 mb-6">
+            Place your ads in the exact context where your audience is most engaged.
+          </p>
+          <StaggerContainer className="flex flex-wrap gap-3">
+            {TARGET_MODULES.map((mod) => (
+              <StaggerItem key={mod}>
+                <span
+                  className="px-4 py-2 rounded-full bg-slate-800/50 border border-slate-700/50 text-slate-300 text-sm inline-block"
+                >
+                  {mod}
+                </span>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </section>
+      </ScrollReveal>
 
       {/* Pricing */}
-      <section className="mb-16">
-        <h2 className="text-2xl font-bold text-white mb-2">Advertising Rates</h2>
-        <p className="text-star-300 mb-8">
-          Premium rates reflecting our highly engaged, niche B2B space industry audience.
-        </p>
+      <ScrollReveal>
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold text-white mb-2">Advertising Rates</h2>
+          <p className="text-star-300 mb-8">
+            Premium rates reflecting our highly engaged, niche B2B space industry audience.
+          </p>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {AD_PRICING.map((plan) => (
-            <div
-              key={plan.name}
-              className={`card p-6 relative ${
-                plan.popular ? 'border-nebula-500 glow-border' : ''
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-nebula-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                    Most Popular
-                  </span>
+          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {AD_PRICING.map((plan) => (
+              <StaggerItem key={plan.name}>
+                <div
+                  className={`card p-6 relative ${
+                    plan.popular ? 'border-nebula-500 glow-border' : ''
+                  }`}
+                >
+                  {plan.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="bg-nebula-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                        Most Popular
+                      </span>
+                    </div>
+                  )}
+
+                  <h3 className="text-lg font-semibold text-white mb-2">{plan.name}</h3>
+                  <p className="text-star-300 text-sm mb-4">{plan.description}</p>
+
+                  <div className="mb-4">
+                    <span className="text-3xl font-bold text-white">
+                      {plan.cpm || plan.price}
+                    </span>
+                    {plan.cpm && (
+                      <span className="text-star-300 text-sm ml-1">CPM</span>
+                    )}
+                  </div>
+
+                  <ul className="space-y-2 mb-6">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2 text-sm">
+                        <svg className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-star-300">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              )}
-
-              <h3 className="text-lg font-semibold text-white mb-2">{plan.name}</h3>
-              <p className="text-star-300 text-sm mb-4">{plan.description}</p>
-
-              <div className="mb-4">
-                <span className="text-3xl font-bold text-white">
-                  {plan.cpm || plan.price}
-                </span>
-                {plan.cpm && (
-                  <span className="text-star-300 text-sm ml-1">CPM</span>
-                )}
-              </div>
-
-              <ul className="space-y-2 mb-6">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2 text-sm">
-                    <svg className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-star-300">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </section>
+      </ScrollReveal>
 
       {/* Registration Form */}
+      <ScrollReveal delay={0.1}>
       <section className="max-w-2xl mx-auto" id="register">
         <div className="card p-8">
           <h2 className="text-2xl font-bold text-white mb-2">Get Started</h2>
@@ -371,6 +389,7 @@ export default function AdvertisePage() {
           )}
         </div>
       </section>
+      </ScrollReveal>
     </main>
   );
 }

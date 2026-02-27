@@ -15,6 +15,7 @@ import AdSlot from '@/components/ads/AdSlot';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 interface MarketplaceStats {
   totalListings: number;
@@ -153,57 +154,57 @@ export default function MarketplacePage() {
 
         {/* Stats Bar */}
         {stats && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4"
-          >
-            {[
-              { label: 'Active Providers', value: stats.activeProviders, color: 'text-cyan-400' },
-              { label: 'Service Listings', value: stats.activeListings, color: 'text-emerald-400' },
-              { label: 'Open RFQs', value: stats.openRFQs, color: 'text-yellow-400' },
-              { label: 'Proposals Submitted', value: stats.totalProposals, color: 'text-purple-400' },
-            ].map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="card p-4 text-center"
-              >
-                <div className={`text-2xl font-bold ${stat.color}`}>{stat.value.toLocaleString()}</div>
-                <div className="text-xs text-slate-500 mt-1">{stat.label}</div>
-              </motion.div>
-            ))}
-          </motion.div>
+          <ScrollReveal>
+            <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { label: 'Active Providers', value: stats.activeProviders, color: 'text-cyan-400' },
+                { label: 'Service Listings', value: stats.activeListings, color: 'text-emerald-400' },
+                { label: 'Open RFQs', value: stats.openRFQs, color: 'text-yellow-400' },
+                { label: 'Proposals Submitted', value: stats.totalProposals, color: 'text-purple-400' },
+              ].map((stat) => (
+                <StaggerItem key={stat.label}>
+                  <div className="card p-4 text-center">
+                    <div className={`text-2xl font-bold ${stat.color}`}>{stat.value.toLocaleString()}</div>
+                    <div className="text-xs text-slate-500 mt-1">{stat.label}</div>
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </ScrollReveal>
         )}
 
         {/* Category Grid */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white">Browse by Category</h2>
-            <Link href="/marketplace/search" className="text-xs text-cyan-400 hover:text-cyan-300">
-              View All →
-            </Link>
-          </div>
-          <CategoryGrid categoryCounts={categoryCounts} />
-        </div>
-
-        {/* Featured Listings */}
-        {featuredListings.length > 0 && (
+        <ScrollReveal>
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-white">Recent Listings</h2>
+              <h2 className="text-lg font-semibold text-white">Browse by Category</h2>
               <Link href="/marketplace/search" className="text-xs text-cyan-400 hover:text-cyan-300">
                 View All →
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {featuredListings.map((listing, i) => (
-                <MarketplaceCard key={listing.id} listing={listing} index={i} />
-              ))}
-            </div>
+            <CategoryGrid categoryCounts={categoryCounts} />
           </div>
+        </ScrollReveal>
+
+        {/* Featured Listings */}
+        {featuredListings.length > 0 && (
+          <ScrollReveal>
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-white">Recent Listings</h2>
+                <Link href="/marketplace/search" className="text-xs text-cyan-400 hover:text-cyan-300">
+                  View All →
+                </Link>
+              </div>
+              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {featuredListings.map((listing, i) => (
+                  <StaggerItem key={listing.id}>
+                    <MarketplaceCard listing={listing} index={i} />
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            </div>
+          </ScrollReveal>
         )}
 
         {/* Ad between listings and RFQs */}
@@ -213,115 +214,113 @@ export default function MarketplacePage() {
 
         {/* Recent RFQs */}
         {recentRFQs.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-white">Open RFQs</h2>
-              <Link href="/marketplace/search?tab=rfqs" className="text-xs text-cyan-400 hover:text-cyan-300">
-                View All →
-              </Link>
+          <ScrollReveal>
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-white">Open RFQs</h2>
+                <Link href="/marketplace/search?tab=rfqs" className="text-xs text-cyan-400 hover:text-cyan-300">
+                  View All →
+                </Link>
+              </div>
+              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {recentRFQs.map((rfq, i) => (
+                  <StaggerItem key={rfq.id}>
+                    <RFQCard rfq={rfq} index={i} />
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {recentRFQs.map((rfq, i) => (
-                <RFQCard key={rfq.id} rfq={rfq} index={i} />
-              ))}
-            </div>
-          </div>
+          </ScrollReveal>
         )}
 
         {/* How It Works */}
-        <div className="card p-8">
-          <h2 className="text-lg font-semibold text-white text-center mb-6">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                step: '1',
-                title: 'Post Your Requirements',
-                desc: 'Submit an RFQ describing what you need. Our algorithm matches you with qualified providers.',
-                icon: '📝',
-              },
-              {
-                step: '2',
-                title: 'Receive Proposals',
-                desc: 'Matched providers submit proposals with pricing, timelines, and technical approaches.',
-                icon: '📬',
-              },
-              {
-                step: '3',
-                title: 'Award & Procure',
-                desc: 'Compare proposals and shortlist candidates. Secure contract awarding with integrated payments coming soon.',
-                icon: '🏆',
-                comingSoon: true,
-              },
-              {
-                step: '4',
-                title: 'Secure Payments',
-                desc: 'Escrow-based milestone payments, invoicing, and contract management.',
-                icon: '🔒',
-                comingSoon: true,
-              },
-            ].map((item, i) => (
-              <motion.div
-                key={item.step}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + i * 0.1 }}
-                className="text-center"
-              >
-                <div className="text-3xl mb-3">{item.icon}</div>
-                <div className="text-sm font-semibold text-white mb-1 flex items-center justify-center gap-2">
-                  {item.title}
-                  {(item as any).comingSoon && <ComingSoonBadge />}
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
-              </motion.div>
-            ))}
+        <ScrollReveal>
+          <div className="card p-8">
+            <h2 className="text-lg font-semibold text-white text-center mb-6">How It Works</h2>
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                {
+                  step: '1',
+                  title: 'Post Your Requirements',
+                  desc: 'Submit an RFQ describing what you need. Our algorithm matches you with qualified providers.',
+                  icon: '📝',
+                },
+                {
+                  step: '2',
+                  title: 'Receive Proposals',
+                  desc: 'Matched providers submit proposals with pricing, timelines, and technical approaches.',
+                  icon: '📬',
+                },
+                {
+                  step: '3',
+                  title: 'Award & Procure',
+                  desc: 'Compare proposals and shortlist candidates. Secure contract awarding with integrated payments coming soon.',
+                  icon: '🏆',
+                  comingSoon: true,
+                },
+                {
+                  step: '4',
+                  title: 'Secure Payments',
+                  desc: 'Escrow-based milestone payments, invoicing, and contract management.',
+                  icon: '🔒',
+                  comingSoon: true,
+                },
+              ].map((item) => (
+                <StaggerItem key={item.step} className="text-center">
+                  <div className="text-3xl mb-3">{item.icon}</div>
+                  <div className="text-sm font-semibold text-white mb-1 flex items-center justify-center gap-2">
+                    {item.title}
+                    {(item as any).comingSoon && <ComingSoonBadge />}
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Coming Soon Features */}
-        <div>
-          <h2 className="text-lg font-semibold text-white text-center mb-6 flex items-center justify-center gap-3">
-            On the Roadmap <ComingSoonBadge size="md" />
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              {
-                title: 'Escrow & Milestone Payments',
-                desc: 'Fund contracts with milestone-based escrow. Release payments as deliverables are confirmed.',
-                icon: '💰',
-              },
-              {
-                title: 'Contract Management',
-                desc: 'Templates, change orders, SLA tracking, and automated invoicing for space service agreements.',
-                icon: '📄',
-              },
-              {
-                title: 'AI Proposal Analysis',
-                desc: 'AI-powered proposal comparison, gap analysis, and bid recommendations to help you choose faster.',
-                icon: '🧠',
-              },
-            ].map((feature, i) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + i * 0.1 }}
-                className="card p-5 border-blue-500/10 relative overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                <div className="text-2xl mb-3">{feature.icon}</div>
-                <div className="text-sm font-semibold text-white mb-1">{feature.title}</div>
-                <p className="text-xs text-slate-400 leading-relaxed mb-3">{feature.desc}</p>
-                <button
-                  onClick={() => toast.info(`We'll notify you when ${feature.title} launches!`, 'Interest Registered')}
-                  className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors py-2 min-h-[44px]"
-                >
-                  Notify Me →
-                </button>
-              </motion.div>
-            ))}
+        <ScrollReveal>
+          <div>
+            <h2 className="text-lg font-semibold text-white text-center mb-6 flex items-center justify-center gap-3">
+              On the Roadmap <ComingSoonBadge size="md" />
+            </h2>
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                {
+                  title: 'Escrow & Milestone Payments',
+                  desc: 'Fund contracts with milestone-based escrow. Release payments as deliverables are confirmed.',
+                  icon: '💰',
+                },
+                {
+                  title: 'Contract Management',
+                  desc: 'Templates, change orders, SLA tracking, and automated invoicing for space service agreements.',
+                  icon: '📄',
+                },
+                {
+                  title: 'AI Proposal Analysis',
+                  desc: 'AI-powered proposal comparison, gap analysis, and bid recommendations to help you choose faster.',
+                  icon: '🧠',
+                },
+              ].map((feature) => (
+                <StaggerItem key={feature.title}>
+                  <div className="card p-5 border-blue-500/10 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                    <div className="text-2xl mb-3">{feature.icon}</div>
+                    <div className="text-sm font-semibold text-white mb-1">{feature.title}</div>
+                    <p className="text-xs text-slate-400 leading-relaxed mb-3">{feature.desc}</p>
+                    <button
+                      onClick={() => toast.info(`We'll notify you when ${feature.title} launches!`, 'Interest Registered')}
+                      className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors py-2 min-h-[44px]"
+                    >
+                      Notify Me →
+                    </button>
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Footer Ad */}
         <div>
@@ -329,6 +328,7 @@ export default function MarketplacePage() {
         </div>
 
         {/* CTA */}
+        <ScrollReveal>
         <div className="text-center card p-8 bg-gradient-to-r from-cyan-900/30 to-blue-900/30 border-cyan-800/50">
           <h2 className="text-lg font-semibold text-white mb-2">Are you a space service provider?</h2>
           <p className="text-sm text-slate-400 mb-4">
@@ -347,6 +347,7 @@ export default function MarketplacePage() {
             </Link>
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
     </PullToRefresh>

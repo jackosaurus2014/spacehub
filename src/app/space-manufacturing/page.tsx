@@ -103,7 +103,7 @@ function OverviewTab() {
       {/* Stats Grid */}
       <ScrollReveal><div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {keyStats.map((stat) => (
-          <div key={stat.label} className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+          <div key={stat.label} className="card p-5">
             <div className="flex items-center gap-3">
               <span className="text-2xl">{stat.icon}</span>
               <div>
@@ -117,7 +117,7 @@ function OverviewTab() {
       </div></ScrollReveal>
 
       {/* Landscape Overview */}
-      <ScrollReveal><div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <ScrollReveal><div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🌐</span>
           In-Space Manufacturing Landscape
@@ -150,7 +150,7 @@ function OverviewTab() {
       </div></ScrollReveal>
 
       {/* Market Projection Chart */}
-      <ScrollReveal><div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <ScrollReveal><div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">📈</span>
           Market Growth Projections
@@ -206,7 +206,7 @@ function OverviewTab() {
       </div></ScrollReveal>
 
       {/* Key Product Categories Quick View */}
-      <ScrollReveal><div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <ScrollReveal><div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🔬</span>
           Key Product Categories
@@ -229,7 +229,7 @@ function OverviewTab() {
       </div></ScrollReveal>
 
       {/* Key Enablers */}
-      <ScrollReveal><div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <ScrollReveal><div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🚀</span>
           Key Market Enablers
@@ -276,7 +276,7 @@ function OverviewTab() {
       </div></ScrollReveal>
 
       {/* Space Environment Advantages */}
-      <ScrollReveal><div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <ScrollReveal><div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🌌</span>
           Why Manufacture in Space?
@@ -306,7 +306,7 @@ function OverviewTab() {
       </div></ScrollReveal>
 
       {/* In-Space Manufacturing Market Snapshot */}
-      <ScrollReveal><div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <ScrollReveal><div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">💰</span>
           Market Snapshot
@@ -392,7 +392,7 @@ function CompaniesTab() {
           return (
             <div
               key={company.id}
-              className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all"
+              className="card p-5 hover:border-nebula-500/40"
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-3">
@@ -515,7 +515,7 @@ function ProcessesTab() {
   return (
     <div className="space-y-8">
       {/* Introduction */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">⚙️</span>
           Manufacturing Processes for Space
@@ -532,21 +532,21 @@ function ProcessesTab() {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+        <div className="card p-5 text-center">
           <div className="text-white font-bold text-2xl">{MANUFACTURING_PROCESSES.length}</div>
           <div className="text-star-400 text-xs uppercase tracking-widest mt-1">Manufacturing Processes</div>
         </div>
-        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+        <div className="card p-5 text-center">
           <div className="text-white font-bold text-2xl">{categories.length}</div>
           <div className="text-star-400 text-xs uppercase tracking-widest mt-1">Process Categories</div>
         </div>
-        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+        <div className="card p-5 text-center">
           <div className="text-green-400 font-bold text-2xl">
             {MANUFACTURING_PROCESSES.filter(p => p.trl >= 7).length}
           </div>
           <div className="text-star-400 text-xs uppercase tracking-widest mt-1">Flight Demonstrated</div>
         </div>
-        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+        <div className="card p-5 text-center">
           <div className="text-white font-bold text-2xl">{SPACE_ENVIRONMENT_ADVANTAGES.length}</div>
           <div className="text-star-400 text-xs uppercase tracking-widest mt-1">Environment Advantages</div>
         </div>
@@ -591,7 +591,7 @@ function ProcessesTab() {
           return (
             <div
               key={process.id}
-              className="card border border-slate-700/50 bg-slate-800/50 backdrop-blur overflow-hidden hover:border-nebula-500/30 transition-all"
+              className="card overflow-hidden hover:border-nebula-500/30"
             >
               <button
                 onClick={() => setSelectedProcess(isExpanded ? null : process.id)}
@@ -738,7 +738,7 @@ function ProcessesTab() {
       </div>
 
       {/* Process Comparison Matrix */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">📋</span>
           Process Comparison Matrix
@@ -788,7 +788,7 @@ function ProcessesTab() {
       </div>
 
       {/* Space Environment Physics */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🔬</span>
           Space Environment Advantages -- The Physics
@@ -807,7 +807,7 @@ function ProcessesTab() {
                   <p className="text-star-400 text-sm">{advantage.description}</p>
                 </div>
               </div>
-              <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-600/20 mb-3">
+              <div className="card p-4 mb-3">
                 <h4 className="text-nebula-300 text-xs uppercase tracking-widest mb-2">Physics Explanation</h4>
                 <p className="text-star-300 text-sm leading-relaxed">{advantage.physicsExplanation}</p>
               </div>
@@ -837,7 +837,7 @@ function ISSLabTab() {
   return (
     <div className="space-y-8">
       {/* ISS Lab Overview */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🛸</span>
           ISS National Laboratory
@@ -861,22 +861,22 @@ function ISSLabTab() {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <div className="card p-5">
           <div className="text-star-300 text-xs uppercase tracking-widest mb-1">Total Experiments</div>
           <div className="text-white font-bold text-2xl">{totalExperiments.toLocaleString()}+</div>
           <div className="text-star-400 text-xs">Since 2005</div>
         </div>
-        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <div className="card p-5">
           <div className="text-star-300 text-xs uppercase tracking-widest mb-1">Categories</div>
           <div className="text-white font-bold text-2xl">{ISS_EXPERIMENT_CATEGORIES.length}</div>
           <div className="text-star-400 text-xs">Research domains</div>
         </div>
-        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <div className="card p-5">
           <div className="text-star-300 text-xs uppercase tracking-widest mb-1">Operational Since</div>
           <div className="text-white font-bold text-2xl">2000</div>
           <div className="text-star-400 text-xs">First crew Nov 2000</div>
         </div>
-        <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <div className="card p-5">
           <div className="text-star-300 text-xs uppercase tracking-widest mb-1">Planned Retirement</div>
           <div className="text-white font-bold text-2xl">2030</div>
           <div className="text-star-400 text-xs">Transition to commercial</div>
@@ -893,7 +893,7 @@ function ISSLabTab() {
             return (
               <div
                 key={category.name}
-                className="card border border-slate-700/50 bg-slate-800/50 backdrop-blur overflow-hidden"
+                className="card overflow-hidden"
               >
                 <button
                   onClick={() => setExpandedCategory(isExpanded ? null : category.name)}
@@ -945,7 +945,7 @@ function ISSLabTab() {
       </div>
 
       {/* Key ISS Manufacturing Facilities */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🔧</span>
           Active Manufacturing Facilities on ISS
@@ -1018,7 +1018,7 @@ function ProductsTab() {
   return (
     <div className="space-y-8">
       {/* Overview */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">📊</span>
           Product Categories & Market Analysis
@@ -1038,7 +1038,7 @@ function ProductsTab() {
           return (
             <div
               key={product.id}
-              className="card border border-slate-700/50 bg-slate-800/50 backdrop-blur overflow-hidden hover:border-nebula-500/30 transition-all"
+              className="card overflow-hidden hover:border-nebula-500/30"
             >
               <button
                 onClick={() => setSelectedProduct(isExpanded ? null : product.id)}
@@ -1142,7 +1142,7 @@ function ProductsTab() {
       </div>
 
       {/* Market Comparison Table */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">📋</span>
           Product Comparison Matrix
@@ -1197,7 +1197,7 @@ function ImgProviderCard({ provider }: { provider: ImageryProvider }) {
   const [expanded, setExpanded] = useState(false);
   const statusStyle = IMG_STATUS_STYLES[provider.status] || DEFAULT_IMG_STATUS_STYLE;
   return (
-    <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-cyan-500/30 transition-all group">
+    <div className="card p-6 hover:border-cyan-500/30 group">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
           <h3 className="text-white font-semibold text-lg group-hover:text-cyan-300 transition-colors">{provider.name}</h3>
@@ -1246,7 +1246,7 @@ function ImgComparisonTable({ sensorFilter }: { sensorFilter: string }) {
   const { IMG_PROVIDERS } = useMfgData();
   const filtered = sensorFilter ? IMG_PROVIDERS.filter((p) => p.sensorType === sensorFilter) : IMG_PROVIDERS;
   return (
-    <div className="card border border-slate-700/50 bg-slate-800/50 backdrop-blur overflow-hidden">
+    <div className="card overflow-hidden">
       <div className="p-4 border-b border-slate-700/50"><h3 className="text-white font-semibold">Provider Comparison</h3><p className="text-star-400 text-sm mt-1">Side-by-side comparison of {filtered.length} satellite imagery providers</p></div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -1295,7 +1295,7 @@ function ImgComparisonTable({ sensorFilter }: { sensorFilter: string }) {
 function ImgUseCaseCard({ useCase }: { useCase: UseCase }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-cyan-500/30 transition-all">
+    <div className="card p-6 hover:border-cyan-500/30">
       <div className="flex items-start gap-3 mb-3">
         <span className="text-2xl flex-shrink-0">{useCase.icon}</span>
         <div><h3 className="text-white font-semibold text-lg">{useCase.name}</h3><p className="text-star-400 text-sm mt-1 leading-relaxed">{useCase.description}</p></div>
@@ -1323,7 +1323,7 @@ function ImageryMarketplaceContent() {
       {/* Hero Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {IMG_HERO_STATS.map((stat) => (
-          <div key={stat.label} className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+          <div key={stat.label} className="card p-5 text-center">
             <div className={`text-3xl font-bold tracking-tight ${stat.color}`}>{stat.value}</div>
             <div className="text-star-400 text-xs uppercase tracking-widest font-medium mt-1">{stat.label}</div>
           </div>
@@ -1373,7 +1373,7 @@ function ImageryMarketplaceContent() {
             {filteredProviders.map((provider) => (<ImgProviderCard key={provider.id} provider={provider} />))}
           </div>
           {filteredProviders.length === 0 && (<div className="text-center py-12"><span className="text-5xl block mb-4">{'\uD83D\uDEF0\uFE0F'}</span><p className="text-star-400">No providers match the selected filter.</p></div>)}
-          <div className="mt-8 card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+          <div className="mt-8 card p-6">
             <h3 className="font-semibold text-white mb-4">Providers by Sensor Type</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {sensorTypes.map((type) => {
@@ -1395,7 +1395,7 @@ function ImageryMarketplaceContent() {
             {sensorTypes.map((type) => (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>{type}</button>))}
           </div>
           <ImgComparisonTable sensorFilter={sensorFilter} />
-          <div className="mt-6 card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+          <div className="mt-6 card p-6">
             <h3 className="text-white font-semibold mb-4">Key Selection Insights</h3>
             <div className="space-y-3">
               {[
@@ -1412,12 +1412,12 @@ function ImageryMarketplaceContent() {
       {/* Use Cases Sub-Tab */}
       {imgTab === 'usecases' && (
         <div>
-          <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur mb-6">
+          <div className="card p-5 mb-6">
             <h3 className="text-white font-semibold mb-2">Choosing the Right Provider for Your Use Case</h3>
             <p className="text-star-400 text-sm leading-relaxed">Different applications require different combinations of spatial resolution, spectral bands, revisit frequency, and sensor type. Below are provider recommendations organized by primary use case.</p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{IMG_USE_CASES.map((useCase) => (<ImgUseCaseCard key={useCase.id} useCase={useCase} />))}</div>
-          <div className="mt-8 card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+          <div className="mt-8 card p-6">
             <h3 className="font-semibold text-white mb-4">Most Versatile Providers</h3>
             <p className="text-star-400 text-sm mb-4">Providers ranked by number of use cases where they appear as a top recommendation:</p>
             <div className="space-y-3">
@@ -1430,7 +1430,7 @@ function ImageryMarketplaceContent() {
               })()}
             </div>
           </div>
-          <div className="mt-6 card p-6 border border-cyan-500/20 bg-slate-800/50 backdrop-blur">
+          <div className="mt-6 card p-6">
             <h3 className="text-cyan-400 font-semibold mb-4">Multi-Sensor Fusion Strategy</h3>
             <p className="text-star-400 text-sm leading-relaxed mb-4">Most operational intelligence workflows benefit from combining multiple sensor types:</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1448,7 +1448,7 @@ function ImageryMarketplaceContent() {
       {/* Market Sub-Tab */}
       {imgTab === 'market' && (
         <div>
-          <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur mb-6">
+          <div className="card p-6 mb-6">
             <h3 className="text-white font-semibold text-lg mb-4">Global Earth Observation Market</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               {[
@@ -1467,14 +1467,14 @@ function ImageryMarketplaceContent() {
           <h3 className="text-white font-semibold text-lg mb-4">Key Market Trends</h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
             {IMG_MARKET_TRENDS.map((trend) => (
-              <div key={trend.title} className={`card p-6 border ${trend.borderColor} bg-slate-800/50 backdrop-blur`}>
+              <div key={trend.title} className={`card p-6 ${trend.borderColor}`}>
                 <h3 className={`text-lg font-semibold ${trend.color} mb-2`}>{trend.title}</h3>
                 <p className="text-star-400 text-sm leading-relaxed mb-4">{trend.description}</p>
                 <div className="space-y-2">{(trend.stats || []).map((stat, i) => (<div key={i} className="text-star-300 text-sm flex items-start gap-2"><span className={`mt-0.5 flex-shrink-0 ${trend.color}`}>-</span>{stat}</div>))}</div>
               </div>
             ))}
           </div>
-          <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur mb-6">
+          <div className="card p-6 mb-6">
             <h3 className="text-white font-semibold mb-4">Industry Evolution</h3>
             <div className="space-y-4">
               {[
@@ -1486,7 +1486,7 @@ function ImageryMarketplaceContent() {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-            <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+            <div className="card p-6">
               <h3 className="text-white font-semibold mb-4">Market by Region</h3>
               <div className="space-y-3">
                 {[
@@ -1497,7 +1497,7 @@ function ImageryMarketplaceContent() {
                 ].map((r) => (<div key={r.region}><div className="flex justify-between mb-1"><span className="text-white text-sm font-medium">{r.region}</span><span className="text-star-400 text-sm">{r.share}</span></div><div className="h-2 bg-slate-700/30 rounded-full overflow-hidden mb-1"><div className={`h-full rounded-full bg-gradient-to-r ${r.color}`} style={{ width: r.share }} /></div><p className="text-star-400 text-xs">{r.providers}</p></div>))}
               </div>
             </div>
-            <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+            <div className="card p-6">
               <h3 className="text-white font-semibold mb-4">Market by Sensor Type</h3>
               <div className="space-y-3">
                 {[
@@ -1510,7 +1510,7 @@ function ImageryMarketplaceContent() {
               </div>
             </div>
           </div>
-          <div className="card p-5 border border-slate-700/50 border-dashed bg-slate-800/50 backdrop-blur">
+          <div className="card p-5 border-dashed">
             <h3 className="text-sm font-semibold text-white mb-2">Data Sources & Methodology</h3>
             <p className="text-star-400 text-xs leading-relaxed">Market size estimates derived from Euroconsult, Northern Sky Research (NSR), and publicly available industry reports. Provider specifications sourced from official company documentation, SEC filings, and satellite operator disclosures. Resolution figures represent best-available modes under optimal conditions. Data as of early 2025.</p>
           </div>
@@ -1681,7 +1681,7 @@ function ManufacturingAndImageryContent() {
         {topTab === 'imagery' && <ImageryMarketplaceContent />}
 
         {/* Related Modules */}
-        <ScrollReveal><div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur mt-8">
+        <ScrollReveal><div className="card p-4 mt-8">
           <h3 className="text-sm font-semibold text-white mb-3">Related Modules</h3>
           <div className="flex flex-wrap gap-3">
             <Link href="/space-mining" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">

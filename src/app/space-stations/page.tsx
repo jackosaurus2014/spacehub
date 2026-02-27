@@ -730,7 +730,7 @@ function HeroStats() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       {stats.map((stat) => (
-        <div key={stat.label} className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <div key={stat.label} className="card p-5">
           <div className="text-star-300 text-xs uppercase tracking-widest">{stat.label}</div>
           <div className="text-white font-bold text-2xl mt-1">{stat.value}</div>
           <div className="text-star-400 text-xs mt-0.5">{stat.sub}</div>
@@ -745,7 +745,7 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
   const statusStyle = STATUS_STYLES[station.status] || DEFAULT_STATUS_STYLE;
 
   return (
-    <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
+    <div className="card p-6 hover:border-nebula-500/40">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
@@ -884,7 +884,7 @@ function CommercialStationCard({ station }: { station: CommercialStation }) {
   const statusStyle = STATUS_STYLES[station.status] || DEFAULT_STATUS_STYLE;
 
   return (
-    <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
+    <div className="card p-6 hover:border-nebula-500/40">
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div>
@@ -1089,7 +1089,7 @@ function ComparisonTable() {
   ];
 
   return (
-    <div className="card border border-slate-700/50 bg-slate-800/50 backdrop-blur overflow-hidden">
+    <div className="card overflow-hidden">
       <div className="p-4 border-b border-slate-700/50">
         <h2 className="text-white font-bold text-lg">Station Comparison Matrix</h2>
         <p className="text-star-400 text-sm mt-1">Side-by-side comparison of all active and planned space stations</p>
@@ -1142,26 +1142,26 @@ function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]
     <div className="space-y-6">
       {/* Crew Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+        <div className="card p-4 text-center">
           <div className="text-white font-bold text-2xl">{currentCrew.length}</div>
           <div className="text-star-400 text-xs uppercase tracking-widest">Humans in Space</div>
         </div>
-        <div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+        <div className="card p-4 text-center">
           <div className="text-cyan-400 font-bold text-2xl">{issCrewCount}</div>
           <div className="text-star-400 text-xs uppercase tracking-widest">ISS Crew</div>
         </div>
-        <div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+        <div className="card p-4 text-center">
           <div className="text-amber-400 font-bold text-2xl">{tiangongCrewCount}</div>
           <div className="text-star-400 text-xs uppercase tracking-widest">Tiangong Crew</div>
         </div>
-        <div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur text-center">
+        <div className="card p-4 text-center">
           <div className="text-purple-400 font-bold text-2xl">{nationalities.length}</div>
           <div className="text-star-400 text-xs uppercase tracking-widest">Nationalities</div>
         </div>
       </div>
 
       {/* Nationality Breakdown */}
-      <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-5">
         <h3 className="text-white font-semibold mb-4">Nationality & Agency Breakdown</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -1213,7 +1213,7 @@ function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]
       {['ISS', 'Tiangong'].map((stationName) => {
         const crew = currentCrew.filter((c) => c.station === stationName);
         return (
-          <div key={stationName} className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+          <div key={stationName} className="card p-5">
             <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
               <span className={`w-3 h-3 rounded-full ${stationName === 'ISS' ? 'bg-cyan-500' : 'bg-amber-500'}`} />
               {stationName} Current Crew ({crew.length})
@@ -1241,7 +1241,7 @@ function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]
       })}
 
       {/* Crew Rotation Schedule */}
-      <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-5">
         <h3 className="text-white font-bold text-lg mb-4">Crew Rotation Schedule</h3>
         <div className="space-y-3">
           {crewRotations.map((rotation) => {
@@ -1284,7 +1284,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
   return (
     <div className="space-y-6">
       {/* Overview */}
-      <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4">NASA Commercial LEO Destinations (CLD) Program</h2>
         <div className="space-y-4 text-star-300 leading-relaxed">
           <p>
@@ -1305,7 +1305,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
       </div>
 
       {/* Budget Comparison */}
-      <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-5">
         <h3 className="text-white font-semibold mb-4">Budget Implications</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="rounded-lg bg-red-900/20 border border-red-500/30 p-4 text-center">
@@ -1327,7 +1327,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
       </div>
 
       {/* CLD Timeline */}
-      <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-5">
         <h3 className="text-white font-bold text-lg mb-6">CLD & ISS Transition Timeline</h3>
         <div className="relative">
           <div className="absolute left-[18px] top-6 bottom-6 w-px bg-gradient-to-b from-green-500 via-yellow-500 to-blue-500 opacity-30" />
@@ -1363,7 +1363,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
       </div>
 
       {/* ISS Deorbit Plan */}
-      <div className="card p-5 border border-amber-500/30 bg-amber-900/10 backdrop-blur">
+      <div className="card p-5 border-amber-500/30 bg-amber-900/10">
         <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-amber-500" />
           ISS Deorbit Plan
@@ -1391,7 +1391,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
       </div>
 
       {/* Capability Gap Analysis */}
-      <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-5">
         <h3 className="text-white font-bold text-lg mb-4">Transition Risk Assessment</h3>
         <p className="text-star-300 text-sm mb-4">
           Key risks and mitigations for the transition from ISS to commercial stations.
@@ -1424,7 +1424,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
       </div>
 
       {/* CLD Provider Summary */}
-      <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <div className="card p-5">
         <h3 className="text-white font-bold text-lg mb-4">CLD Provider Awards</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
@@ -1599,7 +1599,7 @@ export default function SpaceStationTrackerPage() {
 
         {/* ISS Live Position */}
         {issPosition && (
-          <div className="card p-5 border-2 border-cyan-500/40 bg-gradient-to-r from-cyan-900/20 to-slate-800/50 backdrop-blur mb-6 mt-4">
+          <div className="card p-5 border-2 border-cyan-500/40 bg-gradient-to-r from-cyan-900/20 to-slate-800/50 mb-6 mt-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-white font-bold text-lg flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
@@ -1682,7 +1682,7 @@ export default function SpaceStationTrackerPage() {
 
         {activeTab === 'commercial' && (
           <div className="space-y-6">
-            <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur mb-6">
+            <div className="card p-5 mb-6">
               <h2 className="text-white font-bold text-lg mb-3">Next-Generation Commercial Space Stations</h2>
               <p className="text-star-300 text-sm leading-relaxed">
                 As the ISS approaches its planned retirement around 2030, a new generation of commercial space stations
@@ -1708,7 +1708,7 @@ export default function SpaceStationTrackerPage() {
         {activeTab === 'transition' && <ISSTransition cldMilestones={cldMilestones} transitionRisks={transitionRisks} />}
 
         {/* Related Modules */}
-        <div className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur mt-8">
+        <div className="card p-4 mt-8">
           <h3 className="text-sm font-semibold text-white mb-3">Related Modules</h3>
           <div className="flex flex-wrap gap-3">
             <Link href="/cislunar?tab=gateway" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">

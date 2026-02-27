@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from '@/lib/toast';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 type Section = 'profile' | 'security' | 'notifications' | 'data-privacy';
 
@@ -69,43 +70,50 @@ export default function AccountPage() {
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Account Settings</h1>
-          <p className="text-slate-400">
-            Manage your SpaceNexus account, security, and preferences
-          </p>
-        </div>
+        <ScrollReveal>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">Account Settings</h1>
+            <p className="text-slate-400">
+              Manage your SpaceNexus account, security, and preferences
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Tab Navigation */}
-        <div className="relative">
-          <div className="flex overflow-x-auto border-b border-slate-800 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
-            {SECTION_TABS.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveSection(tab.key)}
-                className={`flex items-center gap-2 py-3 px-4 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
-                  activeSection === tab.key
-                    ? 'border-cyan-500 text-white'
-                    : 'border-transparent text-slate-400 hover:text-white'
-                }`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} />
-                </svg>
-                {tab.label}
-              </button>
-            ))}
+        <ScrollReveal delay={0.1}>
+          <div className="relative">
+            <div className="flex overflow-x-auto border-b border-slate-800 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
+              {SECTION_TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveSection(tab.key)}
+                  className={`flex items-center gap-2 py-3 px-4 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                    activeSection === tab.key
+                      ? 'border-cyan-500 text-white'
+                      : 'border-transparent text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} />
+                  </svg>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none sm:hidden" />
           </div>
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none sm:hidden" />
-        </div>
+        </ScrollReveal>
 
         {/* Section Content */}
-        {activeSection === 'profile' && <ProfileSection session={session} />}
-        {activeSection === 'security' && <SecuritySection />}
-        {activeSection === 'notifications' && <NotificationsSection />}
-        {activeSection === 'data-privacy' && <DataPrivacySection />}
+        <ScrollReveal delay={0.2}>
+          {activeSection === 'profile' && <ProfileSection session={session} />}
+          {activeSection === 'security' && <SecuritySection />}
+          {activeSection === 'notifications' && <NotificationsSection />}
+          {activeSection === 'data-privacy' && <DataPrivacySection />}
+        </ScrollReveal>
 
         {/* Quick Links */}
+        <ScrollReveal delay={0.3}>
         <section className="mt-8 bg-slate-900/50 border border-slate-800 rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">Quick Links</h2>
           <div className="flex flex-wrap gap-4">
@@ -129,6 +137,7 @@ export default function AccountPage() {
             </Link>
           </div>
         </section>
+        </ScrollReveal>
       </div>
     </div>
   );

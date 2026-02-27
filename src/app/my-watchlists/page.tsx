@@ -9,6 +9,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { toast } from '@/lib/toast';
 import { clientLogger } from '@/lib/client-logger';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 interface WatchlistItem {
   id: string;
@@ -246,25 +247,29 @@ function WatchlistsContent() {
   return (
     <div className="min-h-screen">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        <AnimatedPageHeader
-          title="My Watchlists"
-          subtitle="Track companies and save your favorite searches"
-        />
+        <ScrollReveal>
+          <AnimatedPageHeader
+            title="My Watchlists"
+            subtitle="Track companies and save your favorite searches"
+          />
+        </ScrollReveal>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 bg-slate-800 rounded-lg p-1 w-fit">
-          {tabs.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
-                tab === t.key ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        <ScrollReveal delay={0.1}>
+          <div className="flex items-center gap-1 bg-slate-800 rounded-lg p-1 w-fit">
+            {tabs.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
+                  tab === t.key ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </ScrollReveal>
 
         {/* Companies Tab */}
         {tab === 'companies' && (
@@ -277,13 +282,11 @@ function WatchlistsContent() {
             )}
 
             {watchlist.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {watchlist.map((item, i) => (
-                  <motion.div
+              <ScrollReveal>
+              <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {watchlist.map((item) => (
+                  <StaggerItem
                     key={item.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
                     className="card p-4 space-y-3"
                   >
                     {/* Company Info */}
@@ -361,9 +364,10 @@ function WatchlistsContent() {
                         Listings
                       </label>
                     </div>
-                  </motion.div>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
+              </ScrollReveal>
             ) : (
               <div className="text-center py-20">
                 <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center mb-6">
@@ -410,8 +414,9 @@ function WatchlistsContent() {
             )}
 
             {savedSearches.length > 0 ? (
-              <div className="space-y-3">
-                {savedSearches.map((search, i) => {
+              <ScrollReveal>
+              <StaggerContainer className="space-y-3">
+                {savedSearches.map((search) => {
                   const typeInfo = SEARCH_TYPE_LABELS[search.searchType] || SEARCH_TYPE_LABELS.company_directory;
                   const filterSummary = Object.entries(search.filters || {})
                     .filter(([, val]) => val !== null && val !== undefined && val !== '')
@@ -419,11 +424,8 @@ function WatchlistsContent() {
                     .join(', ');
 
                   return (
-                    <motion.div
+                    <StaggerItem
                       key={search.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.05 }}
                       className="card p-4 flex items-center justify-between gap-4"
                     >
                       <div className="flex-1 min-w-0">
@@ -472,10 +474,11 @@ function WatchlistsContent() {
                           ✕
                         </button>
                       </div>
-                    </motion.div>
+                    </StaggerItem>
                   );
                 })}
-              </div>
+              </StaggerContainer>
+              </ScrollReveal>
             ) : (
               <div className="text-center py-16">
                 <div className="text-4xl mb-3">💾</div>

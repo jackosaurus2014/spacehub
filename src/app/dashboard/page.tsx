@@ -10,6 +10,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import RecentlyViewed from '@/components/ui/RecentlyViewed';
 import { SkeletonPage } from '@/components/ui/Skeleton';
 import LaunchCountdown from '@/components/widgets/LaunchCountdown';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import {
   getEffectiveLayout,
   getGridColumnsClass,
@@ -175,33 +176,36 @@ function ModuleSection({ title, icon, modules, sizeClasses, delay }: {
   if (modules.length === 0) return null;
 
   return (
-    <div className={`mb-8 animate-fade-in`} style={{ animationDelay: delay }}>
-      <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-        <span className="text-xl">{icon}</span>
-        {title}
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        {modules.map((mod) => (
-          <Link
-            key={mod.href}
-            href={mod.href}
-            className={`group relative card ${sizeClasses.padding} hover:border-cyan-400/40 hover:bg-slate-800/80`}
-          >
-            <div className="flex items-start gap-3">
-              <span className="text-2xl flex-shrink-0 mt-0.5">{mod.icon}</span>
-              <div className="min-w-0">
-                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-cyan-300 transition-colors truncate">
-                  {mod.label}
-                </h3>
-                <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
-                  {mod.description}
-                </p>
-              </div>
-            </div>
-          </Link>
-        ))}
+    <ScrollReveal>
+      <div className="mb-8">
+        <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <span className="text-xl">{icon}</span>
+          {title}
+        </h2>
+        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          {modules.map((mod) => (
+            <StaggerItem key={mod.href}>
+              <Link
+                href={mod.href}
+                className={`group relative card ${sizeClasses.padding} hover:border-cyan-400/40 hover:bg-slate-800/80 block`}
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl flex-shrink-0 mt-0.5">{mod.icon}</span>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-semibold text-slate-200 group-hover:text-cyan-300 transition-colors truncate">
+                      {mod.label}
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
+                      {mod.description}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </StaggerItem>
+          ))}
+        </StaggerContainer>
       </div>
-    </div>
+    </ScrollReveal>
   );
 }
 
@@ -353,51 +357,59 @@ export default function DashboardPage() {
         )}
 
         {/* Quick Stats Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 animate-fade-in" style={{ animationDelay: '0.05s' }}>
-          {QUICK_STATS.map((stat) => (
-            <Link
-              key={stat.key}
-              href={stat.href}
-              className="group card p-4 hover:border-cyan-400/40 hover:bg-slate-800/80"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-lg">{stat.icon}</span>
-                <span className="text-xs text-slate-400 font-medium">{stat.label}</span>
-              </div>
-              <div className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors">
-                {statsLoading ? (
-                  <div className="h-8 w-16 bg-slate-700/50 rounded animate-pulse" />
-                ) : (
-                  <AnimatedCounter target={overviewStats[stat.key] || 0} />
-                )}
-              </div>
-            </Link>
-          ))}
-        </div>
+        <ScrollReveal>
+          <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {QUICK_STATS.map((stat) => (
+              <StaggerItem key={stat.key}>
+                <Link
+                  href={stat.href}
+                  className="group card p-4 hover:border-cyan-400/40 hover:bg-slate-800/80 block"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">{stat.icon}</span>
+                    <span className="text-xs text-slate-400 font-medium">{stat.label}</span>
+                  </div>
+                  <div className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors">
+                    {statsLoading ? (
+                      <div className="h-8 w-16 bg-slate-700/50 rounded animate-pulse" />
+                    ) : (
+                      <AnimatedCounter target={overviewStats[stat.key] || 0} />
+                    )}
+                  </div>
+                </Link>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </ScrollReveal>
 
         {/* Launch Countdown Widget */}
-        <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.06s' }}>
-          <LaunchCountdown />
-        </div>
+        <ScrollReveal>
+          <div className="mb-8">
+            <LaunchCountdown />
+          </div>
+        </ScrollReveal>
 
         {/* Recently Viewed Section */}
-        <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.07s' }}>
-          <div className="card p-5">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
-                <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Recently Viewed
-              </h2>
-              <RecentlyViewed />
+        <ScrollReveal>
+          <div className="mb-8">
+            <div className="card p-5">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Recently Viewed
+                </h2>
+                <RecentlyViewed />
+              </div>
+              <RecentlyViewedInline />
             </div>
-            <RecentlyViewedInline />
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Module Search / Filter */}
-        <div className="mb-6 animate-fade-in" style={{ animationDelay: '0.08s' }}>
+        <ScrollReveal>
+        <div className="mb-6">
           <div className="relative">
             <svg
               className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
@@ -432,6 +444,7 @@ export default function DashboardPage() {
             </p>
           )}
         </div>
+        </ScrollReveal>
 
         {/* Module Sections - matching sidebar order */}
         <ModuleSection

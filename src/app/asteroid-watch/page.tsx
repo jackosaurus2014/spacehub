@@ -1247,7 +1247,7 @@ function AsteroidWatchContent() {
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {FIREBALL_EVENTS.map((fb, idx) => (
-                    <div key={idx} className="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-orange-500/30 transition-all">
+                    <div key={idx} className="card p-4 hover:border-orange-500/30">
                       <div className="text-white font-medium text-sm mb-2">{fb.date}</div>
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         {fb.lat && fb.lon && (
@@ -1406,7 +1406,7 @@ function AsteroidWatchContent() {
                   { name: 'Aten', count: 4_840, description: 'Earth-crossing, semi-major axis < 1 AU. Spend most time inside Earth orbit.', color: 'text-yellow-400', percentage: 14 },
                   { name: 'Atira', count: 412, description: 'Orbit entirely interior to Earth orbit. Hardest to detect from ground.', color: 'text-cyan-400', percentage: 1 },
                 ].map((cls) => (
-                  <div key={cls.name} className="card p-4 bg-slate-800/30">
+                  <div key={cls.name} className="card p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className={`text-lg font-bold ${cls.color}`}>{cls.name}</span>
                       <span className="text-white font-display text-lg">{cls.count.toLocaleString()}</span>
@@ -1651,7 +1651,7 @@ function AsteroidWatchContent() {
             </div>
 
             {/* Delta-V Accessibility Note */}
-            <div className="card p-6 border border-slate-700">
+            <div className="card p-6">
               <h3 className="text-lg font-semibold text-white mb-3">Understanding Delta-V & Accessibility</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                 <div>

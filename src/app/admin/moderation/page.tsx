@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from '@/lib/toast';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -140,10 +141,12 @@ export default function ModerationDashboard() {
     <div className="min-h-screen bg-slate-950">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Moderation Dashboard</h1>
-          <p className="text-slate-400 mt-1">Review reports, manage users, and track moderation actions.</p>
-        </div>
+        <ScrollReveal>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-white">Moderation Dashboard</h1>
+            <p className="text-slate-400 mt-1">Review reports, manage users, and track moderation actions.</p>
+          </div>
+        </ScrollReveal>
 
         {/* Tabs */}
         <div className="flex border-b border-slate-700 mb-6">
@@ -316,16 +319,17 @@ function ReportsTab() {
 
       {/* Report Cards */}
       {!loading && !error && reports.length > 0 && (
-        <div className="space-y-4">
+        <StaggerContainer className="space-y-4">
           {reports.map((report) => (
-            <ReportCard
-              key={report.id}
-              report={report}
-              actioning={actioningId === report.id}
-              onAction={handleReportAction}
-            />
+            <StaggerItem key={report.id}>
+              <ReportCard
+                report={report}
+                actioning={actioningId === report.id}
+                onAction={handleReportAction}
+              />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       )}
 
       {/* Pagination */}
@@ -619,11 +623,13 @@ function UsersTab() {
 
       {/* User Cards */}
       {!loading && !error && users.length > 0 && (
-        <div className="space-y-3">
+        <StaggerContainer className="space-y-3">
           {users.map((user) => (
-            <UserCard key={user.id} user={user} onAction={openConfirmDialog} />
+            <StaggerItem key={user.id}>
+              <UserCard user={user} onAction={openConfirmDialog} />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       )}
 
       {/* Confirmation Dialog */}
@@ -901,23 +907,25 @@ function ActionLogTab() {
   }
 
   return (
-    <div className="card overflow-hidden">
-      {/* Table header */}
-      <div className="hidden sm:grid sm:grid-cols-5 gap-4 px-4 py-3 bg-slate-800 border-b border-slate-700 text-xs font-medium text-slate-400 uppercase tracking-wider">
-        <div>Date</div>
-        <div>Moderator</div>
-        <div>Action</div>
-        <div>Target User</div>
-        <div>Reason</div>
-      </div>
+    <ScrollReveal>
+      <div className="card overflow-hidden">
+        {/* Table header */}
+        <div className="hidden sm:grid sm:grid-cols-5 gap-4 px-4 py-3 bg-slate-800 border-b border-slate-700 text-xs font-medium text-slate-400 uppercase tracking-wider">
+          <div>Date</div>
+          <div>Moderator</div>
+          <div>Action</div>
+          <div>Target User</div>
+          <div>Reason</div>
+        </div>
 
-      {/* Table rows */}
-      <div className="divide-y divide-slate-700">
-        {actions.map((action) => (
-          <ActionLogRow key={action.id} action={action} />
-        ))}
+        {/* Table rows */}
+        <div className="divide-y divide-slate-700">
+          {actions.map((action) => (
+            <ActionLogRow key={action.id} action={action} />
+          ))}
+        </div>
       </div>
-    </div>
+    </ScrollReveal>
   );
 }
 

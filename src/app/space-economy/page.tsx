@@ -76,7 +76,7 @@ function StatCounter({ target, prefix = '', suffix = '', label, sub, color }: {
 }) {
   const { value, ref } = useCounter(target);
   return (
-    <div ref={ref} className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
+    <div ref={ref} className="card p-5 text-center">
       <div className={`text-3xl md:text-4xl font-bold ${color}`}>
         {prefix}{target >= 100 ? Math.round(value) : value.toFixed(1)}{suffix}
       </div>
@@ -153,7 +153,7 @@ export default function SpaceEconomyPage() {
 
         {/* ── Commercial vs Government Split ─────────────── */}
         <ScrollReveal>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 mb-10">
+        <div className="card p-6 mb-10">
           <h3 className="text-lg font-semibold text-white mb-4">Commercial vs Government Split (2024)</h3>
           <div className="flex items-center gap-3 mb-2">
             <span className="text-sm text-slate-300 w-28 shrink-0">Commercial 78%</span>
@@ -171,7 +171,7 @@ export default function SpaceEconomyPage() {
 
         {/* ── Market Segments ────────────────────────────── */}
         <ScrollReveal>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 mb-10">
+        <div className="card p-6 mb-10">
           <h3 className="text-lg font-semibold text-white mb-1">Market Segments (2024)</h3>
           <p className="text-slate-500 text-xs mb-5">Approximate revenue by sector. Source: SIA, Euroconsult, Space Foundation.</p>
           {filteredSegments.length === 0 && (
@@ -197,7 +197,7 @@ export default function SpaceEconomyPage() {
 
         {/* ── National Budgets ───────────────────────────── */}
         <ScrollReveal>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 mb-10">
+        <div className="card p-6 mb-10">
           <h3 className="text-lg font-semibold text-white mb-1">Top Space Nations by Budget (2024)</h3>
           <p className="text-slate-500 text-xs mb-5">Government space spending in USD. Sources: NASA, ESA, JAXA, ISRO, Euroconsult, OECD.</p>
           {filteredNations.length === 0 && (
@@ -225,7 +225,7 @@ export default function SpaceEconomyPage() {
 
         {/* ── Growth Projections ─────────────────────────── */}
         <ScrollReveal>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 mb-10">
+        <div className="card p-6 mb-10">
           <h3 className="text-lg font-semibold text-white mb-1">Growth Projections</h3>
           <p className="text-slate-500 text-xs mb-5">Industry forecasts for global space economy size.</p>
           {/* Timeline bar chart */}
@@ -257,7 +257,7 @@ export default function SpaceEconomyPage() {
         {/* ── Key Trends ─────────────────────────────────── */}
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
           <StaggerItem>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 h-full">
+            <div className="card p-6 h-full">
               <h4 className="text-white font-semibold mb-3">Growth Drivers</h4>
               <ul className="space-y-2 text-sm text-slate-300">
                 <li className="flex items-start gap-2"><span className="text-green-400 mt-0.5">{'\u25B2'}</span> Mega-constellation broadband (Starlink, Kuiper)</li>
@@ -269,7 +269,7 @@ export default function SpaceEconomyPage() {
             </div>
           </StaggerItem>
           <StaggerItem>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 h-full">
+            <div className="card p-6 h-full">
               <h4 className="text-white font-semibold mb-3">Market Risks</h4>
               <ul className="space-y-2 text-sm text-slate-300">
                 <li className="flex items-start gap-2"><span className="text-red-400 mt-0.5">{'\u25BC'}</span> Orbital debris threatening sustainability</li>
@@ -291,7 +291,7 @@ export default function SpaceEconomyPage() {
 
         {/* ── Sources Footer ─────────────────────────────── */}
         <ScrollReveal>
-        <div className="mt-12 bg-slate-800/30 rounded-xl border border-slate-700/30 p-6">
+        <div className="mt-12 card p-6">
           <h4 className="text-slate-400 font-semibold text-sm mb-3">Data Sources & Citations</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs text-slate-500">
             <div>Space Foundation -- The Space Report (2024)</div>

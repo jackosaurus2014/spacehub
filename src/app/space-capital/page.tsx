@@ -469,7 +469,7 @@ function OverviewTab({ investors, fundingByYear, startups }: {
       {/* Hero Stats */}
       <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StaggerItem>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
+          <div className="card p-6 text-center">
             <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
               ${totalFunding.toFixed(0)}B+
             </div>
@@ -477,19 +477,19 @@ function OverviewTab({ investors, fundingByYear, startups }: {
           </div>
         </StaggerItem>
         <StaggerItem>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
+          <div className="card p-6 text-center">
             <div className="text-3xl md:text-4xl font-bold text-cyan-400">{investors.length}+</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Active Investors</div>
           </div>
         </StaggerItem>
         <StaggerItem>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
+          <div className="card p-6 text-center">
             <div className="text-3xl md:text-4xl font-bold text-purple-400">{startups.length}</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Top Funded Startups</div>
           </div>
         </StaggerItem>
         <StaggerItem>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 text-center">
+          <div className="card p-6 text-center">
             <div className="text-3xl md:text-4xl font-bold text-amber-400">{totalDeals}+</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Total Deals</div>
           </div>
@@ -497,7 +497,7 @@ function OverviewTab({ investors, fundingByYear, startups }: {
       </StaggerContainer>
 
       {/* Funding Trends */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+      <div className="card p-6">
         <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center text-lg">📈</span>
           Space Startup Funding by Year
@@ -534,7 +534,7 @@ function OverviewTab({ investors, fundingByYear, startups }: {
 
       {/* Top 20 Investors + Top 20 Startups */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+        <div className="card p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Top {Math.min(investors.length, 20)} Investors</h3>
           <div className="space-y-3">
             {investors.slice(0, 20).map((inv, i) => (
@@ -549,7 +549,7 @@ function OverviewTab({ investors, fundingByYear, startups }: {
             ))}
           </div>
         </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+        <div className="card p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Top 20 Funded Startups</h3>
           <div className="space-y-3">
             {startups.slice(0, 20).map((s, i) => (
@@ -620,7 +620,7 @@ function InvestorsTab({ investors }: { investors: Investor[] }) {
       <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {filtered.map((inv, idx) => (
           <StaggerItem key={inv.id}>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 hover:border-cyan-500/30 transition-colors">
+            <div className="card p-5 hover:border-cyan-500/30 transition-colors">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
@@ -731,7 +731,7 @@ function StartupsTab({ startups }: { startups: StartupCompany[] }) {
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((s, idx) => (
           <StaggerItem key={s.slug}>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 hover:border-green-500/30 transition-colors h-full flex flex-col">
+            <div className="card p-5 hover:border-green-500/30 transition-colors h-full flex flex-col">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-slate-500">#{idx + 1}</span>
@@ -882,7 +882,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
       {/* Startup Mode */}
       {mode === 'startup' && (
         <div className="space-y-6">
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+          <div className="card p-6">
             <h3 className="text-white font-semibold mb-4">Find investors for your space startup</h3>
             <div className="flex flex-wrap gap-4">
               <div>
@@ -917,7 +917,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {matchingInvestors.map(inv => (
-                  <div key={inv.id} className="bg-slate-800/50 rounded-xl border border-green-500/30 p-5">
+                  <div key={inv.id} className="card border-green-500/30 p-5">
                     <div className="flex items-center gap-2 mb-2">
                       <h4 className="text-white font-semibold">{inv.name}</h4>
                       <span className={`text-xs px-2 py-0.5 rounded border ${TYPE_COLORS[inv.type] || 'bg-slate-700/50 text-slate-300 border-slate-600'}`}>
@@ -936,7 +936,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
           )}
 
           {(selectedCategory || selectedStage) && matchingInvestors.length === 0 && (
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-8 text-center">
+            <div className="card p-8 text-center">
               <p className="text-slate-400">No investors match your criteria. Try broadening your filters.</p>
             </div>
           )}
@@ -946,7 +946,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
       {/* Investor Mode */}
       {mode === 'investor' && (
         <div className="space-y-6">
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+          <div className="card p-6">
             <h3 className="text-white font-semibold mb-4">Find startups matching your thesis</h3>
             <div>
               <label className="block text-slate-400 text-sm mb-1">Select Investor</label>
@@ -962,7 +962,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
           </div>
 
           {selectedInvestorData && (
-            <div className="bg-slate-800/50 rounded-xl border border-cyan-500/30 p-5">
+            <div className="card border-cyan-500/30 p-5">
               <h4 className="text-white font-semibold mb-1">{selectedInvestorData.name}</h4>
               <p className="text-slate-400 text-sm mb-3">{selectedInvestorData.investmentThesis}</p>
               <div className="flex flex-wrap gap-1">
@@ -978,7 +978,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
               <h3 className="text-white font-semibold mb-4">{matchingStartups.length} matching startups</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {matchingStartups.map(s => (
-                  <div key={s.slug} className="bg-slate-800/50 rounded-xl border border-green-500/30 p-4">
+                  <div key={s.slug} className="card border-green-500/30 p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="text-white font-semibold text-sm">{s.name}</h4>
                       <span className="text-green-400 font-mono text-sm">
@@ -1002,7 +1002,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
       )}
 
       {/* Investment Activity Matrix */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+      <div className="card p-6">
         <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
           <span className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-lg">📊</span>
           Investor Activity Matrix
@@ -1200,7 +1200,7 @@ function SpaceCapitalInner() {
 
         {/* Data Sources Footer */}
         <ScrollReveal>
-          <div className="mt-12 bg-slate-800/30 rounded-xl border border-slate-700/30 p-6">
+          <div className="mt-12 card p-6">
             <h4 className="text-slate-400 font-semibold text-sm mb-3">Data Sources</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs text-slate-500">
               <div>Space Capital -- Quarterly Investment Reports</div>

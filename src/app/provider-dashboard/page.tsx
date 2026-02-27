@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import ProposalCard from '@/components/marketplace/ProposalCard';
 import { clientLogger } from '@/lib/client-logger';
@@ -152,25 +153,26 @@ function DashboardContent() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: 'Active Listings', value: listings.filter((l) => l.status === 'active').length, color: 'text-cyan-400' },
             { label: 'Total Views', value: listings.reduce((s, l) => s + (l.viewCount || 0), 0), color: 'text-emerald-400' },
             { label: 'Avg Rating', value: reviews.length > 0 ? (reviews.reduce((s, r) => s + r.overallRating, 0) / reviews.length).toFixed(1) : 'N/A', color: 'text-yellow-400' },
             { label: 'Proposals', value: proposals.length, color: 'text-purple-400' },
           ].map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="card p-4 text-center"
-            >
-              <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
-              <div className="text-xs text-slate-500 mt-1">{stat.label}</div>
-            </motion.div>
+            <StaggerItem key={stat.label}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="card p-4 text-center"
+              >
+                <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
+                <div className="text-xs text-slate-500 mt-1">{stat.label}</div>
+              </motion.div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* Tabs */}
         <div className="flex items-center gap-1 bg-slate-800 rounded-lg p-1 w-fit">
@@ -191,26 +193,35 @@ function DashboardContent() {
         {tab === 'overview' && (
           <div className="space-y-6">
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Link href="/marketplace/search" className="card p-5 hover:ring-1 hover:ring-cyan-500 transition-all">
-                <div className="text-2xl mb-2">🏪</div>
-                <div className="text-sm font-semibold text-white">Browse Marketplace</div>
-                <div className="text-xs text-slate-400 mt-1">Explore services and find opportunities</div>
-              </Link>
-              <Link href="/marketplace/search?tab=rfqs" className="card p-5 hover:ring-1 hover:ring-cyan-500 transition-all">
-                <div className="text-2xl mb-2">📋</div>
-                <div className="text-sm font-semibold text-white">Browse Open RFQs</div>
-                <div className="text-xs text-slate-400 mt-1">Find and respond to buyer requests</div>
-              </Link>
-              <Link href={`/company-profiles/${company.slug}`} className="card p-5 hover:ring-1 hover:ring-cyan-500 transition-all">
-                <div className="text-2xl mb-2">🏢</div>
-                <div className="text-sm font-semibold text-white">Edit Company Profile</div>
-                <div className="text-xs text-slate-400 mt-1">Update your company information</div>
-              </Link>
-            </div>
+            <ScrollReveal>
+              <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <StaggerItem>
+                  <Link href="/marketplace/search" className="card p-5 hover:ring-1 hover:ring-cyan-500 transition-all block">
+                    <div className="text-2xl mb-2">🏪</div>
+                    <div className="text-sm font-semibold text-white">Browse Marketplace</div>
+                    <div className="text-xs text-slate-400 mt-1">Explore services and find opportunities</div>
+                  </Link>
+                </StaggerItem>
+                <StaggerItem>
+                  <Link href="/marketplace/search?tab=rfqs" className="card p-5 hover:ring-1 hover:ring-cyan-500 transition-all block">
+                    <div className="text-2xl mb-2">📋</div>
+                    <div className="text-sm font-semibold text-white">Browse Open RFQs</div>
+                    <div className="text-xs text-slate-400 mt-1">Find and respond to buyer requests</div>
+                  </Link>
+                </StaggerItem>
+                <StaggerItem>
+                  <Link href={`/company-profiles/${company.slug}`} className="card p-5 hover:ring-1 hover:ring-cyan-500 transition-all block">
+                    <div className="text-2xl mb-2">🏢</div>
+                    <div className="text-sm font-semibold text-white">Edit Company Profile</div>
+                    <div className="text-xs text-slate-400 mt-1">Update your company information</div>
+                  </Link>
+                </StaggerItem>
+              </StaggerContainer>
+            </ScrollReveal>
 
             {/* Verification Status */}
             {verification && (
+              <ScrollReveal delay={0.1}>
               <div className="card p-5">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-white">Verification Status</h3>
@@ -245,18 +256,23 @@ function DashboardContent() {
                   </div>
                 )}
               </div>
+              </ScrollReveal>
             )}
 
             {/* Recent Listings */}
             {listings.length > 0 && (
-              <div>
-                <h3 className="text-sm font-semibold text-white mb-3">Your Listings</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {listings.slice(0, 3).map((listing, i) => (
-                    <MarketplaceCard key={listing.id} listing={listing} index={i} />
-                  ))}
+              <ScrollReveal delay={0.15}>
+                <div>
+                  <h3 className="text-sm font-semibold text-white mb-3">Your Listings</h3>
+                  <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {listings.slice(0, 3).map((listing, i) => (
+                      <StaggerItem key={listing.id}>
+                        <MarketplaceCard listing={listing} index={i} />
+                      </StaggerItem>
+                    ))}
+                  </StaggerContainer>
                 </div>
-              </div>
+              </ScrollReveal>
             )}
 
             {/* Recent Reviews */}
@@ -272,38 +288,41 @@ function DashboardContent() {
             )}
 
             {/* Coming Soon Features */}
-            <div>
-              <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                Coming Soon <ComingSoonBadge />
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[
-                  { icon: '💰', title: 'Revenue Tracking', desc: 'Track platform-facilitated transactions, invoices, and payouts' },
-                  { icon: '📊', title: 'Proposal Analytics', desc: 'Win/loss rates, competitive benchmarking, and market demand trends' },
-                  { icon: '📄', title: 'Contract Manager', desc: 'Milestone tracking, change orders, and SLA monitoring' },
-                ].map((feature) => (
-                  <div
-                    key={feature.title}
-                    className="card p-4 opacity-60 border-dashed border-slate-700"
-                  >
-                    <div className="text-xl mb-2">{feature.icon}</div>
-                    <div className="text-xs font-semibold text-slate-300">{feature.title}</div>
-                    <div className="text-xs text-slate-500 mt-1">{feature.desc}</div>
-                  </div>
-                ))}
+            <ScrollReveal delay={0.2}>
+              <div>
+                <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                  Coming Soon <ComingSoonBadge />
+                </h3>
+                <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[
+                    { icon: '💰', title: 'Revenue Tracking', desc: 'Track platform-facilitated transactions, invoices, and payouts' },
+                    { icon: '📊', title: 'Proposal Analytics', desc: 'Win/loss rates, competitive benchmarking, and market demand trends' },
+                    { icon: '📄', title: 'Contract Manager', desc: 'Milestone tracking, change orders, and SLA monitoring' },
+                  ].map((feature) => (
+                    <StaggerItem key={feature.title}>
+                      <div className="card p-4 opacity-60 border-dashed border-slate-700">
+                        <div className="text-xl mb-2">{feature.icon}</div>
+                        <div className="text-xs font-semibold text-slate-300">{feature.title}</div>
+                        <div className="text-xs text-slate-500 mt-1">{feature.desc}</div>
+                      </div>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         )}
 
         {tab === 'listings' && (
           <div>
             {listings.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {listings.map((listing, i) => (
-                  <MarketplaceCard key={listing.id} listing={listing} index={i} />
+                  <StaggerItem key={listing.id}>
+                    <MarketplaceCard listing={listing} index={i} />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             ) : (
               <div className="text-center py-20">
                 <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/20 flex items-center justify-center mb-6">

@@ -7,6 +7,7 @@ import { clientLogger } from '@/lib/client-logger';
 import type { FeatureRequest, HelpRequest } from '@/types';
 import { AVAILABLE_MODULES } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 type Tab = 'feature' | 'help' | 'data-status';
 
@@ -329,6 +330,7 @@ function DataStatusPanel() {
   return (
     <div className="space-y-6">
       {/* Seed All Button */}
+      <ScrollReveal>
       <div className="card p-5 border border-space-600/50">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
@@ -418,68 +420,73 @@ function DataStatusPanel() {
           </div>
         )}
       </div>
+      </ScrollReveal>
 
       {/* Module Initialization Grid */}
+      <ScrollReveal delay={0.1}>
       <div>
         <h2 className="text-white font-semibold text-lg mb-4">Module Initialization Status</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {INIT_ENDPOINTS.map((endpoint) => {
             const status = getModuleStatus(endpoint.key);
             const info = freshnessData[endpoint.key];
 
             return (
-              <div
-                key={endpoint.key}
-                className={`card p-4 border rounded-lg ${getStatusColor(status)}`}
-              >
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${getStatusDot(status)}`} />
-                    <h3 className="text-white text-sm font-medium truncate">{endpoint.label}</h3>
-                  </div>
-                  <button
-                    onClick={() => handleReseedModule(endpoint)}
-                    disabled={seedingModule !== null}
-                    className={`text-xs px-2 py-0.5 rounded border transition-colors flex-shrink-0 ${
-                      seedingModule === endpoint.key
-                        ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300 animate-pulse'
-                        : 'bg-space-700/50 border-space-600/30 text-star-300 hover:bg-space-600/50 hover:text-white'
-                    } disabled:opacity-50`}
-                  >
-                    {seedingModule === endpoint.key ? '...' : 'Re-seed'}
-                  </button>
-                </div>
-
-                <div className="text-xs space-y-1">
-                  <div className="flex justify-between text-star-300">
-                    <span>Last seeded:</span>
-                    <span className={
-                      status === 'fresh' ? 'text-green-400' :
-                      status === 'stale' ? 'text-yellow-400' :
-                      'text-slate-500'
-                    }>
-                      {info?.lastRefreshed ? formatAge(info.lastRefreshed) : 'Never'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-star-300">
-                    <span>Records:</span>
-                    <span className="text-white">{info?.total || 0}</span>
-                  </div>
-                  {info && info.active > 0 && (
-                    <div className="flex justify-between text-star-300">
-                      <span>Active:</span>
-                      <span className="text-green-400">{info.active}</span>
+              <StaggerItem key={endpoint.key}>
+                <div
+                  className={`card p-4 border rounded-lg ${getStatusColor(status)}`}
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className={`w-2 h-2 rounded-full flex-shrink-0 ${getStatusDot(status)}`} />
+                      <h3 className="text-white text-sm font-medium truncate">{endpoint.label}</h3>
                     </div>
-                  )}
+                    <button
+                      onClick={() => handleReseedModule(endpoint)}
+                      disabled={seedingModule !== null}
+                      className={`text-xs px-2 py-0.5 rounded border transition-colors flex-shrink-0 ${
+                        seedingModule === endpoint.key
+                          ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300 animate-pulse'
+                          : 'bg-space-700/50 border-space-600/30 text-star-300 hover:bg-space-600/50 hover:text-white'
+                      } disabled:opacity-50`}
+                    >
+                      {seedingModule === endpoint.key ? '...' : 'Re-seed'}
+                    </button>
+                  </div>
+
+                  <div className="text-xs space-y-1">
+                    <div className="flex justify-between text-star-300">
+                      <span>Last seeded:</span>
+                      <span className={
+                        status === 'fresh' ? 'text-green-400' :
+                        status === 'stale' ? 'text-yellow-400' :
+                        'text-slate-500'
+                      }>
+                        {info?.lastRefreshed ? formatAge(info.lastRefreshed) : 'Never'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-star-300">
+                      <span>Records:</span>
+                      <span className="text-white">{info?.total || 0}</span>
+                    </div>
+                    {info && info.active > 0 && (
+                      <div className="flex justify-between text-star-300">
+                        <span>Active:</span>
+                        <span className="text-green-400">{info.active}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </StaggerItem>
             );
           })}
-        </div>
+        </StaggerContainer>
       </div>
+      </ScrollReveal>
 
       {/* Recent Seed Logs */}
       {recentLogs.length > 0 && (
+        <ScrollReveal delay={0.15}>
         <div className="card border border-space-600/50 overflow-hidden">
           <div className="px-4 py-3 border-b border-space-600/50 bg-space-700/30">
             <h2 className="text-white font-semibold text-sm">Recent Activity</h2>
@@ -523,6 +530,7 @@ function DataStatusPanel() {
             </table>
           </div>
         </div>
+        </ScrollReveal>
       )}
     </div>
   );
@@ -536,11 +544,13 @@ function FeatureRequestList({ items, onUpdate }: { items: FeatureRequest[]; onUp
   }
 
   return (
-    <div className="space-y-4">
+    <StaggerContainer className="space-y-4">
       {items.map((item) => (
-        <FeatureRequestItem key={item.id} item={item} onUpdate={onUpdate} />
+        <StaggerItem key={item.id}>
+          <FeatureRequestItem item={item} onUpdate={onUpdate} />
+        </StaggerItem>
       ))}
-    </div>
+    </StaggerContainer>
   );
 }
 
@@ -623,11 +633,13 @@ function HelpRequestList({ items, onUpdate }: { items: HelpRequest[]; onUpdate: 
   }
 
   return (
-    <div className="space-y-4">
+    <StaggerContainer className="space-y-4">
       {items.map((item) => (
-        <HelpRequestItem key={item.id} item={item} onUpdate={onUpdate} />
+        <StaggerItem key={item.id}>
+          <HelpRequestItem item={item} onUpdate={onUpdate} />
+        </StaggerItem>
       ))}
-    </div>
+    </StaggerContainer>
   );
 }
 

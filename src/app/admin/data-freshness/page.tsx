@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // TTL policies mirrored from src/lib/freshness-policies.ts for client-side status calculation
 const FRESHNESS_POLICIES: Record<string, { ttlHours: number; refreshPriority: string }> = {
@@ -353,19 +354,22 @@ export default function DataFreshnessPage() {
     <div className="min-h-screen bg-slate-950 text-white p-4 md:p-8">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Data Freshness Dashboard</h1>
-            <p className="text-slate-400 text-sm mt-1">
-              Last updated: {new Date(data.generatedAt).toLocaleString('en-US', { timeZone: 'UTC' })}
-            </p>
+        <ScrollReveal>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">Data Freshness Dashboard</h1>
+              <p className="text-slate-400 text-sm mt-1">
+                Last updated: {new Date(data.generatedAt).toLocaleString('en-US', { timeZone: 'UTC' })}
+              </p>
+            </div>
+            <Link href="/admin" className="text-cyan-400 hover:underline text-sm">
+              Back to Admin
+            </Link>
           </div>
-          <Link href="/admin" className="text-cyan-400 hover:underline text-sm">
-            Back to Admin
-          </Link>
-        </div>
+        </ScrollReveal>
 
         {/* Freshness Heatmap */}
+        <ScrollReveal delay={0.1}>
         <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -419,39 +423,47 @@ export default function DataFreshnessPage() {
                 <span className="text-slate-400">No data</span>
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
               {sortedEntries.map((entry) => (
-                <HeatmapCell key={entry.module} entry={entry} />
+                <StaggerItem key={entry.module}>
+                  <HeatmapCell entry={entry} />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Table Timestamps */}
+        <ScrollReveal delay={0.15}>
         <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
             <h2 className="text-white font-semibold text-sm">Core Data Sources</h2>
           </div>
           <div className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {Object.entries(data.tableTimestamps).map(([key, ts]) => (
-                <div key={key} className="card p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-slate-300 font-medium capitalize">{key}</span>
-                    <AgeLabel minutes={ts.ageMinutes} />
+                <StaggerItem key={key}>
+                  <div className="card p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-slate-300 font-medium capitalize">{key}</span>
+                      <AgeLabel minutes={ts.ageMinutes} />
+                    </div>
+                    <div className="text-slate-500 text-xs">
+                      {ts.lastFetchedAt || ts.lastUpdatedAt
+                        ? new Date(ts.lastFetchedAt || ts.lastUpdatedAt || '').toLocaleString('en-US', { timeZone: 'UTC' })
+                        : 'Never fetched'}
+                    </div>
                   </div>
-                  <div className="text-slate-500 text-xs">
-                    {ts.lastFetchedAt || ts.lastUpdatedAt
-                      ? new Date(ts.lastFetchedAt || ts.lastUpdatedAt || '').toLocaleString('en-US', { timeZone: 'UTC' })
-                      : 'Never fetched'}
-                  </div>
-                </div>
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Circuit Breakers */}
+        <ScrollReveal delay={0.2}>
         <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
             <h2 className="text-white font-semibold text-sm">Circuit Breakers</h2>
@@ -460,61 +472,67 @@ export default function DataFreshnessPage() {
             {data.circuitBreakers.length === 0 ? (
               <p className="text-slate-500 text-sm">No circuit breakers registered in this process.</p>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {data.circuitBreakers.map((cb) => (
-                  <div
-                    key={cb.name}
-                    className={`rounded-lg p-3 border ${
-                      cb.state === 'CLOSED' ? 'bg-slate-800/50 border-slate-700/30' :
-                      cb.state === 'HALF_OPEN' ? 'bg-yellow-900/10 border-yellow-500/20' :
-                      'bg-red-900/10 border-red-500/20'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <StatusDot status={cb.state} />
-                      <span className="text-white text-sm font-medium">{cb.name}</span>
+                  <StaggerItem key={cb.name}>
+                    <div
+                      className={`rounded-lg p-3 border ${
+                        cb.state === 'CLOSED' ? 'bg-slate-800/50 border-slate-700/30' :
+                        cb.state === 'HALF_OPEN' ? 'bg-yellow-900/10 border-yellow-500/20' :
+                        'bg-red-900/10 border-red-500/20'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <StatusDot status={cb.state} />
+                        <span className="text-white text-sm font-medium">{cb.name}</span>
+                      </div>
+                      <div className="text-slate-500 text-xs space-y-0.5">
+                        <div>State: <span className="text-slate-300">{cb.state}</span></div>
+                        <div>Failures: <span className="text-slate-300">{cb.failures}</span></div>
+                        {cb.lastFailure && (
+                          <div>Last fail: <span className="text-slate-300">{new Date(cb.lastFailure).toLocaleString('en-US', { timeZone: 'UTC' })}</span></div>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-slate-500 text-xs space-y-0.5">
-                      <div>State: <span className="text-slate-300">{cb.state}</span></div>
-                      <div>Failures: <span className="text-slate-300">{cb.failures}</span></div>
-                      {cb.lastFailure && (
-                        <div>Last fail: <span className="text-slate-300">{new Date(cb.lastFailure).toLocaleString('en-US', { timeZone: 'UTC' })}</span></div>
-                      )}
-                    </div>
-                  </div>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             )}
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Manual Refresh */}
+        <ScrollReveal delay={0.25}>
         <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
             <h2 className="text-white font-semibold text-sm">Manual Refresh</h2>
           </div>
           <div className="p-4">
-            <div className="flex flex-wrap gap-2">
+            <StaggerContainer className="flex flex-wrap gap-2">
               {refreshModules.map((mod) => (
-                <button
-                  key={mod.key}
-                  onClick={() => triggerRefresh(mod.key)}
-                  disabled={refreshing !== null}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-                    refreshing === mod.key
-                      ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300 animate-pulse'
-                      : 'bg-slate-800/50 border-slate-700/30 text-slate-300 hover:bg-slate-700/50 hover:text-white'
-                  } disabled:opacity-50`}
-                >
-                  {refreshing === mod.key ? 'Refreshing...' : mod.label}
-                </button>
+                <StaggerItem key={mod.key}>
+                  <button
+                    onClick={() => triggerRefresh(mod.key)}
+                    disabled={refreshing !== null}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                      refreshing === mod.key
+                        ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300 animate-pulse'
+                        : 'bg-slate-800/50 border-slate-700/30 text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                    } disabled:opacity-50`}
+                  >
+                    {refreshing === mod.key ? 'Refreshing...' : mod.label}
+                  </button>
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Dynamic Content Freshness */}
         {data.dynamicContent && Object.keys(data.dynamicContent).length > 0 && (
+          <ScrollReveal delay={0.3}>
           <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
             <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
               <h2 className="text-white font-semibold text-sm">Dynamic Content Modules</h2>
@@ -556,9 +574,11 @@ export default function DataFreshnessPage() {
               </div>
             </div>
           </div>
+          </ScrollReveal>
         )}
 
         {/* Recent Refresh Logs */}
+        <ScrollReveal delay={0.35}>
         <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
             <h2 className="text-white font-semibold text-sm">Recent Refresh Logs</h2>
@@ -600,6 +620,7 @@ export default function DataFreshnessPage() {
             )}
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );
