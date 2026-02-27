@@ -710,30 +710,95 @@ body::after {
 
 /* ——— Print-friendly styles ——— */
 @media print {
-  /* Hide non-essential UI elements */
-  nav, footer, .no-print,
+  /* Hide navigation, footer, ads, and interactive elements */
+  nav, footer, .no-print, .ad-slot, .install-prompt, .pull-to-refresh,
+  .keyboard-shortcuts, button[data-print-hide],
   [data-no-print],
   .fixed, .sticky,
   button:not(.print-include),
-  .toast-container {
+  .toast-container,
+  .starfield {
     display: none !important;
   }
 
-  /* Reset backgrounds for printing */
-  body, main, .min-h-screen {
+  /* Page margins */
+  @page {
+    margin: 1.5cm;
+  }
+
+  /* Reset dark background for print */
+  body, main, .min-h-screen,
+  .bg-slate-950, .bg-slate-900, .bg-slate-800 {
     background: white !important;
     color: black !important;
   }
 
+  /* Remove body pseudo-elements (background image + overlay) */
+  body::before,
+  body::after {
+    display: none !important;
+  }
+
   /* Make text readable on paper */
-  * {
+  .text-white, .text-slate-200, .text-slate-300, .text-slate-400,
+  .text-slate-100, .text-slate-50 {
     color: #1a1a1a !important;
-    background: transparent !important;
-    box-shadow: none !important;
+  }
+
+  .text-slate-500, .text-slate-600 {
+    color: #4b5563 !important;
+  }
+
+  .text-cyan-400, .text-cyan-500, .text-cyan-300 {
+    color: #0891b2 !important;
+  }
+
+  .text-emerald-400, .text-emerald-500 {
+    color: #059669 !important;
+  }
+
+  .text-amber-400, .text-amber-500, .text-amber-300 {
+    color: #d97706 !important;
+  }
+
+  .text-purple-400, .text-purple-500 {
+    color: #7c3aed !important;
+  }
+
+  .text-blue-400, .text-blue-500 {
+    color: #2563eb !important;
+  }
+
+  .text-red-400, .text-red-500 {
+    color: #dc2626 !important;
+  }
+
+  /* General text reset for anything not covered above */
+  * {
     text-shadow: none !important;
   }
 
-  /* Preserve links */
+  /* Cards should have visible borders on white paper */
+  .card, .card-elevated, .card-interactive,
+  .card-nebula, .card-cyan, .card-amber, .card-emerald,
+  [class*="bg-slate-800"] {
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: none !important;
+  }
+
+  /* Reset gradient backgrounds */
+  [class*="bg-gradient"] {
+    background: white !important;
+  }
+
+  /* Backdrop blur not needed for print */
+  .backdrop-blur-xl, .backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur-sm {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Ensure links show their URLs */
   a[href]::after {
     content: " (" attr(href) ")";
     font-size: 0.8em;
@@ -741,19 +806,21 @@ body::after {
   }
 
   a[href^="#"]::after,
-  a[href^="javascript:"]::after {
+  a[href^="javascript:"]::after,
+  a[href^="/"]::after {
     content: "";
   }
 
-  /* Cards and borders for structure */
+  /* Don't break inside cards or sections */
   .card, .card-elevated, .card-interactive {
-    border: 1px solid #ddd !important;
+    break-inside: avoid;
     page-break-inside: avoid;
   }
 
   /* Tables */
   table { border-collapse: collapse; }
   th, td { border: 1px solid #ddd !important; padding: 8px !important; }
+  th { background: #f9fafb !important; color: #111827 !important; }
 
   /* Images */
   img { max-width: 100% !important; }
@@ -761,4 +828,40 @@ body::after {
   /* Page breaks */
   h1, h2, h3 { page-break-after: avoid; }
   .page-break { page-break-before: always; }
+
+  /* Gradient text won't work on print — make it solid */
+  .gradient-text, .gradient-text-warm {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    -webkit-text-fill-color: #0891b2 !important;
+    color: #0891b2 !important;
+  }
+
+  /* Glow effects not needed */
+  .glow-border, .glow-text {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Glass panels should be plain */
+  .glass-panel {
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Custom scrollbar not needed */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Ensure print-include buttons still show their text but look clean */
+  .print-include {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    color: #1a1a1a !important;
+  }
 }

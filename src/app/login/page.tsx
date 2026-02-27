@@ -88,6 +88,7 @@ function ResendVerificationBanner() {
             placeholder="Enter your email"
             className="input text-sm flex-1"
             autoComplete="email"
+            aria-label="Email address for verification resend"
           />
           <button
             type="button"
@@ -166,7 +167,7 @@ function LoginContent() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div id="login-error" className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
+          <div id="login-error" role="alert" className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
             {error}
           </div>
         )}
@@ -186,6 +187,7 @@ function LoginContent() {
             placeholder="you@example.com"
             required
             autoComplete="email"
+            aria-required="true"
             aria-invalid={emailError ? true : error ? true : undefined}
             aria-describedby={emailError ? 'email-error' : error ? 'login-error' : undefined}
           />
@@ -216,6 +218,7 @@ function LoginContent() {
             placeholder="••••••••"
             required
             autoComplete="current-password"
+            aria-required="true"
             aria-invalid={passwordError ? true : error ? true : undefined}
             aria-describedby={passwordError ? 'password-error' : error ? 'login-error' : undefined}
           />

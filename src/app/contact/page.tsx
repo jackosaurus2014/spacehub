@@ -203,7 +203,7 @@ export default function ContactPage() {
             <div className="card p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
                 {status === 'error' && (
-                  <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
+                  <div role="alert" className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
                     {errorMessage}
                   </div>
                 )}
@@ -221,6 +221,7 @@ export default function ContactPage() {
                     onBlur={() => handleBlur('name')}
                     className={`input ${errors.name ? 'border-red-500' : ''}`}
                     placeholder="Your name"
+                    aria-required="true"
                     aria-invalid={errors.name ? true : undefined}
                     aria-describedby={errors.name ? 'name-error' : undefined}
                   />
@@ -243,6 +244,7 @@ export default function ContactPage() {
                     onBlur={() => handleBlur('email')}
                     className={`input ${errors.email ? 'border-red-500' : ''}`}
                     placeholder="you@example.com"
+                    aria-required="true"
                     aria-invalid={errors.email ? true : undefined}
                     aria-describedby={errors.email ? 'email-error' : undefined}
                   />
@@ -262,6 +264,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     onBlur={() => handleBlur('subject')}
                     className={`input ${errors.subject ? 'border-red-500' : ''}`}
+                    aria-required="true"
                     aria-invalid={errors.subject ? true : undefined}
                     aria-describedby={errors.subject ? 'subject-error' : undefined}
                   >
@@ -289,6 +292,7 @@ export default function ContactPage() {
                     rows={6}
                     className={`input resize-none ${errors.message ? 'border-red-500' : ''}`}
                     placeholder="How can we help you?"
+                    aria-required="true"
                     aria-invalid={errors.message ? true : undefined}
                     aria-describedby={errors.message ? 'message-error' : undefined}
                   />

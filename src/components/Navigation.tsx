@@ -539,7 +539,7 @@ export default function Navigation() {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="lg:hidden fixed inset-0 top-[72px] z-50 animate-fade-in">
-            <div className="absolute inset-0 bg-black/50" onClick={() => setIsMenuOpen(false)} />
+            <div className="absolute inset-0 bg-black/50" onClick={() => setIsMenuOpen(false)} role="presentation" aria-hidden="true" />
             <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] backdrop-blur-xl border-l border-cyan-400/30 overflow-y-auto animate-slide-in-right" style={{ background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)', boxShadow: '-8px 0 16px -4px rgba(0, 0, 0, 0.4), -20px 0 40px -10px rgba(0, 0, 0, 0.5)' }}>
               <div className="p-6 space-y-6">
                 {/* Explore Section */}

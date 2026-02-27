@@ -13,6 +13,7 @@ export default function LandingHero() {
           muted
           loop
           playsInline
+          aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover"
           poster="/SpaceNexus%20background.jpg"
         >
