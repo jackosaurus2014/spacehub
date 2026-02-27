@@ -10,6 +10,7 @@ import ITARWarningBanner from '@/components/community/ITARWarningBanner';
 import ThreadTags from '@/components/community/ThreadTags';
 import { toast } from '@/lib/toast';
 import { FORUM_TAGS } from '@/lib/validations';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 interface CategoryInfo {
   id: string;
@@ -141,16 +142,11 @@ export default function ForumCategoryPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-slate-400 mb-4 overflow-x-auto" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
-          <span className="text-slate-600">/</span>
-          <Link href="/community" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Community</Link>
-          <span className="text-slate-600">/</span>
-          <Link href="/community/forums" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Forums</Link>
-          <span className="text-slate-600">/</span>
-          <span className="text-slate-300 whitespace-nowrap">{category?.name || slug}</span>
-        </nav>
+        <Breadcrumbs items={[
+          { label: 'Community', href: '/community' },
+          { label: 'Forums', href: '/community/forums' },
+          { label: category?.name || slug },
+        ]} />
 
         <div className="flex items-center justify-between mb-6">
           <div>

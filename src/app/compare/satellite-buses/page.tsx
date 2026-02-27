@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 // ────────────────────────────────────────
 // Types
@@ -720,14 +721,10 @@ export default function SatelliteBusComparisonPage() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-        <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
-        <span>/</span>
-        <Link href="/compare" className="hover:text-slate-300 transition-colors">Compare</Link>
-        <span>/</span>
-        <span className="text-slate-400">Satellite Buses</span>
-      </nav>
+      <Breadcrumbs items={[
+        { label: 'Compare', href: '/compare' },
+        { label: 'Satellite Buses' },
+      ]} />
 
       <AnimatedPageHeader
         title="Satellite Bus Comparison"

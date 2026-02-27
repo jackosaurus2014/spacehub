@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import sanitizeHtml from 'sanitize-html';
 import { getBlogPost, BLOG_POSTS, BLOG_CATEGORIES } from '@/lib/blog-content';
 import FAQSchema from '@/components/seo/FAQSchema';
+import SocialShare from '@/components/ui/SocialShare';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 const SAFE_HTML_CONFIG: sanitizeHtml.IOptions = {
   allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'blockquote', 'code', 'pre', 'img', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
@@ -150,18 +152,12 @@ export default function BlogPostPage({ params }: Props) {
       />
 
       <article className="container mx-auto px-4 max-w-3xl">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-slate-500 pt-8 mb-8">
-          <Link href="/" className="hover:text-slate-300 transition-colors">
-            Home
-          </Link>
-          <span>/</span>
-          <Link href="/blog" className="hover:text-slate-300 transition-colors">
-            Blog
-          </Link>
-          <span>/</span>
-          <span className="text-slate-400 truncate">{post.title}</span>
-        </nav>
+        <div className="pt-8">
+          <Breadcrumbs items={[
+            { label: 'Blog', href: '/blog' },
+            { label: post.title },
+          ]} />
+        </div>
 
         {/* Header */}
         <header className="mb-10">
@@ -175,12 +171,19 @@ export default function BlogPostPage({ params }: Props) {
             {post.title}
           </h1>
           <p className="text-lg text-slate-400 leading-relaxed mb-6">{post.excerpt}</p>
-          <div className="flex items-center gap-4 text-sm text-slate-500 pb-6 border-b border-slate-700/50">
-            <span>By {post.author}</span>
-            <span>{formatDate(post.publishedAt)}</span>
-            {post.updatedAt && (
-              <span className="text-slate-600">Updated {formatDate(post.updatedAt)}</span>
-            )}
+          <div className="flex items-center justify-between gap-4 text-sm text-slate-500 pb-6 border-b border-slate-700/50">
+            <div className="flex items-center gap-4">
+              <span>By {post.author}</span>
+              <span>{formatDate(post.publishedAt)}</span>
+              {post.updatedAt && (
+                <span className="text-slate-600">Updated {formatDate(post.updatedAt)}</span>
+              )}
+            </div>
+            <SocialShare
+              title={post.title}
+              url={`https://spacenexus.us/blog/${post.slug}`}
+              description={post.excerpt}
+            />
           </div>
         </header>
 

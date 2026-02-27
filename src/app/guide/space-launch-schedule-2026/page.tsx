@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import GuideNavigation from '@/components/guide/GuideNavigation';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 export const revalidate = 3600;
 
@@ -91,16 +92,12 @@ export default function SpaceLaunchSchedule2026Page() {
   return (
     <div className="min-h-screen bg-space-900">
       <div className="container mx-auto px-4 pb-16">
-        {/* Breadcrumbs */}
-        <nav className="pt-6 mb-4" aria-label="Breadcrumb">
-          <ol className="flex items-center gap-2 text-sm text-slate-400">
-            <li><Link href="/" className="hover:text-cyan-400 transition-colors">Home</Link></li>
-            <li>/</li>
-            <li><Link href="/guide/space-industry" className="hover:text-cyan-400 transition-colors">Guides</Link></li>
-            <li>/</li>
-            <li className="text-cyan-400">2026 Launch Schedule</li>
-          </ol>
-        </nav>
+        <div className="pt-6">
+          <Breadcrumbs items={[
+            { label: 'Guides', href: '/guide/space-industry' },
+            { label: 'Launch Schedule 2026' },
+          ]} />
+        </div>
 
         <div className="max-w-4xl mx-auto">
           {/* Header */}

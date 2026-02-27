@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/lib/toast';
 import { getCategoryLabel, getCategoryIcon, formatPrice } from '@/lib/marketplace-types';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 interface Message {
@@ -168,16 +169,14 @@ export default function CopilotPage() {
         { name: 'Marketplace', href: '/marketplace' },
         { name: 'AI Copilot' },
       ]} />
+      <Breadcrumbs items={[
+        { label: 'Marketplace', href: '/marketplace' },
+        { label: 'AI Copilot' },
+      ]} />
+
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <Link href="/marketplace" className="text-slate-400 hover:text-cyan-400 transition-colors text-sm">
-              Marketplace
-            </Link>
-            <span className="text-slate-600">/</span>
-            <span className="text-sm text-slate-300">AI Copilot</span>
-          </div>
           <h1 className="text-2xl font-bold text-white mt-1 flex items-center gap-2">
             <span className="text-3xl">🤖</span> Procurement Copilot
           </h1>

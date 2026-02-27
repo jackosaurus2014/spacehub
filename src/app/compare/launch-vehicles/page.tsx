@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 // ────────────────────────────────────────
 // Types
@@ -156,7 +157,7 @@ const VEHICLES: LaunchVehicle[] = [
     status: 'Operational',
     firstFlight: '2024-01-08',
     payloadLeoKg: 27200,
-    payloadGtoKg: 12350,
+    payloadGtoKg: 14400,
     payloadSsoKg: null,
     costMillions: 110,
     costPerKgLeo: 4044,
@@ -169,6 +170,28 @@ const VEHICLES: LaunchVehicle[] = [
     totalLaunches: 3,
     engines: '2x BE-4 + 1-2x RL-10C',
     propellant: 'CH4 / LOX + LH2 / LOX',
+  },
+  {
+    id: 'atlas-v',
+    name: 'Atlas V',
+    manufacturer: 'ULA',
+    country: 'United States',
+    status: 'Operational',
+    firstFlight: '2002-08-21',
+    payloadLeoKg: 18850,
+    payloadGtoKg: 8900,
+    payloadSsoKg: 8210,
+    costMillions: 110,
+    costPerKgLeo: 5836,
+    reusable: false,
+    maxReflights: null,
+    heightM: 58.3,
+    diameterM: 3.81,
+    stages: 2,
+    successRate: 99.2,
+    totalLaunches: 99,
+    engines: '1x RD-180 + 0-5x AJ-60A SRBs + 1x RL-10C',
+    propellant: 'RP-1 / LOX + HTPB (SRBs) + LH2/LOX',
   },
   {
     id: 'ariane-6',
@@ -246,8 +269,8 @@ const VEHICLES: LaunchVehicle[] = [
     payloadLeoKg: 13000,
     payloadGtoKg: 1500,
     payloadSsoKg: null,
-    costMillions: 50,
-    costPerKgLeo: 3846,
+    costMillions: 55,
+    costPerKgLeo: 4231,
     reusable: true,
     maxReflights: 20,
     heightM: 43,
@@ -290,8 +313,8 @@ const VEHICLES: LaunchVehicle[] = [
     payloadLeoKg: 10000,
     payloadGtoKg: 4000,
     payloadSsoKg: null,
-    costMillions: 47,
-    costPerKgLeo: 4700,
+    costMillions: 50,
+    costPerKgLeo: 5000,
     reusable: false,
     maxReflights: null,
     heightM: 43.4,
@@ -725,6 +748,7 @@ function VehicleSelector({
             { label: 'Reusable Rockets', ids: ['falcon-9', 'starship', 'new-glenn', 'neutron'] },
             { label: 'Small Launch', ids: ['electron', 'pslv', 'new-shepard'] },
             { label: 'International', ids: ['falcon-9', 'ariane-6', 'h3', 'long-march-5'] },
+            { label: 'ULA Transition', ids: ['atlas-v', 'vulcan-centaur', 'falcon-9'] },
             { label: 'Budget-Friendly', ids: ['electron', 'pslv', 'falcon-9', 'h3'] },
           ].map((preset) => (
             <button
@@ -743,6 +767,158 @@ function VehicleSelector({
             </button>
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────
+// Visual Bar Chart Components
+// ────────────────────────────────────────
+
+const VEHICLE_COLORS = ['#06b6d4', '#a855f7', '#f59e0b', '#10b981'];
+
+function PayloadChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
+  const allValues = vehicles.flatMap((v) => [v.payloadLeoKg, v.payloadGtoKg].filter((n): n is number => n !== null && n > 0));
+  const maxVal = Math.max(...allValues, 1);
+  const fmtPayload = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}t` : `${n} kg`;
+  const bars: [string, (v: LaunchVehicle) => number | null][] = [
+    ['LEO', (v) => v.payloadLeoKg > 0 ? v.payloadLeoKg : null],
+    ['GTO', (v) => v.payloadGtoKg],
+  ];
+
+  return (
+    <div className="card p-5">
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="text-sm font-semibold text-white">Payload Capacity Comparison</h3>
+        <span className="text-[10px] text-star-300">Higher is better</span>
+      </div>
+      <div className="flex gap-3 text-[10px] text-star-300 mb-4">
+        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm opacity-90" style={{ backgroundColor: '#06b6d4' }} /> LEO</span>
+        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm opacity-60" style={{ backgroundColor: '#06b6d4' }} /> GTO</span>
+      </div>
+      <div className="space-y-4">
+        {vehicles.map((v, vi) => (
+          <div key={v.id}>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs font-medium text-white truncate mr-2">{v.name}</span>
+              <span className="text-[10px] text-star-300 shrink-0">{v.manufacturer}</span>
+            </div>
+            {bars.map(([label, getVal], bi) => {
+              const val = getVal(v);
+              const pct = val && val > 0 ? (val / maxVal) * 100 : 0;
+              const color = VEHICLE_COLORS[vi % VEHICLE_COLORS.length];
+              return (
+                <div key={bi} className="flex items-center gap-2 mb-1">
+                  <span className="w-7 text-[10px] text-star-300 text-right shrink-0">{label}</span>
+                  <div className="flex-1 h-5 bg-slate-800/60 rounded overflow-hidden relative">
+                    <div
+                      className="h-full rounded transition-all duration-700 ease-out"
+                      style={{ width: `${Math.max(pct, 0.5)}%`, backgroundColor: color, opacity: bi === 0 ? 1 : 0.55 }}
+                    />
+                    {val && val > 0 ? (
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-white font-medium">{fmtPayload(val)}</span>
+                    ) : (
+                      <span className="absolute left-10 top-1/2 -translate-y-1/2 text-[10px] text-star-300">N/A</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CostEfficiencyChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
+  const validVehicles = vehicles.filter((v) => v.costPerKgLeo !== null && v.costPerKgLeo > 0);
+  const maxCpk = Math.max(...validVehicles.map((v) => v.costPerKgLeo!), 1);
+  const minCpk = validVehicles.length > 0 ? Math.min(...validVehicles.map((v) => v.costPerKgLeo!)) : 0;
+
+  return (
+    <div className="card p-5">
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="text-sm font-semibold text-white">Cost Efficiency ($/kg to LEO)</h3>
+        <span className="text-[10px] text-star-300">Lower is better</span>
+      </div>
+      <p className="text-[10px] text-star-300 mb-4">Cost per kilogram delivered to Low Earth Orbit</p>
+      <div className="space-y-3">
+        {[...vehicles]
+          .sort((a, b) => (a.costPerKgLeo ?? Infinity) - (b.costPerKgLeo ?? Infinity))
+          .map((v) => {
+            const cpk = v.costPerKgLeo;
+            const cost = v.costMillions;
+            const pct = cpk && cpk > 0 ? (cpk / maxCpk) * 100 : 0;
+            const isBest = cpk === minCpk && minCpk > 0;
+            const barColor = isBest ? '#10b981' : cpk && cpk <= 3000 ? '#06b6d4' : cpk && cpk <= 5000 ? '#f59e0b' : '#ef4444';
+            return (
+              <div key={v.id}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-medium text-white truncate mr-2">{v.name}</span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {cost !== null && <span className="text-[10px] text-star-300">{formatCost(cost)}/launch</span>}
+                    {isBest && <span className="text-[9px] px-1.5 py-0.5 bg-green-900/40 text-green-400 border border-green-500/30 rounded font-medium">BEST</span>}
+                  </div>
+                </div>
+                <div className="flex-1 h-6 bg-slate-800/60 rounded overflow-hidden relative">
+                  {cpk && cpk > 0 ? (
+                    <>
+                      <div className="h-full rounded transition-all duration-700 ease-out" style={{ width: `${Math.max(pct, 2)}%`, backgroundColor: barColor }} />
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-white font-bold">${cpk.toLocaleString()}/kg</span>
+                    </>
+                  ) : (
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-star-300">Cost data unavailable</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+      </div>
+      <div className="mt-4 pt-3 border-t border-slate-700/50 flex flex-wrap items-center gap-3 text-[10px] text-star-300">
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-green-500" /> Under $1K/kg</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-cyan-500" /> $1K-$3K/kg</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-amber-500" /> $3K-$5K/kg</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-red-500" /> Over $5K/kg</span>
+      </div>
+    </div>
+  );
+}
+
+function SuccessRateChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
+  return (
+    <div className="card p-5">
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="text-sm font-semibold text-white">Reliability & Track Record</h3>
+        <span className="text-[10px] text-star-300">Higher is better</span>
+      </div>
+      <p className="text-[10px] text-star-300 mb-4">Success rate with total launch count</p>
+      <div className="space-y-3">
+        {vehicles.map((v) => {
+          const rate = v.totalLaunches > 0 ? v.successRate : null;
+          const barColor = rate !== null
+            ? rate >= 97 ? '#10b981' : rate >= 90 ? '#f59e0b' : rate >= 75 ? '#f97316' : '#ef4444'
+            : '#475569';
+          return (
+            <div key={v.id}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-medium text-white truncate mr-2">{v.name}</span>
+                <span className="text-[10px] text-star-300 shrink-0">{v.totalLaunches > 0 ? `${v.totalLaunches} launches` : 'No launches yet'}</span>
+              </div>
+              <div className="flex-1 h-5 bg-slate-800/60 rounded overflow-hidden relative">
+                {rate !== null ? (
+                  <>
+                    <div className="h-full rounded transition-all duration-700 ease-out" style={{ width: `${rate}%`, backgroundColor: barColor }} />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-white font-bold">{rate.toFixed(1)}%</span>
+                  </>
+                ) : (
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-star-300">No flight data</span>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -868,6 +1044,7 @@ function ComparisonTable({ vehicles }: { vehicles: LaunchVehicle[] }) {
 
 export default function LaunchVehicleComparePage() {
   const [selected, setSelected] = useState<LaunchVehicle[]>([]);
+  const [viewMode, setViewMode] = useState<'table' | 'charts'>('table');
 
   const handleAdd = useCallback((v: LaunchVehicle) => {
     setSelected((prev) => {
@@ -883,18 +1060,10 @@ export default function LaunchVehicleComparePage() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-        <Link href="/" className="hover:text-slate-300 transition-colors">
-          Home
-        </Link>
-        <span>/</span>
-        <Link href="/launch-vehicles" className="hover:text-slate-300 transition-colors">
-          Launch Vehicles
-        </Link>
-        <span>/</span>
-        <span className="text-slate-400">Compare</span>
-      </nav>
+      <Breadcrumbs items={[
+        { label: 'Compare', href: '/compare' },
+        { label: 'Launch Vehicles' },
+      ]} />
 
       <AnimatedPageHeader
         title="Launch Vehicle Comparison"
@@ -906,7 +1075,7 @@ export default function LaunchVehicleComparePage() {
       {/* Vehicle Selector */}
       <VehicleSelector selected={selected} onAdd={handleAdd} onRemove={handleRemove} />
 
-      {/* Comparison Table or Empty State */}
+      {/* Comparison content or empty state */}
       {selected.length < 2 ? (
         <div className="text-center py-20 card">
           <div className="text-6xl mb-4">&#128640;</div>
@@ -920,7 +1089,43 @@ export default function LaunchVehicleComparePage() {
           </p>
         </div>
       ) : (
-        <ComparisonTable vehicles={selected} />
+        <>
+          {/* View mode toggle */}
+          <div className="flex items-center gap-1 mb-4 bg-slate-800/50 border border-slate-700 rounded-lg p-1 w-fit">
+            <button
+              onClick={() => setViewMode('table')}
+              className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
+                viewMode === 'table'
+                  ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                  : 'text-star-300 hover:text-white border border-transparent'
+              }`}
+            >
+              Table View
+            </button>
+            <button
+              onClick={() => setViewMode('charts')}
+              className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
+                viewMode === 'charts'
+                  ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                  : 'text-star-300 hover:text-white border border-transparent'
+              }`}
+            >
+              Visual Charts
+            </button>
+          </div>
+
+          {viewMode === 'table' ? (
+            <ComparisonTable vehicles={selected} />
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <PayloadChart vehicles={selected} />
+              <CostEfficiencyChart vehicles={selected} />
+              <div className="lg:col-span-2">
+                <SuccessRateChart vehicles={selected} />
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Quick Stats Footer */}

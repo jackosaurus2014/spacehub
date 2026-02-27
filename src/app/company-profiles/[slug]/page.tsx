@@ -17,6 +17,7 @@ import LeadCaptureForm from '@/components/company/LeadCaptureForm';
 import SimilarCompanies from '@/components/company/SimilarCompanies';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ShareButton from '@/components/ui/ShareButton';
+import SocialShare from '@/components/ui/SocialShare';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -1472,6 +1473,10 @@ export default function CompanyProfileDetailPage() {
                     <SponsorBadge tier={company.sponsorTier as 'verified' | 'premium'} />
                   )}
                   <ShareButton title={`${company.name} - SpaceNexus Company Profile`} />
+                  <SocialShare
+                    title={`${company.name} - SpaceNexus Company Profile`}
+                    description={company.description || undefined}
+                  />
                   <button
                     onClick={() => window.print()}
                     data-print-hide

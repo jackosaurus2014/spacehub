@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import SocialShare from '@/components/ui/SocialShare';
 
 interface DigestItem {
   headline: string;
@@ -311,12 +312,22 @@ export default function NewsDigestPage() {
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <AnimatedPageHeader
-          title="Daily Space Digest"
-          subtitle="Curated headlines from across the space industry, grouped by category and rated by significance."
-          icon={<span className="text-3xl">{'\uD83D\uDCD1'}</span>}
-          accentColor="cyan"
-        />
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <AnimatedPageHeader
+              title="Daily Space Digest"
+              subtitle="Curated headlines from across the space industry, grouped by category and rated by significance."
+              icon={<span className="text-3xl">{'\uD83D\uDCD1'}</span>}
+              accentColor="cyan"
+            />
+          </div>
+          <div className="mt-2 flex-shrink-0">
+            <SocialShare
+              title="Daily Space Digest - SpaceNexus"
+              description="Curated headlines from across the space industry, grouped by category and rated by significance."
+            />
+          </div>
+        </div>
 
         {/* Filters */}
         <ScrollReveal delay={0.1}>

@@ -12,6 +12,7 @@ import { clientLogger } from '@/lib/client-logger';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
 import ExportButton from '@/components/ui/ExportButton';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -136,6 +137,11 @@ function SearchContent() {
         { name: 'Search' },
       ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Breadcrumbs items={[
+          { label: 'Marketplace', href: '/marketplace' },
+          { label: 'Search' },
+        ]} />
+
         <AnimatedPageHeader
           title="Marketplace Search"
           subtitle="Find space services, components, and providers"
