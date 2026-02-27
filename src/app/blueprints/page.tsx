@@ -9,6 +9,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import { clientLogger } from '@/lib/client-logger';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ────────────────────────────────────────
 // Types
@@ -847,15 +848,13 @@ function BlueprintsContent() {
 
       {/* Empty State */}
       {!loading && blueprints.length === 0 && (
-        <div className="text-center py-16">
-          <div className="text-6xl mb-4">--</div>
-          <h3 className="text-lg font-medium text-white mb-2 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">No blueprints found</h3>
-          <p className="text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
-            {searchTerm || selectedManufacturer || selectedStatus
-              ? 'Try adjusting your filters'
-              : 'Initialize the database to get started'}
-          </p>
-        </div>
+        <EmptyState
+          icon={<svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>}
+          title="No blueprints found"
+          description={searchTerm || selectedManufacturer || selectedStatus
+            ? 'Try adjusting your filters to find blueprints.'
+            : 'Initialize the database to get started.'}
+        />
       )}
 
       {/* Blueprint Grid */}

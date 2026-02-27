@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ────────────────────────────────────────
 // Types
@@ -633,15 +634,19 @@ export default function ContractAwardsPage() {
         <ScrollReveal delay={0.2}>
           <div className="space-y-4 mb-12">
             {filteredAwards.length === 0 ? (
-              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-12 text-center">
-                <p className="text-slate-400 text-lg">No contract awards match your filters.</p>
-                <button
-                  onClick={() => { setAgencyFilter('All'); setCategoryFilter('All'); setYearFilter('All'); }}
-                  className="mt-3 text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors"
-                >
-                  Reset all filters
-                </button>
-              </div>
+              <EmptyState
+                icon={<svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>}
+                title="No awards found"
+                description="No contract awards match your current filters. Try adjusting your criteria."
+                action={
+                  <button
+                    onClick={() => { setAgencyFilter('All'); setCategoryFilter('All'); setYearFilter('All'); }}
+                    className="text-sm text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors"
+                  >
+                    Reset all filters
+                  </button>
+                }
+              />
             ) : (
               filteredAwards.map((award, idx) => {
                 const isExpanded = expandedIndex === idx;

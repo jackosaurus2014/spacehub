@@ -5,6 +5,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ────────────────────────────────────────
 // Types
@@ -1021,13 +1022,11 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
       </div>
 
       {filtered.length === 0 && (
-        <div className="card p-12 text-center">
-          <svg className="w-16 h-16 mx-auto mb-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-          </svg>
-          <h2 className="text-xl font-semibold text-white mb-2">No Organizations Found</h2>
-          <p className="text-slate-400">No patent holders match your current filters.</p>
-        </div>
+        <EmptyState
+          icon={<svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>}
+          title="No patents found"
+          description="No patent holders match your current filters. Try adjusting your search criteria."
+        />
       )}
     </div>
   );

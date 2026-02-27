@@ -13,6 +13,7 @@ import SupplyChainNode from '@/components/supply-chain/SupplyChainNode';
 import ShortageAlert from '@/components/supply-chain/ShortageAlert';
 import DependencyChart from '@/components/supply-chain/DependencyChart';
 import { clientLogger } from '@/lib/client-logger';
+import EmptyState from '@/components/ui/EmptyState';
 import {
   SupplyChainCompany,
   SupplyRelationship,
@@ -419,9 +420,12 @@ function SupplyChainContent() {
                 </StaggerItem>
               ))}
               {companies.length === 0 && (
-                <div className="col-span-full text-center py-12">
-                  <span className="text-5xl block mb-4">🏭</span>
-                  <p className="text-slate-400">No companies found matching filters.</p>
+                <div className="col-span-full">
+                  <EmptyState
+                    icon={<svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>}
+                    title="No suppliers found"
+                    description="No companies match your current filters. Try adjusting your search criteria."
+                  />
                 </div>
               )}
             </StaggerContainer>

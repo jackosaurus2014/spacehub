@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ────────────────────────────────────────
 // Types
@@ -684,18 +685,22 @@ export default function IndustryTrendsPage() {
 
         {/* Empty State */}
         {filteredTrends.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-slate-400 text-lg">No trends match the selected filters.</p>
-            <button
-              onClick={() => {
-                setCategoryFilter('all');
-                setImpactFilter('all');
-              }}
-              className="mt-4 text-cyan-400 hover:text-cyan-300 text-sm underline underline-offset-2"
-            >
-              Clear all filters
-            </button>
-          </div>
+          <EmptyState
+            icon={<svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>}
+            title="No trends found"
+            description="No trends match the selected filters. Try adjusting your criteria."
+            action={
+              <button
+                onClick={() => {
+                  setCategoryFilter('all');
+                  setImpactFilter('all');
+                }}
+                className="text-sm text-cyan-400 hover:text-cyan-300 underline underline-offset-2"
+              >
+                Clear all filters
+              </button>
+            }
+          />
         )}
 
         {/* Related Pages */}

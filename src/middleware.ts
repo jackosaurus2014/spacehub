@@ -25,6 +25,9 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   if (pathname.startsWith('/api/auth/register')) {
     return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 req/hour
   }
+  if (pathname.startsWith('/api/auth/resend-verification')) {
+    return { maxRequests: 3, windowMs: 60 * 60 * 1000 }; // 3 req/hour
+  }
   if (pathname.startsWith('/api/newsletter')) {
     return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 req/hour
   }
@@ -36,6 +39,10 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   }
   if (pathname.startsWith('/api/auth/verify-email')) {
     return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 req/hour
+  }
+  // Contact form rate limit
+  if (pathname.startsWith('/api/contact')) {
+    return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 per hour
   }
   // Community rate limits
   if (pathname.startsWith('/api/community/forums')) {
@@ -53,11 +60,15 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   }
   // Report generation — expensive AI call
   if (pathname.startsWith('/api/reports/generate')) {
-    return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 per hour
+    return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 per hour
   }
   // Marketplace copilot — expensive AI call
   if (pathname.startsWith('/api/marketplace/copilot')) {
-    return { maxRequests: 20, windowMs: 60 * 60 * 1000 }; // 20 per hour
+    return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 per hour
+  }
+  // Company research — expensive AI call
+  if (pathname.startsWith('/api/company-research')) {
+    return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 per hour
   }
   // AI-powered endpoints (expensive external API calls)
   if (
@@ -132,7 +143,9 @@ function checkRateLimit(
   // Group routes into buckets so sub-paths share a single counter
   // (e.g., /api/auth/register and /api/auth/register/resend share one limit)
   let routeKey: string;
-  if (pathname.startsWith('/api/auth/register')) {
+  if (pathname.startsWith('/api/auth/resend-verification')) {
+    routeKey = 'auth-resend-verification';
+  } else if (pathname.startsWith('/api/auth/register')) {
     routeKey = 'auth-register';
   } else if (pathname.startsWith('/api/newsletter')) {
     routeKey = 'newsletter';
@@ -142,6 +155,8 @@ function checkRateLimit(
     routeKey = 'auth-reset-password';
   } else if (pathname.startsWith('/api/auth/verify-email')) {
     routeKey = 'auth-verify-email';
+  } else if (pathname.startsWith('/api/contact')) {
+    routeKey = 'contact';
   } else if (pathname.startsWith('/api/community/forums')) {
     routeKey = 'community-forums';
   } else if (pathname.startsWith('/api/community/reports')) {
@@ -154,6 +169,8 @@ function checkRateLimit(
     routeKey = 'reports-generate';
   } else if (pathname.startsWith('/api/marketplace/copilot')) {
     routeKey = 'marketplace-copilot';
+  } else if (pathname.startsWith('/api/company-research')) {
+    routeKey = 'company-research';
   } else if (
     pathname.startsWith('/api/search/ai-intent') ||
     pathname.startsWith('/api/opportunities/moonshots') ||

@@ -33,6 +33,10 @@ const CompetitiveComparison = nextDynamic(() => import('@/components/landing/Com
   ssr: false,
   loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse h-96 bg-slate-800 rounded-xl"></div></div></div>,
 });
+const SocialProof = nextDynamic(() => import('@/components/landing/SocialProof'), {
+  ssr: false,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4 max-w-6xl"><div className="animate-pulse space-y-6"><div className="h-8 bg-slate-800 rounded w-1/3 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">{[1,2,3].map(i => <div key={i} className="h-48 bg-slate-800 rounded-xl"></div>)}</div></div></div></div>,
+});
 const HowItWorks = nextDynamic(() => import('@/components/landing/HowItWorks'), {
   ssr: false,
   loading: () => <div className="py-16"><div className="container mx-auto px-4 max-w-5xl"><div className="animate-pulse space-y-6"><div className="h-8 bg-slate-800 rounded w-1/4 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">{[1,2,3].map(i => <div key={i} className="h-40 bg-slate-800 rounded-xl"></div>)}</div></div></div></div>,
@@ -249,6 +253,9 @@ export default async function HomePage() {
 
       {/* Trust Signals & Data Sources */}
       <TrustSignals />
+
+      {/* Social Proof — Testimonials & Stats */}
+      <SocialProof />
 
       {/* Live Stats Section */}
       <section className="py-8 relative z-10">

@@ -11,6 +11,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import AdSlot from '@/components/ads/AdSlot';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ────────────────────────────────────────
 // Types
@@ -1542,11 +1543,11 @@ function StartupTrackerContent() {
 
         {/* Startup Cards */}
         {filteredStartups.length === 0 ? (
-          <div className="card p-12 text-center">
-            <span className="text-5xl block mb-4">{'\u{1F50D}'}</span>
-            <h3 className="text-xl font-semibold text-white mb-2">No Results</h3>
-            <p className="text-slate-400">No startups match your current filters. Try adjusting your criteria.</p>
-          </div>
+          <EmptyState
+            icon={<svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>}
+            title="No startups found"
+            description="No startups match your current filters. Try adjusting your search criteria or browse all startups."
+          />
         ) : (
           <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
             {filteredStartups.map((startup) => (

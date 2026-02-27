@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import AdSlot from '@/components/ads/AdSlot';
 import PremiumGate from '@/components/PremiumGate';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ────────────────────────────────────────
 // Types
@@ -726,15 +727,11 @@ function DealsPageContent() {
               <LoadingSpinner />
             </div>
           ) : deals.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="text-5xl mb-4">
-                <svg className="w-16 h-16 mx-auto text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-2">No deals found</h3>
-              <p className="text-slate-400 mb-4">Try adjusting your search or filters</p>
-              {hasFilters && (
+            <EmptyState
+              icon={<svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>}
+              title="No deals found"
+              description="Try adjusting your search or filters to find space industry deals."
+              action={hasFilters ? (
                 <button
                   onClick={() => {
                     setActiveTab('');
@@ -748,8 +745,8 @@ function DealsPageContent() {
                 >
                   Clear all filters
                 </button>
-              )}
-            </div>
+              ) : undefined}
+            />
           ) : (
             <div className="space-y-3">
               <AnimatePresence mode="popLayout">
