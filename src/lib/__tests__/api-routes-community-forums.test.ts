@@ -22,6 +22,8 @@ jest.mock('@/lib/db', () => ({
     forumCategory: {
       findMany: jest.fn(),
       findUnique: jest.fn(),
+      count: jest.fn().mockResolvedValue(8),
+      upsert: jest.fn(),
     },
     forumThread: {
       findMany: jest.fn(),
