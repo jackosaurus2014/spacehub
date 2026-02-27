@@ -404,7 +404,7 @@ export default function DeveloperPortalPage() {
       {/* Hero Section */}
       <div className="relative overflow-hidden border-b border-slate-800">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-blue-500/10" />
-        <div className="max-w-6xl mx-auto px-4 py-16 relative">
+        <div className="max-w-7xl mx-auto px-4 py-16 relative">
           <ScrollReveal>
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -453,7 +453,7 @@ export default function DeveloperPortalPage() {
 
       {/* Navigation Tabs */}
       <div className="border-b border-slate-800 sticky top-0 z-10 bg-slate-950/95 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="flex gap-1">
             {(['overview', 'keys', 'usage', 'docs'] as const).map((tab) => (
               <button
@@ -473,7 +473,7 @@ export default function DeveloperPortalPage() {
       </div>
 
       {/* Tab Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* OVERVIEW TAB */}
         {activeTab === 'overview' && (
           <div className="space-y-12">

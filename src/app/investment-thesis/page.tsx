@@ -386,7 +386,7 @@ export default function InvestmentThesisPage() {
           { name: 'Home', href: '/' },
           { name: 'Investment Thesis' },
         ]} />
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <AnimatedPageHeader
           title="AI Investment Thesis Generator"

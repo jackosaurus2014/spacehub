@@ -137,7 +137,7 @@ export default function ReadingListPage() {
   if (status === 'loading' || loading) {
     return (
       <main className="min-h-screen bg-space-950 py-8 px-4">
-        <div className="container mx-auto max-w-4xl">
+        <div className="container mx-auto max-w-7xl">
           <AnimatedPageHeader
             title="Reading List"
             subtitle="Your saved articles"
@@ -174,7 +174,7 @@ export default function ReadingListPage() {
   if (!session?.user?.id) {
     return (
       <main className="min-h-screen bg-space-950 py-8 px-4">
-        <div className="container mx-auto max-w-4xl">
+        <div className="container mx-auto max-w-7xl">
           <AnimatedPageHeader
             title="Reading List"
             subtitle="Save articles to read later"
@@ -235,7 +235,7 @@ export default function ReadingListPage() {
 
   return (
     <main className="min-h-screen bg-space-950 py-8 px-4">
-      <div className="container mx-auto max-w-4xl">
+      <div className="container mx-auto max-w-7xl">
         <AnimatedPageHeader
           title="Reading List"
           subtitle={`${items.length} saved article${items.length !== 1 ? 's' : ''}${unreadCount > 0 ? ` \u00B7 ${unreadCount} unread` : ''}`}

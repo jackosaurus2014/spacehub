@@ -625,11 +625,13 @@ function BusinessOpportunitiesContent() {
             </p>
           </div>
         ) : (
-          <div>
+          <StaggerContainer className="space-y-0">
             {opportunities.map((opp) => (
-              <OpportunityRow key={opp.id} opportunity={opp} />
+              <StaggerItem key={opp.id}>
+                <OpportunityRow opportunity={opp} />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         )}
 
             {/* Info Note */}

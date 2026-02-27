@@ -1187,6 +1187,7 @@ function SpaceWeatherTab() {
           </div>
 
           {/* Related Modules */}
+          <ScrollReveal>
           <div className="card p-6">
             <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
               <span>&#128279;</span> Related Modules
@@ -1210,6 +1211,7 @@ function SpaceWeatherTab() {
               </Link>
             </div>
           </div>
+          </ScrollReveal>
         </div>
       )}
 
@@ -2323,6 +2325,7 @@ function OperationsTab() {
           </div>
 
           {/* Grade Distribution */}
+          <ScrollReveal>
           <div className="card p-6">
             <h2 className="text-xl font-semibold text-slate-100 mb-4">Sustainability Grade Distribution</h2>
             <div className="flex items-end gap-4 h-40">
@@ -2353,6 +2356,7 @@ function OperationsTab() {
               })}
             </div>
           </div>
+          </ScrollReveal>
         </div>
       )}
 
@@ -2481,13 +2485,15 @@ function OperationsTab() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {filteredScorecards
                 .sort((a, b) => b.overallScore - a.overallScore)
                 .map((scorecard) => (
-                  <ScorecardCard key={scorecard.id} scorecard={scorecard} />
+                  <StaggerItem key={scorecard.id}>
+                    <ScorecardCard scorecard={scorecard} />
+                  </StaggerItem>
                 ))}
-            </div>
+            </StaggerContainer>
           )}
 
           {/* Scoring Methodology */}

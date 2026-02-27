@@ -622,7 +622,7 @@ export default function UnitEconomicsPage() {
           breadcrumb="Tools"
         />
 
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* ── Section 1: Business Model Selector ──────────────── */}
           <motion.section
             initial="hidden"

@@ -1,7 +1,7 @@
 export default function Loading() {
   return (
     <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Breadcrumb */}
         <div className="h-4 w-48 bg-slate-800/40 rounded animate-pulse mb-6" />
 

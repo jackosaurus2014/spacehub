@@ -930,6 +930,7 @@ function SalaryBenchmarksContent() {
       {/* ================================================================= */}
       {/* FAQ SECTION                                                        */}
       {/* ================================================================= */}
+      <ScrollReveal>
       <div className="mt-12 pt-8 border-t border-slate-700/50">
         <h2 className="text-xl font-bold text-white mb-6">Frequently Asked Questions</h2>
         <div className="space-y-3">
@@ -958,8 +959,10 @@ function SalaryBenchmarksContent() {
           ))}
         </div>
       </div>
+      </ScrollReveal>
 
       {/* ---- RELATED RESOURCES ---- */}
+      <ScrollReveal delay={0.1}>
       <div className="mt-8 pt-8 border-t border-slate-700/50">
         <h3 className="text-slate-400 text-sm font-medium mb-4">Related Resources</h3>
         <div className="flex flex-wrap gap-3">
@@ -995,6 +998,7 @@ function SalaryBenchmarksContent() {
           </Link>
         </div>
       </div>
+      </ScrollReveal>
     </>
   );
 }

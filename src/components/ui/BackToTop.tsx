@@ -37,7 +37,7 @@ export default function BackToTop() {
           aria-label="Back to top"
         >
           {/* Circular progress ring */}
-          <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 48 48">
+          <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 48 48" aria-hidden="true">
             <circle cx="24" cy="24" r="22" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
             <circle cx="24" cy="24" r="22" fill="none" stroke="white" strokeWidth="2"
               strokeDasharray={circumference}
@@ -45,7 +45,7 @@ export default function BackToTop() {
               strokeLinecap="round" />
           </svg>
           {/* Arrow icon */}
-          <svg className="w-5 h-5 relative z-10 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 relative z-10 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
           </svg>
         </button>

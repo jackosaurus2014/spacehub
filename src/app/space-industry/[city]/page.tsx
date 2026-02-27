@@ -97,7 +97,7 @@ export default function CityPage({ params }: Props) {
         { name: city.name },
       ]} />
 
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-slate-500 pt-8 mb-8">
           <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>

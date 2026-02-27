@@ -684,26 +684,35 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
   return (
     <div className="space-y-8">
       {/* Hero Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-white">{formatNumber(latestYear.total)}</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Patents Filed (2026)</div>
-        </div>
-        <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-green-400">+{growthRate}%</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Annual Growth</div>
-        </div>
-        <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{holdersData.length}</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Major Holders Tracked</div>
-        </div>
-        <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-purple-400">{totalCategories}</div>
-          <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Technology Domains</div>
-        </div>
-      </div>
+      <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StaggerItem>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-white">{formatNumber(latestYear.total)}</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Patents Filed (2026)</div>
+          </div>
+        </StaggerItem>
+        <StaggerItem>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-green-400">+{growthRate}%</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Annual Growth</div>
+          </div>
+        </StaggerItem>
+        <StaggerItem>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{holdersData.length}</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Major Holders Tracked</div>
+          </div>
+        </StaggerItem>
+        <StaggerItem>
+          <div className="card-elevated p-6 text-center">
+            <div className="text-4xl font-bold font-display tracking-tight text-purple-400">{totalCategories}</div>
+            <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Technology Domains</div>
+          </div>
+        </StaggerItem>
+      </StaggerContainer>
 
       {/* Filing Trends Chart */}
+      <ScrollReveal>
       <div className="card p-6">
         <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
           <svg className="w-5 h-5 text-nebula-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -747,8 +756,10 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
           </span>
         </div>
       </div>
+      </ScrollReveal>
 
       {/* Geographic Distribution */}
+      <ScrollReveal>
       <div className="card p-6">
         <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
           <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -788,8 +799,10 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
           </p>
         </div>
       </div>
+      </ScrollReveal>
 
       {/* Technology Category Overview */}
+      <ScrollReveal>
       <div className="card p-6">
         <h3 className="text-lg font-semibold text-white mb-1">Technology Category Breakdown</h3>
         <p className="text-slate-400 text-sm mb-4">Patent distribution across space technology domains</p>
@@ -815,8 +828,10 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
           })}
         </div>
       </div>
+      </ScrollReveal>
 
       {/* Top Patent Holders Quick View */}
+      <ScrollReveal>
       <div className="card p-6">
         <h3 className="text-lg font-semibold text-white mb-1">Top Patent Holders</h3>
         <p className="text-slate-400 text-sm mb-4">Ranked by total portfolio size</p>
@@ -863,8 +878,10 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
           </table>
         </div>
       </div>
+      </ScrollReveal>
 
       {/* Litigation Highlights */}
+      <ScrollReveal>
       <div className="card p-6">
         <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
           <svg className="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -900,6 +917,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
           })}
         </div>
       </div>
+      </ScrollReveal>
     </div>
   );
 }

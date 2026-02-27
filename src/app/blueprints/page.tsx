@@ -670,24 +670,32 @@ function BlueprintDetailModal({
 
 function StatsCards({ stats }: { stats: BlueprintStats }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div className="card p-4">
-        <span className="text-xs text-slate-300 block mb-1">Total Blueprints</span>
-        <span className="text-2xl font-bold text-white">{stats.total}</span>
-      </div>
-      <div className="card p-4">
-        <span className="text-xs text-slate-300 block mb-1">Rocket Engines</span>
-        <span className="text-2xl font-bold text-nebula-600">{stats.byCategory['engine'] || 0}</span>
-      </div>
-      <div className="card p-4">
-        <span className="text-xs text-slate-300 block mb-1">Satellite Buses</span>
-        <span className="text-2xl font-bold text-rocket-600">{stats.byCategory['satellite_bus'] || 0}</span>
-      </div>
-      <div className="card p-4">
-        <span className="text-xs text-slate-300 block mb-1">Total Missions</span>
-        <span className="text-2xl font-bold text-green-600">{formatNumber(stats.totalMissionsFlown)}</span>
-      </div>
-    </div>
+    <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <StaggerItem>
+        <div className="card p-4">
+          <span className="text-xs text-slate-300 block mb-1">Total Blueprints</span>
+          <span className="text-2xl font-bold text-white">{stats.total}</span>
+        </div>
+      </StaggerItem>
+      <StaggerItem>
+        <div className="card p-4">
+          <span className="text-xs text-slate-300 block mb-1">Rocket Engines</span>
+          <span className="text-2xl font-bold text-nebula-600">{stats.byCategory['engine'] || 0}</span>
+        </div>
+      </StaggerItem>
+      <StaggerItem>
+        <div className="card p-4">
+          <span className="text-xs text-slate-300 block mb-1">Satellite Buses</span>
+          <span className="text-2xl font-bold text-rocket-600">{stats.byCategory['satellite_bus'] || 0}</span>
+        </div>
+      </StaggerItem>
+      <StaggerItem>
+        <div className="card p-4">
+          <span className="text-xs text-slate-300 block mb-1">Total Missions</span>
+          <span className="text-2xl font-bold text-green-600">{formatNumber(stats.totalMissionsFlown)}</span>
+        </div>
+      </StaggerItem>
+    </StaggerContainer>
   );
 }
 

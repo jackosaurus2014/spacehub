@@ -697,9 +697,9 @@ body::after {
 .scroll-snap-x::-webkit-scrollbar { display: none; }
 .scroll-snap-item { scroll-snap-align: start; }
 
-/* ——— Accessible focus indicators ——— */
-:focus-visible {
-  outline: 2px solid rgb(34 211 238); /* cyan-400 */
+/* Focus visible styles for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #06b6d4;
   outline-offset: 2px;
 }
 

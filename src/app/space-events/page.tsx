@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
-import ScrollReveal from '@/components/ui/ScrollReveal';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import EventSchema from '@/components/seo/EventSchema';
 import {
   SPACE_EVENTS,
@@ -809,39 +809,44 @@ function SpaceEventsPageInner() {
       />
 
       {/* Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
-      >
-        <div className="card p-4 text-center">
-          <div className="text-2xl font-bold text-cyan-400">{SPACE_EVENTS.length}</div>
-          <div className="text-xs text-slate-400 mt-1">Total Events</div>
-        </div>
-        <div className="card p-4 text-center">
-          <div className="text-2xl font-bold text-purple-400">{upcomingCount}</div>
-          <div className="text-xs text-slate-400 mt-1">Upcoming</div>
-        </div>
-        <div className="card p-4 text-center">
-          <div className="text-2xl font-bold text-emerald-400">
-            {SPACE_EVENTS.filter((e) => e.virtual).length}
+      <StaggerContainer className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <StaggerItem>
+          <div className="card p-4 text-center">
+            <div className="text-2xl font-bold text-cyan-400">{SPACE_EVENTS.length}</div>
+            <div className="text-xs text-slate-400 mt-1">Total Events</div>
           </div>
-          <div className="text-xs text-slate-400 mt-1">Virtual Events</div>
-        </div>
-        <div className="card p-4 text-center">
-          <div className="text-2xl font-bold text-amber-400">
-            {SPACE_EVENTS.filter((e) => e.highlight).length}
+        </StaggerItem>
+        <StaggerItem>
+          <div className="card p-4 text-center">
+            <div className="text-2xl font-bold text-purple-400">{upcomingCount}</div>
+            <div className="text-xs text-slate-400 mt-1">Upcoming</div>
           </div>
-          <div className="text-xs text-slate-400 mt-1">Major Events</div>
-        </div>
-        <div className="card p-4 text-center">
-          <div className="text-2xl font-bold text-teal-400">
-            {SPACE_EVENTS.filter((e) => e.costType === 'free').length}
+        </StaggerItem>
+        <StaggerItem>
+          <div className="card p-4 text-center">
+            <div className="text-2xl font-bold text-emerald-400">
+              {SPACE_EVENTS.filter((e) => e.virtual).length}
+            </div>
+            <div className="text-xs text-slate-400 mt-1">Virtual Events</div>
           </div>
-          <div className="text-xs text-slate-400 mt-1">Free Events</div>
-        </div>
-      </motion.div>
+        </StaggerItem>
+        <StaggerItem>
+          <div className="card p-4 text-center">
+            <div className="text-2xl font-bold text-amber-400">
+              {SPACE_EVENTS.filter((e) => e.highlight).length}
+            </div>
+            <div className="text-xs text-slate-400 mt-1">Major Events</div>
+          </div>
+        </StaggerItem>
+        <StaggerItem>
+          <div className="card p-4 text-center">
+            <div className="text-2xl font-bold text-teal-400">
+              {SPACE_EVENTS.filter((e) => e.costType === 'free').length}
+            </div>
+            <div className="text-xs text-slate-400 mt-1">Free Events</div>
+          </div>
+        </StaggerItem>
+      </StaggerContainer>
 
       {/* Tab Navigation */}
       <motion.div
@@ -1101,20 +1106,22 @@ function SpaceEventsPageInner() {
       </AnimatePresence>
 
       {/* Quick tag reference */}
-      <div className="card p-4 mt-6 border-slate-700/30">
-        <div className="text-xs text-slate-500 font-medium mb-2">Popular Tags</div>
-        <div className="flex flex-wrap gap-1.5">
-          {allTags.slice(0, 30).map((tag) => (
-            <button
-              key={tag}
-              onClick={() => setSearchQuery(tag)}
-              className="text-xs px-2 py-0.5 rounded-full bg-slate-800/50 text-slate-400 border border-slate-700/30 hover:border-cyan-500/30 hover:text-cyan-400 transition-all cursor-pointer"
-            >
-              {tag}
-            </button>
-          ))}
+      <ScrollReveal>
+        <div className="card p-4 mt-6 border-slate-700/30">
+          <div className="text-xs text-slate-500 font-medium mb-2">Popular Tags</div>
+          <div className="flex flex-wrap gap-1.5">
+            {allTags.slice(0, 30).map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setSearchQuery(tag)}
+                className="text-xs px-2 py-0.5 rounded-full bg-slate-800/50 text-slate-400 border border-slate-700/30 hover:border-cyan-500/30 hover:text-cyan-400 transition-all cursor-pointer"
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* Event detail modal */}
       <AnimatePresence>

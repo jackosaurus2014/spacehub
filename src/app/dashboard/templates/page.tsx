@@ -131,7 +131,7 @@ export default function DashboardTemplatesPage() {
 
   return (
     <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Back link */}
         <Link
           href="/dashboard"

@@ -309,7 +309,7 @@ export default function DataFreshnessPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 text-white p-8">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-slate-800 rounded w-64" />
             <div className="h-48 bg-slate-800 rounded" />
@@ -323,7 +323,7 @@ export default function DataFreshnessPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-slate-950 text-white p-8">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl font-bold mb-4">Data Freshness</h1>
           <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 text-red-400">
             {error}
@@ -352,7 +352,7 @@ export default function DataFreshnessPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white p-4 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <ScrollReveal>
           <div className="flex items-center justify-between">

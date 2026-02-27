@@ -2039,14 +2039,17 @@ export default function SpaceDefensePage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {filteredPrograms.map((program) => (
-                  <ProgramCard key={program.id} program={program} />
+                  <StaggerItem key={program.id}>
+                    <ProgramCard program={program} />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             </div>
 
             {/* SDA Architecture Explainer */}
+            <ScrollReveal>
             <div className="card p-6">
               <h3 className="text-white font-bold mb-4">Proliferated Warfighter Space Architecture (PWSA)</h3>
               <p className="text-star-300 text-sm mb-4">
@@ -2070,6 +2073,7 @@ export default function SpaceDefensePage() {
                 ))}
               </div>
             </div>
+            </ScrollReveal>
           </div>
         )}
 
@@ -2088,11 +2092,13 @@ export default function SpaceDefensePage() {
               <SpendingTrends />
 
               {/* Contract Cards */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {recentContracts.map((contract) => (
-                  <ContractCard key={contract.id} contract={contract} />
+                  <StaggerItem key={contract.id}>
+                    <ContractCard contract={contract} />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             </div>
 
             {/* Active USSF Procurement Priorities */}
@@ -2436,11 +2442,13 @@ export default function SpaceDefensePage() {
                 and technology cooperation among allied nations.
               </p>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {alliances.map((alliance) => (
-                  <AllianceCard key={alliance.id} alliance={alliance} />
+                  <StaggerItem key={alliance.id}>
+                    <AllianceCard alliance={alliance} />
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             </div>
 
             {/* Data Sharing Frameworks */}
@@ -2479,6 +2487,7 @@ export default function SpaceDefensePage() {
             </div>
 
             {/* Allied Capability Comparison */}
+            <ScrollReveal>
             <div className="card p-6">
               <h3 className="text-white font-bold mb-4">Allied Space Capability Comparison</h3>
               <div className="overflow-x-auto">
@@ -2545,6 +2554,7 @@ export default function SpaceDefensePage() {
                 SDA = Space Domain Awareness. Missile Warning = Overhead persistent infrared / early warning.
               </p>
             </div>
+            </ScrollReveal>
           </div>
         )}
 

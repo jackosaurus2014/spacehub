@@ -1,7 +1,7 @@
 export default function Loading() {
   return (
     <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Profile header */}
         <div className="bg-slate-800/40 rounded-xl animate-pulse p-6 mb-6 flex items-center gap-5">
           <div className="h-20 w-20 bg-slate-700/50 rounded-full shrink-0" />

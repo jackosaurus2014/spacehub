@@ -220,7 +220,7 @@ export default function ThreadDetailPage() {
   if (!thread) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-20">
             <h2 className="text-2xl font-bold text-slate-100 mb-2">Thread Not Found</h2>
             <p className="text-slate-400 mb-6">This thread may have been deleted or the URL is incorrect.</p>
@@ -238,7 +238,7 @@ export default function ThreadDetailPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-slate-400 mb-6 overflow-x-auto" aria-label="Breadcrumb">
           <Link href="/" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Home</Link>

@@ -1,7 +1,7 @@
 export default function Loading() {
   return (
     <div className="min-h-screen bg-slate-950 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Title skeleton */}
         <div className="h-8 w-48 sm:w-64 bg-slate-800 rounded-lg animate-pulse mb-2" />
         <div className="h-4 w-64 sm:w-80 bg-slate-800/60 rounded animate-pulse mb-8" />

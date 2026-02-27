@@ -107,7 +107,7 @@ function SponsorPageInner() {
         { name: 'Company Profiles', href: '/company-profiles' },
         { name: 'Sponsor' },
       ]} />
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Sponsor Your Company Profile"
           subtitle="Increase your visibility in the space industry. Verified badges, priority placement, lead capture, and analytics for your company profile."

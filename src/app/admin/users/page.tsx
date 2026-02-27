@@ -117,7 +117,7 @@ export default function AdminUsersPage() {
 
   return (
     <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-display font-bold text-white">User Management</h1>
@@ -933,7 +933,7 @@ function AuditLogTab() {
 function LoadingSkeleton() {
   return (
     <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="mb-8">
           <div className="h-8 w-64 bg-space-700 rounded animate-pulse" />
           <div className="h-4 w-96 bg-space-700 rounded animate-pulse mt-2" />

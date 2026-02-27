@@ -3,6 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import {
   ORBITAL_SYSTEMS,
   getAllCategories,
@@ -445,31 +446,39 @@ function SummaryStats() {
   const categories = getAllCategories();
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-      <div className="card p-3">
-        <div className="text-xs uppercase tracking-wider text-slate-500">Systems Analyzed</div>
-        <div className="text-xl font-bold text-white">{totalSystems}</div>
-        <div className="text-xs text-slate-400">{categories.length} categories</div>
-      </div>
-      <div className="card p-3">
-        <div className="text-xs uppercase tracking-wider text-slate-500">Cost Range</div>
-        <div className="text-xl font-bold text-green-400">{formatCostCompact(minCost)}</div>
-        <div className="text-xs text-slate-400">to {formatCostCompact(maxCost)}</div>
-      </div>
-      <div className="card p-3">
-        <div className="text-xs uppercase tracking-wider text-slate-500">BOM Items</div>
-        <div className="text-xl font-bold text-blue-400">{totalBOMItems}</div>
-        <div className="text-xs text-slate-400">across all systems</div>
-      </div>
-      <div className="card p-3">
-        <div className="text-xs uppercase tracking-wider text-slate-500">TRL Range</div>
-        <div className="text-xl font-bold text-purple-400">
-          {Math.min(...ORBITAL_SYSTEMS.map((s) => s.techReadinessLevel))}-
-          {Math.max(...ORBITAL_SYSTEMS.map((s) => s.techReadinessLevel))}
+    <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+      <StaggerItem>
+        <div className="card p-3">
+          <div className="text-xs uppercase tracking-wider text-slate-500">Systems Analyzed</div>
+          <div className="text-xl font-bold text-white">{totalSystems}</div>
+          <div className="text-xs text-slate-400">{categories.length} categories</div>
         </div>
-        <div className="text-xs text-slate-400">concept to prototype</div>
-      </div>
-    </div>
+      </StaggerItem>
+      <StaggerItem>
+        <div className="card p-3">
+          <div className="text-xs uppercase tracking-wider text-slate-500">Cost Range</div>
+          <div className="text-xl font-bold text-green-400">{formatCostCompact(minCost)}</div>
+          <div className="text-xs text-slate-400">to {formatCostCompact(maxCost)}</div>
+        </div>
+      </StaggerItem>
+      <StaggerItem>
+        <div className="card p-3">
+          <div className="text-xs uppercase tracking-wider text-slate-500">BOM Items</div>
+          <div className="text-xl font-bold text-blue-400">{totalBOMItems}</div>
+          <div className="text-xs text-slate-400">across all systems</div>
+        </div>
+      </StaggerItem>
+      <StaggerItem>
+        <div className="card p-3">
+          <div className="text-xs uppercase tracking-wider text-slate-500">TRL Range</div>
+          <div className="text-xl font-bold text-purple-400">
+            {Math.min(...ORBITAL_SYSTEMS.map((s) => s.techReadinessLevel))}-
+            {Math.max(...ORBITAL_SYSTEMS.map((s) => s.techReadinessLevel))}
+          </div>
+          <div className="text-xs text-slate-400">concept to prototype</div>
+        </div>
+      </StaggerItem>
+    </StaggerContainer>
   );
 }
 
@@ -575,18 +584,19 @@ export default function OrbitalCostsPage() {
         </div>
 
         {/* System Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredSystems.map((system) => (
-            <SystemCard
-              key={system.slug}
-              system={system}
-              isSelected={selectedSlug === system.slug}
-              onClick={() =>
-                setSelectedSlug(selectedSlug === system.slug ? null : system.slug)
-              }
-            />
+            <StaggerItem key={system.slug}>
+              <SystemCard
+                system={system}
+                isSelected={selectedSlug === system.slug}
+                onClick={() =>
+                  setSelectedSlug(selectedSlug === system.slug ? null : system.slug)
+                }
+              />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* Expanded Detail Panel */}
         {selectedSystem && (
@@ -599,6 +609,7 @@ export default function OrbitalCostsPage() {
         )}
 
         {/* Methodology Note */}
+        <ScrollReveal>
         <div className="card mt-12 p-6">
           <h3 className="text-sm font-semibold text-slate-300 mb-2">Methodology & Disclaimers</h3>
           <div className="text-xs text-slate-500 space-y-2">
@@ -620,8 +631,10 @@ export default function OrbitalCostsPage() {
             </p>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Related Modules */}
+        <ScrollReveal delay={0.1}>
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {[
             { href: '/mission-cost', icon: '💰', label: 'Mission Cost Simulator', desc: 'Estimate launch costs by provider' },
@@ -642,6 +655,7 @@ export default function OrbitalCostsPage() {
             </Link>
           ))}
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

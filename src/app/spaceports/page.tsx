@@ -2352,6 +2352,7 @@ function SpaceportDirectoryPage() {
         </ScrollReveal>
 
         {/* Industry Overview Banner */}
+        <ScrollReveal delay={0.1}>
         <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 border border-cyan-500/30 rounded-xl p-5 mb-8">
           <div className="flex items-start gap-4">
             <div>
@@ -2366,6 +2367,7 @@ function SpaceportDirectoryPage() {
             </div>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Tab Navigation */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-1">

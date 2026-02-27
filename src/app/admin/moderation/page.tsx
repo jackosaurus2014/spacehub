@@ -139,7 +139,7 @@ export default function ModerationDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <ScrollReveal>
           <div className="mb-8">
@@ -998,7 +998,7 @@ function ActionLogRow({ action }: { action: ModerationActionRecord }) {
 function LoadingSkeleton() {
   return (
     <div className="min-h-screen bg-slate-950">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header skeleton */}
         <div className="mb-8">
           <div className="h-8 w-64 bg-slate-700 rounded animate-pulse" />

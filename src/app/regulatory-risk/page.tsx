@@ -343,7 +343,7 @@ export default function RegulatoryRiskPage() {
         { name: 'Home', href: '/' },
         { name: 'Regulatory Risk' },
       ]} />
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <AnimatedPageHeader
           title="Regulatory Risk Assessment"

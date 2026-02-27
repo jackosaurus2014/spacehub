@@ -711,7 +711,7 @@ export default function OrbitGuidePage() {
 
   return (
     <main className="min-h-screen bg-slate-900 text-slate-100">
-      <div className="max-w-6xl mx-auto px-4 py-10 md:py-14">
+      <div className="max-w-7xl mx-auto px-4 py-10 md:py-14">
         {/* Header */}
         <AnimatedPageHeader
           title="Orbit Types Guide"

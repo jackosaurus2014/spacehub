@@ -38,16 +38,17 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'sam-gov-to-space-government-contracts-guide': { tool: 'Procurement Intelligence', path: '/procurement' },
 };
 
-interface Props {
-  params: { slug: string };
-}
+type Props = {
+  params: Promise<{ slug: string }>;
+};
 
 export async function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = getBlogPost(params.slug);
+  const { slug } = await params;
+  const post = getBlogPost(slug);
   if (!post) return { title: 'Post Not Found' };
 
   return {
@@ -84,8 +85,9 @@ function formatDate(iso: string): string {
   });
 }
 
-export default function BlogPostPage({ params }: Props) {
-  const post = getBlogPost(params.slug);
+export default async function BlogPostPage({ params }: Props) {
+  const { slug } = await params;
+  const post = getBlogPost(slug);
   if (!post) notFound();
 
   const categoryLabel = BLOG_CATEGORIES.find((c) => c.value === post.category)?.label || post.category;

@@ -59,7 +59,7 @@ const COMPETITOR_COMPARISONS = [
 export default function ComparisonHubPage() {
   return (
     <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-7xl">
         <AnimatedPageHeader
           title="Comparison Tools"
           subtitle="Side-by-side analysis of launch vehicles, satellite constellations, and companies across the space industry."

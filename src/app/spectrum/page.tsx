@@ -1937,6 +1937,7 @@ function SpectrumContent() {
         {activeTab === 'education' && (
           <div className="space-y-6">
             {/* FCC Auction Process */}
+            <ScrollReveal>
             <div className="card p-6">
               <h3 className="text-lg font-semibold text-white mb-4">FCC Auction Process</h3>
               <p className="text-star-300 text-sm leading-relaxed mb-5">
@@ -1977,8 +1978,10 @@ function SpectrumContent() {
                 ))}
               </div>
             </div>
+            </ScrollReveal>
 
             {/* ITU WRC Cycle */}
+            <ScrollReveal delay={0.1}>
             <div className="card p-6">
               <h3 className="text-lg font-semibold text-white mb-4">ITU World Radiocommunication Conference (WRC) Cycle</h3>
               <p className="text-star-300 text-sm leading-relaxed mb-5">
@@ -2014,8 +2017,10 @@ function SpectrumContent() {
                 ))}
               </div>
             </div>
+            </ScrollReveal>
 
             {/* Spectrum Types */}
+            <ScrollReveal delay={0.2}>
             <div className="card p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Licensed vs. Unlicensed vs. Shared Spectrum</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -2068,8 +2073,10 @@ function SpectrumContent() {
                 </div>
               </div>
             </div>
+            </ScrollReveal>
 
             {/* Primary vs Secondary */}
+            <ScrollReveal delay={0.3}>
             <div className="card p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Primary vs. Secondary Allocation Status</h3>
               <p className="text-star-300 text-sm leading-relaxed mb-5">
@@ -2128,6 +2135,7 @@ function SpectrumContent() {
                 </div>
               </div>
             </div>
+            </ScrollReveal>
           </div>
         )}
 
