@@ -1,7 +1,55 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+
+/* ------------------------------------------------------------------ */
+/*  Animated counter hook — counts from 0 to `end` when visible       */
+/* ------------------------------------------------------------------ */
+function useCountUp(end: number, duration = 2000, startDelay = 0) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const started = useRef(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started.current) {
+          started.current = true;
+          const startTime = performance.now() + startDelay;
+          const step = (now: number) => {
+            const elapsed = Math.max(0, now - startTime);
+            const progress = Math.min(elapsed / duration, 1);
+            // ease-out cubic
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.round(eased * end));
+            if (progress < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        }
+      },
+      { threshold: 0.3 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [end, duration, startDelay]);
+
+  return { count, ref };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Platform stat definitions                                          */
+/* ------------------------------------------------------------------ */
+const PLATFORM_STATS = [
+  { value: 200, suffix: '+', label: 'Pages & Tools', icon: '\uD83D\uDCCA' },
+  { value: 100, suffix: '+', label: 'Companies Profiled', icon: '\uD83C\uDFE2' },
+  { value: 50, suffix: '+', label: 'Interactive Tools', icon: '\u2699\uFE0F' },
+  { value: 1500, suffix: '+', label: 'Automated Tests', icon: '\u2705' },
+];
 
 export default function LandingHero() {
   return (
@@ -31,19 +79,25 @@ export default function LandingHero() {
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
-          {/* Headline */}
+          {/* Headline with animated gradient */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
             className="text-3xl md:text-5xl lg:text-display-xl font-display font-bold mb-6 leading-tight"
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+            <span
+              className="text-transparent bg-clip-text bg-[length:200%_auto] animate-[gradient-shift_6s_ease_infinite]"
+              style={{
+                backgroundImage: 'linear-gradient(90deg, #67e8f9, #c4b5fd, #f9a8d4, #67e8f9)',
+                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.9))',
+              }}
+            >
               The Space Industry&apos;s Comprehensive Intelligence Platform.
             </span>
           </motion.h1>
 
-          {/* Subtitle — condensed value proposition */}
+          {/* Subtitle -- condensed value proposition */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -82,7 +136,7 @@ export default function LandingHero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.9 }}
-            className="flex gap-6 justify-center"
+            className="flex gap-6 justify-center mb-14"
           >
             <Link
               href="/register"
@@ -98,6 +152,20 @@ export default function LandingHero() {
               Browse News
             </Link>
           </motion.div>
+
+          {/* Animated Platform Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 1.1, ease: 'easeOut' }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-3xl mx-auto"
+            role="list"
+            aria-label="Platform statistics"
+          >
+            {PLATFORM_STATS.map((stat, i) => (
+              <StatCounter key={stat.label} stat={stat} index={i} />
+            ))}
+          </motion.div>
         </div>
       </div>
 
@@ -105,7 +173,7 @@ export default function LandingHero() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.5 }}
+        transition={{ delay: 1.6, duration: 0.5 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float"
       >
         <div className="w-6 h-10 border-2 border-cyan-400/50 rounded-full flex items-start justify-center p-1.5 shadow-lg shadow-cyan-500/20">
@@ -116,5 +184,36 @@ export default function LandingHero() {
       {/* Bottom gradient divider */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#050a15] to-transparent z-[2]" />
     </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Individual stat counter tile                                       */
+/* ------------------------------------------------------------------ */
+function StatCounter({
+  stat,
+  index,
+}: {
+  stat: (typeof PLATFORM_STATS)[number];
+  index: number;
+}) {
+  const { count, ref } = useCountUp(stat.value, 2200, index * 150);
+
+  return (
+    <div
+      role="listitem"
+      className="relative rounded-2xl border border-slate-700/40 bg-slate-900/60 backdrop-blur-md px-4 py-5 text-center hover:border-cyan-500/40 transition-colors"
+    >
+      <span className="text-2xl mb-1 block" aria-hidden="true">{stat.icon}</span>
+      <span
+        ref={ref}
+        className="text-3xl md:text-4xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-b from-cyan-300 to-cyan-500"
+      >
+        {count.toLocaleString()}{stat.suffix}
+      </span>
+      <span className="block text-xs md:text-sm text-slate-300 mt-1 font-medium tracking-wide">
+        {stat.label}
+      </span>
+    </div>
   );
 }

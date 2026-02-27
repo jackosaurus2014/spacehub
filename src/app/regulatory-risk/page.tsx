@@ -100,7 +100,7 @@ function CategoryScoreCard({ category, score, factors }: {
   const barWidth = Math.min(score, 100);
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
+    <div className="card p-5">
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full text-left flex items-center justify-between"
@@ -175,7 +175,7 @@ function TimelineChart({ applicableFactors }: { applicableFactors: string[] }) {
   const maxVal = Math.max(...items.map(i => i.max));
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+    <div className="card p-6">
       <h3 className="text-lg font-semibold text-slate-100 mb-4">Licensing Timeline Estimates</h3>
       <p className="text-sm text-slate-400 mb-6">Parallel processing assumed. Longest process determines critical path.</p>
       <div className="space-y-4">
@@ -232,7 +232,7 @@ function RiskFactorReference() {
         const factors = RISK_FACTORS.filter(f => f.category === cat);
 
         return (
-          <div key={cat} className="bg-slate-800/50 border border-slate-700/50 rounded-xl overflow-hidden">
+          <div key={cat} className="card overflow-hidden">
             <div className="px-5 py-3 border-b border-slate-700/50 flex items-center gap-2">
               <span>{config.icon}</span>
               <h4 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">{config.label}</h4>
@@ -394,7 +394,7 @@ export default function RegulatoryRiskPage() {
         {/* ── PROFILE BUILDER SECTION ────────────────────────────────── */}
         {activeSection === 'form' && (
           <ScrollReveal>
-            <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 md:p-8">
+            <div className="card p-6 md:p-8">
               <h2 className="text-xl font-bold text-slate-100 mb-6">Company Risk Profile Builder</h2>
 
               {/* Sector Selection */}
@@ -510,12 +510,12 @@ export default function RegulatoryRiskPage() {
               <StaggerItem>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Main Gauge */}
-                  <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 flex items-center justify-center">
+                  <div className="card p-6 flex items-center justify-center">
                     <RiskGauge score={assessment.overallScore} riskLevel={assessment.riskLevel} />
                   </div>
 
                   {/* Key Stats */}
-                  <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 flex flex-col justify-center space-y-4">
+                  <div className="card p-6 flex flex-col justify-center space-y-4">
                     <div>
                       <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Estimated Licensing Timeline</p>
                       <p className="text-2xl font-bold text-slate-100">{assessment.estimatedTimeline}</p>
@@ -533,7 +533,7 @@ export default function RegulatoryRiskPage() {
                   </div>
 
                   {/* Required Licenses */}
-                  <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+                  <div className="card p-6">
                     <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">
                       Required Licenses & Authorizations
                     </h3>
@@ -577,7 +577,7 @@ export default function RegulatoryRiskPage() {
 
               {/* Recommendations */}
               <StaggerItem>
-                <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+                <div className="card p-6">
                   <h3 className="text-lg font-semibold text-slate-100 mb-4">Recommendations</h3>
                   {assessment.recommendations.length > 0 ? (
                     <div className="space-y-3">
@@ -627,7 +627,7 @@ export default function RegulatoryRiskPage() {
         {activeSection === 'reference' && (
           <ScrollReveal>
             <div className="space-y-6">
-              <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+              <div className="card p-6">
                 <h2 className="text-xl font-bold text-slate-100 mb-2">Risk Factor Reference</h2>
                 <p className="text-sm text-slate-400 mb-6">
                   Complete reference of all {RISK_FACTORS.length} regulatory risk factors assessed by the engine.

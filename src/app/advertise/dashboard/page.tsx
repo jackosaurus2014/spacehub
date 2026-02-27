@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { toast } from '@/lib/toast';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 interface Campaign {
   id: string;
@@ -233,28 +234,39 @@ export default function AdvertiserDashboard() {
       )}
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="card p-4">
-          <p className="text-star-300 text-xs uppercase tracking-wider mb-1">Active Campaigns</p>
-          <p className="text-2xl font-bold text-white">{activeCampaigns.length}</p>
-        </div>
-        <div className="card p-4">
-          <p className="text-star-300 text-xs uppercase tracking-wider mb-1">Total Impressions</p>
-          <p className="text-2xl font-bold text-white">
-            {totalImpressions.toLocaleString()}
-          </p>
-        </div>
-        <div className="card p-4">
-          <p className="text-star-300 text-xs uppercase tracking-wider mb-1">Total Spent</p>
-          <p className="text-2xl font-bold text-white">{formatCurrency(totalSpent)}</p>
-        </div>
-        <div className="card p-4">
-          <p className="text-star-300 text-xs uppercase tracking-wider mb-1">Total Budget</p>
-          <p className="text-2xl font-bold text-white">{formatCurrency(totalBudget)}</p>
-        </div>
-      </div>
+      <ScrollReveal delay={0.1}>
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <StaggerItem>
+            <div className="card p-4">
+              <p className="text-star-300 text-xs uppercase tracking-wider mb-1">Active Campaigns</p>
+              <p className="text-2xl font-bold text-white">{activeCampaigns.length}</p>
+            </div>
+          </StaggerItem>
+          <StaggerItem>
+            <div className="card p-4">
+              <p className="text-star-300 text-xs uppercase tracking-wider mb-1">Total Impressions</p>
+              <p className="text-2xl font-bold text-white">
+                {totalImpressions.toLocaleString()}
+              </p>
+            </div>
+          </StaggerItem>
+          <StaggerItem>
+            <div className="card p-4">
+              <p className="text-star-300 text-xs uppercase tracking-wider mb-1">Total Spent</p>
+              <p className="text-2xl font-bold text-white">{formatCurrency(totalSpent)}</p>
+            </div>
+          </StaggerItem>
+          <StaggerItem>
+            <div className="card p-4">
+              <p className="text-star-300 text-xs uppercase tracking-wider mb-1">Total Budget</p>
+              <p className="text-2xl font-bold text-white">{formatCurrency(totalBudget)}</p>
+            </div>
+          </StaggerItem>
+        </StaggerContainer>
+      </ScrollReveal>
 
       {/* Campaign Controls */}
+      <ScrollReveal delay={0.2}>
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <div className="flex items-center gap-2">
           <label htmlFor="status-filter" className="text-star-300 text-sm">Filter:</label>
@@ -286,6 +298,7 @@ export default function AdvertiserDashboard() {
           </Link>
         )}
       </div>
+      </ScrollReveal>
 
       {/* Campaign List */}
       {campaigns.length === 0 ? (
@@ -299,9 +312,10 @@ export default function AdvertiserDashboard() {
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <StaggerContainer className="space-y-4">
           {campaigns.map((campaign) => (
-            <div key={campaign.id} className="card p-6">
+            <StaggerItem key={campaign.id}>
+            <div className="card p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <div className="flex items-center gap-3 mb-1">
@@ -393,8 +407,9 @@ export default function AdvertiserDashboard() {
                 </div>
               )}
             </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       )}
     </main>
   );

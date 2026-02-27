@@ -7,7 +7,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PremiumGate from '@/components/PremiumGate';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
-import ScrollReveal from '@/components/ui/ScrollReveal';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import {
   GRAPH_NODES,
   GRAPH_EDGES,
@@ -1326,39 +1326,42 @@ function SupplyChainMapContent() {
         )}
 
         {/* Quick stats */}
+        <ScrollReveal delay={0.1}>
         <div className="bg-space-800 border border-space-700 rounded-xl p-4 space-y-2">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
             Graph Statistics
           </h4>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div>
+          <StaggerContainer className="grid grid-cols-2 gap-2 text-sm">
+            <StaggerItem>
               <div className="text-slate-500 text-xs">Total Companies</div>
               <div className="text-white font-semibold">
                 {GRAPH_NODES.length}
               </div>
-            </div>
-            <div>
+            </StaggerItem>
+            <StaggerItem>
               <div className="text-slate-500 text-xs">Total Relationships</div>
               <div className="text-white font-semibold">
                 {GRAPH_EDGES.length}
               </div>
-            </div>
-            <div>
+            </StaggerItem>
+            <StaggerItem>
               <div className="text-slate-500 text-xs">Sectors</div>
               <div className="text-white font-semibold">
                 {allSectors.length}
               </div>
-            </div>
-            <div>
+            </StaggerItem>
+            <StaggerItem>
               <div className="text-slate-500 text-xs">Primes</div>
               <div className="text-white font-semibold">
                 {GRAPH_NODES.filter((n) => n.tier === 'prime').length}
               </div>
-            </div>
-          </div>
+            </StaggerItem>
+          </StaggerContainer>
         </div>
+        </ScrollReveal>
 
         {/* Top connected companies */}
+        <ScrollReveal delay={0.2}>
         <div className="bg-space-800 border border-space-700 rounded-xl p-4">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
             Most Connected
@@ -1398,6 +1401,7 @@ function SupplyChainMapContent() {
               ))}
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );
@@ -1431,6 +1435,7 @@ export default function SupplyChainMapPage() {
           </div>
         </AnimatedPageHeader>
 
+        <ScrollReveal delay={0.1}>
         <PremiumGate requiredTier="pro" context="supply-chain-map" showPreview={true}>
           <Suspense
             fallback={
@@ -1442,6 +1447,7 @@ export default function SupplyChainMapPage() {
             <SupplyChainMapContent />
           </Suspense>
         </PremiumGate>
+        </ScrollReveal>
       </div>
     </div>
   );

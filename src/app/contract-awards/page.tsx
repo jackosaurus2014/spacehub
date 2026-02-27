@@ -496,22 +496,22 @@ export default function ContractAwardsPage() {
         {/* Summary Statistics */}
         <ScrollReveal>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+            <div className="card p-4">
               <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Total Value</p>
               <p className="text-2xl font-bold text-amber-400">{formatCurrency(stats.totalValue)}</p>
               <p className="text-xs text-slate-500 mt-1">{formatFullCurrency(stats.totalValue)}</p>
             </div>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+            <div className="card p-4">
               <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Contracts</p>
               <p className="text-2xl font-bold text-white">{stats.count}</p>
               <p className="text-xs text-slate-500 mt-1">{stats.count === CONTRACT_AWARDS.length ? 'All awards' : `of ${CONTRACT_AWARDS.length} total`}</p>
             </div>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+            <div className="card p-4">
               <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Avg. Size</p>
               <p className="text-2xl font-bold text-cyan-400">{formatCurrency(stats.avgSize)}</p>
               <p className="text-xs text-slate-500 mt-1">Per contract</p>
             </div>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+            <div className="card p-4">
               <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Top Agency</p>
               <p className="text-2xl font-bold text-purple-400">{stats.topAgencies[0]?.[0] ?? '—'}</p>
               <p className="text-xs text-slate-500 mt-1">
@@ -523,7 +523,7 @@ export default function ContractAwardsPage() {
 
         {/* Top Agencies Breakdown */}
         <ScrollReveal delay={0.1}>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 mb-8">
+          <div className="card p-5 mb-8">
             <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Agency Breakdown</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {stats.topAgencies.map(([agency, data]) => (
@@ -543,7 +543,7 @@ export default function ContractAwardsPage() {
 
         {/* Filters & Sort */}
         <ScrollReveal delay={0.15}>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 mb-8">
+          <div className="card p-5 mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Agency Filter */}
               <div>
@@ -681,7 +681,7 @@ export default function ContractAwardsPage() {
                 return (
                   <div
                     key={`${award.title}-${award.date}`}
-                    className="bg-slate-800/50 border border-slate-700/50 rounded-xl overflow-hidden hover:border-slate-600/70 transition-colors"
+                    className="card overflow-hidden hover:border-slate-600/70 transition-colors"
                   >
                     <button
                       onClick={() => setExpandedIndex(isExpanded ? null : idx)}
@@ -764,7 +764,7 @@ export default function ContractAwardsPage() {
 
         {/* Related Links */}
         <ScrollReveal delay={0.25}>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+          <div className="card p-6">
             <h2 className="text-lg font-semibold text-white mb-4">Related Resources</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link

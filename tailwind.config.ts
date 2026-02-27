@@ -67,6 +67,7 @@ const config: Config = {
         'glow-pulse': 'glowPulse 3s ease-in-out infinite',
         'fade-out': 'fadeOut 0.3s ease-in forwards',
         'progress-shimmer': 'progressShimmer 1.5s ease-in-out infinite',
+        'gradient-shift': 'gradient-shift 6s ease infinite',
       },
       keyframes: {
         twinkle: {
@@ -108,6 +109,10 @@ const config: Config = {
         progressShimmer: {
           '0%': { backgroundPosition: '200% 0' },
           '100%': { backgroundPosition: '-200% 0' },
+        },
+        'gradient-shift': {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
         },
       },
       backgroundImage: {

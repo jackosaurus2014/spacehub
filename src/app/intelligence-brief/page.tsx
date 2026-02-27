@@ -235,7 +235,7 @@ export default function IntelligenceBriefPage() {
               { label: 'Executive Moves', href: '/executive-moves', icon: '👤' },
             ].map(link => (
               <Link key={link.href} href={link.href}
-                className="flex items-center gap-2 p-3 bg-slate-800/50 border border-slate-700/50 rounded-lg hover:border-cyan-400/30 transition-colors text-sm text-slate-300 hover:text-cyan-300">
+                className="flex items-center gap-2 p-3 card hover:border-cyan-400/30 transition-colors text-sm text-slate-300 hover:text-cyan-300">
                 <span>{link.icon}</span>
                 {link.label}
               </Link>

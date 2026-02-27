@@ -53,6 +53,14 @@ const NewsTicker = nextDynamic(() => import('@/components/widgets/NewsTicker'), 
   ssr: false,
   loading: () => <div className="h-10 bg-slate-900/80 border-y border-slate-700/40" />,
 });
+const FeaturedTools = nextDynamic(() => import('@/components/landing/FeaturedTools'), {
+  ssr: false,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-slate-800 rounded w-1/3 mx-auto mb-8"></div><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">{[1,2,3,4,5,6].map(i => <div key={i} className="h-32 bg-slate-800 rounded-xl"></div>)}</div></div></div></div>,
+});
+const RecentUpdates = nextDynamic(() => import('@/components/landing/RecentUpdates'), {
+  ssr: false,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-slate-800 rounded w-1/3 mx-auto mb-8"></div><div className="space-y-4 max-w-3xl mx-auto">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-slate-800 rounded-xl"></div>)}</div></div></div></div>,
+});
 
 // Force dynamic rendering - no static generation at build time
 export const dynamic = 'force-dynamic';
@@ -176,6 +184,9 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Featured Engineering Tools — Quick-access for first-time visitors */}
+      <FeaturedTools />
+
       {/* Latest from SpaceNexus — Original Content Showcase (above value prop) */}
       {topContent.length > 0 && (
         <section className="section-spacer-sm relative z-10">
@@ -252,6 +263,9 @@ export default async function HomePage() {
 
       {/* How It Works — 3-step onboarding flow */}
       <HowItWorks />
+
+      {/* What's New — Recent platform updates */}
+      <RecentUpdates />
 
       {/* Persona-Based Quick Access Dashboard */}
       <PersonaDashboard />

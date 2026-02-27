@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import RFQForm from '@/components/marketplace/RFQForm';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export default function NewRFQPage() {
   const router = useRouter();
@@ -28,13 +29,15 @@ export default function NewRFQPage() {
           title="Submit a Request for Quote"
           subtitle="Describe what you need and we'll match you with qualified providers"
         />
-        <div className="mt-8">
-          <RFQForm
-            onSuccess={(rfq) => {
-              router.push(`/marketplace/rfq/${rfq.id}`);
-            }}
-          />
-        </div>
+        <ScrollReveal delay={0.1}>
+          <div className="mt-8">
+            <RFQForm
+              onSuccess={(rfq) => {
+                router.push(`/marketplace/rfq/${rfq.id}`);
+              }}
+            />
+          </div>
+        </ScrollReveal>
       </div>
     </div>
   );

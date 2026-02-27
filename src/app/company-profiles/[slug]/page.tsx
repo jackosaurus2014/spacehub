@@ -1006,7 +1006,7 @@ function DigestTab({ companyId, companyName }: { companyId: string; companyName:
         try { highlights = Array.isArray(digest.highlights) ? digest.highlights : JSON.parse(digest.highlights || '[]'); } catch {}
 
         return (
-          <div key={digest.id} className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
+          <div key={digest.id} className="card p-5">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-white font-semibold text-sm">{digest.title}</h3>
               <span className="text-xs text-slate-500">

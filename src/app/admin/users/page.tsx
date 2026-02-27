@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from '@/lib/toast';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -119,27 +120,31 @@ export default function AdminUsersPage() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-display font-bold text-white">User Management</h1>
-          <p className="text-star-300 mt-1">Manage users, admin roles, and view audit logs.</p>
-        </div>
+        <ScrollReveal>
+          <div className="mb-8">
+            <h1 className="text-3xl font-display font-bold text-white">User Management</h1>
+            <p className="text-star-300 mt-1">Manage users, admin roles, and view audit logs.</p>
+          </div>
+        </ScrollReveal>
 
         {/* Tabs */}
-        <div className="flex border-b border-space-600/50 mb-6">
-          {tabs.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
-                tab === t.key
-                  ? 'border-nebula-500 text-white'
-                  : 'border-transparent text-star-300 hover:text-white'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        <ScrollReveal delay={0.1}>
+          <div className="flex border-b border-space-600/50 mb-6">
+            {tabs.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
+                  tab === t.key
+                    ? 'border-nebula-500 text-white'
+                    : 'border-transparent text-star-300 hover:text-white'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </ScrollReveal>
 
         {/* Tab Content */}
         {tab === 'all-users' && <AllUsersTab />}
@@ -250,6 +255,7 @@ function AllUsersTab() {
   return (
     <div>
       {/* Search & Filter Bar */}
+      <ScrollReveal>
       <div className="flex flex-wrap items-end gap-3 mb-6">
         <form onSubmit={handleSearchSubmit} className="flex-1 min-w-[200px]">
           <label htmlFor="user-search" className="block text-xs font-medium text-star-400 mb-1">Search Users</label>
@@ -287,6 +293,7 @@ function AllUsersTab() {
           </div>
         )}
       </div>
+      </ScrollReveal>
 
       {/* Loading */}
       {loading && (
@@ -321,6 +328,7 @@ function AllUsersTab() {
 
       {/* User Table */}
       {!loading && !error && users.length > 0 && (
+        <ScrollReveal delay={0.15}>
         <div className="card border border-space-600/50 overflow-hidden">
           {/* Table Header */}
           <div className="hidden lg:grid lg:grid-cols-7 gap-4 px-4 py-3 bg-space-700/50 border-b border-space-600/50 text-xs font-medium text-star-400 uppercase tracking-wider">
@@ -439,6 +447,7 @@ function AllUsersTab() {
             ))}
           </div>
         </div>
+        </ScrollReveal>
       )}
 
       {/* Pagination */}
@@ -573,7 +582,7 @@ function AdminManagementTab({ currentUserId }: { currentUserId: string }) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {admins.map((admin) => {
           const badge = ROLE_BADGES[admin.adminRole || 'admin'] || ROLE_BADGES.admin;
           const isEditing = editingId === admin.id;
@@ -581,7 +590,8 @@ function AdminManagementTab({ currentUserId }: { currentUserId: string }) {
           const isSelf = admin.id === currentUserId;
 
           return (
-            <div key={admin.id} className="card border border-space-600/50 p-4">
+            <StaggerItem key={admin.id}>
+            <div className="card border border-space-600/50 p-4">
               {/* Header */}
               <div className="flex items-start justify-between mb-3">
                 <div className="min-w-0 flex-1">
@@ -672,9 +682,10 @@ function AdminManagementTab({ currentUserId }: { currentUserId: string }) {
                 </div>
               )}
             </div>
+            </StaggerItem>
           );
         })}
-      </div>
+      </StaggerContainer>
     </div>
   );
 }

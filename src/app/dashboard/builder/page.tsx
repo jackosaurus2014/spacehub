@@ -15,6 +15,7 @@ import {
   type LocalLayout,
 } from '@/lib/dashboard/local-storage';
 import { SkeletonPage } from '@/components/ui/Skeleton';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 interface ApiLayout {
   id: string;
@@ -433,69 +434,76 @@ export default function DashboardBuilderPage() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
         {/* Page Header */}
-        <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="text-slate-400 hover:text-slate-600 p-1"
-              title="Back to Dashboard"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <div>
-              <h1 className="text-xl font-bold text-white">{activeLayoutName}</h1>
-              <p className="text-sm text-slate-500">
-                {useLocalStorage ? 'Saved locally' : `${tier} tier`}
-                {' | '}
-                {activeWidgets.length} widget{activeWidgets.length !== 1 ? 's' : ''}
-              </p>
+        <ScrollReveal>
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="text-slate-400 hover:text-slate-600 p-1"
+                title="Back to Dashboard"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <div>
+                <h1 className="text-xl font-bold text-white">{activeLayoutName}</h1>
+                <p className="text-sm text-slate-500">
+                  {useLocalStorage ? 'Saved locally' : `${tier} tier`}
+                  {' | '}
+                  {activeWidgets.length} widget{activeWidgets.length !== 1 ? 's' : ''}
+                </p>
+              </div>
             </div>
-          </div>
 
-          <button
-            onClick={() => setShowLayoutSelector(true)}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 bg-slate-800 border border-slate-700 rounded-lg hover:border-cyan-400/50 hover:bg-cyan-900/30 transition-all shadow-sm"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-            Layouts
-          </button>
-        </div>
+            <button
+              onClick={() => setShowLayoutSelector(true)}
+              className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 bg-slate-800 border border-slate-700 rounded-lg hover:border-cyan-400/50 hover:bg-cyan-900/30 transition-all shadow-sm"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+              Layouts
+            </button>
+          </div>
+        </ScrollReveal>
 
         {/* Onboarding: no layouts exist */}
         {layouts.length === 0 && !activeLayoutId && (
-          <div className="card p-8 text-center mb-6">
-            <svg className="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-            </svg>
-            <h2 className="text-lg font-bold text-white mb-2">Build Your Dashboard</h2>
-            <p className="text-slate-500 text-sm mb-6 max-w-md mx-auto">
-              Create a personalized dashboard with widgets from any SpaceNexus module.
-              Start from a template or build from scratch.
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              {DEFAULT_LAYOUTS.slice(0, 2).map((preset, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleCreateFromPreset(preset)}
-                  className="px-5 py-3 rounded-xl border border-slate-700 hover:border-cyan-400/50 hover:bg-cyan-900/30 transition-all text-left max-w-xs"
-                >
-                  <p className="text-sm font-semibold text-white">{preset.name}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">{preset.description}</p>
-                </button>
-              ))}
-              <button
-                onClick={handleCreateBlank}
-                className="px-5 py-3 rounded-xl border border-dashed border-slate-600 hover:border-cyan-400/50 hover:bg-cyan-900/30 transition-all"
-              >
-                <p className="text-sm font-semibold text-white">Blank Dashboard</p>
-                <p className="text-xs text-slate-400 mt-0.5">Start from scratch</p>
-              </button>
+          <ScrollReveal delay={0.1}>
+            <div className="card p-8 text-center mb-6">
+              <svg className="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+              </svg>
+              <h2 className="text-lg font-bold text-white mb-2">Build Your Dashboard</h2>
+              <p className="text-slate-500 text-sm mb-6 max-w-md mx-auto">
+                Create a personalized dashboard with widgets from any SpaceNexus module.
+                Start from a template or build from scratch.
+              </p>
+              <StaggerContainer className="flex flex-wrap justify-center gap-3">
+                {DEFAULT_LAYOUTS.slice(0, 2).map((preset, index) => (
+                  <StaggerItem key={index}>
+                    <button
+                      onClick={() => handleCreateFromPreset(preset)}
+                      className="px-5 py-3 rounded-xl border border-slate-700 hover:border-cyan-400/50 hover:bg-cyan-900/30 transition-all text-left max-w-xs"
+                    >
+                      <p className="text-sm font-semibold text-white">{preset.name}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">{preset.description}</p>
+                    </button>
+                  </StaggerItem>
+                ))}
+                <StaggerItem>
+                  <button
+                    onClick={handleCreateBlank}
+                    className="px-5 py-3 rounded-xl border border-dashed border-slate-600 hover:border-cyan-400/50 hover:bg-cyan-900/30 transition-all"
+                  >
+                    <p className="text-sm font-semibold text-white">Blank Dashboard</p>
+                    <p className="text-xs text-slate-400 mt-0.5">Start from scratch</p>
+                  </button>
+                </StaggerItem>
+              </StaggerContainer>
             </div>
-          </div>
+          </ScrollReveal>
         )}
 
         {/* Dashboard Builder */}
