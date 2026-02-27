@@ -9,6 +9,7 @@ import ModuleConfigurator from '@/components/ModuleConfigurator';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import RecentlyViewed from '@/components/ui/RecentlyViewed';
 import { SkeletonPage } from '@/components/ui/Skeleton';
+import LaunchCountdown from '@/components/widgets/LaunchCountdown';
 import {
   getEffectiveLayout,
   getGridColumnsClass,
@@ -368,6 +369,11 @@ export default function DashboardPage() {
               </div>
             </Link>
           ))}
+        </div>
+
+        {/* Launch Countdown Widget */}
+        <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.06s' }}>
+          <LaunchCountdown />
         </div>
 
         {/* Recently Viewed Section */}

@@ -49,6 +49,10 @@ const PersonaDashboard = nextDynamic(() => import('@/components/PersonaDashboard
   ssr: false,
   loading: () => <div className="py-8"><div className="container mx-auto px-4"><div className="animate-pulse h-40 bg-slate-800 rounded-xl"></div></div></div>,
 });
+const NewsTicker = nextDynamic(() => import('@/components/widgets/NewsTicker'), {
+  ssr: false,
+  loading: () => <div className="h-10 bg-slate-900/80 border-y border-slate-700/40" />,
+});
 
 // Force dynamic rendering - no static generation at build time
 export const dynamic = 'force-dynamic';
@@ -131,6 +135,9 @@ export default async function HomePage() {
     <div className="min-h-screen">
       {/* Hero Section with Video Background */}
       <LandingHero />
+
+      {/* Scrolling News Ticker */}
+      <NewsTicker />
 
       {/* Coming Soon — Mobile App Banner */}
       <section className="relative z-10 py-4">
