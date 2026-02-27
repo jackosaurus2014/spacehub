@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Resources & Podcasts | SpaceNexus',
-  description: 'Curated directory of space industry podcasts, newsletters, YouTube channels, and conferences.',
+  title: 'Platform Resources | SpaceNexus',
+  description: 'Central directory of all SpaceNexus tools, trackers, calculators, and content — from market intelligence to mission planning.',
   openGraph: {
-    title: 'Resources & Podcasts | SpaceNexus',
-    description: 'Curated directory of space industry podcasts, newsletters, YouTube channels, and conferences.',
+    title: 'Platform Resources | SpaceNexus',
+    description: 'Central directory of all SpaceNexus tools, trackers, calculators, and content — from market intelligence to mission planning.',
   },
 };
 

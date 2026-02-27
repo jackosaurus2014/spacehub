@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
+import ExportButton from '@/components/ui/ExportButton';
 import { clientLogger } from '@/lib/client-logger';
 import EmptyState from '@/components/ui/EmptyState';
 
@@ -1007,6 +1008,34 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
               Clear Filters
             </button>
           )}
+
+          <div className="ml-auto">
+            <ExportButton
+              data={filtered.map(h => ({
+                name: h.name,
+                country: h.country,
+                portfolioSize: h.portfolioSize,
+                recentFilings: h.recentFilings,
+                citationCount: h.citationCount,
+                keyAreas: (h.keyAreas || []).join('; '),
+                trend: h.trend,
+                trendPct: h.trendPct,
+                notablePatents: (h.notablePatents || []).join('; '),
+              }))}
+              filename="patent-holders"
+              columns={[
+                { key: 'name', label: 'Organization' },
+                { key: 'country', label: 'Country' },
+                { key: 'portfolioSize', label: 'Portfolio Size' },
+                { key: 'recentFilings', label: 'Recent Filings (2yr)' },
+                { key: 'citationCount', label: 'Citation Count' },
+                { key: 'keyAreas', label: 'Key Areas' },
+                { key: 'trend', label: 'Trend' },
+                { key: 'trendPct', label: 'Growth %' },
+                { key: 'notablePatents', label: 'Notable Patents' },
+              ]}
+            />
+          </div>
         </div>
       </div>
 
@@ -1182,15 +1211,40 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
       {/* Sort Control */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-white">Technology Domain Analysis</h3>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as 'patents' | 'growth' | 'recent')}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
-        >
-          <option value="patents">Sort by Total Patents</option>
-          <option value="growth">Sort by Growth Rate</option>
-          <option value="recent">Sort by Recent Activity</option>
-        </select>
+        <div className="flex items-center gap-3">
+          <ExportButton
+            data={sorted.map(c => ({
+              name: c.name,
+              totalPatents: c.totalPatents,
+              growthRate: c.growthRate,
+              recentFilings: c.recentFilings,
+              acceleration: c.acceleration,
+              topHolders: (c.topHolders || []).join('; '),
+              emergingSubfields: (c.emergingSubfields || []).join('; '),
+              description: c.description,
+            }))}
+            filename="patent-technology-trends"
+            columns={[
+              { key: 'name', label: 'Technology Domain' },
+              { key: 'totalPatents', label: 'Total Patents' },
+              { key: 'growthRate', label: 'Growth Rate (%)' },
+              { key: 'recentFilings', label: 'Recent Filings (2yr)' },
+              { key: 'acceleration', label: 'Acceleration' },
+              { key: 'topHolders', label: 'Top Holders' },
+              { key: 'emergingSubfields', label: 'Emerging Subfields' },
+              { key: 'description', label: 'Description' },
+            ]}
+          />
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'patents' | 'growth' | 'recent')}
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+          >
+            <option value="patents">Sort by Total Patents</option>
+            <option value="growth">Sort by Growth Rate</option>
+            <option value="recent">Sort by Recent Activity</option>
+          </select>
+        </div>
       </div>
 
       {/* Category Cards */}
@@ -1428,8 +1482,33 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
       </div>
 
       {/* Patent Cards */}
-      <div className="text-sm text-slate-400 mb-2">
-        Showing {filtered.length} of {nasaData.length} highlighted patents
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-sm text-slate-400">
+          Showing {filtered.length} of {nasaData.length} highlighted patents
+        </div>
+        <ExportButton
+          data={filtered.map(p => ({
+            title: p.title,
+            patentNumber: p.patentNumber,
+            center: p.center,
+            category: p.category,
+            year: p.year,
+            status: p.status,
+            licensable: p.licensable ? 'Yes' : 'No',
+            description: p.description,
+          }))}
+          filename="nasa-patents"
+          columns={[
+            { key: 'title', label: 'Title' },
+            { key: 'patentNumber', label: 'Patent Number' },
+            { key: 'center', label: 'NASA Center' },
+            { key: 'category', label: 'Category' },
+            { key: 'year', label: 'Year' },
+            { key: 'status', label: 'Status' },
+            { key: 'licensable', label: 'Licensable' },
+            { key: 'description', label: 'Description' },
+          ]}
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

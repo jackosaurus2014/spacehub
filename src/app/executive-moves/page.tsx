@@ -8,6 +8,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PremiumGate from '@/components/PremiumGate';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import ExportButton from '@/components/ui/ExportButton';
 import EmptyState from '@/components/ui/EmptyState';
 
 interface ExecutiveMove {
@@ -380,9 +381,34 @@ function ExecutiveMovesContent() {
 
         <div className="flex items-center justify-between mt-3 text-xs text-slate-500">
           <span>{total} executive move{total !== 1 ? 's' : ''} found</span>
-          {totalPages > 1 && (
-            <span>Page {page} of {totalPages}</span>
-          )}
+          <div className="flex items-center gap-3">
+            <ExportButton
+              data={moves.map(m => ({
+                personName: m.personName,
+                fromCompany: m.fromCompany || '',
+                fromTitle: m.fromTitle || '',
+                toCompany: m.toCompany || '',
+                toTitle: m.toTitle || '',
+                moveType: m.moveType,
+                date: m.date,
+                summary: m.summary || '',
+              }))}
+              filename="executive-moves"
+              columns={[
+                { key: 'personName', label: 'Person' },
+                { key: 'fromCompany', label: 'From Company' },
+                { key: 'fromTitle', label: 'From Title' },
+                { key: 'toCompany', label: 'To Company' },
+                { key: 'toTitle', label: 'To Title' },
+                { key: 'moveType', label: 'Type' },
+                { key: 'date', label: 'Date' },
+                { key: 'summary', label: 'Summary' },
+              ]}
+            />
+            {totalPages > 1 && (
+              <span>Page {page} of {totalPages}</span>
+            )}
+          </div>
         </div>
       </motion.div>
 

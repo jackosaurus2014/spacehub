@@ -11,6 +11,7 @@ import NotificationBell from '@/components/launch/NotificationBell';
 import EventSchema from '@/components/seo/EventSchema';
 import { getCompanyProfileUrl } from '@/lib/company-links';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import PullToRefresh from '@/components/ui/PullToRefresh';
 
 interface LaunchEvent {
   id: string;
@@ -237,6 +238,7 @@ export default function LaunchListPage() {
           accentColor="cyan"
         />
 
+        <PullToRefresh onRefresh={async () => { await fetchLaunches(); }}>
         {loading ? (
           <div className="flex justify-center py-20">
             <LoadingSpinner size="lg" />
@@ -325,6 +327,7 @@ export default function LaunchListPage() {
             )}
           </div>
         )}
+        </PullToRefresh>
       </div>
     </div>
   );

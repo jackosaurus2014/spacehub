@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import ExportButton from '@/components/ui/ExportButton';
 import EmptyState from '@/components/ui/EmptyState';
 
 // ────────────────────────────────────────
@@ -613,20 +614,47 @@ export default function ContractAwardsPage() {
               </div>
             </div>
 
-            {/* Active filter count */}
-            {(agencyFilter !== 'All' || categoryFilter !== 'All' || yearFilter !== 'All') && (
-              <div className="mt-3 flex items-center gap-2">
-                <span className="text-xs text-slate-400">
-                  Showing {filteredAwards.length} of {CONTRACT_AWARDS.length} awards
-                </span>
-                <button
-                  onClick={() => { setAgencyFilter('All'); setCategoryFilter('All'); setYearFilter('All'); }}
-                  className="text-xs text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors"
-                >
-                  Clear filters
-                </button>
+            {/* Active filter count & export */}
+            <div className="mt-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {(agencyFilter !== 'All' || categoryFilter !== 'All' || yearFilter !== 'All') && (
+                  <>
+                    <span className="text-xs text-slate-400">
+                      Showing {filteredAwards.length} of {CONTRACT_AWARDS.length} awards
+                    </span>
+                    <button
+                      onClick={() => { setAgencyFilter('All'); setCategoryFilter('All'); setYearFilter('All'); }}
+                      className="text-xs text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors"
+                    >
+                      Clear filters
+                    </button>
+                  </>
+                )}
               </div>
-            )}
+              <ExportButton
+                data={filteredAwards.map(a => ({
+                  title: a.title,
+                  agency: a.agency,
+                  contractor: a.contractor,
+                  value: a.value,
+                  date: a.date,
+                  type: a.type,
+                  category: a.category,
+                  description: a.description,
+                }))}
+                filename="contract-awards"
+                columns={[
+                  { key: 'title', label: 'Title' },
+                  { key: 'agency', label: 'Agency' },
+                  { key: 'contractor', label: 'Contractor' },
+                  { key: 'value', label: 'Value (USD)' },
+                  { key: 'date', label: 'Date' },
+                  { key: 'type', label: 'Contract Type' },
+                  { key: 'category', label: 'Category' },
+                  { key: 'description', label: 'Description' },
+                ]}
+              />
+            </div>
           </div>
         </ScrollReveal>
 
