@@ -36,29 +36,34 @@ const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'swap' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://spacenexus.us'),
+  metadataBase: new URL('https://spacenexus.io'),
   title: {
-    template: 'SpaceNexus | %s',
+    template: '%s | SpaceNexus',
     default: 'SpaceNexus - Space Industry Intelligence Platform',
   },
-  description: 'The space industry\'s first comprehensive intelligence platform. Real-time data, investor tools, market sizing, grant tracking, satellite monitoring, and 30+ interactive modules for space professionals.',
+  description: 'The comprehensive space industry intelligence platform. Company profiles, market data, mission planning tools, procurement intelligence, and community forums for space professionals.',
   keywords: [
     'space industry',
+    'space intelligence',
     'space industry intelligence',
     'space market intelligence',
+    'space market data',
     'space investor tools',
     'satellite tracking',
+    'launch vehicles',
     'space economy',
     'space startup funding',
     'space industry market size',
     'space companies',
+    'orbital mechanics',
+    'space procurement',
     'rocket launches',
     'aerospace',
     'space grants',
   ],
-  authors: [{ name: 'SpaceNexus Team' }],
-  creator: 'SpaceNexus',
-  publisher: 'SpaceNexus',
+  authors: [{ name: 'SpaceNexus LLC' }],
+  creator: 'SpaceNexus LLC',
+  publisher: 'SpaceNexus LLC',
   robots: {
     index: true,
     follow: true,
@@ -73,10 +78,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://spacenexus.us',
+    url: 'https://spacenexus.io',
     siteName: 'SpaceNexus',
     title: 'SpaceNexus - Space Industry Intelligence Platform',
-    description: 'Your comprehensive gateway to space industry intelligence. Track launches, market data, solar activity, and discover business opportunities.',
+    description: 'The comprehensive space industry intelligence platform for space professionals.',
     images: [
       {
         url: '/og-image.png',
@@ -89,7 +94,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'SpaceNexus - Space Industry Intelligence Platform',
-    description: 'Your comprehensive gateway to space industry intelligence. Track launches, market data, solar activity, and discover business opportunities.',
+    description: 'The comprehensive space industry intelligence platform for space professionals.',
     images: ['/og-image.png'],
     creator: '@spacenexus',
     site: '@spacenexus',
@@ -109,7 +114,7 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   alternates: {
-    canonical: 'https://spacenexus.us',
+    canonical: 'https://spacenexus.io',
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,

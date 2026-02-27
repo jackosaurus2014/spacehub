@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     images: ['/og-marketplace.png'],
   },
   alternates: {
-    canonical: 'https://spacenexus.us/marketplace',
+    canonical: 'https://spacenexus.io/marketplace',
   },
 };
 

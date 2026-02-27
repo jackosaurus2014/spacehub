@@ -28,7 +28,7 @@ export const metadata: Metadata = {
       'Get answers about SpaceNexus space industry intelligence platform features, pricing, and technical details.',
   },
   alternates: {
-    canonical: 'https://spacenexus.us/faq',
+    canonical: 'https://spacenexus.io/faq',
   },
 };
 

@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   alternates: {
-    canonical: 'https://spacenexus.us/glossary',
+    canonical: 'https://spacenexus.io/glossary',
   },
 };
 
