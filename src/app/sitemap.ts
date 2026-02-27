@@ -245,6 +245,12 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/satellite-bus-comparison`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/rf-spectrum`, changeFrequency: 'weekly' as const, priority: 0.6 },
 
+    // Wave 53 pages
+    { url: `${BASE_URL}/propulsion-comparison`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/space-edge-computing`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/conferences`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/newsletters-directory`, changeFrequency: 'weekly' as const, priority: 0.6 },
+
     // About & Dashboard
     { url: `${BASE_URL}/about`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/dashboard`, changeFrequency: 'daily' as const, priority: 0.6 },

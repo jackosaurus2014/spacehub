@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Technology Readiness Tracker | SpaceNexus',
-  description: 'Track emerging space technologies from lab research to flight-ready across propulsion, materials, comms, and AI.',
+  title: 'Technology Readiness Assessment | SpaceNexus',
+  description: 'Comprehensive TRL assessment tool with interactive 9-level scale reference, self-assessment questionnaire, and 28+ emerging space technology tracker.',
   openGraph: {
-    title: 'Technology Readiness Tracker | SpaceNexus',
-    description: 'Track emerging space technologies from lab research to flight-ready across propulsion, materials, comms, and AI.',
+    title: 'Technology Readiness Assessment | SpaceNexus',
+    description: 'Comprehensive TRL assessment tool with interactive 9-level scale reference, self-assessment questionnaire, and 28+ emerging space technology tracker.',
   },
 };
 

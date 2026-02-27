@@ -49,6 +49,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Debris Catalog', href: '/debris-catalog', description: 'Comprehensive orbital debris database' },
   { label: 'Sustainability Scorecard', href: '/sustainability-scorecard', description: 'Space sustainability metrics & ratings' },
   { label: 'FAQ', href: '/faq', description: 'Frequently asked questions' },
+  { label: 'Newsletters', href: '/newsletters-directory', description: 'Space industry newsletter directory' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
@@ -79,6 +80,7 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Ground Stations', href: '/ground-station-directory', description: 'Global ground station directory & capabilities' },
   { label: 'Launch Economics', href: '/launch-economics', description: 'Launch cost trends & pricing analysis' },
   { label: 'RF Spectrum', href: '/rf-spectrum', description: 'RF spectrum analysis & interference mapping' },
+  { label: 'Edge Computing', href: '/space-edge-computing', description: 'Space edge computing & on-orbit processing' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
@@ -99,6 +101,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Supply Chain Risk', href: '/supply-chain-risk', description: 'Supplier risk scoring & disruption alerts' },
   { label: 'Funding Rounds', href: '/funding-rounds', description: 'Startup funding rounds & investment data' },
   { label: 'M&A Tracker', href: '/ma-tracker', description: 'Mergers & acquisitions deal tracking' },
+  { label: 'Conferences', href: '/conferences', description: 'Space industry conferences & events calendar' },
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [
@@ -141,6 +144,7 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Clean Room Guide', href: '/clean-room-reference', description: 'Clean room classifications & requirements' },
   { label: 'Education Pathways', href: '/education-pathways', description: 'Space industry degree & training programs' },
   { label: 'Satellite Buses', href: '/satellite-bus-comparison', description: 'Satellite bus platform comparison tool' },
+  { label: 'Propulsion Comparison', href: '/propulsion-comparison', description: 'Compare rocket engines & propulsion systems' },
 ];
 
 function DropdownMenu({
