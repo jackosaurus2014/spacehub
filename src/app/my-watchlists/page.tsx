@@ -377,14 +377,19 @@ function WatchlistsContent() {
                   </svg>
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">No watchlists yet</h3>
-                <p className="text-sm text-slate-400 max-w-md mx-auto mb-6">
-                  Create your first watchlist to track satellites, companies, and launches.
-                  Get notified about news, contract awards, and marketplace activity for companies you follow.
+                <p className="text-sm text-slate-400 max-w-md mx-auto mb-2">
+                  Create your first watchlist to track companies, launches, and topics that matter to you.
+                </p>
+                <p className="text-xs text-slate-500 max-w-md mx-auto mb-6">
+                  Get notified about breaking news, contract awards, and marketplace activity for the companies you follow.
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
                   <Link href="/company-profiles">
-                    <button className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-semibold transition-colors">
-                      Browse Companies
+                    <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-semibold transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                      </svg>
+                      Create Watchlist
                     </button>
                   </Link>
                   <Link href="/satellites">
@@ -480,19 +485,30 @@ function WatchlistsContent() {
               </StaggerContainer>
               </ScrollReveal>
             ) : (
-              <div className="text-center py-16">
-                <div className="text-4xl mb-3">💾</div>
-                <p className="text-sm text-slate-400 mb-4">
-                  No saved searches yet. Save your searches from the company directory or marketplace.
+              <div className="text-center py-20">
+                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-purple-500/20 flex items-center justify-center mb-6">
+                  <svg className="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">No saved searches yet</h3>
+                <p className="text-sm text-slate-400 max-w-md mx-auto mb-2">
+                  Save your frequently used searches from the company directory or marketplace to quickly re-run them later.
+                </p>
+                <p className="text-xs text-slate-500 max-w-md mx-auto mb-6">
+                  Enable alerts on saved searches to get notified when new results match your criteria.
                 </p>
                 <div className="flex justify-center gap-3">
                   <Link href="/company-profiles">
-                    <button className="px-5 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors">
+                    <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                      </svg>
                       Company Directory
                     </button>
                   </Link>
                   <Link href="/marketplace/search">
-                    <button className="px-5 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors">
+                    <button className="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors">
                       Marketplace Search
                     </button>
                   </Link>
@@ -562,16 +578,36 @@ function WatchlistsContent() {
                 );
               })
             ) : (
-              <div className="text-center py-16">
-                <div className="text-4xl mb-3">📊</div>
-                <p className="text-sm text-slate-400 mb-2">
+              <div className="text-center py-20">
+                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/20 flex items-center justify-center mb-6">
+                  <svg className="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  {watchlist.length === 0 ? 'No digests available' : 'Digests coming soon'}
+                </h3>
+                <p className="text-sm text-slate-400 max-w-md mx-auto mb-2">
                   {watchlist.length === 0
-                    ? 'Watch some companies first to see their weekly digests here.'
-                    : 'No digests available yet. Digests are generated weekly for companies with recent news.'}
+                    ? 'Watch some companies first to receive their weekly intelligence digests here.'
+                    : 'No digests available yet. Digests are generated weekly for companies with recent news coverage.'}
                 </p>
+                {watchlist.length === 0 ? (
+                  <p className="text-xs text-slate-500 max-w-md mx-auto mb-6">
+                    Digests summarize the latest news, contract awards, and market activity for each company you follow.
+                  </p>
+                ) : (
+                  <p className="text-xs text-slate-500 max-w-md mx-auto mb-6">
+                    Check back soon -- your next digest will appear after the weekly analysis runs.
+                  </p>
+                )}
                 {watchlist.length === 0 && (
                   <Link href="/company-profiles">
-                    <button className="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors mt-2">
+                    <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
                       Browse Companies
                     </button>
                   </Link>

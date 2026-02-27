@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 // ────────────────────────────────────────
 // Types
@@ -839,9 +840,14 @@ export default function PropulsionComparisonPage() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
         {/* Breadcrumbs */}
+        <BreadcrumbSchema items={[
+          { name: 'Home', href: '/' },
+          { name: 'Tools' },
+          { name: 'Propulsion Comparison' },
+        ]} />
         <Breadcrumbs
           items={[
-            { label: 'Mission Planning', href: '/mission-cost' },
+            { label: 'Tools' },
             { label: 'Propulsion Comparison' },
           ]}
         />

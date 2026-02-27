@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ---------- Types ----------
@@ -639,7 +640,15 @@ export default function NewslettersDirectoryPage() {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
-        <Breadcrumbs items={[{ label: 'News & Media', href: '/news' }, { label: 'Newsletters Directory' }]} />
+        <BreadcrumbSchema items={[
+          { name: 'Home', href: '/' },
+          { name: 'Resources', href: '/resources' },
+          { name: 'Newsletters' },
+        ]} />
+        <Breadcrumbs items={[
+          { label: 'Resources', href: '/resources' },
+          { label: 'Newsletters' },
+        ]} />
 
         <AnimatedPageHeader
           title="Space Industry Newsletters & Media"

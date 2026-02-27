@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import {
   OVERVIEW_STATS,
@@ -142,8 +143,13 @@ export default function WorkforceAnalyticsPage() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
         {/* Breadcrumbs */}
+        <BreadcrumbSchema items={[
+          { name: 'Home', href: '/' },
+          { name: 'Intelligence', href: '/market-intel' },
+          { name: 'Workforce Analytics' },
+        ]} />
         <Breadcrumbs items={[
-          { label: 'Space Talent', href: '/space-talent' },
+          { label: 'Intelligence', href: '/market-intel' },
           { label: 'Workforce Analytics' },
         ]} />
 

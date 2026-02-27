@@ -913,8 +913,37 @@ export default function LaunchManifestPage() {
     });
   }, [vehicleFilter, siteFilter, statusFilter, searchQuery]);
 
+  // Build Event JSON-LD structured data for upcoming launches (SEO)
+  const upcomingLaunches = LAUNCHES.filter((l) => l.status === 'upcoming');
+  const launchSchemaData = upcomingLaunches.slice(0, 30).map((launch) => ({
+    '@type': 'Event',
+    name: `${launch.vehicle} - ${launch.payload}`,
+    description: launch.description,
+    startDate: `${launch.date}T${launch.time}:00Z`,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: {
+      '@type': 'Place',
+      name: launch.site,
+      address: launch.site,
+    },
+    organizer: {
+      '@type': 'Organization',
+      name: launch.customer,
+    },
+  }));
+
+  const launchesSchema = {
+    '@context': 'https://schema.org',
+    '@graph': launchSchemaData,
+  };
+
   return (
     <div className="min-h-screen py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(launchesSchema).replace(/</g, '\\u003c') }}
+      />
       <div className="container mx-auto px-4 max-w-7xl">
         <Breadcrumbs items={[
           { label: 'Launch Dashboard', href: '/launch' },

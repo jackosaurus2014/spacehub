@@ -325,11 +325,11 @@ export default function ReadingListPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-16"
+            className="text-center py-20"
           >
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800/50 flex items-center justify-center">
+            <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center mb-6">
               <svg
-                className="w-8 h-8 text-slate-500"
+                className="w-10 h-10 text-cyan-400"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={1.5}
@@ -342,18 +342,23 @@ export default function ReadingListPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-slate-200 mb-2">
+            <h2 className="text-xl font-semibold text-white mb-2">
               Your reading list is empty
             </h2>
-            <p className="text-slate-400 mb-6 max-w-md mx-auto">
-              Save articles from the news feed by clicking the bookmark icon on
-              any article card.
+            <p className="text-slate-400 mb-2 max-w-md mx-auto">
+              Browse articles and click the bookmark icon to save them here.
+            </p>
+            <p className="text-slate-500 text-sm mb-6 max-w-md mx-auto">
+              Build your personal library of space industry news, analysis, and research to read on your schedule.
             </p>
             <Link
               href="/news"
-              className="btn-primary inline-block text-sm py-2.5 px-6"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors"
             >
-              Browse News
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+              </svg>
+              Browse News Articles
             </Link>
           </motion.div>
         )}

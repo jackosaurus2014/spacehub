@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 // ════════════════════════════════════════
 // Types & Constants
@@ -396,8 +397,13 @@ export default function MissionSimulatorPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
+        <BreadcrumbSchema items={[
+          { name: 'Home', href: '/' },
+          { name: 'Tools' },
+          { name: 'Mission Simulator' },
+        ]} />
         <Breadcrumbs items={[
-          { label: 'Mission Planning', href: '/mission-cost' },
+          { label: 'Tools' },
           { label: 'Mission Simulator' },
         ]} />
 

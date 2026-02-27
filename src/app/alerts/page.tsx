@@ -735,22 +735,27 @@ function AlertsPageInner() {
     <div className="space-y-4">
       {rules.length === 0 ? (
         <div className="text-center py-20 bg-slate-900/50 border border-slate-800 rounded-xl">
-          <svg
-            className="w-14 h-14 text-slate-600 mx-auto mb-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-500/20 to-amber-500/20 border border-orange-500/20 flex items-center justify-center mb-6">
+            <svg
+              className="w-10 h-10 text-orange-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
               strokeWidth={1.5}
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-            />
-          </svg>
-          <h3 className="text-lg font-semibold text-white mb-2">No alert rules yet</h3>
-          <p className="text-slate-400 mb-6 max-w-sm mx-auto">
-            Create your first alert rule to get notified about space industry events that matter to you.
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+              />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-white mb-2">Set up smart alerts</h3>
+          <p className="text-slate-400 mb-2 max-w-md mx-auto">
+            Stay informed about launches, funding rounds, contract awards, and industry events that matter to you.
+          </p>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto mb-6">
+            Configure keyword watches, price thresholds, launch status changes, and more. Get notified via email, in-app, or webhook.
           </p>
           <button
             onClick={() => setShowRuleBuilder(true)}
@@ -924,22 +929,29 @@ function AlertsPageInner() {
 
       {deliveries.length === 0 ? (
         <div className="text-center py-20 bg-slate-900/50 border border-slate-800 rounded-xl">
-          <svg
-            className="w-14 h-14 text-slate-600 mx-auto mb-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500/15 to-blue-500/15 border border-cyan-500/20 flex items-center justify-center mb-6">
+            <svg
+              className="w-10 h-10 text-cyan-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
               strokeWidth={1.5}
-              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-            />
-          </svg>
-          <h3 className="text-lg font-semibold text-white mb-2">No notifications yet</h3>
-          <p className="text-slate-400 max-w-sm mx-auto">
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-white mb-2">No notifications yet</h3>
+          <p className="text-slate-400 mb-2 max-w-sm mx-auto">
             When your alert rules are triggered, notifications will appear here.
+          </p>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            {rules.length === 0
+              ? 'Create an alert rule first to start receiving notifications.'
+              : `You have ${rules.filter(r => r.isActive).length} active alert rule${rules.filter(r => r.isActive).length !== 1 ? 's' : ''} monitoring for events.`}
           </p>
         </div>
       ) : (
@@ -1098,33 +1110,41 @@ function AlertsPageInner() {
     <div>
       {savedSearches.length === 0 ? (
         <div className="text-center py-20 bg-slate-900/50 border border-slate-800 rounded-xl">
-          <svg
-            className="w-14 h-14 text-slate-600 mx-auto mb-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-purple-500/20 flex items-center justify-center mb-6">
+            <svg
+              className="w-10 h-10 text-purple-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
               strokeWidth={1.5}
-              d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-            />
-          </svg>
-          <h3 className="text-lg font-semibold text-white mb-2">No saved searches</h3>
-          <p className="text-slate-400 max-w-sm mx-auto mb-6">
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-white mb-2">No saved searches</h3>
+          <p className="text-slate-400 mb-2 max-w-md mx-auto">
             Save searches from the Company Directory or Marketplace to quickly re-run them and get alerts on new matches.
+          </p>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto mb-6">
+            Enable alerts on any saved search to be notified automatically when new results appear.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link
               href="/company-profiles"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg transition-colors border border-slate-700"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-medium rounded-lg transition-colors"
             >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
               Browse Companies
             </Link>
             <Link
               href="/marketplace/search"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg transition-colors border border-slate-700"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium rounded-lg transition-colors"
             >
               Marketplace Search
             </Link>

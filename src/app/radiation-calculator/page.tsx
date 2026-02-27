@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 // ────────────────────────────────────────
 // Types & Constants
@@ -910,8 +911,13 @@ export default function RadiationCalculatorPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-8">
       <div className="container mx-auto px-4 max-w-7xl">
+        <BreadcrumbSchema items={[
+          { name: 'Home', href: '/' },
+          { name: 'Tools' },
+          { name: 'Radiation Calculator' },
+        ]} />
         <Breadcrumbs items={[
-          { label: 'Tools', href: '/tools' },
+          { label: 'Tools' },
           { label: 'Radiation Calculator' },
         ]} />
 

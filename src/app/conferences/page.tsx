@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 // ────────────────────────────────────────
 // Types
@@ -710,11 +711,72 @@ export default function ConferencesPage() {
     setSearchQuery('');
   };
 
+  // Build Event JSON-LD structured data for SEO
+  const eventSchemaData = CONFERENCES.map((event) => {
+    // Parse dates like "Jan 7-10, 2026" or "Apr 6-9, 2026"
+    const dateMatch = event.dates.match(/(\w+)\s+(\d+)-(\d+),\s*(\d{4})/);
+    const monthMap: Record<string, string> = {
+      Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+      Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12',
+    };
+
+    let startDate: string | undefined;
+    let endDate: string | undefined;
+    if (dateMatch) {
+      const mm = monthMap[dateMatch[1]] || String(event.month).padStart(2, '0');
+      const year = dateMatch[4];
+      startDate = `${year}-${mm}-${dateMatch[2].padStart(2, '0')}`;
+      endDate = `${year}-${mm}-${dateMatch[3].padStart(2, '0')}`;
+    }
+
+    const isVirtual = event.region === 'Virtual';
+
+    return {
+      '@type': 'Event',
+      name: event.name,
+      description: event.description,
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate }),
+      eventStatus: 'https://schema.org/EventScheduled',
+      eventAttendanceMode: isVirtual
+        ? 'https://schema.org/OnlineEventAttendanceMode'
+        : 'https://schema.org/OfflineEventAttendanceMode',
+      location: isVirtual
+        ? { '@type': 'VirtualLocation', url: `https://${event.website}` }
+        : { '@type': 'Place', name: event.location, address: event.location },
+      url: `https://${event.website}`,
+      offers: {
+        '@type': 'AggregateOffer',
+        lowPrice: String(event.costLow),
+        highPrice: String(event.costHigh),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+      },
+    };
+  });
+
+  const conferencesSchema = {
+    '@context': 'https://schema.org',
+    '@graph': eventSchemaData,
+  };
+
   return (
     <div className="min-h-screen py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(conferencesSchema).replace(/</g, '\\u003c') }}
+      />
       <div className="container mx-auto px-4">
         {/* Breadcrumbs */}
-        <Breadcrumbs items={[{ label: 'Conferences & Events' }]} />
+        <BreadcrumbSchema items={[
+          { name: 'Home', href: '/' },
+          { name: 'Resources', href: '/resources' },
+          { name: 'Conferences' },
+        ]} />
+        <Breadcrumbs items={[
+          { label: 'Resources', href: '/resources' },
+          { label: 'Conferences' },
+        ]} />
 
         {/* Header */}
         <AnimatedPageHeader
