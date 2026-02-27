@@ -283,7 +283,7 @@ describe('POST /api/marketplace/listings', () => {
     const body = await res.json();
 
     expect(res.status).toBe(401);
-    expect(body.error).toBe('Authentication required');
+    expect(body.error.message).toBe('Authentication required');
   });
 
   it('returns 403 when user has no claimed company', async () => {
@@ -299,7 +299,7 @@ describe('POST /api/marketplace/listings', () => {
     const body = await res.json();
 
     expect(res.status).toBe(403);
-    expect(body.error).toContain('claim a company profile');
+    expect(body.error.message).toContain('claim a company profile');
   });
 
   it('returns 400 for missing required fields', async () => {

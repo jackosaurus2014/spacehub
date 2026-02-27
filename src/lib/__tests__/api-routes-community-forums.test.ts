@@ -683,8 +683,8 @@ describe('POST /api/community/forums/[slug]', () => {
     const body = await res.json();
 
     expect(res.status).toBe(403);
-    expect(body.error).toContain('suspended');
-    expect(body.error).toContain('Spamming');
+    expect(body.error.message).toContain('suspended');
+    expect(body.error.message).toContain('Spamming');
   });
 
   it('returns 403 for banned user without a reason', async () => {
@@ -698,7 +698,7 @@ describe('POST /api/community/forums/[slug]', () => {
     const body = await res.json();
 
     expect(res.status).toBe(403);
-    expect(body.error).toContain('suspended');
+    expect(body.error.message).toContain('suspended');
   });
 
   it('returns 403 when user is muted', async () => {
@@ -712,7 +712,7 @@ describe('POST /api/community/forums/[slug]', () => {
     const body = await res.json();
 
     expect(res.status).toBe(403);
-    expect(body.error).toContain('muted');
+    expect(body.error.message).toContain('muted');
   });
 
   it('does not create a thread when user is banned', async () => {

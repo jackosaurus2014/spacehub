@@ -95,11 +95,11 @@ export default function NewsletterSignup({
   if (variant === 'footer') {
     return (
       <div>
-        <h4 className="text-slate-700 font-semibold text-sm uppercase tracking-wider mb-4">
+        <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-2">
           Newsletter
         </h4>
-        <p className="text-slate-400 text-sm mb-4">
-          Get daily space industry insights delivered to your inbox.
+        <p className="text-slate-400 text-xs mb-3">
+          Daily space industry insights in your inbox.
         </p>
         <form onSubmit={handleSubmit} className="space-y-2">
           <input
@@ -108,14 +108,14 @@ export default function NewsletterSignup({
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email"
             aria-label="Email address"
-            className="w-full px-3 py-2 text-sm bg-white/80 border border-slate-300 rounded-lg text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
+            className="w-full px-3 py-2 text-sm bg-slate-800/80 border border-slate-700 rounded-lg text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
             required
             disabled={status === 'loading'}
           />
           <button
             type="submit"
             disabled={status === 'loading' || !email}
-            className="w-full px-3 py-2 text-sm font-medium bg-nebula-600 hover:bg-nebula-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+            className="w-full px-3 py-2 text-sm font-medium bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
           >
             {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
           </button>
@@ -123,7 +123,7 @@ export default function NewsletterSignup({
         {message && (
           <p
             className={`mt-3 text-xs ${
-              status === 'success' ? 'text-emerald-600' : status === 'error' ? 'text-red-500' : 'text-slate-400'
+              status === 'success' ? 'text-emerald-400' : status === 'error' ? 'text-red-400' : 'text-slate-400'
             }`}
           >
             {message}

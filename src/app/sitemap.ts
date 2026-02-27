@@ -159,6 +159,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/privacy`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/terms`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/cookies`, changeFrequency: 'monthly' as const, priority: 0.3 },
+    { url: `${BASE_URL}/legal/dmca`, changeFrequency: 'monthly' as const, priority: 0.3 },
 
     // Community
     { url: `${BASE_URL}/community`, changeFrequency: 'weekly' as const, priority: 0.7 },
@@ -206,6 +207,13 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/orbital-calculator`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/reading-list`, changeFrequency: 'daily' as const, priority: 0.5 },
     { url: `${BASE_URL}/debris-tracker`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/glossary`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/timeline`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/tools`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/company-research`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/link-budget-calculator`, changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/power-budget-calculator`, changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/imagery-providers`, changeFrequency: 'monthly' as const, priority: 0.5 },
 
     // Developer pages
     { url: `${BASE_URL}/developer/docs`, changeFrequency: 'monthly' as const, priority: 0.5 },

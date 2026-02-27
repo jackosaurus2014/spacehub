@@ -44,6 +44,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Debris Remediation', href: '/debris-remediation', description: 'Active debris removal efforts and space sustainability' },
   { label: 'Debris Tracker', href: '/debris-tracker', description: 'Track orbital debris' },
   { label: 'Space Tourism', href: '/space-tourism', description: 'Space tourism providers' },
+  { label: 'FAQ', href: '/faq', description: 'Frequently asked questions' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
@@ -391,6 +392,30 @@ export default function Navigation() {
                 Upgrade
               </Link>
             )}
+            {/* Keyboard Shortcuts */}
+            <button
+              onClick={() => {
+                const opener = (window as unknown as Record<string, unknown>).__openKeyboardShortcuts;
+                if (typeof opener === 'function') {
+                  (opener as () => void)();
+                }
+              }}
+              className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-slate-700/40 transition-colors"
+              aria-label="Keyboard shortcuts (?)"
+              title="Keyboard shortcuts (?)"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <rect x="2" y="6" width="20" height="12" rx="2" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 10h0m4 0h0m4 0h0m4 0h0M8 14h8" />
+              </svg>
+            </button>
             {/* High Contrast Toggle */}
             <button
               onClick={toggleHighContrast}

@@ -62,6 +62,7 @@ const EXPLORE_MODULES: ModuleItem[] = [
   { icon: '\u{1F9F9}', label: 'Debris Remediation', href: '/debris-remediation', description: 'Active debris removal efforts and space sustainability' },
   { icon: '\u{1F6F8}', label: 'Debris Tracker', href: '/debris-tracker', description: 'Track orbital debris' },
   { icon: '\u{1F680}', label: 'Space Tourism', href: '/space-tourism', description: 'Space tourism providers' },
+  { icon: '\u2753', label: 'FAQ', href: '/faq', description: 'Frequently asked questions' },
 ];
 
 const INTELLIGENCE_MODULES: ModuleItem[] = [

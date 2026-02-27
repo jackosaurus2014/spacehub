@@ -563,7 +563,7 @@ describe('PUT /api/marketplace/verify/admin', () => {
     const body = await res.json();
 
     expect(res.status).toBe(403);
-    expect(body.error).toContain('Admin access required');
+    expect(body.error.message).toContain('Admin access required');
   });
 
   it('returns 403 when no session', async () => {
@@ -617,7 +617,7 @@ describe('PUT /api/marketplace/verify/admin', () => {
     const body = await res.json();
 
     expect(res.status).toBe(404);
-    expect(body.error).toBe('Company not found');
+    expect(body.error.message).toBe('Company not found');
   });
 
   it('returns 500 when database throws', async () => {
