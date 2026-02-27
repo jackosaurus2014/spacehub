@@ -251,6 +251,11 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/conferences`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/newsletters-directory`, changeFrequency: 'weekly' as const, priority: 0.6 },
 
+    // Wave 54 pages
+    { url: `${BASE_URL}/market-segments`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/patent-landscape`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/workforce-analytics`, changeFrequency: 'weekly' as const, priority: 0.7 },
+
     // About & Dashboard
     { url: `${BASE_URL}/about`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/dashboard`, changeFrequency: 'daily' as const, priority: 0.6 },
@@ -261,6 +266,11 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Procurement
     { url: `${BASE_URL}/procurement/awards`, changeFrequency: 'weekly' as const, priority: 0.6 },
+
+    // Additional comparison pages
+    { url: `${BASE_URL}/compare/satellites`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/compare/companies`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/compare/launch-vehicles`, changeFrequency: 'monthly' as const, priority: 0.6 },
   ];
 
   return routes.map(route => ({

@@ -81,6 +81,9 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Launch Economics', href: '/launch-economics', description: 'Launch cost trends & pricing analysis' },
   { label: 'RF Spectrum', href: '/rf-spectrum', description: 'RF spectrum analysis & interference mapping' },
   { label: 'Edge Computing', href: '/space-edge-computing', description: 'Space edge computing & on-orbit processing' },
+  { label: 'Market Segments', href: '/market-segments', description: 'Space industry market segment analysis' },
+  { label: 'Patent Landscape', href: '/patent-landscape', description: 'Patent analytics & IP landscape mapping' },
+  { label: 'Workforce Analytics', href: '/workforce-analytics', description: 'Space workforce trends & talent data' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
