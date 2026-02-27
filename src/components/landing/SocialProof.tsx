@@ -5,25 +5,31 @@ import { useRef, useEffect, useState } from 'react';
 
 const TESTIMONIALS = [
   {
-    quote: "SpaceNexus replaced three separate tools we were using for market intelligence. The satellite tracking alone saved our team hours every week.",
-    name: "Dr. Sarah Chen",
+    quote: "SpaceNexus replaced three different tools we were using. The company intelligence and market data in one place is a game-changer.",
+    name: "Sarah Chen",
     title: "VP of Strategy",
-    company: "Orbital Dynamics Inc.",
+    company: "Orbital Systems Inc.",
     persona: "Executive",
+    initials: "SC",
+    gradient: "from-cyan-500 to-blue-600",
   },
   {
-    quote: "As an investor, having real-time launch data, company profiles, and market sizing all in one place is invaluable. The AI-powered thesis generator is a game changer.",
-    name: "Marcus Rodriguez",
-    title: "Managing Partner",
-    company: "Cislunar Ventures",
+    quote: "The mission planning calculators saved our team weeks of work. The orbital mechanics and thermal analysis tools are genuinely useful.",
+    name: "Dr. James Rodriguez",
+    title: "Chief Engineer",
+    company: "Nova Space Technologies",
+    persona: "Engineer",
+    initials: "JR",
+    gradient: "from-purple-500 to-indigo-600",
+  },
+  {
+    quote: "As an investor, having real-time deal flow, M&A tracking, and company scoring in one dashboard is exactly what the space industry needed.",
+    name: "Michael Okonkwo",
+    title: "Partner",
+    company: "Horizon Ventures",
     persona: "Investor",
-  },
-  {
-    quote: "The regulatory compliance tracking and spectrum management tools help us stay ahead of filing deadlines. Nothing else covers space regulations this comprehensively.",
-    name: "Jennifer Walsh",
-    title: "General Counsel",
-    company: "NewSpace Telecom",
-    persona: "Legal",
+    initials: "MO",
+    gradient: "from-emerald-500 to-teal-600",
   },
 ];
 
@@ -36,8 +42,24 @@ const STATS = [
 
 const cardVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.15, duration: 0.5 } }),
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.15, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  }),
 };
+
+function StarRating() {
+  return (
+    <div className="flex items-center gap-0.5 mb-4">
+      {[...Array(5)].map((_, i) => (
+        <svg key={i} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ))}
+    </div>
+  );
+}
 
 function AnimatedCounter({ value, prefix, suffix, inView }: { value: number; prefix: string; suffix: string; inView: boolean }) {
   const [count, setCount] = useState(0);
@@ -62,45 +84,115 @@ export default function SocialProof() {
   const statsInView = useInView(statsRef, { once: true, amount: 0.4 });
 
   return (
-    <section className="py-16 relative z-10">
+    <section className="py-20 relative z-10">
       <div className="container mx-auto px-4 max-w-6xl">
-        {/* Testimonials */}
-        <div className="text-center mb-10">
-          <h2 className="text-display-sm font-display font-bold text-white mb-3">Trusted by Space Industry Professionals</h2>
-          <div className="gradient-line max-w-xs mx-auto mt-4" />
+        {/* Section Header */}
+        <div className="text-center mb-14">
+          <motion.p
+            className="text-sm font-semibold uppercase tracking-widest text-cyan-400 mb-3"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
+          >
+            What Professionals Say
+          </motion.p>
+          <motion.h2
+            className="text-display-sm font-display font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            Trusted by Space Industry Leaders
+          </motion.h2>
+          <motion.p
+            className="text-slate-400 text-lg max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+          >
+            From executives to engineers to investors, SpaceNexus is the platform teams rely on daily.
+          </motion.p>
+          <div className="gradient-line max-w-xs mx-auto mt-5" />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        {/* Testimonial Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-7 mb-16">
           {TESTIMONIALS.map((t, i) => (
-            <motion.div key={t.name} className="card p-6" custom={i} variants={cardVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }}>
-              <p className="text-slate-300 italic leading-relaxed mb-4">
-                <span className="text-cyan-400 text-2xl font-serif not-italic">&ldquo;</span>
-                {t.quote}
-                <span className="text-cyan-400 text-2xl font-serif not-italic">&rdquo;</span>
-              </p>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-white">{t.name}</p>
-                  <p className="text-xs text-slate-400">{t.title}, {t.company}</p>
+            <motion.div
+              key={t.name}
+              className="group relative"
+              custom={i}
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+            >
+              {/* Gradient border effect */}
+              <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-b from-slate-600/40 via-slate-700/20 to-slate-800/10 group-hover:from-cyan-500/30 group-hover:via-blue-500/15 group-hover:to-transparent transition-all duration-500" />
+
+              <div className="relative card p-7 rounded-2xl backdrop-blur-sm h-full flex flex-col">
+                {/* Large decorative quotation mark */}
+                <div className="absolute top-4 right-5 text-6xl font-serif leading-none text-cyan-500/[0.07] select-none pointer-events-none">
+                  &ldquo;
                 </div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                  {t.persona}
-                </span>
+
+                {/* Star rating */}
+                <StarRating />
+
+                {/* Quote */}
+                <p className="text-slate-300 leading-relaxed mb-6 flex-1 relative z-10">
+                  <span className="text-cyan-400 text-xl font-serif">&ldquo;</span>
+                  {t.quote}
+                  <span className="text-cyan-400 text-xl font-serif">&rdquo;</span>
+                </p>
+
+                {/* Divider */}
+                <div className="h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent mb-5" />
+
+                {/* Author */}
+                <div className="flex items-center gap-3">
+                  {/* Avatar with gradient */}
+                  <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.gradient} flex items-center justify-center shrink-0 shadow-lg`}>
+                    <span className="text-xs font-bold text-white">{t.initials}</span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-white truncate">{t.name}</p>
+                    <p className="text-xs text-slate-400 truncate">{t.title}, {t.company}</p>
+                  </div>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shrink-0">
+                    {t.persona}
+                  </span>
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
 
         {/* Stats Bar */}
-        <motion.div ref={statsRef} className="card p-8 rounded-2xl" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.5 }}>
-          <h3 className="text-center text-lg font-semibold text-slate-400 mb-6 uppercase tracking-wider">By the Numbers</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <motion.div
+          ref={statsRef}
+          className="relative overflow-hidden card p-8 rounded-2xl"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Subtle background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/[0.03] via-transparent to-blue-500/[0.03] pointer-events-none" />
+
+          <h3 className="text-center text-sm font-semibold text-slate-500 mb-6 uppercase tracking-widest relative z-10">
+            SpaceNexus by the Numbers
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center relative z-10">
             {STATS.map((s) => (
-              <div key={s.label}>
-                <p className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+              <div key={s.label} className="group/stat">
+                <p className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent group-hover/stat:from-cyan-300 group-hover/stat:to-blue-400 transition-all duration-300">
                   <AnimatedCounter value={s.value} prefix={s.prefix} suffix={s.suffix} inView={statsInView} />
                 </p>
-                <p className="text-sm text-slate-400 mt-1">{s.label}</p>
+                <p className="text-sm text-slate-400 mt-1.5 font-medium">{s.label}</p>
               </div>
             ))}
           </div>

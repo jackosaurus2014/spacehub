@@ -1,3 +1,5 @@
+import GridSkeleton from '@/components/ui/GridSkeleton';
+
 export default function Loading() {
   return (
     <div className="min-h-screen py-8">
@@ -28,27 +30,8 @@ export default function Loading() {
           </div>
         </div>
 
-        {/* Event card grid skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className="bg-slate-800/40 rounded-2xl animate-pulse">
-              <div className="p-5 space-y-3">
-                <div className="flex justify-between">
-                  <div className="h-5 w-16 bg-slate-700/60 rounded-full" />
-                  <div className="h-5 w-20 bg-slate-700/40 rounded" />
-                </div>
-                <div className="h-6 w-full bg-slate-700/50 rounded" />
-                <div className="h-4 w-3/4 bg-slate-700/40 rounded" />
-                <div className="h-4 w-1/2 bg-slate-700/40 rounded" />
-                <div className="flex gap-2 pt-2">
-                  <div className="h-6 w-16 bg-slate-700/30 rounded-full" />
-                  <div className="h-6 w-20 bg-slate-700/30 rounded-full" />
-                  <div className="h-6 w-14 bg-slate-700/30 rounded-full" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* Conference event cards */}
+        <GridSkeleton count={6} cols={3} />
       </div>
     </div>
   );

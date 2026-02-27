@@ -13,7 +13,7 @@ import StructuredData from '@/components/StructuredData';
 import dynamic from 'next/dynamic';
 const SearchCommandPalette = dynamic(() => import('@/components/SearchCommandPalette'), { ssr: false });
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
-import CookieConsent from '@/components/analytics/CookieConsent';
+import CookieConsent from '@/components/ui/CookieConsent';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 const InstallPrompt = dynamic(() => import('@/components/InstallPrompt'), { ssr: false });
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';

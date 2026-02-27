@@ -1,71 +1,244 @@
 // In-app changelog data — "What's New" display after updates
 
+export interface ChangelogChange {
+  type: 'feature' | 'improvement' | 'fix';
+  text: string;
+}
+
 export interface ChangelogEntry {
   version: string;
   date: string; // ISO date
   title: string;
   description: string;
-  changes: {
-    type: 'feature' | 'improvement' | 'fix';
-    text: string;
-  }[];
+  highlight?: string; // Key metric or stat to feature
+  changes: ChangelogChange[];
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.3.0',
+    date: '2026-02-27',
+    title: 'Platform Polish & Animation Overhaul',
+    description:
+      'A sweeping refinement pass across the entire platform: scroll-triggered animations, social sharing, PDF exports, print styles, accessibility, SEO metadata, structured data, dark theme consistency, and homepage upgrades.',
+    highlight: '100+ pages enhanced',
+    changes: [
+      { type: 'feature', text: 'ScrollReveal entrance animations added to 100+ pages' },
+      { type: 'feature', text: 'ShareButton social sharing on 13+ pages (Twitter, LinkedIn, copy link)' },
+      { type: 'feature', text: 'PDF export capability for reports and company profiles' },
+      { type: 'feature', text: 'Comprehensive print styles for all major pages' },
+      { type: 'feature', text: 'JSON-LD structured data schemas (WebSite, FAQ, Event)' },
+      { type: 'feature', text: 'Homepage Featured Tools section with quick-access cards' },
+      { type: 'feature', text: 'Homepage Recent Updates feed showing latest platform changes' },
+      { type: 'improvement', text: 'WCAG 2.1 AA accessibility: skip-to-content links, focus-visible outlines, ARIA labels' },
+      { type: 'improvement', text: '50+ new SEO layout files with Open Graph metadata and canonical URLs' },
+      { type: 'improvement', text: 'Dark theme consistency across all components and pages' },
+      { type: 'improvement', text: 'Enhanced footer with comprehensive navigation and social links' },
+      { type: 'improvement', text: 'AnimatedPageHeader component used across all pages' },
+      { type: 'fix', text: 'Color contrast ratios improved to meet WCAG AA standards' },
+      { type: 'fix', text: 'Focus management for modals and dialogs' },
+    ],
+  },
+  {
     version: '1.2.0',
     date: '2026-02-14',
-    title: 'Marketing & SEO Improvements',
-    description: 'Enhanced SEO, new content pages, and email infrastructure.',
+    title: 'Content Expansion & SEO',
+    description:
+      '30+ new content pages covering tools, calculators, directories, analytics, and industry reference material. Major SEO infrastructure improvements.',
+    highlight: '30+ new pages',
     changes: [
-      { type: 'feature', text: 'New original blog at /blog with 6 articles' },
-      { type: 'feature', text: 'RSS feed for blog content at /api/feed/rss' },
+      { type: 'feature', text: 'Mission Simulator for planning hypothetical missions with cost estimates' },
+      { type: 'feature', text: 'Orbital Calculator for transfer orbits, delta-v, and period calculations' },
+      { type: 'feature', text: 'Thermal Calculator for spacecraft thermal analysis' },
+      { type: 'feature', text: 'Space industry glossary with 200+ terms and definitions' },
+      { type: 'feature', text: 'Interactive space industry timeline from Sputnik to present' },
+      { type: 'feature', text: 'Space FAQ page with structured data for Google Rich Results' },
+      { type: 'feature', text: 'Conference directory with 50+ space industry events' },
+      { type: 'feature', text: 'Podcast directory featuring top space industry shows' },
+      { type: 'feature', text: 'Newsletter directory of curated space industry newsletters' },
+      { type: 'feature', text: 'Market segments breakdown across 12 space sectors' },
+      { type: 'feature', text: 'Patent landscape visualization for space technology IP' },
+      { type: 'feature', text: 'Workforce analytics dashboard for space industry employment' },
+      { type: 'feature', text: 'Funding rounds database tracking space venture capital' },
+      { type: 'feature', text: 'M&A tracker for space industry acquisitions and mergers' },
+      { type: 'feature', text: 'Sustainability scorecard rating companies on ESG metrics' },
+      { type: 'feature', text: 'Original blog with 6 articles and RSS feed' },
       { type: 'feature', text: 'City-specific pages for 5 major space industry hubs' },
-      { type: 'feature', text: 'Press kit page at /press' },
-      { type: 'feature', text: 'Space Launch Schedule 2026 guide page' },
+      { type: 'feature', text: 'Press kit page for media inquiries' },
       { type: 'improvement', text: 'Enhanced structured data for Google Rich Results' },
-      { type: 'improvement', text: 'Added page-level SEO metadata to 10 key pages' },
+      { type: 'improvement', text: 'Page-level SEO metadata added to 10+ key pages' },
       { type: 'improvement', text: 'Homepage trust signals showing data sources and platform stats' },
     ],
   },
   {
     version: '1.1.0',
     date: '2026-02-12',
-    title: 'Marketplace & Mobile',
-    description: 'Space marketplace, native mobile apps, and ad integration.',
+    title: 'Marketplace Launch',
+    description:
+      'Full B2B marketplace for the space industry with RFQ workflows, AI-powered procurement copilot, company comparison tools, and native mobile apps.',
+    highlight: '80 marketplace listings',
     changes: [
-      { type: 'feature', text: 'Space Marketplace with listings, RFQs, and AI Copilot' },
+      { type: 'feature', text: 'Space Marketplace with 80 service listings across 10 categories' },
+      { type: 'feature', text: 'RFQ system with proposal submission and provider matching' },
+      { type: 'feature', text: 'AI-powered procurement copilot (Claude Sonnet) for RFQ assistance' },
+      { type: 'feature', text: 'Company comparison tool for side-by-side analysis' },
+      { type: 'feature', text: 'Investment tracker and deal flow database' },
       { type: 'feature', text: 'Android app available on Google Play' },
       { type: 'feature', text: 'iOS app with Face ID and push notifications' },
-      { type: 'feature', text: 'Non-intrusive ad integration on 8 pages' },
+      { type: 'feature', text: 'Non-intrusive ad integration on 8 pages with AdSense fallback' },
       { type: 'improvement', text: 'Account deletion (self-service) at /account' },
-      { type: 'fix', text: 'Security hardening from full audit' },
+      { type: 'improvement', text: 'Provider dashboard with analytics and engagement metrics' },
+      { type: 'fix', text: 'All critical, high, and medium security findings from audit resolved' },
+      { type: 'fix', text: 'CSRF protection hardened on all mutation endpoints' },
     ],
   },
   {
     version: '1.0.0',
     date: '2026-02-10',
     title: 'Company Intelligence',
-    description: '200+ space company profiles with deep data.',
+    description:
+      'Comprehensive company intelligence platform with 100+ detailed profiles, Space Score ratings, satellite asset tracking, facility mapping, and news integration.',
+    highlight: '100+ company profiles',
     changes: [
-      { type: 'feature', text: '200+ space company profiles with 9-tab detail pages' },
+      { type: 'feature', text: '100+ space company profiles with 9-tab detail pages' },
+      { type: 'feature', text: 'Space Score rating system across 6 dimensions' },
+      { type: 'feature', text: 'Satellite asset tracking linked to company profiles' },
+      { type: 'feature', text: 'Facility locations with interactive map view' },
+      { type: 'feature', text: 'Executive moves tracker for leadership changes' },
       { type: 'feature', text: 'Company watchlists and saved searches' },
-      { type: 'feature', text: 'Company-tagged news articles' },
-      { type: 'improvement', text: 'News cards show company badges linking to profiles' },
+      { type: 'feature', text: 'News article tagging with company mention detection' },
+      { type: 'improvement', text: 'News cards display company badges linking to profiles' },
+      { type: 'improvement', text: 'Company directory with grid and list views, advanced filters' },
     ],
   },
   {
     version: '0.9.0',
     date: '2026-02-08',
-    title: 'Platform Expansion',
-    description: 'Stripe payments, API product, alerts, and procurement intelligence.',
+    title: 'Mobile & Revenue Infrastructure',
+    description:
+      'Native mobile experience with PWA offline support, Stripe payment integration, commercial API product with developer portal, smart alerts, and procurement intelligence.',
+    highlight: '114 new files, 236 routes',
     changes: [
+      { type: 'feature', text: 'PWA with offline support, install prompt, and home screen icons' },
       { type: 'feature', text: 'Stripe payment integration for Pro and Enterprise tiers' },
-      { type: 'feature', text: 'Commercial API v1 with developer portal' },
-      { type: 'feature', text: 'Smart alert system with email delivery' },
-      { type: 'feature', text: 'SAM.gov procurement intelligence' },
-      { type: 'feature', text: 'Custom dashboard builder' },
-      { type: 'feature', text: 'Real-time launch day dashboard with chat' },
+      { type: 'feature', text: 'Commercial API v1 with developer portal and API key management' },
+      { type: 'feature', text: 'Smart alert system with configurable rules and email delivery' },
+      { type: 'feature', text: 'SAM.gov procurement intelligence for government contracts' },
+      { type: 'feature', text: 'Custom dashboard builder with drag-and-drop widgets' },
+      { type: 'feature', text: 'Real-time launch day dashboard with live chat' },
+      { type: 'feature', text: '6 mobile-optimized hooks (swipe gestures, pull-to-refresh, etc.)' },
+      { type: 'improvement', text: 'Mobile navigation with swipe and gesture support' },
+      { type: 'improvement', text: 'Widget system for iOS and Android home screens' },
+    ],
+  },
+  {
+    version: '0.8.0',
+    date: '2026-02-05',
+    title: 'Data Source Expansion',
+    description:
+      'Massive expansion of real-time data feeds including NASA/JPL APIs, NOAA weather, RSS aggregation, and automated cron jobs for continuous data freshness.',
+    highlight: '26 fetcher functions',
+    changes: [
+      { type: 'feature', text: '12 new NASA/JPL API integrations (APOD, NEO, Mars Rover, etc.)' },
+      { type: 'feature', text: '8 NOAA space weather data feeds' },
+      { type: 'feature', text: '53 RSS feeds aggregated from industry sources' },
+      { type: 'feature', text: '39 blog sources monitored for new content' },
+      { type: 'feature', text: '9 automated cron jobs for data freshness' },
+      { type: 'improvement', text: 'Circuit breaker pattern for all external API calls' },
+      { type: 'improvement', text: 'TTL cache layer for API fallback data' },
+      { type: 'improvement', text: 'HTML sanitization for all RSS feed content' },
+    ],
+  },
+  {
+    version: '0.7.0',
+    date: '2026-02-01',
+    title: 'Module Consolidation',
+    description:
+      'Consolidated 44 modules into 10 main categories with tab-based navigation, legacy redirects, and a cleaner information architecture.',
+    highlight: '44 modules into 10',
+    changes: [
+      { type: 'improvement', text: 'Consolidated 44 modules into 10 main modules with sub-navigation' },
+      { type: 'feature', text: '8 tab-based merged pages (cislunar, spectrum, talent, compliance, etc.)' },
+      { type: 'feature', text: 'Space Talent Hub merging jobs and workforce analytics' },
+      { type: 'feature', text: 'Space Environment page merging weather, debris, and ops awareness' },
+      { type: 'improvement', text: '12 permanent redirects for legacy routes' },
+      { type: 'improvement', text: 'Module configurator for personalized navigation' },
+      { type: 'fix', text: 'Sidebar z-index layering issues resolved' },
+    ],
+  },
+  {
+    version: '0.6.0',
+    date: '2026-01-28',
+    title: 'Module Expansion',
+    description:
+      '13 new modules added from brainstorming research, expanding the platform to 44 total modules.',
+    highlight: '44 total modules',
+    changes: [
+      { type: 'feature', text: 'Space Law and Regulatory Filings modules' },
+      { type: 'feature', text: 'Space Economy and Launch Vehicles modules' },
+      { type: 'feature', text: 'Space Stations and Cislunar Ecosystem modules' },
+      { type: 'feature', text: 'Spaceports and Asteroid Watch modules' },
+      { type: 'feature', text: 'Patents, Space Manufacturing, and Space Comms modules' },
+      { type: 'feature', text: 'Imagery Marketplace and Space Defense modules' },
+    ],
+  },
+  {
+    version: '0.5.0',
+    date: '2026-01-22',
+    title: 'Navigation & Configuration',
+    description:
+      'Prominent navigation, module configurator, pricing updates, and 6 new modules.',
+    changes: [
+      { type: 'feature', text: 'Module configurator for personalizing sidebar navigation' },
+      { type: 'feature', text: '6 new modules added to the platform' },
+      { type: 'feature', text: 'Service provider submission form with admin email notifications' },
+      { type: 'improvement', text: 'Prominent navigation buttons on Next Steps page' },
+      { type: 'improvement', text: 'Updated pricing with Market Intel moved to free tier' },
+      { type: 'improvement', text: 'Text contrast improvements across all modules' },
+      { type: 'fix', text: 'Sidebar z-index fix for overlapping content' },
+    ],
+  },
+  {
+    version: '0.4.2',
+    date: '2026-01-18',
+    title: 'Developer Experience & Performance',
+    description:
+      'Pinned dependencies, structured logging, circuit breaker, bundle analysis, accessibility, and chart enhancements.',
+    changes: [
+      { type: 'feature', text: 'Bundle analyzer (ANALYZE=true) for build optimization' },
+      { type: 'feature', text: 'Structured logging with src/lib/logger.ts' },
+      { type: 'feature', text: 'Circuit breaker pattern for external API resilience' },
+      { type: 'feature', text: 'API cache with TTL for fallback data' },
+      { type: 'feature', text: 'Chart export (PNG/SVG) and zoom/pan controls' },
+      { type: 'feature', text: 'Webhook dispatcher for external integrations' },
+      { type: 'feature', text: 'Keyboard shortcuts modal and recently viewed items' },
+      { type: 'feature', text: 'Pull-to-refresh and swipe gestures for mobile' },
+      { type: 'improvement', text: 'High-contrast mode for accessibility' },
+      { type: 'improvement', text: 'Screen reader improvements and keyboard navigation' },
+      { type: 'improvement', text: 'Responsive charts with touch-friendly tooltips' },
+      { type: 'improvement', text: 'Three.js tree shaking for smaller bundles' },
+      { type: 'improvement', text: 'Prisma .select() for optimized database queries' },
+      { type: 'improvement', text: 'CONTRIBUTING.md developer guide added' },
+      { type: 'fix', text: 'Pinned all dependencies for reproducible builds' },
+    ],
+  },
+  {
+    version: '0.4.1',
+    date: '2026-01-14',
+    title: 'Security & Authentication',
+    description:
+      'Security hardening, authentication flows, skeleton loaders, CI pipeline, testing, and accessibility improvements.',
+    changes: [
+      { type: 'feature', text: 'Password reset flow with email tokens (1hr expiry, bcrypt)' },
+      { type: 'feature', text: 'Email verification on registration via Resend' },
+      { type: 'feature', text: 'CSRF protection with Origin/Referer header checks' },
+      { type: 'feature', text: 'Rate limiting (sliding window) on all API routes' },
+      { type: 'feature', text: 'Skeleton loader components for loading states' },
+      { type: 'feature', text: 'Toast notification system' },
+      { type: 'feature', text: 'GitHub Actions CI pipeline (lint, test, build)' },
+      { type: 'feature', text: '80 tests across 4 test suites (Jest)' },
+      { type: 'improvement', text: 'Anti-enumeration on forgot-password endpoint' },
+      { type: 'fix', text: 'Edge Runtime compatibility for middleware (Map iterator fix)' },
     ],
   },
 ];
@@ -87,4 +260,23 @@ export function getNewEntries(lastSeenVersion: string | null): ChangelogEntry[] 
  */
 export function getLatestVersion(): string {
   return CHANGELOG[0]?.version || '0.0.0';
+}
+
+/**
+ * Get total counts by change type across all versions
+ */
+export function getChangelogStats() {
+  let features = 0;
+  let improvements = 0;
+  let fixes = 0;
+
+  for (const entry of CHANGELOG) {
+    for (const change of entry.changes) {
+      if (change.type === 'feature') features++;
+      else if (change.type === 'improvement') improvements++;
+      else if (change.type === 'fix') fixes++;
+    }
+  }
+
+  return { features, improvements, fixes, totalVersions: CHANGELOG.length };
 }
