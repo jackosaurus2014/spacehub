@@ -6,6 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import ShareButton from '@/components/ui/ShareButton';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -673,6 +674,13 @@ export default function SustainabilityScorecardPage() {
           icon={<span>♻️</span>}
           accentColor="emerald"
         />
+
+        <div className="flex justify-end mb-4">
+          <ShareButton
+            title="Space Sustainability Scorecard - SpaceNexus"
+            description="Comprehensive sustainability ratings for space operators, tracking debris mitigation, disposal compliance, and environmental impact."
+          />
+        </div>
 
         {/* Overall Industry Score */}
         <ScrollReveal>

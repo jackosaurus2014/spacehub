@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 export const revalidate = 86400;
 
@@ -127,6 +129,7 @@ export default function LearnPage() {
         </nav>
 
         {/* Header */}
+        <ScrollReveal>
         <header className="mb-12 text-center">
           <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
             Space Industry Learning Center
@@ -137,12 +140,13 @@ export default function LearnPage() {
             economy.
           </p>
         </header>
+        </ScrollReveal>
 
         {/* Guide Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
           {guides.map((guide) => (
+            <StaggerItem key={guide.slug}>
             <Link
-              key={guide.slug}
               href={`/learn/${guide.slug}`}
               className="group bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 hover:border-nebula-500/50 transition-all duration-300 hover:bg-slate-800/70"
             >
@@ -165,10 +169,12 @@ export default function LearnPage() {
                 {guide.cta} &rarr;
               </span>
             </Link>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* CTA */}
+        <ScrollReveal>
         <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-8 text-center mb-12">
           <h2 className="text-2xl font-bold text-white mb-3">Need live data, not just guides?</h2>
           <p className="text-slate-400 mb-6 max-w-2xl mx-auto">
@@ -190,8 +196,10 @@ export default function LearnPage() {
             </Link>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Related sections */}
+        <ScrollReveal>
         <section className="border-t border-slate-700/50 pt-8">
           <h3 className="text-lg font-bold text-white mb-4">Explore More SpaceNexus Resources</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -225,6 +233,7 @@ export default function LearnPage() {
             </Link>
           </div>
         </section>
+        </ScrollReveal>
       </div>
     </div>
   );

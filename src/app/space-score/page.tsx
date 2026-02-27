@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import SpaceScoreBadge, { SpaceScoreInlineBadge, SpaceScoreMiniBar } from '@/components/company/SpaceScoreBadge';
 import {
   getLeaderboard,
@@ -279,13 +281,10 @@ function MethodologyTab() {
       {/* Scoring Dimensions */}
       <div>
         <h2 className="text-lg font-bold text-white mb-4">5 Scoring Dimensions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {dimensions.map((dim, i) => (
-            <motion.div
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {dimensions.map((dim) => (
+            <StaggerItem
               key={dim.key}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
               className="card p-5 relative overflow-hidden"
             >
               {/* Color accent */}
@@ -310,9 +309,9 @@ function MethodologyTab() {
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </div>
 
       {/* Tier Definitions */}
@@ -345,12 +344,8 @@ function MethodologyTab() {
       </motion.div>
 
       {/* Comparison */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="card p-6"
-      >
+      <ScrollReveal>
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4">Comparison to Other Rating Systems</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -390,15 +385,12 @@ function MethodologyTab() {
             </tbody>
           </table>
         </div>
-      </motion.div>
+      </div>
+      </ScrollReveal>
 
       {/* Feedback */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="card p-6 text-center border border-dashed border-slate-700"
-      >
+      <ScrollReveal delay={0.1}>
+      <div className="card p-6 text-center border border-dashed border-slate-700">
         <h3 className="text-lg font-bold text-white mb-2">Suggest a Factor</h3>
         <p className="text-slate-400 text-sm mb-4">
           Think we should incorporate additional data points into the Space Score algorithm?
@@ -413,7 +405,8 @@ function MethodologyTab() {
           </svg>
           Submit Suggestion
         </Link>
-      </motion.div>
+      </div>
+      </ScrollReveal>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import ShareButton from '@/components/ui/ShareButton';
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -459,6 +460,13 @@ export default function EducationPathwaysPage() {
           icon={<span className="text-4xl">{'\u{1F393}'}</span>}
           accentColor="cyan"
         />
+
+        <div className="flex justify-end mb-4">
+          <ShareButton
+            title="Space Industry Education & Career Pathways - SpaceNexus"
+            description="Your comprehensive guide to building a career in space, from university programs and certifications to salary benchmarks."
+          />
+        </div>
 
         {/* Section Nav */}
         <ScrollReveal>

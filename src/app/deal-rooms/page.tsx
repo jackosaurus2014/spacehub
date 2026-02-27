@@ -6,6 +6,8 @@ import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PremiumGate from '@/components/PremiumGate';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -1369,7 +1371,9 @@ function DealRoomsPageInner() {
         )}
 
         {/* Feature info cards */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <ScrollReveal>
+        <StaggerContainer className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <StaggerItem>
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
             <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-3">
               <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1379,6 +1383,8 @@ function DealRoomsPageInner() {
             <h4 className="font-semibold text-slate-200 mb-1">NDA Protection</h4>
             <p className="text-sm text-slate-400">Require members to accept an NDA before accessing any confidential documents in the room.</p>
           </div>
+          </StaggerItem>
+          <StaggerItem>
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
             <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-3">
               <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1388,6 +1394,8 @@ function DealRoomsPageInner() {
             <h4 className="font-semibold text-slate-200 mb-1">Activity Tracking</h4>
             <p className="text-sm text-slate-400">Full audit trail of who viewed, uploaded, or downloaded documents. Complete transparency for all parties.</p>
           </div>
+          </StaggerItem>
+          <StaggerItem>
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
             <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-3">
               <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1397,7 +1405,9 @@ function DealRoomsPageInner() {
             <h4 className="font-semibold text-slate-200 mb-1">Invite by Code</h4>
             <p className="text-sm text-slate-400">Share a unique access code with investors or partners. They can join the room with a single click.</p>
           </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
+        </ScrollReveal>
       </div>
     </div>
   );

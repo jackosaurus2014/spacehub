@@ -5,6 +5,8 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Physical Constants
@@ -848,47 +850,57 @@ function OrbitalCalculatorContent() {
       {activeTab === 'decay' && <OrbitalDecayCalculator />}
 
       {/* Related Links */}
+      <ScrollReveal delay={0.1}>
       <div className="card p-5 mt-8 border border-purple-500/20">
         <h3 className="text-lg font-semibold text-white mb-4">Related Tools</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <StaggerItem>
           <Link
             href="/launch-cost-calculator"
-            className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+            className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group block"
           >
             <div className="text-sm font-medium text-white group-hover:text-purple-200">
               Launch Cost Calculator
             </div>
             <p className="text-xs text-slate-400 mt-1">Estimate satellite launch costs</p>
           </Link>
+          </StaggerItem>
+          <StaggerItem>
           <Link
             href="/mission-cost"
-            className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+            className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group block"
           >
             <div className="text-sm font-medium text-white group-hover:text-purple-200">
               Mission Cost Estimator
             </div>
             <p className="text-xs text-slate-400 mt-1">Full mission cost breakdown</p>
           </Link>
+          </StaggerItem>
+          <StaggerItem>
           <Link
             href="/launch-windows"
-            className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+            className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group block"
           >
             <div className="text-sm font-medium text-white group-hover:text-purple-200">
               Launch Windows
             </div>
             <p className="text-xs text-slate-400 mt-1">Optimal launch timing</p>
           </Link>
+          </StaggerItem>
+          <StaggerItem>
           <Link
             href="/satellites"
-            className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+            className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group block"
           >
             <div className="text-sm font-medium text-white group-hover:text-purple-200">
               Satellite Tracker
             </div>
             <p className="text-xs text-slate-400 mt-1">Track objects in orbit</p>
           </Link>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
       </div>
+      </ScrollReveal>
     </div>
   );
 }
@@ -902,6 +914,7 @@ export default function OrbitalCalculatorPage() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Breadcrumb */}
+        <ScrollReveal>
         <nav className="text-sm text-slate-500 mb-4">
           <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
           <span className="mx-2">/</span>
@@ -909,6 +922,7 @@ export default function OrbitalCalculatorPage() {
           <span className="mx-2">/</span>
           <span className="text-slate-400">Orbital Calculator</span>
         </nav>
+        </ScrollReveal>
 
         <AnimatedPageHeader
           title="Orbital Mechanics Calculator"

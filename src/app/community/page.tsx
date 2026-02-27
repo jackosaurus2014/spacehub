@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 interface CommunityStats {
   totalMembers: number;
@@ -116,14 +118,9 @@ export default function CommunityPage() {
         </motion.div>
 
         {/* Main sections */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {SECTIONS.map((section, idx) => (
-            <motion.div
-              key={section.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + idx * 0.1, duration: 0.5 }}
-            >
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          {SECTIONS.map((section) => (
+            <StaggerItem key={section.title}>
               <Link href={section.href}>
                 <motion.div
                   whileHover={{ y: -4, scale: 1.01 }}
@@ -155,17 +152,13 @@ export default function CommunityPage() {
                   </div>
                 </motion.div>
               </Link>
-            </motion.div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* Your profile CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-          className="card p-6 mb-8"
-        >
+        <ScrollReveal>
+        <div className="card p-6 mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-white mb-1">Set Up Your Profile</h3>
@@ -183,15 +176,12 @@ export default function CommunityPage() {
               Edit Profile
             </Link>
           </div>
-        </motion.div>
+        </div>
+        </ScrollReveal>
 
         {/* Activity feed placeholder */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.5 }}
-          className="card p-6"
-        >
+        <ScrollReveal delay={0.1}>
+        <div className="card p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Activity Feed</h3>
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <div className="w-16 h-16 rounded-2xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-4">
@@ -204,7 +194,8 @@ export default function CommunityPage() {
               A real-time feed of community activity — new members, popular threads, and trending discussions.
             </p>
           </div>
-        </motion.div>
+        </div>
+        </ScrollReveal>
       </div>
     </div>
   );

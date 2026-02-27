@@ -3,6 +3,8 @@
 import { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Constants & Types
@@ -333,6 +335,7 @@ export default function PowerBudgetCalculatorPage() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Breadcrumb */}
+        <ScrollReveal>
         <nav className="text-sm text-slate-500 mb-4">
           <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
           <span className="mx-2">/</span>
@@ -340,6 +343,7 @@ export default function PowerBudgetCalculatorPage() {
           <span className="mx-2">/</span>
           <span className="text-slate-400">Power Budget Calculator</span>
         </nav>
+        </ScrollReveal>
 
         <AnimatedPageHeader
           title="Satellite Power Budget Calculator"
@@ -348,21 +352,24 @@ export default function PowerBudgetCalculatorPage() {
         />
 
         {/* ── Quick Presets ── */}
+        <ScrollReveal>
         <div className="card p-5 mb-6">
           <h3 className="text-sm font-semibold text-slate-300 mb-3">Quick Presets</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {PRESETS.map((preset) => (
+              <StaggerItem key={preset.label}>
               <button
-                key={preset.label}
                 onClick={() => applyPreset(preset)}
-                className="text-left p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-amber-500/40 hover:bg-amber-500/5 transition-all group"
+                className="w-full text-left p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-amber-500/40 hover:bg-amber-500/5 transition-all group"
               >
                 <div className="text-sm font-medium text-white group-hover:text-amber-200">{preset.label}</div>
                 <p className="text-xs text-slate-400 mt-0.5">{preset.description}</p>
               </button>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* ── Solar Panel Section ── */}
@@ -700,6 +707,7 @@ export default function PowerBudgetCalculatorPage() {
         </div>
 
         {/* ── Formulas & Notes ── */}
+        <ScrollReveal delay={0.1}>
         <div className="card p-5 mb-6">
           <h4 className="text-sm font-semibold text-slate-300 mb-2">Formulas & Methodology</h4>
           <div className="text-xs text-slate-500 leading-relaxed space-y-2">
@@ -725,49 +733,60 @@ export default function PowerBudgetCalculatorPage() {
             </p>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* ── Related Tools ── */}
+        <ScrollReveal delay={0.2}>
         <div className="card p-5 border border-amber-500/20">
           <h3 className="text-lg font-semibold text-white mb-4">Related Tools</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <StaggerItem>
             <Link
               href="/orbital-calculator"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="block p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-amber-200">
                 Orbital Calculator
               </div>
               <p className="text-xs text-slate-400 mt-1">Delta-v, periods, decay estimates</p>
             </Link>
+            </StaggerItem>
+            <StaggerItem>
             <Link
               href="/launch-cost-calculator"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="block p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-amber-200">
                 Launch Cost Calculator
               </div>
               <p className="text-xs text-slate-400 mt-1">Estimate satellite launch costs</p>
             </Link>
+            </StaggerItem>
+            <StaggerItem>
             <Link
               href="/mission-cost"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="block p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-amber-200">
                 Mission Cost Estimator
               </div>
               <p className="text-xs text-slate-400 mt-1">Full mission cost breakdown</p>
             </Link>
+            </StaggerItem>
+            <StaggerItem>
             <Link
               href="/satellites"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="block p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-amber-200">
                 Satellite Tracker
               </div>
               <p className="text-xs text-slate-400 mt-1">Track objects in orbit</p>
             </Link>
-          </div>
+            </StaggerItem>
+          </StaggerContainer>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

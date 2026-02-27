@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export const metadata = {
   title: 'Community Guidelines | SpaceNexus',
@@ -27,6 +28,7 @@ export default function CommunityGuidelinesPage() {
         </AnimatedPageHeader>
 
         <div className="max-w-4xl mx-auto">
+          <ScrollReveal>
           <div className="card p-8 space-y-8">
             <p className="text-slate-400 text-sm">Last Updated: {lastUpdated}</p>
 
@@ -342,6 +344,7 @@ export default function CommunityGuidelinesPage() {
               </div>
             </section>
           </div>
+          </ScrollReveal>
         </div>
       </div>
     </div>

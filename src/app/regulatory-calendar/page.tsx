@@ -6,6 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import PremiumGate from '@/components/PremiumGate';
 import EventSchema from '@/components/seo/EventSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import {
   REGULATORY_DEADLINES,
   AGENCY_COLORS,
@@ -807,13 +808,16 @@ export default function RegulatoryCalendarPage() {
 
         </PremiumGate>
 
+        <ScrollReveal>
         <RelatedModules modules={[
           { name: 'Compliance Hub', description: 'Treaties, laws, and regulatory bodies', href: '/compliance', icon: '\u{2696}\u{FE0F}' },
           { name: 'Regulatory Risk', description: 'Risk scoring and assessment', href: '/regulatory-risk', icon: '\u{26A0}\u{FE0F}' },
           { name: 'Space Defense', description: 'Defense procurement and policy', href: '/space-defense', icon: '\u{1F6E1}\u{FE0F}' },
         ]} />
+        </ScrollReveal>
 
         {/* Footer disclaimer */}
+        <ScrollReveal delay={0.1}>
         <div className="mt-12 text-center text-xs text-slate-500">
           <p>
             Deadlines are based on publicly available regulatory schedules and may be subject to change.
@@ -823,6 +827,7 @@ export default function RegulatoryCalendarPage() {
             Sources: FCC Space Bureau, FAA/AST, NASA, ITU-R, BIS/DDTC, UNOOSA, Congressional schedules
           </p>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

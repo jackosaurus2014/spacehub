@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import Link from 'next/link';
 import { clientLogger } from '@/lib/client-logger';
 
@@ -81,6 +82,7 @@ function ExplainersContent() {
         />
 
         {/* Filters */}
+        <ScrollReveal>
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <select
             value={agency}
@@ -127,21 +129,17 @@ function ExplainersContent() {
             {total} result{total !== 1 ? 's' : ''}
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Results */}
         {loading ? (
           <div className="flex justify-center py-20"><LoadingSpinner /></div>
         ) : explainers.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {explainers.map((exp, i) => {
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {explainers.map((exp) => {
               const impact = getImpactBadge(exp.impactLevel);
               return (
-                <motion.div
-                  key={exp.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                >
+                <StaggerItem key={exp.id}>
                   <Link href={`/regulation-explainers/${exp.slug}`}>
                     <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5 hover:border-cyan-500/30 transition-all cursor-pointer h-full flex flex-col">
                       <div className="flex items-center gap-2 mb-3">
@@ -174,10 +172,10 @@ function ExplainersContent() {
                       </div>
                     </div>
                   </Link>
-                </motion.div>
+                </StaggerItem>
               );
             })}
-          </div>
+          </StaggerContainer>
         ) : (
           <div className="text-center py-20">
             <div className="text-4xl mb-3">📜</div>

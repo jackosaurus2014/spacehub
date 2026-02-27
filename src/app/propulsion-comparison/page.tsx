@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ShareButton from '@/components/ui/ShareButton';
 
 // ────────────────────────────────────────
 // Types
@@ -858,6 +859,13 @@ export default function PropulsionComparisonPage() {
           subtitle="Compare propulsion technologies and specific engines across chemical, electric, nuclear, and green propulsion categories. 27 engines spanning 8 technology families."
           accentColor="amber"
         />
+
+        <div className="flex justify-end mb-4">
+          <ShareButton
+            title="Space Propulsion Systems - SpaceNexus"
+            description="Compare propulsion technologies and specific engines across chemical, electric, nuclear, and green propulsion categories."
+          />
+        </div>
 
         {/* Stats row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

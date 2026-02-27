@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ShareButton from '@/components/ui/ShareButton';
 
 // ────────────────────────────────────────
 // Types
@@ -487,6 +488,13 @@ export default function LaunchEconomicsPage() {
           subtitle="Comprehensive cost analysis of orbital launch vehicles. Compare cost per kilogram, track industry trends, and understand the business of getting to space."
           accentColor="cyan"
         />
+
+        <div className="flex justify-end mb-4">
+          <ShareButton
+            title="Space Launch Economics - SpaceNexus"
+            description="Comprehensive cost analysis of orbital launch vehicles. Compare cost per kilogram and track industry trends."
+          />
+        </div>
 
         {/* ── Filter & Sort Controls ──────────────── */}
         <div className="flex flex-wrap items-center gap-3 mb-8">

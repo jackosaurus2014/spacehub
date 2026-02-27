@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ShareButton from '@/components/ui/ShareButton';
 
 // ────────────────────────────────────────
 // Types
@@ -784,6 +785,13 @@ export default function ConferencesPage() {
           subtitle="Discover upcoming aerospace conferences, trade shows, symposia, and networking events worldwide. Filter by category, region, cost, and month."
           accentColor="purple"
         />
+
+        <div className="flex justify-end mb-4">
+          <ShareButton
+            title="Space Industry Conferences & Events - SpaceNexus"
+            description="Discover upcoming aerospace conferences, trade shows, symposia, and networking events worldwide."
+          />
+        </div>
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

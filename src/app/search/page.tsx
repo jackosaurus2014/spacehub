@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import type { SearchModule } from '@/lib/validations';
 import CompanyIntelCard from '@/components/search/CompanyIntelCard';
 import HighlightedText from '@/components/search/HighlightedText';
@@ -876,6 +877,7 @@ function SearchContent() {
 
           {/* Empty query state */}
           {!loading && !hasSearched && (
+            <ScrollReveal>
             <div className="card p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center">
                 <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -899,10 +901,12 @@ function SearchContent() {
                 ))}
               </div>
             </div>
+            </ScrollReveal>
           )}
 
           {/* No results state */}
           {!loading && hasSearched && totalResults === 0 && (
+            <ScrollReveal>
             <div className="card p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-slate-700/40 border border-slate-600/40 flex items-center justify-center">
                 <svg className="w-8 h-8 text-star-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -930,6 +934,7 @@ function SearchContent() {
                 </button>
               </div>
             </div>
+            </ScrollReveal>
           )}
 
           {/* Results */}

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 export const metadata: Metadata = {
   title: 'Space Engineering Tools — Interactive Calculators & Analysis | SpaceNexus',
@@ -175,20 +177,22 @@ export default function ToolsHubPage() {
 
         <div className="max-w-5xl mx-auto">
           {/* Intro */}
-          <div className="card p-8 mb-10">
-            <p className="text-slate-400 leading-relaxed">
-              Plan your space mission with professional-grade engineering tools. From launch cost
-              estimation and orbital mechanics to constellation design and regulatory compliance,
-              these interactive calculators help aerospace engineers, mission planners, and business
-              strategists make data-driven decisions.
-            </p>
-          </div>
+          <ScrollReveal>
+            <div className="card p-8 mb-10">
+              <p className="text-slate-400 leading-relaxed">
+                Plan your space mission with professional-grade engineering tools. From launch cost
+                estimation and orbital mechanics to constellation design and regulatory compliance,
+                these interactive calculators help aerospace engineers, mission planners, and business
+                strategists make data-driven decisions.
+              </p>
+            </div>
+          </ScrollReveal>
 
           {/* Tool Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12">
             {TOOLS.map((tool) => (
+              <StaggerItem key={tool.href}>
               <Link
-                key={tool.href}
                 href={tool.href}
                 className={`card p-6 hover:ring-2 ${tool.hoverRing} transition-all group relative overflow-hidden`}
               >
@@ -223,10 +227,12 @@ export default function ToolsHubPage() {
                   </div>
                 </div>
               </Link>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
 
           {/* Mission Cost Simulator CTA */}
+          <ScrollReveal>
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               Full Mission Simulator
@@ -259,13 +265,16 @@ export default function ToolsHubPage() {
               </div>
             </Link>
           </section>
+          </ScrollReveal>
 
           {/* Additional Resources */}
+          <ScrollReveal>
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               Related Resources
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <StaggerItem>
               <Link
                 href="/launch-vehicles"
                 className="card p-5 hover:ring-2 hover:ring-cyan-500/50 transition-all group"
@@ -277,6 +286,8 @@ export default function ToolsHubPage() {
                   Compare specifications, payload capacity, and pricing across 50+ rockets.
                 </p>
               </Link>
+              </StaggerItem>
+              <StaggerItem>
               <Link
                 href="/compare/launch-vehicles"
                 className="card p-5 hover:ring-2 hover:ring-cyan-500/50 transition-all group"
@@ -288,6 +299,8 @@ export default function ToolsHubPage() {
                   Compare up to 4 launch vehicles across payload, cost, dimensions, and reliability.
                 </p>
               </Link>
+              </StaggerItem>
+              <StaggerItem>
               <Link
                 href="/blueprints"
                 className="card p-5 hover:ring-2 hover:ring-cyan-500/50 transition-all group"
@@ -299,10 +312,13 @@ export default function ToolsHubPage() {
                   Technical hardware breakdowns and engineering specifications for space systems.
                 </p>
               </Link>
-            </div>
+              </StaggerItem>
+            </StaggerContainer>
           </section>
+          </ScrollReveal>
 
           {/* CTA */}
+          <ScrollReveal>
           <section className="text-center">
             <div className="card p-10">
               <h2 className="text-2xl font-bold text-white mb-3">Need Custom Analysis?</h2>
@@ -320,6 +336,7 @@ export default function ToolsHubPage() {
               </div>
             </div>
           </section>
+          </ScrollReveal>
         </div>
       </div>
 

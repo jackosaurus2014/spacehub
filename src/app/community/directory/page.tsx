@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ProfileCard from '@/components/community/ProfileCard';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 interface ProfileData {
   id: string;
@@ -98,6 +100,7 @@ export default function DirectoryPage() {
         />
 
         {/* Search + Filters */}
+        <ScrollReveal>
         <div className="card p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Search */}
@@ -137,6 +140,7 @@ export default function DirectoryPage() {
             />
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Loading */}
         {loading && (
@@ -165,11 +169,13 @@ export default function DirectoryPage() {
         {/* Profiles grid */}
         {!loading && profiles.length > 0 && (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {profiles.map((profile, idx) => (
-                <ProfileCard key={profile.id} profile={profile} index={idx} />
+                <StaggerItem key={profile.id}>
+                  <ProfileCard profile={profile} index={idx} />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
 
             {/* Load more */}
             {hasMore && (

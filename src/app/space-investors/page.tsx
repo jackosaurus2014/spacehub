@@ -6,6 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import ShareButton from '@/components/ui/ShareButton';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -572,6 +573,13 @@ export default function SpaceInvestorsPage() {
           subtitle="Explore the leading venture capital firms, corporate investors, and angel networks funding the next generation of space companies."
           accentColor="purple"
         />
+
+        <div className="flex justify-end mb-4">
+          <ShareButton
+            title="Space Venture Capital & Investors - SpaceNexus"
+            description="Explore leading venture capital firms, corporate investors, and angel networks funding the next generation of space companies."
+          />
+        </div>
 
         {/* ── Market Stats ─────────────────────────────────────────────── */}
         <ScrollReveal>

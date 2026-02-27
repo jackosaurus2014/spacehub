@@ -5,6 +5,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import ShareButton from '@/components/ui/ShareButton';
 import { motion } from 'framer-motion';
 
 // ── Market Segment Data ──────────────────────────────────────────────
@@ -702,6 +703,13 @@ export default function MarketSegmentsPage() {
           icon={<span className="text-4xl">{'\uD83D\uDCC8'}</span>}
           accentColor="cyan"
         />
+
+        <div className="flex justify-end mb-4">
+          <ShareButton
+            title="Space Industry Market Segments - SpaceNexus"
+            description="Breaking down the global space economy into 12 investable market segments with size, growth rates, and key players."
+          />
+        </div>
 
         {/* Total Market Banner */}
         <TotalMarketBanner />
