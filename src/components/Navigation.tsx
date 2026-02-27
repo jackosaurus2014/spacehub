@@ -47,6 +47,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'News Aggregator', href: '/news-aggregator', description: 'Curated multi-source news feed' },
   { label: 'Launch Manifest', href: '/launch-manifest', description: 'Global launch schedule & manifest tracker' },
   { label: 'Debris Catalog', href: '/debris-catalog', description: 'Comprehensive orbital debris database' },
+  { label: 'Sustainability Scorecard', href: '/sustainability-scorecard', description: 'Space sustainability metrics & ratings' },
   { label: 'FAQ', href: '/faq', description: 'Frequently asked questions' },
 ];
 
@@ -77,6 +78,7 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Frequency Database', href: '/frequency-database', description: 'Searchable satellite frequency allocations' },
   { label: 'Ground Stations', href: '/ground-station-directory', description: 'Global ground station directory & capabilities' },
   { label: 'Launch Economics', href: '/launch-economics', description: 'Launch cost trends & pricing analysis' },
+  { label: 'RF Spectrum', href: '/rf-spectrum', description: 'RF spectrum analysis & interference mapping' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
@@ -96,6 +98,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Manufacturing & Imagery', href: '/space-manufacturing', description: 'In-space manufacturing & EO providers' },
   { label: 'Supply Chain Risk', href: '/supply-chain-risk', description: 'Supplier risk scoring & disruption alerts' },
   { label: 'Funding Rounds', href: '/funding-rounds', description: 'Startup funding rounds & investment data' },
+  { label: 'M&A Tracker', href: '/ma-tracker', description: 'Mergers & acquisitions deal tracking' },
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [
@@ -137,6 +140,7 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Thermal Calculator', href: '/thermal-calculator', description: 'Spacecraft thermal analysis tool' },
   { label: 'Clean Room Guide', href: '/clean-room-reference', description: 'Clean room classifications & requirements' },
   { label: 'Education Pathways', href: '/education-pathways', description: 'Space industry degree & training programs' },
+  { label: 'Satellite Buses', href: '/satellite-bus-comparison', description: 'Satellite bus platform comparison tool' },
 ];
 
 function DropdownMenu({
