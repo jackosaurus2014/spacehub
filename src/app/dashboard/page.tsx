@@ -179,7 +179,7 @@ function ModuleSection({ title, icon, modules, sizeClasses, delay }: {
           <Link
             key={mod.href}
             href={mod.href}
-            className={`group relative bg-slate-800/50 border border-slate-700/50 rounded-xl ${sizeClasses.padding} hover:border-cyan-400/40 hover:bg-slate-800/80 transition-all duration-200`}
+            className={`group relative card ${sizeClasses.padding} hover:border-cyan-400/40 hover:bg-slate-800/80`}
           >
             <div className="flex items-start gap-3">
               <span className="text-2xl flex-shrink-0 mt-0.5">{mod.icon}</span>
@@ -352,7 +352,7 @@ export default function DashboardPage() {
             <Link
               key={stat.key}
               href={stat.href}
-              className="group bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 hover:border-cyan-400/40 hover:bg-slate-800/80 transition-all duration-200"
+              className="group card p-4 hover:border-cyan-400/40 hover:bg-slate-800/80"
             >
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">{stat.icon}</span>
@@ -371,7 +371,7 @@ export default function DashboardPage() {
 
         {/* Recently Viewed Section */}
         <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.07s' }}>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
+          <div className="card p-5">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
                 <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

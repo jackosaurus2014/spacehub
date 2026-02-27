@@ -16,7 +16,7 @@ export default function Error({
           </svg>
         </div>
         <h2 className="text-xl font-bold mb-2">Something went wrong</h2>
-        <p className="text-slate-400 mb-6">{error.message || 'Failed to load regulatory risk data. Please try again.'}</p>
+        <p className="text-slate-400 mb-6">{error.message || 'Failed to load in-situ resource utilization data. Please try again.'}</p>
         <button
           onClick={reset}
           className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-medium transition-colors"

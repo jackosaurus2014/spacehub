@@ -1139,7 +1139,7 @@ function SpaceWeatherTab() {
                   return (
                     <div key={flare.id} className="p-4 bg-slate-700/30 rounded-lg">
                       <div className="flex items-start gap-4">
-                        <div className={`w-14 h-14 rounded-lg flex items-center justify-center text-white font-bold text-lg ${classInfo?.color || 'bg-gray-500'}`}>
+                        <div className={`w-14 h-14 rounded-lg flex items-center justify-center text-white font-bold text-lg ${classInfo?.color || 'bg-slate-500'}`}>
                           {flare.classification}{flare.intensity}
                         </div>
                         <div className="flex-1">

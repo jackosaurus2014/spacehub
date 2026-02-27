@@ -242,7 +242,7 @@ export default function NewsPage() {
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
-                className="group block bg-slate-800/40 border border-slate-700/50 rounded-lg p-5 hover:border-nebula-500/50 transition-all"
+                className="group block card p-5 hover:border-nebula-500/50"
               >
                 <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-nebula-500/20 text-nebula-300 border border-nebula-500/30">
                   Blog

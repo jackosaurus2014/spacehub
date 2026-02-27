@@ -1405,19 +1405,19 @@ function SpaceTalentHubContent() {
               {talentStats && (
                 <ScrollReveal>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 text-center">
+                  <div className="card p-4 text-center">
                     <div className="text-2xl font-bold text-white">{talentStats.totalExperts}</div>
                     <div className="text-slate-400 text-xs">Total Experts</div>
                   </div>
-                  <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 text-center">
+                  <div className="card p-4 text-center">
                     <div className="text-2xl font-bold text-cyan-400">{talentStats.featuredCount}</div>
                     <div className="text-slate-400 text-xs">Featured</div>
                   </div>
-                  <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 text-center">
+                  <div className="card p-4 text-center">
                     <div className="text-2xl font-bold text-green-400">{talentStats.availableCount}</div>
                     <div className="text-slate-400 text-xs">Available Now</div>
                   </div>
-                  <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 text-center">
+                  <div className="card p-4 text-center">
                     <div className="text-2xl font-bold text-white">${talentStats.avgConsultingRate}</div>
                     <div className="text-slate-400 text-xs">Avg. Rate/hr</div>
                   </div>
@@ -1426,7 +1426,7 @@ function SpaceTalentHubContent() {
               )}
 
               {/* Filters */}
-              <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 mb-6">
+              <div className="card p-4 mb-6">
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1">
                     <input
@@ -1544,7 +1544,7 @@ function SpaceTalentHubContent() {
               {/* Stats Cards */}
               {webinarStats && (
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                  <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 text-center">
+                  <div className="card p-4 text-center">
                     <div className="text-2xl font-bold text-white">{webinarStats.totalWebinars}</div>
                     <div className="text-slate-400 text-xs">Total Events</div>
                   </div>
@@ -1552,15 +1552,15 @@ function SpaceTalentHubContent() {
                     <div className="text-2xl font-bold text-red-400">{webinarStats.liveCount}</div>
                     <div className="text-slate-400 text-xs">Live Now</div>
                   </div>
-                  <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 text-center">
+                  <div className="card p-4 text-center">
                     <div className="text-2xl font-bold text-cyan-400">{webinarStats.upcomingCount}</div>
                     <div className="text-slate-400 text-xs">Upcoming</div>
                   </div>
-                  <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 text-center">
+                  <div className="card p-4 text-center">
                     <div className="text-2xl font-bold text-slate-400">{webinarStats.pastCount}</div>
                     <div className="text-slate-400 text-xs">Past Events</div>
                   </div>
-                  <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 text-center">
+                  <div className="card p-4 text-center">
                     <div className="text-2xl font-bold text-green-400">{webinarStats.recordingsAvailable}</div>
                     <div className="text-slate-400 text-xs">Recordings</div>
                   </div>
@@ -1568,7 +1568,7 @@ function SpaceTalentHubContent() {
               )}
 
               {/* Filters */}
-              <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 mb-6">
+              <div className="card p-4 mb-6">
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex gap-2">
                     {[

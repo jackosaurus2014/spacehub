@@ -614,23 +614,23 @@ export default function DealFlowPage() {
         {/* ── Summary Stats ──────────────────────────────────────── */}
         <ScrollReveal>
           <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-5 backdrop-blur">
+            <div className="card p-5">
               <p className="text-sm font-medium text-slate-400">Total Deal Value</p>
               <p className="mt-1 text-2xl font-bold text-emerald-400">
                 {formatCurrency(stats.totalValue)}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-5 backdrop-blur">
+            <div className="card p-5">
               <p className="text-sm font-medium text-slate-400">Deal Count</p>
               <p className="mt-1 text-2xl font-bold text-cyan-400">{stats.dealCount}</p>
             </div>
-            <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-5 backdrop-blur">
+            <div className="card p-5">
               <p className="text-sm font-medium text-slate-400">Average Size</p>
               <p className="mt-1 text-2xl font-bold text-amber-400">
                 {formatCurrency(stats.avgSize)}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-5 backdrop-blur">
+            <div className="card p-5">
               <p className="text-sm font-medium text-slate-400">Largest Deal</p>
               <p className="mt-1 text-2xl font-bold text-purple-400">
                 {formatCurrency(stats.largest)}
@@ -641,7 +641,7 @@ export default function DealFlowPage() {
 
         {/* ── Filters & Search ───────────────────────────────────── */}
         <ScrollReveal delay={0.1}>
-          <div className="mt-8 rounded-xl border border-slate-700/50 bg-slate-800/50 p-5 backdrop-blur">
+          <div className="mt-8 card p-5">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
               {/* Search */}
               <div className="lg:col-span-2">
@@ -741,7 +741,7 @@ export default function DealFlowPage() {
         <ScrollReveal delay={0.2}>
           <div className="mt-8 space-y-4">
             {filteredDeals.length === 0 && (
-              <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-12 text-center backdrop-blur">
+              <div className="card p-12 text-center">
                 <p className="text-lg text-slate-400">No deals match your current filters.</p>
                 <button
                   onClick={() => {
@@ -760,7 +760,7 @@ export default function DealFlowPage() {
             {filteredDeals.map((deal) => (
               <div
                 key={deal.id}
-                className="group rounded-xl border border-slate-700/50 bg-slate-800/50 p-5 backdrop-blur transition-all duration-200 hover:border-slate-600/50 hover:bg-slate-800/70"
+                className="group card p-5 hover:border-slate-600/50 hover:bg-slate-800/70"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   {/* Left: Company & Info */}
@@ -839,7 +839,7 @@ export default function DealFlowPage() {
 
         {/* ── Deal Type Breakdown ────────────────────────────────── */}
         <ScrollReveal delay={0.15}>
-          <div className="mt-12 rounded-xl border border-slate-700/50 bg-slate-800/50 p-6 backdrop-blur">
+          <div className="mt-12 card p-6">
             <h2 className="text-lg font-semibold text-white">Deal Type Breakdown</h2>
             <p className="mt-1 text-sm text-slate-400">
               Distribution of deals by type across the current filtered view.
@@ -878,7 +878,7 @@ export default function DealFlowPage() {
 
         {/* ── Sector Heatmap ─────────────────────────────────────── */}
         <ScrollReveal delay={0.2}>
-          <div className="mt-8 rounded-xl border border-slate-700/50 bg-slate-800/50 p-6 backdrop-blur">
+          <div className="mt-8 card p-6">
             <h2 className="text-lg font-semibold text-white">Sector Activity</h2>
             <p className="mt-1 text-sm text-slate-400">
               Deal volume and total capital by sector.
@@ -939,7 +939,7 @@ export default function DealFlowPage() {
 
         {/* ── Related Links ──────────────────────────────────────── */}
         <ScrollReveal delay={0.25}>
-          <div className="mt-12 rounded-xl border border-slate-700/50 bg-slate-800/50 p-6 backdrop-blur">
+          <div className="mt-12 card p-6">
             <h2 className="text-lg font-semibold text-white">Related Resources</h2>
             <p className="mt-1 text-sm text-slate-400">
               Explore more space industry financial intelligence and opportunity tracking.

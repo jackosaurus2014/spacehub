@@ -177,7 +177,7 @@ function getCategoryInfo(category: string) {
 function getAvailabilityInfo(availability: string) {
   return ORBITAL_SERVICE_AVAILABILITY.find(a => a.value === availability) || {
     label: availability,
-    color: 'bg-gray-500',
+    color: 'bg-slate-500',
   };
 }
 

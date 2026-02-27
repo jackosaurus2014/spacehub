@@ -71,7 +71,7 @@ export default function ComparisonHubPage() {
             <ScrollReveal key={tool.href} delay={0.1 + index * 0.1}>
               <Link
                 href={tool.href}
-                className="group block bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 hover:border-cyan-400/40 hover:bg-slate-800/80 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/5 hover:-translate-y-1"
+                className="group block card p-6 hover:border-cyan-400/40 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-cyan-500/5 hover:-translate-y-1"
               >
                 <div className="text-4xl mb-4">{tool.icon}</div>
                 <h2 className="text-lg font-bold text-white group-hover:text-cyan-200 transition-colors mb-2">
@@ -106,7 +106,7 @@ export default function ComparisonHubPage() {
               <ScrollReveal key={comp.href} delay={0.2 + index * 0.1}>
                 <Link
                   href={comp.href}
-                  className="group block bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-cyan-400/30 hover:bg-slate-800/70 transition-all duration-300"
+                  className="group block card p-5 hover:border-cyan-400/30 hover:bg-slate-800/70"
                 >
                   <div className="text-2xl mb-3">{comp.icon}</div>
                   <h3 className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors mb-2">

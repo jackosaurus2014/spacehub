@@ -805,7 +805,7 @@ export default function GlossaryPage() {
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center hover:border-cyan-400/20 transition-all"
+                  className="card p-4 text-center hover:border-cyan-400/20"
                 >
                   <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
                   <div className="text-xs text-slate-400 mt-1">{stat.label}</div>
