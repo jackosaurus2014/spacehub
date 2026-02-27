@@ -6,10 +6,11 @@ import { toast } from '@/lib/toast';
 interface ShareButtonProps {
   title: string;
   url?: string;
+  description?: string;
   className?: string;
 }
 
-export default function ShareButton({ title, url, className = '' }: ShareButtonProps) {
+export default function ShareButton({ title, url, description, className = '' }: ShareButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -25,6 +26,18 @@ export default function ShareButton({ title, url, className = '' }: ShareButtonP
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  // Close dropdown on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setIsOpen(false);
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
   function getShareUrl(): string {
@@ -70,7 +83,7 @@ export default function ShareButton({ title, url, className = '' }: ShareButtonP
   function handleShareEmail() {
     const shareUrl = getShareUrl();
     const subject = encodeURIComponent(title);
-    const body = encodeURIComponent(`Check this out on SpaceNexus:\n\n${title}\n${shareUrl}`);
+    const body = encodeURIComponent(`Check this out on SpaceNexus:\n\n${title}${description ? '\n' + description : ''}\n\n${shareUrl}`);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
     setIsOpen(false);
   }
@@ -79,10 +92,26 @@ export default function ShareButton({ title, url, className = '' }: ShareButtonP
     <div ref={containerRef} className={`relative inline-block ${className}`}>
       {/* Share Button */}
       <button
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={async () => {
+          // On mobile, try native Web Share API first
+          if (typeof navigator !== 'undefined' && navigator.share) {
+            try {
+              await navigator.share({
+                title,
+                text: description || title,
+                url: getShareUrl(),
+              });
+              return;
+            } catch {
+              // User cancelled or API failed; fall through to dropdown
+            }
+          }
+          setIsOpen((prev) => !prev);
+        }}
         className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs font-medium text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all"
         aria-label="Share"
         aria-expanded={isOpen}
+        aria-haspopup="true"
       >
         <svg
           className="w-3.5 h-3.5"

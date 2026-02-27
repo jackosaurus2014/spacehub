@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useRef, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import ShareButton from '@/components/ui/ShareButton';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -545,13 +546,21 @@ export default function GlossaryPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* ---- Header ---- */}
-        <AnimatedPageHeader
-          title="Space Industry Glossary"
-          subtitle="A comprehensive reference of key terms, acronyms, and concepts used across the global space industry — from orbital mechanics to regulatory frameworks."
-          icon={<span className="text-4xl">&#128218;</span>}
-          breadcrumb="Resources"
-          accentColor="cyan"
-        />
+        <div className="flex items-start justify-between gap-4">
+          <AnimatedPageHeader
+            title="Space Industry Glossary"
+            subtitle="A comprehensive reference of key terms, acronyms, and concepts used across the global space industry — from orbital mechanics to regulatory frameworks."
+            icon={<span className="text-4xl">&#128218;</span>}
+            breadcrumb="Resources"
+            accentColor="cyan"
+          />
+          <ShareButton
+            title="Space Industry Glossary - SpaceNexus"
+            url="https://spacenexus.us/glossary"
+            description="A comprehensive reference of key terms, acronyms, and concepts used across the global space industry."
+            className="mt-2 flex-shrink-0"
+          />
+        </div>
 
         {/* ---- Search & Filter ---- */}
         <ScrollReveal delay={0.1}>

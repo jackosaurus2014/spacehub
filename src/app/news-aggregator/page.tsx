@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ShareButton from '@/components/ui/ShareButton';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -519,26 +520,34 @@ export default function NewsAggregatorPage() {
         />
 
         {/* Header */}
-        <AnimatedPageHeader
-          title="Space Industry News Aggregator"
-          subtitle="Real-time news from 50+ sources across the global space industry. Filter, search, and stay ahead."
-          icon={
-            <svg
-              className="w-8 h-8 text-cyan-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"
-              />
-            </svg>
-          }
-          accentColor="cyan"
-        />
+        <div className="flex items-start justify-between gap-4">
+          <AnimatedPageHeader
+            title="Space Industry News Aggregator"
+            subtitle="Real-time news from 50+ sources across the global space industry. Filter, search, and stay ahead."
+            icon={
+              <svg
+                className="w-8 h-8 text-cyan-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"
+                />
+              </svg>
+            }
+            accentColor="cyan"
+          />
+          <ShareButton
+            title="Space Industry News Aggregator - SpaceNexus"
+            url="https://spacenexus.us/news-aggregator"
+            description="Real-time space industry news from 50+ sources. Filter, search, and stay ahead."
+            className="mt-2 flex-shrink-0"
+          />
+        </div>
 
         {/* Stats bar */}
         <ScrollReveal>

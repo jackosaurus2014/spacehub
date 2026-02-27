@@ -5,6 +5,7 @@ import sanitizeHtml from 'sanitize-html';
 import { getBlogPost, BLOG_POSTS, BLOG_CATEGORIES } from '@/lib/blog-content';
 import FAQSchema from '@/components/seo/FAQSchema';
 import SocialShare from '@/components/ui/SocialShare';
+import ShareButton from '@/components/ui/ShareButton';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 const SAFE_HTML_CONFIG: sanitizeHtml.IOptions = {
@@ -179,7 +180,7 @@ export default function BlogPostPage({ params }: Props) {
                 <span className="text-slate-600">Updated {formatDate(post.updatedAt)}</span>
               )}
             </div>
-            <SocialShare
+            <ShareButton
               title={post.title}
               url={`https://spacenexus.us/blog/${post.slug}`}
               description={post.excerpt}

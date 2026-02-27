@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import ShareButton from '@/components/ui/ShareButton';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -512,13 +513,21 @@ export default function SpaceTimelinePage() {
       {/* ----------------------------------------------------------------- */}
       {/* Header                                                            */}
       {/* ----------------------------------------------------------------- */}
-      <AnimatedPageHeader
-        title="Space Industry Timeline"
-        subtitle={`${statYears}+ years of humanity's journey to the stars \u2014 from Sputnik to Artemis and beyond. ${TIMELINE_EVENTS.length} pivotal moments that shaped our future among the stars.`}
-        icon={<span className="text-4xl">{'\uD83D\uDE80'}</span>}
-        breadcrumb="SpaceNexus"
-        accentColor="cyan"
-      />
+      <div className="flex items-start justify-between gap-4">
+        <AnimatedPageHeader
+          title="Space Industry Timeline"
+          subtitle={`${statYears}+ years of humanity's journey to the stars \u2014 from Sputnik to Artemis and beyond. ${TIMELINE_EVENTS.length} pivotal moments that shaped our future among the stars.`}
+          icon={<span className="text-4xl">{'\uD83D\uDE80'}</span>}
+          breadcrumb="SpaceNexus"
+          accentColor="cyan"
+        />
+        <ShareButton
+          title="Space Industry Timeline - SpaceNexus"
+          url="https://spacenexus.us/timeline"
+          description="68+ years of humanity's journey to the stars. From Sputnik to Artemis and beyond."
+          className="mt-2 flex-shrink-0"
+        />
+      </div>
 
       {/* ----------------------------------------------------------------- */}
       {/* Era filter tabs                                                   */}

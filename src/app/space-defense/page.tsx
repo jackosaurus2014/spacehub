@@ -1156,7 +1156,7 @@ function HeroStats({ forceCount, programCount, contractCount, allianceCount }: {
     <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       {stats.map((stat) => (
         <StaggerItem key={stat.label}>
-          <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+          <div className="card p-5">
             <div className="text-star-300 text-xs uppercase tracking-widest">{stat.label}</div>
             <div className="text-white font-bold text-2xl mt-1">{stat.value}</div>
             <div className="text-star-400 text-xs">{stat.sub}</div>
@@ -1171,7 +1171,7 @@ function SpaceForceCard({ force }: { force: SpaceForce }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
+    <div className="card p-5 hover:border-nebula-500/40">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-slate-700/50 flex items-center justify-center text-xs font-bold text-white">
@@ -1265,7 +1265,7 @@ function ProgramCard({ program }: { program: DefenseProgram }) {
   const catStyle = CATEGORY_STYLES[program.category] || DEFAULT_CATEGORY_STYLE;
 
   return (
-    <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
+    <div className="card p-5 hover:border-nebula-500/40">
       <div className="flex items-start justify-between mb-2">
         <div>
           <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -1340,7 +1340,7 @@ function ProgramCard({ program }: { program: DefenseProgram }) {
 
 function ContractCard({ contract }: { contract: ContractAward }) {
   return (
-    <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
+    <div className="card p-5 hover:border-nebula-500/40">
       <div className="flex items-start justify-between mb-2">
         <h3 className="text-white font-semibold">{contract.title}</h3>
         <span className="text-green-400 font-bold text-sm whitespace-nowrap ml-3">{contract.value}</span>
@@ -1382,7 +1382,7 @@ function ThreatEventCard({ event }: { event: CounterspaceEvent }) {
   const typeStyle = EVENT_TYPE_STYLES[event.type] || DEFAULT_EVENT_TYPE_STYLE;
 
   return (
-    <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+    <div className="card p-5">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-slate-700/50 flex items-center justify-center text-xs font-bold text-white">
@@ -1433,7 +1433,7 @@ function AllianceCard({ alliance }: { alliance: Alliance }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
+    <div className="card p-5 hover:border-nebula-500/40">
       <div className="flex items-start justify-between mb-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -1512,7 +1512,7 @@ function SpendingTrends() {
   const maxVal = 35;
 
   return (
-    <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur mb-8">
+    <div className="card p-6 mb-8">
       <h3 className="text-white font-bold mb-4">U.S. Defense Space Budget Trends ($B)</h3>
       <div className="space-y-3">
         {budgetData.map((row) => (
@@ -1735,7 +1735,7 @@ function ThreatSummary() {
   };
 
   return (
-    <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur mb-8">
+    <div className="card p-6 mb-8">
       <h3 className="text-white font-bold mb-2">Counterspace Threat Overview (OSINT Assessment)</h3>
       <p className="text-star-400 text-xs mb-4">
         Click &quot;View full analysis&quot; on each threat category to see the rationale behind each rating,
@@ -1944,7 +1944,7 @@ export default function SpaceDefensePage() {
             </div>
 
             {/* USSF Organizational Detail */}
-            <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+            <div className="card p-6">
               <h3 className="text-white font-bold mb-4">U.S. Space Force Organizational Structure</h3>
               <p className="text-star-300 text-sm mb-4">
                 The USSF is organized under the Department of the Air Force and structured around three
@@ -2006,7 +2006,7 @@ export default function SpaceDefensePage() {
               </div>
 
               {/* Category Filters */}
-              <div className="card p-4 border border-slate-700/50 bg-slate-800/50 mb-6">
+              <div className="card p-4 mb-6">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-star-400 text-sm mr-2">Filter by category:</span>
                   <button
@@ -2047,7 +2047,7 @@ export default function SpaceDefensePage() {
             </div>
 
             {/* SDA Architecture Explainer */}
-            <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+            <div className="card p-6">
               <h3 className="text-white font-bold mb-4">Proliferated Warfighter Space Architecture (PWSA)</h3>
               <p className="text-star-300 text-sm mb-4">
                 The Space Development Agency (SDA) is building the Proliferated Warfighter Space Architecture,
@@ -2171,7 +2171,7 @@ export default function SpaceDefensePage() {
                     focus: ['LEO PNT constellations', 'Terrestrial eLoran modernization', 'Quantum-inertial navigation'],
                   },
                 ].map((opp) => (
-                  <div key={opp.title} className="card p-5 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
+                  <div key={opp.title} className="card p-5 hover:border-nebula-500/40">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <h3 className="text-white font-semibold text-sm">{opp.title}</h3>
                       <span className={`text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap ${opp.statusBg} ${opp.statusColor}`}>
@@ -2233,7 +2233,7 @@ export default function SpaceDefensePage() {
                     const typeStyle = typeStyles[opp.type || 'solicitation'] || typeStyles.solicitation;
 
                     return (
-                      <div key={opp.id} className="card p-4 border border-slate-700/50 bg-slate-800/50 backdrop-blur hover:border-nebula-500/40 transition-all">
+                      <div key={opp.id} className="card p-4 hover:border-nebula-500/40">
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <h3 className="text-white font-semibold text-sm line-clamp-2">{opp.title}</h3>
                           <span className={`text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap ${typeStyle.bg} ${typeStyle.color}`}>
@@ -2308,7 +2308,7 @@ export default function SpaceDefensePage() {
             </div>
 
             {/* SBIR/STTR Note */}
-            <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+            <div className="card p-6">
               <h3 className="text-white font-bold mb-3">SBIR/STTR Opportunities in Space Defense</h3>
               <p className="text-star-300 text-sm mb-3">
                 The Space Force and SDA actively use the Small Business Innovation Research (SBIR) and
@@ -2357,7 +2357,7 @@ export default function SpaceDefensePage() {
               <ThreatSummary />
 
               {/* Event Type Filters */}
-              <div className="card p-4 border border-slate-700/50 bg-slate-800/50 mb-6">
+              <div className="card p-4 mb-6">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-star-400 text-sm mr-2">Filter events:</span>
                   <button
@@ -2444,7 +2444,7 @@ export default function SpaceDefensePage() {
             </div>
 
             {/* Data Sharing Frameworks */}
-            <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+            <div className="card p-6">
               <h3 className="text-white font-bold mb-4">Key Data Sharing Frameworks</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
@@ -2479,7 +2479,7 @@ export default function SpaceDefensePage() {
             </div>
 
             {/* Allied Capability Comparison */}
-            <div className="card p-6 border border-slate-700/50 bg-slate-800/50 backdrop-blur">
+            <div className="card p-6">
               <h3 className="text-white font-bold mb-4">Allied Space Capability Comparison</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">

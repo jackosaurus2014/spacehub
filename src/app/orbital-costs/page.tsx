@@ -223,7 +223,7 @@ function SystemDetail({ system, onClose }: { system: OrbitalSystem; onClose: () 
   ];
 
   return (
-    <div className="bg-slate-900 border border-slate-700 rounded-xl p-4 sm:p-6 mt-4 animate-fadeIn">
+    <div className="card p-4 sm:p-6 mt-4 animate-fadeIn">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
@@ -446,22 +446,22 @@ function SummaryStats() {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-      <div className="bg-slate-900/60 border border-slate-700 rounded-lg p-3">
+      <div className="card p-3">
         <div className="text-xs uppercase tracking-wider text-slate-500">Systems Analyzed</div>
         <div className="text-xl font-bold text-white">{totalSystems}</div>
         <div className="text-xs text-slate-400">{categories.length} categories</div>
       </div>
-      <div className="bg-slate-900/60 border border-slate-700 rounded-lg p-3">
+      <div className="card p-3">
         <div className="text-xs uppercase tracking-wider text-slate-500">Cost Range</div>
         <div className="text-xl font-bold text-green-400">{formatCostCompact(minCost)}</div>
         <div className="text-xs text-slate-400">to {formatCostCompact(maxCost)}</div>
       </div>
-      <div className="bg-slate-900/60 border border-slate-700 rounded-lg p-3">
+      <div className="card p-3">
         <div className="text-xs uppercase tracking-wider text-slate-500">BOM Items</div>
         <div className="text-xl font-bold text-blue-400">{totalBOMItems}</div>
         <div className="text-xs text-slate-400">across all systems</div>
       </div>
-      <div className="bg-slate-900/60 border border-slate-700 rounded-lg p-3">
+      <div className="card p-3">
         <div className="text-xs uppercase tracking-wider text-slate-500">TRL Range</div>
         <div className="text-xl font-bold text-purple-400">
           {Math.min(...ORBITAL_SYSTEMS.map((s) => s.techReadinessLevel))}-
@@ -599,7 +599,7 @@ export default function OrbitalCostsPage() {
         )}
 
         {/* Methodology Note */}
-        <div className="mt-12 bg-slate-900/40 border border-slate-800 rounded-xl p-6">
+        <div className="card mt-12 p-6">
           <h3 className="text-sm font-semibold text-slate-300 mb-2">Methodology & Disclaimers</h3>
           <div className="text-xs text-slate-500 space-y-2">
             <p>
@@ -632,7 +632,7 @@ export default function OrbitalCostsPage() {
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center gap-3 p-3 bg-slate-900/60 border border-slate-700 rounded-lg hover:border-slate-500 hover:bg-slate-800/50 transition-all"
+              className="card flex items-center gap-3 p-3 hover:border-slate-500"
             >
               <span className="text-xl">{link.icon}</span>
               <div>

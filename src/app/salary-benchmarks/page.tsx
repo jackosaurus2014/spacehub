@@ -213,7 +213,7 @@ function RoleCard({
   const adjMedian = Math.round(displayRange.median * locationMultiplier);
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-slate-600/70 transition-all">
+    <div className="card p-5 hover:border-slate-600/70">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-white text-base">{role.title}</h3>
@@ -378,7 +378,7 @@ function CompanyCard({ comp }: { comp: (typeof COMPANY_COMPENSATIONS)[0] }) {
   const multiplierColor = comp.baseSalaryMultiplier >= 1 ? 'text-green-400' : 'text-yellow-400';
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-slate-600/70 transition-all">
+    <div className="card p-5 hover:border-slate-600/70">
       <div className="flex items-start justify-between mb-3">
         <div>
           <Link
@@ -427,7 +427,7 @@ function LocationModifierSection({
   onSelect: (loc: MetroLocation | '') => void;
 }) {
   return (
-    <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4">
+    <div className="card p-4">
       <div className="flex items-center gap-2 mb-3">
         <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -605,19 +605,19 @@ function SalaryBenchmarksContent() {
       {/* ---- OVERVIEW STATS ---- */}
       <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 text-center">
+          <div className="card p-5 text-center">
             <div className="text-3xl font-bold text-white">{overviewStats.totalRoles}</div>
             <div className="text-slate-400 text-xs mt-1">Roles Tracked</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 text-center">
+          <div className="card p-5 text-center">
             <div className="text-3xl font-bold text-cyan-400">{formatSalary(overviewStats.avgMedian)}</div>
             <div className="text-slate-400 text-xs mt-1">Average Median Salary</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 text-center">
+          <div className="card p-5 text-center">
             <div className="text-3xl font-bold text-green-400">{overviewStats.highDemand}</div>
             <div className="text-slate-400 text-xs mt-1">High-Demand Roles</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 text-center">
+          <div className="card p-5 text-center">
             <div className="text-3xl font-bold text-purple-400">+{overviewStats.techPremium}%</div>
             <div className="text-slate-400 text-xs mt-1">vs. General Tech</div>
           </div>
@@ -681,7 +681,7 @@ function SalaryBenchmarksContent() {
           </div>
 
           {/* Filters */}
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 mb-6">
+          <div className="card p-4 mb-6">
             <div className="flex flex-col md:flex-row gap-3 mb-4">
               <div className="flex-1">
                 <input
@@ -819,7 +819,7 @@ function SalaryBenchmarksContent() {
       {activeView === 'chart' && (
         <div className="space-y-8">
           {/* Category Median Comparison */}
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+          <div className="card p-6">
             <h3 className="text-white font-semibold text-lg mb-1">Median Salary by Category</h3>
             <p className="text-slate-400 text-sm mb-6">Average median salary across all roles in each category</p>
             <div className="w-full" style={{ height: 400 }}>
@@ -853,7 +853,7 @@ function SalaryBenchmarksContent() {
           </div>
 
           {/* Company Base Salary Multiplier */}
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+          <div className="card p-6">
             <h3 className="text-white font-semibold text-lg mb-1">Company Base Salary vs. Market</h3>
             <p className="text-slate-400 text-sm mb-6">
               How each company&apos;s base salary compares to the industry median (100% = market rate)
@@ -934,7 +934,7 @@ function SalaryBenchmarksContent() {
         <h2 className="text-xl font-bold text-white mb-6">Frequently Asked Questions</h2>
         <div className="space-y-3">
           {SALARY_FAQS.map((faq, index) => (
-            <div key={index} className="bg-slate-800/50 border border-slate-700/50 rounded-xl overflow-hidden">
+            <div key={index} className="card overflow-hidden">
               <button
                 onClick={() => setFaqOpen(faqOpen === index ? null : index)}
                 className="w-full text-left px-5 py-4 flex items-center justify-between hover:bg-slate-700/30 transition-colors"
@@ -965,31 +965,31 @@ function SalaryBenchmarksContent() {
         <div className="flex flex-wrap gap-3">
           <Link
             href="/space-talent"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-cyan-500/50 transition-all"
+            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-cyan-500/50"
           >
             Space Talent Hub
           </Link>
           <Link
             href="/space-talent?tab=workforce"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-cyan-500/50 transition-all"
+            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-cyan-500/50"
           >
             Workforce Analytics
           </Link>
           <Link
             href="/company-profiles"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-cyan-500/50 transition-all"
+            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-cyan-500/50"
           >
             Company Profiles
           </Link>
           <Link
             href="/ecosystem-map"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-cyan-500/50 transition-all"
+            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-cyan-500/50"
           >
             Ecosystem Map
           </Link>
           <Link
             href="/marketplace"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-cyan-500/50 transition-all"
+            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-cyan-500/50"
           >
             Marketplace
           </Link>

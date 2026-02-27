@@ -710,38 +710,89 @@ body::after {
 
 /* ——— Print-friendly styles ——— */
 @media print {
-  /* Hide navigation, footer, ads, and interactive elements */
-  nav, footer, .no-print, .ad-slot, .install-prompt, .pull-to-refresh,
-  .keyboard-shortcuts, button[data-print-hide],
-  [data-no-print],
-  .fixed, .sticky,
-  button:not(.print-include),
+  /* Page setup */
+  @page {
+    margin: 1cm;
+  }
+
+  /* ── Hide non-printable UI chrome ── */
+  nav, footer, aside,
+  .no-print, [data-no-print],
+  .ad-slot, .ad-banner, [class*="adsense"],
   .toast-container,
-  .starfield {
+  .install-prompt, .pull-to-refresh,
+  .keyboard-shortcuts,
+  .starfield,
+  .fixed, .sticky,
+  /* Back-to-top button & scroll progress bar */
+  button[aria-label="Back to top"],
+  button[aria-label="Back to top"] ~ *,
+  /* Notification center */
+  [aria-label="Notifications"],
+  /* Service worker / PWA prompts */
+  [role="alert"],
+  /* Sidebar */
+  [class*="QuickAccess"], [class*="Sidebar"],
+  /* Interactive elements not useful in print */
+  button:not(.print-include),
+  input, select, textarea,
+  button[data-print-hide],
+  /* Chart controls and tooltips (keep chart images) */
+  .chart-controls, .chart-tooltip, .chart-zoom-controls,
+  [class*="recharts-tooltip"], [class*="recharts-legend"],
+  /* Miscellaneous overlays */
+  .modal-overlay, .dropdown-menu,
+  [class*="z-[9998]"], [class*="z-[9999]"] {
     display: none !important;
   }
 
-  /* Page margins */
-  @page {
-    margin: 1.5cm;
+  /* ── Base print reset ── */
+  * {
+    text-shadow: none !important;
   }
 
-  /* Reset dark background for print */
+  html {
+    font-size: 12pt;
+  }
+
   body, main, .min-h-screen,
   .bg-slate-950, .bg-slate-900, .bg-slate-800 {
     background: white !important;
     color: black !important;
+    font-size: 12pt !important;
+    line-height: 1.5 !important;
   }
 
-  /* Remove body pseudo-elements (background image + overlay) */
+  /* Remove body pseudo-elements (background image + dark overlay) */
   body::before,
   body::after {
     display: none !important;
   }
 
-  /* Make text readable on paper */
-  .text-white, .text-slate-200, .text-slate-300, .text-slate-400,
-  .text-slate-100, .text-slate-50 {
+  /* ── Remove decorative effects ── */
+  *, *::before, *::after {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .backdrop-blur-xl, .backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur-sm {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .glow-border, .glow-text {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Reset gradient backgrounds */
+  [class*="bg-gradient"] {
+    background: white !important;
+  }
+
+  /* ── Text colors for paper ── */
+  .text-white, .text-slate-50, .text-slate-100,
+  .text-slate-200, .text-slate-300, .text-slate-400 {
     color: #1a1a1a !important;
   }
 
@@ -749,7 +800,7 @@ body::after {
     color: #4b5563 !important;
   }
 
-  .text-cyan-400, .text-cyan-500, .text-cyan-300 {
+  .text-cyan-300, .text-cyan-400, .text-cyan-500 {
     color: #0891b2 !important;
   }
 
@@ -757,7 +808,7 @@ body::after {
     color: #059669 !important;
   }
 
-  .text-amber-400, .text-amber-500, .text-amber-300 {
+  .text-amber-300, .text-amber-400, .text-amber-500 {
     color: #d97706 !important;
   }
 
@@ -773,63 +824,95 @@ body::after {
     color: #dc2626 !important;
   }
 
-  /* General text reset for anything not covered above */
-  * {
-    text-shadow: none !important;
-  }
-
-  /* Cards should have visible borders on white paper */
+  /* ── Cards — white background with visible border ── */
   .card, .card-elevated, .card-interactive,
   .card-nebula, .card-cyan, .card-amber, .card-emerald,
   [class*="bg-slate-800"] {
     background: white !important;
-    border: 1px solid #e5e7eb !important;
-    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    color: #1a1a1a !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
-  /* Reset gradient backgrounds */
-  [class*="bg-gradient"] {
+  /* Card headings and text overrides for print */
+  .card h1, .card h2, .card h3, .card h4, .card h5, .card h6,
+  .card-elevated h1, .card-elevated h2, .card-elevated h3, .card-elevated h4,
+  .card-interactive h1, .card-interactive h2, .card-interactive h3, .card-interactive h4 {
+    color: #111827 !important;
+  }
+
+  .card *, .card-elevated *, .card-interactive * {
+    color: inherit !important;
+  }
+
+  /* Glass panels should be plain */
+  .glass-panel {
     background: white !important;
-  }
-
-  /* Backdrop blur not needed for print */
-  .backdrop-blur-xl, .backdrop-blur-lg, .backdrop-blur-md, .backdrop-blur-sm {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
     backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
   }
 
-  /* Ensure links show their URLs */
+  /* ── Tables — visible borders ── */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  th, td {
+    border: 1px solid #ccc !important;
+    padding: 8px !important;
+    color: #1a1a1a !important;
+  }
+
+  th {
+    background: #f9fafb !important;
+    color: #111827 !important;
+    font-weight: 600 !important;
+  }
+
+  /* ── Links — show URL after text ── */
   a[href]::after {
     content: " (" attr(href) ")";
     font-size: 0.8em;
     color: #666 !important;
+    word-break: break-all;
   }
 
+  /* Skip URL display for anchors, JS, and internal links */
   a[href^="#"]::after,
   a[href^="javascript:"]::after,
   a[href^="/"]::after {
     content: "";
   }
 
-  /* Don't break inside cards or sections */
-  .card, .card-elevated, .card-interactive {
+  /* ── Images ── */
+  img {
+    max-width: 100% !important;
     break-inside: avoid;
     page-break-inside: avoid;
   }
 
-  /* Tables */
-  table { border-collapse: collapse; }
-  th, td { border: 1px solid #ddd !important; padding: 8px !important; }
-  th { background: #f9fafb !important; color: #111827 !important; }
+  /* Show chart images/canvases */
+  canvas, svg.recharts-surface {
+    max-width: 100% !important;
+    break-inside: avoid;
+  }
 
-  /* Images */
-  img { max-width: 100% !important; }
+  /* ── Page break control ── */
+  h1, h2, h3 {
+    page-break-after: avoid;
+    color: #111827 !important;
+  }
 
-  /* Page breaks */
-  h1, h2, h3 { page-break-after: avoid; }
-  .page-break { page-break-before: always; }
+  .page-break {
+    page-break-before: always;
+  }
 
-  /* Gradient text won't work on print — make it solid */
+  /* ── Gradient text — solid color for print ── */
   .gradient-text, .gradient-text-warm {
     background: none !important;
     -webkit-background-clip: unset !important;
@@ -838,27 +921,14 @@ body::after {
     color: #0891b2 !important;
   }
 
-  /* Glow effects not needed */
-  .glow-border, .glow-text {
-    box-shadow: none !important;
-    text-shadow: none !important;
-  }
-
-  /* Glass panels should be plain */
-  .glass-panel {
-    background: white !important;
-    border: 1px solid #e5e7eb !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-  }
-
-  /* Custom scrollbar not needed */
+  /* ── Scrollbar not needed ── */
   ::-webkit-scrollbar {
     display: none;
   }
 
-  /* Ensure print-include buttons still show their text but look clean */
+  /* ── Print-include buttons (e.g., "Print this page") — show text cleanly ── */
   .print-include {
+    display: inline !important;
     background: none !important;
     border: none !important;
     padding: 0 !important;

@@ -798,7 +798,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
           {[...categoriesData].sort((a, b) => b.totalPatents - a.totalPatents).map((cat) => {
             const accBadge = getAccelerationBadge(cat.acceleration);
             return (
-              <div key={cat.id} className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 hover:border-nebula-500/30 transition-colors">
+              <div key={cat.id} className="card p-4 hover:border-nebula-500/30">
                 <div className="flex items-center justify-between mb-2">
                   <span className={`font-medium text-sm ${cat.color}`}>{cat.name}</span>
                   <span className={`text-xs px-2 py-0.5 rounded font-medium ${accBadge.color} ${accBadge.bg}`}>
@@ -878,7 +878,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
           {litigationData.map((lcase) => {
             const badge = getLitigationBadge(lcase.status);
             return (
-              <div key={lcase.id} className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4">
+              <div key={lcase.id} className="card p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <h4 className="font-medium text-white text-sm">{lcase.title}</h4>
@@ -1567,7 +1567,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
             { name: 'Ames Research Center', location: 'Mountain View, CA', focus: 'AI/ML, thermal protection, astrobiology', patents: 260 },
             { name: 'Stennis Space Center', location: 'Hancock County, MS', focus: 'Engine testing, propulsion validation', patents: 120 },
           ].map((center) => (
-            <div key={center.name} className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 hover:border-nebula-500/30 transition-colors">
+            <div key={center.name} className="card p-4 hover:border-nebula-500/30">
               <div className="font-medium text-white text-sm mb-0.5">{center.name}</div>
               <div className="text-xs text-slate-400 mb-2">{center.location}</div>
               <div className="text-xs text-slate-500 mb-2">{center.focus}</div>
@@ -1614,7 +1614,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
               potential: 'High',
             },
           ].map((opp) => (
-            <div key={opp.area} className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4">
+            <div key={opp.area} className="card p-4">
               <h4 className="font-medium text-white text-sm mb-1">{opp.area}</h4>
               <p className="text-xs text-slate-500 mb-2">{opp.description}</p>
               <div className="flex items-center gap-3 text-xs">

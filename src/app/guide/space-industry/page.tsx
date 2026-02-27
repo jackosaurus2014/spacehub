@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
+import ShareButton from '@/components/ui/ShareButton';
 
 export const revalidate = 3600; // ISR: revalidate every hour
 
@@ -177,6 +178,13 @@ export default function SpaceIndustryGuidePage() {
               <ReadingTime wordCount={5000} className="flex items-center gap-1.5" />
               <span className="hidden sm:inline text-star-300/40">|</span>
               <span>By SpaceNexus Research</span>
+            </div>
+            <div className="mt-6 flex justify-center">
+              <ShareButton
+                title="The Complete Guide to the Space Industry in 2026"
+                url="https://spacenexus.us/guide/space-industry"
+                description="Comprehensive guide to the $630B+ space industry covering markets, companies, trends, careers, and opportunities."
+              />
             </div>
             <div className="w-24 h-[3px] bg-gradient-to-r from-nebula-500 to-plasma-400 rounded-full mx-auto mt-8" />
           </div>
