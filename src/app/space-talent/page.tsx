@@ -175,24 +175,28 @@ interface SkillDemand {
 }
 
 const SKILLS_DEMAND_DATA: SkillDemand[] = [
+  { skill: 'Systems Engineering', demandLevel: 'critical', openRoles: 4200, avgSalary: 155000, yoyChange: 11.2, category: 'Engineering' },
   { skill: 'RF Engineering', demandLevel: 'critical', openRoles: 2840, avgSalary: 145000, yoyChange: 24.3, category: 'Engineering' },
-  { skill: 'GN&C (Guidance, Navigation & Control)', demandLevel: 'critical', openRoles: 2120, avgSalary: 158000, yoyChange: 19.7, category: 'Engineering' },
-  { skill: 'Propulsion Systems', demandLevel: 'critical', openRoles: 1890, avgSalary: 152000, yoyChange: 16.5, category: 'Engineering' },
-  { skill: 'Embedded Systems / Flight Software', demandLevel: 'critical', openRoles: 3100, avgSalary: 162000, yoyChange: 22.1, category: 'Engineering' },
-  { skill: 'Orbital Mechanics', demandLevel: 'high', openRoles: 1450, avgSalary: 148000, yoyChange: 14.8, category: 'Engineering' },
-  { skill: 'Systems Engineering', demandLevel: 'high', openRoles: 4200, avgSalary: 155000, yoyChange: 11.2, category: 'Engineering' },
-  { skill: 'Thermal Analysis & Design', demandLevel: 'high', openRoles: 1680, avgSalary: 138000, yoyChange: 13.4, category: 'Engineering' },
-  { skill: 'Spacecraft Structures', demandLevel: 'high', openRoles: 1320, avgSalary: 142000, yoyChange: 10.6, category: 'Engineering' },
-  { skill: 'Space Cybersecurity', demandLevel: 'critical', openRoles: 2650, avgSalary: 168000, yoyChange: 31.2, category: 'IT/Security' },
-  { skill: 'AI/ML for Space Applications', demandLevel: 'critical', openRoles: 2980, avgSalary: 172000, yoyChange: 38.5, category: 'IT/Security' },
+  { skill: 'Propulsion Engineering', demandLevel: 'critical', openRoles: 1890, avgSalary: 152000, yoyChange: 16.5, category: 'Engineering' },
+  { skill: 'Software Development (C++, Python, MATLAB)', demandLevel: 'critical', openRoles: 3100, avgSalary: 162000, yoyChange: 22.1, category: 'Engineering' },
+  { skill: 'GNC (Guidance, Navigation, Control)', demandLevel: 'critical', openRoles: 2120, avgSalary: 158000, yoyChange: 19.7, category: 'Engineering' },
+  { skill: 'Satellite Operations', demandLevel: 'high', openRoles: 1850, avgSalary: 132000, yoyChange: 9.3, category: 'Operations' },
+  { skill: 'Ground Systems', demandLevel: 'high', openRoles: 1620, avgSalary: 138000, yoyChange: 12.8, category: 'Operations' },
+  { skill: 'MBSE (Model-Based Systems Engineering)', demandLevel: 'high', openRoles: 1740, avgSalary: 151000, yoyChange: 27.6, category: 'Engineering' },
+  { skill: 'Thermal Analysis', demandLevel: 'high', openRoles: 1680, avgSalary: 138000, yoyChange: 13.4, category: 'Engineering' },
+  { skill: 'Structural Analysis', demandLevel: 'high', openRoles: 1320, avgSalary: 142000, yoyChange: 10.6, category: 'Engineering' },
+  { skill: 'Space Policy & Regulatory Affairs', demandLevel: 'growing', openRoles: 580, avgSalary: 145000, yoyChange: 17.8, category: 'Regulatory' },
+  { skill: 'Data Science & Machine Learning', demandLevel: 'critical', openRoles: 2980, avgSalary: 172000, yoyChange: 38.5, category: 'IT/Security' },
+  { skill: 'Cybersecurity (Space Systems)', demandLevel: 'critical', openRoles: 2650, avgSalary: 168000, yoyChange: 31.2, category: 'IT/Security' },
+  { skill: 'Supply Chain Management', demandLevel: 'growing', openRoles: 1150, avgSalary: 126000, yoyChange: 18.4, category: 'Business' },
+  { skill: 'Project Management (Aerospace)', demandLevel: 'high', openRoles: 2340, avgSalary: 144000, yoyChange: 9.8, category: 'Business' },
+  { skill: 'Additive Manufacturing', demandLevel: 'growing', openRoles: 890, avgSalary: 128000, yoyChange: 25.3, category: 'Manufacturing' },
   { skill: 'Cloud Infrastructure (AWS/Azure GovCloud)', demandLevel: 'high', openRoles: 3400, avgSalary: 156000, yoyChange: 15.7, category: 'IT/Security' },
   { skill: 'Space Situational Awareness', demandLevel: 'growing', openRoles: 980, avgSalary: 140000, yoyChange: 28.9, category: 'Operations' },
-  { skill: 'Mission Operations', demandLevel: 'high', openRoles: 1850, avgSalary: 132000, yoyChange: 9.3, category: 'Operations' },
-  { skill: 'Spectrum Management', demandLevel: 'growing', openRoles: 720, avgSalary: 135000, yoyChange: 21.4, category: 'Regulatory' },
-  { skill: 'Space Law & Policy', demandLevel: 'growing', openRoles: 580, avgSalary: 145000, yoyChange: 17.8, category: 'Regulatory' },
+  { skill: 'Orbital Mechanics', demandLevel: 'high', openRoles: 1450, avgSalary: 148000, yoyChange: 14.8, category: 'Engineering' },
   { skill: 'Space Business Development', demandLevel: 'high', openRoles: 2100, avgSalary: 148000, yoyChange: 12.6, category: 'Business' },
-  { skill: 'Additive Manufacturing', demandLevel: 'growing', openRoles: 890, avgSalary: 128000, yoyChange: 25.3, category: 'Manufacturing' },
   { skill: 'Power Systems (Solar/Battery)', demandLevel: 'high', openRoles: 1560, avgSalary: 141000, yoyChange: 14.1, category: 'Engineering' },
+  { skill: 'Spectrum Management', demandLevel: 'growing', openRoles: 720, avgSalary: 135000, yoyChange: 21.4, category: 'Regulatory' },
 ];
 
 interface GeoDistribution {
@@ -274,6 +278,85 @@ const EDUCATION_PIPELINE_DATA: EducationPipelineStat[] = [
   { field: 'Data Science / AI-ML', annualGraduates: 28000, enteringSpace: 2400, enteringSpacePct: 8.6, demandGap: 1900, trend: 'up' },
   { field: 'Cybersecurity', annualGraduates: 18000, enteringSpace: 1200, enteringSpacePct: 6.7, demandGap: 2100, trend: 'up' },
   { field: 'Materials Science', annualGraduates: 5400, enteringSpace: 680, enteringSpacePct: 12.6, demandGap: 420, trend: 'flat' },
+];
+
+// ────────────────────────────────────────
+// Top Employers Data
+// ────────────────────────────────────────
+
+interface TopEmployer {
+  company: string;
+  headcount: number;
+  segment: string;
+  hqLocation: string;
+  recentGrowth: number;
+  keyPrograms: string[];
+  tier: 'prime' | 'major' | 'growth';
+}
+
+const TOP_EMPLOYERS_DATA: TopEmployer[] = [
+  { company: 'Lockheed Martin', headcount: 116000, segment: 'Space & Defense', hqLocation: 'Bethesda, MD', recentGrowth: 3.2, keyPrograms: ['Orion', 'GPS III', 'SBIRS', 'Lunar Gateway'], tier: 'prime' },
+  { company: 'Northrop Grumman', headcount: 36000, segment: 'Space Segment', hqLocation: 'Falls Church, VA', recentGrowth: 5.8, keyPrograms: ['James Webb', 'Cygnus', 'GBSD', 'HALO'], tier: 'prime' },
+  { company: 'Boeing', headcount: 14000, segment: 'Space & Launch', hqLocation: 'Arlington, VA', recentGrowth: -2.1, keyPrograms: ['Starliner', 'SLS', 'WGS', 'ISS Support'], tier: 'prime' },
+  { company: 'SpaceX', headcount: 13000, segment: 'Launch & Satellites', hqLocation: 'Hawthorne, CA', recentGrowth: 18.5, keyPrograms: ['Starship', 'Falcon 9', 'Starlink', 'Dragon'], tier: 'major' },
+  { company: 'Blue Origin', headcount: 11000, segment: 'Launch & Lunar', hqLocation: 'Kent, WA', recentGrowth: 22.4, keyPrograms: ['New Glenn', 'Blue Moon', 'Orbital Reef', 'New Shepard'], tier: 'major' },
+  { company: 'Raytheon / RTX', headcount: 8000, segment: 'Space & Sensors', hqLocation: 'Arlington, VA', recentGrowth: 4.1, keyPrograms: ['OPIR', 'GPS OCX', 'Space Fence', 'Missile Warning'], tier: 'prime' },
+  { company: 'L3Harris', headcount: 8000, segment: 'Space & Airborne', hqLocation: 'Melbourne, FL', recentGrowth: 6.7, keyPrograms: ['Weather Satellites', 'Missile Defense', 'Responsive Space', 'EO/IR'], tier: 'prime' },
+  { company: 'Ball Aerospace', headcount: 5600, segment: 'Spacecraft & Instruments', hqLocation: 'Boulder, CO', recentGrowth: 8.3, keyPrograms: ['JWST Mirrors', 'IXPE', 'WorldView', 'Green Propellant'], tier: 'major' },
+  { company: 'Rocket Lab', headcount: 1800, segment: 'Launch & Spacecraft', hqLocation: 'Long Beach, CA', recentGrowth: 32.1, keyPrograms: ['Electron', 'Neutron', 'Photon', 'HASTE'], tier: 'growth' },
+  { company: 'Planet Labs', headcount: 800, segment: 'Earth Observation', hqLocation: 'San Francisco, CA', recentGrowth: 12.6, keyPrograms: ['PlanetScope', 'SkySat', 'Pelican', 'Hyperspectral'], tier: 'growth' },
+];
+
+// ────────────────────────────────────────
+// Workforce Overview Stats
+// ────────────────────────────────────────
+
+interface WorkforceOverviewStat {
+  label: string;
+  value: string;
+  detail: string;
+  icon: string;
+  color: string;
+}
+
+const WORKFORCE_OVERVIEW_STATS: WorkforceOverviewStat[] = [
+  { label: 'Total US Space Workforce', value: '~360,000', detail: 'Across government, commercial, and defense sectors', icon: 'users', color: 'text-cyan-400' },
+  { label: 'Average Salary', value: '$108,000', detail: 'Median base compensation for full-time positions', icon: 'dollar', color: 'text-green-400' },
+  { label: 'Gender Diversity', value: '~24% Women', detail: 'Improving year-over-year, up from 20% in 2020', icon: 'diversity', color: 'text-purple-400' },
+  { label: 'Average Age', value: '42 Years', detail: 'With 31% of workforce nearing retirement within 10 years', icon: 'age', color: 'text-orange-400' },
+  { label: 'Projected Growth', value: '6% / Year', detail: 'Through 2030, driven by commercial space expansion', icon: 'growth', color: 'text-emerald-400' },
+];
+
+interface DiversityBreakdown {
+  category: string;
+  percentage: number;
+  trend: 'up' | 'flat' | 'down';
+  note: string;
+}
+
+const DIVERSITY_DATA: DiversityBreakdown[] = [
+  { category: 'Women in Engineering Roles', percentage: 18.2, trend: 'up', note: '+2.1% since 2022' },
+  { category: 'Women in Leadership', percentage: 21.5, trend: 'up', note: '+3.4% since 2022' },
+  { category: 'Women Overall', percentage: 24.0, trend: 'up', note: 'Up from 20% in 2020' },
+  { category: 'Underrepresented Minorities', percentage: 28.3, trend: 'up', note: '+1.8% since 2022' },
+  { category: 'Veterans', percentage: 22.1, trend: 'flat', note: 'Stable across defense primes' },
+  { category: 'Workers Under 35', percentage: 31.4, trend: 'up', note: 'New Space companies skew younger' },
+  { category: 'Workers Over 55', percentage: 19.8, trend: 'down', note: 'Retirement wave accelerating' },
+];
+
+interface AgeDistribution {
+  range: string;
+  percentage: number;
+  color: string;
+}
+
+const AGE_DISTRIBUTION_DATA: AgeDistribution[] = [
+  { range: 'Under 25', percentage: 8.2, color: 'bg-cyan-500' },
+  { range: '25-34', percentage: 23.2, color: 'bg-blue-500' },
+  { range: '35-44', percentage: 28.8, color: 'bg-indigo-500' },
+  { range: '45-54', percentage: 20.0, color: 'bg-purple-500' },
+  { range: '55-64', percentage: 15.3, color: 'bg-orange-500' },
+  { range: '65+', percentage: 4.5, color: 'bg-red-500' },
 ];
 
 // ────────────────────────────────────────
@@ -943,6 +1026,354 @@ function EducationPipelineSection() {
 
       <div className="mt-4 pt-3 border-t border-slate-700/50 text-xs text-slate-500">
         Source: Estimated from NSF STEM data, AIAA workforce surveys, and industry hiring reports. &quot;Demand Gap&quot; reflects unfilled positions relative to pipeline.
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────
+// Workforce Overview Stats Section
+// ────────────────────────────────────────
+
+function WorkforceOverviewSection() {
+  const totalHeadcount = TOP_EMPLOYERS_DATA.reduce((sum, e) => sum + e.headcount, 0);
+
+  return (
+    <div className="card p-5">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-white font-semibold text-base">US Space Workforce Overview</h3>
+        <span className="text-xs text-slate-400">2025 Estimates</span>
+      </div>
+      <p className="text-slate-400 text-xs mb-5">
+        Key demographics and statistics for the United States space industry workforce.
+      </p>
+
+      {/* Top-level stat cards */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+        {WORKFORCE_OVERVIEW_STATS.map((stat) => (
+          <div key={stat.label} className="bg-slate-800/50 rounded-lg p-4 text-center">
+            <div className={`text-xl font-bold ${stat.color}`}>{stat.value}</div>
+            <div className="text-xs text-white font-medium mt-1">{stat.label}</div>
+            <div className="text-xs text-slate-500 mt-0.5">{stat.detail}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Age Distribution */}
+      <div className="mb-6">
+        <h4 className="text-sm font-medium text-slate-300 mb-3">Age Distribution</h4>
+        <div className="flex gap-1 h-8 rounded-lg overflow-hidden mb-2">
+          {AGE_DISTRIBUTION_DATA.map((age) => (
+            <div
+              key={age.range}
+              className={`${age.color} relative group cursor-default transition-opacity hover:opacity-90`}
+              style={{ width: `${age.percentage}%` }}
+              title={`${age.range}: ${age.percentage}%`}
+            >
+              <div className="absolute inset-0 flex items-center justify-center">
+                {age.percentage >= 10 && (
+                  <span className="text-xs font-bold text-white drop-shadow-sm">{age.percentage}%</span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {AGE_DISTRIBUTION_DATA.map((age) => (
+            <div key={age.range} className="flex items-center gap-1.5">
+              <span className={`w-2.5 h-2.5 rounded-full ${age.color}`} />
+              <span className="text-xs text-slate-400">{age.range}: {age.percentage}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Diversity & Demographics Table */}
+      <div>
+        <h4 className="text-sm font-medium text-slate-300 mb-3">Diversity & Demographics</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {DIVERSITY_DATA.map((item) => (
+            <div key={item.category} className="bg-slate-800/30 rounded-lg p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-white">{item.category}</span>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-medium ${
+                    item.trend === 'up' ? 'text-green-400' : item.trend === 'down' ? 'text-orange-400' : 'text-slate-400'
+                  }`}>
+                    {item.trend === 'up' ? 'Improving' : item.trend === 'down' ? 'Declining' : 'Stable'}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-2 bg-slate-800/50 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      item.trend === 'up' ? 'bg-green-500' : item.trend === 'down' ? 'bg-orange-500' : 'bg-slate-500'
+                    }`}
+                    style={{ width: `${item.percentage}%` }}
+                  />
+                </div>
+                <span className="text-sm font-bold text-white w-12 text-right">{item.percentage}%</span>
+              </div>
+              <div className="text-xs text-slate-500 mt-1">{item.note}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-4 pt-3 border-t border-slate-700/50 text-xs text-slate-500">
+        Source: Space Foundation Workforce Reports, AIAA Diversity Survey, BLS Occupational Statistics, and SIA Annual Reports.
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────
+// Top Employers Section
+// ────────────────────────────────────────
+
+function TopEmployersSection() {
+  const [sortKey, setSortKey] = useState<'headcount' | 'growth' | 'name'>('headcount');
+  const [filterTier, setFilterTier] = useState<'all' | 'prime' | 'major' | 'growth'>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const tierColors = {
+    prime: { bg: 'bg-blue-500/15', text: 'text-blue-400', border: 'border-blue-500/30', label: 'Defense Prime' },
+    major: { bg: 'bg-cyan-500/15', text: 'text-cyan-400', border: 'border-cyan-500/30', label: 'Major Player' },
+    growth: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/30', label: 'High Growth' },
+  };
+
+  const filtered = TOP_EMPLOYERS_DATA
+    .filter((e) => filterTier === 'all' || e.tier === filterTier)
+    .filter((e) => !searchTerm || e.company.toLowerCase().includes(searchTerm.toLowerCase()) || e.segment.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => {
+      if (sortKey === 'headcount') return b.headcount - a.headcount;
+      if (sortKey === 'growth') return b.recentGrowth - a.recentGrowth;
+      return a.company.localeCompare(b.company);
+    });
+
+  const totalHeadcount = TOP_EMPLOYERS_DATA.reduce((sum, e) => sum + e.headcount, 0);
+  const maxHeadcount = Math.max(...TOP_EMPLOYERS_DATA.map((e) => e.headcount));
+
+  return (
+    <div className="card p-5">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-white font-semibold text-base">Top Space Employers</h3>
+        <span className="text-xs text-slate-400">{totalHeadcount.toLocaleString()} combined headcount (top 10)</span>
+      </div>
+      <p className="text-slate-400 text-xs mb-4">
+        Leading space industry employers ranked by space-related workforce size.
+      </p>
+
+      {/* Filters & Search */}
+      <div className="flex flex-wrap items-center gap-3 mb-5">
+        <input
+          type="text"
+          placeholder="Search companies..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-star-400 focus:outline-none focus:border-nebula-500/50 transition-colors w-48"
+          aria-label="Search top employers"
+        />
+        <div className="flex gap-1 bg-slate-800/50 rounded-lg p-0.5">
+          {[
+            { id: 'all' as const, label: 'All' },
+            { id: 'prime' as const, label: 'Primes' },
+            { id: 'major' as const, label: 'Major' },
+            { id: 'growth' as const, label: 'Growth' },
+          ].map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setFilterTier(t.id)}
+              className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+                filterTier === t.id ? 'bg-nebula-500 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-1 bg-slate-800/50 rounded-lg p-0.5 ml-auto">
+          {[
+            { id: 'headcount' as const, label: 'By Size' },
+            { id: 'growth' as const, label: 'By Growth' },
+            { id: 'name' as const, label: 'A-Z' },
+          ].map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setSortKey(s.id)}
+              className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+                sortKey === s.id ? 'bg-nebula-500 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Employer Cards */}
+      <div className="space-y-3">
+        {filtered.map((employer, idx) => {
+          const tc = tierColors[employer.tier];
+          const barPct = (employer.headcount / maxHeadcount) * 100;
+          return (
+            <div
+              key={employer.company}
+              className={`bg-slate-800/30 rounded-lg p-4 border ${tc.border} hover:bg-slate-800/50 transition-colors`}
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-bold text-slate-500 w-6 text-right">{idx + 1}</span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/company-profiles/${employer.company.toLowerCase().replace(/[\s\/]+/g, '-').replace(/[^a-z0-9-]/g, '')}`}
+                        className="text-white font-semibold hover:text-nebula-300 transition-colors"
+                      >
+                        {employer.company}
+                      </Link>
+                      <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${tc.bg} ${tc.text} border ${tc.border}`}>
+                        {tc.label}
+                      </span>
+                    </div>
+                    <div className="text-xs text-slate-400 mt-0.5">{employer.segment} &middot; {employer.hqLocation}</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-white font-bold text-lg">{employer.headcount.toLocaleString()}</div>
+                  <div className={`text-xs font-medium ${employer.recentGrowth >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {employer.recentGrowth >= 0 ? '+' : ''}{employer.recentGrowth}% YoY
+                  </div>
+                </div>
+              </div>
+
+              {/* Headcount bar */}
+              <div className="h-2 bg-slate-800/50 rounded-full overflow-hidden mb-3">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    employer.tier === 'prime' ? 'bg-blue-500' : employer.tier === 'major' ? 'bg-cyan-500' : 'bg-emerald-500'
+                  }`}
+                  style={{ width: `${barPct}%` }}
+                />
+              </div>
+
+              {/* Key Programs */}
+              <div className="flex flex-wrap gap-1.5">
+                {employer.keyPrograms.map((prog) => (
+                  <span key={prog} className="text-xs px-2 py-0.5 rounded bg-slate-700/50 text-slate-400">
+                    {prog}
+                  </span>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {filtered.length === 0 && (
+        <div className="text-center py-8 text-slate-500 text-sm">No employers match the current filters.</div>
+      )}
+
+      <div className="mt-4 pt-3 border-t border-slate-700/50 text-xs text-slate-500">
+        Source: Company filings, Space Foundation, Payload Research. Headcount reflects space-related employees as of 2025 estimates.
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────
+// Skills Tag Cloud Section
+// ────────────────────────────────────────
+
+function SkillsTagCloudSection() {
+  const [activeFilter, setActiveFilter] = useState<'all' | 'critical' | 'high' | 'growing'>('all');
+
+  const demandColors = {
+    critical: { bg: 'bg-red-500/20', text: 'text-red-300', border: 'border-red-500/30', size: 'text-base font-bold' },
+    high: { bg: 'bg-orange-500/15', text: 'text-orange-300', border: 'border-orange-500/30', size: 'text-sm font-semibold' },
+    growing: { bg: 'bg-yellow-500/15', text: 'text-yellow-300', border: 'border-yellow-500/30', size: 'text-xs font-medium' },
+    steady: { bg: 'bg-slate-500/15', text: 'text-slate-300', border: 'border-slate-500/30', size: 'text-xs' },
+  };
+
+  const filtered = SKILLS_DEMAND_DATA
+    .filter((s) => activeFilter === 'all' || s.demandLevel === activeFilter)
+    .sort((a, b) => b.openRoles - a.openRoles);
+
+  const totalOpenRoles = SKILLS_DEMAND_DATA.reduce((sum, s) => sum + s.openRoles, 0);
+  const avgSalaryAll = Math.round(SKILLS_DEMAND_DATA.reduce((sum, s) => sum + s.avgSalary, 0) / SKILLS_DEMAND_DATA.length);
+
+  return (
+    <div className="card p-5">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-white font-semibold text-base">Skills Tag Cloud</h3>
+        <div className="flex items-center gap-3 text-xs text-slate-400">
+          <span>{totalOpenRoles.toLocaleString()} open roles</span>
+          <span>Avg: {formatSalary(avgSalaryAll)}</span>
+        </div>
+      </div>
+      <p className="text-slate-400 text-xs mb-4">
+        Visual representation of skill demand. Size reflects the number of open roles; color indicates urgency level.
+      </p>
+
+      {/* Filter tabs */}
+      <div className="flex gap-2 mb-5">
+        {[
+          { id: 'all' as const, label: 'All Skills' },
+          { id: 'critical' as const, label: 'Critical Shortage' },
+          { id: 'high' as const, label: 'High Demand' },
+          { id: 'growing' as const, label: 'Rapidly Growing' },
+        ].map((f) => (
+          <button
+            key={f.id}
+            onClick={() => setActiveFilter(f.id)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              activeFilter === f.id
+                ? 'bg-nebula-500/20 text-nebula-300 border border-nebula-500/30'
+                : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tag Cloud */}
+      <div className="flex flex-wrap gap-2 justify-center py-4">
+        {filtered.map((skill) => {
+          const dc = demandColors[skill.demandLevel];
+          // Scale size based on openRoles relative to max
+          const maxRoles = Math.max(...SKILLS_DEMAND_DATA.map((s) => s.openRoles));
+          const scale = 0.75 + (skill.openRoles / maxRoles) * 0.75;
+
+          return (
+            <div
+              key={skill.skill}
+              className={`px-3 py-1.5 rounded-lg border ${dc.border} ${dc.bg} cursor-default transition-all hover:scale-105 group relative`}
+              style={{ fontSize: `${scale}rem` }}
+              title={`${skill.skill}: ${skill.openRoles.toLocaleString()} open roles, ${formatSalary(skill.avgSalary)} avg salary, +${skill.yoyChange}% YoY`}
+            >
+              <span className={dc.text}>{skill.skill}</span>
+              {/* Tooltip on hover */}
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10 pointer-events-none">
+                <div className="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-xl whitespace-nowrap text-xs">
+                  <div className="text-white font-semibold mb-1">{skill.skill}</div>
+                  <div className="text-slate-400">Open Roles: <span className="text-white">{skill.openRoles.toLocaleString()}</span></div>
+                  <div className="text-slate-400">Avg Salary: <span className="text-green-400">{formatSalary(skill.avgSalary)}</span></div>
+                  <div className="text-slate-400">YoY Growth: <span className="text-emerald-400">+{skill.yoyChange}%</span></div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {filtered.length === 0 && (
+        <div className="text-center py-8 text-slate-500 text-sm">No skills match the selected filter.</div>
+      )}
+
+      <div className="mt-4 pt-3 border-t border-slate-700/50 text-xs text-slate-500">
+        Tag size is proportional to open role count. Hover for detailed statistics.
       </div>
     </div>
   );
@@ -2372,18 +2803,33 @@ function SpaceTalentHubContent() {
               <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-lg p-4 mb-6">
                 <p className="text-slate-300 text-sm">
                   <strong className="text-cyan-400">Deep-dive workforce intelligence.</strong>{' '}
-                  Explore employment distribution across sectors, identify the most critical skill shortages,
-                  understand geographic hiring patterns, and track the STEM education pipeline feeding the space workforce.
+                  Explore workforce demographics, top employers by headcount, the most critical skill shortages,
+                  employment across sectors, geographic hiring patterns, and the STEM education pipeline.
                 </p>
               </div>
 
               <div className="space-y-6">
+                {/* Workforce Overview Stats */}
+                <ScrollReveal>
+                  <WorkforceOverviewSection />
+                </ScrollReveal>
+
+                {/* Top Employers */}
+                <ScrollReveal>
+                  <TopEmployersSection />
+                </ScrollReveal>
+
+                {/* Skills Tag Cloud */}
+                <ScrollReveal>
+                  <SkillsTagCloudSection />
+                </ScrollReveal>
+
                 {/* Sector Employment */}
                 <ScrollReveal>
                   <SectorEmploymentSection />
                 </ScrollReveal>
 
-                {/* Skills Demand */}
+                {/* Skills Demand (detailed) */}
                 <ScrollReveal>
                   <SkillsDemandSection />
                 </ScrollReveal>
@@ -2414,6 +2860,7 @@ function SpaceTalentHubContent() {
                       <p>
                         Salary data represents base compensation for US-based positions unless otherwise noted.
                         International salary comparisons use PPP-adjusted rates where applicable.
+                        Employer headcount data sourced from company filings and Payload Research estimates.
                       </p>
                     </div>
                   </div>

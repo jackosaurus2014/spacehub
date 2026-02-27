@@ -63,7 +63,621 @@ interface ServiceStats {
   uniqueProviders: number;
 }
 
-type TabId = 'overview' | 'operators' | 'events' | 'services' | 'contracts' | 'pricing' | 'request';
+type TabId = 'overview' | 'geo-slots' | 'constellations' | 'regulatory' | 'operators' | 'events' | 'services' | 'contracts' | 'pricing' | 'request';
+
+// ────────────────────────────────────────
+// Static Data: Orbital Regimes
+// ────────────────────────────────────────
+
+interface OrbitalRegimeInfo {
+  id: string;
+  name: string;
+  abbreviation: string;
+  altitudeRange: string;
+  altitudeMin: number;
+  altitudeMax: number;
+  activeSatellites: number;
+  periodRange: string;
+  velocityRange: string;
+  congestion: CongestionLevel;
+  description: string;
+  keyUses: string[];
+  challenges: string[];
+  notableConstellations: string[];
+}
+
+const ORBITAL_REGIMES: OrbitalRegimeInfo[] = [
+  {
+    id: 'leo',
+    name: 'Low Earth Orbit',
+    abbreviation: 'LEO',
+    altitudeRange: '160 - 2,000 km',
+    altitudeMin: 160,
+    altitudeMax: 2000,
+    activeSatellites: 7500,
+    periodRange: '88 - 127 min',
+    velocityRange: '7.8 - 6.9 km/s',
+    congestion: 'critical',
+    description: 'The most congested orbital regime, home to mega-constellations, ISS, Earth observation satellites, and the majority of tracked debris. LEO is experiencing explosive growth driven by Starlink and other broadband constellations.',
+    keyUses: ['Broadband Internet', 'Earth Observation', 'Scientific Research', 'Space Stations', 'Technology Demonstration'],
+    challenges: ['Orbital debris density', 'Atmospheric drag requires station-keeping', 'Short ground contact windows', 'Conjunction avoidance maneuvers', 'Light pollution concerns'],
+    notableConstellations: ['Starlink', 'OneWeb', 'Planet Labs', 'Spire Global', 'ISS'],
+  },
+  {
+    id: 'meo',
+    name: 'Medium Earth Orbit',
+    abbreviation: 'MEO',
+    altitudeRange: '2,000 - 35,786 km',
+    altitudeMin: 2000,
+    altitudeMax: 35786,
+    activeSatellites: 300,
+    periodRange: '2 - 24 hours',
+    velocityRange: '6.9 - 3.1 km/s',
+    congestion: 'moderate',
+    description: 'Primarily used by navigation constellations (GPS, Galileo, GLONASS, BeiDou). MEO offers a balance between coverage area and signal latency, making it ideal for positioning systems and some communications.',
+    keyUses: ['Navigation (GNSS)', 'Search and Rescue (COSPAS-SARSAT)', 'Communications', 'Science Missions'],
+    challenges: ['Van Allen radiation belts', 'Higher launch energy required', 'Complex orbital mechanics', 'Radiation-hardened electronics needed'],
+    notableConstellations: ['GPS (USA)', 'Galileo (EU)', 'GLONASS (Russia)', 'BeiDou (China)', 'O3b mPOWER (SES)'],
+  },
+  {
+    id: 'geo',
+    name: 'Geostationary Orbit',
+    abbreviation: 'GEO',
+    altitudeRange: '35,786 km (circular)',
+    altitudeMin: 35786,
+    altitudeMax: 35786,
+    activeSatellites: 565,
+    periodRange: '23 hr 56 min',
+    velocityRange: '3.07 km/s',
+    congestion: 'high',
+    description: 'The most commercially valuable orbit. Satellites here appear stationary relative to Earth, enabling fixed ground antennas for broadcast TV, weather monitoring, and communications. GEO slot allocation is managed by the ITU and is a finite, contested resource.',
+    keyUses: ['Direct Broadcast Television', 'Weather Monitoring', 'Military Communications', 'Commercial Broadband', 'Data Relay'],
+    challenges: ['Limited slot availability (1,800 positions at 0.2\u00B0 spacing)', 'Signal latency (~240ms round-trip)', 'High launch cost', 'Graveyard orbit disposal required', 'Slot coordination via ITU'],
+    notableConstellations: ['SES Astra', 'Eutelsat', 'Intelsat', 'Viasat', 'GOES (NOAA)'],
+  },
+  {
+    id: 'heo',
+    name: 'Highly Elliptical Orbit',
+    abbreviation: 'HEO',
+    altitudeRange: '500 - 40,000+ km',
+    altitudeMin: 500,
+    altitudeMax: 40000,
+    activeSatellites: 100,
+    periodRange: '12 - 24 hours',
+    velocityRange: 'Variable',
+    congestion: 'low',
+    description: 'Elliptical orbits like Molniya and Tundra provide extended dwell time over high-latitude regions that GEO cannot serve well. These orbits are critical for communications and early-warning systems covering polar regions.',
+    keyUses: ['Arctic Communications', 'Early Warning Systems', 'Signals Intelligence', 'Scientific Observation', 'Polar Coverage'],
+    challenges: ['Crosses Van Allen belts twice per orbit', 'Complex ground tracking', 'Variable altitude complicates link budgets', 'Radiation exposure'],
+    notableConstellations: ['Molniya (Russia)', 'Tundra (Russia)', 'SDS (USA)', 'Quasi-Zenith (Japan)', 'Sirius XM'],
+  },
+];
+
+// ────────────────────────────────────────
+// Static Data: Key GEO Slots
+// ────────────────────────────────────────
+
+interface GeoSlotInfo {
+  position: string;
+  longitude: number;
+  operator: string;
+  satelliteName: string;
+  country: string;
+  use: string;
+  band: string;
+  coverageRegion: string;
+  launchYear: number | null;
+  estimatedValue: string;
+  status: 'active' | 'planned' | 'transitioning';
+  notes: string;
+}
+
+const KEY_GEO_SLOTS: GeoSlotInfo[] = [
+  {
+    position: '77\u00B0W',
+    longitude: -77,
+    operator: 'DirecTV / AT&T',
+    satelliteName: 'DirecTV-14, DirecTV-15',
+    country: 'USA',
+    use: 'Direct Broadcast Satellite TV',
+    band: 'Ku-band, Ka-band',
+    coverageRegion: 'Continental USA',
+    launchYear: 2014,
+    estimatedValue: '$500M+',
+    status: 'active',
+    notes: 'Primary slot for DirecTV residential service to North America.',
+  },
+  {
+    position: '101\u00B0W',
+    longitude: -101,
+    operator: 'DirecTV / AT&T',
+    satelliteName: 'DirecTV-10, DirecTV-12',
+    country: 'USA',
+    use: 'Direct Broadcast Satellite TV',
+    band: 'Ka-band',
+    coverageRegion: 'Continental USA',
+    launchYear: 2007,
+    estimatedValue: '$400M+',
+    status: 'active',
+    notes: 'High-definition and local channel delivery for DirecTV subscribers.',
+  },
+  {
+    position: '137\u00B0E',
+    longitude: 137,
+    operator: 'JSAT (SKY Perfect JSAT)',
+    satelliteName: 'JCSAT-2B',
+    country: 'Japan',
+    use: 'Communications & Broadcasting',
+    band: 'C-band, Ku-band',
+    coverageRegion: 'Asia-Pacific',
+    launchYear: 2016,
+    estimatedValue: '$300M+',
+    status: 'active',
+    notes: 'Key broadcasting slot for Japanese and Asia-Pacific markets.',
+  },
+  {
+    position: '13\u00B0E',
+    longitude: 13,
+    operator: 'Eutelsat',
+    satelliteName: 'Hot Bird 13F, 13G',
+    country: 'France',
+    use: 'Direct-to-Home Television',
+    band: 'Ku-band',
+    coverageRegion: 'Europe, North Africa, Middle East',
+    launchYear: 2022,
+    estimatedValue: '$800M+',
+    status: 'active',
+    notes: 'One of the most valuable orbital positions in the world. Serves 1,000+ TV channels to 135M homes.',
+  },
+  {
+    position: '28.2\u00B0E',
+    longitude: 28.2,
+    operator: 'SES',
+    satelliteName: 'Astra 2E, 2F, 2G',
+    country: 'Luxembourg',
+    use: 'Direct-to-Home Television',
+    band: 'Ku-band',
+    coverageRegion: 'UK, Ireland, Europe',
+    launchYear: 2013,
+    estimatedValue: '$600M+',
+    status: 'active',
+    notes: 'Primary position for UK Sky TV platform and Freesat. Serves 13M+ households.',
+  },
+  {
+    position: '9\u00B0E',
+    longitude: 9,
+    operator: 'Eutelsat',
+    satelliteName: 'Ka-Sat, Eutelsat 9B',
+    country: 'France',
+    use: 'Broadband Internet & Broadcasting',
+    band: 'Ka-band, Ku-band',
+    coverageRegion: 'Europe, Mediterranean',
+    launchYear: 2010,
+    estimatedValue: '$450M+',
+    status: 'active',
+    notes: 'High-throughput Ka-band satellite delivering broadband across Europe with 90 Gbps capacity.',
+  },
+  {
+    position: '19.2\u00B0E',
+    longitude: 19.2,
+    operator: 'SES',
+    satelliteName: 'Astra 1KR, 1L, 1M, 1N',
+    country: 'Luxembourg',
+    use: 'Direct-to-Home Television',
+    band: 'Ku-band',
+    coverageRegion: 'Central Europe, Germany',
+    launchYear: 2006,
+    estimatedValue: '$700M+',
+    status: 'active',
+    notes: 'Premier European TV position. Primary platform for German and Central European broadcasters with 118M+ TV homes.',
+  },
+  {
+    position: '95\u00B0W',
+    longitude: -95,
+    operator: 'SES / DISH Network',
+    satelliteName: 'SES-11 / EchoStar-105',
+    country: 'USA',
+    use: 'Television & Government',
+    band: 'C-band, Ku-band',
+    coverageRegion: 'North America',
+    launchYear: 2017,
+    estimatedValue: '$350M+',
+    status: 'active',
+    notes: 'Shared satellite serving DISH Network TV and government/enterprise C-band customers.',
+  },
+  {
+    position: '105.5\u00B0E',
+    longitude: 105.5,
+    operator: 'APT Satellite (AsiaSat)',
+    satelliteName: 'AsiaSat 7',
+    country: 'China',
+    use: 'Broadcasting & Communications',
+    band: 'C-band, Ku-band',
+    coverageRegion: 'Asia-Pacific',
+    launchYear: 2011,
+    estimatedValue: '$250M+',
+    status: 'active',
+    notes: 'Serves major broadcasters across Asia including CCTV, Star TV, and regional networks.',
+  },
+  {
+    position: '74\u00B0W',
+    longitude: -74,
+    operator: 'Star One (Embratel)',
+    satelliteName: 'Star One D2',
+    country: 'USA',
+    use: 'Broadcasting & Broadband',
+    band: 'C-band, Ku-band, Ka-band',
+    coverageRegion: 'Latin America',
+    launchYear: 2022,
+    estimatedValue: '$300M+',
+    status: 'active',
+    notes: 'Primary position for Brazilian and Latin American broadcast and broadband services.',
+  },
+  {
+    position: '108.2\u00B0E',
+    longitude: 108.2,
+    operator: 'Telkom Indonesia',
+    satelliteName: 'Telkom 4 (Merah Putih)',
+    country: 'India',
+    use: 'Communications & Broadcasting',
+    band: 'C-band',
+    coverageRegion: 'Indonesia, South Asia',
+    launchYear: 2018,
+    estimatedValue: '$200M+',
+    status: 'active',
+    notes: 'Critical connectivity infrastructure for the Indonesian archipelago.',
+  },
+  {
+    position: '75\u00B0E',
+    longitude: 75,
+    operator: 'ISRO (Indian Space Research Organisation)',
+    satelliteName: 'GSAT-15',
+    country: 'India',
+    use: 'Broadcasting & Navigation (GAGAN)',
+    band: 'Ku-band',
+    coverageRegion: 'Indian Subcontinent',
+    launchYear: 2015,
+    estimatedValue: '$150M+',
+    status: 'active',
+    notes: 'Supports DTH television and the GPS-Aided Geo Augmented Navigation (GAGAN) system.',
+  },
+];
+
+// ────────────────────────────────────────
+// Static Data: Mega-Constellation Stats
+// ────────────────────────────────────────
+
+interface MegaConstellationInfo {
+  name: string;
+  operator: string;
+  country: string;
+  orbit: string;
+  altitude: string;
+  launched: number;
+  operational: number;
+  approved: number;
+  gen2Target: number | null;
+  purpose: string;
+  status: 'operational' | 'deploying' | 'planned' | 'early-stage';
+  firstLaunch: string;
+  inclinationPlanes: string;
+  massPerSat: string;
+  designLife: string;
+  deorbitPlan: string;
+  fundingStatus: string;
+  website: string;
+}
+
+const MEGA_CONSTELLATIONS: MegaConstellationInfo[] = [
+  {
+    name: 'Starlink',
+    operator: 'SpaceX',
+    country: 'USA',
+    orbit: 'LEO',
+    altitude: '540-570 km',
+    launched: 6800,
+    operational: 6300,
+    approved: 12000,
+    gen2Target: 42000,
+    purpose: 'Global broadband internet with low latency',
+    status: 'operational',
+    firstLaunch: 'May 2019',
+    inclinationPlanes: '53\u00B0, 70\u00B0, 97.6\u00B0 (72 planes)',
+    massPerSat: '~295 kg (v2 Mini)',
+    designLife: '5 years',
+    deorbitPlan: 'Autonomous propulsive deorbit within 5 years',
+    fundingStatus: 'Self-funded by SpaceX; contributing to >$6B/yr revenue',
+    website: 'https://www.starlink.com',
+  },
+  {
+    name: 'OneWeb',
+    operator: 'Eutelsat OneWeb',
+    country: 'UK',
+    orbit: 'LEO',
+    altitude: '1,200 km',
+    launched: 634,
+    operational: 630,
+    approved: 648,
+    gen2Target: 7088,
+    purpose: 'Enterprise broadband and government connectivity',
+    status: 'operational',
+    firstLaunch: 'February 2019',
+    inclinationPlanes: '87.9\u00B0 (12 planes)',
+    massPerSat: '~150 kg',
+    designLife: '7 years',
+    deorbitPlan: 'Propulsive deorbit; 25-year natural decay backup',
+    fundingStatus: 'Merged with Eutelsat in 2023; combined entity',
+    website: 'https://oneweb.net',
+  },
+  {
+    name: 'Project Kuiper',
+    operator: 'Amazon',
+    country: 'USA',
+    orbit: 'LEO',
+    altitude: '590-630 km',
+    launched: 2,
+    operational: 2,
+    approved: 3236,
+    gen2Target: 7774,
+    purpose: 'Global broadband internet service',
+    status: 'deploying',
+    firstLaunch: 'October 2023',
+    inclinationPlanes: '30\u00B0, 40\u00B0, 51.9\u00B0 (multiple planes)',
+    massPerSat: '~500 kg',
+    designLife: '7 years',
+    deorbitPlan: 'Propulsive deorbit; design for 355-day deorbit',
+    fundingStatus: '$10B+ committed investment by Amazon',
+    website: 'https://www.aboutamazon.com/what-we-do/devices-services/project-kuiper',
+  },
+  {
+    name: 'Telesat Lightspeed',
+    operator: 'Telesat',
+    country: 'Canada',
+    orbit: 'LEO',
+    altitude: '1,015-1,325 km',
+    launched: 0,
+    operational: 0,
+    approved: 198,
+    gen2Target: null,
+    purpose: 'Enterprise and government broadband',
+    status: 'planned',
+    firstLaunch: 'Expected 2026',
+    inclinationPlanes: '98.98\u00B0, 50.88\u00B0 (6 planes polar, 5 inclined)',
+    massPerSat: '~700 kg',
+    designLife: '10 years',
+    deorbitPlan: 'Propulsive deorbit capability',
+    fundingStatus: 'C$2.14B federal loan + C$1.44B equity',
+    website: 'https://www.telesat.com/leo-satellites/',
+  },
+  {
+    name: 'G60 Starnet (Guowang)',
+    operator: 'Shanghai Spacecom Satellite Technology (SSST)',
+    country: 'China',
+    orbit: 'LEO',
+    altitude: '500-1,145 km',
+    launched: 36,
+    operational: 36,
+    approved: 12000,
+    gen2Target: 12000,
+    purpose: 'Global broadband and IoT connectivity',
+    status: 'deploying',
+    firstLaunch: 'August 2024',
+    inclinationPlanes: 'Multiple planes at various inclinations',
+    massPerSat: '~300 kg',
+    designLife: '5-7 years',
+    deorbitPlan: 'TBD - active propulsion expected',
+    fundingStatus: 'State-backed; Shanghai municipal government support',
+    website: 'N/A',
+  },
+  {
+    name: 'Guowang (GW)',
+    operator: 'China SatNet',
+    country: 'China',
+    orbit: 'LEO',
+    altitude: '500-1,145 km',
+    launched: 0,
+    operational: 0,
+    approved: 12992,
+    gen2Target: 12992,
+    purpose: 'National broadband constellation',
+    status: 'planned',
+    firstLaunch: 'Expected 2025-2026',
+    inclinationPlanes: 'Multiple shells across LEO',
+    massPerSat: '~300 kg (estimated)',
+    designLife: '5-7 years',
+    deorbitPlan: 'TBD',
+    fundingStatus: 'Chinese state-owned enterprise; fully state-funded',
+    website: 'N/A',
+  },
+  {
+    name: 'Rivada Space Network',
+    operator: 'Rivada Networks',
+    country: 'Germany',
+    orbit: 'LEO',
+    altitude: '1,000 km',
+    launched: 0,
+    operational: 0,
+    approved: 600,
+    gen2Target: null,
+    purpose: 'Secure optical mesh network for enterprise & government',
+    status: 'planned',
+    firstLaunch: 'Expected 2026-2027',
+    inclinationPlanes: '10 planes at 87.4\u00B0',
+    massPerSat: '~500 kg',
+    designLife: '7 years',
+    deorbitPlan: 'Propulsive deorbit',
+    fundingStatus: 'Private investment + Terran Orbital manufacturing contract',
+    website: 'https://rivadaspace.com',
+  },
+  {
+    name: 'Hanwha Systems',
+    operator: 'Hanwha Systems',
+    country: 'Germany',
+    orbit: 'LEO',
+    altitude: '500-600 km',
+    launched: 0,
+    operational: 0,
+    approved: 2000,
+    gen2Target: null,
+    purpose: 'Broadband and aerospace connectivity',
+    status: 'early-stage',
+    firstLaunch: 'Expected 2027+',
+    inclinationPlanes: 'TBD',
+    massPerSat: 'TBD',
+    designLife: 'TBD',
+    deorbitPlan: 'TBD',
+    fundingStatus: 'Acquired Phasor and OneWeb subsidiary technologies',
+    website: 'https://www.hanwhasystems.com',
+  },
+];
+
+// ────────────────────────────────────────
+// Static Data: Regulatory Bodies
+// ────────────────────────────────────────
+
+interface RegulatoryBody {
+  name: string;
+  abbreviation: string;
+  country: string;
+  scope: string;
+  jurisdiction: string;
+  role: string;
+  keyResponsibilities: string[];
+  website: string;
+  filingTypes: string[];
+  relevantTreaties: string[];
+}
+
+const REGULATORY_BODIES: RegulatoryBody[] = [
+  {
+    name: 'International Telecommunication Union',
+    abbreviation: 'ITU',
+    country: 'International',
+    scope: 'Global frequency and orbit coordination',
+    jurisdiction: 'International (193 member states)',
+    role: 'The primary international body that coordinates GEO orbital slot allocation, frequency assignments, and prevents harmful interference between satellite networks. All satellite operators must file through their national administration to the ITU.',
+    keyResponsibilities: [
+      'GEO orbital slot coordination and assignment',
+      'Radio frequency spectrum allocation (Radio Regulations)',
+      'Advance Publication Information (API) filings',
+      'Coordination and notification procedures',
+      'Harmful interference resolution',
+      'World Radiocommunication Conferences (WRC)',
+    ],
+    website: 'https://www.itu.int',
+    filingTypes: ['API (Advance Publication)', 'CR/C (Coordination Request)', 'Notification', 'Due Diligence'],
+    relevantTreaties: ['ITU Radio Regulations', 'ITU Constitution and Convention'],
+  },
+  {
+    name: 'Federal Communications Commission',
+    abbreviation: 'FCC',
+    country: 'USA',
+    scope: 'US domestic satellite licensing',
+    jurisdiction: 'United States',
+    role: 'Licenses all US satellite systems, grants market access to foreign satellites serving US markets, manages domestic spectrum allocation, and enforces orbital debris mitigation requirements for US-licensed satellites.',
+    keyResponsibilities: [
+      'US satellite system licensing (Part 25)',
+      'Market access for non-US satellites',
+      'Spectrum allocation for US operations',
+      'Orbital debris mitigation rules (5-year deorbit rule)',
+      'NGSO constellation processing rounds',
+      'Space Bureau oversight of commercial space',
+    ],
+    website: 'https://www.fcc.gov',
+    filingTypes: ['Space Station Application', 'Earth Station Application', 'Market Access Petition', 'Experimental License'],
+    relevantTreaties: ['Communications Act of 1934', 'FCC Space Bureau Rules (47 CFR Part 25)'],
+  },
+  {
+    name: 'Office of Communications',
+    abbreviation: 'Ofcom',
+    country: 'UK',
+    scope: 'UK satellite licensing and spectrum management',
+    jurisdiction: 'United Kingdom',
+    role: 'Regulates UK satellite communications, manages UK spectrum allocations, and files on behalf of UK operators to the ITU. Oversees OneWeb and other UK-licensed constellations.',
+    keyResponsibilities: [
+      'UK satellite network filings to ITU',
+      'Spectrum management and assignment',
+      'Licensing of satellite earth stations',
+      'Enforcement of spectrum regulations',
+      'International frequency coordination',
+    ],
+    website: 'https://www.ofcom.org.uk',
+    filingTypes: ['Satellite (Non-geostationary) License', 'Satellite (Geostationary) License', 'Earth Station License'],
+    relevantTreaties: ['Communications Act 2003', 'Wireless Telegraphy Act 2006'],
+  },
+  {
+    name: 'Centre National d\'Etudes Spatiales',
+    abbreviation: 'CNES',
+    country: 'France',
+    scope: 'French space policy and satellite regulation',
+    jurisdiction: 'France',
+    role: 'France\'s national space agency responsible for implementing the French Space Operations Act. CNES oversees technical standards, orbital debris mitigation compliance, and coordinates French ITU filings including Eutelsat operations.',
+    keyResponsibilities: [
+      'French Space Operations Act enforcement',
+      'Technical authorization of space objects',
+      'Orbital debris mitigation oversight',
+      'ITU filing coordination for French operators',
+      'Launch and re-entry authorization',
+    ],
+    website: 'https://cnes.fr',
+    filingTypes: ['Launch Authorization', 'Orbital Operations Authorization', 'Transfer of Operations'],
+    relevantTreaties: ['French Space Operations Act (2008)', 'ESA Convention'],
+  },
+  {
+    name: 'European Space Agency',
+    abbreviation: 'ESA',
+    country: 'International',
+    scope: 'European space coordination and programs',
+    jurisdiction: 'European (22 member states)',
+    role: 'Coordinates European space activities, sets space debris mitigation guidelines, operates the Space Debris Office, and manages European GNSS programs (Galileo). Does not directly regulate but sets technical standards.',
+    keyResponsibilities: [
+      'Space debris guidelines and monitoring',
+      'European GNSS (Galileo) program management',
+      'Space situational awareness (SSA)',
+      'Space sustainability standards',
+      'Copernicus Earth observation program',
+    ],
+    website: 'https://www.esa.int',
+    filingTypes: ['N/A - Advisory and programmatic role'],
+    relevantTreaties: ['ESA Convention', 'EU Space Regulation'],
+  },
+  {
+    name: 'United Nations Office for Outer Space Affairs',
+    abbreviation: 'UNOOSA',
+    country: 'International',
+    scope: 'International space law and UN treaties',
+    jurisdiction: 'International (UN Member States)',
+    role: 'Maintains the UN Register of Objects Launched into Outer Space, supports COPUOS (Committee on the Peaceful Uses of Outer Space), and provides the framework for the Outer Space Treaty and related agreements.',
+    keyResponsibilities: [
+      'UN Registry of Space Objects',
+      'COPUOS secretariat',
+      'Space law guidance and capacity building',
+      'Long-Term Sustainability Guidelines for Outer Space',
+      'Space debris mitigation guidelines (IADC-based)',
+    ],
+    website: 'https://www.unoosa.org',
+    filingTypes: ['Registration Convention notification', 'Liability Convention claims'],
+    relevantTreaties: ['Outer Space Treaty (1967)', 'Registration Convention (1975)', 'Liability Convention (1972)', 'Rescue Agreement (1968)'],
+  },
+  {
+    name: 'Indian Space Research Organisation / IN-SPACe',
+    abbreviation: 'ISRO / IN-SPACe',
+    country: 'India',
+    scope: 'Indian satellite authorization and spectrum',
+    jurisdiction: 'India',
+    role: 'ISRO manages India\'s space program including GAGAN navigation augmentation. IN-SPACe (Indian National Space Promotion and Authorization Centre) is the regulatory body that authorizes private space activities in India.',
+    keyResponsibilities: [
+      'Authorization of private satellite operators',
+      'ITU filings for Indian satellite networks',
+      'GSAT and IRNSS constellation management',
+      'Space Situational Awareness coordination',
+      'Private space activity promotion and regulation',
+    ],
+    website: 'https://www.isro.gov.in',
+    filingTypes: ['Space Activity Authorization', 'Frequency Assignment', 'Launch License'],
+    relevantTreaties: ['Indian Space Activities Bill (pending)', 'Indian Satellite Communications Policy'],
+  },
+];
 
 // ────────────────────────────────────────
 // Constants
@@ -572,6 +1186,12 @@ function OrbitalManagementContent() {
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
   const [orbitFilter, setOrbitFilter] = useState<OrbitType | ''>(initialOrbit);
 
+  // ── Search state ──
+  const [searchQuery, setSearchQuery] = useState('');
+  const [regimeFilter, setRegimeFilter] = useState<string>('');
+  const [geoSortBy, setGeoSortBy] = useState<'longitude' | 'value' | 'operator'>('longitude');
+  const [constellationStatusFilter, setConstellationStatusFilter] = useState<string>('');
+
   // ── Services state ──
   const [servicesData, setServicesData] = useState<OrbitalService[]>([]);
   const [contracts, setContracts] = useState<OrbitalServiceContract[]>([]);
@@ -598,6 +1218,71 @@ function OrbitalManagementContent() {
 
   // Determine if the current tab is a services-related tab
   const isServicesTab = activeTab === 'services' || activeTab === 'contracts' || activeTab === 'pricing' || activeTab === 'request';
+
+  // Determine if the current tab is a static data tab (no API fetch needed)
+  const isStaticTab = activeTab === 'geo-slots' || activeTab === 'constellations' || activeTab === 'regulatory';
+
+  // Filtered GEO slots by search
+  const filteredGeoSlots = KEY_GEO_SLOTS.filter(slot => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      slot.operator.toLowerCase().includes(q) ||
+      slot.position.toLowerCase().includes(q) ||
+      slot.satelliteName.toLowerCase().includes(q) ||
+      slot.country.toLowerCase().includes(q) ||
+      slot.coverageRegion.toLowerCase().includes(q) ||
+      slot.use.toLowerCase().includes(q)
+    );
+  }).sort((a, b) => {
+    if (geoSortBy === 'longitude') return a.longitude - b.longitude;
+    if (geoSortBy === 'operator') return a.operator.localeCompare(b.operator);
+    // sort by value (strip $, M, B, +)
+    const parseVal = (v: string) => {
+      const num = parseFloat(v.replace(/[^0-9.]/g, ''));
+      return v.includes('B') ? num * 1000 : num;
+    };
+    return parseVal(b.estimatedValue) - parseVal(a.estimatedValue);
+  });
+
+  // Filtered constellations by search and status
+  const filteredConstellations = MEGA_CONSTELLATIONS.filter(c => {
+    if (constellationStatusFilter && c.status !== constellationStatusFilter) return false;
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      c.name.toLowerCase().includes(q) ||
+      c.operator.toLowerCase().includes(q) ||
+      c.country.toLowerCase().includes(q) ||
+      c.purpose.toLowerCase().includes(q)
+    );
+  });
+
+  // Filtered regulatory bodies by search
+  const filteredRegulatory = REGULATORY_BODIES.filter(r => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      r.name.toLowerCase().includes(q) ||
+      r.abbreviation.toLowerCase().includes(q) ||
+      r.country.toLowerCase().includes(q) ||
+      r.scope.toLowerCase().includes(q) ||
+      r.role.toLowerCase().includes(q)
+    );
+  });
+
+  // Filtered regimes by search
+  const filteredRegimes = ORBITAL_REGIMES.filter(r => {
+    if (regimeFilter && r.abbreviation !== regimeFilter) return false;
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      r.name.toLowerCase().includes(q) ||
+      r.abbreviation.toLowerCase().includes(q) ||
+      r.description.toLowerCase().includes(q) ||
+      r.keyUses.some(u => u.toLowerCase().includes(q))
+    );
+  });
 
   // Sync state changes to URL
   const updateUrl = (updates: Record<string, string>) => {
@@ -786,9 +1471,9 @@ function OrbitalManagementContent() {
           </div>
         )}
 
-        {loading && !isServicesTab ? (
+        {loading && !isServicesTab && !isStaticTab ? (
           <SkeletonPage statCards={4} contentCards={3} />
-        ) : needsInit && !isServicesTab ? (
+        ) : needsInit && !isServicesTab && !isStaticTab ? (
           <div className="card p-12 text-center">
             <span className="text-6xl block mb-4">&#128752;</span>
             <h2 className="text-2xl font-semibold text-white mb-2">
@@ -818,10 +1503,10 @@ function OrbitalManagementContent() {
             {/* ──────────────── Quick Stats Banner ──────────────── */}
             {!isServicesTab && (
               <ScrollReveal>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
                 <div className="card-elevated p-4 text-center">
                   <div className="text-2xl font-bold font-display text-white">
-                    {formatNumber(stats?.totalActive || 0)}
+                    {formatNumber(stats?.totalActive || ORBITAL_REGIMES.reduce((s, r) => s + r.activeSatellites, 0))}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                     Active Satellites
@@ -829,7 +1514,7 @@ function OrbitalManagementContent() {
                 </div>
                 <div className="card-elevated p-4 text-center">
                   <div className="text-2xl font-bold font-display text-red-400">
-                    {formatNumber(stats?.totalDebris || 0)}
+                    {formatNumber(stats?.totalDebris || 36500)}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                     Debris Objects
@@ -841,7 +1526,7 @@ function OrbitalManagementContent() {
                     mostCongestedSlot?.congestionLevel === 'high' ? 'text-orange-400' :
                     'text-yellow-400'
                   }`}>
-                    {mostCongestedSlot?.orbitType || 'N/A'}
+                    {mostCongestedSlot?.orbitType || 'LEO'}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                     Most Congested
@@ -856,10 +1541,26 @@ function OrbitalManagementContent() {
                 </div>
                 <div className="card-elevated p-4 text-center">
                   <div className="text-2xl font-bold font-display text-nebula-300">
-                    {operators.length}
+                    {operators.length || MEGA_CONSTELLATIONS.length}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
                     Operators
+                  </div>
+                </div>
+                <div className="card-elevated p-4 text-center">
+                  <div className="text-2xl font-bold font-display text-cyan-400">
+                    {KEY_GEO_SLOTS.length}
+                  </div>
+                  <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
+                    Key GEO Slots
+                  </div>
+                </div>
+                <div className="card-elevated p-4 text-center">
+                  <div className="text-2xl font-bold font-display text-purple-400">
+                    {formatNumber(MEGA_CONSTELLATIONS.reduce((s, c) => s + c.approved, 0))}
+                  </div>
+                  <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
+                    Approved Sats
                   </div>
                 </div>
               </div>
@@ -925,16 +1626,46 @@ function OrbitalManagementContent() {
               </div>
             )}
 
+            {/* ──────────────── Search Bar ──────────────── */}
+            <div className="mb-6">
+              <div className="relative">
+                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search orbital slots, constellations, operators, regulatory bodies..."
+                  className="input pl-12 pr-10 w-full"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                    aria-label="Clear search"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </div>
+
             {/* ──────────────── Tab Navigation ──────────────── */}
             <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
               {([
-                { id: 'overview' as const, label: 'Overview', count: slots.length },
-                { id: 'operators' as const, label: 'Operators', count: operators.length },
-                { id: 'events' as const, label: 'Events', count: events.length },
-                { id: 'services' as const, label: 'Services', count: servicesData.length },
-                { id: 'contracts' as const, label: 'Contracts', count: contracts.length },
-                { id: 'pricing' as const, label: 'Pricing Guide', count: 0 },
-                { id: 'request' as const, label: 'Request Service', count: 0 },
+                { id: 'overview' as const, label: 'Orbital Regimes', count: ORBITAL_REGIMES.length, icon: '\u{1F30D}' },
+                { id: 'geo-slots' as const, label: 'GEO Slots', count: KEY_GEO_SLOTS.length, icon: '\u{1F4E1}' },
+                { id: 'constellations' as const, label: 'Mega-Constellations', count: MEGA_CONSTELLATIONS.length, icon: '\u{2B50}' },
+                { id: 'regulatory' as const, label: 'Regulatory', count: REGULATORY_BODIES.length, icon: '\u{2696}\u{FE0F}' },
+                { id: 'operators' as const, label: 'Operators', count: operators.length, icon: '\u{1F6F0}\u{FE0F}' },
+                { id: 'events' as const, label: 'Events', count: events.length, icon: '\u{1F4C5}' },
+                { id: 'services' as const, label: 'Services', count: servicesData.length, icon: '\u{1F527}' },
+                { id: 'contracts' as const, label: 'Contracts', count: contracts.length, icon: '\u{1F4DD}' },
+                { id: 'pricing' as const, label: 'Pricing Guide', count: 0, icon: '\u{1F4B0}' },
+                { id: 'request' as const, label: 'Request Service', count: 0, icon: '\u{1F4E9}' },
               ]).map((tab) => (
                 <button
                   key={tab.id}
@@ -945,6 +1676,7 @@ function OrbitalManagementContent() {
                       : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
                   }`}
                 >
+                  <span>{tab.icon}</span>
                   {tab.label}
                   {tab.count > 0 && (
                     <span
@@ -959,7 +1691,7 @@ function OrbitalManagementContent() {
               ))}
             </div>
 
-            {/* ──────────────── OVERVIEW TAB ──────────────── */}
+            {/* ──────────────── OVERVIEW TAB (Orbital Regimes) ──────────────── */}
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 {/* Summary Bar */}
@@ -968,20 +1700,20 @@ function OrbitalManagementContent() {
                     <div>
                       <h3 className="text-lg font-semibold text-white">Orbital Environment Summary</h3>
                       <p className="text-slate-400 text-sm mt-1">
-                        {formatNumber(stats?.totalObjects || 0)} total objects tracked across {slots.length} orbital regimes
+                        {formatNumber(stats?.totalObjects || ORBITAL_REGIMES.reduce((s, r) => s + r.activeSatellites, 0) + 36500)} total objects tracked across {ORBITAL_REGIMES.length} primary orbital regimes
                       </p>
                     </div>
                     <div className="flex items-center gap-6">
                       <div className="text-right">
                         <div className="text-2xl font-bold font-display text-green-400">
-                          +{formatNumber(stats?.growth1Year || 0)}
+                          +{formatNumber(stats?.growth1Year || 4200)}
                         </div>
                         <div className="text-slate-400 text-xs">1-Year Growth</div>
                       </div>
                       <div className="w-px h-10 bg-white/[0.06]" />
                       <div className="text-right">
                         <div className="text-2xl font-bold font-display text-blue-400">
-                          +{formatNumber(stats?.growth5Year || 0)}
+                          +{formatNumber(stats?.growth5Year || 32000)}
                         </div>
                         <div className="text-slate-400 text-xs">5-Year Growth</div>
                       </div>
@@ -989,14 +1721,201 @@ function OrbitalManagementContent() {
                   </div>
                 </div>
 
-                {/* Orbit Type Cards */}
-                <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {slots.map((slot) => (
-                    <StaggerItem key={slot.id}>
-                      <OrbitTypeCard slot={slot} />
-                    </StaggerItem>
-                  ))}
+                {/* Regime Filter */}
+                <div className="card p-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-slate-400 text-sm mr-2">Filter by regime:</span>
+                    <button
+                      onClick={() => setRegimeFilter('')}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        regimeFilter === ''
+                          ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                          : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
+                      }`}
+                    >
+                      All ({ORBITAL_REGIMES.length})
+                    </button>
+                    {ORBITAL_REGIMES.map((regime) => {
+                      const congestionStyle = CONGESTION_STYLES[regime.congestion];
+                      return (
+                        <button
+                          key={regime.abbreviation}
+                          onClick={() => setRegimeFilter(regime.abbreviation === regimeFilter ? '' : regime.abbreviation)}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                            regimeFilter === regime.abbreviation
+                              ? `${congestionStyle.bg} ${congestionStyle.text} border ${congestionStyle.border} shadow-glow-sm`
+                              : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
+                          }`}
+                        >
+                          {regime.abbreviation}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Orbital Regime Detail Cards */}
+                <StaggerContainer className="grid grid-cols-1 gap-6">
+                  {filteredRegimes.map((regime) => {
+                    const congestionStyle = CONGESTION_STYLES[regime.congestion];
+                    const totalInRegime = MEGA_CONSTELLATIONS.filter(c =>
+                      regime.abbreviation === 'LEO' ? c.orbit === 'LEO' : false
+                    ).reduce((s, c) => s + c.operational, 0);
+
+                    return (
+                      <StaggerItem key={regime.id}>
+                        <div className={`card p-6 border ${congestionStyle.border}`}>
+                          {/* Header */}
+                          <div className="flex items-start justify-between mb-5">
+                            <div className="flex items-center gap-4">
+                              <div className={`w-14 h-14 rounded-xl ${congestionStyle.bg} border ${congestionStyle.border} flex items-center justify-center`}>
+                                <span className="text-2xl font-bold font-display" style={{ lineHeight: 1 }}>
+                                  {regime.abbreviation}
+                                </span>
+                              </div>
+                              <div>
+                                <h3 className="text-xl font-semibold text-white">{regime.name}</h3>
+                                <div className="flex items-center gap-3 text-sm text-slate-400 mt-1">
+                                  <span>Altitude: {regime.altitudeRange}</span>
+                                  <span className="text-slate-600">|</span>
+                                  <span>Period: {regime.periodRange}</span>
+                                  <span className="text-slate-600">|</span>
+                                  <span>Velocity: {regime.velocityRange}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-2">
+                              <span className={`text-xs font-bold px-3 py-1.5 rounded ${congestionStyle.bg} ${congestionStyle.text} border ${congestionStyle.border} uppercase tracking-wider`}>
+                                {regime.congestion} Congestion
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Description */}
+                          <p className="text-slate-400 text-sm leading-relaxed mb-5">{regime.description}</p>
+
+                          {/* Stats Row */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+                            <div className="bg-slate-700/50 rounded-lg p-3 text-center">
+                              <div className="text-2xl font-bold font-display text-white">{formatNumber(regime.activeSatellites)}</div>
+                              <div className="text-slate-400 text-xs uppercase tracking-widest">Active Satellites</div>
+                            </div>
+                            <div className="bg-slate-700/50 rounded-lg p-3 text-center">
+                              <div className="text-2xl font-bold font-display text-cyan-400">{regime.altitudeRange.split(' ')[0]}</div>
+                              <div className="text-slate-400 text-xs uppercase tracking-widest">Min Alt (km)</div>
+                            </div>
+                            <div className="bg-slate-700/50 rounded-lg p-3 text-center">
+                              <div className="text-2xl font-bold font-display text-nebula-300">{regime.notableConstellations.length}</div>
+                              <div className="text-slate-400 text-xs uppercase tracking-widest">Key Systems</div>
+                            </div>
+                            <div className="bg-slate-700/50 rounded-lg p-3 text-center">
+                              <div className={`text-2xl font-bold font-display ${congestionStyle.text}`}>
+                                {regime.congestion === 'critical' ? '>95%' : regime.congestion === 'high' ? '~75%' : regime.congestion === 'moderate' ? '~40%' : '<20%'}
+                              </div>
+                              <div className="text-slate-400 text-xs uppercase tracking-widest">Utilization</div>
+                            </div>
+                          </div>
+
+                          {/* Utilization Bar */}
+                          <div className="mb-5">
+                            <div className="flex items-center justify-between mb-1.5">
+                              <span className="text-slate-400 text-xs font-medium uppercase tracking-widest">Orbital Congestion</span>
+                              <span className={`text-sm font-bold ${congestionStyle.text}`}>
+                                {regime.congestion === 'critical' ? '95%' : regime.congestion === 'high' ? '75%' : regime.congestion === 'moderate' ? '40%' : '15%'}
+                              </span>
+                            </div>
+                            <div className="h-3 bg-slate-700/50 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full bg-gradient-to-r ${congestionStyle.barColor} rounded-full transition-all duration-1000`}
+                                style={{ width: regime.congestion === 'critical' ? '95%' : regime.congestion === 'high' ? '75%' : regime.congestion === 'moderate' ? '40%' : '15%' }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Two-Column Details */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            {/* Key Uses */}
+                            <div>
+                              <h4 className="text-white font-medium text-sm mb-2 uppercase tracking-widest">Key Uses</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {regime.keyUses.map((use) => (
+                                  <span key={use} className="text-xs px-2.5 py-1 rounded-full bg-nebula-500/10 text-nebula-300 border border-nebula-500/20">
+                                    {use}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Challenges */}
+                            <div>
+                              <h4 className="text-white font-medium text-sm mb-2 uppercase tracking-widest">Challenges</h4>
+                              <ul className="space-y-1">
+                                {regime.challenges.map((challenge) => (
+                                  <li key={challenge} className="text-slate-400 text-xs flex items-start gap-2">
+                                    <span className="text-red-400 mt-0.5 flex-shrink-0">!</span>
+                                    {challenge}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+
+                          {/* Notable Constellations */}
+                          <div className="mt-4 pt-4 border-t border-slate-700/50">
+                            <h4 className="text-white font-medium text-sm mb-2 uppercase tracking-widest">Notable Systems</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {regime.notableConstellations.map((name) => (
+                                <span key={name} className="text-xs px-3 py-1.5 rounded-lg bg-slate-700/50 text-slate-200 border border-slate-700/50">
+                                  {name}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Cross-module link */}
+                          <div className="mt-4 pt-4 border-t border-slate-700/50 flex flex-wrap gap-2">
+                            <Link
+                              href="/space-environment?tab=debris"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+                            >
+                              View debris in this orbit &rarr;
+                            </Link>
+                            <Link
+                              href="/spectrum"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-rocket-500/20 text-rocket-300 hover:bg-rocket-500/30 transition-colors border border-rocket-500/30"
+                            >
+                              Spectrum Filings &rarr;
+                            </Link>
+                          </div>
+                        </div>
+                      </StaggerItem>
+                    );
+                  })}
                 </StaggerContainer>
+
+                {filteredRegimes.length === 0 && (
+                  <div className="text-center py-16">
+                    <h3 className="text-xl font-semibold text-white mb-2">No Matching Regimes</h3>
+                    <p className="text-slate-400">Try adjusting your search or filter.</p>
+                  </div>
+                )}
+
+                {/* DB-loaded Orbit Type Cards */}
+                {slots.length > 0 && !regimeFilter && !searchQuery && (
+                  <>
+                    <div className="card p-5 mt-2">
+                      <h3 className="text-lg font-semibold text-white mb-1">Detailed Orbital Slot Data</h3>
+                      <p className="text-slate-400 text-sm">Granular slot-level data from our tracking database</p>
+                    </div>
+                    <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {slots.map((slot) => (
+                        <StaggerItem key={slot.id}>
+                          <OrbitTypeCard slot={slot} />
+                        </StaggerItem>
+                      ))}
+                    </StaggerContainer>
+                  </>
+                )}
 
                 {/* Congestion Legend */}
                 <div className="card p-5 border-dashed">
@@ -1017,6 +1936,641 @@ function OrbitalManagementContent() {
                         </div>
                       );
                     })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ──────────────── GEO SLOTS TAB ──────────────── */}
+            {activeTab === 'geo-slots' && (
+              <div className="space-y-6">
+                {/* GEO Introduction */}
+                <div className="card p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                      <span className="text-2xl">{'\u{1F4E1}'}</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-1">Geostationary Orbital Slots</h3>
+                      <p className="text-slate-400 text-sm leading-relaxed">
+                        GEO slots at 35,786 km altitude are among the most commercially valuable positions in space. With approximately 1,800 usable positions
+                        (at 0.2{'\u00B0'} spacing), these slots are coordinated by the ITU and assigned to national administrations. A single
+                        premium GEO slot can be worth hundreds of millions of dollars in broadcast and communications revenue.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sort Controls */}
+                <div className="card p-4">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <span className="text-slate-400 text-sm">Sort by:</span>
+                    {([
+                      { value: 'longitude' as const, label: 'Longitude' },
+                      { value: 'operator' as const, label: 'Operator' },
+                      { value: 'value' as const, label: 'Estimated Value' },
+                    ]).map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setGeoSortBy(option.value)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                          geoSortBy === option.value
+                            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-glow-sm'
+                            : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                    <span className="ml-auto text-slate-500 text-sm">
+                      {filteredGeoSlots.length} slot{filteredGeoSlots.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                </div>
+
+                {/* GEO Slot Cards */}
+                <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {filteredGeoSlots.map((slot) => {
+                    const flag = COUNTRY_FLAGS[slot.country] || '\u{1F30D}';
+                    return (
+                      <StaggerItem key={slot.position}>
+                        <div className="card p-5 hover:border-cyan-500/30 transition-colors h-full flex flex-col">
+                          {/* Position Header */}
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center">
+                                <span className="text-cyan-300 font-bold text-sm font-display">{slot.position}</span>
+                              </div>
+                              <div>
+                                <h4 className="text-white font-semibold">{slot.operator}</h4>
+                                <div className="flex items-center gap-2 text-sm">
+                                  <span>{flag}</span>
+                                  <span className="text-slate-400">{slot.country}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                              slot.status === 'active'
+                                ? 'bg-green-500/20 text-green-400'
+                                : slot.status === 'planned'
+                                ? 'bg-yellow-500/20 text-yellow-400'
+                                : 'bg-blue-500/20 text-blue-400'
+                            }`}>
+                              {slot.status.charAt(0).toUpperCase() + slot.status.slice(1)}
+                            </span>
+                          </div>
+
+                          {/* Satellite Info */}
+                          <div className="bg-slate-700/50 rounded-lg p-3 mb-4">
+                            <div className="text-slate-400 text-xs mb-1">Satellite(s)</div>
+                            <div className="text-white text-sm font-medium">{slot.satelliteName}</div>
+                          </div>
+
+                          {/* Details Grid */}
+                          <div className="grid grid-cols-2 gap-3 mb-4 flex-1">
+                            <div className="bg-slate-700/50 rounded-lg p-3">
+                              <div className="text-slate-400 text-xs">Use</div>
+                              <div className="text-white text-sm mt-0.5">{slot.use}</div>
+                            </div>
+                            <div className="bg-slate-700/50 rounded-lg p-3">
+                              <div className="text-slate-400 text-xs">Band</div>
+                              <div className="text-white text-sm mt-0.5">{slot.band}</div>
+                            </div>
+                            <div className="bg-slate-700/50 rounded-lg p-3">
+                              <div className="text-slate-400 text-xs">Coverage</div>
+                              <div className="text-white text-sm mt-0.5">{slot.coverageRegion}</div>
+                            </div>
+                            <div className="bg-slate-700/50 rounded-lg p-3">
+                              <div className="text-slate-400 text-xs">Est. Value</div>
+                              <div className="text-green-400 text-sm font-semibold mt-0.5">{slot.estimatedValue}</div>
+                            </div>
+                          </div>
+
+                          {/* Notes */}
+                          <p className="text-slate-400 text-xs leading-relaxed mb-3">{slot.notes}</p>
+
+                          {/* Footer */}
+                          <div className="flex items-center justify-between pt-3 border-t border-slate-700/50 mt-auto">
+                            {slot.launchYear && (
+                              <span className="text-slate-500 text-xs">Launch: {slot.launchYear}</span>
+                            )}
+                            <Link
+                              href="/spectrum"
+                              className="inline-flex items-center gap-1 text-xs text-nebula-300 hover:text-nebula-200 transition-colors"
+                            >
+                              Spectrum Filings &rarr;
+                            </Link>
+                          </div>
+                        </div>
+                      </StaggerItem>
+                    );
+                  })}
+                </StaggerContainer>
+
+                {filteredGeoSlots.length === 0 && (
+                  <div className="text-center py-16">
+                    <h3 className="text-xl font-semibold text-white mb-2">No Matching GEO Slots</h3>
+                    <p className="text-slate-400">Try adjusting your search.</p>
+                  </div>
+                )}
+
+                {/* GEO Slot Explainer */}
+                <div className="card p-5 border-dashed">
+                  <h3 className="text-lg font-semibold text-white mb-3">How GEO Slot Allocation Works</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-300 font-bold text-sm">1</span>
+                        <h4 className="text-white font-medium">Filing</h4>
+                      </div>
+                      <p className="text-slate-400 text-xs leading-relaxed">
+                        National administration files an Advance Publication Information (API) with the ITU Radio Bureau,
+                        providing technical parameters of the planned satellite network.
+                      </p>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-300 font-bold text-sm">2</span>
+                        <h4 className="text-white font-medium">Coordination</h4>
+                      </div>
+                      <p className="text-slate-400 text-xs leading-relaxed">
+                        The filing enters a coordination phase where potentially affected administrations are identified.
+                        Bilateral negotiations resolve interference issues (can take 2-7 years).
+                      </p>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-300 font-bold text-sm">3</span>
+                        <h4 className="text-white font-medium">Recording</h4>
+                      </div>
+                      <p className="text-slate-400 text-xs leading-relaxed">
+                        Once coordination is complete and the satellite is deployed, the assignment is recorded in the Master
+                        International Frequency Register (MIFR), granting international recognition.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ──────────────── CONSTELLATIONS TAB ──────────────── */}
+            {activeTab === 'constellations' && (
+              <div className="space-y-6">
+                {/* Summary Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  <div className="card-elevated p-4 text-center">
+                    <div className="text-2xl font-bold font-display text-white">
+                      {formatNumber(MEGA_CONSTELLATIONS.reduce((s, c) => s + c.launched, 0))}
+                    </div>
+                    <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Launched</div>
+                  </div>
+                  <div className="card-elevated p-4 text-center">
+                    <div className="text-2xl font-bold font-display text-green-400">
+                      {formatNumber(MEGA_CONSTELLATIONS.reduce((s, c) => s + c.operational, 0))}
+                    </div>
+                    <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Operational</div>
+                  </div>
+                  <div className="card-elevated p-4 text-center">
+                    <div className="text-2xl font-bold font-display text-cyan-400">
+                      {formatNumber(MEGA_CONSTELLATIONS.reduce((s, c) => s + c.approved, 0))}
+                    </div>
+                    <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Approved</div>
+                  </div>
+                  <div className="card-elevated p-4 text-center">
+                    <div className="text-2xl font-bold font-display text-purple-400">
+                      {formatNumber(MEGA_CONSTELLATIONS.reduce((s, c) => s + (c.gen2Target || 0), 0))}
+                    </div>
+                    <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Gen2 Target</div>
+                  </div>
+                  <div className="card-elevated p-4 text-center">
+                    <div className="text-2xl font-bold font-display text-yellow-400">
+                      {MEGA_CONSTELLATIONS.length}
+                    </div>
+                    <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Constellations</div>
+                  </div>
+                </div>
+
+                {/* Status Filter */}
+                <div className="card p-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-slate-400 text-sm mr-2">Filter by status:</span>
+                    <button
+                      onClick={() => setConstellationStatusFilter('')}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        constellationStatusFilter === ''
+                          ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                          : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
+                      }`}
+                    >
+                      All ({MEGA_CONSTELLATIONS.length})
+                    </button>
+                    {(['operational', 'deploying', 'planned', 'early-stage'] as const).map((status) => {
+                      const count = MEGA_CONSTELLATIONS.filter(c => c.status === status).length;
+                      const colors: Record<string, string> = {
+                        operational: 'text-green-400',
+                        deploying: 'text-blue-400',
+                        planned: 'text-yellow-400',
+                        'early-stage': 'text-slate-400',
+                      };
+                      return (
+                        <button
+                          key={status}
+                          onClick={() => setConstellationStatusFilter(status === constellationStatusFilter ? '' : status)}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                            constellationStatusFilter === status
+                              ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                              : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
+                          }`}
+                        >
+                          <span className={colors[status]}>{status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')}</span> ({count})
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Constellation Cards */}
+                <StaggerContainer className="space-y-6">
+                  {filteredConstellations.map((constellation) => {
+                    const flag = COUNTRY_FLAGS[constellation.country] || '\u{1F30D}';
+                    const launchProgress = constellation.approved > 0 ? (constellation.launched / constellation.approved) * 100 : 0;
+                    const operationalRate = constellation.launched > 0 ? (constellation.operational / constellation.launched) * 100 : 0;
+                    const statusColors: Record<string, { bg: string; text: string; border: string }> = {
+                      operational: { bg: 'bg-green-900/20', text: 'text-green-400', border: 'border-green-500/30' },
+                      deploying: { bg: 'bg-blue-900/20', text: 'text-blue-400', border: 'border-blue-500/30' },
+                      planned: { bg: 'bg-yellow-900/20', text: 'text-yellow-400', border: 'border-yellow-500/30' },
+                      'early-stage': { bg: 'bg-slate-700/30', text: 'text-slate-400', border: 'border-slate-600/30' },
+                    };
+                    const sc = statusColors[constellation.status];
+
+                    return (
+                      <StaggerItem key={constellation.name}>
+                        <div className={`card p-6 border ${sc.border}`}>
+                          {/* Header */}
+                          <div className="flex items-start justify-between mb-5">
+                            <div className="flex items-center gap-4">
+                              <div className={`w-14 h-14 rounded-xl ${sc.bg} border ${sc.border} flex items-center justify-center`}>
+                                <span className="text-3xl">{'\u{2B50}'}</span>
+                              </div>
+                              <div>
+                                <h3 className="text-xl font-semibold text-white">{constellation.name}</h3>
+                                <div className="flex items-center gap-2 text-sm text-slate-400 mt-0.5">
+                                  <span>{flag} {constellation.country}</span>
+                                  <span className="text-slate-600">|</span>
+                                  <span>{constellation.operator}</span>
+                                  <span className="text-slate-600">|</span>
+                                  <span>{constellation.orbit} @ {constellation.altitude}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <span className={`text-xs font-bold px-3 py-1.5 rounded ${sc.bg} ${sc.text} border ${sc.border} uppercase tracking-wider`}>
+                              {constellation.status.replace('-', ' ')}
+                            </span>
+                          </div>
+
+                          {/* Purpose */}
+                          <p className="text-slate-400 text-sm mb-5">{constellation.purpose}</p>
+
+                          {/* Launch Progress Bar */}
+                          <div className="mb-5">
+                            <div className="flex items-center justify-between mb-1.5">
+                              <span className="text-slate-400 text-xs font-medium uppercase tracking-widest">Launch Progress</span>
+                              <span className="text-white text-sm font-bold">{launchProgress.toFixed(1)}% ({formatNumber(constellation.launched)} / {formatNumber(constellation.approved)})</span>
+                            </div>
+                            <div className="h-4 bg-slate-700/50 rounded-full overflow-hidden relative">
+                              <div
+                                className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-1000"
+                                style={{ width: `${Math.min(launchProgress, 100)}%` }}
+                              />
+                              {constellation.gen2Target && constellation.gen2Target > constellation.approved && (
+                                <div
+                                  className="absolute top-0 h-full border-r-2 border-dashed border-purple-400/50"
+                                  style={{ left: `${Math.min((constellation.approved / constellation.gen2Target) * 100, 100)}%` }}
+                                  title={`Gen1 approved: ${formatNumber(constellation.approved)}`}
+                                />
+                              )}
+                            </div>
+                            {constellation.gen2Target && (
+                              <div className="flex items-center justify-between mt-1">
+                                <span className="text-purple-400/60 text-xs">Gen2 Target: {formatNumber(constellation.gen2Target)}</span>
+                                <span className="text-slate-500 text-xs">{((constellation.launched / constellation.gen2Target) * 100).toFixed(1)}% of Gen2</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Stats Grid */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+                            <div className="bg-slate-700/50 rounded-lg p-3 text-center">
+                              <div className="text-lg font-bold text-white">{formatNumber(constellation.launched)}</div>
+                              <div className="text-slate-400 text-xs">Launched</div>
+                            </div>
+                            <div className="bg-slate-700/50 rounded-lg p-3 text-center">
+                              <div className="text-lg font-bold text-green-400">{formatNumber(constellation.operational)}</div>
+                              <div className="text-slate-400 text-xs">Operational</div>
+                            </div>
+                            <div className="bg-slate-700/50 rounded-lg p-3 text-center">
+                              <div className="text-lg font-bold text-cyan-400">{formatNumber(constellation.approved)}</div>
+                              <div className="text-slate-400 text-xs">Approved</div>
+                            </div>
+                            <div className="bg-slate-700/50 rounded-lg p-3 text-center">
+                              <div className="text-lg font-bold text-purple-400">{formatNumber(constellation.gen2Target || 0)}</div>
+                              <div className="text-slate-400 text-xs">Gen2 Target</div>
+                            </div>
+                          </div>
+
+                          {/* Technical Details */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-slate-400">First Launch</span>
+                                <span className="text-white">{constellation.firstLaunch}</span>
+                              </div>
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-slate-400">Inclination/Planes</span>
+                                <span className="text-white text-xs text-right max-w-[200px]">{constellation.inclinationPlanes}</span>
+                              </div>
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-slate-400">Mass/Satellite</span>
+                                <span className="text-white">{constellation.massPerSat}</span>
+                              </div>
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-slate-400">Design Life</span>
+                                <span className="text-white">{constellation.designLife}</span>
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-slate-400">Deorbit Plan</span>
+                                <span className="text-white text-xs text-right max-w-[200px]">{constellation.deorbitPlan}</span>
+                              </div>
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-slate-400">Funding</span>
+                                <span className="text-white text-xs text-right max-w-[200px]">{constellation.fundingStatus}</span>
+                              </div>
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-slate-400">Operational Rate</span>
+                                <span className={`font-semibold ${operationalRate > 95 ? 'text-green-400' : operationalRate > 80 ? 'text-yellow-400' : 'text-slate-400'}`}>
+                                  {constellation.launched > 0 ? `${operationalRate.toFixed(1)}%` : 'N/A'}
+                                </span>
+                              </div>
+                              {constellation.website !== 'N/A' && (
+                                <div className="flex items-center justify-between text-sm">
+                                  <span className="text-slate-400">Website</span>
+                                  <a
+                                    href={constellation.website}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-nebula-300 hover:text-nebula-200 text-xs transition-colors"
+                                  >
+                                    Visit &rarr;
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Cross-links */}
+                          <div className="mt-4 pt-4 border-t border-slate-700/50 flex flex-wrap gap-2">
+                            <Link
+                              href={`/market-intel?search=${encodeURIComponent(constellation.operator)}`}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-green-500/20 text-green-300 hover:bg-green-500/30 transition-colors border border-green-500/30"
+                            >
+                              Company Intel &rarr;
+                            </Link>
+                            <Link
+                              href="/space-environment?tab=debris"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+                            >
+                              Debris Impact &rarr;
+                            </Link>
+                            <Link
+                              href="/spectrum"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-rocket-500/20 text-rocket-300 hover:bg-rocket-500/30 transition-colors border border-rocket-500/30"
+                            >
+                              Spectrum Filings &rarr;
+                            </Link>
+                          </div>
+                        </div>
+                      </StaggerItem>
+                    );
+                  })}
+                </StaggerContainer>
+
+                {filteredConstellations.length === 0 && (
+                  <div className="text-center py-16">
+                    <h3 className="text-xl font-semibold text-white mb-2">No Matching Constellations</h3>
+                    <p className="text-slate-400">Try adjusting your search or filter.</p>
+                  </div>
+                )}
+
+                {/* Data Sources */}
+                <div className="card p-5 border-dashed">
+                  <h3 className="text-lg font-semibold text-white mb-3">Constellation Data Sources</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
+                    <div>
+                      <h4 className="text-white font-medium mb-2">Launch & Operations Data</h4>
+                      <ul className="space-y-1 text-xs">
+                        <li>FCC NGSO processing round filings</li>
+                        <li>ITU satellite network filings (SNL database)</li>
+                        <li>Jonathan McDowell&apos;s GCAT satellite catalog</li>
+                        <li>UCS Satellite Database</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="text-white font-medium mb-2">Regulatory & Approval Data</h4>
+                      <ul className="space-y-1 text-xs">
+                        <li>FCC Space Bureau authorization records</li>
+                        <li>ITU BR IFIC publications</li>
+                        <li>National regulatory filings (Ofcom, CNES, etc.)</li>
+                        <li>Operator press releases and SEC filings</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ──────────────── REGULATORY TAB ──────────────── */}
+            {activeTab === 'regulatory' && (
+              <div className="space-y-6">
+                {/* Regulatory Overview */}
+                <div className="card p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center flex-shrink-0">
+                      <span className="text-2xl">{'\u{2696}\u{FE0F}'}</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-1">Space Regulatory Framework</h3>
+                      <p className="text-slate-400 text-sm leading-relaxed">
+                        Orbital slot allocation, frequency coordination, and space operations are governed by a layered system of international treaties,
+                        multilateral organizations, and national regulatory bodies. The ITU coordinates globally, while national agencies like the FCC,
+                        Ofcom, and CNES handle domestic licensing and enforcement.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Treaty Framework Summary */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="card p-4 text-center border border-purple-500/20">
+                    <div className="text-3xl mb-2">{'\u{1F30D}'}</div>
+                    <div className="text-white font-semibold text-sm">Outer Space Treaty</div>
+                    <div className="text-slate-400 text-xs mt-1">1967 - Foundation</div>
+                    <div className="text-purple-400 text-xs mt-2">115 ratifications</div>
+                  </div>
+                  <div className="card p-4 text-center border border-purple-500/20">
+                    <div className="text-3xl mb-2">{'\u{1F4DD}'}</div>
+                    <div className="text-white font-semibold text-sm">Registration Convention</div>
+                    <div className="text-slate-400 text-xs mt-1">1975 - Object tracking</div>
+                    <div className="text-purple-400 text-xs mt-2">72 ratifications</div>
+                  </div>
+                  <div className="card p-4 text-center border border-purple-500/20">
+                    <div className="text-3xl mb-2">{'\u{2696}\u{FE0F}'}</div>
+                    <div className="text-white font-semibold text-sm">Liability Convention</div>
+                    <div className="text-slate-400 text-xs mt-1">1972 - Damage claims</div>
+                    <div className="text-purple-400 text-xs mt-2">98 ratifications</div>
+                  </div>
+                  <div className="card p-4 text-center border border-purple-500/20">
+                    <div className="text-3xl mb-2">{'\u{1F4E1}'}</div>
+                    <div className="text-white font-semibold text-sm">ITU Radio Regulations</div>
+                    <div className="text-slate-400 text-xs mt-1">Frequency & orbit</div>
+                    <div className="text-purple-400 text-xs mt-2">193 member states</div>
+                  </div>
+                </div>
+
+                {/* Regulatory Body Cards */}
+                <StaggerContainer className="space-y-6">
+                  {filteredRegulatory.map((body) => {
+                    const flag = COUNTRY_FLAGS[body.country] || '\u{1F30D}';
+                    return (
+                      <StaggerItem key={body.abbreviation}>
+                        <div className="card p-6 border border-purple-500/10 hover:border-purple-500/30 transition-colors">
+                          {/* Header */}
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-4">
+                              <div className="w-14 h-14 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                                <span className="text-purple-300 font-bold text-base font-display">{body.abbreviation}</span>
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-semibold text-white">{body.name}</h3>
+                                <div className="flex items-center gap-2 text-sm text-slate-400 mt-0.5">
+                                  <span>{flag} {body.country}</span>
+                                  <span className="text-slate-600">|</span>
+                                  <span>{body.scope}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <a
+                              href={body.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 transition-colors border border-purple-500/20"
+                            >
+                              Visit Website &rarr;
+                            </a>
+                          </div>
+
+                          {/* Role Description */}
+                          <p className="text-slate-400 text-sm leading-relaxed mb-5">{body.role}</p>
+
+                          {/* Details Grid */}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            {/* Key Responsibilities */}
+                            <div>
+                              <h4 className="text-white font-medium text-sm mb-2 uppercase tracking-widest">Key Responsibilities</h4>
+                              <ul className="space-y-1.5">
+                                {body.keyResponsibilities.map((resp) => (
+                                  <li key={resp} className="text-slate-400 text-xs flex items-start gap-2">
+                                    <span className="text-purple-400 mt-0.5 flex-shrink-0">&bull;</span>
+                                    {resp}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Filing Types */}
+                            <div>
+                              <h4 className="text-white font-medium text-sm mb-2 uppercase tracking-widest">Filing Types</h4>
+                              <div className="flex flex-wrap gap-1.5">
+                                {body.filingTypes.map((type) => (
+                                  <span key={type} className="text-xs px-2.5 py-1 rounded-full bg-slate-700/50 text-slate-200 border border-slate-700/50">
+                                    {type}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Relevant Treaties */}
+                            <div>
+                              <h4 className="text-white font-medium text-sm mb-2 uppercase tracking-widest">Legal Framework</h4>
+                              <div className="flex flex-wrap gap-1.5">
+                                {body.relevantTreaties.map((treaty) => (
+                                  <span key={treaty} className="text-xs px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                                    {treaty}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Cross-module link */}
+                          <div className="mt-4 pt-4 border-t border-slate-700/50 flex flex-wrap gap-2">
+                            <Link
+                              href="/compliance"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 transition-colors border border-purple-500/30"
+                            >
+                              Compliance Hub &rarr;
+                            </Link>
+                            <Link
+                              href="/spectrum"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-rocket-500/20 text-rocket-300 hover:bg-rocket-500/30 transition-colors border border-rocket-500/30"
+                            >
+                              Spectrum Management &rarr;
+                            </Link>
+                            <Link
+                              href="/compliance?tab=filings"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+                            >
+                              Regulatory Filings &rarr;
+                            </Link>
+                          </div>
+                        </div>
+                      </StaggerItem>
+                    );
+                  })}
+                </StaggerContainer>
+
+                {filteredRegulatory.length === 0 && (
+                  <div className="text-center py-16">
+                    <h3 className="text-xl font-semibold text-white mb-2">No Matching Regulatory Bodies</h3>
+                    <p className="text-slate-400">Try adjusting your search.</p>
+                  </div>
+                )}
+
+                {/* Regulatory Landscape Notes */}
+                <div className="card p-5 border-dashed">
+                  <h3 className="text-lg font-semibold text-white mb-3">Evolving Regulatory Landscape</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                    <div>
+                      <h4 className="text-white font-medium mb-2">Key Trends</h4>
+                      <ul className="space-y-1.5 text-xs text-slate-400">
+                        <li className="flex items-start gap-2"><span className="text-yellow-400 mt-0.5 flex-shrink-0">&rarr;</span>FCC 5-year deorbit rule (effective 2024) replacing 25-year guideline</li>
+                        <li className="flex items-start gap-2"><span className="text-yellow-400 mt-0.5 flex-shrink-0">&rarr;</span>Growing push for binding IADC debris mitigation guidelines</li>
+                        <li className="flex items-start gap-2"><span className="text-yellow-400 mt-0.5 flex-shrink-0">&rarr;</span>NGSO mega-constellation coordination challenges with ITU</li>
+                        <li className="flex items-start gap-2"><span className="text-yellow-400 mt-0.5 flex-shrink-0">&rarr;</span>Space sustainability rating systems under development</li>
+                        <li className="flex items-start gap-2"><span className="text-yellow-400 mt-0.5 flex-shrink-0">&rarr;</span>WRC-23 outcomes affecting NGSO spectrum sharing rules</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="text-white font-medium mb-2">Upcoming Milestones</h4>
+                      <ul className="space-y-1.5 text-xs text-slate-400">
+                        <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5 flex-shrink-0">&rarr;</span>WRC-27 preparations for spectrum allocation decisions</li>
+                        <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5 flex-shrink-0">&rarr;</span>EU Space Law regulation expected 2025-2026</li>
+                        <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5 flex-shrink-0">&rarr;</span>India Space Activities Bill finalization</li>
+                        <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5 flex-shrink-0">&rarr;</span>UN COPUOS sustainability guidelines implementation review</li>
+                        <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5 flex-shrink-0">&rarr;</span>Active Debris Removal regulatory framework discussions</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>

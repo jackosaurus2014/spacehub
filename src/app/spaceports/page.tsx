@@ -1391,10 +1391,12 @@ function HeroStats({ activeSpaceports, emergingSpaceports, trafficData }: {
   );
 }
 
-function SpaceportCard({ spaceport }: { spaceport: Spaceport }) {
+function SpaceportCard({ spaceport, maxLaunches }: { spaceport: Spaceport; maxLaunches: number }) {
   const [expanded, setExpanded] = useState(false);
   const statusStyle = STATUS_CONFIG[spaceport.status];
   const capStyle = CAPABILITY_CONFIG[spaceport.launchCapability];
+  const launchBarWidth = maxLaunches > 0 ? (spaceport.recentLaunches2025 / maxLaunches) * 100 : 0;
+  const launchBar2024Width = maxLaunches > 0 ? (spaceport.recentLaunches2024 / maxLaunches) * 100 : 0;
 
   return (
     <div className="card-elevated p-6 border border-space-700 hover:border-cyan-500/30 transition-all group">
@@ -1408,6 +1410,9 @@ function SpaceportCard({ spaceport }: { spaceport: Spaceport }) {
             <span className="text-star-300 text-sm">{spaceport.location}</span>
             <span className="text-star-300/30">|</span>
             <span className="text-star-300/70 text-sm">{spaceport.country}</span>
+          </div>
+          <div className="text-star-300/50 text-xs font-mono mt-1">
+            {formatCoordinate(spaceport.latitude, spaceport.longitude)}
           </div>
         </div>
         <span className={`text-xs font-bold px-2.5 py-1 rounded border flex-shrink-0 ml-2 ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}>
@@ -1429,6 +1434,39 @@ function SpaceportCard({ spaceport }: { spaceport: Spaceport }) {
           <div className="text-amber-400 text-xl font-bold font-display">{spaceport.yearEstablished}</div>
           <div className="text-star-300/60 text-xs uppercase tracking-widest">Established</div>
         </div>
+      </div>
+
+      {/* Launch Count Comparison Bars */}
+      <div className="mb-4 space-y-1.5">
+        <div>
+          <div className="flex items-center justify-between mb-0.5">
+            <span className="text-star-300/60 text-xs">2025</span>
+            <span className="text-cyan-400 text-xs font-mono font-bold">{spaceport.recentLaunches2025}</span>
+          </div>
+          <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400 transition-all duration-500"
+              style={{ width: `${launchBarWidth}%` }}
+            />
+          </div>
+        </div>
+        <div>
+          <div className="flex items-center justify-between mb-0.5">
+            <span className="text-star-300/60 text-xs">2024</span>
+            <span className="text-star-300/70 text-xs font-mono">{spaceport.recentLaunches2024}</span>
+          </div>
+          <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-blue-500/60 to-blue-400/60 transition-all duration-500"
+              style={{ width: `${launchBar2024Width}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Operator */}
+      <div className="text-star-300/70 text-xs mb-3">
+        <span className="text-star-300/50">Operator:</span> <span className="text-white/80">{spaceport.operator}</span>
       </div>
 
       {/* Vehicles */}
@@ -1496,6 +1534,23 @@ function SpaceportCard({ spaceport }: { spaceport: Spaceport }) {
                 <span key={f} className="px-2 py-0.5 bg-space-700 text-emerald-300 border border-space-600 rounded text-xs">
                   {f}
                 </span>
+              ))}
+            </div>
+          </div>
+
+          {/* 3-year launch history comparison */}
+          <div>
+            <span className="text-star-300/60 text-xs block mb-2">Launch History</span>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { year: '2023', count: spaceport.recentLaunches2023 },
+                { year: '2024', count: spaceport.recentLaunches2024 },
+                { year: '2025', count: spaceport.recentLaunches2025 },
+              ].map((d) => (
+                <div key={d.year} className="bg-space-800/50 rounded-lg p-2 text-center">
+                  <div className="text-white font-bold font-mono text-sm">{d.count}</div>
+                  <div className="text-star-300/50 text-xs">{d.year}</div>
+                </div>
               ))}
             </div>
           </div>
@@ -2161,6 +2216,9 @@ function SpaceportDirectoryPage() {
 
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
   const [countryFilter, setCountryFilter] = useState<string>('');
+  const [capabilityFilter, setCapabilityFilter] = useState<string>('');
+  const [operatorFilter, setOperatorFilter] = useState<string>('');
+  const [sortBy, setSortBy] = useState<'name' | 'launches' | 'location' | 'established'>('launches');
   const [commsSubTab, setCommsSubTab] = useState<CommsSubTab>('dsn');
   const [relayFilter, setRelayFilter] = useState<string>('');
 
@@ -2220,10 +2278,24 @@ function SpaceportDirectoryPage() {
   }, []);
 
   const countries = Array.from(new Set(activeSpaceportsData.map(s => s.country))).sort();
+  const capabilities = Array.from(new Set(activeSpaceportsData.map(s => s.launchCapability))).sort();
+  const operators = Array.from(new Set(activeSpaceportsData.map(s => s.operator))).sort();
 
-  const filteredSpaceports = countryFilter
-    ? activeSpaceportsData.filter(s => s.country === countryFilter)
-    : activeSpaceportsData;
+  const filteredSpaceports = activeSpaceportsData
+    .filter(s => !countryFilter || s.country === countryFilter)
+    .filter(s => !capabilityFilter || s.launchCapability === capabilityFilter)
+    .filter(s => !operatorFilter || s.operator === operatorFilter)
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'name': return a.name.localeCompare(b.name);
+        case 'launches': return b.recentLaunches2025 - a.recentLaunches2025;
+        case 'location': return a.country.localeCompare(b.country) || a.location.localeCompare(b.location);
+        case 'established': return a.yearEstablished - b.yearEstablished;
+        default: return 0;
+      }
+    });
+
+  const maxLaunchesForCards = Math.max(...activeSpaceportsData.map(s => s.recentLaunches2025), 1);
 
   const filteredRelays = relayFilter
     ? relayNetworksData.filter((n) => n.status === relayFilter)
@@ -2317,10 +2389,11 @@ function SpaceportDirectoryPage() {
           {/* ──────────────── ACTIVE SITES TAB ──────────────── */}
           {activeTab === 'active' && (
             <div className="space-y-6">
-              {/* Country Filter */}
-              <div className="card p-4">
+              {/* Filters & Sort Controls */}
+              <div className="card p-4 space-y-4">
+                {/* Country Filter */}
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-star-300 text-sm mr-2">Filter by country:</span>
+                  <span className="text-star-300 text-sm mr-2 flex-shrink-0">Country:</span>
                   <button
                     onClick={() => setCountryFilter('')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
@@ -2348,20 +2421,122 @@ function SpaceportDirectoryPage() {
                     );
                   })}
                 </div>
+
+                {/* Capability Filter */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-star-300 text-sm mr-2 flex-shrink-0">Capability:</span>
+                  <button
+                    onClick={() => setCapabilityFilter('')}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      capabilityFilter === ''
+                        ? 'bg-white/10 text-white border border-white/20'
+                        : 'bg-transparent text-star-300 border border-white/10 hover:border-white/20'
+                    }`}
+                  >
+                    All
+                  </button>
+                  {capabilities.map((cap) => {
+                    const capLabel = CAPABILITY_CONFIG[cap]?.label || cap;
+                    const capColor = CAPABILITY_CONFIG[cap]?.color || 'text-white';
+                    return (
+                      <button
+                        key={cap}
+                        onClick={() => setCapabilityFilter(cap)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                          capabilityFilter === cap
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50'
+                            : 'bg-transparent text-star-300 border border-white/10 hover:border-white/20'
+                        }`}
+                      >
+                        <span className={capabilityFilter === cap ? '' : capColor}>{capLabel}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Operator Filter */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-star-300 text-sm mr-2 flex-shrink-0">Operator:</span>
+                  <button
+                    onClick={() => setOperatorFilter('')}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      operatorFilter === ''
+                        ? 'bg-white/10 text-white border border-white/20'
+                        : 'bg-transparent text-star-300 border border-white/10 hover:border-white/20'
+                    }`}
+                  >
+                    All
+                  </button>
+                  {operators.map((op) => (
+                    <button
+                      key={op}
+                      onClick={() => setOperatorFilter(op)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        operatorFilter === op
+                          ? 'bg-purple-500/20 text-purple-300 border border-purple-500/50'
+                          : 'bg-transparent text-star-300 border border-white/10 hover:border-white/20'
+                      }`}
+                    >
+                      {op}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Sort + Active Filter Count */}
+                <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-white/5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-star-300 text-sm mr-2 flex-shrink-0">Sort by:</span>
+                    {([
+                      { key: 'launches' as const, label: 'Most Launches' },
+                      { key: 'name' as const, label: 'Name' },
+                      { key: 'location' as const, label: 'Location' },
+                      { key: 'established' as const, label: 'Year Established' },
+                    ]).map((opt) => (
+                      <button
+                        key={opt.key}
+                        onClick={() => setSortBy(opt.key)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                          sortBy === opt.key
+                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50'
+                            : 'bg-transparent text-star-300 border border-white/10 hover:border-white/20'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="text-star-300/60 text-sm">
+                    Showing <span className="text-white font-bold">{filteredSpaceports.length}</span> of {activeSpaceportsData.length} sites
+                    {(countryFilter || capabilityFilter || operatorFilter) && (
+                      <button
+                        onClick={() => { setCountryFilter(''); setCapabilityFilter(''); setOperatorFilter(''); }}
+                        className="ml-3 text-xs text-red-400 hover:text-red-300 transition-colors"
+                      >
+                        Clear filters
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Spaceport Cards Grid */}
               <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {filteredSpaceports.map((spaceport) => (
                   <StaggerItem key={spaceport.id}>
-                    <SpaceportCard spaceport={spaceport} />
+                    <SpaceportCard spaceport={spaceport} maxLaunches={maxLaunchesForCards} />
                   </StaggerItem>
                 ))}
               </StaggerContainer>
 
               {filteredSpaceports.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-star-300">No spaceports match the selected filter.</p>
+                  <p className="text-star-300">No spaceports match the selected filters.</p>
+                  <button
+                    onClick={() => { setCountryFilter(''); setCapabilityFilter(''); setOperatorFilter(''); }}
+                    className="mt-3 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                  >
+                    Clear all filters
+                  </button>
                 </div>
               )}
             </div>
