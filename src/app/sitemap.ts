@@ -233,6 +233,12 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/ground-station-directory`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/clean-room-reference`, changeFrequency: 'monthly' as const, priority: 0.6 },
 
+    // Wave 51 pages
+    { url: `${BASE_URL}/launch-economics`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/funding-rounds`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/debris-catalog`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/education-pathways`, changeFrequency: 'weekly' as const, priority: 0.6 },
+
     // Developer pages
     { url: `${BASE_URL}/developer/docs`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/developer/explorer`, changeFrequency: 'monthly' as const, priority: 0.4 },

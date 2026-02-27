@@ -46,6 +46,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Space Tourism', href: '/space-tourism', description: 'Space tourism providers' },
   { label: 'News Aggregator', href: '/news-aggregator', description: 'Curated multi-source news feed' },
   { label: 'Launch Manifest', href: '/launch-manifest', description: 'Global launch schedule & manifest tracker' },
+  { label: 'Debris Catalog', href: '/debris-catalog', description: 'Comprehensive orbital debris database' },
   { label: 'FAQ', href: '/faq', description: 'Frequently asked questions' },
 ];
 
@@ -75,6 +76,7 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Tech Readiness', href: '/tech-readiness', description: 'Technology readiness levels' },
   { label: 'Frequency Database', href: '/frequency-database', description: 'Searchable satellite frequency allocations' },
   { label: 'Ground Stations', href: '/ground-station-directory', description: 'Global ground station directory & capabilities' },
+  { label: 'Launch Economics', href: '/launch-economics', description: 'Launch cost trends & pricing analysis' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
@@ -93,6 +95,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Space Insurance', href: '/space-insurance', description: 'Risk calculator and market data' },
   { label: 'Manufacturing & Imagery', href: '/space-manufacturing', description: 'In-space manufacturing & EO providers' },
   { label: 'Supply Chain Risk', href: '/supply-chain-risk', description: 'Supplier risk scoring & disruption alerts' },
+  { label: 'Funding Rounds', href: '/funding-rounds', description: 'Startup funding rounds & investment data' },
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [
@@ -133,6 +136,7 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Standards Reference', href: '/standards-reference', description: 'Space industry standards & specifications' },
   { label: 'Thermal Calculator', href: '/thermal-calculator', description: 'Spacecraft thermal analysis tool' },
   { label: 'Clean Room Guide', href: '/clean-room-reference', description: 'Clean room classifications & requirements' },
+  { label: 'Education Pathways', href: '/education-pathways', description: 'Space industry degree & training programs' },
 ];
 
 function DropdownMenu({
