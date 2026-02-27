@@ -57,6 +57,39 @@ interface FrequencyBand {
   services: string;
   spaceRelevance: string;
   congestion: 'low' | 'medium' | 'high' | 'critical';
+  keyOperators: string[];
+  throughput: string;
+  propagation: string;
+  wavelength: string;
+  color: string;
+}
+
+interface SatelliteOperator {
+  name: string;
+  orbitType: string;
+  constellationSize: string;
+  spectrumBands: string[];
+  keySystem: string;
+  status: string;
+  description: string;
+  hqCountry: string;
+  revenueEst: string;
+}
+
+interface SpectrumChallenge {
+  id: string;
+  title: string;
+  severity: 'critical' | 'high' | 'medium' | 'emerging';
+  parties: string[];
+  description: string;
+  outlook: string;
+}
+
+interface ITUTimelineEvent {
+  year: string;
+  event: string;
+  type: 'wrc' | 'filing' | 'decision' | 'milestone';
+  description: string;
 }
 
 interface RegulatoryProceeding {
@@ -71,9 +104,9 @@ interface RegulatoryProceeding {
 }
 
 // All valid tab IDs for the consolidated page
-type TabId = 'bands' | 'filings' | 'coordination' | 'auctions' | 'freq-bands' | 'regulatory' | 'education' | 'lawyers';
+type TabId = 'bands' | 'filings' | 'coordination' | 'auctions' | 'freq-bands' | 'operators' | 'challenges' | 'itu-timeline' | 'regulatory' | 'education' | 'lawyers';
 
-const ALL_TABS: TabId[] = ['bands', 'filings', 'coordination', 'auctions', 'freq-bands', 'regulatory', 'education', 'lawyers'];
+const ALL_TABS: TabId[] = ['bands', 'filings', 'coordination', 'auctions', 'freq-bands', 'operators', 'challenges', 'itu-timeline', 'regulatory', 'education', 'lawyers'];
 
 // ────────────────────────────────────────
 // Constants (original spectrum page)
@@ -253,15 +286,374 @@ const AUCTIONS: Auction[] = [
 ];
 
 const FREQUENCY_BANDS: FrequencyBand[] = [
-  { band: 'L-band', range: '1-2 GHz', services: 'Mobile satellite services, GPS, Iridium, Globalstar', spaceRelevance: 'Critical for mobile satellite voice/data and navigation', congestion: 'high' },
-  { band: 'S-band', range: '2-4 GHz', services: 'Weather satellites, NASA deep space, some broadband', spaceRelevance: 'Used for telemetry, tracking, and command (TT&C)', congestion: 'medium' },
-  { band: 'C-band', range: '4-8 GHz', services: 'Traditional satellite TV, being cleared for 5G in lower portion', spaceRelevance: 'Legacy satellite band under pressure from 5G reallocation', congestion: 'critical' },
-  { band: 'X-band', range: '8-12 GHz', services: 'Military satcom, Earth observation downlink', spaceRelevance: 'Government and defense satellite communications', congestion: 'medium' },
-  { band: 'Ku-band', range: '12-18 GHz', services: 'DTH TV, NGSO broadband (Starlink, OneWeb)', spaceRelevance: 'Primary band for consumer satellite broadband', congestion: 'high' },
-  { band: 'Ka-band', range: '26-40 GHz', services: 'High-throughput satellite, NGSO broadband uplink/downlink', spaceRelevance: 'Next-gen HTS capacity, growing NGSO use', congestion: 'high' },
-  { band: 'V-band', range: '40-75 GHz', services: 'Next-gen satellite broadband (Starlink Gen2), experimental', spaceRelevance: 'Future capacity expansion, atmospheric challenges', congestion: 'low' },
-  { band: 'Q-band', range: '33-50 GHz', services: 'Military, experimental satellite', spaceRelevance: 'Military and research applications', congestion: 'low' },
-  { band: 'E-band', range: '60-90 GHz', services: 'Inter-satellite links, backhaul', spaceRelevance: 'Optical-like ISL capacity, minimal interference', congestion: 'low' },
+  {
+    band: 'UHF',
+    range: '300-3000 MHz',
+    services: 'CubeSat communications, amateur radio, search & rescue, AIS vessel tracking',
+    spaceRelevance: 'Primary band for small satellite communications and amateur radio satellites (AMSAT). Low data rates but excellent propagation and penetration through atmosphere.',
+    congestion: 'medium',
+    keyOperators: ['AMSAT', 'Planet Labs', 'Spire Global', 'Swarm (SpaceX)'],
+    throughput: '9.6 kbps - 1 Mbps',
+    propagation: 'Excellent atmospheric penetration, good diffraction around obstacles, long range',
+    wavelength: '10 cm - 1 m',
+    color: '#6366f1',
+  },
+  {
+    band: 'L-band',
+    range: '1-2 GHz',
+    services: 'Mobile satellite services, GPS/GNSS, Iridium, Globalstar, Inmarsat, COSPAS-SARSAT',
+    spaceRelevance: 'Critical for mobile satellite voice/data, navigation (GPS L1/L2/L5), and maritime/aviation safety. Low bandwidth but reliable all-weather connectivity.',
+    congestion: 'high',
+    keyOperators: ['Iridium', 'Globalstar', 'Inmarsat (Viasat)', 'Ligado Networks'],
+    throughput: '64 kbps - 1 Mbps',
+    propagation: 'Good penetration through rain/clouds, moderate building penetration',
+    wavelength: '15-30 cm',
+    color: '#8b5cf6',
+  },
+  {
+    band: 'S-band',
+    range: '2-4 GHz',
+    services: 'Telemetry, tracking & command (TT&C), weather satellites, NASA deep space, some broadband, AST SpaceMobile',
+    spaceRelevance: 'Standard band for satellite TT&C operations. NASA Deep Space Network uses 2.1-2.3 GHz for spacecraft communications. AST SpaceMobile uses S-band for direct-to-cell.',
+    congestion: 'medium',
+    keyOperators: ['NASA', 'ESA', 'AST SpaceMobile', 'Globalstar'],
+    throughput: '1-10 Mbps',
+    propagation: 'Good rain fade resistance, moderate atmospheric absorption',
+    wavelength: '7.5-15 cm',
+    color: '#a855f7',
+  },
+  {
+    band: 'C-band',
+    range: '4-8 GHz',
+    services: 'Legacy satellite TV (FTA), data distribution, being cleared for 5G in lower 3.7-3.98 GHz portion',
+    spaceRelevance: 'Historical workhorse of satellite communications. Excellent rain fade performance but under massive pressure from 5G reallocation globally. Upper C-band (4.0-4.2 GHz) facing further clearing.',
+    congestion: 'critical',
+    keyOperators: ['SES', 'Intelsat', 'ABS', 'Measat'],
+    throughput: '10-100 Mbps per transponder',
+    propagation: 'Excellent rain fade resistance (0.04 dB/km at 6 GHz), minimal atmospheric absorption',
+    wavelength: '3.75-7.5 cm',
+    color: '#ec4899',
+  },
+  {
+    band: 'X-band',
+    range: '8-12 GHz',
+    services: 'Military satcom (MILSATCOM), Earth observation downlink, high-resolution SAR imaging, deep space communications',
+    spaceRelevance: 'Dedicated military and government satellite communications. Used by WGS, XTAR, and Skynet constellations. Deep space missions use X-band for high-rate data return.',
+    congestion: 'medium',
+    keyOperators: ['US DoD (WGS)', 'XTAR', 'UK MOD (Skynet)', 'Hisdesat'],
+    throughput: '100 Mbps - 1 Gbps (military HTS)',
+    propagation: 'Moderate rain fade, good atmospheric transmission, narrow beamwidth for security',
+    wavelength: '2.5-3.75 cm',
+    color: '#f43f5e',
+  },
+  {
+    band: 'Ku-band',
+    range: '12-18 GHz',
+    services: 'DTH satellite TV, VSAT enterprise networks, NGSO broadband (Starlink, OneWeb), maritime/aviation connectivity',
+    spaceRelevance: 'Primary band for consumer satellite broadband and direct-to-home TV. Starlink and OneWeb use Ku-band for user terminal downlinks. Heavily contested between NGSO and GSO operators.',
+    congestion: 'high',
+    keyOperators: ['SpaceX Starlink', 'OneWeb (Eutelsat)', 'SES', 'Hughes (EchoStar)'],
+    throughput: '50-200 Mbps per beam',
+    propagation: 'Susceptible to rain fade (0.1-0.5 dB/km), good balance of bandwidth and link margin',
+    wavelength: '1.67-2.5 cm',
+    color: '#f97316',
+  },
+  {
+    band: 'Ka-band',
+    range: '26.5-40 GHz',
+    services: 'High-throughput satellites (HTS), NGSO broadband uplink/downlink, gateway feeder links, military wideband',
+    spaceRelevance: 'Enables terabit-class satellite capacity via spot beams. ViaSat-3, Jupiter-3, and O3b mPOWER deliver 1+ Tbps per satellite. Amazon Kuiper primary band. Critical for next-gen broadband.',
+    congestion: 'high',
+    keyOperators: ['Viasat', 'SES (O3b mPOWER)', 'Amazon Kuiper', 'SpaceX Starlink'],
+    throughput: '100 Mbps - 1+ Gbps per beam',
+    propagation: 'High rain fade (1-5 dB/km), requires adaptive coding and modulation (ACM)',
+    wavelength: '7.5-11.3 mm',
+    color: '#eab308',
+  },
+  {
+    band: 'Q-band',
+    range: '33-50 GHz',
+    services: 'Future high-capacity feeder links, military experimental systems, scientific research',
+    spaceRelevance: 'Being explored for gateway feeder links to free up Ka-band for user beams. ESA has conducted Q/V-band experiments on Alphasat. WRC-27 agenda item for expanded satellite use.',
+    congestion: 'low',
+    keyOperators: ['ESA (Alphasat)', 'SES', 'Eutelsat'],
+    throughput: '1-10 Gbps (experimental)',
+    propagation: 'Very high rain fade, requires site diversity and large fade margins',
+    wavelength: '6-9 mm',
+    color: '#84cc16',
+  },
+  {
+    band: 'V-band',
+    range: '40-75 GHz',
+    services: 'Next-gen LEO broadband (Starlink Gen2), inter-satellite links, Boeing V-band constellation',
+    spaceRelevance: 'Massive available bandwidth (35 GHz) for future satellite broadband capacity. SpaceX Starlink Gen2 has V-band authorization. Atmospheric oxygen absorption at 60 GHz limits some sub-bands.',
+    congestion: 'low',
+    keyOperators: ['SpaceX Starlink Gen2', 'Boeing', 'Telesat Lightspeed'],
+    throughput: '1-10+ Gbps (projected)',
+    propagation: 'Severe rain fade, oxygen absorption peak at 60 GHz, requires advanced PHY layer',
+    wavelength: '4-7.5 mm',
+    color: '#22c55e',
+  },
+  {
+    band: 'E-band',
+    range: '60-90 GHz',
+    services: 'Inter-satellite links (ISL), terrestrial backhaul, point-to-point high-capacity links',
+    spaceRelevance: 'Emerging for laser-like inter-satellite links in LEO constellations. Minimal interference between space and ground due to oxygen absorption. Used for ISL in Starlink constellation.',
+    congestion: 'low',
+    keyOperators: ['SpaceX (ISL)', 'Kepler Communications'],
+    throughput: '10+ Gbps',
+    propagation: 'Severe atmospheric absorption (especially 60 GHz O2 peak), excellent for ISL in vacuum',
+    wavelength: '3.3-5 mm',
+    color: '#06b6d4',
+  },
+  {
+    band: 'Optical/Laser',
+    range: '100-800 THz (375-3000 nm)',
+    services: 'Free-space optical communications (FSOC), inter-satellite laser links, deep space optical comms (LCRD, DSOC)',
+    spaceRelevance: 'Revolutionary capacity leap: 100+ Gbps demonstrated. NASA LCRD and DSOC missions proved space-to-ground and deep-space optical links. Starlink uses laser ISL across 6,000+ sats. No spectrum licensing needed (unregulated).',
+    congestion: 'low',
+    keyOperators: ['SpaceX (laser ISL)', 'NASA (LCRD/DSOC)', 'Mynaric', 'CACI (SA Photonics)'],
+    throughput: '10-200+ Gbps',
+    propagation: 'Blocked by clouds/rain/fog for ground links; perfect in vacuum for ISL. Requires precision pointing.',
+    wavelength: '375 nm - 3 um (near-IR/visible)',
+    color: '#14b8a6',
+  },
+];
+
+// ── Major Satellite Operators by Spectrum Holdings ──
+
+const SATELLITE_OPERATORS: SatelliteOperator[] = [
+  {
+    name: 'SpaceX Starlink',
+    orbitType: 'LEO (550 km)',
+    constellationSize: '6,700+ active (12,000 Gen1 + 30,000 Gen2 authorized)',
+    spectrumBands: ['Ku-band', 'Ka-band', 'V-band', 'E-band (laser ISL)'],
+    keySystem: 'Starlink Gen1/Gen2',
+    status: 'Operational / Expanding',
+    description: 'Largest satellite constellation ever. Gen1 uses Ku/Ka-band for user and gateway links. Gen2 authorized for V-band, enabling massive capacity expansion. Laser inter-satellite links on all Gen2 satellites. Over 4 million subscribers worldwide.',
+    hqCountry: 'US',
+    revenueEst: '$6.6B (2024)',
+  },
+  {
+    name: 'SES',
+    orbitType: 'GEO + MEO (8,000 km)',
+    constellationSize: '50+ GEO + 13 MEO (O3b mPOWER)',
+    spectrumBands: ['C-band', 'Ku-band', 'Ka-band'],
+    keySystem: 'O3b mPOWER (MEO HTS)',
+    status: 'Operational',
+    description: 'Multi-orbit operator with GEO fleet and O3b mPOWER MEO constellation delivering terabit-class capacity. Received $4B in C-band relocation payments from FCC auction. Merging with Intelsat (announced 2024).',
+    hqCountry: 'Luxembourg',
+    revenueEst: '$2.1B (2024)',
+  },
+  {
+    name: 'Intelsat',
+    orbitType: 'GEO',
+    constellationSize: '50+ GEO satellites',
+    spectrumBands: ['C-band', 'Ku-band', 'Ka-band'],
+    keySystem: 'Epic NG (HTS)',
+    status: 'Operational / Merging with SES',
+    description: 'One of the oldest commercial satellite operators. Large C-band and Ku-band GEO fleet. Epic NG high-throughput satellites for mobility and enterprise. Received $4.87B in C-band accelerated relocation payments. Merger with SES pending regulatory approval.',
+    hqCountry: 'US',
+    revenueEst: '$1.8B (2024)',
+  },
+  {
+    name: 'Viasat',
+    orbitType: 'GEO',
+    constellationSize: '7 GEO (incl. Inmarsat fleet)',
+    spectrumBands: ['Ka-band', 'L-band', 'S-band', 'Ka-band HTS'],
+    keySystem: 'ViaSat-3 (1+ Tbps per satellite)',
+    status: 'Operational',
+    description: 'Acquired Inmarsat in 2023 for $7.3B, gaining L-band and S-band assets plus global maritime/aviation dominance. ViaSat-3 constellation (3 satellites) delivers 1+ Tbps each across Americas, EMEA, and APAC. Largest Ka-band HTS capacity.',
+    hqCountry: 'US',
+    revenueEst: '$4.0B (2024, combined)',
+  },
+  {
+    name: 'Eutelsat / OneWeb',
+    orbitType: 'GEO + LEO (1,200 km)',
+    constellationSize: '36 GEO + 634 LEO (OneWeb)',
+    spectrumBands: ['Ku-band', 'Ka-band'],
+    keySystem: 'OneWeb LEO constellation',
+    status: 'Operational',
+    description: 'Combined GEO/LEO operator after Eutelsat-OneWeb merger in 2023. OneWeb provides Ku-band LEO broadband for enterprise, government, and mobility. GEO fleet serves broadcast and broadband across Europe, Africa, and Asia. IRIS2 EU constellation partner.',
+    hqCountry: 'France/UK',
+    revenueEst: '$1.4B (2024)',
+  },
+  {
+    name: 'Amazon Kuiper',
+    orbitType: 'LEO (590-630 km)',
+    constellationSize: '2 prototype launched; 3,236 authorized',
+    spectrumBands: ['Ka-band'],
+    keySystem: 'Project Kuiper',
+    status: 'Pre-Operational (2025 deployment start)',
+    description: 'Amazon\'s $10B+ satellite broadband constellation. FCC authorized 3,236 LEO satellites in Ka-band. Must deploy 50% by 2026 under FCC milestone rules. First production satellites launched Q1 2025. Targeting consumer broadband, enterprise, and government.',
+    hqCountry: 'US',
+    revenueEst: 'Pre-revenue',
+  },
+  {
+    name: 'Telesat Lightspeed',
+    orbitType: 'LEO (1,000-1,325 km)',
+    constellationSize: '198 planned',
+    spectrumBands: ['Ka-band'],
+    keySystem: 'Lightspeed LEO',
+    status: 'Under Development',
+    description: 'Enterprise-focused Ka-band LEO constellation with advanced optical ISL and software-defined networking. Secured $2.5B in financing incl. Canadian government support. Targeting enterprise, government, maritime, and aviation connectivity.',
+    hqCountry: 'Canada',
+    revenueEst: 'Pre-revenue',
+  },
+];
+
+// ── Spectrum Challenges ──
+
+const SPECTRUM_CHALLENGES: SpectrumChallenge[] = [
+  {
+    id: 'leo-geo-interference',
+    title: 'LEO Mega-Constellation vs. GEO Operator Interference',
+    severity: 'critical',
+    parties: ['SpaceX', 'Amazon Kuiper', 'SES', 'Intelsat', 'Viasat'],
+    description: 'As LEO constellations scale to 10,000+ satellites, aggregate interference into GEO satellite receivers increases. ITU Article 22 EPFD limits, designed for smaller NGSO systems, may be inadequate. SpaceX has petitioned the FCC to modernize EPFD calculations, while GEO operators argue current limits are already too lenient.',
+    outlook: 'WRC-27 will review Article 22 EPFD limits. FCC IB Docket 25-145 (NGSO/GSO modernization) may set US precedent. Resolution expected 2027-2028.',
+  },
+  {
+    id: '5g-satellite-sharing',
+    title: '5G/Satellite C-Band Spectrum Sharing',
+    severity: 'high',
+    parties: ['Mobile operators (T-Mobile, Verizon, AT&T)', 'SES', 'Intelsat', 'Eutelsat'],
+    description: 'The global C-band clearing for 5G (3.3-4.2 GHz) displaces satellite operators from spectrum they have used for 40+ years. The US cleared 3.7-3.98 GHz with $9.7B in relocation payments, and the FCC is now proposing to clear the upper C-band (3.98-4.2 GHz). Similar transitions are underway in Brazil, EU, India, and Japan.',
+    outlook: 'Upper C-band NPRM (GN Docket 25-289) comments due mid-2026. Auction mandated by July 2027. Global C-band satellite services will be compressed to <100 MHz in most markets.',
+  },
+  {
+    id: 'optical-interference',
+    title: 'Space-to-Ground Optical Link Interference',
+    severity: 'emerging',
+    parties: ['Laser comm providers', 'Astronomical observatories', 'Aviation authorities'],
+    description: 'As free-space optical communication ground stations proliferate, concerns grow about laser beams interfering with astronomical observations and aviation safety. Unlike RF spectrum, optical frequencies are largely unregulated for space communications. No international coordination framework exists for ground station siting.',
+    outlook: 'ITU-R is studying optical link regulation under WRC-27 preparatory work. Industry-led voluntary coordination emerging. Formal regulation likely post-2030.',
+  },
+  {
+    id: 'military-commercial-tension',
+    title: 'Military vs. Commercial Spectrum Access',
+    severity: 'high',
+    parties: ['US DoD', 'NATO', 'SpaceX', 'Commercial satellite operators'],
+    description: 'Defense agencies hold vast X-band and UHF spectrum allocations with low utilization rates, while commercial operators face severe congestion in adjacent bands. Proposals to share or reallocate military spectrum face national security objections. Conversely, military increasingly relies on commercial satellite services (COMSATCOM), blurring the boundary.',
+    outlook: 'US National Spectrum Strategy (2023) calls for spectrum sharing studies. DoD commercial SATCOM procurement growing at 15% CAGR. Formal sharing frameworks under development.',
+  },
+  {
+    id: 'd2d-spectrum-conflict',
+    title: 'Direct-to-Device (D2D) Spectrum Conflicts',
+    severity: 'high',
+    parties: ['SpaceX/T-Mobile', 'AST SpaceMobile', 'MNOs globally', 'National regulators'],
+    description: 'Satellite direct-to-cell services transmit in terrestrial mobile bands from space, creating cross-border interference that terrestrial systems do not. A satellite beam covering 700 km may span multiple countries with different spectrum assignments. MNOs debate whether existing licenses authorize satellite-based transmission of their spectrum.',
+    outlook: 'FCC SCS framework established. Ofcom UK authorized D2D Dec 2025. WRC-27 agenda item addresses D2D allocations. Bilateral coordination agreements needed for border areas.',
+  },
+  {
+    id: 'spectrum-warehousing',
+    title: 'Spectrum Warehousing and Paper Satellites',
+    severity: 'medium',
+    parties: ['Small nations filing on behalf of operators', 'ITU', 'Established operators'],
+    description: 'Some entities file ITU satellite network registrations for orbital slots and spectrum they have no immediate plans to use, blocking access for legitimate operators. "Paper satellites" and speculative filings clog the ITU coordination process and create artificial scarcity.',
+    outlook: 'ITU Resolution 559 addresses filing abuse. WRC-23 tightened milestone requirements. Continued enforcement and due diligence obligations being strengthened.',
+  },
+];
+
+// ── ITU Regulatory Timeline ──
+
+const ITU_REGULATORY_TIMELINE: ITUTimelineEvent[] = [
+  {
+    year: '1906',
+    event: 'International Radiotelegraph Convention',
+    type: 'wrc',
+    description: 'First international radio regulations established in Berlin, laying the foundation for global spectrum governance.',
+  },
+  {
+    year: '1963',
+    event: 'First GEO Satellite Spectrum Allocation',
+    type: 'decision',
+    description: 'ITU allocated dedicated frequency bands for geostationary satellite communications, enabling the commercial satellite industry.',
+  },
+  {
+    year: '1971',
+    event: 'WARC-71: Satellite Broadcasting Allocations',
+    type: 'wrc',
+    description: 'World Administrative Radio Conference allocated Ku-band spectrum for satellite broadcasting services (BSS), enabling direct-to-home TV.',
+  },
+  {
+    year: '1992',
+    event: 'WRC-92: Mobile Satellite Service Expansion',
+    type: 'wrc',
+    description: 'Expanded L-band allocations for mobile satellite services, enabling Iridium and Globalstar constellations.',
+  },
+  {
+    year: '1997',
+    event: 'WRC-97: LEO Constellation Framework',
+    type: 'wrc',
+    description: 'Established NGSO satellite coordination procedures and EPFD limits under Article 22, prompted by Teledesic and other broadband LEO proposals.',
+  },
+  {
+    year: '2000',
+    event: 'WRC-2000: Ka-band Allocation',
+    type: 'wrc',
+    description: 'Major Ka-band allocations for fixed satellite service (FSS), setting the stage for high-throughput satellite (HTS) systems.',
+  },
+  {
+    year: '2012',
+    event: 'WRC-12: C-band Sharing Studies Initiated',
+    type: 'wrc',
+    description: 'Began studies on sharing between satellite and terrestrial mobile broadband in C-band, foreshadowing the 5G spectrum conflict.',
+  },
+  {
+    year: '2015',
+    event: 'WRC-15: IMT Identification in C-band',
+    type: 'wrc',
+    description: 'Identified portions of C-band for IMT (International Mobile Telecommunications) in some regions, starting the global C-band transition.',
+  },
+  {
+    year: '2019',
+    event: 'WRC-19: V-band & NGSO Milestones',
+    type: 'wrc',
+    description: 'Established milestone-based approach for NGSO satellite deployments. Identified spectrum for 5G in bands adjacent to satellite services. V-band Earth station sharing studies initiated.',
+  },
+  {
+    year: '2020',
+    event: 'FCC C-Band Auction 107',
+    type: 'milestone',
+    description: 'FCC auctioned 280 MHz of C-band spectrum (3.7-3.98 GHz) for $81.2B, the largest spectrum auction in history. Satellite operators received $9.7B in relocation payments.',
+  },
+  {
+    year: '2022',
+    event: 'FCC 5-Year Deorbit Rule',
+    type: 'decision',
+    description: 'FCC reduced post-mission deorbit requirement from 25 years to 5 years for LEO satellites, affecting spectrum licensing conditions for all NGSO constellations.',
+  },
+  {
+    year: '2023',
+    event: 'WRC-23: Ka-band Sharing & MSS Updates',
+    type: 'wrc',
+    description: 'Revised NGSO/GSO sharing frameworks under Article 22. New MSS allocations. IMT identification in bands adjacent to satellite. Set WRC-27 agenda with D2D satellite spectrum as key item.',
+  },
+  {
+    year: '2023',
+    event: 'FCC Space Bureau Established',
+    type: 'decision',
+    description: 'FCC created dedicated Space Bureau to consolidate satellite licensing, spectrum coordination, and orbital debris rules under a single regulatory body.',
+  },
+  {
+    year: '2024',
+    event: 'SCS Framework for D2D Satellite',
+    type: 'decision',
+    description: 'FCC adopted Supplemental Coverage from Space framework allowing satellite operators to use terrestrial mobile spectrum from space (SpaceX/T-Mobile, AST SpaceMobile).',
+  },
+  {
+    year: '2025',
+    event: '12 GHz Band Decision & Spectrum Pipeline Act',
+    type: 'decision',
+    description: 'FCC protected NGSO satellite downlinks in 12.2-12.7 GHz, declining terrestrial 5G. Congress restored FCC auction authority and mandated 800 MHz spectrum pipeline. FCC opened upper C-band clearing proceeding.',
+  },
+  {
+    year: '2027',
+    event: 'WRC-27 (Planned)',
+    type: 'wrc',
+    description: 'Key agenda: D2D satellite spectrum, V-band earth stations in motion (AI 1.1), radio quiet zones (AI 1.16), space weather sensors (AI 1.17), EPFD limit review. Expected to shape satellite spectrum policy for the 2030s.',
+  },
 ];
 
 const REGULATORY_PROCEEDINGS: RegulatoryProceeding[] = [
@@ -911,7 +1303,7 @@ function SpectrumContent() {
   const countriesTracked = new Set(AUCTIONS.map((a) => a.country)).size;
 
   // Determine whether the current tab is from the "allocations" group or "auctions" group
-  const isAuctionTab = activeTab === 'auctions' || activeTab === 'freq-bands' || activeTab === 'regulatory' || activeTab === 'education' || activeTab === 'lawyers';
+  const isAuctionTab = activeTab === 'auctions' || activeTab === 'freq-bands' || activeTab === 'operators' || activeTab === 'challenges' || activeTab === 'itu-timeline' || activeTab === 'regulatory' || activeTab === 'education' || activeTab === 'lawyers';
 
   if (loading) {
     return (
@@ -1098,11 +1490,14 @@ function SpectrumContent() {
 
           {/* Divider */}
           <div className="w-px bg-slate-600 mx-1 self-stretch hidden md:block" />
-          <span className="text-xs text-slate-400 uppercase tracking-widest font-medium self-center px-1 hidden md:inline">Auctions</span>
+          <span className="text-xs text-slate-400 uppercase tracking-widest font-medium self-center px-1 hidden md:inline">Analysis</span>
 
           {([
             { id: 'auctions' as const, label: 'Auctions', count: AUCTIONS.length },
             { id: 'freq-bands' as const, label: 'Frequency Bands', count: FREQUENCY_BANDS.length },
+            { id: 'operators' as const, label: 'Operators', count: SATELLITE_OPERATORS.length },
+            { id: 'challenges' as const, label: 'Challenges', count: SPECTRUM_CHALLENGES.length },
+            { id: 'itu-timeline' as const, label: 'ITU Timeline' },
             { id: 'regulatory' as const, label: 'Regulatory Tracker', count: REGULATORY_PROCEEDINGS.length },
             { id: 'education' as const, label: 'How Auctions Work' },
             { id: 'lawyers' as const, label: 'For Lawyers' },
@@ -1565,20 +1960,85 @@ function SpectrumContent() {
               <h3 className="text-white font-semibold mb-2">Key Frequency Bands for Space Communications</h3>
               <p className="text-star-300 text-sm leading-relaxed">
                 Satellite and space communications rely on specific frequency bands allocated by the ITU.
-                Each band has unique propagation characteristics, capacity, and regulatory status. Understanding
-                these bands is essential for tracking auctions and spectrum policy decisions.
+                Each band has unique propagation characteristics, capacity, and regulatory status. From UHF
+                CubeSat links to 100+ Gbps optical laser communications, the spectrum landscape spans six
+                orders of magnitude in frequency.
               </p>
             </div>
 
-            {/* Band Cards */}
+            {/* Visual Spectrum Chart */}
+            <div className="card p-6">
+              <h3 className="text-white font-semibold mb-4">Electromagnetic Spectrum for Space Communications</h3>
+              <p className="text-star-300 text-xs mb-4">Frequency increases left to right. Bar width represents relative bandwidth. Color intensity indicates congestion level.</p>
+              <div className="space-y-1.5">
+                {FREQUENCY_BANDS.map((band) => {
+                  const cong = CONGESTION_STYLES[band.congestion];
+                  // Approximate relative bandwidth widths
+                  const bandwidthMap: Record<string, number> = {
+                    'UHF': 18, 'L-band': 6, 'S-band': 12, 'C-band': 25,
+                    'X-band': 25, 'Ku-band': 38, 'Ka-band': 85, 'Q-band': 55,
+                    'V-band': 100, 'E-band': 80, 'Optical/Laser': 95,
+                  };
+                  const barWidth = bandwidthMap[band.band] || 30;
+                  return (
+                    <div key={band.band} className="group relative">
+                      <div className="flex items-center gap-3">
+                        <div className="w-28 sm:w-32 text-right shrink-0">
+                          <span className="text-white text-xs font-medium">{band.band}</span>
+                          <span className="text-star-300 text-[10px] block font-mono">{band.range}</span>
+                        </div>
+                        <div className="flex-1 relative h-7">
+                          <div
+                            className="h-full rounded-md transition-all duration-500 flex items-center px-2 cursor-default"
+                            style={{
+                              width: `${barWidth}%`,
+                              backgroundColor: band.color,
+                              opacity: band.congestion === 'critical' ? 0.95 : band.congestion === 'high' ? 0.8 : band.congestion === 'medium' ? 0.65 : 0.5,
+                            }}
+                          >
+                            <span className="text-[10px] font-medium text-white/90 truncate">
+                              {band.throughput}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="w-20 shrink-0">
+                          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${cong.bg} ${cong.text}`}>
+                            {cong.label}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex items-center gap-6 mt-5 pt-4 border-t border-white/10">
+                <span className="text-star-300 text-xs">Congestion:</span>
+                {Object.entries(CONGESTION_STYLES).map(([key, style]) => (
+                  <div key={key} className="flex items-center gap-1.5">
+                    <span className={`w-2.5 h-2.5 rounded-full ${style.barColor}`} style={{ opacity: key === 'critical' ? 0.95 : key === 'high' ? 0.8 : key === 'medium' ? 0.65 : 0.5 }} />
+                    <span className="text-star-300 text-xs">{style.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Enhanced Band Cards */}
             {FREQUENCY_BANDS.map((band) => {
               const cong = CONGESTION_STYLES[band.congestion];
               return (
                 <div key={band.band} className="card p-5 hover:border-nebula-500/50 transition-all">
                   <div className="flex items-start justify-between mb-3 gap-3">
-                    <div>
-                      <h4 className="font-semibold text-white text-base">{band.band}</h4>
-                      <span className="text-star-300 text-sm font-mono">{band.range}</span>
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                        style={{ backgroundColor: `${band.color}20` }}
+                      >
+                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: band.color, opacity: 0.8 }} />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-white text-base">{band.band}</h4>
+                        <span className="text-star-300 text-sm font-mono">{band.range}</span>
+                      </div>
                     </div>
                     <span className={`text-xs font-medium px-2.5 py-1 rounded whitespace-nowrap ${cong.bg} ${cong.text}`}>
                       {cong.label} Congestion
@@ -1596,6 +2056,37 @@ function SpectrumContent() {
                     </div>
                   </div>
 
+                  {/* Technical specs row */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 p-3 rounded-lg bg-white/[0.02]">
+                    <div>
+                      <span className="text-star-300 text-[10px] uppercase tracking-wider block mb-0.5">Throughput</span>
+                      <span className="text-white text-xs font-medium">{band.throughput}</span>
+                    </div>
+                    <div>
+                      <span className="text-star-300 text-[10px] uppercase tracking-wider block mb-0.5">Wavelength</span>
+                      <span className="text-white text-xs font-medium font-mono">{band.wavelength}</span>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="text-star-300 text-[10px] uppercase tracking-wider block mb-0.5">Propagation</span>
+                      <span className="text-white text-xs">{band.propagation}</span>
+                    </div>
+                  </div>
+
+                  {/* Key operators */}
+                  <div className="mb-4">
+                    <span className="text-star-300 text-xs block mb-1.5">Key Operators</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {band.keyOperators.map((op) => (
+                        <span
+                          key={op}
+                          className="text-[11px] px-2 py-0.5 rounded bg-white/5 text-white/80 border border-white/5"
+                        >
+                          {op}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Congestion bar */}
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
@@ -1604,8 +2095,8 @@ function SpectrumContent() {
                     </div>
                     <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                       <div
-                        className={`h-full ${cong.barColor} rounded-full transition-all duration-500`}
-                        style={{ width: `${cong.percent}%`, opacity: 0.8 }}
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${cong.percent}%`, backgroundColor: band.color, opacity: 0.8 }}
                       />
                     </div>
                   </div>
@@ -1622,7 +2113,8 @@ function SpectrumContent() {
                     <tr className="border-b border-white/10">
                       <th className="text-left text-star-300 text-xs uppercase tracking-widest font-medium py-3 pr-4">Band</th>
                       <th className="text-left text-star-300 text-xs uppercase tracking-widest font-medium py-3 pr-4">Range</th>
-                      <th className="text-left text-star-300 text-xs uppercase tracking-widest font-medium py-3 pr-4">Primary Services</th>
+                      <th className="text-left text-star-300 text-xs uppercase tracking-widest font-medium py-3 pr-4">Throughput</th>
+                      <th className="text-left text-star-300 text-xs uppercase tracking-widest font-medium py-3 pr-4">Key Operators</th>
                       <th className="text-left text-star-300 text-xs uppercase tracking-widest font-medium py-3">Congestion</th>
                     </tr>
                   </thead>
@@ -1631,9 +2123,15 @@ function SpectrumContent() {
                       const cong = CONGESTION_STYLES[band.congestion];
                       return (
                         <tr key={band.band} className="border-b border-white/5 last:border-0">
-                          <td className="py-3 pr-4 text-white font-medium">{band.band}</td>
+                          <td className="py-3 pr-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: band.color }} />
+                              <span className="text-white font-medium">{band.band}</span>
+                            </div>
+                          </td>
                           <td className="py-3 pr-4 text-star-300 font-mono text-xs">{band.range}</td>
-                          <td className="py-3 pr-4 text-star-300">{band.services}</td>
+                          <td className="py-3 pr-4 text-star-300 text-xs">{band.throughput}</td>
+                          <td className="py-3 pr-4 text-star-300 text-xs">{band.keyOperators.slice(0, 2).join(', ')}{band.keyOperators.length > 2 ? ` +${band.keyOperators.length - 2}` : ''}</td>
                           <td className="py-3">
                             <span className={`text-xs font-medium px-2 py-0.5 rounded ${cong.bg} ${cong.text}`}>
                               {cong.label}
@@ -1644,6 +2142,494 @@ function SpectrumContent() {
                     })}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════════════ OPERATORS TAB ═══════════════════ */}
+        {activeTab === 'operators' && (
+          <div className="space-y-4">
+            <div className="card p-5 mb-2">
+              <h3 className="text-white font-semibold mb-2">Major Satellite Operators by Spectrum Holdings</h3>
+              <p className="text-star-300 text-sm leading-relaxed">
+                The satellite communications industry is dominated by a handful of operators controlling
+                vast spectrum holdings across GEO, MEO, and LEO orbits. Understanding their spectrum portfolios
+                is essential for tracking competitive dynamics, interference risks, and market evolution.
+              </p>
+            </div>
+
+            {/* Operator Comparison Chart */}
+            <div className="card p-6">
+              <h3 className="text-white font-semibold mb-4">Spectrum Band Coverage by Operator</h3>
+              <p className="text-star-300 text-xs mb-4">Dots indicate spectrum bands held by each operator. Larger operators have broader multi-band portfolios.</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left text-star-300 text-xs uppercase tracking-widest font-medium py-3 pr-4 sticky left-0 bg-slate-900/95">Operator</th>
+                      {['UHF', 'L', 'S', 'C', 'X', 'Ku', 'Ka', 'Q', 'V', 'E', 'Optical'].map((b) => (
+                        <th key={b} className="text-center text-star-300 text-[10px] uppercase tracking-wider font-medium py-3 px-2 min-w-[48px]">{b}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {SATELLITE_OPERATORS.map((op) => (
+                      <tr key={op.name} className="border-b border-white/5 last:border-0">
+                        <td className="py-3 pr-4 sticky left-0 bg-slate-900/95">
+                          <span className="text-white font-medium text-xs">{op.name}</span>
+                          <span className="text-star-300 text-[10px] block">{op.orbitType}</span>
+                        </td>
+                        {['UHF', 'L-band', 'S-band', 'C-band', 'X-band', 'Ku-band', 'Ka-band', 'Q-band', 'V-band', 'E-band (laser ISL)', 'Optical/Laser'].map((bandKey) => {
+                          const hasBand = op.spectrumBands.some((sb) =>
+                            bandKey.toLowerCase().includes(sb.toLowerCase().replace('-band', '').replace('-band', '')) ||
+                            sb.toLowerCase().includes(bandKey.toLowerCase().split(' ')[0].split('-')[0])
+                          );
+                          return (
+                            <td key={bandKey} className="py-3 px-2 text-center">
+                              {hasBand ? (
+                                <div className="w-4 h-4 rounded-full bg-nebula-500/60 border border-nebula-400/40 mx-auto" />
+                              ) : (
+                                <div className="w-4 h-4 rounded-full bg-white/5 mx-auto" />
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Operator Detail Cards */}
+            <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {SATELLITE_OPERATORS.map((op) => (
+                <StaggerItem key={op.name}>
+                  <div className="card p-5 hover:border-nebula-500/50 transition-all h-full">
+                    <div className="flex items-start justify-between mb-3 gap-3">
+                      <div>
+                        <h4 className="font-semibold text-white text-base">{op.name}</h4>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-star-300 text-sm">{op.orbitType}</span>
+                          <span className="text-star-300/30">|</span>
+                          <span className="text-star-300 text-sm">{op.hqCountry}</span>
+                        </div>
+                      </div>
+                      <span className={`text-xs font-medium px-2.5 py-1 rounded whitespace-nowrap ${
+                        op.status.includes('Operational') ? 'bg-green-500/20 text-green-400'
+                        : op.status.includes('Pre-') ? 'bg-yellow-500/20 text-yellow-400'
+                        : 'bg-blue-500/20 text-blue-400'
+                      }`}>
+                        {op.status.split('/')[0].trim()}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div>
+                        <span className="text-star-300 text-xs block mb-0.5">Constellation Size</span>
+                        <span className="text-white text-sm font-medium">{op.constellationSize}</span>
+                      </div>
+                      <div>
+                        <span className="text-star-300 text-xs block mb-0.5">Revenue (est.)</span>
+                        <span className="text-white text-sm font-medium">{op.revenueEst}</span>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="text-star-300 text-xs block mb-0.5">Key System</span>
+                        <span className="text-nebula-300 text-sm font-medium">{op.keySystem}</span>
+                      </div>
+                    </div>
+
+                    {/* Spectrum bands */}
+                    <div className="mb-4">
+                      <span className="text-star-300 text-xs block mb-1.5">Spectrum Bands</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {op.spectrumBands.map((band) => (
+                          <span
+                            key={band}
+                            className="text-[11px] px-2 py-0.5 rounded bg-nebula-500/10 text-nebula-300 border border-nebula-500/20"
+                          >
+                            {band}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <p className="text-star-300 text-xs leading-relaxed">{op.description}</p>
+
+                    {/* Cross-module link */}
+                    <div className="mt-3 pt-3 border-t border-white/10">
+                      <Link
+                        href={`/company-profiles`}
+                        className="text-xs text-nebula-300 hover:text-nebula-200 underline underline-offset-2 transition-colors"
+                      >
+                        View company profile
+                      </Link>
+                    </div>
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </div>
+        )}
+
+        {/* ═══════════════════ CHALLENGES TAB ═══════════════════ */}
+        {activeTab === 'challenges' && (
+          <div className="space-y-4">
+            <div className="card p-5 mb-2">
+              <h3 className="text-white font-semibold mb-2">Spectrum Challenges & Conflicts</h3>
+              <p className="text-star-300 text-sm leading-relaxed">
+                The satellite industry faces mounting spectrum challenges as mega-constellations compete with
+                each other, with GEO incumbents, and with terrestrial 5G/6G networks for finite radio frequency
+                resources. These conflicts shape regulatory policy, investment decisions, and technology roadmaps.
+              </p>
+            </div>
+
+            {/* Severity overview */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {(['critical', 'high', 'medium', 'emerging'] as const).map((sev) => {
+                const count = SPECTRUM_CHALLENGES.filter((c) => c.severity === sev).length;
+                const sevStyles = {
+                  critical: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Critical' },
+                  high: { bg: 'bg-orange-500/20', text: 'text-orange-400', label: 'High' },
+                  medium: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', label: 'Medium' },
+                  emerging: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Emerging' },
+                };
+                const style = sevStyles[sev];
+                return (
+                  <div key={sev} className="card-elevated p-4 text-center">
+                    <div className={`text-2xl font-bold font-display ${style.text}`}>{count}</div>
+                    <div className={`text-xs font-medium mt-1 ${style.text}`}>{style.label}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Challenge Cards */}
+            {SPECTRUM_CHALLENGES.map((challenge) => {
+              const sevStyles: Record<string, { bg: string; text: string; label: string; borderColor: string }> = {
+                critical: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Critical', borderColor: 'border-red-500/30' },
+                high: { bg: 'bg-orange-500/20', text: 'text-orange-400', label: 'High', borderColor: 'border-orange-500/30' },
+                medium: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', label: 'Medium', borderColor: 'border-yellow-500/30' },
+                emerging: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Emerging', borderColor: 'border-blue-500/30' },
+              };
+              const style = sevStyles[challenge.severity];
+              return (
+                <div key={challenge.id} className={`card p-5 hover:border-nebula-500/50 transition-all border-l-2 ${style.borderColor}`}>
+                  <div className="flex items-start justify-between mb-3 gap-3">
+                    <h4 className="font-semibold text-white text-base">{challenge.title}</h4>
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded whitespace-nowrap ${style.bg} ${style.text}`}>
+                      {style.label}
+                    </span>
+                  </div>
+
+                  <p className="text-star-300 text-sm leading-relaxed mb-4">{challenge.description}</p>
+
+                  {/* Affected parties */}
+                  <div className="mb-4">
+                    <span className="text-star-300 text-xs block mb-1.5">Key Parties</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {challenge.parties.map((party) => (
+                        <span
+                          key={party}
+                          className="text-[11px] px-2 py-0.5 rounded bg-white/5 text-white/80 border border-white/5"
+                        >
+                          {party}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Outlook */}
+                  <div className="p-3 rounded-lg bg-white/[0.02] border border-white/5">
+                    <span className="text-nebula-300 text-xs font-medium block mb-1">Outlook</span>
+                    <p className="text-star-300 text-xs leading-relaxed">{challenge.outlook}</p>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Cross-module links */}
+            <div className="card p-5 border border-nebula-500/20">
+              <h3 className="text-white font-semibold mb-3">Related Analysis</h3>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/compliance?tab=regulations"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-nebula-500/10 text-nebula-300 hover:bg-nebula-500/20 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Regulatory Framework
+                </Link>
+                <Link
+                  href="/space-environment?tab=debris"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-nebula-500/10 text-nebula-300 hover:bg-nebula-500/20 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  Orbital Debris Impact
+                </Link>
+                <Link
+                  href="/market-intel"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-nebula-500/10 text-nebula-300 hover:bg-nebula-500/20 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  Market Intelligence
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════════════ ITU TIMELINE TAB ═══════════════════ */}
+        {activeTab === 'itu-timeline' && (
+          <div className="space-y-4">
+            <div className="card p-5 mb-2">
+              <h3 className="text-white font-semibold mb-2">ITU Regulatory Framework & Timeline</h3>
+              <p className="text-star-300 text-sm leading-relaxed">
+                The International Telecommunication Union (ITU) governs global spectrum allocation through the
+                Radio Regulations, updated at each World Radiocommunication Conference (WRC). The filing process
+                for satellite networks follows a defined path: Advance Publication Information (API) leads to
+                Coordination Request (CR/C), then notification, coordination with affected parties, and finally
+                registration in the Master International Frequency Register (MIFR).
+              </p>
+            </div>
+
+            {/* ITU Filing Process */}
+            <div className="card p-6">
+              <h3 className="text-white font-semibold mb-4">ITU Satellite Network Filing Process</h3>
+              <p className="text-star-300 text-xs mb-5">The standard process for registering a new satellite network with the ITU Radiocommunication Bureau (BR).</p>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                {[
+                  {
+                    step: '1',
+                    title: 'API Filing',
+                    subtitle: 'Advance Publication',
+                    desc: 'Administration files Advance Publication Information (API) with ITU-BR, providing basic orbital and frequency parameters. Published in BR IFIC for comment.',
+                    timeline: 'T+0',
+                  },
+                  {
+                    step: '2',
+                    title: 'CR/C Request',
+                    subtitle: 'Coordination',
+                    desc: 'Coordination Request (CR/C) filed with detailed technical parameters. ITU identifies potentially affected administrations and satellite networks.',
+                    timeline: 'T+6 months',
+                  },
+                  {
+                    step: '3',
+                    title: 'Coordination',
+                    subtitle: 'Bilateral/Multilateral',
+                    desc: 'Administrations negotiate bilaterally to resolve interference issues. Technical analyses exchanged. Agreements documented in coordination letters.',
+                    timeline: 'T+6-30 months',
+                  },
+                  {
+                    step: '4',
+                    title: 'Notification',
+                    subtitle: 'ITU-BR Examination',
+                    desc: 'Once coordinated, administration files notification. ITU-BR examines conformity with Radio Regulations and coordination agreements.',
+                    timeline: 'T+24-36 months',
+                  },
+                  {
+                    step: '5',
+                    title: 'Registration',
+                    subtitle: 'MIFR Entry',
+                    desc: 'Frequency assignments recorded in the Master International Frequency Register (MIFR). Network gains international recognition and protection rights.',
+                    timeline: 'T+30-42 months',
+                  },
+                ].map((item) => (
+                  <div key={item.step} className="card p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-7 h-7 rounded-full bg-nebula-500/20 text-nebula-300 font-bold text-xs flex items-center justify-center shrink-0">
+                        {item.step}
+                      </div>
+                      <div>
+                        <h4 className="text-white font-semibold text-xs">{item.title}</h4>
+                        <span className="text-nebula-300 text-[10px]">{item.subtitle}</span>
+                      </div>
+                    </div>
+                    <p className="text-star-300 text-[11px] leading-relaxed mb-2">{item.desc}</p>
+                    <span className="text-[10px] font-mono text-star-300/60">{item.timeline}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* GEO vs NGSO Filing Differences */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="card-elevated p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-xs">
+                    GEO
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold">GEO Orbital Slot Filings</h4>
+                    <span className="text-star-300 text-xs">Geostationary Orbit (35,786 km)</span>
+                  </div>
+                </div>
+                <ul className="space-y-2 text-star-300 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-400 mt-1 shrink-0">--</span>
+                    <span>Filing covers specific orbital position (e.g., 101 degrees W longitude)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-400 mt-1 shrink-0">--</span>
+                    <span>Coordination based on orbital spacing and antenna discrimination</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-400 mt-1 shrink-0">--</span>
+                    <span>Limited slots available (roughly 2-degree spacing for same-band operations)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-400 mt-1 shrink-0">--</span>
+                    <span>7-year bring-into-use deadline from date of receipt of API</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-400 mt-1 shrink-0">--</span>
+                    <span>Protected under ITU Article 9 (coordination with GSO networks)</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="card-elevated p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-xs">
+                    NGSO
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold">NGSO Constellation Filings</h4>
+                    <span className="text-star-300 text-xs">Non-Geostationary Orbits (LEO/MEO)</span>
+                  </div>
+                </div>
+                <ul className="space-y-2 text-star-300 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-400 mt-1 shrink-0">--</span>
+                    <span>Filing covers entire constellation (orbital planes, altitude, inclination)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-400 mt-1 shrink-0">--</span>
+                    <span>Must demonstrate compliance with EPFD limits (Article 22) to protect GSO</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-400 mt-1 shrink-0">--</span>
+                    <span>Milestone-based deployment requirements (FCC: 50% in 6 years)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-400 mt-1 shrink-0">--</span>
+                    <span>Aggregate interference from multiple NGSO systems is a growing concern</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-400 mt-1 shrink-0">--</span>
+                    <span>ITU processing rounds determine access priority among competing NGSO filings</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* WRC-23 Key Outcomes */}
+            <div className="card p-6">
+              <h3 className="text-white font-semibold mb-2">WRC-23 Key Outcomes for Satellite</h3>
+              <p className="text-star-300 text-xs mb-4">Dubai, November-December 2023. Attended by 3,900+ delegates from 163 countries.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                {[
+                  {
+                    title: 'NGSO/GSO Sharing',
+                    desc: 'Revised Article 22 frameworks for NGSO-to-GSO protection. Initiated studies on EPFD limit adequacy for mega-constellations.',
+                    icon: 'N/G',
+                  },
+                  {
+                    title: 'IMT-2020 (5G) Bands',
+                    desc: 'New allocations for 5G in bands adjacent to satellite: 4.8-4.99 GHz, 3.3-3.4 GHz (Region 2). Sharing studies mandated.',
+                    icon: '5G',
+                  },
+                  {
+                    title: 'MSS Allocations',
+                    desc: 'New mobile-satellite service allocations in 1.7/2.0 GHz bands. Framework for satellite direct-to-device referenced.',
+                    icon: 'MSS',
+                  },
+                  {
+                    title: 'WRC-27 Agenda Set',
+                    desc: 'Key items: D2D satellite spectrum (AI 1.2), V-band ESIM (AI 1.1), space weather (AI 1.17), EPFD review continuation.',
+                    icon: '27',
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="card p-4">
+                    <div className="w-8 h-8 rounded-full bg-nebula-500/20 text-nebula-300 font-bold text-[10px] flex items-center justify-center mb-3">
+                      {item.icon}
+                    </div>
+                    <h4 className="text-white font-semibold text-sm mb-1">{item.title}</h4>
+                    <p className="text-star-300 text-xs leading-relaxed">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Timeline */}
+            <div className="card p-6">
+              <h3 className="text-white font-semibold mb-4">Spectrum Regulation Timeline</h3>
+              <p className="text-star-300 text-xs mb-5">Key milestones in satellite spectrum governance from the first radio regulations to the upcoming WRC-27.</p>
+              <div className="relative">
+                {/* Vertical line */}
+                <div className="absolute left-[83px] md:left-[95px] top-0 bottom-0 w-px bg-white/10" />
+
+                <div className="space-y-4">
+                  {ITU_REGULATORY_TIMELINE.map((event, idx) => {
+                    const typeStyles: Record<string, { bg: string; text: string; label: string }> = {
+                      wrc: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'WRC' },
+                      filing: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Filing' },
+                      decision: { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Decision' },
+                      milestone: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', label: 'Milestone' },
+                    };
+                    const typeStyle = typeStyles[event.type];
+                    return (
+                      <div key={idx} className="flex items-start gap-4 group">
+                        <div className="w-[72px] md:w-[84px] text-right shrink-0">
+                          <span className="text-white font-bold text-sm font-mono">{event.year}</span>
+                        </div>
+                        <div className="relative shrink-0 mt-1">
+                          <div className={`w-3 h-3 rounded-full border-2 border-slate-900 ${typeStyle.bg.replace('/20', '')} z-10 relative`} />
+                        </div>
+                        <div className="flex-1 pb-2 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <h4 className="text-white font-semibold text-sm">{event.event}</h4>
+                            <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${typeStyle.bg} ${typeStyle.text}`}>
+                              {typeStyle.label}
+                            </span>
+                          </div>
+                          <p className="text-star-300 text-xs leading-relaxed">{event.description}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Cross-module links */}
+            <div className="card p-5 border border-nebula-500/20">
+              <h3 className="text-white font-semibold mb-3">Related Resources</h3>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/compliance?tab=treaties"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-nebula-500/10 text-nebula-300 hover:bg-nebula-500/20 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  International Treaties
+                </Link>
+                <Link
+                  href="/orbital-slots"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-nebula-500/10 text-nebula-300 hover:bg-nebula-500/20 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
+                  </svg>
+                  Orbital Slot Management
+                </Link>
               </div>
             </div>
           </div>
@@ -2128,7 +3114,7 @@ function SpectrumContent() {
                   ))}
                 </div>
                 <span className="text-xs text-star-300">
-                  {AUCTIONS.length} auctions | {FREQUENCY_BANDS.length} bands | {REGULATORY_PROCEEDINGS.length} proceedings
+                  {AUCTIONS.length} auctions | {FREQUENCY_BANDS.length} bands | {SATELLITE_OPERATORS.length} operators | {SPECTRUM_CHALLENGES.length} challenges | {REGULATORY_PROCEEDINGS.length} proceedings
                 </span>
               </>
             )}

@@ -10,6 +10,8 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import ExportButton from '@/components/ui/ExportButton';
 import { clientLogger } from '@/lib/client-logger';
 import EmptyState from '@/components/ui/EmptyState';
+import ReferenceDesigns from '@/components/blueprints/ReferenceDesigns';
+import MissionPlanner from '@/components/blueprints/MissionPlanner';
 
 // ────────────────────────────────────────
 // Types
@@ -84,7 +86,7 @@ interface BlueprintStats {
   totalMissionsFlown: number;
 }
 
-type TabId = 'all' | 'engines' | 'buses' | 'landers';
+type TabId = 'all' | 'engines' | 'buses' | 'landers' | 'reference' | 'planner';
 
 // ────────────────────────────────────────
 // Constants
@@ -95,6 +97,8 @@ const TABS: { id: TabId; label: string; icon: string; category?: BlueprintCatego
   { id: 'engines', label: 'Rocket Engines', icon: 'M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z', category: 'engine' },
   { id: 'buses', label: 'Satellite Buses', icon: 'M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z', category: 'satellite_bus' },
   { id: 'landers', label: 'Lunar Landers', icon: 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z', category: 'lander' },
+  { id: 'reference', label: 'Reference Designs', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+  { id: 'planner', label: 'Mission Planner', icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z' },
 ];
 
 const STATUS_STYLES: Record<BlueprintStatus, { label: string; color: string; bg: string }> = {
@@ -720,7 +724,15 @@ function BlueprintsContent() {
     router.push(`${pathname}?${params.toString()}`);
   }, [searchParams, router, pathname]);
 
+  // Client-only tabs that don't need API data
+  const isClientTab = activeTab === 'reference' || activeTab === 'planner';
+
   useEffect(() => {
+    if (isClientTab) {
+      setLoading(false);
+      return;
+    }
+
     async function fetchData() {
       setLoading(true);
       setError(null);
@@ -753,24 +765,26 @@ function BlueprintsContent() {
     }
 
     fetchData();
-  }, [activeTab, selectedManufacturer, selectedStatus, searchTerm]);
+  }, [activeTab, selectedManufacturer, selectedStatus, searchTerm, isClientTab]);
 
   return (
     <>
       <AnimatedPageHeader
         title="Blueprint Series"
-        subtitle="Technical breakdowns of space hardware - rocket engines, satellite buses, and lunar landers"
+        subtitle="Technical breakdowns of space hardware, CubeSat/SmallSat reference designs, and interactive mission planning tools"
         icon="📐"
         accentColor="cyan"
       >
-        <ExportButton
-          data={blueprints}
-          columns={EXPORT_COLUMNS}
-          filename={`blueprints-${activeTab}`}
-        />
+        {!isClientTab && (
+          <ExportButton
+            data={blueprints}
+            columns={EXPORT_COLUMNS}
+            filename={`blueprints-${activeTab}`}
+          />
+        )}
       </AnimatedPageHeader>
 
-      {stats && <StatsCards stats={stats} />}
+      {stats && !isClientTab && <StatsCards stats={stats} />}
 
       {error && (
         <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
@@ -779,8 +793,8 @@ function BlueprintsContent() {
       )}
 
       {/* Tabs */}
-      <div className="border-b border-slate-500/30 mb-6">
-        <nav className="flex gap-8">
+      <div className="border-b border-slate-500/30 mb-6 overflow-x-auto">
+        <nav className="flex gap-4 lg:gap-8 min-w-max">
           {TABS.map(tab => (
             <button
               key={tab.id}
@@ -800,83 +814,98 @@ function BlueprintsContent() {
         </nav>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 mb-6">
-        {/* Search */}
-        <div className="flex-1 min-w-64">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search blueprints..."
-            className="w-full px-4 py-2 border border-slate-700/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-nebula-500 focus:border-transparent"
-          />
-        </div>
-
-        {/* Manufacturer Filter */}
-        <select
-          value={selectedManufacturer}
-          onChange={(e) => updateParams({ manufacturer: e.target.value || null })}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
-        >
-          <option value="">All Manufacturers</option>
-          {manufacturers.map(m => (
-            <option key={m} value={m}>{m}</option>
-          ))}
-        </select>
-
-        {/* Status Filter */}
-        <select
-          value={selectedStatus || ''}
-          onChange={(e) => updateParams({ status: e.target.value || null })}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
-        >
-          <option value="">All Statuses</option>
-          <option value="operational">Operational</option>
-          <option value="development">In Development</option>
-          <option value="retired">Retired</option>
-          <option value="proposed">Proposed</option>
-        </select>
-      </div>
-
-      {/* Loading State */}
-      {loading && (
-        <div className="flex items-center justify-center py-16">
-          <LoadingSpinner size="lg" />
-        </div>
+      {/* Reference Designs Tab */}
+      {activeTab === 'reference' && (
+        <ReferenceDesigns />
       )}
 
-      {/* Empty State */}
-      {!loading && blueprints.length === 0 && (
-        <EmptyState
-          icon={<svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>}
-          title="No blueprints found"
-          description={searchTerm || selectedManufacturer || selectedStatus
-            ? 'Try adjusting your filters to find blueprints.'
-            : 'Initialize the database to get started.'}
-        />
+      {/* Mission Planner Tab */}
+      {activeTab === 'planner' && (
+        <MissionPlanner />
       )}
 
-      {/* Blueprint Grid */}
-      {!loading && blueprints.length > 0 && (
-        <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {blueprints.map(blueprint => (
-            <StaggerItem key={blueprint.id}>
-              <BlueprintCard
-                blueprint={blueprint}
-                onClick={() => setSelectedBlueprint(blueprint)}
+      {/* API-backed blueprint tabs (all, engines, buses, landers) */}
+      {!isClientTab && (
+        <>
+          {/* Filters */}
+          <div className="flex flex-wrap gap-4 mb-6">
+            {/* Search */}
+            <div className="flex-1 min-w-64">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search blueprints..."
+                className="w-full px-4 py-2 border border-slate-700/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-nebula-500 focus:border-transparent"
               />
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
-      )}
+            </div>
 
-      {/* Detail Modal */}
-      {selectedBlueprint && (
-        <BlueprintDetailModal
-          blueprint={selectedBlueprint}
-          onClose={() => setSelectedBlueprint(null)}
-        />
+            {/* Manufacturer Filter */}
+            <select
+              value={selectedManufacturer}
+              onChange={(e) => updateParams({ manufacturer: e.target.value || null })}
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            >
+              <option value="">All Manufacturers</option>
+              {manufacturers.map(m => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+
+            {/* Status Filter */}
+            <select
+              value={selectedStatus || ''}
+              onChange={(e) => updateParams({ status: e.target.value || null })}
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            >
+              <option value="">All Statuses</option>
+              <option value="operational">Operational</option>
+              <option value="development">In Development</option>
+              <option value="retired">Retired</option>
+              <option value="proposed">Proposed</option>
+            </select>
+          </div>
+
+          {/* Loading State */}
+          {loading && (
+            <div className="flex items-center justify-center py-16">
+              <LoadingSpinner size="lg" />
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && blueprints.length === 0 && (
+            <EmptyState
+              icon={<svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>}
+              title="No blueprints found"
+              description={searchTerm || selectedManufacturer || selectedStatus
+                ? 'Try adjusting your filters to find blueprints.'
+                : 'Initialize the database to get started.'}
+            />
+          )}
+
+          {/* Blueprint Grid */}
+          {!loading && blueprints.length > 0 && (
+            <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {blueprints.map(blueprint => (
+                <StaggerItem key={blueprint.id}>
+                  <BlueprintCard
+                    blueprint={blueprint}
+                    onClick={() => setSelectedBlueprint(blueprint)}
+                  />
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          )}
+
+          {/* Detail Modal */}
+          {selectedBlueprint && (
+            <BlueprintDetailModal
+              blueprint={selectedBlueprint}
+              onClose={() => setSelectedBlueprint(null)}
+            />
+          )}
+        </>
       )}
     </>
   );
