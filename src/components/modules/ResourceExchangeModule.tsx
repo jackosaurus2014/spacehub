@@ -50,24 +50,24 @@ function ResourceCard({
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-lg">{categoryInfo?.icon || '📦'}</span>
-          <h3 className="font-semibold text-slate-800 text-sm">{resource.name}</h3>
+          <h3 className="font-semibold text-slate-200 text-sm">{resource.name}</h3>
         </div>
         <span
-          className={`text-xs ${availabilityInfo?.color || 'bg-slate-500'} text-white px-2 py-0.5 rounded`}
+          className={`text-xs ${availabilityInfo?.color || 'bg-slate-800/500'} text-white px-2 py-0.5 rounded`}
         >
           {availabilityInfo?.label || resource.availability}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mt-3">
-        <div className="bg-slate-50 rounded p-2">
+        <div className="bg-slate-800/50 rounded p-2">
           <div className="text-xs text-slate-400 mb-1">Earth Price</div>
           <div className="text-green-400 font-semibold text-sm">
             {formatPrice(earthPriceKg)}/kg
           </div>
           <div className="text-slate-400 text-xs">{formatPrice(earthPriceLb)}/lb</div>
         </div>
-        <div className="bg-slate-50 rounded p-2">
+        <div className="bg-slate-800/50 rounded p-2">
           <div className="text-xs text-slate-400 mb-1">Space Price (LEO)</div>
           <div className="text-rocket-400 font-semibold text-sm">
             {formatPrice(spacePriceKg)}/kg
@@ -163,7 +163,7 @@ export default function ResourceExchangeModule() {
     return (
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">💰</span>
-        <h3 className="text-xl font-semibold text-slate-800 mb-2">Resource Exchange</h3>
+        <h3 className="text-xl font-semibold text-slate-200 mb-2">Resource Exchange</h3>
         <p className="text-slate-400 mb-4">
           Track space commodity prices and calculate launch costs.
         </p>
@@ -191,7 +191,7 @@ export default function ResourceExchangeModule() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">💰</span>
           <div>
-            <h2 className="text-2xl font-display font-bold text-slate-800">Resource Exchange</h2>
+            <h2 className="text-2xl font-display font-bold text-slate-200">Resource Exchange</h2>
             <p className="text-slate-400 text-sm">Earth vs space commodity pricing</p>
           </div>
         </div>

@@ -39,17 +39,17 @@ function highlightText(text: string, query: string): React.ReactNode {
 
 function AccordionItem({ item, isOpen, onToggle, searchQuery }: AccordionItemProps) {
   return (
-    <div className="border-b border-slate-200 last:border-b-0">
+    <div className="border-b border-slate-700/50 last:border-b-0">
       <button
         onClick={onToggle}
-        className="w-full py-4 px-5 flex items-center justify-between text-left hover:bg-slate-50/50 transition-colors"
+        className="w-full py-4 px-5 flex items-center justify-between text-left hover:bg-slate-800/50 transition-colors"
         aria-expanded={isOpen}
       >
-        <span className="font-medium text-slate-900 pr-4">
+        <span className="font-medium text-slate-100 pr-4">
           {searchQuery ? highlightText(item.question, searchQuery) : item.question}
         </span>
         <span
-          className={`flex-shrink-0 w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center transition-transform duration-200 ${
+          className={`flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           }`}
         >
@@ -142,7 +142,7 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
   if (filteredItems.length === 0) {
     return (
       <div className="card p-12 text-center">
-        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
             className="w-8 h-8 text-slate-400"
             fill="none"
@@ -157,7 +157,7 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
             />
           </svg>
         </div>
-        <h3 className="text-lg font-semibold text-slate-900 mb-2">No results found</h3>
+        <h3 className="text-lg font-semibold text-slate-100 mb-2">No results found</h3>
         <p className="text-slate-400">
           Try adjusting your search or browse a different category.
         </p>
@@ -174,7 +174,7 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             activeCategory === null
               ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-              : 'bg-slate-100 text-slate-500 border border-slate-200 hover:border-slate-300'
+              : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600'
           }`}
         >
           All Categories
@@ -186,7 +186,7 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
               activeCategory === category.id
                 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-                : 'bg-slate-100 text-slate-500 border border-slate-200 hover:border-slate-300'
+                : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600'
             }`}
           >
             <span>{category.icon}</span>
@@ -237,7 +237,7 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
           const category = categories.find((c) => c.id === categoryId);
           return (
             <div key={categoryId} className="space-y-3">
-              <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+              <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-100">
                 <span className="text-xl">{category?.icon}</span>
                 {category?.label || categoryId}
               </h3>

@@ -203,7 +203,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
     return (
       <div className="card p-12 text-center">
         <span className="text-6xl block mb-6">🛸</span>
-        <h3 className="text-2xl font-semibold text-slate-800 mb-3">No Modules Available</h3>
+        <h3 className="text-2xl font-semibold text-slate-200 mb-3">No Modules Available</h3>
         <p className="text-slate-400 max-w-md mx-auto">
           Please check back later for available modules.
         </p>

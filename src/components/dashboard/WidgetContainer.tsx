@@ -66,7 +66,7 @@ export default function WidgetContainer({
       `}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-200 bg-slate-50/50 flex-shrink-0">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-700/50 bg-slate-800/50 flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           {/* Drag handle (edit mode only) */}
           {isEditing && (
@@ -74,7 +74,7 @@ export default function WidgetContainer({
               draggable
               onDragStart={handleDragStart}
               onDragEnd={onDragEnd}
-              className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 p-0.5 flex-shrink-0"
+              className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-200 p-0.5 flex-shrink-0"
               title="Drag to reposition"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -87,10 +87,10 @@ export default function WidgetContainer({
           <span className="text-base flex-shrink-0">{definition.icon}</span>
 
           {/* Title */}
-          <h3 className="text-sm font-semibold text-slate-900 truncate">{displayTitle}</h3>
+          <h3 className="text-sm font-semibold text-slate-100 truncate">{displayTitle}</h3>
 
           {/* Widget type badge */}
-          <span className="text-xs text-slate-400 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0">
+          <span className="text-xs text-slate-400 bg-slate-800 border border-slate-700 rounded px-1.5 py-0.5 flex-shrink-0">
             {widgetType}
           </span>
         </div>
@@ -100,7 +100,7 @@ export default function WidgetContainer({
           {!isEditing && (
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="text-slate-400 hover:text-slate-600 p-1 rounded"
+              className="text-slate-400 hover:text-slate-200 p-1 rounded"
               title={collapsed ? 'Expand' : 'Collapse'}
             >
               <svg

@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     'launch data api',
   ],
   openGraph: {
+    type: 'website',
+    siteName: 'SpaceNexus',
+    locale: 'en_US',
     title: 'Pricing | SpaceNexus',
     description: 'Choose your subscription plan for unlimited space industry intelligence.',
     url: 'https://spacenexus.us/pricing',
@@ -28,6 +31,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@spacenexus',
+    creator: '@spacenexus',
     title: 'Pricing | SpaceNexus',
     description: 'Choose your subscription plan for unlimited space industry intelligence.',
     images: ['/og-image.png'],

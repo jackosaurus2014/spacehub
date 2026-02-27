@@ -558,6 +558,14 @@ export default function SearchCommandPalette() {
   // Register keyboard shortcut
   useCommandPaletteShortcut(openPalette, !isOpen);
 
+  // Expose global opener so Navigation search button can trigger the palette
+  useEffect(() => {
+    (window as unknown as Record<string, unknown>).__openSearchPalette = openPalette;
+    return () => {
+      delete (window as unknown as Record<string, unknown>).__openSearchPalette;
+    };
+  }, [openPalette]);
+
   // Focus input when opened
   useEffect(() => {
     if (isOpen && inputRef.current) {

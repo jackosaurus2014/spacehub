@@ -131,7 +131,7 @@ export default function OrbitalServicesModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">🌐</span>
             Orbital Services Marketplace
           </h2>
@@ -147,7 +147,7 @@ export default function OrbitalServicesModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">🌐</span>
             Orbital Services Marketplace
           </h2>
@@ -179,7 +179,7 @@ export default function OrbitalServicesModule() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card p-4 text-center">
-          <div className="text-3xl font-bold text-slate-800">
+          <div className="text-3xl font-bold text-slate-200">
             {data.stats.totalServices}
           </div>
           <div className="text-slate-400 text-sm">Services Listed</div>
@@ -206,24 +206,24 @@ export default function OrbitalServicesModule() {
 
       {/* Services by Type */}
       <div className="card p-4">
-        <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
           <span>📦</span> Services by Type
         </h3>
         <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
           {groupServicesByType(data.services).slice(0, 6).map(([serviceType, typeServices]) => {
             const typeInfo = getServiceTypeInfo(serviceType);
             return (
-              <div key={serviceType} className="pb-3 border-b border-slate-200 last:border-0">
+              <div key={serviceType} className="pb-3 border-b border-slate-700/50 last:border-0">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">{typeInfo.icon}</span>
-                  <span className="text-slate-800 font-medium text-sm">{typeInfo.label}</span>
+                  <span className="text-slate-200 font-medium text-sm">{typeInfo.label}</span>
                   <span className="ml-auto text-slate-400 text-xs">{typeServices.length} service{typeServices.length !== 1 ? 's' : ''}</span>
                 </div>
                 <div className="space-y-2">
                   {typeServices.slice(0, 2).map((service) => (
-                    <div key={service.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                    <div key={service.id} className="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
                       <div className="min-w-0">
-                        <div className="text-slate-800 text-sm truncate">{service.serviceName}</div>
+                        <div className="text-slate-200 text-sm truncate">{service.serviceName}</div>
                         <div className="text-slate-400 text-xs">{service.providerName}</div>
                       </div>
                       <div className="flex items-center gap-2 ml-2">
@@ -250,7 +250,7 @@ export default function OrbitalServicesModule() {
 
       {/* Service Categories Grid */}
       <div className="card p-4">
-        <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
           <span>📊</span> Browse by Category
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -260,10 +260,10 @@ export default function OrbitalServicesModule() {
               <Link
                 key={category.value}
                 href={`/orbital-services?category=${category.value}`}
-                className="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors text-center"
+                className="p-3 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 transition-colors text-center"
               >
                 <span className="text-2xl block mb-1">{category.icon}</span>
-                <span className="text-slate-800 font-medium text-sm block">{category.label}</span>
+                <span className="text-slate-200 font-medium text-sm block">{category.label}</span>
                 <span className="text-nebula-300 text-xs">{count} services</span>
               </Link>
             );
@@ -274,13 +274,13 @@ export default function OrbitalServicesModule() {
       {/* Recent Contracts */}
       {data.contracts.length > 0 && (
         <div className="card p-4">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
             <span>📝</span> Recent Contracts
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-slate-400 text-xs uppercase border-b border-slate-200">
+                <tr className="text-slate-400 text-xs uppercase border-b border-slate-700/50">
                   <th className="text-left py-2 px-2">Contract</th>
                   <th className="text-left py-2 px-2">Customer</th>
                   <th className="text-left py-2 px-2">Provider</th>
@@ -289,8 +289,8 @@ export default function OrbitalServicesModule() {
               </thead>
               <tbody>
                 {data.contracts.slice(0, 5).map((contract) => (
-                  <tr key={contract.id} className="border-b border-slate-200 hover:bg-slate-100">
-                    <td className="py-2 px-2 text-slate-800">{contract.title}</td>
+                  <tr key={contract.id} className="border-b border-slate-700/50 hover:bg-slate-700/50">
+                    <td className="py-2 px-2 text-slate-200">{contract.title}</td>
                     <td className="py-2 px-2 text-slate-400">{contract.customerName}</td>
                     <td className="py-2 px-2 text-slate-400">{contract.providerName}</td>
                     <td className="py-2 px-2 text-right text-green-400 font-medium">

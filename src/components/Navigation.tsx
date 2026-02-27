@@ -17,6 +17,7 @@ interface DropdownItem {
 }
 
 const EXPLORE_ITEMS: DropdownItem[] = [
+  { label: "What's New", href: '/changelog', description: 'Latest platform updates and features' },
   { label: 'Mission Control', href: '/mission-control', description: 'Upcoming launches and events' },
   { label: 'Mission Pipeline', href: '/mission-pipeline', description: 'Upcoming missions 2025-2030' },
   { label: 'Mission Statistics', href: '/mission-stats', description: 'Launch provider leaderboards & stats' },
@@ -419,6 +420,33 @@ export default function Navigation() {
                 Upgrade
               </Link>
             )}
+            {/* Search */}
+            <button
+              onClick={() => {
+                const opener = (window as unknown as Record<string, unknown>).__openSearchPalette;
+                if (typeof opener === 'function') {
+                  (opener as () => void)();
+                }
+              }}
+              className="relative flex items-center gap-2 px-3 py-1.5 min-h-[44px] rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/40 transition-colors border border-slate-700/50 hover:border-slate-600/50"
+              aria-label="Search (Ctrl+K)"
+              title="Search (Ctrl+K)"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              <span className="text-xs text-slate-500">Search</span>
+              <kbd className="hidden xl:inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px] font-mono text-slate-500">
+                Ctrl+K
+              </kbd>
+            </button>
             {/* Keyboard Shortcuts */}
             <button
               onClick={() => {
@@ -660,6 +688,37 @@ export default function Navigation() {
                     </Link>
                   </div>
                 )}
+
+                {/* Search link (mobile) */}
+                <div className="pt-4 border-t border-slate-700/50">
+                  <button
+                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors text-sm font-medium touch-target"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setTimeout(() => {
+                        const opener = (window as unknown as Record<string, unknown>).__openSearchPalette;
+                        if (typeof opener === 'function') {
+                          (opener as () => void)();
+                        }
+                      }, 100);
+                    }}
+                  >
+                    <svg
+                      className="w-4 h-4 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                    Search
+                    <kbd className="ml-auto px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px] font-mono text-slate-500">
+                      Ctrl+K
+                    </kbd>
+                  </button>
+                </div>
 
                 {/* Reading List link (mobile) */}
                 <div className="pt-4 border-t border-slate-700/50">

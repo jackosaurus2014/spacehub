@@ -60,7 +60,7 @@ export default function SolarFlareTrackerModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">☀️</span>
             Solar Flare Tracker
           </h2>
@@ -76,7 +76,7 @@ export default function SolarFlareTrackerModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">☀️</span>
             Solar Flare Tracker
           </h2>
@@ -157,13 +157,13 @@ export default function SolarFlareTrackerModule() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card p-4 text-center">
-          <div className="text-2xl font-bold text-slate-800">
+          <div className="text-2xl font-bold text-slate-200">
             {data.stats.last30Days.xClass}
           </div>
           <div className="text-slate-400 text-sm">X-Class (30d)</div>
         </div>
         <div className="card p-4 text-center">
-          <div className="text-2xl font-bold text-slate-800">
+          <div className="text-2xl font-bold text-slate-200">
             {data.stats.last30Days.mClass}
           </div>
           <div className="text-slate-400 text-sm">M-Class (30d)</div>
@@ -199,7 +199,7 @@ export default function SolarFlareTrackerModule() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Flares */}
         <div className="card p-4">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
             <span>🔥</span> Recent Solar Flares
           </h3>
           <div className="space-y-3">
@@ -209,13 +209,13 @@ export default function SolarFlareTrackerModule() {
               data.flares.slice(0, 5).map((flare) => {
                 const classInfo = FLARE_CLASSIFICATIONS.find(c => c.value === flare.classification);
                 return (
-                  <div key={flare.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                  <div key={flare.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${classInfo?.color || 'bg-slate-500'}`}>
                         {flare.classification}{flare.intensity}
                       </div>
                       <div>
-                        <div className="text-slate-800 text-sm font-medium">
+                        <div className="text-slate-200 text-sm font-medium">
                           {flare.activeRegion || 'Unknown Region'}
                         </div>
                         <div className="text-slate-400 text-xs">
@@ -242,7 +242,7 @@ export default function SolarFlareTrackerModule() {
 
         {/* Danger Forecast */}
         <div className="card p-4">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
             <span>⚠️</span> 90-Day Danger Forecast
           </h3>
           {dangerForecasts.length === 0 ? (
@@ -294,24 +294,24 @@ export default function SolarFlareTrackerModule() {
       {/* Current Solar Wind (if available) */}
       {data.activity && (
         <div className="card p-4">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
             <span>🌬️</span> Current Solar Conditions
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-xl font-bold text-slate-800">
+              <div className="text-xl font-bold text-slate-200">
                 {Math.round(data.activity.solarWindSpeed || 0)} km/s
               </div>
               <div className="text-slate-400 text-sm">Solar Wind</div>
             </div>
             <div className="text-center">
-              <div className="text-xl font-bold text-slate-800">
+              <div className="text-xl font-bold text-slate-200">
                 Kp {(data.activity.kpIndex || 0).toFixed(1)}
               </div>
               <div className="text-slate-400 text-sm">Kp Index</div>
             </div>
             <div className="text-center">
-              <div className="text-xl font-bold text-slate-800">
+              <div className="text-xl font-bold text-slate-200">
                 {data.activity.sunspotNumber || 0}
               </div>
               <div className="text-slate-400 text-sm">Sunspot Number</div>

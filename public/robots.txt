@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /account/
+Disallow: /messages/
+Disallow: /notifications/
+Disallow: /my-watchlists/
+Disallow: /reading-list/
+
+Sitemap: https://spacenexus.us/sitemap.xml

@@ -80,10 +80,10 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
           {stats.map((stat, i) => (
             <div
               key={i}
-              className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center"
+              className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-3 text-center"
             >
               <p className="text-xs text-slate-400 truncate">{stat.label}</p>
-              <p className="text-lg font-bold text-slate-900">{stat.value}</p>
+              <p className="text-lg font-bold text-slate-100">{stat.value}</p>
               {stat.trend && (
                 <p className={`text-xs ${stat.trend.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>
                   {stat.trend}
@@ -104,9 +104,9 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
               <Link
                 key={item.id}
                 href={item.url || moduleRoute}
-                className="block p-2.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-cyan-400/40 transition-colors"
+                className="block p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-cyan-400/40 transition-colors"
               >
-                <p className="text-sm font-medium text-slate-900 line-clamp-2">{item.title}</p>
+                <p className="text-sm font-medium text-slate-100 line-clamp-2">{item.title}</p>
                 {item.subtitle && (
                   <p className="text-xs text-slate-400 mt-0.5 truncate">{item.subtitle}</p>
                 )}
@@ -121,7 +121,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
 
     case 'chart':
       return (
-        <div className="flex flex-col items-center justify-center h-full min-h-[160px] bg-slate-50 border border-slate-200 rounded-lg p-4">
+        <div className="flex flex-col items-center justify-center h-full min-h-[160px] bg-slate-800/50 border border-slate-700/50 rounded-lg p-4">
           <div className="w-full h-24 flex items-end justify-between gap-1 px-2">
             {[40, 65, 50, 80, 45, 70, 55, 90, 60, 75, 85, 50].map((h, i) => (
               <div
@@ -146,9 +146,9 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
           {stats.length > 0 && (
             <div className="flex gap-3">
               {stats.slice(0, 2).map((stat, i) => (
-                <div key={i} className="flex-1 bg-slate-50 border border-slate-200 rounded-lg p-2 text-center">
+                <div key={i} className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-lg p-2 text-center">
                   <p className="text-xs text-slate-400">{stat.label}</p>
-                  <p className="text-sm font-bold text-slate-900">{stat.value}</p>
+                  <p className="text-sm font-bold text-slate-100">{stat.value}</p>
                 </div>
               ))}
             </div>
@@ -158,7 +158,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
               {items.slice(0, 3).map((item) => (
                 <div key={item.id} className="flex items-center gap-2 text-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" />
-                  <span className="text-slate-700 truncate">{item.title}</span>
+                  <span className="text-slate-300 truncate">{item.title}</span>
                 </div>
               ))}
             </div>
@@ -179,9 +179,9 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
           {stats.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {stats.map((stat, i) => (
-                <div key={i} className="bg-slate-50 border border-slate-200 rounded-lg p-2 text-center">
+                <div key={i} className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-2 text-center">
                   <p className="text-xs text-slate-400">{stat.label}</p>
-                  <p className="text-sm font-bold text-slate-900">{stat.value}</p>
+                  <p className="text-sm font-bold text-slate-100">{stat.value}</p>
                 </div>
               ))}
             </div>
@@ -190,9 +190,9 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
             <Link
               key={item.id}
               href={item.url || moduleRoute}
-              className="block p-3 rounded-lg bg-slate-50 border border-slate-200 hover:border-cyan-400/40 transition-colors"
+              className="block p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-cyan-400/40 transition-colors"
             >
-              <p className="text-sm font-medium text-slate-900 line-clamp-2">{item.title}</p>
+              <p className="text-sm font-medium text-slate-100 line-clamp-2">{item.title}</p>
               {item.subtitle && (
                 <p className="text-xs text-slate-400 mt-1">{item.subtitle}</p>
               )}
@@ -364,7 +364,7 @@ function WidgetSkeleton({ type }: { type: string }) {
     return (
       <div className="grid grid-cols-2 gap-3 p-1">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-slate-50 rounded-lg p-3">
+          <div key={i} className="bg-slate-800/50 rounded-lg p-3">
             <Skeleton className="h-3 w-16 mx-auto mb-2" />
             <Skeleton className="h-5 w-10 mx-auto" />
           </div>

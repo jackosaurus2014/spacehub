@@ -63,7 +63,7 @@ function ClassificationCard({ item }: { item: ExportClassification }) {
         </div>
         <span className="text-lg">{categoryInfo?.icon || '📋'}</span>
       </div>
-      <h4 className="font-semibold text-slate-800 text-sm mb-1 line-clamp-1">{item.name}</h4>
+      <h4 className="font-semibold text-slate-200 text-sm mb-1 line-clamp-1">{item.name}</h4>
       <p className="text-slate-400 text-xs line-clamp-2 mb-2">{item.description}</p>
       {item.controlReason && (
         <span className="text-xs text-slate-400">Control: {item.controlReason}</span>
@@ -80,7 +80,7 @@ function RegulationCard({ item }: { item: ProposedRegulation }) {
   return (
     <div className="card p-4 hover:border-nebula-500/50 transition-all">
       <div className="flex items-start justify-between mb-2">
-        <span className="text-xs font-semibold text-nebula-300 bg-slate-100 px-2 py-0.5 rounded">
+        <span className="text-xs font-semibold text-nebula-300 bg-slate-800 px-2 py-0.5 rounded">
           {item.agency}
         </span>
         <span
@@ -97,7 +97,7 @@ function RegulationCard({ item }: { item: ProposedRegulation }) {
           {statusInfo?.label || item.status}
         </span>
       </div>
-      <h4 className="font-semibold text-slate-800 text-sm mb-1 line-clamp-2">{item.title}</h4>
+      <h4 className="font-semibold text-slate-200 text-sm mb-1 line-clamp-2">{item.title}</h4>
       <p className="text-slate-400 text-xs line-clamp-2 mb-2">{item.summary}</p>
       <div className="flex items-center justify-between">
         {deadline && (
@@ -136,7 +136,7 @@ function LegalSourceCard({ source }: { source: LegalSource }) {
     >
       <span className="text-xl">{typeInfo.icon}</span>
       <div className="flex-1 min-w-0">
-        <h4 className="font-medium text-slate-800 text-sm truncate">{source.name}</h4>
+        <h4 className="font-medium text-slate-200 text-sm truncate">{source.name}</h4>
         <span className="text-xs text-slate-400">{typeInfo.label}</span>
       </div>
       <span className="text-slate-400">→</span>
@@ -214,7 +214,7 @@ export default function ComplianceModule() {
     return (
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">⚖️</span>
-        <h3 className="text-xl font-semibold text-slate-800 mb-2">Compliance</h3>
+        <h3 className="text-xl font-semibold text-slate-200 mb-2">Compliance</h3>
         <p className="text-slate-400 mb-4">
           Export controls, regulations, and legal updates for the space industry.
         </p>
@@ -242,7 +242,7 @@ export default function ComplianceModule() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">⚖️</span>
           <div>
-            <h2 className="text-2xl font-display font-bold text-slate-800">Compliance</h2>
+            <h2 className="text-2xl font-display font-bold text-slate-200">Compliance</h2>
             <p className="text-slate-400 text-sm">Export controls, regulations & legal updates</p>
           </div>
         </div>
@@ -256,7 +256,7 @@ export default function ComplianceModule() {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="card p-3 text-center">
-          <div className="text-2xl font-bold text-slate-800">{stats.classifications}</div>
+          <div className="text-2xl font-bold text-slate-200">{stats.classifications}</div>
           <div className="text-slate-400 text-xs">Classifications</div>
         </div>
         <div className="card p-3 text-center">
@@ -286,7 +286,7 @@ export default function ComplianceModule() {
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeTab === tab.id
                 ? 'bg-nebula-500 text-white'
-                : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
             }`}
           >
             <span>{tab.icon}</span>

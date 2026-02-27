@@ -209,10 +209,21 @@ export default function Footer() {
                 className="text-slate-500 hover:text-cyan-400 text-xs transition-colors flex items-center gap-1"
                 aria-label="Open keyboard shortcuts help"
               >
-                Shortcuts
+                Press
                 <kbd className="inline-flex items-center justify-center min-w-[18px] h-4 bg-slate-800 border border-slate-700 rounded px-1 font-mono text-[10px] text-slate-400">
                   ?
                 </kbd>
+                for keyboard shortcuts
+              </button>
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="text-slate-500 hover:text-cyan-400 text-xs transition-colors flex items-center gap-1"
+                aria-label="Back to top"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+                Back to top
               </button>
             </div>
 

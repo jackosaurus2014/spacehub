@@ -92,7 +92,7 @@ export default function SatelliteTrackerModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">🛰️</span>
             Satellite Tracker
           </h2>
@@ -108,7 +108,7 @@ export default function SatelliteTrackerModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">🛰️</span>
             Satellite Tracker
           </h2>
@@ -145,7 +145,7 @@ export default function SatelliteTrackerModule() {
           {`Satellite statistics: ${stats.total.toLocaleString()} total satellites, ${stats.byStatus.active.toLocaleString()} active, ${stats.byOrbitType.LEO.toLocaleString()} in low Earth orbit, ${stats.byOrbitType.GEO.toLocaleString()} in geostationary orbit`}
         </span>
         <div className="card p-4 text-center">
-          <div className="text-3xl font-bold text-slate-800">
+          <div className="text-3xl font-bold text-slate-200">
             {stats.total.toLocaleString()}
           </div>
           <div className="text-slate-400 text-sm">Total Satellites</div>
@@ -228,7 +228,7 @@ export default function SatelliteTrackerModule() {
 
       {/* Notable Satellites */}
       <div className="card p-4">
-        <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
           <span>⭐</span> Notable Satellites
         </h3>
         <div className="space-y-3">
@@ -238,13 +238,13 @@ export default function SatelliteTrackerModule() {
             return (
               <div
                 key={sat.id}
-                className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 hover:bg-slate-100/50 transition-colors"
+                className="p-3 rounded-lg border border-slate-700/50 bg-slate-800/50 hover:bg-slate-700/50 transition-colors"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-xl flex-shrink-0">{purposeIcon}</span>
                     <div className="min-w-0">
-                      <h4 className="font-medium text-slate-800 text-sm truncate">{sat.name}</h4>
+                      <h4 className="font-medium text-slate-200 text-sm truncate">{sat.name}</h4>
                       <div className="flex items-center gap-2 text-xs text-slate-400">
                         <span>{sat.operator}</span>
                         <span className="text-slate-300">|</span>
@@ -268,7 +268,7 @@ export default function SatelliteTrackerModule() {
 
       {/* Top Operators */}
       <div className="card p-4">
-        <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
           <span>🏢</span> Top Operators
         </h3>
         <span className="sr-only">

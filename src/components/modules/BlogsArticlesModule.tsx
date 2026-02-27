@@ -86,7 +86,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
               </span>
             )}
           </div>
-          <h3 className="font-semibold text-slate-800 text-sm line-clamp-2 group-hover:text-nebula-200 transition-colors">
+          <h3 className="font-semibold text-slate-200 text-sm line-clamp-2 group-hover:text-nebula-200 transition-colors">
             {post.title}
           </h3>
           {post.excerpt && (
@@ -128,7 +128,7 @@ export default function BlogsArticlesModule() {
       <Link href="/blogs" className="block">
         <div className="card p-6 glow-border">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-display font-bold text-slate-800 flex items-center gap-2">
+            <h2 className="text-xl font-display font-bold text-slate-200 flex items-center gap-2">
               <span>✍️</span> Blogs & Articles
             </h2>
           </div>
@@ -144,7 +144,7 @@ export default function BlogsArticlesModule() {
     <Link href="/blogs" className="block">
       <div className="card p-6 glow-border hover:border-nebula-400/50 transition-all cursor-pointer group">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-display font-bold text-slate-800 flex items-center gap-2">
+          <h2 className="text-xl font-display font-bold text-slate-200 flex items-center gap-2">
             <span>✍️</span> Blogs & Articles
           </h2>
           <span className="text-slate-400 text-sm group-hover:text-nebula-200 transition-colors flex items-center gap-1">
@@ -171,13 +171,13 @@ export default function BlogsArticlesModule() {
             </div>
 
             {/* Author Type Quick Filters */}
-            <div className="mt-4 pt-4 border-t border-slate-200">
+            <div className="mt-4 pt-4 border-t border-slate-700/50">
               <p className="text-slate-400 text-xs mb-2">Browse by author type:</p>
               <div className="flex flex-wrap gap-2">
                 {AUTHOR_TYPES.slice(0, 4).map((type) => (
                   <span
                     key={type.value}
-                    className="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded flex items-center gap-1"
+                    className="bg-slate-800 text-slate-400 text-xs px-2 py-1 rounded flex items-center gap-1"
                   >
                     <span>{type.icon}</span>
                     <span>{type.label}</span>
@@ -188,7 +188,7 @@ export default function BlogsArticlesModule() {
           </>
         )}
 
-        <div className="mt-4 pt-4 border-t border-slate-200 text-center">
+        <div className="mt-4 pt-4 border-t border-slate-700/50 text-center">
           <span className="text-nebula-300 text-sm group-hover:text-nebula-200 transition-colors">
             Click to explore all expert insights →
           </span>

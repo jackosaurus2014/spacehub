@@ -249,8 +249,8 @@ export default function DashboardBuilder({
             onClick={onToggleEdit}
             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg shadow-sm transition-all ${
               isEditing
-                ? 'text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-200'
-                : 'text-cyan-600 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200'
+                ? 'text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700'
+                : 'text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30'
             }`}
           >
             {isEditing ? (

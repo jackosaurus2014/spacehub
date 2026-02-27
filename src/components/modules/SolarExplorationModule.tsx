@@ -14,7 +14,7 @@ const PlanetaryScene = dynamic(
 
 function SceneLoading() {
   return (
-    <div className="h-[300px] flex items-center justify-center bg-slate-50 rounded-lg">
+    <div className="h-[300px] flex items-center justify-center bg-slate-800/50 rounded-lg">
       <div className="text-center">
         <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" style={{ borderWidth: '3px' }} />
         <p className="text-slate-400 text-sm">Loading 3D visualization...</p>
@@ -60,7 +60,7 @@ export default function SolarExplorationModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">🌍</span>
             Solar Exploration
           </h2>
@@ -76,7 +76,7 @@ export default function SolarExplorationModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">🌍</span>
             Solar Exploration
           </h2>
@@ -123,7 +123,7 @@ export default function SolarExplorationModule() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               selectedBodySlug === body.slug
                 ? 'bg-nebula-500 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
+                : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
             }`}
           >
             {body.name}
@@ -148,7 +148,7 @@ export default function SolarExplorationModule() {
           {/* Info Panel */}
           <div className="card p-4 space-y-4">
             <div>
-              <h3 className="text-xl font-semibold text-slate-800 mb-1">{selectedBody.name}</h3>
+              <h3 className="text-xl font-semibold text-slate-200 mb-1">{selectedBody.name}</h3>
               <p className="text-slate-400 text-sm capitalize">{selectedBody.type}</p>
             </div>
 
@@ -156,7 +156,7 @@ export default function SolarExplorationModule() {
               <p className="text-slate-400 text-sm">{selectedBody.description}</p>
             )}
 
-            <div className="border-t border-slate-200 pt-4">
+            <div className="border-t border-slate-700/50 pt-4">
               <h4 className="text-slate-400 text-sm font-medium mb-3">Landing Statistics</h4>
               <span className="sr-only">
                 {`Landing statistics for ${selectedBody.name}: ${Object.entries(LANDER_STATUS_INFO)
@@ -182,7 +182,7 @@ export default function SolarExplorationModule() {
 
             {/* Recent Landers */}
             {selectedBody.landers && selectedBody.landers.length > 0 && (
-              <div className="border-t border-slate-200 pt-4">
+              <div className="border-t border-slate-700/50 pt-4">
                 <h4 className="text-slate-400 text-sm font-medium mb-3">Recent Missions</h4>
                 <div className="space-y-2">
                   {selectedBody.landers.slice(0, 3).map((lander) => {
@@ -206,7 +206,7 @@ export default function SolarExplorationModule() {
             {/* View All Link */}
             <Link
               href={`/solar-exploration?body=${selectedBody.slug}`}
-              className="block w-full text-center py-2 bg-slate-100 hover:bg-slate-200 text-nebula-300 rounded-lg text-sm transition-colors"
+              className="block w-full text-center py-2 bg-slate-800 hover:bg-slate-700 text-nebula-300 rounded-lg text-sm transition-colors"
             >
               View All {selectedBody.name} Missions
             </Link>

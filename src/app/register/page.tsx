@@ -290,7 +290,7 @@ export default function RegisterPage() {
                 type="checkbox"
                 checked={agreedToDisclaimer}
                 onChange={(e) => setAgreedToDisclaimer(e.target.checked)}
-                className="mt-1 w-4 h-4 rounded border-slate-200 bg-slate-50 text-nebula-300 focus:ring-nebula-500 cursor-pointer"
+                className="mt-1 w-4 h-4 rounded border-slate-600 bg-slate-800 text-nebula-300 focus:ring-nebula-500 cursor-pointer"
               />
               <label htmlFor="disclaimer" className="text-slate-400 text-sm cursor-pointer">
                 I have read and agree to the{' '}

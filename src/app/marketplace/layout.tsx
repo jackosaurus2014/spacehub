@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   description: 'Buy and sell space industry products and services. Find launch slots, satellite components, ground station time, engineering services, and more. Post RFQs and connect with verified providers.',
   keywords: ['space marketplace', 'satellite parts', 'launch services', 'space procurement', 'space industry suppliers'],
   openGraph: {
+    type: 'website',
+    siteName: 'SpaceNexus',
+    locale: 'en_US',
     title: 'SpaceNexus Marketplace - Space Industry Products & Services',
     description: 'The B2B marketplace for the space industry. Find launch services, satellite components, and engineering providers.',
     url: 'https://spacenexus.us/marketplace',
@@ -19,6 +22,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@spacenexus',
+    creator: '@spacenexus',
     title: 'SpaceNexus Marketplace - Space Industry Products & Services',
     description: 'The B2B marketplace for the space industry. Find launch services, satellite components, and engineering providers.',
     images: ['/og-marketplace.png'],

@@ -62,7 +62,7 @@ export default function OrbitalSlotsModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">🛰️</span>
             Orbital Slots
           </h2>
@@ -78,7 +78,7 @@ export default function OrbitalSlotsModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">🛰️</span>
             Orbital Slots
           </h2>
@@ -113,7 +113,7 @@ export default function OrbitalSlotsModule() {
           {`Orbital overview: ${data.stats.totalActive.toLocaleString()} active satellites, ${data.stats.totalInactive.toLocaleString()} inactive, ${data.stats.totalDebris.toLocaleString()} debris objects, ${data.stats.growth1Year.toLocaleString()} projected 1-year growth`}
         </span>
         <div className="card p-4 text-center">
-          <div className="text-3xl font-bold text-slate-800">
+          <div className="text-3xl font-bold text-slate-200">
             {data.stats.totalActive.toLocaleString()}
           </div>
           <div className="text-slate-400 text-sm">Active Satellites</div>
@@ -142,7 +142,7 @@ export default function OrbitalSlotsModule() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Orbit Breakdown */}
         <div className="lg:col-span-2 card p-4">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
             <span>🌐</span> Satellites by Orbit
           </h3>
           <div className="space-y-3">
@@ -153,12 +153,12 @@ export default function OrbitalSlotsModule() {
               const activePercent = total > 0 ? (slot.activeSatellites / total) * 100 : 0;
 
               return (
-                <div key={slot.id} className="p-3 bg-slate-50 rounded-lg">
+                <div key={slot.id} className="p-3 bg-slate-800/50 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{orbitInfo?.icon || '🛰️'}</span>
                       <div>
-                        <span className="text-slate-800 font-medium">{slot.orbitName}</span>
+                        <span className="text-slate-200 font-medium">{slot.orbitName}</span>
                         <span className="text-slate-400 text-sm ml-2">({orbitInfo?.altitude})</span>
                       </div>
                     </div>
@@ -188,7 +188,7 @@ export default function OrbitalSlotsModule() {
                   </div>
 
                   {/* Projections */}
-                  <div className="flex gap-4 mt-2 pt-2 border-t border-slate-200 text-xs">
+                  <div className="flex gap-4 mt-2 pt-2 border-t border-slate-700/50 text-xs">
                     <span className="text-slate-400">
                       1Y: <span className="text-green-400">+{(slot.projected1Year - slot.activeSatellites).toLocaleString()}</span>
                     </span>
@@ -206,7 +206,7 @@ export default function OrbitalSlotsModule() {
         <div className="space-y-6">
           {/* Top Operators */}
           <div className="card p-4">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
               <span>🏆</span> Top Operators
             </h3>
             <div className="space-y-3">
@@ -219,14 +219,14 @@ export default function OrbitalSlotsModule() {
                       <span className="text-slate-400 text-sm w-4">{idx + 1}.</span>
                       <span className="text-lg">{countryInfo?.flag || '🌍'}</span>
                       <div>
-                        <div className="text-slate-800 text-sm">{operator.name}</div>
+                        <div className="text-slate-200 text-sm">{operator.name}</div>
                         {operator.constellationName && (
                           <div className="text-slate-400 text-xs">{operator.constellationName}</div>
                         )}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-slate-800 font-medium">{operator.totalActive.toLocaleString()}</div>
+                      <div className="text-slate-200 font-medium">{operator.totalActive.toLocaleString()}</div>
                       <div className="text-slate-400 text-xs">satellites</div>
                     </div>
                   </div>
@@ -237,7 +237,7 @@ export default function OrbitalSlotsModule() {
 
           {/* Upcoming Events */}
           <div className="card p-4">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
               <span>📅</span> Upcoming Launches
             </h3>
             <div className="space-y-3">
@@ -248,10 +248,10 @@ export default function OrbitalSlotsModule() {
                   const date = new Date(event.expectedDate);
 
                   return (
-                    <div key={event.id} className="p-3 bg-slate-50 rounded-lg">
+                    <div key={event.id} className="p-3 bg-slate-800/50 rounded-lg">
                       <div className="flex items-start justify-between">
                         <div>
-                          <div className="text-slate-800 text-sm font-medium">
+                          <div className="text-slate-200 text-sm font-medium">
                             {event.missionName || 'Unknown Mission'}
                           </div>
                           <div className="text-slate-400 text-xs">
@@ -277,7 +277,7 @@ export default function OrbitalSlotsModule() {
       <div className="card p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-slate-200 flex items-center gap-2">
               <span>📈</span> 5-Year Projection
             </h3>
             <p className="text-slate-400 text-sm mt-1">

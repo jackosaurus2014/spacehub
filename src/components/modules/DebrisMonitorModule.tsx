@@ -95,7 +95,7 @@ export default function DebrisMonitorModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">&#9888;&#65039;</span>
             Space Debris & Collision Risk Monitor
           </h2>
@@ -111,7 +111,7 @@ export default function DebrisMonitorModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">&#9888;&#65039;</span>
             Space Debris & Collision Risk Monitor
           </h2>
@@ -135,7 +135,7 @@ export default function DebrisMonitorModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-800 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
             <span className="text-3xl mr-3">&#9888;&#65039;</span>
             Space Debris & Collision Risk Monitor
           </h2>
@@ -191,7 +191,7 @@ export default function DebrisMonitorModule() {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card p-4 text-center">
-          <div className="text-3xl font-bold text-slate-800">
+          <div className="text-3xl font-bold text-slate-200">
             {totalTracked.toLocaleString()}
           </div>
           <div className="text-slate-400 text-sm">Total Tracked Objects</div>
@@ -206,7 +206,7 @@ export default function DebrisMonitorModule() {
           </div>
         </div>
         <div className="card p-4 text-center">
-          <div className="text-3xl font-bold text-slate-800">
+          <div className="text-3xl font-bold text-slate-200">
             {(overview?.conjunctionsPerDay || 0).toFixed(1)}
           </div>
           <div className="text-slate-400 text-sm">Conjunctions/Day</div>
@@ -223,7 +223,7 @@ export default function DebrisMonitorModule() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Orbit Distribution */}
         <div className="card p-4">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
             <span>&#127760;</span> Distribution by Orbit
           </h3>
           <div className="space-y-3">
@@ -268,7 +268,7 @@ export default function DebrisMonitorModule() {
 
         {/* Type Distribution */}
         <div className="card p-4">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
             <span>&#128640;</span> Distribution by Type
           </h3>
           <div className="space-y-3">
@@ -300,7 +300,7 @@ export default function DebrisMonitorModule() {
 
       {/* Active Conjunction Events */}
       <div className="card p-4">
-        <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
           <span>&#128680;</span> Active Conjunction Events
         </h3>
         {conjunctions.length === 0 ? (
@@ -333,22 +333,22 @@ export default function DebrisMonitorModule() {
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm mt-2">
-                        <div className="bg-slate-100 rounded px-2 py-1">
+                        <div className="bg-slate-800 rounded px-2 py-1">
                           <span className="text-slate-400 text-xs">Primary: </span>
-                          <span className="text-slate-800">{event.primaryObject}</span>
+                          <span className="text-slate-200">{event.primaryObject}</span>
                           <span className="text-slate-400 text-xs ml-1">({event.primaryType})</span>
                         </div>
                         <span className="text-slate-400">vs</span>
-                        <div className="bg-slate-100 rounded px-2 py-1">
+                        <div className="bg-slate-800 rounded px-2 py-1">
                           <span className="text-slate-400 text-xs">Secondary: </span>
-                          <span className="text-slate-800">{event.secondaryObject}</span>
+                          <span className="text-slate-200">{event.secondaryObject}</span>
                           <span className="text-slate-400 text-xs ml-1">({event.secondaryType})</span>
                         </div>
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">
                       <div className="text-slate-400 text-sm">
-                        Miss: <span className="text-slate-800 font-medium">{event.missDistance.toFixed(1)} m</span>
+                        Miss: <span className="text-slate-200 font-medium">{event.missDistance.toFixed(1)} m</span>
                       </div>
                       <div className="text-slate-400 text-sm">
                         Prob: <span className={`font-medium ${event.probability > 0.001 ? 'text-red-400' : event.probability > 0.0001 ? 'text-yellow-400' : 'text-slate-400'}`}>
@@ -359,7 +359,7 @@ export default function DebrisMonitorModule() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-slate-200 text-xs">
+                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-slate-700/50 text-xs">
                     <span className="text-slate-400">
                       Alt: <span className="text-slate-400">{event.altitude.toFixed(0)} km</span>
                     </span>
@@ -392,7 +392,7 @@ export default function DebrisMonitorModule() {
       <div className="card p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-slate-200 flex items-center gap-2">
               <span>&#9989;</span> 25-Year Deorbit Compliance
             </h3>
             <p className="text-slate-400 text-sm mt-1">

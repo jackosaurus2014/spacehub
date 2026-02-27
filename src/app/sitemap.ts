@@ -90,6 +90,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Company Intelligence directory
     { url: `${BASE_URL}/company-profiles`, changeFrequency: 'daily' as const, priority: 0.8 },
+    { url: `${BASE_URL}/company-profiles/sponsor`, changeFrequency: 'monthly' as const, priority: 0.5 },
 
     // Blog index
     { url: `${BASE_URL}/blog`, changeFrequency: 'weekly' as const, priority: 0.7 },
@@ -146,6 +147,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/marketplace`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/marketplace/search`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${BASE_URL}/marketplace/copilot`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/marketplace/rfq/new`, changeFrequency: 'monthly' as const, priority: 0.5 },
 
     // Conversion pages
     { url: `${BASE_URL}/pricing`, changeFrequency: 'monthly' as const, priority: 0.5 },
@@ -164,6 +166,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // Community
     { url: `${BASE_URL}/community`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/community/forums`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/community/directory`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/community/guidelines`, changeFrequency: 'monthly' as const, priority: 0.3 },
 
     // Additional content pages
@@ -205,7 +208,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/constellation-designer`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/unit-economics`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/orbital-calculator`, changeFrequency: 'weekly' as const, priority: 0.6 },
-    { url: `${BASE_URL}/reading-list`, changeFrequency: 'daily' as const, priority: 0.5 },
+    // reading-list removed — disallowed in robots.txt
     { url: `${BASE_URL}/debris-tracker`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/glossary`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/timeline`, changeFrequency: 'monthly' as const, priority: 0.6 },
@@ -255,6 +258,11 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/market-segments`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/patent-landscape`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/workforce-analytics`, changeFrequency: 'weekly' as const, priority: 0.7 },
+
+    // Missing public pages
+    { url: `${BASE_URL}/mission-heritage`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/regulatory-tracker`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/space-investors`, changeFrequency: 'weekly' as const, priority: 0.7 },
 
     // About & Dashboard
     { url: `${BASE_URL}/about`, changeFrequency: 'monthly' as const, priority: 0.5 },

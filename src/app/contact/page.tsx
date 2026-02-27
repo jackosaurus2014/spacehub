@@ -317,7 +317,7 @@ export default function ContactPage() {
                 </button>
               </form>
 
-              <div className="mt-8 pt-8 border-t border-slate-200">
+              <div className="mt-8 pt-8 border-t border-slate-700/50">
                 <h3 className="text-lg font-semibold text-white mb-4">Other Ways to Reach Us</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">

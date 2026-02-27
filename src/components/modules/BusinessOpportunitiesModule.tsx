@@ -57,7 +57,7 @@ function OpportunityCard({ opportunity }: { opportunity: BusinessOpportunity }) 
         )}
       </div>
 
-      <h3 className="font-semibold text-slate-800 text-sm mb-2 line-clamp-2">
+      <h3 className="font-semibold text-slate-200 text-sm mb-2 line-clamp-2">
         {opportunity.title}
       </h3>
 
@@ -85,7 +85,7 @@ function OpportunityCard({ opportunity }: { opportunity: BusinessOpportunity }) 
             return (
               <span
                 key={audience}
-                className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded"
+                className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded"
                 title={info?.label}
               >
                 {info?.icon}
@@ -183,7 +183,7 @@ export default function BusinessOpportunitiesModule() {
     return (
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">💼</span>
-        <h3 className="text-xl font-semibold text-slate-800 mb-2">Business Opportunities</h3>
+        <h3 className="text-xl font-semibold text-slate-200 mb-2">Business Opportunities</h3>
         <p className="text-slate-400 mb-4">
           Discover AI-powered business opportunities in the space industry.
         </p>
@@ -211,7 +211,7 @@ export default function BusinessOpportunitiesModule() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">💼</span>
           <div>
-            <h2 className="text-2xl font-display font-bold text-slate-800">
+            <h2 className="text-2xl font-display font-bold text-slate-200">
               Business Opportunities
             </h2>
             <p className="text-slate-400 text-sm">
@@ -251,7 +251,7 @@ export default function BusinessOpportunitiesModule() {
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="card p-3 text-center">
-            <div className="text-2xl font-bold text-slate-800">{stats.total}</div>
+            <div className="text-2xl font-bold text-slate-200">{stats.total}</div>
             <div className="text-slate-400 text-xs">Opportunities</div>
           </div>
           <div className="card p-3 text-center">
@@ -284,7 +284,7 @@ export default function BusinessOpportunitiesModule() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="text-2xl">🚀</span>
-              <h3 className="text-xl font-display font-bold text-slate-800">Moonshots</h3>
+              <h3 className="text-xl font-display font-bold text-slate-200">Moonshots</h3>
               <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded ml-2">
                 High Risk / High Reward
               </span>
@@ -317,7 +317,7 @@ export default function BusinessOpportunitiesModule() {
                       </span>
                     </div>
 
-                    <h4 className="text-slate-800 font-semibold mb-2">{moonshot.title}</h4>
+                    <h4 className="text-slate-200 font-semibold mb-2">{moonshot.title}</h4>
                     <p className="text-slate-400 text-sm mb-4">{moonshot.description}</p>
 
                     <div className="space-y-2 text-xs">
@@ -331,7 +331,7 @@ export default function BusinessOpportunitiesModule() {
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-slate-200">
+                    <div className="mt-4 pt-3 border-t border-slate-700/50">
                       <div className="mb-2">
                         <span className="text-orange-400 text-xs font-medium">Why Most Would Dismiss:</span>
                         <p className="text-slate-400 text-xs mt-1">{moonshot.whyUnlikely}</p>
@@ -357,7 +357,7 @@ export default function BusinessOpportunitiesModule() {
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">🎯</span>
                   <div>
-                    <p className="text-slate-800 font-medium">{moonshots.length} Moonshot Ideas Available</p>
+                    <p className="text-slate-200 font-medium">{moonshots.length} Moonshot Ideas Available</p>
                     <p className="text-slate-400 text-sm">
                       Unconventional opportunities with extreme risk and reward potential
                     </p>

@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   description: 'Comprehensive directory of 200+ space industry companies. Explore profiles with financial data, satellite assets, facility locations, and competitive analysis for SpaceX, Blue Origin, Rocket Lab, and more.',
   keywords: ['space companies', 'aerospace company directory', 'space company profiles', 'SpaceX profile', 'satellite companies', 'space startups'],
   openGraph: {
+    type: 'website',
+    siteName: 'SpaceNexus',
+    locale: 'en_US',
     title: 'SpaceNexus Company Directory - 200+ Space Companies',
     description: 'Comprehensive profiles of 200+ space industry companies with financial data, assets, and competitive analysis.',
     url: 'https://spacenexus.us/company-profiles',
@@ -19,6 +22,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@spacenexus',
+    creator: '@spacenexus',
     title: 'SpaceNexus Company Directory - 200+ Space Companies',
     description: 'Comprehensive profiles of 200+ space industry companies with financial data, assets, and competitive analysis.',
     images: ['/og-companies.png'],

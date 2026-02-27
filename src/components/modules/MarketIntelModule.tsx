@@ -55,7 +55,7 @@ function PublicCompanyCard({
         <div className="flex items-center gap-2">
           <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
           <div>
-            <h3 className="font-semibold text-slate-800 text-sm">{company.name}</h3>
+            <h3 className="font-semibold text-slate-200 text-sm">{company.name}</h3>
             <span className="text-xs text-nebula-300 font-mono">
               {company.exchange}:{company.ticker}
             </span>
@@ -77,7 +77,7 @@ function PublicCompanyCard({
       {stockData ? (
         <>
           <div className="mb-3">
-            <div className="text-xl font-bold text-slate-800">
+            <div className="text-xl font-bold text-slate-200">
               {formatPrice(stockData.price)}
             </div>
             <div className={`text-xs ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
@@ -115,9 +115,9 @@ function PublicCompanyCard({
         </>
       ) : (
         <div className="animate-pulse">
-          <div className="h-6 w-24 bg-slate-100 rounded mb-2" />
-          <div className="h-9 w-full bg-slate-100 rounded mb-2" />
-          <div className="h-6 w-32 bg-slate-100 rounded" />
+          <div className="h-6 w-24 bg-slate-800 rounded mb-2" />
+          <div className="h-9 w-full bg-slate-800 rounded mb-2" />
+          <div className="h-6 w-32 bg-slate-800 rounded" />
         </div>
       )}
 
@@ -127,7 +127,7 @@ function PublicCompanyCard({
           return (
             <span
               key={area}
-              className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded"
+              className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded"
             >
               {focusInfo?.icon} {focusInfo?.label || area}
             </span>
@@ -236,7 +236,7 @@ export default function MarketIntelModule() {
     return (
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">📊</span>
-        <h3 className="text-xl font-semibold text-slate-800 mb-2">Market Intel</h3>
+        <h3 className="text-xl font-semibold text-slate-200 mb-2">Market Intel</h3>
         <p className="text-slate-400 mb-4">
           Track space industry companies, stock prices, and funding rounds.
         </p>
@@ -285,7 +285,7 @@ export default function MarketIntelModule() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">📊</span>
           <div>
-            <h2 className="text-2xl font-display font-bold text-slate-800">Market Intel</h2>
+            <h2 className="text-2xl font-display font-bold text-slate-200">Market Intel</h2>
             <p className="text-slate-400 text-sm">Space industry companies & investments</p>
           </div>
         </div>
@@ -307,7 +307,7 @@ export default function MarketIntelModule() {
             }`}
           </span>
           <div className="card p-3 text-center">
-            <div className="text-2xl font-bold text-slate-800">{stats.total}</div>
+            <div className="text-2xl font-bold text-slate-200">{stats.total}</div>
             <div className="text-slate-400 text-xs">Companies</div>
           </div>
           <div className="card p-3 text-center">
@@ -336,7 +336,7 @@ export default function MarketIntelModule() {
       {/* Live Stock Prices */}
       {publicCompanies.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-200 mb-3 flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             Live Stock Prices
           </h3>
@@ -354,7 +354,7 @@ export default function MarketIntelModule() {
                   className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-mono font-medium transition-all ${
                     isSelected
                       ? 'bg-nebula-500/30 text-nebula-300 border border-nebula-500/50'
-                      : 'bg-slate-100 text-slate-500 border border-slate-200 hover:border-slate-400'
+                      : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-500'
                   }`}
                 >
                   {company.ticker}
@@ -378,14 +378,14 @@ export default function MarketIntelModule() {
       {/* Publicly Traded Companies List */}
       {publicCompanies.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-200 mb-3 flex items-center gap-2">
             <span className="text-green-400">📈</span>
             Publicly Traded Companies
             <span className="text-slate-400 font-normal text-sm">({publicCompanies.length})</span>
           </h3>
           <div className="card overflow-hidden">
             {/* Table Header */}
-            <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-slate-100 border-b border-slate-200 text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-slate-800/50 border-b border-slate-700/50 text-xs font-medium text-slate-500 uppercase tracking-wider">
               <div className="col-span-5">Company</div>
               <div className="col-span-2 text-right">Stock Price</div>
               <div className="col-span-2 text-right">Today</div>
@@ -400,19 +400,19 @@ export default function MarketIntelModule() {
                 return (
                   <div
                     key={company.id}
-                    className="grid grid-cols-12 gap-2 items-center px-4 py-3 border-b border-slate-200 last:border-b-0 hover:bg-slate-100 transition-colors"
+                    className="grid grid-cols-12 gap-2 items-center px-4 py-3 border-b border-slate-700/50 last:border-b-0 hover:bg-slate-700/50 transition-colors"
                   >
                     <div className="col-span-5 flex items-center gap-3 min-w-0">
                       <span className="text-lg flex-shrink-0">{countryInfo?.flag || '🌐'}</span>
                       <div className="min-w-0">
-                        <div className="font-medium text-slate-800 text-sm truncate">{company.name}</div>
+                        <div className="font-medium text-slate-200 text-sm truncate">{company.name}</div>
                         <span className="text-nebula-300 font-mono text-xs">{company.exchange}:{company.ticker}</span>
                       </div>
                     </div>
 
                     <div className="col-span-2 text-right">
                       {companyStockData ? (
-                        <span className="text-slate-800 text-sm font-medium font-mono">
+                        <span className="text-slate-200 text-sm font-medium font-mono">
                           {formatPrice(companyStockData.price)}
                         </span>
                       ) : (
@@ -454,14 +454,14 @@ export default function MarketIntelModule() {
       {/* Private Companies List */}
       {companies.filter(c => !c.isPublic).length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-slate-200 mb-3 flex items-center gap-2">
             <span className="text-yellow-400">🔒</span>
             Private Companies
             <span className="text-slate-400 font-normal text-sm">({companies.filter(c => !c.isPublic).length})</span>
           </h3>
           <div className="card overflow-hidden">
             {/* Table Header */}
-            <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-slate-100 border-b border-slate-200 text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-slate-800/50 border-b border-slate-700/50 text-xs font-medium text-slate-500 uppercase tracking-wider">
               <div className="col-span-4">Company</div>
               <div className="col-span-3 text-right">Last Funding</div>
               <div className="col-span-2 text-right">Valuation</div>
@@ -474,12 +474,12 @@ export default function MarketIntelModule() {
                 return (
                   <div
                     key={company.id}
-                    className="grid grid-cols-12 gap-2 items-center px-4 py-3 border-b border-slate-200 last:border-b-0 hover:bg-slate-100 transition-colors"
+                    className="grid grid-cols-12 gap-2 items-center px-4 py-3 border-b border-slate-700/50 last:border-b-0 hover:bg-slate-700/50 transition-colors"
                   >
                     <div className="col-span-4 flex items-center gap-3 min-w-0">
                       <span className="text-lg flex-shrink-0">{countryInfo?.flag || '🌐'}</span>
                       <div className="min-w-0">
-                        <div className="font-medium text-slate-800 text-sm truncate">{company.name}</div>
+                        <div className="font-medium text-slate-200 text-sm truncate">{company.name}</div>
                         <div className="text-xs text-slate-400">
                           {(company.focusAreas as string[]).slice(0, 1).map((area) => {
                             const focusInfo = FOCUS_AREAS.find((f) => f.value === area);
@@ -492,7 +492,7 @@ export default function MarketIntelModule() {
                     <div className="col-span-3 text-right">
                       {company.lastFundingRound ? (
                         <div>
-                          <span className="text-slate-800 text-sm font-medium">
+                          <span className="text-slate-200 text-sm font-medium">
                             {company.lastFundingAmount
                               ? `$${company.lastFundingAmount >= 1000
                                   ? `${(company.lastFundingAmount / 1000).toFixed(1)}B`

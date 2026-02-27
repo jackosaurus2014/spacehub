@@ -113,11 +113,11 @@ export default function SatelliteCard({ satellite, compact = false }: SatelliteC
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-2xl border border-slate-200">
+          <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center text-2xl border border-slate-700">
             {purposeIcon}
           </div>
           <div>
-            <h3 className="font-semibold text-slate-900">{satellite.name}</h3>
+            <h3 className="font-semibold text-slate-100">{satellite.name}</h3>
             <div className="flex items-center gap-2 text-sm">
               <span className="text-slate-400">{satellite.operator}</span>
               <span className="text-slate-300">|</span>
@@ -191,7 +191,7 @@ export default function SatelliteCard({ satellite, compact = false }: SatelliteC
       </div>
 
       {/* External Links */}
-      <div className="flex items-center gap-2 pt-3 border-t border-slate-200">
+      <div className="flex items-center gap-2 pt-3 border-t border-slate-700/50">
         <span className="text-slate-400 text-xs">Track on:</span>
         <a
           href={n2yoUrl}

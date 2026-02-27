@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     'NewSpace conferences',
   ],
   openGraph: {
+    type: 'website',
+    siteName: 'SpaceNexus',
+    locale: 'en_US',
     title: 'Space Industry Conferences & Events | SpaceNexus',
     description:
       'Find and filter 25+ upcoming space industry conferences, trade shows, and networking events worldwide.',
@@ -34,6 +37,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@spacenexus',
+    creator: '@spacenexus',
     title: 'Space Industry Conferences & Events | SpaceNexus',
     description:
       'Find and filter 25+ upcoming space industry conferences, trade shows, and networking events worldwide.',
