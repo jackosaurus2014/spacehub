@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import GuideNavigation from '@/components/guide/GuideNavigation';
+import ReadingTime from '@/components/ui/ReadingTime';
 
 export const revalidate = 3600; // ISR: revalidate every hour
 
@@ -154,7 +155,7 @@ export default function ItarComplianceGuidePage() {
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-star-300">
               <time dateTime="2026-02-08">Last updated: February 2026</time>
               <span className="hidden sm:inline text-star-300/40">|</span>
-              <span>20 min read</span>
+              <ReadingTime wordCount={4000} className="flex items-center gap-1.5" />
               <span className="hidden sm:inline text-star-300/40">|</span>
               <span>By SpaceNexus Research</span>
             </div>

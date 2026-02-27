@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import GuideNavigation from '@/components/guide/GuideNavigation';
+import ReadingTime from '@/components/ui/ReadingTime';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 export const revalidate = 3600;
@@ -114,7 +115,7 @@ export default function SpaceLaunchSchedule2026Page() {
               <span>|</span>
               <span>By SpaceNexus Team</span>
               <span>|</span>
-              <span>15 min read</span>
+              <ReadingTime wordCount={3000} className="flex items-center gap-1.5" />
             </div>
           </header>
 

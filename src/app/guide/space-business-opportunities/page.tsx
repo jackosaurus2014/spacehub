@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import FAQSchema from '@/components/seo/FAQSchema';
 import GuideNavigation from '@/components/guide/GuideNavigation';
+import ReadingTime from '@/components/ui/ReadingTime';
 
 export const revalidate = 3600;
 
@@ -164,7 +165,7 @@ export default function SpaceBusinessOpportunitiesPage() {
               <span>|</span>
               <span>By SpaceNexus Team</span>
               <span>|</span>
-              <span>20 min read</span>
+              <ReadingTime wordCount={4000} className="flex items-center gap-1.5" />
             </div>
           </header>
 
