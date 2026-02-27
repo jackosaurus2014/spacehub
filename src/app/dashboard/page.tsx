@@ -63,6 +63,7 @@ const EXPLORE_MODULES: ModuleItem[] = [
   { icon: '\u{1F9F9}', label: 'Debris Remediation', href: '/debris-remediation', description: 'Active debris removal efforts and space sustainability' },
   { icon: '\u{1F6F8}', label: 'Debris Tracker', href: '/debris-tracker', description: 'Track orbital debris' },
   { icon: '\u{1F680}', label: 'Space Tourism', href: '/space-tourism', description: 'Space tourism providers' },
+  { icon: '\u{1F4F0}', label: 'News Aggregator', href: '/news-aggregator', description: 'Curated multi-source news feed' },
   { icon: '\u2753', label: 'FAQ', href: '/faq', description: 'Frequently asked questions' },
 ];
 
@@ -80,6 +81,7 @@ const INTELLIGENCE_MODULES: ModuleItem[] = [
   { icon: '\u{1F464}', label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes across the industry' },
   { icon: '\u{1F680}', label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies & funding stages' },
   { icon: '\u{1F4CA}', label: 'Report Cards', href: '/report-cards', description: 'Quarterly company performance grades' },
+  { icon: '\u{1F4BC}', label: 'Portfolio Tracker', href: '/portfolio-tracker', description: 'Track space investment portfolios' },
   { icon: '\u{1F4C8}', label: 'Industry Trends', href: '/industry-trends', description: 'Data-backed space industry trend analysis' },
   { icon: '\u{1F4DC}', label: 'Contract Awards', href: '/contract-awards', description: 'Government contract feed' },
   { icon: '\u{1F52C}', label: 'Tech Readiness', href: '/tech-readiness', description: 'Technology readiness levels' },
@@ -88,6 +90,7 @@ const INTELLIGENCE_MODULES: ModuleItem[] = [
 const BUSINESS_MODULES: ModuleItem[] = [
   { icon: '\u{1F4BC}', label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
   { icon: '\u{1F465}', label: 'Space Talent Hub', href: '/space-talent', description: 'Jobs, experts & workforce analytics' },
+  { icon: '\u{1F4CB}', label: 'Space Jobs Board', href: '/jobs', description: 'Browse and post space industry jobs' },
   { icon: '\u{1F517}', label: 'Global Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain & shortage alerts' },
   { icon: '\u26CF\uFE0F', label: 'Space Mining', href: '/space-mining', description: 'Asteroid and planetary mining intelligence' },
   { icon: '\u{1F6E1}\uFE0F', label: 'Space Insurance', href: '/space-insurance', description: 'Risk calculator and market data' },
@@ -121,6 +124,7 @@ const TOOLS_MODULES: ModuleItem[] = [
   { icon: '\u2728', label: 'Constellation Designer', href: '/constellation-designer', description: 'Design satellite constellations' },
   { icon: '\u{1F4B5}', label: 'Unit Economics', href: '/unit-economics', description: 'Revenue modeling calculator' },
   { icon: '\u{1F30D}', label: 'Orbital Calculator', href: '/orbital-calculator', description: 'Orbital mechanics calculator' },
+  { icon: '\u{1F680}', label: 'Mission Simulator', href: '/mission-simulator', description: 'Simulate and plan space missions' },
   { icon: '\u{1F4D6}', label: 'Reading List', href: '/reading-list', description: 'Your saved articles' },
 ];
 

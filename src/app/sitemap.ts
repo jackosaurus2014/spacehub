@@ -215,6 +215,12 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/power-budget-calculator`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/imagery-providers`, changeFrequency: 'monthly' as const, priority: 0.5 },
 
+    // Wave 48 pages
+    { url: `${BASE_URL}/news-aggregator`, changeFrequency: 'hourly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/jobs`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/portfolio-tracker`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/mission-simulator`, changeFrequency: 'weekly' as const, priority: 0.7 },
+
     // Developer pages
     { url: `${BASE_URL}/developer/docs`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/developer/explorer`, changeFrequency: 'monthly' as const, priority: 0.4 },

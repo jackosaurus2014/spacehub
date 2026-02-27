@@ -44,6 +44,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Debris Remediation', href: '/debris-remediation', description: 'Active debris removal efforts and space sustainability' },
   { label: 'Debris Tracker', href: '/debris-tracker', description: 'Track orbital debris' },
   { label: 'Space Tourism', href: '/space-tourism', description: 'Space tourism providers' },
+  { label: 'News Aggregator', href: '/news-aggregator', description: 'Curated multi-source news feed' },
   { label: 'FAQ', href: '/faq', description: 'Frequently asked questions' },
 ];
 
@@ -67,6 +68,7 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },
   { label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies & funding stages' },
   { label: 'Report Cards', href: '/report-cards', description: 'Quarterly company performance grades' },
+  { label: 'Portfolio Tracker', href: '/portfolio-tracker', description: 'Track space investment portfolios' },
   { label: 'Industry Trends', href: '/industry-trends', description: 'Data-backed space industry trend analysis' },
   { label: 'Contract Awards', href: '/contract-awards', description: 'Government contract feed' },
   { label: 'Tech Readiness', href: '/tech-readiness', description: 'Technology readiness levels' },
@@ -80,6 +82,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Business Model Tools', href: '/business-models', description: 'Unit economics & revenue modeling' },
   { label: 'Customer Discovery', href: '/customer-discovery', description: 'Market segments & buyer personas' },
   { label: 'Space Talent Hub', href: '/space-talent', description: 'Jobs, experts & workforce analytics' },
+  { label: 'Space Jobs Board', href: '/jobs', description: 'Browse and post space industry jobs' },
   { label: 'Space Events', href: '/space-events', description: 'Conferences, demos & networking' },
   { label: 'Global Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain & shortage alerts' },
   { label: 'Supply Chain Map', href: '/supply-chain-map', description: 'Interactive supplier relationship map' },
@@ -120,6 +123,7 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Constellation Designer', href: '/constellation-designer', description: 'Design satellite constellations' },
   { label: 'Unit Economics', href: '/unit-economics', description: 'Revenue modeling calculator' },
   { label: 'Orbital Calculator', href: '/orbital-calculator', description: 'Orbital mechanics calculator' },
+  { label: 'Mission Simulator', href: '/mission-simulator', description: 'Simulate and plan space missions' },
   { label: 'Reading List', href: '/reading-list', description: 'Your saved articles' },
 ];
 

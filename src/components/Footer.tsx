@@ -16,6 +16,8 @@ const footerLinks = {
       { label: 'News & Media', href: '/news' },
       { label: 'Satellite Tracker', href: '/satellites' },
       { label: 'Market Intelligence', href: '/market-intel' },
+      { label: 'News Aggregator', href: '/news-aggregator' },
+      { label: 'Space Jobs Board', href: '/jobs' },
     ],
   },
   tools: {
@@ -27,6 +29,8 @@ const footerLinks = {
       { label: 'Power Budget Calculator', href: '/power-budget-calculator' },
       { label: 'Constellation Designer', href: '/constellation-designer' },
       { label: 'Insurance Calculator', href: '/space-insurance' },
+      { label: 'Portfolio Tracker', href: '/portfolio-tracker' },
+      { label: 'Mission Simulator', href: '/mission-simulator' },
     ],
   },
   resources: {
