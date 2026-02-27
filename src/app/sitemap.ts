@@ -221,6 +221,12 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/portfolio-tracker`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/mission-simulator`, changeFrequency: 'weekly' as const, priority: 0.7 },
 
+    // Wave 49 pages
+    { url: `${BASE_URL}/radiation-calculator`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/launch-manifest`, changeFrequency: 'daily' as const, priority: 0.7 },
+    { url: `${BASE_URL}/frequency-database`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/supply-chain-risk`, changeFrequency: 'daily' as const, priority: 0.7 },
+
     // Developer pages
     { url: `${BASE_URL}/developer/docs`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/developer/explorer`, changeFrequency: 'monthly' as const, priority: 0.4 },

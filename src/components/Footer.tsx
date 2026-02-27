@@ -18,6 +18,7 @@ const footerLinks = {
       { label: 'Market Intelligence', href: '/market-intel' },
       { label: 'News Aggregator', href: '/news-aggregator' },
       { label: 'Space Jobs Board', href: '/jobs' },
+      { label: 'Launch Manifest', href: '/launch-manifest' },
     ],
   },
   tools: {
@@ -31,6 +32,7 @@ const footerLinks = {
       { label: 'Insurance Calculator', href: '/space-insurance' },
       { label: 'Portfolio Tracker', href: '/portfolio-tracker' },
       { label: 'Mission Simulator', href: '/mission-simulator' },
+      { label: 'Supply Chain Risk', href: '/supply-chain-risk' },
     ],
   },
   resources: {

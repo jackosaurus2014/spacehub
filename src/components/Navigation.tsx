@@ -45,6 +45,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Debris Tracker', href: '/debris-tracker', description: 'Track orbital debris' },
   { label: 'Space Tourism', href: '/space-tourism', description: 'Space tourism providers' },
   { label: 'News Aggregator', href: '/news-aggregator', description: 'Curated multi-source news feed' },
+  { label: 'Launch Manifest', href: '/launch-manifest', description: 'Global launch schedule & manifest tracker' },
   { label: 'FAQ', href: '/faq', description: 'Frequently asked questions' },
 ];
 
@@ -72,6 +73,7 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Industry Trends', href: '/industry-trends', description: 'Data-backed space industry trend analysis' },
   { label: 'Contract Awards', href: '/contract-awards', description: 'Government contract feed' },
   { label: 'Tech Readiness', href: '/tech-readiness', description: 'Technology readiness levels' },
+  { label: 'Frequency Database', href: '/frequency-database', description: 'Searchable satellite frequency allocations' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
@@ -89,6 +91,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Space Mining', href: '/space-mining', description: 'Asteroid and planetary mining intelligence' },
   { label: 'Space Insurance', href: '/space-insurance', description: 'Risk calculator and market data' },
   { label: 'Manufacturing & Imagery', href: '/space-manufacturing', description: 'In-space manufacturing & EO providers' },
+  { label: 'Supply Chain Risk', href: '/supply-chain-risk', description: 'Supplier risk scoring & disruption alerts' },
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [
@@ -124,6 +127,7 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Unit Economics', href: '/unit-economics', description: 'Revenue modeling calculator' },
   { label: 'Orbital Calculator', href: '/orbital-calculator', description: 'Orbital mechanics calculator' },
   { label: 'Mission Simulator', href: '/mission-simulator', description: 'Simulate and plan space missions' },
+  { label: 'Radiation Calculator', href: '/radiation-calculator', description: 'Space radiation dose & shielding estimator' },
   { label: 'Reading List', href: '/reading-list', description: 'Your saved articles' },
 ];
 
