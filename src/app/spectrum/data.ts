@@ -87,7 +87,7 @@ export const OPERATOR_FILING_STATUSES: { value: string; label: string; color: st
   { value: 'pending', label: 'Pending', color: 'bg-yellow-500/20 text-yellow-400' },
   { value: 'coordinating', label: 'Coordinating', color: 'bg-blue-500/20 text-blue-400' },
   { value: 'denied', label: 'Denied', color: 'bg-red-500/20 text-red-400' },
-  { value: 'expired', label: 'Expired', color: 'bg-gray-500/20 text-gray-400' },
+  { value: 'expired', label: 'Expired', color: 'bg-slate-500/20 text-slate-400' },
 ];
 
 export const SERVICE_LABELS: Record<string, string> = {

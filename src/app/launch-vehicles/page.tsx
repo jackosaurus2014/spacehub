@@ -802,7 +802,7 @@ function getStatusColor(status: VehicleStatus): { bg: string; text: string; bord
     case 'In Development':
       return { bg: 'bg-cyan-900/30', text: 'text-cyan-400', border: 'border-cyan-500/30' };
     case 'Retired':
-      return { bg: 'bg-gray-800/30', text: 'text-gray-400', border: 'border-gray-500/30' };
+      return { bg: 'bg-slate-800/30', text: 'text-slate-400', border: 'border-slate-500/30' };
   }
 }
 
@@ -1528,7 +1528,7 @@ export default function LaunchVehiclesPage() {
                 {reliabilityRanked.map((v, idx) => (
                   <div key={v.id} className="flex items-center gap-4">
                     <div className="flex-shrink-0 w-8 text-center">
-                      <span className={`text-sm font-bold ${idx === 0 ? 'text-yellow-400' : idx === 1 ? 'text-gray-300' : idx === 2 ? 'text-amber-600' : 'text-star-300'}`}>
+                      <span className={`text-sm font-bold ${idx === 0 ? 'text-yellow-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-amber-600' : 'text-star-300'}`}>
                         #{idx + 1}
                       </span>
                     </div>

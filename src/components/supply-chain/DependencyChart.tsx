@@ -182,7 +182,7 @@ export default function DependencyChart({
             <span className="text-slate-400">Tier 2</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-gray-500"></div>
+            <div className="w-3 h-3 rounded-full bg-slate-500"></div>
             <span className="text-slate-400">Tier 3</span>
           </div>
           <div className="flex items-center gap-1 ml-4">

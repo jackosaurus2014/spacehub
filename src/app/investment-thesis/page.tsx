@@ -9,6 +9,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PremiumGate from '@/components/PremiumGate';
 import ConfidenceBadge from '@/components/ui/ConfidenceBadge';
 import SourceCitation from '@/components/ui/SourceCitation';
+import ExportPDFButton from '@/components/ui/ExportPDFButton';
 
 // ============================================================================
 // TYPES
@@ -388,12 +389,17 @@ export default function InvestmentThesisPage() {
         ]} />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <AnimatedPageHeader
-          title="AI Investment Thesis Generator"
-          subtitle="Generate comprehensive, AI-powered investment theses for space companies using SpaceNexus platform intelligence. Powered by Claude AI."
-          breadcrumb="Space Market Intelligence"
-          accentColor="purple"
-        />
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <AnimatedPageHeader
+              title="AI Investment Thesis Generator"
+              subtitle="Generate comprehensive, AI-powered investment theses for space companies using SpaceNexus platform intelligence. Powered by Claude AI."
+              breadcrumb="Space Market Intelligence"
+              accentColor="purple"
+            />
+          </div>
+          <ExportPDFButton className="mt-2 flex-shrink-0" />
+        </div>
 
         {/* Disclaimer */}
         <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg px-4 py-2.5 mb-6">

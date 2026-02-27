@@ -248,7 +248,7 @@ const OBJECT_TYPE_COLORS: Record<string, string> = {
   payload: 'text-green-400',
   rocket_body: 'text-orange-400',
   debris: 'text-red-400',
-  unknown: 'text-gray-400',
+  unknown: 'text-slate-400',
 };
 
 const DEFAULT_OBJECT_TYPE_COLOR = 'text-slate-400';

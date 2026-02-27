@@ -50,12 +50,12 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
 
   const getAgencyStyle = (agency: ContractAgency) => {
     const agencyInfo = CONTRACT_AGENCIES.find((a) => a.value === agency);
-    return agencyInfo ? `${agencyInfo.bgColor} ${agencyInfo.color}` : 'bg-gray-600 text-gray-200';
+    return agencyInfo ? `${agencyInfo.bgColor} ${agencyInfo.color}` : 'bg-slate-600 text-slate-200';
   };
 
   const getStatusStyle = (status: string) => {
     const statusInfo = CONTRACT_STATUS_INFO[status as keyof typeof CONTRACT_STATUS_INFO];
-    return statusInfo ? `${statusInfo.bgColor}` : 'bg-gray-600';
+    return statusInfo ? `${statusInfo.bgColor}` : 'bg-slate-600';
   };
 
   const getTypeInfo = (type: string) => {
@@ -180,7 +180,7 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
                 </span>
 
                 {/* Type Badge */}
-                <span className={`px-2 py-0.5 rounded text-xs font-medium ${typeInfo?.color || 'bg-gray-600'} text-white`}>
+                <span className={`px-2 py-0.5 rounded text-xs font-medium ${typeInfo?.color || 'bg-slate-600'} text-white`}>
                   {contract.type}
                 </span>
 

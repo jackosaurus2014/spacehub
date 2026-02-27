@@ -15,7 +15,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
       <div className="text-center max-w-md">
         <div className="text-5xl mb-4">🏢</div>
         <h2 className="text-xl font-bold text-white mb-2">Company Profile Error</h2>

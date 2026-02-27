@@ -37,7 +37,7 @@ interface LaunchWindowData {
 // ────────────────────────────────────────
 
 const DESTINATION_TYPE_INFO: Record<string, { label: string; icon: string; color: string }> = {
-  moon: { label: 'Moon', icon: '🌙', color: 'text-gray-300' },
+  moon: { label: 'Moon', icon: '🌙', color: 'text-slate-300' },
   planet: { label: 'Planet', icon: '🪐', color: 'text-orange-400' },
   asteroid: { label: 'Asteroid', icon: '☄️', color: 'text-amber-400' },
   lagrange: { label: 'Lagrange Point', icon: '⚖️', color: 'text-cyan-400' },

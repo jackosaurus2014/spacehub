@@ -174,7 +174,7 @@ function formatDate(dateStr: string | null): string {
 }
 
 function getTypeInfo(type: string) {
-  return OPP_TYPES.find(t => t.value === type) || { value: type, label: type, color: 'bg-gray-500/20 text-gray-400' };
+  return OPP_TYPES.find(t => t.value === type) || { value: type, label: type, color: 'bg-slate-500/20 text-slate-400' };
 }
 
 function getCongressionalTypeInfo(type: string) {

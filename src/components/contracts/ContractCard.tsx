@@ -79,13 +79,13 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
         <div className="sticky top-0 bg-slate-900 border-b border-slate-700 p-4 flex items-start justify-between">
           <div className="flex items-center gap-3">
             {/* Agency Badge */}
-            <div className={`px-3 py-1.5 rounded-lg ${agencyInfo?.bgColor || 'bg-gray-600'}`}>
+            <div className={`px-3 py-1.5 rounded-lg ${agencyInfo?.bgColor || 'bg-slate-600'}`}>
               <span className={`font-bold text-lg ${agencyInfo?.color || 'text-white'}`}>
                 {contract.agency}
               </span>
             </div>
             <div>
-              <span className={`px-2 py-0.5 rounded text-xs font-medium ${typeInfo?.color || 'bg-gray-600'} text-white`}>
+              <span className={`px-2 py-0.5 rounded text-xs font-medium ${typeInfo?.color || 'bg-slate-600'} text-white`}>
                 {contract.type}
               </span>
             </div>
@@ -107,7 +107,7 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
 
           {/* Status and Value Row */}
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusInfo?.bgColor || 'bg-gray-600'} text-white`}>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusInfo?.bgColor || 'bg-slate-600'} text-white`}>
               {statusInfo?.label || contract.status}
             </span>
             {contract.value && (

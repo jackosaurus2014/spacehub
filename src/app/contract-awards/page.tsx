@@ -419,7 +419,7 @@ const AGENCY_COLORS: Record<string, string> = {
   NASA: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
   DoD: 'bg-red-500/20 text-red-300 border-red-500/40',
   USSF: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
-  NRO: 'bg-gray-500/20 text-gray-300 border-gray-500/40',
+  NRO: 'bg-slate-500/20 text-slate-300 border-slate-500/40',
   ESA: 'bg-teal-500/20 text-teal-300 border-teal-500/40',
   Commercial: 'bg-green-500/20 text-green-300 border-green-500/40',
   NOAA: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',

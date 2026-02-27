@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import ExportPDFButton from '@/components/ui/ExportPDFButton';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -635,12 +636,17 @@ export default function ReportCardsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* ── Header ───────────────────────────────────────────────────── */}
-        <AnimatedPageHeader
-          title="Industry Report Cards"
-          subtitle="Quarterly analyst-style assessments of major space companies. Grades reflect execution, financial health, competitive positioning, and strategic outlook."
-          icon={<span>📊</span>}
-          accentColor="cyan"
-        />
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <AnimatedPageHeader
+              title="Industry Report Cards"
+              subtitle="Quarterly analyst-style assessments of major space companies. Grades reflect execution, financial health, competitive positioning, and strategic outlook."
+              icon={<span>📊</span>}
+              accentColor="cyan"
+            />
+          </div>
+          <ExportPDFButton className="mt-2 flex-shrink-0" />
+        </div>
 
         {/* ── Summary Stats ────────────────────────────────────────────── */}
         <ScrollReveal>

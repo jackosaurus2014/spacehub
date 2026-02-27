@@ -53,7 +53,7 @@ function ResourceCard({
           <h3 className="font-semibold text-slate-800 text-sm">{resource.name}</h3>
         </div>
         <span
-          className={`text-xs ${availabilityInfo?.color || 'bg-gray-500'} text-white px-2 py-0.5 rounded`}
+          className={`text-xs ${availabilityInfo?.color || 'bg-slate-500'} text-white px-2 py-0.5 rounded`}
         >
           {availabilityInfo?.label || resource.availability}
         </span>

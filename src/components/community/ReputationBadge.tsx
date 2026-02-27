@@ -1,7 +1,7 @@
 'use client';
 
 const REPUTATION_LEVELS = [
-  { min: 0, label: 'Novice', color: 'text-gray-400', bgColor: 'bg-gray-500/10', borderColor: 'border-gray-500/20', badge: '\u{1F311}' },
+  { min: 0, label: 'Novice', color: 'text-slate-400', bgColor: 'bg-slate-500/10', borderColor: 'border-slate-500/20', badge: '\u{1F311}' },
   { min: 50, label: 'Contributor', color: 'text-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20', badge: '\u{1F312}' },
   { min: 200, label: 'Active Member', color: 'text-green-400', bgColor: 'bg-green-500/10', borderColor: 'border-green-500/20', badge: '\u{1F313}' },
   { min: 500, label: 'Expert', color: 'text-purple-400', bgColor: 'bg-purple-500/10', borderColor: 'border-purple-500/20', badge: '\u{1F314}' },
@@ -70,8 +70,8 @@ export default function ReputationBadge({ reputation, size = 'sm' }: ReputationB
           <div className="flex-1 h-1 bg-slate-700/50 rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
-                current.color.includes('gray')
-                  ? 'bg-gray-400'
+                current.color.includes('slate')
+                  ? 'bg-slate-400'
                   : current.color.includes('blue')
                   ? 'bg-blue-400'
                   : current.color.includes('green')

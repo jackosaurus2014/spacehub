@@ -938,7 +938,7 @@ export const REGULATION_CATEGORIES: { value: RegulationCategory; label: string; 
 
 export const EVENT_TYPE_INFO: Record<SpaceEventType, { label: string; icon: string; color: string }> = {
   launch: { label: 'Launch', icon: '🚀', color: 'bg-rocket-500' },
-  moon_mission: { label: 'Moon Mission', icon: '🌙', color: 'bg-gray-400' },
+  moon_mission: { label: 'Moon Mission', icon: '🌙', color: 'bg-slate-400' },
   mars_mission: { label: 'Mars Mission', icon: '🔴', color: 'bg-red-500' },
   rover: { label: 'Rover', icon: '🤖', color: 'bg-yellow-500' },
   payload: { label: 'Payload', icon: '📦', color: 'bg-blue-500' },
@@ -952,7 +952,7 @@ export const EVENT_TYPE_INFO: Record<SpaceEventType, { label: string; icon: stri
 export const EVENT_STATUS_INFO: Record<SpaceEventStatus, { label: string; color: string }> = {
   upcoming: { label: 'Upcoming', color: 'bg-blue-500' },
   in_progress: { label: 'In Progress', color: 'bg-green-500' },
-  completed: { label: 'Completed', color: 'bg-gray-500' },
+  completed: { label: 'Completed', color: 'bg-slate-500' },
   scrubbed: { label: 'Scrubbed', color: 'bg-red-500' },
   tbd: { label: 'TBD', color: 'bg-yellow-500' },
   go: { label: 'GO', color: 'bg-green-600' },
@@ -1499,7 +1499,7 @@ export const RISK_LEVEL_INFO: Record<RiskLevel, { label: string; color: string; 
 };
 
 export const IMPACT_LEVEL_INFO: Record<ImpactLevel, { label: string; scale: number; color: string }> = {
-  none: { label: 'None', scale: 0, color: 'text-gray-400' },
+  none: { label: 'None', scale: 0, color: 'text-slate-400' },
   minor: { label: 'Minor (R1/S1/G1)', scale: 1, color: 'text-green-400' },
   moderate: { label: 'Moderate (R2/S2/G2)', scale: 2, color: 'text-yellow-400' },
   strong: { label: 'Strong (R3/S3/G3)', scale: 3, color: 'text-orange-400' },
@@ -1934,7 +1934,7 @@ export const HELP_REQUEST_STATUSES: { value: HelpRequestStatus; label: string; c
   { value: 'new', label: 'New', color: 'bg-blue-500' },
   { value: 'in_progress', label: 'In Progress', color: 'bg-yellow-500' },
   { value: 'resolved', label: 'Resolved', color: 'bg-green-500' },
-  { value: 'closed', label: 'Closed', color: 'bg-gray-500' },
+  { value: 'closed', label: 'Closed', color: 'bg-slate-500' },
 ];
 
 // ============================================================
@@ -2229,7 +2229,7 @@ export const SUPPLY_CHAIN_TIERS: { value: SupplyChainTier; label: string; color:
   { value: 'prime', label: 'Prime Contractor', color: 'text-blue-400', bgColor: 'bg-blue-500' },
   { value: 'tier1', label: 'Tier 1 Supplier', color: 'text-cyan-400', bgColor: 'bg-cyan-500' },
   { value: 'tier2', label: 'Tier 2 Supplier', color: 'text-green-400', bgColor: 'bg-green-500' },
-  { value: 'tier3', label: 'Tier 3 Supplier', color: 'text-gray-400', bgColor: 'bg-gray-500' },
+  { value: 'tier3', label: 'Tier 3 Supplier', color: 'text-slate-400', bgColor: 'bg-slate-500' },
 ];
 
 export const SUPPLY_CRITICALITY_INFO: Record<SupplyCriticality, { label: string; color: string; bgColor: string }> = {
@@ -2242,7 +2242,7 @@ export const GEOPOLITICAL_RISK_INFO: Record<GeopoliticalRisk, { label: string; c
   high: { label: 'High Risk', color: 'text-red-400', bgColor: 'bg-red-500' },
   medium: { label: 'Medium Risk', color: 'text-yellow-400', bgColor: 'bg-yellow-500' },
   low: { label: 'Low Risk', color: 'text-green-400', bgColor: 'bg-green-500' },
-  none: { label: 'No Risk', color: 'text-gray-400', bgColor: 'bg-gray-500' },
+  none: { label: 'No Risk', color: 'text-slate-400', bgColor: 'bg-slate-500' },
 };
 
 export const SHORTAGE_SEVERITY_INFO: Record<ShortageSeverity, { label: string; color: string; bgColor: string; icon: string }> = {
@@ -2360,7 +2360,7 @@ export const GOV_CONTRACT_STATUS_INFO: Record<GovContractStatus, { label: string
   open: { label: 'Open', color: 'text-green-400', bgColor: 'bg-green-600' },
   closing_soon: { label: 'Closing Soon', color: 'text-yellow-400', bgColor: 'bg-yellow-600' },
   awarded: { label: 'Awarded', color: 'text-purple-400', bgColor: 'bg-purple-600' },
-  closed: { label: 'Closed', color: 'text-gray-400', bgColor: 'bg-gray-600' },
+  closed: { label: 'Closed', color: 'text-slate-400', bgColor: 'bg-slate-600' },
 };
 
 // Category labels
@@ -2468,14 +2468,14 @@ export const MINING_BODY_TYPES: { value: MiningBodyType; label: string; icon: st
 
 // Spectral type info - composition indicators
 export const SPECTRAL_TYPES: { value: SpectralType; label: string; description: string; color: string }[] = [
-  { value: 'C', label: 'C-type (Carbonaceous)', description: 'Carbon-rich, water, organics. ~75% of asteroids.', color: 'bg-gray-600' },
+  { value: 'C', label: 'C-type (Carbonaceous)', description: 'Carbon-rich, water, organics. ~75% of asteroids.', color: 'bg-slate-600' },
   { value: 'S', label: 'S-type (Silicaceous)', description: 'Silicate rocks, iron, nickel. ~17% of asteroids.', color: 'bg-amber-600' },
   { value: 'M', label: 'M-type (Metallic)', description: 'Iron-nickel metal, PGMs. Rare and valuable.', color: 'bg-slate-400' },
   { value: 'V', label: 'V-type (Vestoid)', description: 'Basaltic, from Vesta family.', color: 'bg-purple-600' },
   { value: 'X', label: 'X-type (Various)', description: 'Metallic or carbon-rich. Composition uncertain.', color: 'bg-zinc-500' },
   { value: 'D', label: 'D-type (Dark)', description: 'Very dark, organic-rich. Outer belt.', color: 'bg-stone-700' },
   { value: 'P', label: 'P-type (Primitive)', description: 'Organic-rich, very dark. Outer solar system.', color: 'bg-stone-600' },
-  { value: 'E', label: 'E-type (Enstatite)', description: 'High albedo, enstatite achondrites.', color: 'bg-gray-300' },
+  { value: 'E', label: 'E-type (Enstatite)', description: 'High albedo, enstatite achondrites.', color: 'bg-slate-300' },
   { value: 'B', label: 'B-type', description: 'Blue-sloped, volatile-rich C-type variant.', color: 'bg-blue-600' },
   { value: 'Q', label: 'Q-type', description: 'Fresh, unweathered ordinary chondrite.', color: 'bg-orange-600' },
 ];

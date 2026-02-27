@@ -367,7 +367,7 @@ const ORBIT_TYPES: OrbitType[] = [
       'Not all operators comply with guidelines',
       'No active debris removal capability yet',
     ],
-    color: 'bg-gray-500',
+    color: 'bg-slate-500',
     barHeight: 30,
   },
   {

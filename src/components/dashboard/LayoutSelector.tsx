@@ -59,11 +59,11 @@ export default function LayoutSelector({
       />
 
       {/* Modal */}
-      <div className="relative bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col mx-4">
+      <div className="relative bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col mx-4">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">
+            <h2 className="text-lg font-bold text-slate-100">
               {showPresets ? 'Choose a Template' : 'Dashboard Layouts'}
             </h2>
             <p className="text-sm text-slate-500">
@@ -74,7 +74,7 @@ export default function LayoutSelector({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-100"
+            className="text-slate-400 hover:text-slate-200 p-2 rounded-lg hover:bg-slate-800"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -88,7 +88,7 @@ export default function LayoutSelector({
             <>
               <button
                 onClick={() => setShowPresets(false)}
-                className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-4"
+                className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-300 mb-4"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -104,9 +104,9 @@ export default function LayoutSelector({
                       onCreateFromPreset(preset);
                       setShowPresets(false);
                     }}
-                    className="w-full p-4 rounded-xl border border-slate-200 hover:border-cyan-400/50 hover:bg-cyan-50/20 text-left transition-all"
+                    className="w-full p-4 rounded-xl border border-slate-700 hover:border-cyan-400/50 hover:bg-cyan-500/10 text-left transition-all"
                   >
-                    <p className="text-sm font-semibold text-slate-900">{preset.name}</p>
+                    <p className="text-sm font-semibold text-slate-100">{preset.name}</p>
                     <p className="text-xs text-slate-500 mt-1">{preset.description}</p>
                     <p className="text-xs text-slate-400 mt-2">
                       {preset.widgets.length} widget{preset.widgets.length !== 1 ? 's' : ''}
@@ -120,14 +120,14 @@ export default function LayoutSelector({
                     onCreateBlank();
                     setShowPresets(false);
                   }}
-                  className="w-full p-4 rounded-xl border border-dashed border-slate-300 hover:border-cyan-400/50 hover:bg-cyan-50/20 text-left transition-all"
+                  className="w-full p-4 rounded-xl border border-dashed border-slate-600 hover:border-cyan-400/50 hover:bg-cyan-500/10 text-left transition-all"
                 >
                   <div className="flex items-center gap-2">
                     <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">Blank Dashboard</p>
+                      <p className="text-sm font-semibold text-slate-100">Blank Dashboard</p>
                       <p className="text-xs text-slate-500">Start from scratch</p>
                     </div>
                   </div>
@@ -197,7 +197,7 @@ export default function LayoutSelector({
                                   onDeleteLayout(layout.id);
                                   setDeleteConfirm(null);
                                 }}
-                                className="text-xs text-red-600 hover:text-red-700 font-medium px-2 py-1 bg-red-50 rounded"
+                                className="text-xs text-red-400 hover:text-red-300 font-medium px-2 py-1 bg-red-500/10 rounded"
                               >
                                 Delete
                               </button>
@@ -237,13 +237,13 @@ export default function LayoutSelector({
               {canCreate && (
                 <button
                   onClick={() => setShowPresets(true)}
-                  className="w-full p-4 rounded-xl border border-dashed border-slate-300 hover:border-cyan-400/50 hover:bg-cyan-50/20 text-center transition-all"
+                  className="w-full p-4 rounded-xl border border-dashed border-slate-600 hover:border-cyan-400/50 hover:bg-cyan-500/10 text-center transition-all"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <svg className="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    <span className="text-sm font-medium text-cyan-600">New Layout</span>
+                    <span className="text-sm font-medium text-cyan-400">New Layout</span>
                   </div>
                 </button>
               )}

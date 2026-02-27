@@ -60,7 +60,7 @@ export const CONTRACT_STATUS_INFO: Record<ContractStatus, { label: string; color
   open: { label: 'Open', color: 'text-green-400', bgColor: 'bg-green-600' },
   closing_soon: { label: 'Closing Soon', color: 'text-yellow-400', bgColor: 'bg-yellow-600' },
   awarded: { label: 'Awarded', color: 'text-purple-400', bgColor: 'bg-purple-600' },
-  closed: { label: 'Closed', color: 'text-gray-400', bgColor: 'bg-gray-600' },
+  closed: { label: 'Closed', color: 'text-slate-400', bgColor: 'bg-slate-600' },
 };
 
 // Category labels

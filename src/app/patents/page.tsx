@@ -604,7 +604,7 @@ const GEOGRAPHIC_DISTRIBUTION = [
   { country: 'India', flag: 'IN', share: 3.3, totalPatents: 2050, trend: 'up', color: 'bg-green-500' },
   { country: 'South Korea', flag: 'KR', share: 2.2, totalPatents: 1350, trend: 'up', color: 'bg-indigo-500' },
   { country: 'Russia', flag: 'RU', share: 1.7, totalPatents: 1050, trend: 'down', color: 'bg-slate-800/500' },
-  { country: 'Other', flag: 'OT', share: 4.4, totalPatents: 2750, trend: 'up', color: 'bg-gray-500' },
+  { country: 'Other', flag: 'OT', share: 4.4, totalPatents: 2750, trend: 'up', color: 'bg-slate-500' },
 ];
 
 // ────────────────────────────────────────

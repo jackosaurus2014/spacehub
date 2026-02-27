@@ -21,7 +21,7 @@ export const REPUTATION_POINTS = {
 
 // Reputation levels with thresholds, labels, colors, and badge icons
 export const REPUTATION_LEVELS = [
-  { min: 0, label: 'Novice', color: 'text-gray-400', badge: '\u{1F311}' },         // New Moon
+  { min: 0, label: 'Novice', color: 'text-slate-400', badge: '\u{1F311}' },         // New Moon
   { min: 50, label: 'Contributor', color: 'text-blue-400', badge: '\u{1F312}' },    // Waxing Crescent
   { min: 200, label: 'Active Member', color: 'text-green-400', badge: '\u{1F313}' },// First Quarter
   { min: 500, label: 'Expert', color: 'text-purple-400', badge: '\u{1F314}' },      // Waxing Gibbous

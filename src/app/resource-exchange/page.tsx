@@ -65,7 +65,7 @@ function ResourceRow({
       </td>
       <td className="py-4 px-4">
         <span
-          className={`text-xs ${availabilityInfo?.color || 'bg-gray-500'} text-slate-900 px-2 py-1 rounded`}
+          className={`text-xs ${availabilityInfo?.color || 'bg-slate-500'} text-slate-900 px-2 py-1 rounded`}
         >
           {availabilityInfo?.label}
         </span>

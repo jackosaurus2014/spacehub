@@ -118,7 +118,7 @@ const STATUS_INFO: Record<MissionStatus, { label: string; color: string }> = {
   planned: { label: 'Planned', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
   'in-development': { label: 'In Development', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
   concept: { label: 'Concept', color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' },
-  decommissioned: { label: 'Decommissioned', color: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
+  decommissioned: { label: 'Decommissioned', color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' },
 };
 
 const RISK_COLORS: Record<string, string> = {

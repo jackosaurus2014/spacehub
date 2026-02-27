@@ -306,7 +306,7 @@ const CONFIDENCE_STYLES: Record<ConfidenceLevel, { bg: string; text: string; bor
   Confirmed: { bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/40' },
   Likely: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', border: 'border-yellow-500/40' },
   Tentative: { bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/40' },
-  Speculative: { bg: 'bg-gray-500/20', text: 'text-gray-400', border: 'border-gray-500/40' },
+  Speculative: { bg: 'bg-slate-500/20', text: 'text-slate-400', border: 'border-slate-500/40' },
 };
 
 const CATEGORY_ICONS: Record<MissionCategory, string> = {

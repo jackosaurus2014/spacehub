@@ -421,7 +421,7 @@ function getStatusStyle(status: VehicleStatus): { bg: string; text: string } {
     case 'In Development':
       return { bg: 'bg-cyan-900/30 border border-cyan-500/30', text: 'text-cyan-400' };
     case 'Retired':
-      return { bg: 'bg-gray-800/30 border border-gray-500/30', text: 'text-gray-400' };
+      return { bg: 'bg-slate-800/30 border border-slate-500/30', text: 'text-slate-400' };
   }
 }
 

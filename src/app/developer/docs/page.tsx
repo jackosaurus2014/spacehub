@@ -155,7 +155,7 @@ function CodeExamples({ endpoint }: { endpoint: OpenAPIEndpoint }) {
             onClick={() => setActiveLang(lang)}
             className={`px-3 py-1.5 text-xs rounded-t font-medium transition-colors ${
               activeLang === lang
-                ? 'bg-gray-800 text-cyan-400 border border-b-0 border-slate-600'
+                ? 'bg-slate-800 text-cyan-400 border border-b-0 border-slate-600'
                 : 'bg-slate-800/50 text-slate-400 hover:text-slate-300 border border-b-0 border-transparent'
             }`}
           >
@@ -164,7 +164,7 @@ function CodeExamples({ endpoint }: { endpoint: OpenAPIEndpoint }) {
         ))}
       </div>
       <div className="relative">
-        <pre className="bg-gray-800 rounded-b rounded-tr p-4 text-sm overflow-x-auto border border-slate-600">
+        <pre className="bg-slate-800 rounded-b rounded-tr p-4 text-sm overflow-x-auto border border-slate-600">
           <code className="text-green-400 whitespace-pre">{endpoint.codeExamples[activeLang]}</code>
         </pre>
         <div className="absolute top-2 right-2">
@@ -181,7 +181,7 @@ function JsonBlock({ data, label }: { data: unknown; label?: string }) {
     <div>
       {label && <p className="text-sm text-slate-400 mb-2">{label}</p>}
       <div className="relative">
-        <pre className="bg-gray-800 rounded p-4 text-sm overflow-x-auto border border-slate-600 max-h-96">
+        <pre className="bg-slate-800 rounded p-4 text-sm overflow-x-auto border border-slate-600 max-h-96">
           <code className="text-green-400 whitespace-pre">{jsonString}</code>
         </pre>
         <div className="absolute top-2 right-2">
@@ -538,7 +538,7 @@ function ApiDocsPageInner() {
                 <div>
                   <p className="text-sm text-slate-400 mb-1.5">Option 1: X-API-Key Header (recommended)</p>
                   <div className="relative">
-                    <pre className="bg-gray-800 rounded p-3 border border-slate-600">
+                    <pre className="bg-slate-800 rounded p-3 border border-slate-600">
                       <code className="text-green-400 text-sm">X-API-Key: snx_YOUR_API_KEY</code>
                     </pre>
                     <div className="absolute top-1.5 right-1.5">
@@ -550,7 +550,7 @@ function ApiDocsPageInner() {
                 <div>
                   <p className="text-sm text-slate-400 mb-1.5">Option 2: Bearer Token</p>
                   <div className="relative">
-                    <pre className="bg-gray-800 rounded p-3 border border-slate-600">
+                    <pre className="bg-slate-800 rounded p-3 border border-slate-600">
                       <code className="text-green-400 text-sm">Authorization: Bearer snx_YOUR_API_KEY</code>
                     </pre>
                     <div className="absolute top-1.5 right-1.5">
@@ -692,7 +692,7 @@ function ApiDocsPageInner() {
                     <code className="text-white font-mono text-sm">{err.code}</code>
                   </div>
                   <p className="text-sm text-slate-300 mb-1">{err.description}</p>
-                  <pre className="bg-gray-800 rounded p-2 text-xs border border-slate-600 overflow-x-auto">
+                  <pre className="bg-slate-800 rounded p-2 text-xs border border-slate-600 overflow-x-auto">
                     <code className="text-slate-400">
                       {JSON.stringify({ success: false, error: { code: err.code, message: err.message } }, null, 2)}
                     </code>

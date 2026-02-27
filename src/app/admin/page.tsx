@@ -591,7 +591,7 @@ function FeatureRequestItem({ item, onUpdate }: { item: FeatureRequest; onUpdate
             {item.type === 'existing_module' ? `Module: ${moduleName}` : 'New Module'}
           </p>
         </div>
-        <span className={`text-xs px-2 py-0.5 rounded ${statusInfo?.color || 'bg-gray-500'} text-white`}>
+        <span className={`text-xs px-2 py-0.5 rounded ${statusInfo?.color || 'bg-slate-500'} text-white`}>
           {statusInfo?.label || item.status}
         </span>
       </div>
@@ -675,7 +675,7 @@ function HelpRequestItem({ item, onUpdate }: { item: HelpRequest; onUpdate: () =
             {item.email} &middot; {new Date(item.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
           </p>
         </div>
-        <span className={`text-xs px-2 py-0.5 rounded ${statusInfo?.color || 'bg-gray-500'} text-white`}>
+        <span className={`text-xs px-2 py-0.5 rounded ${statusInfo?.color || 'bg-slate-500'} text-white`}>
           {statusInfo?.label || item.status}
         </span>
       </div>

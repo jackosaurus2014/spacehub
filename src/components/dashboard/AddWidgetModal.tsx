@@ -85,11 +85,11 @@ export default function AddWidgetModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col mx-4">
+      <div className="relative bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col mx-4">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Add Widget</h2>
+            <h2 className="text-lg font-bold text-slate-100">Add Widget</h2>
             <p className="text-sm text-slate-500">
               {selectedModule
                 ? 'Choose a display type'
@@ -98,7 +98,7 @@ export default function AddWidgetModal({
           </div>
           <button
             onClick={handleClose}
-            className="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-100"
+            className="text-slate-400 hover:text-slate-200 p-2 rounded-lg hover:bg-slate-800"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -117,7 +117,7 @@ export default function AddWidgetModal({
                   placeholder="Search modules..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 text-sm"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 text-sm"
                   autoFocus
                 />
               </div>
@@ -137,13 +137,13 @@ export default function AddWidgetModal({
                         p-4 rounded-xl border text-left transition-all
                         ${
                           alreadyAdded
-                            ? 'border-slate-200 bg-slate-50 opacity-60'
-                            : 'border-slate-200 hover:border-cyan-400/50 hover:bg-cyan-50/30 hover:shadow-sm'
+                            ? 'border-slate-700 bg-slate-800/50 opacity-60'
+                            : 'border-slate-700 hover:border-cyan-400/50 hover:bg-cyan-500/10 hover:shadow-sm'
                         }
                       `}
                     >
                       <span className="text-2xl block mb-2">{def.icon}</span>
-                      <p className="text-sm font-semibold text-slate-900">{def.label}</p>
+                      <p className="text-sm font-semibold text-slate-100">{def.label}</p>
                       <p className="text-xs text-slate-400 mt-0.5">
                         {def.supportedTypes.length} view{def.supportedTypes.length !== 1 ? 's' : ''}
                         {alreadyAdded && ' (added)'}
@@ -167,7 +167,7 @@ export default function AddWidgetModal({
                   setSelectedModule(null);
                   setSelectedType(null);
                 }}
-                className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-4"
+                className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-300 mb-4"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -179,7 +179,7 @@ export default function AddWidgetModal({
               <div className="flex items-center gap-3 mb-6">
                 <span className="text-3xl">{selectedDef?.icon}</span>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">{selectedDef?.label}</h3>
+                  <h3 className="text-base font-bold text-slate-100">{selectedDef?.label}</h3>
                   <p className="text-sm text-slate-500">
                     Select how you want this module displayed
                   </p>
@@ -196,13 +196,13 @@ export default function AddWidgetModal({
                       w-full p-4 rounded-xl border text-left transition-all flex items-center gap-4
                       ${
                         selectedType === type
-                          ? 'border-cyan-400 bg-cyan-50/50 ring-1 ring-cyan-400/30'
-                          : 'border-slate-200 hover:border-slate-300'
+                          ? 'border-cyan-400 bg-cyan-500/10 ring-1 ring-cyan-400/30'
+                          : 'border-slate-700 hover:border-slate-600'
                       }
                     `}
                   >
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-slate-900">
+                      <p className="text-sm font-semibold text-slate-100">
                         {WIDGET_TYPE_LABELS[type as keyof typeof WIDGET_TYPE_LABELS] || type}
                       </p>
                       <p className="text-xs text-slate-500 mt-0.5">
@@ -227,10 +227,10 @@ export default function AddWidgetModal({
 
         {/* Footer */}
         {selectedModule && (
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-700">
             <button
               onClick={handleClose}
-              className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 rounded-lg hover:bg-slate-100"
+              className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800"
             >
               Cancel
             </button>

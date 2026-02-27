@@ -211,7 +211,7 @@ export default function SolarFlareTrackerModule() {
                 return (
                   <div key={flare.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${classInfo?.color || 'bg-gray-500'}`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${classInfo?.color || 'bg-slate-500'}`}>
                         {flare.classification}{flare.intensity}
                       </div>
                       <div>

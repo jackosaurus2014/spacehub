@@ -50,7 +50,7 @@ export default function SupplyChainNode({
       case 'tier2':
         return 'border-green-500/50 hover:border-green-400';
       case 'tier3':
-        return 'border-gray-500/50 hover:border-gray-400';
+        return 'border-slate-500/50 hover:border-slate-400';
       default:
         return 'border-slate-600 hover:border-slate-500';
     }

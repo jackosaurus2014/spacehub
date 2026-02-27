@@ -39,7 +39,7 @@ function OpportunityCard({ opportunity }: { opportunity: BusinessOpportunity }) 
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
           <span
-            className={`text-xs ${typeInfo?.color || 'bg-gray-500'} text-white px-2 py-0.5 rounded flex items-center gap-1`}
+            className={`text-xs ${typeInfo?.color || 'bg-slate-500'} text-white px-2 py-0.5 rounded flex items-center gap-1`}
           >
             <span>{typeInfo?.icon}</span>
             <span>{typeInfo?.label}</span>
