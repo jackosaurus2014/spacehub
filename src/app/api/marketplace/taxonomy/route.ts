@@ -16,5 +16,7 @@ export async function GET() {
     verificationLevels: VERIFICATION_LEVELS,
     teamingRoles: TEAMING_ROLES,
     setAsideOptions: SET_ASIDE_OPTIONS,
+  }, {
+    headers: { 'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=3600' },
   });
 }

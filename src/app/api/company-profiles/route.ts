@@ -125,6 +125,8 @@ export async function GET(request: NextRequest) {
         avgCompleteness: Math.round(stats._avg.dataCompleteness || 0),
         sectors: sectors.map((s: { sector: string | null; _count: number }) => ({ sector: s.sector, count: s._count })),
       },
+    }, {
+      headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=600' },
     });
   } catch (error) {
     logger.error('Failed to fetch company profiles', {

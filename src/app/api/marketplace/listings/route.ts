@@ -70,7 +70,9 @@ export async function GET(request: NextRequest) {
       prisma.serviceListing.count({ where: where as any }),
     ]);
 
-    return NextResponse.json({ listings, total, limit, offset });
+    return NextResponse.json({ listings, total, limit, offset }, {
+      headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=600' },
+    });
   } catch (error) {
     logger.error('Marketplace listings search error', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to search listings');

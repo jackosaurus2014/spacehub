@@ -1,0 +1,1101 @@
+// ────────────────────────────────────────
+// Static Data for Space Manufacturing page
+// Extracted for code-splitting / tree-shaking
+// ────────────────────────────────────────
+
+import { createContext } from 'react';
+
+// ────────────────────────────────────────
+// Types — Manufacturing
+// ────────────────────────────────────────
+
+export type TopTabId = 'manufacturing' | 'imagery';
+export type MfgTabId = 'overview' | 'companies' | 'iss-lab' | 'products' | 'processes';
+
+export interface ManufacturingCompany {
+  id: string;
+  name: string;
+  hq: string;
+  founded: number;
+  ticker: string | null;
+  funding: string;
+  trl: number;
+  technologyFocus: string;
+  keyProducts: string[];
+  status: 'operational' | 'development' | 'pre-revenue' | 'concept';
+  milestones: string[];
+  description: string;
+  website: string;
+}
+
+export interface ISSExperimentCategory {
+  name: string;
+  icon: string;
+  count: number;
+  color: string;
+  description: string;
+  keyResults: string[];
+}
+
+export interface ProductCategory {
+  id: string;
+  name: string;
+  icon: string;
+  marketPotential: string;
+  trl: number;
+  timeToMarket: string;
+  keyAdvantage: string;
+  competitiveLandscape: string;
+  leaders: string[];
+  description: string;
+}
+
+export interface MarketProjection {
+  year: number;
+  low: number;
+  mid: number;
+  high: number;
+}
+
+export interface ManufacturingProcess {
+  id: string;
+  name: string;
+  icon: string;
+  category: 'additive' | 'crystal-growth' | 'fiber-optics' | 'bioprinting' | 'regolith' | 'assembly';
+  description: string;
+  microgravityAdvantage: string;
+  techniques: string[];
+  materials: string[];
+  trl: number;
+  keyPlayers: string[];
+  applications: string[];
+  challenges: string[];
+}
+
+export interface SpaceEnvironmentAdvantage {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  enabledProducts: string[];
+  physicsExplanation: string;
+}
+
+// ────────────────────────────────────────
+// Types — Imagery Marketplace
+// ────────────────────────────────────────
+
+export type ImgTabId = 'providers' | 'compare' | 'usecases' | 'market';
+export type SensorType = 'Optical' | 'SAR' | 'Multispectral' | 'Hyperspectral' | 'Thermal';
+export type PricingTier = '$' | '$$' | '$$$';
+export type ProviderStatus = 'Operational' | 'Deploying' | 'Development';
+
+export interface ImageryProvider {
+  id: string;
+  name: string;
+  headquarters: string;
+  sensorType: SensorType;
+  constellationSize: string;
+  resolutionM: string;
+  spectralBands: string;
+  revisitHours: string;
+  swathWidthKm: string;
+  orbit: string;
+  launchYear: number;
+  status: ProviderStatus;
+  pricingTier: PricingTier;
+  archiveAvailable: boolean;
+  taskingAvailable: boolean;
+  coveragePercent: number;
+  description: string;
+  highlights: string[];
+}
+
+export interface UseCase {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  topProviders: string[];
+  requirements: string[];
+  keyMetrics: string[];
+}
+
+export interface MarketTrend {
+  title: string;
+  description: string;
+  color: string;
+  borderColor: string;
+  stats: string[];
+}
+
+// ────────────────────────────────────────
+// Data Context
+// ────────────────────────────────────────
+
+export interface MfgDataContextType {
+  COMPANIES: ManufacturingCompany[];
+  ISS_EXPERIMENT_CATEGORIES: ISSExperimentCategory[];
+  PRODUCT_CATEGORIES: ProductCategory[];
+  MARKET_PROJECTIONS: MarketProjection[];
+  MANUFACTURING_PROCESSES: ManufacturingProcess[];
+  SPACE_ENVIRONMENT_ADVANTAGES: SpaceEnvironmentAdvantage[];
+  IMG_PROVIDERS: ImageryProvider[];
+  IMG_USE_CASES: UseCase[];
+  IMG_MARKET_TRENDS: MarketTrend[];
+  IMG_HERO_STATS: { label: string; value: string; color: string }[];
+  refreshedAt: string | null;
+}
+
+export const MfgDataContext = createContext<MfgDataContextType>({
+  COMPANIES: [],
+  ISS_EXPERIMENT_CATEGORIES: [],
+  PRODUCT_CATEGORIES: [],
+  MARKET_PROJECTIONS: [],
+  MANUFACTURING_PROCESSES: [],
+  SPACE_ENVIRONMENT_ADVANTAGES: [],
+  IMG_PROVIDERS: [],
+  IMG_USE_CASES: [],
+  IMG_MARKET_TRENDS: [],
+  IMG_HERO_STATS: [],
+  refreshedAt: null,
+});
+
+export const FALLBACK_COMPANIES: ManufacturingCompany[] = [
+  {
+    id: 'varda',
+    name: 'Varda Space Industries',
+    hq: 'El Segundo, CA',
+    founded: 2020,
+    ticker: null,
+    funding: '$200M+ (Series C)',
+    trl: 9,
+    technologyFocus: 'Pharmaceutical crystallization & materials processing in microgravity',
+    keyProducts: ['W-Series re-entry capsule', 'Microgravity drug crystallization', 'Ritonavir crystal polymorphs', 'Multi-drug manufacturing pipeline'],
+    status: 'operational',
+    milestones: [
+      'W-1 capsule: successful re-entry and recovery at Utah Test & Training Range (Feb 2024)',
+      'W-2 capsule: second successful re-entry and pharmaceutical production mission (2025)',
+      'Demonstrated repeatable in-space pharmaceutical manufacturing across two missions',
+      'FAA re-entry license obtained after extended regulatory process',
+      'Partnership with US Air Force for hypersonic re-entry data',
+      'Expanding drug manufacturing pipeline beyond ritonavir to multiple compounds',
+    ],
+    description: 'Varda Space Industries is the leading in-space pharmaceutical manufacturing company with two successful missions completed. Their W-Series autonomous capsules are launched as secondary payloads on SpaceX rideshares, process drug compounds in microgravity orbit, then de-orbit and land for recovery. The W-1 mission (Feb 2024) successfully produced ritonavir crystals with a superior polymorph form not achievable on Earth. W-2 (2025) confirmed repeatable manufacturing capability with a second successful re-entry and recovery. Varda is now scaling toward routine production flights and expanding its pharmaceutical pipeline.',
+    website: 'https://varda.com',
+  },
+  {
+    id: 'redwire',
+    name: 'Redwire Corporation',
+    hq: 'Jacksonville, FL',
+    founded: 2020,
+    ticker: 'RDW',
+    funding: 'Public (NYSE)',
+    trl: 9,
+    technologyFocus: 'ISS-based manufacturing: ZBLAN fiber optics, ceramics, bioprinting, deployable structures, in-space servicing',
+    keyProducts: ['ZBLAN fiber optic cable', 'Ceramic manufacturing facility', '3D BioFabrication Facility', 'ROSA solar arrays', 'Additive Manufacturing Facility'],
+    status: 'operational',
+    milestones: [
+      'Multiple ZBLAN fiber optic draws on ISS with commercially viable quality achieved',
+      'Ceramic Manufacturing Module operational on ISS since 2023, multiple production runs completed',
+      'BioFabrication Facility printed human tissue constructs including meniscus and cardiac tissue in orbit',
+      'Awarded NASA contracts for in-space manufacturing research through 2026+',
+      'Revenue exceeding $300M annually across all space infrastructure segments',
+      'Continued ISS manufacturing operations with plans for post-ISS commercial station transition',
+    ],
+    description: 'Redwire Corporation (NYSE: RDW) is the most diversified in-space manufacturing company, operating multiple production facilities aboard the International Space Station. Their ZBLAN fiber optic production has achieved commercially viable quality with dramatically lower signal loss than terrestrial equivalents. The 3D BioFabrication Facility has printed meniscus tissue and cardiac tissue constructs in microgravity. With ISS operations continuing through at least 2030, Redwire is scaling manufacturing throughput while planning transitions to commercial stations for long-term production continuity.',
+    website: 'https://redwirespace.com',
+  },
+  {
+    id: 'space-forge',
+    name: 'Space Forge',
+    hq: 'Cardiff, Wales, UK',
+    founded: 2018,
+    ticker: null,
+    funding: '~$15M (Series A)',
+    trl: 5,
+    technologyFocus: 'Semiconductor & advanced alloy manufacturing in space using returnable satellite platform',
+    keyProducts: ['ForgeStar returnable satellite', 'Space-grown semiconductor wafers', 'Superalloy production'],
+    status: 'development',
+    milestones: [
+      'ForgeStar-0 test mission launched (2022, lost during deployment)',
+      'ForgeStar-1 mission in preparation with improved design',
+      'UK Space Agency grant recipient for in-space manufacturing R&D',
+      'Developing returnable satellite platform for repeated manufacturing runs',
+    ],
+    description: 'Space Forge is developing the ForgeStar platform, a returnable and reusable satellite designed for manufacturing semiconductors and advanced alloys in the microgravity and vacuum of space. Their approach focuses on materials that benefit from the unique space environment -- superior crystal structures for semiconductors, high-purity alloys free from container contamination, and novel metamaterials impossible to create under gravity.',
+    website: 'https://spaceforge.com',
+  },
+  {
+    id: 'gitai',
+    name: 'GITAI',
+    hq: 'Torrance, CA / Tokyo, Japan',
+    founded: 2016,
+    ticker: null,
+    funding: '~$75M+',
+    trl: 6,
+    technologyFocus: 'Robotic assembly, manufacturing, and servicing in space',
+    keyProducts: ['GITAI S2 robotic arm', 'Autonomous assembly robots', 'In-space construction robotics'],
+    status: 'development',
+    milestones: [
+      'S2 robotic arm successfully demonstrated on ISS (2023)',
+      'Completed autonomous panel assembly tasks in orbit',
+      'Demonstrated dexterous manipulation in microgravity',
+      'Contracts with JAXA and NASA for robotic assembly R&D',
+      'Developing lunar surface construction robotics',
+    ],
+    description: 'GITAI is building general-purpose robotic workers for space. Their S2 robotic arm was demonstrated aboard the International Space Station, successfully performing autonomous assembly and panel installation tasks. The company envisions a fleet of robots performing construction, manufacturing, maintenance, and servicing tasks in orbit and on planetary surfaces, enabling large-scale space infrastructure without requiring extensive human EVA time.',
+    website: 'https://gitai.tech',
+  },
+  {
+    id: 'axiom',
+    name: 'Axiom Space',
+    hq: 'Houston, TX',
+    founded: 2016,
+    ticker: null,
+    funding: '$500M+',
+    trl: 7,
+    technologyFocus: 'Commercial space station with integrated research & manufacturing capabilities',
+    keyProducts: ['Axiom Station modules', 'ISS commercial missions (Ax-1 through Ax-4)', 'NASA spacesuit (AxEMU)'],
+    status: 'operational',
+    milestones: [
+      'Ax-1: First all-private mission to ISS (Apr 2022)',
+      'Ax-2: Second private mission with ESA participation (May 2023)',
+      'Ax-3: Third mission with international crew (Jan 2024)',
+      'Ax-4: Fourth private astronaut mission completed (2025)',
+      'First Axiom Station module targeting 2026-2027 launch to ISS',
+      'Manufacturing capabilities planned for standalone station phase',
+    ],
+    description: 'Axiom Space is building the world\'s first commercial space station, initially as modules attached to the ISS before detaching as a free-flying station. Their four completed private astronaut missions (Ax-1 through Ax-4) have included microgravity research payloads and demonstrated sustained commercial operations. The first Axiom Station module is targeting a 2026-2027 launch, and the future standalone station will include dedicated manufacturing bays for pharmaceutical production, advanced materials processing, and bioprinting at commercial scale.',
+    website: 'https://axiomspace.com',
+  },
+  {
+    id: 'vast',
+    name: 'Vast',
+    hq: 'Long Beach, CA',
+    founded: 2021,
+    ticker: null,
+    funding: '$300M+ (Series B)',
+    trl: 6,
+    technologyFocus: 'Artificial gravity space station with integrated manufacturing capabilities',
+    keyProducts: ['Haven-1 single-module station', 'Haven-2 expandable station', 'Artificial gravity research platform'],
+    status: 'development',
+    milestones: [
+      'Haven-1 targeting 2026 launch on Falcon 9',
+      'SpaceX Crew Dragon selected for crew transport',
+      'Developing artificial gravity spin capabilities for later stations',
+      'Manufacturing research partnerships announced',
+      'Founded by Jed McCaleb (co-founder of Stellar, Ripple)',
+      'Haven-1 hardware in advanced manufacturing and integration',
+    ],
+    description: 'Vast is developing Haven-1, a single-module commercial space station targeting launch in 2026 aboard a SpaceX Falcon 9, with crew transported via Crew Dragon. The station hardware is in advanced manufacturing and integration. The company\'s longer-term vision includes larger stations with artificial gravity capability, which would enable a new class of manufacturing processes that benefit from controlled partial gravity rather than pure microgravity or full Earth gravity.',
+    website: 'https://vastspace.com',
+  },
+  {
+    id: 'sierra-space',
+    name: 'Sierra Space',
+    hq: 'Louisville, CO',
+    founded: 2021,
+    ticker: null,
+    funding: '$1.5B+ valuation',
+    trl: 7,
+    technologyFocus: 'Large-scale inflatable habitat (LIFE) with integrated manufacturing and research volume',
+    keyProducts: ['LIFE habitat', 'Dream Chaser spaceplane', 'Shooting Star cargo module'],
+    status: 'development',
+    milestones: [
+      'LIFE habitat passed NASA full-scale burst test (exceeding ISS pressure requirements)',
+      'Dream Chaser Tenacity spaceplane completed and undergoing final preparations for ISS cargo resupply',
+      'LIFE provides 3x volume of traditional rigid modules',
+      'Orbital Reef partnership with Blue Origin for commercial station',
+      'Fully spun off from Sierra Nevada Corporation as independent company',
+    ],
+    description: 'Sierra Space is developing the Large Integrated Flexible Environment (LIFE) habitat, an inflatable space module that provides approximately three times the volume of traditional rigid modules at a fraction of the launch mass. LIFE successfully completed a NASA full-scale burst test, proving its structural integrity at pressures exceeding ISS requirements. The Dream Chaser Tenacity spaceplane is completing final preparations for its inaugural ISS cargo resupply mission. The LIFE habitat is a key component of the Orbital Reef commercial space station (partnered with Blue Origin), designed to support manufacturing, research, and tourism.',
+    website: 'https://sierraspace.com',
+  },
+  {
+    id: 'nanoracks',
+    name: 'Nanoracks (Voyager Space)',
+    hq: 'Houston, TX',
+    founded: 2009,
+    ticker: null,
+    funding: 'Acquired by Voyager Space',
+    trl: 8,
+    technologyFocus: 'ISS commercial airlock, satellite deployment, and in-space services',
+    keyProducts: ['Bishop Airlock', 'CubeSat deployers', 'Outpost Mars habitat', 'StarLab commercial station'],
+    status: 'operational',
+    milestones: [
+      'Bishop Airlock: first commercial airlock on ISS (installed 2020)',
+      '1,800+ payloads deployed or hosted to date',
+      'Over 400 small satellites deployed from ISS via Nanoracks deployers',
+      'StarLab commercial station development underway with Lockheed Martin & Airbus',
+      'Multiple manufacturing experiment hosting missions completed',
+    ],
+    description: 'Nanoracks, now part of Voyager Space, operates the Bishop Airlock on the ISS -- the station\'s first commercially developed and funded airlock. Bishop enables rapid deployment of experiments, CubeSats, and external payloads to the space environment. With over 1,800 payloads processed and 400+ satellites deployed, Nanoracks has been the primary commercial gateway to ISS manufacturing and research. StarLab, their next-generation commercial station being developed with Lockheed Martin and Airbus, will include dedicated manufacturing facilities.',
+    website: 'https://nanoracks.com',
+  },
+  {
+    id: 'orbital-assembly',
+    name: 'Orbital Assembly',
+    hq: 'Fontana, CA',
+    founded: 2019,
+    ticker: null,
+    funding: '~$10M',
+    trl: 3,
+    technologyFocus: 'Large-scale orbital construction and artificial gravity structures',
+    keyProducts: ['Pioneer Station (gravity ring demonstrator)', 'Voyager Station concept', 'DSTAR robotic truss assembly'],
+    status: 'concept',
+    milestones: [
+      'DSTAR prototype: autonomous truss assembly demonstrated in 1-g environment',
+      'Pioneer Station design completed (partial gravity ring for R&D)',
+      'Voyager Station: larger rotating habitat concept for future development',
+      'Exploring manufacturing applications in controlled partial gravity',
+    ],
+    description: 'Orbital Assembly is designing large rotating structures that generate artificial gravity through centripetal force. Their Pioneer Station concept is a smaller demonstrator featuring a gravity ring that could provide variable gravity levels for manufacturing research. The company\'s DSTAR (Demonstrator Structural Truss Assembly Robot) has been tested for autonomous truss construction. While still early-stage, the ability to manufacture in controlled partial gravity opens unique possibilities for processes that benefit from some gravity but not Earth\'s full 1g.',
+    website: 'https://orbitalassembly.com',
+  },
+  {
+    id: 'made-in-space',
+    name: 'Made In Space (Redwire)',
+    hq: 'Jacksonville, FL',
+    founded: 2010,
+    ticker: 'RDW',
+    funding: 'Acquired by Redwire (2020)',
+    trl: 9,
+    technologyFocus: 'Additive manufacturing (3D printing) in microgravity, fiber optics production, on-orbit servicing',
+    keyProducts: ['Additive Manufacturing Facility (AMF)', 'Turbine Ceramic Manufacturing Module', 'Archinaut orbital manufacturing', 'On-orbit 3D printing services'],
+    status: 'operational',
+    milestones: [
+      'First 3D printer on ISS (2014) -- printed first object manufactured in space',
+      'Additive Manufacturing Facility: operational on ISS since 2016, printed 300+ parts to date',
+      'Manufactured first tool printed in space from ground command',
+      'Archinaut program: demonstrated large-scale autonomous manufacturing and assembly',
+      'Acquired by Redwire in 2020, technologies integrated into Redwire portfolio',
+      'AMF continues active operations on ISS through 2026, printing parts for crew and research',
+    ],
+    description: 'Made In Space (now part of Redwire) pioneered additive manufacturing in orbit with the first 3D printer aboard the ISS in 2014. Their Additive Manufacturing Facility (AMF) has produced over 300 parts in space, including tools, medical devices, and structural components, and remains in active operation aboard the ISS. The Archinaut program demonstrated the ability to autonomously manufacture and assemble large structures in orbit. These foundational technologies proved that reliable, repeatable manufacturing in microgravity is viable, and the AMF continues to serve as a production workhorse for on-orbit needs.',
+    website: 'https://redwirespace.com',
+  },
+  {
+    id: 'spacepharma',
+    name: 'SpacePharma',
+    hq: 'Herzliya, Israel / Courgenay, Switzerland',
+    founded: 2012,
+    ticker: null,
+    funding: '~$25M',
+    trl: 7,
+    technologyFocus: 'Miniaturized microgravity lab platforms for pharmaceutical and biotech R&D',
+    keyProducts: ['DIDO miniaturized lab platform', 'Remote-controlled microgravity experiments', 'CubeSat-scale pharma labs'],
+    status: 'operational',
+    milestones: [
+      'Multiple DIDO platform missions flown on ISS and standalone satellites',
+      'Remotely conducted pharmaceutical crystallization experiments in orbit',
+      'Partnerships with major pharmaceutical companies for drug development R&D',
+      'Demonstrated autonomous experiment control from ground stations',
+    ],
+    description: 'SpacePharma operates miniaturized laboratory platforms that enable pharmaceutical and biotechnology companies to conduct microgravity experiments without requiring dedicated spacecraft. Their DIDO platform can fly as an ISS payload or integrated into a CubeSat-class satellite, offering remote-controlled experiment capabilities. Multiple major pharmaceutical companies have used SpacePharma\'s systems to investigate drug crystallization, protein behavior, and bioprocessing in microgravity.',
+    website: 'https://spacepharma.com',
+  },
+  {
+    id: 'yuri',
+    name: 'yuri',
+    hq: 'Meckenbeuren, Germany',
+    founded: 2019,
+    ticker: null,
+    funding: '~$10M',
+    trl: 6,
+    technologyFocus: 'Biotech and pharmaceutical microgravity research services',
+    keyProducts: ['yuri microgravity lab kits', 'Stem cell research in space', 'Bioprinting payloads'],
+    status: 'development',
+    milestones: [
+      'Multiple payload missions to ISS via various launch providers',
+      'Stem cell differentiation experiments in microgravity',
+      'Partnerships with European pharmaceutical and biotech firms',
+      'Developing standardized microgravity experiment hardware',
+    ],
+    description: 'yuri provides turnkey microgravity research services for biotechnology and pharmaceutical companies, focusing on the European market. Their standardized lab kits simplify the process of conducting experiments in space, handling hardware development, launch integration, and data analysis. Key research areas include stem cell biology, tissue engineering, protein crystallization, and drug formulation optimization in microgravity.',
+    website: 'https://yurigravity.com',
+  },
+  {
+    id: 'relativity-space',
+    name: 'Relativity Space',
+    hq: 'Long Beach, CA',
+    founded: 2015,
+    ticker: null,
+    funding: '$1.3B+',
+    trl: 7,
+    technologyFocus: 'Largest 3D-printed rockets using proprietary Stargate metal 3D printers, autonomous manufacturing',
+    keyProducts: ['Terran R (reusable, medium-lift)', 'Stargate 4th-gen metal 3D printer', 'AI-driven factory automation'],
+    status: 'development',
+    milestones: [
+      'Terran 1: first 3D-printed rocket to reach space (March 2023, reached max-Q but did not achieve orbit)',
+      'Pivoted from Terran 1 (small-lift) to Terran R (medium-lift reusable) for commercial viability',
+      'Stargate is the world\'s largest metal 3D printer -- prints rocket structures in days vs. months',
+      '85%+ of Terran 1 by mass was 3D-printed, aiming for 95%+ on Terran R',
+      'Secured multiple launch contracts including with OneWeb and Impulse Space',
+      'Terran R first flight targeting 2026-2027 timeframe',
+    ],
+    description: 'Relativity Space is revolutionizing rocket manufacturing through extreme 3D printing. Their proprietary Stargate system is the world\'s largest metal 3D printer, capable of producing entire rocket structures using directed energy deposition with metal wire feedstock. Terran 1 became the first 3D-printed rocket to reach space in March 2023. The company has pivoted focus to Terran R, a fully reusable medium-lift vehicle designed to compete with Falcon 9, with dramatically reduced part counts (fewer than 1,000 parts vs. 100,000+ in traditional rockets). Their manufacturing approach reduces tooling, lead times, and factory footprint by 10x compared to conventional aerospace fabrication.',
+    website: 'https://relativityspace.com',
+  },
+  {
+    id: 'icon',
+    name: 'ICON',
+    hq: 'Austin, TX',
+    founded: 2017,
+    ticker: null,
+    funding: '$451M+ (Series B)',
+    trl: 6,
+    technologyFocus: 'Large-scale 3D-printed construction for Earth and space, lunar surface construction using ISRU',
+    keyProducts: ['Olympus lunar construction system', 'Vulcan 3D-printed building system', 'Project Artemis habitat prototypes'],
+    status: 'development',
+    milestones: [
+      'Awarded $57.2M NASA contract for Olympus lunar construction technology development',
+      'Built first 3D-printed homes for sale in Austin, TX (Community First! Village and Wolf Ranch)',
+      'Mars Dune Alpha: 3D-printed simulated Mars habitat at Johnson Space Center for year-long crew missions',
+      'Vulcan construction system prints structures using locally-sourced concrete/regolith materials',
+      'Developing Olympus system to print landing pads, roads, and habitats on the lunar surface',
+      'Partnership with BIG (Bjarke Ingels Group) for space architecture design',
+    ],
+    description: 'ICON is the leading construction technology company bridging terrestrial 3D-printed buildings with lunar and Mars surface construction. Their Vulcan system has produced the first permitted 3D-printed homes in the US. The Olympus system, funded by NASA, is being developed for autonomous construction on the Moon using in-situ regolith as feedstock -- potentially printing landing pads, blast shields, roads, and habitats without requiring materials from Earth. Mars Dune Alpha, their 1,700-sq-ft simulated Mars habitat at NASA JSC, is hosting year-long analog missions to prepare for crewed Mars missions.',
+    website: 'https://iconbuild.com',
+  },
+  {
+    id: 'ai-spacefactory',
+    name: 'AI SpaceFactory',
+    hq: 'New York, NY',
+    founded: 2017,
+    ticker: null,
+    funding: '~$15M',
+    trl: 5,
+    technologyFocus: 'Autonomous robotic construction for Mars and lunar habitats using bio-composite and ISRU materials',
+    keyProducts: ['MARSHA Mars habitat', 'LINA lunar habitat', 'TERA terrestrial 3D-printed structures', 'Autonomous robotic construction platform'],
+    status: 'development',
+    milestones: [
+      'Won NASA 3D-Printed Habitat Challenge (Phase 3, Level 5) with MARSHA habitat design',
+      'MARSHA: autonomously 3D-printed habitat using basalt fiber/PLA bio-composite, demonstrated full-scale construction',
+      'LINA lunar habitat design using sintered regolith -- selected for NASA architectural studies',
+      'TERA: commercially available Earth-based 3D-printed structure derived from space technology',
+      'Developing autonomous construction robotics that operate without human intervention',
+    ],
+    description: 'AI SpaceFactory designs and builds habitats for Mars, the Moon, and Earth using advanced robotics and novel materials. Their MARSHA concept won the NASA 3D-Printed Habitat Challenge, demonstrating a vertically-oriented Mars habitat autonomously printed from a basalt fiber and PLA bio-composite derived from Martian resources. LINA is their lunar habitat concept using sintered regolith. The company\'s Earth-based TERA structures commercialize space construction technology for sustainable terrestrial building, while their autonomous construction platform is designed to operate on planetary surfaces without human oversight.',
+    website: 'https://aispacefactory.com',
+  },
+  {
+    id: 'orbital-composites',
+    name: 'Orbital Composites',
+    hq: 'San Jose, CA',
+    founded: 2016,
+    ticker: null,
+    funding: '~$10M',
+    trl: 5,
+    technologyFocus: 'Continuous fiber composite manufacturing in space, including fiber optic cable production',
+    keyProducts: ['In-space fiber optic manufacturing', 'Continuous composite structures', 'Orbital manufacturing platform'],
+    status: 'development',
+    milestones: [
+      'Developing fiber optic cable manufacturing process for microgravity production',
+      'Continuous fiber composite printing technology demonstrated terrestrially',
+      'NASA SBIR contracts for in-space manufacturing research',
+      'Working on specialty optical fibers that benefit from microgravity production',
+    ],
+    description: 'Orbital Composites is developing continuous fiber composite manufacturing technology for space applications, with a focus on producing specialty fiber optic cables in microgravity. Their approach leverages the benefits of the space environment -- absence of convection currents and containerless processing -- to produce optical fibers with dramatically improved transmission properties. The company also develops continuous composite printing technology for building large structures in orbit using carbon fiber and other advanced materials.',
+    website: 'https://orbitalcomposites.com',
+  },
+  {
+    id: 'techshot',
+    name: 'TechShot Inc.',
+    hq: 'Greenville, IN',
+    founded: 1988,
+    ticker: null,
+    funding: 'Private (revenue-generating)',
+    trl: 8,
+    technologyFocus: 'BioFabrication Facility on ISS for organ and tissue bioprinting, life science payloads',
+    keyProducts: ['BioFabrication Facility (BFF)', 'Multi-use Variable-g Platform (MVP)', '3D BioFabrication Facility upgrade', 'ADvanced Space Experiment Processor (ADSEP)'],
+    status: 'operational',
+    milestones: [
+      'BioFabrication Facility operational on ISS since 2019 (in partnership with Redwire for operations)',
+      'Successfully printed meniscus tissue, cardiac tissue, and partial knee constructs in orbit',
+      'BFF demonstrates scaffold-free bioprinting -- tissues maintain 3D shape without gravitational collapse',
+      'Multi-use Variable-g Platform provides controlled centrifugal gravity on ISS for comparative research',
+      '35+ years of spaceflight hardware development for NASA and commercial customers',
+      'Upgraded BFF with enhanced resolution and multi-material printing capabilities',
+    ],
+    description: 'TechShot is a veteran spaceflight hardware company that developed the BioFabrication Facility (BFF), a sophisticated bioprinter operating aboard the International Space Station. The BFF has successfully printed human tissue constructs including meniscus, cardiac, and partial knee tissue in microgravity. The key advantage of bioprinting in space is that soft tissue constructs maintain their 3D shape without requiring artificial scaffolding, as they don\'t collapse under their own weight. TechShot also operates the Multi-use Variable-g Platform, a centrifuge facility on ISS that enables experiments at variable gravity levels from microgravity to 2g.',
+    website: 'https://techshot.com',
+  },
+  {
+    id: 'tethers-unlimited',
+    name: 'Tethers Unlimited (AMERGINT Technologies)',
+    hq: 'Bothell, WA',
+    founded: 1994,
+    ticker: null,
+    funding: 'Acquired by AMERGINT Technologies',
+    trl: 6,
+    technologyFocus: 'In-space manufacturing of large structures, antennas, and trusses via Firmamentum SpiderFab technology',
+    keyProducts: ['Firmamentum (in-space manufacturing division)', 'SpiderFab robotic fabrication', 'Trusselator truss manufacturing', 'MakerSat deployment platform', 'Refabricator recycling system'],
+    status: 'development',
+    milestones: [
+      'NASA-funded SpiderFab program for autonomous in-space fabrication of large structures',
+      'Trusselator: demonstrated manufacturing of carbon fiber trusses in simulated space conditions',
+      'Refabricator: ISS-bound recycling system to convert plastic waste into 3D printing feedstock',
+      'MakerSat: platform for deploying in-space manufactured structures from a CubeSat-class vehicle',
+      'Developing km-scale antenna reflectors manufactured on-orbit (impossible to launch pre-assembled)',
+      'Acquired by AMERGINT Technologies, continuing in-space manufacturing development',
+    ],
+    description: 'Tethers Unlimited (now part of AMERGINT Technologies) developed the Firmamentum division for in-space manufacturing of structures too large to launch pre-assembled. Their SpiderFab technology uses robotic systems to manufacture and assemble large truss structures, antenna reflectors, and solar arrays directly in orbit. The Trusselator demonstrated the ability to fabricate carbon fiber composite trusses in space conditions. Their Refabricator system was developed to recycle plastic waste into 3D printer feedstock on the ISS, enabling a closed-loop manufacturing cycle in space. The company envisions manufacturing km-scale structures on-orbit that would be impossible to launch from Earth.',
+    website: 'https://amergint.com',
+  },
+  {
+    id: 'lunar-resources',
+    name: 'Lunar Resources',
+    hq: 'Houston, TX',
+    founded: 2018,
+    ticker: null,
+    funding: '~$12M',
+    trl: 4,
+    technologyFocus: 'ISRU (In-Situ Resource Utilization) for lunar construction -- extracting metals and manufacturing from regolith',
+    keyProducts: ['Molten regolith electrolysis (MRE) system', 'Lunar metal extraction', 'In-situ construction materials', 'Solar cell manufacturing from lunar regolith'],
+    status: 'development',
+    milestones: [
+      'Developing molten regolith electrolysis to extract iron, aluminum, silicon, and oxygen from lunar soil',
+      'NASA SBIR/STTR contracts for ISRU technology development',
+      'Demonstrated metal extraction from simulated lunar regolith in laboratory conditions',
+      'Working on manufacturing solar cells and structural metals directly from lunar materials',
+      'Partnership with NASA for Artemis program resource utilization studies',
+    ],
+    description: 'Lunar Resources is developing In-Situ Resource Utilization (ISRU) technology to extract useful metals and manufacturing materials directly from lunar regolith. Their molten regolith electrolysis (MRE) system heats lunar soil to ~1,600\u00B0C and uses electrolysis to separate it into oxygen (for breathing and propellant) and metals including iron, aluminum, silicon, and titanium (for construction and manufacturing). This approach could enable lunar bases to manufacture solar cells, structural beams, wiring, and other components from local materials rather than launching everything from Earth, dramatically reducing the cost of sustained lunar presence.',
+    website: 'https://lunarresources.space',
+  },
+];
+
+export const FALLBACK_ISS_EXPERIMENT_CATEGORIES: ISSExperimentCategory[] = [
+  {
+    name: 'Materials Science',
+    icon: '🔬',
+    count: 420,
+    color: 'text-blue-400',
+    description: 'Crystal growth, metal alloys, composites, ceramics, and optical fiber production in microgravity',
+    keyResults: [
+      'ZBLAN fiber optics with 10-100x lower signal loss than terrestrial equivalents',
+      'Superior semiconductor crystal growth with fewer defects',
+      'Novel metal alloy compositions impossible to mix under gravity',
+      'Ceramic sintering at lower temperatures in microgravity',
+      'Improved aerogel production with more uniform pore structures',
+    ],
+  },
+  {
+    name: 'Pharmaceutical & Biotech',
+    icon: '💊',
+    count: 380,
+    color: 'text-green-400',
+    description: 'Drug crystallization, protein crystallography, tissue engineering, and bioprocessing',
+    keyResults: [
+      'Protein crystals grown 10-100x larger than on Earth for structural analysis',
+      'Ritonavir (HIV drug) crystal polymorph with improved bioavailability (Varda)',
+      'Monoclonal antibody formulation improvements in microgravity',
+      'Stem cell expansion and differentiation enhanced in microgravity',
+      'Organ-on-chip models showing more realistic behavior in space',
+    ],
+  },
+  {
+    name: 'Bioprinting & Tissue Engineering',
+    icon: '🧬',
+    count: 85,
+    color: 'text-purple-400',
+    description: '3D printing of human tissues, organs, and biological structures in microgravity',
+    keyResults: [
+      'First human cardiac tissue constructs bioprinted in orbit (Redwire BFF)',
+      'Meniscus tissue printed without scaffolding support (microgravity advantage)',
+      'Retinal tissue organoids grown in microgravity showed improved structure',
+      'Bone tissue constructs with improved mineralization in space',
+    ],
+  },
+  {
+    name: 'Technology Demonstrations',
+    icon: '🛠️',
+    count: 310,
+    color: 'text-orange-400',
+    description: 'Additive manufacturing, robotic assembly, thermal management, and process validation',
+    keyResults: [
+      'Over 200 3D-printed parts produced by AMF on ISS',
+      'First tool manufactured in space from ground command (2014)',
+      'GITAI S2 robotic arm autonomous assembly demonstration',
+      'Fiber optic cable draws with production-grade quality achieved',
+      'Bishop Airlock enabling rapid commercial payload deployment',
+    ],
+  },
+  {
+    name: 'Earth & Space Science',
+    icon: '🌍',
+    count: 520,
+    color: 'text-cyan-400',
+    description: 'Combustion science, fluid dynamics, fundamental physics, and Earth observation',
+    keyResults: [
+      'Cool flames discovery -- combustion at temperatures previously thought impossible',
+      'Capillary flow experiments informing fuel tank and life support design',
+      'Colloid studies revealing self-assembly patterns for nanomaterial production',
+    ],
+  },
+  {
+    name: 'Human Research',
+    icon: '👨\u200D🚀',
+    count: 350,
+    color: 'text-red-400',
+    description: 'Human physiology, radiation biology, countermeasures, and medical technology',
+    keyResults: [
+      'Telomere lengthening and gene expression changes documented (Twins Study)',
+      'Bone density loss countermeasures developed and validated',
+      'Immune system changes characterized for long-duration missions',
+    ],
+  },
+];
+
+export const FALLBACK_PRODUCT_CATEGORIES: ProductCategory[] = [
+  {
+    id: 'zblan',
+    name: 'ZBLAN Fiber Optics',
+    icon: '🔮',
+    marketPotential: '$1.5B-$5B/year',
+    trl: 7,
+    timeToMarket: '2026-2028',
+    keyAdvantage: '10-100x lower signal loss than silica fibers, enabling longer repeater-less spans',
+    competitiveLandscape: 'Redwire (lead), FOMS Inc., Thorlabs (terrestrial competitor). Space-produced ZBLAN has demonstrated dramatically superior optical properties.',
+    leaders: ['Redwire', 'FOMS Inc.', 'Flawless Photonics'],
+    description: 'ZBLAN (ZrF4-BaF2-LaF3-AlF3-NaF) is a fluoride glass that, when drawn into fiber in microgravity, avoids the crystallization defects that plague terrestrial production. Space-produced ZBLAN fibers have demonstrated attenuation rates 10-100x lower than Earth-made equivalents, potentially revolutionizing long-haul telecommunications, undersea cables, and specialized sensing applications. At $1M+/km for specialty fiber applications, even small production quantities can be commercially viable.',
+  },
+  {
+    id: 'pharma',
+    name: 'Pharmaceutical Crystallization',
+    icon: '💊',
+    marketPotential: '$500M-$2B/year',
+    trl: 7,
+    timeToMarket: '2025-2027',
+    keyAdvantage: 'Access to superior crystal polymorphs, improved drug formulation, enhanced bioavailability',
+    competitiveLandscape: 'Varda Space Industries (lead), SpacePharma, yuri, Merck (pharma partner). First-mover advantage with FDA pathway being established.',
+    leaders: ['Varda Space Industries', 'SpacePharma', 'yuri'],
+    description: 'Microgravity enables crystal growth free from sedimentation and convection, producing larger, more uniform crystals and access to polymorphic forms not achievable on Earth. Varda\'s W-1 mission demonstrated production of ritonavir in a crystal form with potentially improved bioavailability. The pharmaceutical industry invests $150B+ annually in R&D, and even incremental improvements in drug formulation can be worth billions.',
+  },
+  {
+    id: 'bioprinting',
+    name: 'Bioprinting & Tissue Engineering',
+    icon: '🧬',
+    marketPotential: '$2B-$8B/year (long-term)',
+    trl: 5,
+    timeToMarket: '2028-2032',
+    keyAdvantage: 'Microgravity enables scaffold-free 3D printing of complex tissues without gravitational collapse',
+    competitiveLandscape: 'Redwire/BFF (ISS operational), Techshot (bioprinting), academic partnerships. Early-stage but transformative potential.',
+    leaders: ['Redwire (3D BioFabrication Facility)', 'Techshot', 'nScrypt'],
+    description: 'In microgravity, bioprinted tissue constructs maintain their 3D structure without requiring artificial scaffolding, as soft tissues do not collapse under their own weight. This enables printing of complex vascularized structures, functional organ tissues, and patient-specific implants. Redwire\'s BFF has successfully printed cardiac and meniscus tissue in orbit. Long-term, this could address the organ transplant shortage ($30B+ market) and revolutionize regenerative medicine.',
+  },
+  {
+    id: 'semiconductors',
+    name: 'Semiconductor Wafers',
+    icon: '🔌',
+    marketPotential: '$800M-$3B/year',
+    trl: 4,
+    timeToMarket: '2028-2032',
+    keyAdvantage: 'Defect-free crystal growth, novel doping profiles, superior carrier mobility',
+    competitiveLandscape: 'Space Forge (lead), academic programs (InGaAs, GaAs wafer growth). Very early commercial stage.',
+    leaders: ['Space Forge', 'Various university programs'],
+    description: 'Semiconductor crystals grown in microgravity exhibit fewer defects, more uniform doping distribution, and superior electrical properties compared to terrestrial Czochralski or Bridgman growth. Gallium arsenide (GaAs) and indium gallium arsenide (InGaAs) wafers for high-power RF, photovoltaic, and optoelectronic applications are the primary targets. Space Forge is developing the ForgeStar returnable satellite platform specifically for semiconductor production, though the technology remains in early development.',
+  },
+  {
+    id: 'alloys',
+    name: 'Advanced Alloys & Superalloys',
+    icon: '🔩',
+    marketPotential: '$200M-$1B/year',
+    trl: 4,
+    timeToMarket: '2029-2033',
+    keyAdvantage: 'Containerless processing, immiscible metal mixing, novel phase structures',
+    competitiveLandscape: 'Space Forge, ISS experiments (NASA/ESA), Redwire Ceramic Manufacturing Module. Primarily research stage.',
+    leaders: ['Space Forge', 'Redwire', 'NASA/ESA research programs'],
+    description: 'Microgravity enables containerless processing (electromagnetic or acoustic levitation) of metals, eliminating contamination from crucible walls. It also allows mixing of metals that separate under gravity due to density differences (immiscible alloys), creating novel materials with unique properties. Applications include high-temperature turbine blades, radiation shielding, biocompatible implant materials, and ultra-high-strength structural components.',
+  },
+  {
+    id: 'optical',
+    name: 'Optical Components & Crystals',
+    icon: '🔭',
+    marketPotential: '$300M-$1.5B/year',
+    trl: 5,
+    timeToMarket: '2027-2030',
+    keyAdvantage: 'Larger, higher-purity crystals with superior optical properties for lasers, sensors, and telecommunications',
+    competitiveLandscape: 'Redwire, SpacePharma (protein crystals), university programs. Protein crystallography already commercial via ISS.',
+    leaders: ['Redwire', 'SpacePharma', 'Various university labs'],
+    description: 'Microgravity crystal growth produces larger, more uniform optical crystals with fewer defects for applications in laser systems, infrared sensors, and nonlinear optical devices. Protein crystallography in space has already demonstrated commercial value, with structures of pharmaceutical targets solved at higher resolution than ground-based methods. The market for specialized optical components, including for defense and telecommunications, continues to grow rapidly.',
+  },
+];
+
+export const FALLBACK_MARKET_PROJECTIONS: MarketProjection[] = [
+  { year: 2024, low: 1.5, mid: 2.1, high: 2.8 },
+  { year: 2026, low: 2.8, mid: 4.5, high: 6.5 },
+  { year: 2028, low: 5.5, mid: 9.0, high: 14.0 },
+  { year: 2030, low: 10.0, mid: 18.0, high: 32.0 },
+  { year: 2032, low: 18.0, mid: 35.0, high: 62.0 },
+  { year: 2035, low: 35.0, mid: 70.0, high: 140.0 },
+];
+
+export const FALLBACK_MANUFACTURING_PROCESSES: ManufacturingProcess[] = [
+  {
+    id: '3d-printing-metals',
+    name: '3D Printing -- Metals (Additive Manufacturing)',
+    icon: '🔥',
+    category: 'additive',
+    description: 'Metal additive manufacturing in space uses directed energy deposition, powder bed fusion, or wire-fed processes to build metallic parts layer by layer. In microgravity, melt pool dynamics differ significantly -- surface tension dominates over gravity-driven convection, producing more uniform microstructures. Techniques like Direct Metal Laser Sintering (DMLS) and Electron Beam Melting (EBM) are adapted for space environments.',
+    microgravityAdvantage: 'Elimination of gravity-driven convection in melt pools produces more uniform grain structures and reduced porosity. Containerless processing via electromagnetic or acoustic levitation enables ultra-pure alloys free from crucible contamination. Immiscible metal mixing becomes possible, creating novel alloy compositions.',
+    techniques: ['Direct Metal Laser Sintering (DMLS)', 'Electron Beam Melting (EBM)', 'Directed Energy Deposition (DED)', 'Wire Arc Additive Manufacturing (WAAM)', 'Cold Spray Additive'],
+    materials: ['Titanium alloys (Ti-6Al-4V)', 'Inconel / Nickel superalloys', 'Stainless steels', 'Aluminum alloys', 'Copper alloys', 'Refractory metals (tungsten, molybdenum)'],
+    trl: 7,
+    keyPlayers: ['Relativity Space', 'Redwire (AMF)', 'Made In Space', 'NASA MSFC'],
+    applications: ['Structural spacecraft components', 'Replacement parts on-demand', 'Large truss structures', 'Engine components', 'Radiation shielding'],
+    challenges: ['Powder containment in microgravity', 'Heat dissipation without convection', 'Quality control and inspection in orbit', 'Feedstock resupply logistics'],
+  },
+  {
+    id: '3d-printing-polymers',
+    name: '3D Printing -- Polymers & Composites',
+    icon: '🖨️',
+    category: 'additive',
+    description: 'Polymer and composite 3D printing was the first additive manufacturing process demonstrated in space, with the Made In Space printer producing the first 3D-printed object on the ISS in 2014. Fused Deposition Modeling (FDM) and continuous fiber composite printing are now routine on the ISS, enabling on-demand production of tools, fixtures, and experimental hardware.',
+    microgravityAdvantage: 'Reduced sagging and warping of overhanging features allows more complex geometries without support structures. Layer adhesion can be improved due to more uniform thermal gradients. Continuous fiber composites can be oriented in any direction without gravity-induced fiber settling.',
+    techniques: ['Fused Deposition Modeling (FDM)', 'Stereolithography (SLA)', 'Continuous Fiber Reinforced Printing', 'Multi-material Extrusion'],
+    materials: ['ABS / ULTEM / PEEK polymers', 'PLA bio-composites', 'Carbon fiber reinforced polymers', 'PETG and specialty engineering plastics', 'Recycled feedstock (from Refabricator)'],
+    trl: 9,
+    keyPlayers: ['Redwire (AMF on ISS)', 'Made In Space', 'Tethers Unlimited (Refabricator)', 'ICON (regolith composites)'],
+    applications: ['On-demand tools and spare parts', 'Experimental fixtures and housings', 'CubeSat structures', 'Medical devices for crew', 'Habitat interior components'],
+    challenges: ['Outgassing in enclosed habitats', 'Limited material selection vs. terrestrial printers', 'Part size constraints of current ISS printers', 'Fire safety with polymer feedstocks'],
+  },
+  {
+    id: '3d-printing-ceramics',
+    name: '3D Printing -- Ceramics',
+    icon: '🏺',
+    category: 'additive',
+    description: 'Ceramic additive manufacturing in space produces high-temperature components such as turbine blades, electronic substrates, and thermal protection systems. Redwire\'s Ceramic Manufacturing Module on the ISS has demonstrated sintering of ceramic parts in microgravity, achieving more uniform density distribution than terrestrial equivalents.',
+    microgravityAdvantage: 'More uniform particle distribution during sintering (no gravity-induced settling). Reduced density gradients in final parts. Possibility of containerless sintering for ultra-pure ceramics. More uniform pore structures in porous ceramics.',
+    techniques: ['Powder Bed Sintering', 'Binder Jetting', 'Direct Ink Writing', 'Stereolithography of ceramic slurries'],
+    materials: ['Alumina (Al2O3)', 'Silicon carbide (SiC)', 'Zirconia (ZrO2)', 'Barium titanate (piezoelectric)', 'Lunar regolith simulants'],
+    trl: 6,
+    keyPlayers: ['Redwire (Ceramic Manufacturing Module)', 'NASA', 'ESA'],
+    applications: ['Turbine engine components', 'Electronic substrates', 'Thermal protection tiles', 'Biomedical implants', 'Sensor housings'],
+    challenges: ['High sintering temperatures in space', 'Powder handling in microgravity', 'Quality assurance of sintered parts', 'Shrinkage control'],
+  },
+  {
+    id: 'crystal-growth',
+    name: 'Crystal Growth (Protein & Semiconductor)',
+    icon: '💎',
+    category: 'crystal-growth',
+    description: 'Crystal growth in microgravity eliminates buoyancy-driven convection and sedimentation, producing larger, more perfect crystals with fewer defects. This applies to protein crystals for pharmaceutical structure determination, semiconductor crystals for electronics, and optical crystals for photonics. Protein crystals grown in space can be 10-100x larger than Earth-grown counterparts.',
+    microgravityAdvantage: 'Elimination of sedimentation allows crystals to grow uniformly in all directions. Absence of buoyancy-driven convection creates a more stable depletion zone around the growing crystal, resulting in fewer defects. Diffusion-dominated transport produces superior crystal quality. Access to unique polymorphic forms not achievable under gravity.',
+    techniques: ['Vapor Diffusion (hanging drop / sitting drop)', 'Counter-diffusion', 'Bridgman Growth (semiconductors)', 'Czochralski Growth (adapted for microgravity)', 'Float-zone processing'],
+    materials: ['Protein crystals (enzymes, antibodies, drug targets)', 'Gallium arsenide (GaAs)', 'Indium gallium arsenide (InGaAs)', 'Silicon (ultra-pure)', 'Cadmium zinc telluride (CZT)', 'Ritonavir and other drug compounds'],
+    trl: 8,
+    keyPlayers: ['Varda Space Industries', 'SpacePharma', 'Redwire', 'Space Forge', 'JAXA / Mitsubishi'],
+    applications: ['Drug structure determination (X-ray crystallography)', 'Pharmaceutical production (superior polymorphs)', 'High-efficiency solar cells', 'Infrared detectors', 'High-power RF electronics', 'Radiation detectors'],
+    challenges: ['Sample containment and handling', 'Temperature control precision', 'Return to Earth without damaging crystals', 'Scale-up from research to production quantities'],
+  },
+  {
+    id: 'fiber-optics',
+    name: 'Fiber Optics (ZBLAN & Specialty Fibers)',
+    icon: '🔮',
+    category: 'fiber-optics',
+    description: 'ZBLAN (ZrF4-BaF2-LaF3-AlF3-NaF) and other fluoride glass optical fibers are among the most near-term commercially viable space manufacturing products. When drawn in microgravity, these fibers avoid the crystallization that plagues terrestrial production, achieving attenuation rates 10-100x lower than Earth-made equivalents. At $150-300+/meter for specialty fibers, even small production quantities are economically viable.',
+    microgravityAdvantage: 'Suppression of crystallization during fiber drawing due to absence of convection currents and gravity-driven density variations. The fiber preform maintains uniform temperature distribution during drawing, resulting in an amorphous (non-crystalline) structure with dramatically lower signal loss. Containerless processing eliminates surface contamination.',
+    techniques: ['Preform Drawing', 'Double-Crucible Method', 'Containerless Fiber Drawing', 'Continuous Pull in Microgravity'],
+    materials: ['ZBLAN fluoride glass', 'Fluoroindate glass', 'Chalcogenide glass', 'Heavy metal fluoride glass', 'Specialty photonic crystal fiber preforms'],
+    trl: 7,
+    keyPlayers: ['Redwire', 'FOMS Inc.', 'Flawless Photonics', 'Orbital Composites', 'Thorlabs (terrestrial competitor)'],
+    applications: ['Long-haul telecommunications (lower signal loss = fewer repeaters)', 'Submarine fiber optic cables', 'Mid-infrared spectroscopy', 'Medical laser delivery systems', 'Military/defense sensing', 'Quantum communication networks'],
+    challenges: ['Scaling from meters to kilometers of production', 'Preform manufacturing and delivery', 'Splicing space-made fibers to terrestrial networks', 'Competing with improving terrestrial silica fiber technology'],
+  },
+  {
+    id: 'bioprinting',
+    name: 'Bioprinting & Tissue Engineering',
+    icon: '🧬',
+    category: 'bioprinting',
+    description: 'Bioprinting in microgravity enables scaffold-free fabrication of complex 3D tissue constructs that would collapse under their own weight on Earth. The BioFabrication Facility on the ISS has printed cardiac tissue, meniscus, and other constructs that maintain their shape in microgravity. This technology could eventually address the organ transplant shortage and revolutionize regenerative medicine.',
+    microgravityAdvantage: 'Soft tissue constructs maintain 3D shape without artificial scaffolding -- cells and bioinks don\'t sag or collapse under gravity. More uniform cell distribution throughout the construct. Spherical organoid formation (perfect geometry) instead of flattened structures. Vascularization patterns can develop more naturally in 3D without directional gravity bias.',
+    techniques: ['Extrusion Bioprinting', 'Magnetic Levitation Bioprinting', 'Droplet-on-Demand Bioprinting', 'Light-Assisted Bioprinting (DLP)', 'Organoid Self-Assembly'],
+    materials: ['Collagen bioinks', 'Gelatin methacrylate (GelMA)', 'Alginate hydrogels', 'Decellularized extracellular matrix (dECM)', 'Stem cells (iPSC, MSC)', 'Patient-derived cell suspensions'],
+    trl: 5,
+    keyPlayers: ['Redwire (BFF)', 'TechShot', 'nScrypt', 'Aspect Biosystems', 'Organaut (Russian ISS experiment)'],
+    applications: ['Patient-specific organ transplants', 'Meniscus and cartilage repair', 'Cardiac tissue patches', 'Retinal tissue for vision restoration', 'Drug testing tissue models', 'Bone and skeletal tissue grafts'],
+    challenges: ['Cell viability during launch and processing', 'Maintaining sterility in orbit', 'Returning living tissue constructs to Earth', 'Maturation and vascularization timelines', 'Regulatory pathway for space-made implants'],
+  },
+  {
+    id: 'regolith-processing',
+    name: 'Regolith Processing (ISRU)',
+    icon: '🌑',
+    category: 'regolith',
+    description: 'In-Situ Resource Utilization (ISRU) transforms lunar or Martian regolith into usable construction materials, metals, and oxygen. Processes include sintering (heating regolith into solid blocks), molten regolith electrolysis (extracting metals and oxygen), and 3D printing with regolith feedstock. ISRU is considered essential for sustainable lunar and Mars presence, as launching all construction materials from Earth is prohibitively expensive.',
+    microgravityAdvantage: 'On planetary surfaces (Moon/Mars), reduced gravity (1/6g and 1/3g respectively) changes sintering and casting dynamics. The primary advantage is economic: using local materials eliminates ~$1M/kg launch costs to the lunar surface. Vacuum environment on the Moon enables high-purity metal processing. Absence of atmosphere prevents oxidation during metalworking.',
+    techniques: ['Sintering / Microwave Sintering', 'Molten Regolith Electrolysis (MRE)', 'Regolith 3D Printing (binder jetting)', 'Solar Thermal Processing', 'Carbothermal Reduction', 'Ice Electrolysis (for propellant)'],
+    materials: ['Lunar regolith (basaltic)', 'Mars regolith (iron-rich)', 'Extracted metals (iron, aluminum, titanium, silicon)', 'Oxygen (as byproduct)', 'Water ice (polar regions)', 'Regolith-derived glass and ceramics'],
+    trl: 4,
+    keyPlayers: ['ICON (Olympus)', 'AI SpaceFactory', 'Lunar Resources', 'Redwire', 'NASA (ISRU program)', 'ESA'],
+    applications: ['Lunar landing pads and blast shields', 'Habitat structures and radiation shielding', 'Roads and infrastructure', 'Solar cells from lunar silicon', 'Oxygen for life support and propellant', 'Metal stock for further manufacturing'],
+    challenges: ['Abrasive and electrostatically-charged regolith', 'High energy requirements for processing', 'Equipment durability in harsh environments', 'Varying regolith composition across sites', 'Long-duration autonomous operation requirements'],
+  },
+  {
+    id: 'large-structure-assembly',
+    name: 'Large Structure Assembly & In-Space Construction',
+    icon: '🏗️',
+    category: 'assembly',
+    description: 'Manufacturing and assembling structures in orbit that are too large to fit within any launch vehicle fairing. This includes massive antenna reflectors, solar arrays, space station components, and trusses that can be fabricated and assembled by robotic systems directly in space. This approach overcomes the fundamental launch constraint -- structures manufactured in zero-g need not survive launch loads.',
+    microgravityAdvantage: 'Structures manufactured in space don\'t need to survive launch vibration and acceleration loads, enabling much lighter and more efficient designs. No fairing size constraints -- structures can be arbitrarily large. Assembly in zero-g requires minimal structural support during construction. Welding and joining in vacuum produces high-quality bonds.',
+    techniques: ['Robotic Truss Assembly', 'Autonomous Additive Construction', 'Composite Pultrusion in Orbit', 'Electron Beam Welding in Vacuum', 'Friction Stir Welding', 'Inflatable Structure Deployment'],
+    materials: ['Carbon fiber composites', 'Aluminum alloys', 'Titanium structures', 'CFRP trusses', 'Metallic meshes (antenna reflectors)', 'Inflatable Kevlar/Vectran (LIFE habitat)'],
+    trl: 6,
+    keyPlayers: ['Redwire (Archinaut)', 'Made In Space', 'Tethers Unlimited (SpiderFab)', 'GITAI', 'Maxar (robotic arms)', 'Sierra Space (LIFE)'],
+    applications: ['Kilometer-scale antenna reflectors', 'Large solar power arrays', 'Space station modules and trusses', 'Orbital fuel depots', 'Space-based solar power infrastructure', 'Deep space communication arrays'],
+    challenges: ['Autonomous robotic reliability', 'Thermal cycling during construction', 'Inspection and quality verification at scale', 'Debris collision risk for large structures', 'Power requirements for manufacturing'],
+  },
+];
+
+export const FALLBACK_SPACE_ENVIRONMENT_ADVANTAGES: SpaceEnvironmentAdvantage[] = [
+  {
+    id: 'microgravity',
+    name: 'Microgravity (~10^-6 g)',
+    icon: '🪶',
+    description: 'Near-weightlessness eliminates buoyancy-driven convection, sedimentation, and hydrostatic pressure. Diffusion becomes the dominant transport mechanism, enabling processes impossible under gravity.',
+    enabledProducts: ['ZBLAN fiber optics', 'Protein crystals', 'Semiconductor wafers', 'Bioprinted tissues', 'Uniform alloys', 'Scaffold-free organoids'],
+    physicsExplanation: 'In microgravity, there is no density-driven stratification of materials. Heavier components don\'t sink and lighter ones don\'t float. This means metals with different densities can be uniformly mixed, crystals grow symmetrically in all directions, and biological tissues maintain 3D shape without scaffolding. The Rayleigh number approaches zero, suppressing convection and enabling diffusion-limited growth -- the key to superior crystal quality.',
+  },
+  {
+    id: 'vacuum',
+    name: 'Ultra-High Vacuum',
+    icon: '🌌',
+    description: 'The vacuum of space (~10^-12 torr in LEO shadow) is far more pure than any vacuum achievable on Earth. This enables containerless processing, ultra-pure material synthesis, and contamination-free surfaces.',
+    enabledProducts: ['Ultra-pure semiconductors', 'Contamination-free alloys', 'Thin film deposition', 'Electron beam welding', 'Atomic layer deposition'],
+    physicsExplanation: 'Earth\'s best vacuum chambers achieve ~10^-10 torr with enormous pumping systems. Space provides ~10^-12 torr (in Earth\'s shadow) for free. This eliminates oxide formation on metal surfaces during processing, enables containerless levitation processing of reactive metals, and provides an ideal environment for thin film deposition and surface treatments. The free vacuum extends essentially infinitely, unlike bounded terrestrial chambers.',
+  },
+  {
+    id: 'temperature',
+    name: 'Extreme Temperature Range',
+    icon: '🌡️',
+    description: 'Objects in LEO experience temperatures from -157 degrees C (shadow) to +121 degrees C (direct sunlight), with deep space approaching -270 degrees C. This free thermal gradient can be harnessed for manufacturing processes.',
+    enabledProducts: ['Directional solidification', 'Cryogenic processing', 'Thermal gradient crystal growth', 'Freeze-casting of ceramics'],
+    physicsExplanation: 'The Sun provides ~1,361 W/m2 of thermal energy for free in LEO. The cold of Earth\'s shadow and deep space provides an infinite heat sink. This temperature differential can drive Czochralski crystal growth, directional solidification of alloys, and other thermal processes without requiring active heating or cooling systems. Thermal management becomes a design advantage rather than a constraint.',
+  },
+  {
+    id: 'radiation',
+    name: 'Radiation Environment',
+    icon: '☢️',
+    description: 'While often considered a hazard, space radiation can be harnessed for specialized material modification including radiation crosslinking, sterilization, and semiconductor doping.',
+    enabledProducts: ['Radiation-crosslinked polymers', 'Sterilized biomedical products', 'Modified semiconductor properties', 'Radiation-hardened electronics testing'],
+    physicsExplanation: 'The space radiation environment includes galactic cosmic rays, solar particle events, and trapped radiation (Van Allen belts). While damaging to electronics and biology, controlled exposure can be used for crosslinking polymers to improve their thermal and mechanical properties, sterilizing biomedical products, and studying radiation effects on materials for space qualification -- all without the cost of terrestrial radiation facilities.',
+  },
+  {
+    id: 'unlimited-volume',
+    name: 'Unlimited Processing Volume',
+    icon: '♾️',
+    description: 'Space provides essentially infinite volume for manufacturing processes and product storage. There are no walls, floors, or ceilings constraining the size of manufactured structures.',
+    enabledProducts: ['Kilometer-scale antennas', 'Massive solar arrays', 'Space station structures', 'Tethered systems', 'Solar sails'],
+    physicsExplanation: 'On Earth, manufacturing is constrained by factory size, clean room dimensions, and transportation infrastructure. In space, a robotic manufacturing system can build structures of arbitrary size -- limited only by material supply and construction time. This fundamentally changes what is possible: antenna reflectors hundreds of meters across, solar arrays spanning kilometers, and habitats much larger than any launch fairing. Structures designed for zero-g also require far less material, as they need not support their own weight.',
+  },
+];
+
+export const STATUS_STYLES: Record<string, { label: string; color: string; bg: string }> = {
+  operational: { label: 'Operational', color: 'text-green-400', bg: 'bg-green-900/30' },
+  active: { label: 'Operational', color: 'text-green-400', bg: 'bg-green-900/30' },
+  development: { label: 'In Development', color: 'text-yellow-400', bg: 'bg-yellow-900/30' },
+  'pre-revenue': { label: 'Pre-Revenue', color: 'text-orange-400', bg: 'bg-orange-900/30' },
+  concept: { label: 'Concept', color: 'text-purple-400', bg: 'bg-purple-900/30' },
+};
+export const DEFAULT_STATUS_STYLE = { label: 'Unknown', color: 'text-star-400', bg: 'bg-slate-700/30' };
+
+export const MFG_TABS: { id: MfgTabId; label: string; icon: string }[] = [
+  { id: 'overview', label: 'Overview', icon: '🏭' },
+  { id: 'companies', label: 'Companies', icon: '🏢' },
+  { id: 'processes', label: 'Processes', icon: '⚙️' },
+  { id: 'iss-lab', label: 'ISS Lab', icon: '🧪' },
+  { id: 'products', label: 'Products & Markets', icon: '📦' },
+];
+
+// ────────────────────────────────────────
+// Data — Imagery Marketplace
+// ────────────────────────────────────────
+
+export const FALLBACK_IMG_PROVIDERS: ImageryProvider[] = [
+  {
+    id: 'maxar', name: 'Maxar Intelligence (Advent International)', headquarters: 'Westminster, CO, USA', sensorType: 'Optical',
+    constellationSize: '8 satellites (WorldView Legion expanded + heritage)', resolutionM: '0.30',
+    spectralBands: '8 multispectral + panchromatic', revisitHours: '3-5 (with full Legion)', swathWidthKm: '14.5',
+    orbit: 'SSO, ~450-770 km', launchYear: 2007, status: 'Operational', pricingTier: '$$$',
+    archiveAvailable: true, taskingAvailable: true, coveragePercent: 95,
+    description: 'Industry leader in very high resolution commercial satellite imagery, now operating as Maxar Intelligence following acquisition by Advent International (completed 2024). WorldView Legion constellation provides 30cm native resolution with rapid revisit across multiple orbital planes. Heritage fleet includes WorldView-2, WorldView-3 (31cm, SWIR capable), and GeoEye-1. SecureWatch platform serves defense and intelligence communities.',
+    highlights: ['30cm native resolution -- highest commercially available', 'WorldView-3 offers 8 SWIR bands for material identification', '20+ year image archive (back to IKONOS era)', 'Acquired by Advent International, rebranded as Maxar Intelligence'],
+  },
+  {
+    id: 'planet', name: 'Planet Labs PBC', headquarters: 'San Francisco, CA, USA', sensorType: 'Multispectral',
+    constellationSize: '220+ (PlanetScope SuperDove) + 21 (SkySat) + 2 (Tanager)', resolutionM: '3.0 (PlanetScope), 0.5 (SkySat)',
+    spectralBands: '8 bands (SuperDove), 400+ (Tanager hyperspectral)', revisitHours: '24 (daily global)',
+    swathWidthKm: '24.6 (PlanetScope), 23x5 (SkySat)', orbit: 'SSO, ~475-500 km', launchYear: 2013,
+    status: 'Operational', pricingTier: '$$', archiveAvailable: true, taskingAvailable: true, coveragePercent: 100,
+    description: 'Operates the largest commercial Earth observation constellation with 220+ PlanetScope SuperDove satellites imaging the entire landmass daily at 3m resolution. SkySat provides sub-meter tasking capability. Tanager hyperspectral satellites (launched 2024) built with NASA/JPL detect methane and CO2 emissions. Planetary Variables and Planet Insights deliver analysis-ready data feeds and automated change detection.',
+    highlights: ['Only provider imaging entire Earth landmass every single day', 'Tanager hyperspectral for greenhouse gas detection (400+ bands)', 'SkySat sub-meter video and collect capability', 'Planet Insights / Planetary Variables for automated analytics'],
+  },
+  {
+    id: 'airbus', name: 'Airbus Defence & Space', headquarters: 'Toulouse, France', sensorType: 'Optical',
+    constellationSize: '6 (Pleiades Neo 3/4, Pleiades 1A/1B, SPOT 6/7)', resolutionM: '0.30 (Pleiades Neo), 0.50 (Pleiades), 1.5 (SPOT)',
+    spectralBands: '4 MS + pan (Pleiades Neo), 4 MS + pan (SPOT)', revisitHours: '24 (any point on Earth)',
+    swathWidthKm: '14 (Pleiades Neo), 60 (SPOT)', orbit: 'SSO, ~500-694 km', launchYear: 2012,
+    status: 'Operational', pricingTier: '$$$', archiveAvailable: true, taskingAvailable: true, coveragePercent: 95,
+    description: 'Major European EO provider operating the Pleiades Neo constellation (30cm native resolution, launched 2021-2022) alongside heritage Pleiades (50cm) and SPOT (1.5m) satellites. OneAtlas platform provides cloud-based access to imagery, basemaps, and analytics. Key supplier to European defence and government customers.',
+    highlights: ['Pleiades Neo: 30cm resolution with 14km swath width', 'SPOT 6/7 provides wide-area 1.5m coverage', 'OneAtlas cloud platform and Living Library archive', 'Strong European government and defence customer base'],
+  },
+  {
+    id: 'capella', name: 'Capella Space', headquarters: 'San Francisco, CA, USA', sensorType: 'SAR',
+    constellationSize: '10 operational satellites', resolutionM: '0.25-0.50 (Spotlight), 1.0 (Stripmap)',
+    spectralBands: 'X-band SAR (single polarization)', revisitHours: '1-6 (average latency)',
+    swathWidthKm: '5 (Spot), 10 (Strip), 40 (Sliding Spot)', orbit: 'SSO, ~525 km', launchYear: 2020,
+    status: 'Operational', pricingTier: '$$', archiveAvailable: true, taskingAvailable: true, coveragePercent: 85,
+    description: 'Leading US commercial SAR provider with sub-25cm resolution spotlight capability. Acadia-generation satellites deliver industry-leading SAR resolution day or night, through clouds and smoke. Platform offers automated change detection, coherent change detection (CCD), and interferometric SAR (InSAR) products. Key US defense and intelligence contractor.',
+    highlights: ['Sub-25cm SAR resolution -- sharpest commercial radar imagery', 'All-weather, day/night imaging capability', 'Automated tasking with sub-hour collection latency', 'InSAR and coherent change detection products'],
+  },
+  {
+    id: 'iceye', name: 'ICEYE', headquarters: 'Espoo, Finland', sensorType: 'SAR',
+    constellationSize: '30+ operational satellites', resolutionM: '0.25 (Spot Fine), 1.0 (Strip), 3.0 (Scan)',
+    spectralBands: 'X-band SAR (VV polarization)', revisitHours: '4-20 (depending on mode)',
+    swathWidthKm: '5 (Spot), 30 (Strip), 100 (Scan)', orbit: 'SSO & mid-inclination, ~570 km', launchYear: 2018,
+    status: 'Operational', pricingTier: '$$', archiveAvailable: true, taskingAvailable: true, coveragePercent: 90,
+    description: 'Finnish SAR microsatellite operator with the world\'s largest commercial SAR constellation (30+ satellites). Pioneered microsatellite SAR technology enabling rapid revisit. Strong flood monitoring and insurance analytics business.',
+    highlights: ['World\'s largest commercial SAR constellation', '25cm Spot Fine resolution with rapid revisit', 'Industry-leading flood extent and damage analytics', 'Persistent monitoring and change detection solutions'],
+  },
+  {
+    id: 'satellogic', name: 'Satellogic', headquarters: 'Buenos Aires, Argentina', sensorType: 'Multispectral',
+    constellationSize: '22 operational satellites', resolutionM: '0.70 (multispectral), 0.50 (panchromatic)',
+    spectralBands: '4 MS + pan, hyperspectral option (29 bands)', revisitHours: '12-24',
+    swathWidthKm: '5-10', orbit: 'SSO, ~475-500 km', launchYear: 2020,
+    status: 'Deploying', pricingTier: '$', archiveAvailable: true, taskingAvailable: true, coveragePercent: 75,
+    description: 'Argentine NewSpace company offering sub-meter multispectral imagery at disruptive pricing. Constellation of 22+ microsatellites provides 70cm multispectral and 50cm panchromatic resolution. Also operates hyperspectral payloads. Pursuing constellation expansion to 200+ satellites for daily global coverage.',
+    highlights: ['Most affordable sub-meter commercial imagery provider', 'Hyperspectral capability alongside multispectral', 'Vertically integrated satellite manufacturing', 'Targeting 200+ satellite constellation for daily global coverage'],
+  },
+  {
+    id: 'blacksky', name: 'BlackSky Technology', headquarters: 'Herndon, VA, USA', sensorType: 'Optical',
+    constellationSize: '16 operational satellites', resolutionM: '0.50-1.0',
+    spectralBands: '4 MS + pan', revisitHours: '1-4 (rapid revisit)',
+    swathWidthKm: '4.4', orbit: 'Low-inclination + SSO, ~430-450 km', launchYear: 2018,
+    status: 'Operational', pricingTier: '$$', archiveAvailable: true, taskingAvailable: true, coveragePercent: 80,
+    description: 'Real-time geospatial intelligence company combining satellite imagery with AI analytics. Operates 16 Gen-2 satellites in low-inclination and SSO orbits for rapid revisit of populated areas. Spectra AI platform fuses imagery with open-source intelligence for automated monitoring and alerting.',
+    highlights: ['Sub-1m resolution with rapid revisit focus', 'Spectra AI platform for automated geospatial intelligence', 'Dawn-to-dusk orbit strategy for maximum revisit', 'Integrated OSINT + satellite intelligence fusion'],
+  },
+  {
+    id: 'umbra', name: 'Umbra', headquarters: 'Santa Barbara, CA, USA', sensorType: 'SAR',
+    constellationSize: '6 operational satellites', resolutionM: '0.16-0.25 (Spotlight), 1.0 (Stripmap)',
+    spectralBands: 'X-band SAR (dual-pol capable)', revisitHours: '12-36',
+    swathWidthKm: '5 (Spot), 15 (Strip)', orbit: 'SSO, ~525 km', launchYear: 2021,
+    status: 'Deploying', pricingTier: '$$', archiveAvailable: true, taskingAvailable: true, coveragePercent: 60,
+    description: 'US commercial SAR company with industry-leading 16cm resolution spotlight mode. Open data model with SAR data available for direct download. Deploying constellation of next-generation satellites with improved imaging modes and throughput.',
+    highlights: ['16cm SAR resolution -- among finest commercial radar imagery', 'Open data model with direct download access', 'Dual-polarization capable for enhanced analytics', 'Expanding constellation for improved revisit'],
+  },
+  {
+    id: 'pixxel', name: 'Pixxel', headquarters: 'Bengaluru, India', sensorType: 'Hyperspectral',
+    constellationSize: '6 satellites (Fireflies constellation, fully deployed 2025)', resolutionM: '5.0',
+    spectralBands: '150+ contiguous bands (400-2500nm VNIR-SWIR)', revisitHours: '24-48',
+    swathWidthKm: '40', orbit: 'SSO, ~550 km', launchYear: 2022,
+    status: 'Operational', pricingTier: '$$', archiveAvailable: true, taskingAvailable: true, coveragePercent: 65,
+    description: 'Indian hyperspectral imaging company operating the fully deployed Fireflies constellation (launched on SpaceX in early 2025) for commercial hyperspectral Earth observation. Six satellites capture 150+ contiguous spectral bands from visible through SWIR wavelengths at 5m spatial resolution. Aurora platform provides analysis-ready hyperspectral analytics.',
+    highlights: ['150+ spectral bands from VNIR through SWIR', 'First commercial hyperspectral constellation at 5m resolution -- fully operational', 'Aurora analytics platform for automated spectral analysis', 'Applications in agriculture, mining, oil & gas, environment'],
+  },
+  {
+    id: 'wyvern', name: 'Wyvern', headquarters: 'Edmonton, Canada', sensorType: 'Hyperspectral',
+    constellationSize: '3 (Dragonette pathfinders)', resolutionM: '2.0-5.0 (target)',
+    spectralBands: '32+ bands (VNIR, 400-1000nm)', revisitHours: '48-72',
+    swathWidthKm: '40 (target)', orbit: 'SSO, ~550 km', launchYear: 2023,
+    status: 'Deploying', pricingTier: '$', archiveAvailable: false, taskingAvailable: true, coveragePercent: 20,
+    description: 'Canadian hyperspectral satellite startup focused on precision agriculture and environmental monitoring. Dragonette pathfinder satellites validated the proprietary deployable optics technology. Uses innovative folded optics design for higher resolution from smaller satellites.',
+    highlights: ['Innovative deployable optics for high-res from small sats', 'Focus on precision agriculture analytics', '32+ spectral bands in VNIR range', 'Canadian Space Agency supported technology'],
+  },
+  {
+    id: 'satvu', name: 'SatVu (Satellite Vu)', headquarters: 'London, UK', sensorType: 'Thermal',
+    constellationSize: '1 operational (HotSat-1) + 7 planned', resolutionM: '3.5 (thermal MWIR)',
+    spectralBands: 'Mid-wave infrared (MWIR, 3-5 micron)', revisitHours: '24-48 (planned constellation: 1-3 hrs)',
+    swathWidthKm: '10', orbit: 'SSO, ~500 km', launchYear: 2023,
+    status: 'Deploying', pricingTier: '$$', archiveAvailable: true, taskingAvailable: true, coveragePercent: 30,
+    description: 'UK-based thermal imaging satellite company. HotSat-1 (launched June 2023) provides 3.5m thermal resolution -- highest commercially available from space. Measures building-level heat emissions for energy efficiency, urban heat island mapping, industrial monitoring, and carbon emissions estimation.',
+    highlights: ['3.5m thermal resolution -- best commercial thermal from space', 'Building-level heat loss detection and energy analytics', 'Urban heat island and carbon emissions monitoring', 'Planning 8-satellite constellation for hourly thermal revisit'],
+  },
+  {
+    id: 'albedo', name: 'Albedo Space', headquarters: 'Denver, CO, USA', sensorType: 'Optical',
+    constellationSize: '1 (first satellite launched 2025) + constellation planned', resolutionM: '0.10 (target visible), 2.0 (thermal)',
+    spectralBands: 'Visible + thermal IR (co-registered)', revisitHours: '24-48 (planned)',
+    swathWidthKm: '4.5', orbit: 'VLEO, ~250 km', launchYear: 2025,
+    status: 'Deploying', pricingTier: '$$$', archiveAvailable: false, taskingAvailable: true, coveragePercent: 5,
+    description: 'US company operating the first satellite in very low Earth orbit (~250km) for 10cm visible resolution imagery with co-registered 2m thermal. First satellite launched in 2025, demonstrating unprecedented commercial resolution from the VLEO approach without requiring larger apertures. Constellation expansion underway.',
+    highlights: ['10cm visible -- highest resolution commercial satellite in orbit', 'Co-registered visible + thermal from single platform', 'Very Low Earth Orbit (VLEO) approach for resolution', 'Applications in urban analytics, infrastructure, and insurance'],
+  },
+  {
+    id: 'synspective', name: 'Synspective', headquarters: 'Tokyo, Japan', sensorType: 'SAR',
+    constellationSize: '4 operational (StriX series)', resolutionM: '1.0-3.0 (Strip/Slide)',
+    spectralBands: 'X-band SAR', revisitHours: '12-24',
+    swathWidthKm: '10-30', orbit: 'SSO, ~560 km', launchYear: 2020,
+    status: 'Deploying', pricingTier: '$$', archiveAvailable: true, taskingAvailable: true, coveragePercent: 40,
+    description: 'Japanese SAR satellite startup operating the StriX small SAR constellation. Provides all-weather monitoring solutions for infrastructure, land subsidence, and disaster response in the Asia-Pacific region. Planning 30-satellite constellation for global persistent monitoring.',
+    highlights: ['Compact SAR microsatellite design (StriX platform)', 'Strong Asia-Pacific regional coverage', 'Infrastructure monitoring and land subsidence analytics', 'Planning 30-satellite constellation for sub-hour revisit'],
+  },
+  {
+    id: 'earthdaily', name: 'EarthDaily Analytics', headquarters: 'Vancouver, Canada', sensorType: 'Multispectral',
+    constellationSize: '8 (EarthDaily constellation, deploying 2025-2026)', resolutionM: '3.5-5.0',
+    spectralBands: '22 spectral bands (VNIR + Red Edge)', revisitHours: '24 (daily global)',
+    swathWidthKm: '220', orbit: 'SSO, ~630 km', launchYear: 2025,
+    status: 'Deploying', pricingTier: '$$', archiveAvailable: true, taskingAvailable: false, coveragePercent: 15,
+    description: 'Canadian Earth observation analytics company deploying a new 8-satellite constellation for daily global multispectral coverage with 22 spectral bands. Wide 220km swath enables full-Earth daily revisit. EarthPipeline platform integrates imagery with analytics for agriculture, forestry, and environmental monitoring. First satellites launched in 2025.',
+    highlights: ['22 spectral bands including red edge for vegetation analysis', '220km swath for efficient daily global coverage', 'EarthPipeline science-grade analytics platform', 'Heritage from Deimos/UrtheCast Earth observation programs'],
+  },
+];
+
+export const FALLBACK_IMG_USE_CASES: UseCase[] = [
+  { id: 'agriculture', name: 'Agriculture & Precision Farming', icon: '\uD83C\uDF3E', description: 'Crop health monitoring, yield prediction, irrigation management, and soil analysis using multispectral and hyperspectral imagery.', topProviders: ['Planet Labs', 'Pixxel', 'Wyvern', 'EarthDaily Analytics', 'Satellogic'], requirements: ['Daily revisit for crop phenology tracking', 'Red edge and NIR bands for vegetation indices (NDVI, EVI)', 'Hyperspectral for nutrient deficiency detection', '3-10m resolution sufficient for field-level analysis'], keyMetrics: ['3-5m resolution', 'Daily revisit', 'NIR/Red Edge bands', '$-$$ pricing'] },
+  { id: 'defense', name: 'Defense & Intelligence', icon: '\uD83D\uDEE1\uFE0F', description: 'Geospatial intelligence, change detection, activity monitoring, and battle damage assessment.', topProviders: ['Maxar Technologies', 'Capella Space', 'BlackSky Technology', 'Airbus Defence & Space', 'ICEYE'], requirements: ['Sub-50cm resolution for feature identification', 'SAR for all-weather / denied area monitoring', 'Rapid tasking with sub-hour collection latency', 'Secure delivery and handling (ITAR/classified)'], keyMetrics: ['<50cm resolution', '<1hr tasking', 'All-weather (SAR)', '$$$ pricing'] },
+  { id: 'insurance', name: 'Insurance & Risk Assessment', icon: '\uD83D\uDCCA', description: 'Pre-event risk assessment, post-disaster damage quantification, flood extent mapping, and portfolio exposure analysis.', topProviders: ['ICEYE', 'Maxar Technologies', 'Planet Labs', 'Capella Space', 'SatVu'], requirements: ['SAR for flood and weather-event monitoring through clouds', 'Thermal for building-level risk assessment', 'Historical archive for change-over-time analysis', 'Automated analytics and API integration'], keyMetrics: ['SAR + optical fusion', '4-24hr revisit', 'Archive depth', '$$-$$$ pricing'] },
+  { id: 'infrastructure', name: 'Infrastructure Monitoring', icon: '\uD83C\uDFD7\uFE0F', description: 'Bridge and dam stability, pipeline surveillance, construction progress tracking, and subsidence detection.', topProviders: ['ICEYE', 'Capella Space', 'Synspective', 'Maxar Technologies', 'Umbra'], requirements: ['InSAR for millimeter-level displacement detection', 'High resolution for structural feature identification', 'Consistent revisit for time-series analysis', 'All-weather capability for continuous monitoring'], keyMetrics: ['<1m SAR resolution', 'InSAR capability', '12-24hr revisit', '$$ pricing'] },
+  { id: 'maritime', name: 'Maritime & Vessel Tracking', icon: '\uD83D\uDEA2', description: 'Ship detection and classification, port activity monitoring, oil spill detection, and maritime domain awareness.', topProviders: ['ICEYE', 'Capella Space', 'Maxar Technologies', 'Planet Labs', 'Airbus Defence & Space'], requirements: ['SAR for all-weather ocean monitoring', 'Wide-area scan mode for ocean surveillance', 'Frequent revisit for vessel tracking', 'AIS correlation and dark vessel detection'], keyMetrics: ['Wide swath SAR', '<6hr revisit', 'AIS fusion', '$$-$$$ pricing'] },
+  { id: 'environment', name: 'Environmental & Climate', icon: '\uD83C\uDF0D', description: 'Deforestation monitoring, methane detection, carbon stock estimation, wildfire mapping, and ecosystem health.', topProviders: ['Planet Labs', 'Pixxel', 'Wyvern', 'EarthDaily Analytics', 'SatVu'], requirements: ['Hyperspectral for gas detection and vegetation species', 'Daily coverage for deforestation alerts', 'Thermal for wildfire and industrial emissions', 'Global basemap for change detection'], keyMetrics: ['Hyperspectral bands', 'Daily global', 'Thermal IR', '$-$$ pricing'] },
+  { id: 'urban', name: 'Urban Planning & Smart Cities', icon: '\uD83C\uDFD9\uFE0F', description: 'Urban growth monitoring, land use classification, building footprint extraction, and urban heat island analysis.', topProviders: ['Maxar Technologies', 'Airbus Defence & Space', 'Albedo Space', 'SatVu', 'BlackSky Technology'], requirements: ['Very high resolution (<50cm) for building-level detail', 'Thermal for urban heat mapping', '3D elevation models from stereo pairs', 'Frequent revisit for change monitoring'], keyMetrics: ['<50cm resolution', 'Thermal + visible', 'Stereo/3D', '$$-$$$ pricing'] },
+  { id: 'disaster', name: 'Disaster Response', icon: '\u26A1', description: 'Rapid damage assessment, flood mapping, earthquake impact, wildfire perimeter tracking, and humanitarian response.', topProviders: ['ICEYE', 'Capella Space', 'Maxar Technologies', 'Planet Labs', 'BlackSky Technology'], requirements: ['Rapid tasking (<1hr from request to collect)', 'SAR for cloud-penetrating disaster imaging', 'Before/after comparison capability', 'Fast delivery and open data licensing for NGOs'], keyMetrics: ['<1hr tasking', 'All-weather SAR', 'Fast delivery', 'Variable pricing'] },
+];
+
+export const FALLBACK_IMG_MARKET_TRENDS: MarketTrend[] = [
+  { title: 'SAR Market Expansion', description: 'Synthetic Aperture Radar has emerged as the fastest-growing segment in commercial Earth observation. All-weather, day-night capability drives adoption for defense, insurance, maritime, and infrastructure monitoring.', color: 'text-cyan-400', borderColor: 'border-cyan-500/30', stats: ['SAR market growing at 15-20% CAGR through 2030', '100+ commercial SAR satellites now in orbit', 'Sub-25cm SAR resolution now commercially available', 'InSAR analytics market exceeding $500M annually'] },
+  { title: 'Hyperspectral Emergence', description: 'Commercial hyperspectral satellites are transitioning from experimental to operational. Pixxel, Wyvern, Planet (Tanager), and OroraTech are deploying constellations that capture hundreds of spectral bands.', color: 'text-purple-400', borderColor: 'border-purple-500/30', stats: ['First commercial hyperspectral constellations deployed 2023-2024', 'Methane detection from space now operational (Tanager, MethaneSAT)', 'Precision agriculture driving demand for 10+ spectral bands', 'Hyperspectral market projected to reach $1.8B by 2030'] },
+  { title: 'AI-Powered Analytics', description: 'The value chain is shifting from raw imagery to automated intelligence. Providers are increasingly offering AI/ML analytics layers as the primary product, with imagery as the underlying data source.', color: 'text-amber-400', borderColor: 'border-amber-500/30', stats: ['Geospatial AI analytics market exceeding $3B annually', 'Automated object detection accuracy now >95% for major features', 'Foundation models (IBM/NASA Prithvi, Clay) accelerating adoption', 'Analytics revenue growing faster than imagery revenue for most providers'] },
+  { title: 'Very High Resolution Competition', description: 'The sub-50cm resolution market is intensifying with new entrants challenging Maxar and Airbus dominance. Albedo targets 10cm from VLEO, Satellogic offers sub-meter at disruptive pricing.', color: 'text-green-400', borderColor: 'border-green-500/30', stats: ['10cm resolution planned from VLEO (Albedo) by 2025-2026', '30cm now standard for premium optical providers', 'Sub-meter imagery pricing dropped 50%+ since 2020', 'Daily sub-meter coverage becoming feasible by 2027'] },
+  { title: 'Thermal & Specialized Sensors', description: 'New sensor modalities are expanding the commercial EO market beyond traditional optical and radar. Thermal infrared (SatVu, Albedo), SIGINT-adjacent RF sensing, and LIDAR pathfinders are creating entirely new data products.', color: 'text-red-400', borderColor: 'border-red-500/30', stats: ['SatVu HotSat-1 achieves 3.5m thermal resolution from space', 'Building-level heat loss detection now possible from orbit', 'Thermal data enabling carbon emissions estimation', 'Combined visible+thermal co-registration a key differentiator'] },
+  { title: 'Constellation Scale & Daily Coverage', description: 'The industry is moving toward daily or sub-daily global coverage as the baseline expectation. Planet demonstrated daily global imaging at 3m. Multiple providers now targeting daily revisit at higher resolutions.', color: 'text-blue-400', borderColor: 'border-blue-500/30', stats: ['Planet images entire Earth landmass daily at 3m resolution', '1,000+ commercial EO satellites now in orbit', 'Average satellite manufacturing cost down 70% since 2015', 'Daily sub-meter global coverage targeted by multiple providers by 2028'] },
+];
+
+export const FALLBACK_IMG_HERO_STATS = [
+  { label: 'Providers Tracked', value: '14', color: 'text-cyan-400' },
+  { label: 'Satellites in Orbit', value: '550+', color: 'text-blue-400' },
+  { label: 'Best Optical GSD', value: '10cm', color: 'text-green-400' },
+  { label: 'Best SAR GSD', value: '16cm', color: 'text-amber-400' },
+];
+
+export const IMG_STATUS_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+  Operational: { bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/40' },
+  active: { bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/40' },
+  Deploying: { bg: 'bg-cyan-900/30', text: 'text-cyan-400', border: 'border-cyan-500/40' },
+  deploying: { bg: 'bg-cyan-900/30', text: 'text-cyan-400', border: 'border-cyan-500/40' },
+  Development: { bg: 'bg-amber-900/30', text: 'text-amber-400', border: 'border-amber-500/40' },
+  development: { bg: 'bg-amber-900/30', text: 'text-amber-400', border: 'border-amber-500/40' },
+};
+export const DEFAULT_IMG_STATUS_STYLE = { bg: 'bg-slate-700/30', text: 'text-star-400', border: 'border-slate-500/40' };
+
+export const SENSOR_COLORS: Record<SensorType, string> = {
+  Optical: 'text-blue-400 bg-blue-500/10 border-blue-500/30',
+  SAR: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30',
+  Multispectral: 'text-green-400 bg-green-500/10 border-green-500/30',
+  Hyperspectral: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
+  Thermal: 'text-red-400 bg-red-500/10 border-red-500/30',
+};
+
+export const IMG_PRICING_INFO: Record<string, { archive: string; tasking: string; notes: string }> = {
+  '$': { archive: '$5-15 / km\u00B2', tasking: '$10-25 / km\u00B2', notes: 'Budget-friendly providers, often NewSpace startups with competitive pricing models.' },
+  '$$': { archive: '$10-30 / km\u00B2', tasking: '$20-75 / km\u00B2', notes: 'Mid-tier pricing with strong resolution and revisit capabilities.' },
+  '$$$': { archive: '$15-50 / km\u00B2', tasking: '$25-150+ / km\u00B2', notes: 'Premium very high resolution imagery from established providers.' },
+};
+
+export const IMG_TABS: { id: ImgTabId; label: string; icon: string }[] = [
+  { id: 'providers', label: 'Providers', icon: '\uD83D\uDEF0\uFE0F' },
+  { id: 'compare', label: 'Compare', icon: '\uD83D\uDCCA' },
+  { id: 'usecases', label: 'Use Cases', icon: '\uD83C\uDFAF' },
+  { id: 'market', label: 'Market Overview', icon: '\uD83D\uDCC8' },
+];
+

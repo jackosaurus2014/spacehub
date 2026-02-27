@@ -68,6 +68,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       opportunities,
       pagination: { total, limit, offset, hasMore: offset + limit < total },
+    }, {
+      headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=600' },
     });
   } catch (error) {
     logger.error('Failed to fetch funding opportunities', { error: error instanceof Error ? error.message : String(error) });

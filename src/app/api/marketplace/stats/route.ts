@@ -48,6 +48,8 @@ export async function GET() {
       activeProviders: activeProviderCount,
       totalReviews,
       categories,
+    }, {
+      headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=600' },
     });
   } catch (error) {
     logger.error('Marketplace stats error', { error: error instanceof Error ? error.message : String(error) });

@@ -17,6 +17,8 @@ export async function GET() {
       byAgency: byAgency.map(a => ({ agency: a.agency, count: a._count })),
       byType: byType.map(t => ({ type: t.fundingType, count: t._count })),
       totalAvailableFunding: totalFunding._sum.amountMax || 0,
+    }, {
+      headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=600' },
     });
   } catch {
     return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });

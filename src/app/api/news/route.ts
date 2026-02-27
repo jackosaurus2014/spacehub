@@ -20,7 +20,9 @@ export async function GET(req: NextRequest) {
       offset,
     });
 
-    return NextResponse.json({ articles, total });
+    return NextResponse.json({ articles, total }, {
+      headers: { 'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=60' },
+    });
   } catch (error) {
     logger.error('Error fetching news', { error: error instanceof Error ? error.message : String(error) });
     return internalError('Failed to fetch news');

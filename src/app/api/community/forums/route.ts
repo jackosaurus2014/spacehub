@@ -97,6 +97,8 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       data: { categories: data },
+    }, {
+      headers: { 'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=60' },
     });
   } catch (error) {
     logger.error('Error fetching forum categories', {

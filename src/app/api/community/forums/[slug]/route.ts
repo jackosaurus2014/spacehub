@@ -151,6 +151,8 @@ export async function GET(
           totalPages: Math.ceil(total / limit),
         },
       },
+    }, {
+      headers: { 'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=60' },
     });
   } catch (error) {
     logger.error('Error fetching forum threads', {
