@@ -2273,6 +2273,8 @@ export const SUPPLY_CHAIN_COUNTRIES: Record<string, { name: string; flag: string
   MYS: { name: 'Malaysia', flag: '🇲🇾', risk: 'low' },
   IDN: { name: 'Indonesia', flag: '🇮🇩', risk: 'low' },
   CHL: { name: 'Chile', flag: '🇨🇱', risk: 'low' },
+  NOR: { name: 'Norway', flag: '🇳🇴', risk: 'none' },
+  ITA: { name: 'Italy', flag: '🇮🇹', risk: 'none' },
 };
 
 export const SUPPLY_CHAIN_PRODUCT_CATEGORIES: { value: string; label: string; icon: string }[] = [
@@ -2292,6 +2294,9 @@ export const SUPPLY_CHAIN_PRODUCT_CATEGORIES: { value: string; label: string; ic
   { value: 'cryogenic', label: 'Cryogenic Systems', icon: '🧊' },
   { value: 'robotics', label: 'Robotics & Mechanisms', icon: '🦾' },
   { value: 'communications', label: 'Communications', icon: '📶' },
+  { value: 'ground_equipment', label: 'Ground Equipment', icon: '📡' },
+  { value: 'testing_integration', label: 'Testing & Integration', icon: '🔬' },
+  { value: 'solar_panels', label: 'Solar Panels & Power', icon: '☀️' },
 ];
 
 // ============================================================

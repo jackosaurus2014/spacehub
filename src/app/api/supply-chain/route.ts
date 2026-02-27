@@ -35,7 +35,7 @@ function computeStats(
     highSeverityShortages: shortages.filter((s) => s.severity === 'high').length,
     countriesWithHighRisk: ['CHN', 'RUS', 'COD'],
     usCompanies: companies.filter((c) => c.countryCode === 'USA').length,
-    europeanCompanies: companies.filter((c) => ['EUR', 'FRA', 'DEU', 'GBR'].includes(c.countryCode)).length,
+    europeanCompanies: companies.filter((c) => ['EUR', 'FRA', 'DEU', 'GBR', 'NOR', 'ITA'].includes(c.countryCode)).length,
   };
 }
 

@@ -30,6 +30,7 @@ const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), {
 import ModuleNavBar from '@/components/ModuleNavBar';
 import WebVitals from '@/components/analytics/WebVitals';
 import ErrorReporter from '@/components/ErrorReporter';
+import BackToTop from '@/components/ui/BackToTop';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'swap' });
@@ -209,6 +210,7 @@ export default function RootLayout({
               <WebVitals />
               <InstallPrompt />
               <ErrorReporter />
+              <BackToTop />
             </div>
           </SubscriptionProvider>
         </AuthProvider>
