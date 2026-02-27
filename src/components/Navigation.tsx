@@ -74,6 +74,7 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Contract Awards', href: '/contract-awards', description: 'Government contract feed' },
   { label: 'Tech Readiness', href: '/tech-readiness', description: 'Technology readiness levels' },
   { label: 'Frequency Database', href: '/frequency-database', description: 'Searchable satellite frequency allocations' },
+  { label: 'Ground Stations', href: '/ground-station-directory', description: 'Global ground station directory & capabilities' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
@@ -129,6 +130,9 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Mission Simulator', href: '/mission-simulator', description: 'Simulate and plan space missions' },
   { label: 'Radiation Calculator', href: '/radiation-calculator', description: 'Space radiation dose & shielding estimator' },
   { label: 'Reading List', href: '/reading-list', description: 'Your saved articles' },
+  { label: 'Standards Reference', href: '/standards-reference', description: 'Space industry standards & specifications' },
+  { label: 'Thermal Calculator', href: '/thermal-calculator', description: 'Spacecraft thermal analysis tool' },
+  { label: 'Clean Room Guide', href: '/clean-room-reference', description: 'Clean room classifications & requirements' },
 ];
 
 function DropdownMenu({

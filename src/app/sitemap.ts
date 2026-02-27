@@ -227,6 +227,12 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/frequency-database`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/supply-chain-risk`, changeFrequency: 'daily' as const, priority: 0.7 },
 
+    // Wave 50 pages
+    { url: `${BASE_URL}/standards-reference`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/thermal-calculator`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/ground-station-directory`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/clean-room-reference`, changeFrequency: 'monthly' as const, priority: 0.6 },
+
     // Developer pages
     { url: `${BASE_URL}/developer/docs`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/developer/explorer`, changeFrequency: 'monthly' as const, priority: 0.4 },
