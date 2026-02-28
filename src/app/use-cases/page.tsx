@@ -95,7 +95,7 @@ const USE_CASES = [
       { name: 'Market Intelligence', href: '/market-intel', desc: 'Daily curated industry news, trend analysis, and competitive landscape tracking.' },
       { name: 'Market Sizing', href: '/market-sizing', desc: 'Bottom-up TAM/SAM/SOM analysis for every major space market segment.' },
       { name: 'Contract Awards', href: '/contracts', desc: 'Government and commercial contract database with value, competitors, and timeline data.' },
-      { name: 'Pricing Benchmarks', href: '/pricing-benchmarks', desc: 'Launch costs, satellite bus pricing, and ground segment benchmarks across vendors.' },
+      { name: 'Pricing & Plans', href: '/pricing', desc: 'Subscription plans and feature comparison across tiers.' },
     ],
     result: 'Closed a $4.2M seed round with data-backed market sizing. Won first government SBIR contract within 6 months using the contract awards module.',
     quote: 'SpaceNexus gave a two-person startup the market intelligence of a Fortune 500 company. Our investors were blown away by the depth of our market analysis.',

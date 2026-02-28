@@ -551,6 +551,9 @@ export default function SatelliteTrackerPage() {
                       onClick={handleCanvasClick}
                       onMouseMove={handleCanvasMouseMove}
                       className="w-full h-full"
+                      role="img"
+                      aria-label="Interactive satellite tracking map showing satellite positions on equirectangular world projection"
+                      tabIndex={0}
                     />
 
                     {/* Map overlay: last refresh */}

@@ -87,6 +87,7 @@ interface SliderFieldProps {
   prefix?: string;
   suffix?: string;
   onChange: (v: number) => void;
+  'aria-label'?: string;
 }
 
 function SliderField({
@@ -98,6 +99,7 @@ function SliderField({
   prefix = '',
   suffix = '',
   onChange,
+  'aria-label': ariaLabel,
 }: SliderFieldProps) {
   const pct = ((value - min) / (max - min)) * 100;
 
@@ -118,6 +120,10 @@ function SliderField({
         max={max}
         step={step}
         value={value}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={value}
+        aria-label={ariaLabel}
         onChange={(e) => onChange(Number(e.target.value))}
         className="roi-slider w-full"
         style={
@@ -298,6 +304,7 @@ export default function ROICalculator() {
               max={50}
               suffix={teamSize === 1 ? ' person' : ' people'}
               onChange={setTeamSize}
+              aria-label="Team size: number of space professionals"
             />
 
             <SliderField
@@ -307,6 +314,7 @@ export default function ROICalculator() {
               max={40}
               suffix={researchHours === 1 ? ' hr/week' : ' hrs/week'}
               onChange={setResearchHours}
+              aria-label="Hours spent on research per week"
             />
 
             <SliderField
@@ -318,6 +326,7 @@ export default function ROICalculator() {
               prefix="$"
               suffix="/mo"
               onChange={setCurrentSpend}
+              aria-label="Current monthly tool spend in dollars"
             />
 
             {/* Assumptions footnote */}
@@ -330,7 +339,7 @@ export default function ROICalculator() {
           </div>
 
           {/* ---- Right: Results ---- */}
-          <div className="px-6 pb-6 sm:px-8 pt-6 lg:pt-0 border-t lg:border-t-0 border-slate-700/30">
+          <div className="px-6 pb-6 sm:px-8 pt-6 lg:pt-0 border-t lg:border-t-0 border-slate-700/30" aria-live="polite">
             {/* Hero savings number */}
             <div className="text-center lg:text-left mb-6">
               <p className="text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">

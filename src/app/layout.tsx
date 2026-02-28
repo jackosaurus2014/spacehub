@@ -28,6 +28,9 @@ import OfflineIndicator from '@/components/ui/OfflineIndicator';
 const NpsSurvey = dynamic(() => import('@/components/ui/NpsSurvey'), { ssr: false });
 const ExitIntentPopup = dynamic(() => import('@/components/marketing/ExitIntentPopup'), { ssr: false });
 const QuickStartGuide = dynamic(() => import('@/components/onboarding/QuickStartGuide'), { ssr: false });
+const TrialCountdownBanner = dynamic(() => import('@/components/billing/TrialCountdownBanner'), {
+  ssr: false,
+});
 const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), { ssr: false });
 import ModuleNavBar from '@/components/ModuleNavBar';
 import WebVitals from '@/components/analytics/WebVitals';
@@ -197,6 +200,7 @@ export default function RootLayout({
               <QuickAccessSidebar />
               <main id="main-content" className="flex-1 lg:pl-16 pb-16 lg:pb-0" tabIndex={-1}>
                 <ModuleNavBar />
+                <TrialCountdownBanner />
                 <PageTransitionProvider>
                   {children}
                 </PageTransitionProvider>
