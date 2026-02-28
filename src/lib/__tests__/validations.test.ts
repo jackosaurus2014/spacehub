@@ -393,7 +393,7 @@ describe('telemetryEventSchema', () => {
       level: 'error',
       message: 'Something went wrong',
       context: { component: 'Sidebar', code: 500 },
-      url: 'https://spacenexus.io/dashboard',
+      url: 'https://spacenexus.us/dashboard',
       userAgent: 'Mozilla/5.0',
       timestamp: '2026-02-23T12:00:00Z',
     });

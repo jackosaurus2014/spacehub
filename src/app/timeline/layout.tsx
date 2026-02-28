@@ -7,8 +7,14 @@ export const metadata: Metadata = {
     title: 'Space Industry Timeline | SpaceNexus',
     description: 'Interactive timeline of major milestones in space exploration from Sputnik to present-day commercial space.',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Space Industry Timeline | SpaceNexus',
+    description: 'Interactive timeline of major milestones in space exploration from Sputnik to present-day commercial space.',
+    images: ['/og-image.png'],
+  },
   alternates: {
-    canonical: 'https://spacenexus.io/timeline',
+    canonical: 'https://spacenexus.us/timeline',
   },
 };
 

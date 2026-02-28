@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   alternates: {
-    canonical: 'https://spacenexus.io/pricing',
+    canonical: 'https://spacenexus.us/pricing',
   },
 };
 

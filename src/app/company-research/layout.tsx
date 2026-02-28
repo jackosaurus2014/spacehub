@@ -7,6 +7,15 @@ export const metadata: Metadata = {
     title: 'Company Research AI | SpaceNexus',
     description: 'AI-powered space company research assistant for due diligence and analysis.',
   },
+    twitter: {
+    card: 'summary_large_image',
+    title: 'Company Research AI | SpaceNexus',
+    description: 'AI-powered space company research assistant for due diligence and analysis.',
+    images: ['/og-image.png'],
+  },
+  alternates: {
+    canonical: 'https://spacenexus.us/company-research',
+  },
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

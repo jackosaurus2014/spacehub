@@ -20,6 +20,7 @@ import {
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 import ExportButton from '@/components/ui/ExportButton';
 import { ContractTicker, ContractsList } from '@/components/contracts';
 import { toast } from '@/lib/toast';
@@ -684,6 +685,18 @@ function BusinessOpportunitiesContent() {
           </>
         )}
       </div>
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Marketplace', description: 'Find and connect with space service providers', href: '/marketplace', icon: '🏪' },
+              { name: 'Supply Chain', description: 'Space industry supply chain intelligence', href: '/supply-chain', icon: '🔗' },
+              { name: 'Compliance Hub', description: 'Regulatory requirements and filings', href: '/compliance', icon: '📋' },
+              { name: 'Space Mining', description: 'ISRU and asteroid mining opportunities', href: '/space-mining', icon: '⛏️' },
+                ]}
+              />
+            </ScrollReveal>
+
     </div>
   );
 }

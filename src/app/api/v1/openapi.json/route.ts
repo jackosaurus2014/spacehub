@@ -13,7 +13,7 @@ const OPENAPI_SPEC = {
     contact: {
       name: 'SpaceNexus API Support',
       url: '/developer',
-      email: 'api@spacenexus.io',
+      email: 'api@spacenexus.us',
     },
     license: {
       name: 'Proprietary',
@@ -21,7 +21,7 @@ const OPENAPI_SPEC = {
   },
   servers: [
     {
-      url: 'https://spacenexus.io/api/v1',
+      url: 'https://spacenexus.us/api/v1',
       description: 'Production',
     },
     {

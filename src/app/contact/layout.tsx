@@ -9,6 +9,12 @@ export const metadata: Metadata = {
     description: 'Get in touch with the SpaceNexus team for support, partnerships, or enterprise pricing.',
     url: 'https://spacenexus.us/contact',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Contact SpaceNexus',
+    description: 'Get in touch with the SpaceNexus team for support, partnerships, or enterprise pricing.',
+    images: ['/og-image.png'],
+  },
   alternates: {
     canonical: 'https://spacenexus.us/contact',
   },

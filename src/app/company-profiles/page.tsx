@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
@@ -678,6 +679,18 @@ export default function CompanyProfilesPage() {
       {/* Footer Ad */}
       <div className="mt-8">
         <AdSlot position="footer" module="company-profiles" />
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Market Intelligence', description: 'Space industry market data and trends', href: '/market-intel', icon: '📈' },
+              { name: 'Funding Tracker', description: 'VC deals and investment rounds', href: '/funding-tracker', icon: '💰' },
+              { name: 'Investment Tracker', description: 'Space sector investment analysis', href: '/investment-tracker', icon: '📊' },
+              { name: 'Space Talent Hub', description: 'Jobs and workforce intelligence', href: '/space-talent', icon: '👥' },
+                ]}
+              />
+            </ScrollReveal>
+
       </div>
     </div>
     </PullToRefresh>

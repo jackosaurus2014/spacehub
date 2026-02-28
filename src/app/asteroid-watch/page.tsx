@@ -6,6 +6,7 @@ import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -1892,6 +1893,18 @@ function AsteroidWatchContent() {
           </div>
         )}
       </div>
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Solar Exploration', description: 'Planetary science and mission data', href: '/solar-exploration', icon: '🪐' },
+              { name: 'Space Environment', description: 'Space weather and debris tracking', href: '/space-environment', icon: '🌍' },
+              { name: 'Cislunar Economy', description: 'Earth-Moon commerce and ISRU', href: '/cislunar', icon: '🌙' },
+              { name: 'Mars Planner', description: 'Deep space mission planning', href: '/mars-planner', icon: '🔴' },
+                ]}
+              />
+            </ScrollReveal>
+
     </div>
   );
 }

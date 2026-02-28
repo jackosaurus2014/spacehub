@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     images: ['/og-companies.png'],
   },
   alternates: {
-    canonical: 'https://spacenexus.io/company-profiles',
+    canonical: 'https://spacenexus.us/company-profiles',
   },
 };
 

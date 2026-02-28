@@ -9,6 +9,12 @@ export const metadata: Metadata = {
     description: 'Plan your orbital venture with detailed cost breakdowns, bill of materials, and insurance estimates for 11 types of orbital systems.',
     url: 'https://spacenexus.us/orbital-costs',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SpaceNexus - Estimated Orbital System Costs',
+    description: 'Plan your orbital venture with detailed cost breakdowns, bill of materials, and insurance estimates for 11 types of orbital systems.',
+    images: ['/og-image.png'],
+  },
   alternates: {
     canonical: 'https://spacenexus.us/orbital-costs',
   },

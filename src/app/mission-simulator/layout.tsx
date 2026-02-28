@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   alternates: {
-    canonical: 'https://spacenexus.io/mission-simulator',
+    canonical: 'https://spacenexus.us/mission-simulator',
   },
 };
 

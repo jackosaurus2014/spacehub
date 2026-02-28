@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import TourismCard from '@/components/tourism/TourismCard';
 import ComparisonModal from '@/components/tourism/ComparisonModal';
@@ -1129,6 +1130,18 @@ export default function SpaceTourismPage() {
             <div className="flex justify-center py-20">
               <LoadingSpinner size="lg" />
             </div>
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Business Opportunities', description: 'Space industry contracts and RFPs', href: '/business-opportunities', icon: '📋' },
+              { name: 'Cislunar Economy', description: 'Earth-Moon tourism and commerce', href: '/cislunar', icon: '🌙' },
+              { name: 'Mars Planner', description: 'Future Mars tourism missions', href: '/mars-planner', icon: '🔴' },
+              { name: 'Space Agencies', description: 'Government programs and partnerships', href: '/space-agencies', icon: '🏛️' },
+                ]}
+              />
+            </ScrollReveal>
+
           </div>
         </div>
       }

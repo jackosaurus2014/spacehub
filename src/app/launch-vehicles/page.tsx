@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
 import ExportButton from '@/components/ui/ExportButton';
 import Link from 'next/link';
@@ -1837,6 +1838,18 @@ export default function LaunchVehiclesPage() {
           </div>
         )}
       </div>
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Mission Planning', description: 'Cost estimation and mission design', href: '/mission-cost', icon: '📊' },
+              { name: 'Space Manufacturing', description: 'Rocket and satellite manufacturing', href: '/space-manufacturing', icon: '🏭' },
+              { name: 'Spaceports', description: 'Global launch site directory', href: '/spaceports', icon: '🏗️' },
+              { name: 'Launch Sites', description: 'Worldwide launch facility profiles', href: '/launch-sites', icon: '📍' },
+                ]}
+              />
+            </ScrollReveal>
+
     </div>
   );
 }

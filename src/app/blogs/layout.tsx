@@ -9,6 +9,12 @@ export const metadata: Metadata = {
     description: 'Expert analysis and insights on the space industry from SpaceNexus.',
     url: 'https://spacenexus.us/blogs',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SpaceNexus Blog - Space Industry Analysis & Insights',
+    description: 'Expert analysis and insights on the space industry from SpaceNexus.',
+    images: ['/og-image.png'],
+  },
   alternates: {
     canonical: 'https://spacenexus.us/blogs',
   },

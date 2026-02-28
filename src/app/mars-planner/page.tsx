@@ -6,6 +6,7 @@ import Image from 'next/image';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
 
@@ -794,6 +795,18 @@ export default function MarsPlannerPage() {
           </div>
         </div></ScrollReveal>
       </div>
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Solar Exploration', description: 'Planetary science and deep space missions', href: '/solar-exploration', icon: '🪐' },
+              { name: 'Cislunar Economy', description: 'Earth-Moon space commerce and logistics', href: '/cislunar', icon: '🌙' },
+              { name: 'Asteroid Watch', description: 'Near-Earth objects and mining targets', href: '/asteroid-watch', icon: '☄️' },
+              { name: 'Mission Planning', description: 'Cost estimation and design tools', href: '/mission-cost', icon: '📊' },
+                ]}
+              />
+            </ScrollReveal>
+
     </div>
   );
 }

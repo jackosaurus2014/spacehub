@@ -134,7 +134,7 @@ interface NOAAHourlyResponse {
  */
 async function fetchRealWeather(lat: number, lon: number): Promise<WeatherData> {
   const headers = {
-    'User-Agent': 'SpaceNexus/1.0 (contact@spacenexus.io)',
+    'User-Agent': 'SpaceNexus/1.0 (contact@spacenexus.us)',
     'Accept': 'application/geo+json',
   };
 

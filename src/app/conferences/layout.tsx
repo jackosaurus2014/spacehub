@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     images: ['/og-conferences.png'],
   },
   alternates: {
-    canonical: 'https://spacenexus.io/conferences',
+    canonical: 'https://spacenexus.us/conferences',
   },
 };
 

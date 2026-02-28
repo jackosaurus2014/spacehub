@@ -36,7 +36,7 @@ const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'swap' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://spacenexus.io'),
+  metadataBase: new URL('https://spacenexus.us'),
   title: {
     template: '%s | SpaceNexus',
     default: 'SpaceNexus - Space Industry Intelligence Platform',
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://spacenexus.io',
+    url: 'https://spacenexus.us',
     siteName: 'SpaceNexus',
     title: 'SpaceNexus - Space Industry Intelligence Platform',
     description: 'The comprehensive space industry intelligence platform for space professionals.',
@@ -114,7 +114,7 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   alternates: {
-    canonical: 'https://spacenexus.io',
+    canonical: 'https://spacenexus.us',
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,

@@ -93,12 +93,12 @@ const API_TIERS = [
 ];
 
 const CODE_EXAMPLES = {
-  curl: `curl -X GET "https://spacenexus.io/api/v1/launches?limit=5" \\
+  curl: `curl -X GET "https://spacenexus.us/api/v1/launches?limit=5" \\
   -H "Authorization: Bearer snx_YOUR_API_KEY"`,
 
   javascript: `// Using fetch
 const response = await fetch(
-  'https://spacenexus.io/api/v1/launches?limit=5',
+  'https://spacenexus.us/api/v1/launches?limit=5',
   {
     headers: {
       'Authorization': 'Bearer snx_YOUR_API_KEY',
@@ -112,7 +112,7 @@ console.log(data.data); // Array of upcoming launches`,
 import axios from 'axios';
 
 const { data } = await axios.get(
-  'https://spacenexus.io/api/v1/launches',
+  'https://spacenexus.us/api/v1/launches',
   {
     params: { limit: 5 },
     headers: {
@@ -125,7 +125,7 @@ console.log(data.data); // Array of upcoming launches`,
   python: `import requests
 
 response = requests.get(
-    'https://spacenexus.io/api/v1/launches',
+    'https://spacenexus.us/api/v1/launches',
     params={'limit': 5},
     headers={
         'Authorization': 'Bearer snx_YOUR_API_KEY',

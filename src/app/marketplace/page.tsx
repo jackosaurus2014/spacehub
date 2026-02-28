@@ -16,6 +16,7 @@ import PullToRefresh from '@/components/ui/PullToRefresh';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 
 interface MarketplaceStats {
   totalListings: number;
@@ -348,6 +349,18 @@ export default function MarketplacePage() {
           </div>
         </div>
         </ScrollReveal>
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Company Profiles', description: 'Detailed profiles of 100+ space companies', href: '/company-profiles', icon: '🏢' },
+              { name: 'Funding Tracker', description: 'Track investment rounds and VC activity', href: '/funding-tracker', icon: '💰' },
+              { name: 'Business Opportunities', description: 'Contracts, RFPs, and procurement', href: '/business-opportunities', icon: '📋' },
+              { name: 'Space Talent Hub', description: 'Hire or find jobs in the space industry', href: '/space-talent', icon: '👥' },
+                ]}
+              />
+            </ScrollReveal>
+
       </div>
     </div>
     </PullToRefresh>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
 
@@ -1342,6 +1343,18 @@ export default function GroundStationsPage() {
           </div>
         </div>
       </div>
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Satellite Tracker', description: 'Real-time orbital tracking and pass predictions', href: '/satellites', icon: '🛰️' },
+              { name: 'Space Communications', description: 'RF systems and link budget analysis', href: '/space-comms', icon: '📡' },
+              { name: 'Spectrum Management', description: 'Frequency allocations and coordination', href: '/spectrum', icon: '📻' },
+              { name: 'Orbital Slots', description: 'GEO/MEO/LEO slot allocations', href: '/orbital-slots', icon: '🌐' },
+                ]}
+              />
+            </ScrollReveal>
+
     </div>
   );
 }

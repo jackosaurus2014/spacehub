@@ -1369,7 +1369,7 @@ export async function POST(request: NextRequest) {
 
     // Step 2: Find or create system user
     let author = await prisma.user.findUnique({
-      where: { email: 'system@spacenexus.io' },
+      where: { email: 'system@spacenexus.us' },
     });
 
     if (!author) {
@@ -1382,7 +1382,7 @@ export async function POST(request: NextRequest) {
       author = await prisma.user.create({
         data: {
           name: 'SpaceNexus Team',
-          email: 'system@spacenexus.io',
+          email: 'system@spacenexus.us',
           password: '',
         },
       });

@@ -85,7 +85,7 @@ We're just getting started. Our roadmap includes:
 
 The space industry's next chapter is being written right now. Whether you're building rockets, investing in satellites, or just passionate about humanity's future among the stars — SpaceNexus gives you the intelligence edge you need.
 
-**Visit [spacenexus.io](https://spacenexus.io) to explore the platform.**
+**Visit [spacenexus.us](https://spacenexus.us) to explore the platform.**
 
 We'd love to hear what features matter most to you. Drop a comment below or reach out directly — we're building this for the community, and your input shapes our roadmap.
 

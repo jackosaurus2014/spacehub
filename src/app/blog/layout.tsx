@@ -18,6 +18,12 @@ export const metadata: Metadata = {
       'Original analysis, market intelligence, guides, and insights on the space industry from the SpaceNexus team.',
     url: 'https://spacenexus.us/blog',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SpaceNexus Blog — Space Industry Analysis & Insights',
+    description: 'Original analysis, market intelligence, guides, and insights on the space industry from the SpaceNexus team.',
+    images: ['/og-image.png'],
+  },
   alternates: {
     canonical: 'https://spacenexus.us/blog',
     types: {

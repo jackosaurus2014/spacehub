@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
 import {
@@ -1704,6 +1705,18 @@ function ManufacturingAndImageryContent() {
             </Link>
           </div>
         </div></ScrollReveal>
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Supply Chain', description: 'Space supply chain intelligence', href: '/supply-chain', icon: '🔗' },
+              { name: 'Launch Vehicles', description: 'Rocket and launch system comparison', href: '/launch-vehicles', icon: '🚀' },
+              { name: 'Marketplace', description: 'Find manufacturing service providers', href: '/marketplace', icon: '🏪' },
+              { name: 'Business Opportunities', description: 'Manufacturing contracts and RFPs', href: '/business-opportunities', icon: '📋' },
+                ]}
+              />
+            </ScrollReveal>
+
       </div>
     </div>
     </MfgDataContext.Provider>

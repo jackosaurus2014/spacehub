@@ -6,6 +6,7 @@ import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
 
@@ -1643,6 +1644,18 @@ function CislunarEcosystemContent() {
           </div>
         </div></ScrollReveal>
       </div>
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Solar Exploration', description: 'Planetary missions and deep space', href: '/solar-exploration', icon: '🪐' },
+              { name: 'Asteroid Watch', description: 'NEOs, mining targets, and risk assessment', href: '/asteroid-watch', icon: '☄️' },
+              { name: 'Mars Planner', description: 'Mars mission design and logistics', href: '/mars-planner', icon: '🔴' },
+              { name: 'Space Stations', description: 'Orbital habitats and platforms', href: '/space-stations', icon: '🏗️' },
+                ]}
+              />
+            </ScrollReveal>
+
     </div>
   );
 }

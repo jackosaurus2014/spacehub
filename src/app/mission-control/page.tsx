@@ -14,6 +14,7 @@ import AdSlot from '@/components/ads/AdSlot';
 import { clientLogger } from '@/lib/client-logger';
 import { getCompanyProfileUrl } from '@/lib/company-links';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
   { value: 'all', label: 'All Events', icon: '🌌' },
@@ -1364,6 +1365,18 @@ function MissionControlContent() {
             </div>
           </div>
         )}
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Mission Planning', description: 'Cost estimation and mission design tools', href: '/mission-cost', icon: '📊' },
+              { name: 'Satellite Tracker', description: 'Real-time orbital tracking for active missions', href: '/satellites', icon: '🛰️' },
+              { name: 'Launch Vehicles', description: 'Compare launch providers and capabilities', href: '/launch-vehicles', icon: '🚀' },
+              { name: 'Space Environment', description: 'Weather and debris monitoring for ops', href: '/space-environment', icon: '🌍' },
+                ]}
+              />
+            </ScrollReveal>
+
       </div>
     </div>
     </PullToRefresh>

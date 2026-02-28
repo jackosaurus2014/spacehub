@@ -18,6 +18,12 @@ export const metadata: Metadata = {
       'Track every update, feature, and improvement shipped to SpaceNexus. 11 releases, 100+ features, and continuous improvements.',
     url: 'https://spacenexus.us/changelog',
   },
+    twitter: {
+    card: 'summary_large_image',
+    title: 'SpaceNexus Changelog - Platform Updates & New Features',
+    description: 'Track every update, feature, and improvement shipped to SpaceNexus. 11 releases, 100+ features, and continuous improvements.',
+    images: ['/og-image.png'],
+  },
   alternates: {
     canonical: 'https://spacenexus.us/changelog',
   },

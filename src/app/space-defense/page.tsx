@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
 import Link from 'next/link';
@@ -2575,6 +2576,18 @@ export default function SpaceDefensePage() {
         </div>
         </ScrollReveal>
       </div>
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Compliance Hub', description: 'Regulatory requirements and filings', href: '/compliance', icon: '📋' },
+              { name: 'Space Law', description: 'International space law and treaties', href: '/space-law', icon: '⚖️' },
+              { name: 'Regulatory Risk', description: 'Risk assessment and compliance scoring', href: '/regulatory-risk', icon: '⚠️' },
+              { name: 'Space Agencies', description: 'Government space programs', href: '/space-agencies', icon: '🏛️' },
+                ]}
+              />
+            </ScrollReveal>
+
     </div>
   );
 }

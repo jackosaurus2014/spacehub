@@ -7,6 +7,7 @@ import GlassCard from '@/components/ui/GlassCard';
 import ConfidenceBadge from '@/components/ui/ConfidenceBadge';
 import SourceCitation from '@/components/ui/SourceCitation';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 import { clientLogger } from '@/lib/client-logger';
 
 interface Insight {
@@ -317,6 +318,18 @@ export default function AIInsightsPage() {
           </>
         )}
       </div>
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Market Intelligence', description: 'Space industry market data and analysis', href: '/market-intel', icon: '📈' },
+              { name: 'Mission Control', description: 'Real-time space operations dashboard', href: '/mission-control', icon: '🎯' },
+              { name: 'Space Talent Hub', description: 'Jobs and workforce trends', href: '/space-talent', icon: '👥' },
+              { name: 'News', description: 'Latest space industry news', href: '/news', icon: '📰' },
+                ]}
+              />
+            </ScrollReveal>
+
     </div>
   );
 }

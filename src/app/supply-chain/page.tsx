@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
 import PremiumGate from '@/components/PremiumGate';
 import ExportButton from '@/components/ui/ExportButton';
 import SupplyChainNode from '@/components/supply-chain/SupplyChainNode';
@@ -1599,6 +1600,18 @@ export default function SupplyChainPage() {
           </Suspense>
         </PremiumGate>
       </div>
+
+            <ScrollReveal>
+              <RelatedModules
+                modules={[
+              { name: 'Business Opportunities', description: 'Contracts and procurement opportunities', href: '/business-opportunities', icon: '📋' },
+              { name: 'Marketplace', description: 'Find space service providers', href: '/marketplace', icon: '🏪' },
+              { name: 'Space Manufacturing', description: 'In-space and terrestrial manufacturing', href: '/space-manufacturing', icon: '🏭' },
+              { name: 'Supply Chain Risk', description: 'Risk assessment and mitigation strategies', href: '/supply-chain-risk', icon: '⚠️' },
+                ]}
+              />
+            </ScrollReveal>
+
     </div>
   );
 }
