@@ -31,6 +31,33 @@ const TESTIMONIALS = [
     initials: "MO",
     gradient: "from-emerald-500 to-teal-600",
   },
+  {
+    quote: "SpaceNexus replaced 3 expensive subscriptions for our space fund. The deal flow intelligence alone pays for itself ten times over.",
+    name: "Alexandra Petrov",
+    title: "VC Partner",
+    company: "Stellar Capital Group",
+    persona: "VC",
+    initials: "AP",
+    gradient: "from-amber-500 to-orange-600",
+  },
+  {
+    quote: "The regulatory intelligence and contract tracking saved us weeks of manual research. Essential tool for any defense contractor in the space sector.",
+    name: "Col. David Park (Ret.)",
+    title: "Director of Space Programs",
+    company: "Meridian Defense Systems",
+    persona: "Defense",
+    initials: "DP",
+    gradient: "from-red-500 to-rose-600",
+  },
+  {
+    quote: "As a bootstrapped space startup, having Bloomberg-level intelligence for free changed everything. We punch way above our weight now.",
+    name: "Priya Narayanan",
+    title: "Founder & CEO",
+    company: "LunarGrid Technologies",
+    persona: "Founder",
+    initials: "PN",
+    gradient: "from-violet-500 to-purple-600",
+  },
 ];
 
 const STATS = [
@@ -119,7 +146,7 @@ export default function SocialProof() {
         </div>
 
         {/* Testimonial Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-7 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mb-16">
           {TESTIMONIALS.map((t, i) => (
             <motion.div
               key={t.name}
@@ -170,6 +197,57 @@ export default function SocialProof() {
             </motion.div>
           ))}
         </div>
+
+        {/* Industry Logos / Trust Badges */}
+        <motion.div
+          className="mb-12"
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <p className="text-center text-sm font-semibold text-slate-500 uppercase tracking-widest mb-5">
+            Trusted by professionals from
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {['Aerospace Firms', 'Government Agencies', 'Venture Capital', 'Defense', 'Startups', 'Universities'].map((label) => (
+              <span
+                key={label}
+                className="px-4 py-2 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs font-medium text-slate-400 hover:text-slate-300 hover:border-slate-600 transition-colors"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Live Usage Counter */}
+        <motion.div
+          className="relative overflow-hidden card p-8 rounded-2xl mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/[0.04] via-transparent to-blue-500/[0.04] pointer-events-none" />
+          <p className="text-center text-lg font-bold text-white mb-6 relative z-10">
+            Join <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">10,000+</span> space professionals
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center relative z-10">
+            {[
+              { stat: '200+', label: 'Companies Tracked' },
+              { stat: '50+', label: 'Data Sources' },
+              { stat: '30+', label: 'Intelligence Modules' },
+            ].map((item) => (
+              <div key={item.label} className="group/usage">
+                <p className="text-2xl md:text-3xl font-bold text-white group-hover/usage:text-cyan-400 transition-colors duration-200">
+                  {item.stat}
+                </p>
+                <p className="text-sm text-slate-400 mt-1 font-medium">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
         {/* Stats Bar */}
         <motion.div

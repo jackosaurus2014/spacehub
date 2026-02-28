@@ -1158,6 +1158,504 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p><a href="/register">Create your free account</a> and start winning space contracts.</p>
 `,
   },
+  {
+    slug: 'space-industry-due-diligence-guide',
+    title: 'The Complete Guide to Space Industry Due Diligence',
+    excerpt: 'Learn how to evaluate space companies using public data sources, proprietary scoring, and structured frameworks. A practical guide for investors, analysts, and business development professionals.',
+    category: 'guide',
+    author: 'SpaceNexus Intelligence Team',
+    authorRole: 'Market Research',
+    publishedAt: '2026-02-28T00:00:00Z',
+    readingTime: 12,
+    keywords: ['space due diligence', 'space investment analysis', 'space company evaluation', 'SpaceNexus Score'],
+    featured: false,
+    content: `
+<p>Evaluating a space company is fundamentally different from evaluating a SaaS startup or a traditional manufacturer. The capital intensity is higher, the regulatory landscape is more complex, the technology risk is more severe, and the timelines to revenue are often measured in years rather than quarters. Yet the tools and frameworks available for space industry due diligence have historically lagged far behind other sectors.</p>
+
+<p>This guide provides a structured approach to evaluating space companies using publicly available data, proprietary intelligence from <a href="/company-profiles">SpaceNexus company profiles</a>, and the <a href="/space-score">SpaceNexus Score</a> — our composite rating that distills six critical dimensions of company health into a single, actionable metric.</p>
+
+<h2 id="why-space-due-diligence-is-different">Why Space Due Diligence Is Different</h2>
+
+<p>Before diving into methodology, it is worth understanding why standard due diligence frameworks fall short when applied to space companies.</p>
+
+<p><strong>Capital intensity.</strong> Developing a launch vehicle costs $500 million to $2 billion. Building a satellite constellation can cost $1-10 billion. These are not software companies where a small team can reach product-market fit on a seed round. The capital requirements shape everything — from burn rates to funding strategy to exit timelines.</p>
+
+<p><strong>Regulatory dependency.</strong> Space companies need licenses from the FAA (launch), FCC (spectrum), NOAA (remote sensing), and potentially DDTC (export controls). A single regulatory delay can push a launch by months and burn through tens of millions in carrying costs. Understanding a company\'s regulatory posture is not optional — it is existential.</p>
+
+<p><strong>Technical risk concentration.</strong> A rocket either works or it does not. A satellite either reaches orbit or it does not. Binary technical outcomes create a risk profile that is fundamentally different from incremental software development. Due diligence must assess technical readiness with rigor.</p>
+
+<p><strong>Long feedback loops.</strong> It can take 3-5 years from company founding to first orbital test. Revenue may not materialize for 5-8 years. Traditional metrics like ARR growth and customer acquisition cost are often irrelevant for pre-revenue space companies.</p>
+
+<h2 id="six-dimensions-of-evaluation">The Six Dimensions of Space Company Evaluation</h2>
+
+<p>At SpaceNexus, we evaluate space companies across six dimensions, each scored from 0-100 and weighted to produce the composite <a href="/space-score">SpaceNexus Score</a>:</p>
+
+<h3>1. Financial Health (Weight: 20%)</h3>
+
+<p>Financial health assesses a company\'s ability to survive long enough to execute its business plan. Key indicators include:</p>
+
+<ul>
+<li><strong>Cash runway:</strong> How many months of operating expenses can the company cover with current cash reserves? For pre-revenue space companies, 18+ months of runway is the minimum threshold for comfort.</li>
+<li><strong>Funding history:</strong> Track the progression of funding rounds using the <a href="/funding-tracker">SpaceNexus Funding Tracker</a>. Look for increasing round sizes from credible investors. Down rounds or bridge financing are red flags.</li>
+<li><strong>Revenue trajectory:</strong> For companies with revenue, assess growth rate, customer concentration, and contract backlog. Government contracts provide revenue visibility but often come with margin compression.</li>
+<li><strong>Capital efficiency:</strong> How much capital has the company raised relative to the milestones achieved? Compare against sector benchmarks — a launch company that has raised $500 million without reaching orbit faces harder questions than one that has reached orbit on $200 million.</li>
+</ul>
+
+<p>Data sources: SEC filings (10-K, 10-Q, S-1 for public companies), Crunchbase, PitchBook, and the <a href="/funding-tracker">SpaceNexus Funding Tracker</a> which aggregates funding data for 200+ space companies.</p>
+
+<h3>2. Technology Readiness (Weight: 20%)</h3>
+
+<p>Technology readiness evaluates where a company\'s core technology sits on the development spectrum and the credibility of its technical claims.</p>
+
+<ul>
+<li><strong>TRL assessment:</strong> NASA\'s Technology Readiness Level (TRL) scale (1-9) provides a standardized framework. TRL 1-3 is basic research. TRL 4-6 is development and testing. TRL 7-9 is flight-proven. Ask: what TRL is the core technology, and what evidence supports that claim?</li>
+<li><strong>Patent portfolio:</strong> Review patent filings using the <a href="/patents">SpaceNexus Patent Intelligence module</a>. Patent activity indicates genuine R&amp;D investment and can reveal technical direction. Look for granted patents (not just applications) and assess whether the IP is core to the business model.</li>
+<li><strong>Test and launch track record:</strong> For launch providers, examine success rates, cadence improvement, and anomaly resolution. For satellite operators, assess on-orbit performance, mission life vs. design life, and failure rates.</li>
+<li><strong>Technical team credentials:</strong> Evaluate the depth of the engineering team. Key hires from SpaceX, Blue Origin, JPL, or major aerospace primes signal technical credibility. Check the <a href="/executive-moves">Executive Moves tracker</a> for recent leadership changes.</li>
+</ul>
+
+<h3>3. Market Position (Weight: 15%)</h3>
+
+<p>Market position evaluates competitive dynamics and the company\'s ability to capture market share.</p>
+
+<ul>
+<li><strong>Addressable market:</strong> Is the company targeting a market that is large enough and growing fast enough to support a venture-scale outcome? Use the <a href="/market-intel">SpaceNexus Market Intelligence module</a> for market sizing data.</li>
+<li><strong>Competitive landscape:</strong> Who are the direct and indirect competitors? What is the company\'s differentiation — cost, performance, reliability, time-to-market?</li>
+<li><strong>Customer validation:</strong> Has the company secured contracts, letters of intent, or partnerships with credible customers? Government anchor contracts (e.g., NASA CLPS, Space Force SDA Tranche) provide strong validation.</li>
+<li><strong>Backlog and pipeline:</strong> What is the contracted backlog value relative to the company\'s annual capacity? A healthy backlog-to-capacity ratio indicates demand sustainability.</li>
+</ul>
+
+<h3>4. Growth Momentum (Weight: 15%)</h3>
+
+<p>Growth momentum captures the trajectory of key business metrics over the most recent 6-12 months.</p>
+
+<ul>
+<li><strong>Contract wins:</strong> Track new contract announcements and compare year-over-year. The <a href="/deal-flow">SpaceNexus Deal Flow module</a> aggregates this data across the industry.</li>
+<li><strong>Headcount growth:</strong> Hiring velocity, particularly in engineering roles, signals confidence in the business plan and adequacy of funding.</li>
+<li><strong>Launch or deployment cadence:</strong> For operational companies, increasing cadence indicates scaling capability.</li>
+<li><strong>Partnership expansion:</strong> New strategic partnerships, especially with larger aerospace primes or government agencies, indicate growing industry credibility.</li>
+</ul>
+
+<h3>5. Operational Maturity (Weight: 15%)</h3>
+
+<p>Operational maturity assesses whether a company can execute reliably at scale.</p>
+
+<ul>
+<li><strong>Manufacturing capability:</strong> Can the company produce hardware at the rate its business plan requires? Transitioning from prototype to production is one of the most common failure points in hardware-intensive space companies.</li>
+<li><strong>Supply chain resilience:</strong> Assess dependency on single-source suppliers, particularly for critical components like propulsion systems, avionics, and solar cells.</li>
+<li><strong>Quality and compliance:</strong> AS9100 certification, NASA suitability assessments, and ITAR/EAR compliance programs indicate operational seriousness.</li>
+<li><strong>Organizational depth:</strong> Does the company have functional leadership beyond the founders? VP-level hires in operations, finance, and business development signal maturation.</li>
+</ul>
+
+<h3>6. Risk Profile (Weight: 15%)</h3>
+
+<p>Risk profile identifies factors that could derail execution regardless of the company\'s other strengths.</p>
+
+<ul>
+<li><strong>Key person dependency:</strong> Is the company overly dependent on a single founder, engineer, or customer?</li>
+<li><strong>Regulatory risk:</strong> Are there pending regulatory decisions that could materially affect the business?</li>
+<li><strong>Geopolitical exposure:</strong> Does the company have supply chain or customer dependencies in geopolitically sensitive regions?</li>
+<li><strong>Litigation and IP disputes:</strong> Active or pending lawsuits can drain resources and create uncertainty.</li>
+</ul>
+
+<h2 id="practical-due-diligence-workflow">Practical Due Diligence Workflow</h2>
+
+<p>Here is a step-by-step workflow for conducting space company due diligence using SpaceNexus:</p>
+
+<ol>
+<li><strong>Start with the company profile:</strong> Visit <a href="/company-profiles">Company Profiles</a> and review the company\'s SpaceNexus Score, financial summary, satellite assets, contract history, and patent portfolio — all in one place.</li>
+<li><strong>Review funding history:</strong> Use the <a href="/funding-tracker">Funding Tracker</a> to map the company\'s fundraising trajectory, investor quality, and implied valuation progression.</li>
+<li><strong>Assess technical credibility:</strong> Check the <a href="/patents">Patent Intelligence module</a> for IP activity and review launch/mission history from public records.</li>
+<li><strong>Map competitive dynamics:</strong> Use SpaceNexus market data to understand where the company sits relative to competitors in its segment.</li>
+<li><strong>Monitor ongoing activity:</strong> Set up alerts for the company\'s news mentions, contract wins, executive moves, and regulatory filings.</li>
+<li><strong>Synthesize and score:</strong> Use the six-dimension framework above to create a structured assessment, or leverage the <a href="/space-score">SpaceNexus Score</a> as a starting point for deeper analysis.</li>
+</ol>
+
+<h2 id="common-red-flags">Common Red Flags in Space Company Evaluation</h2>
+
+<p>Years of analyzing space companies have taught us to watch for these warning signs:</p>
+
+<ul>
+<li><strong>Timeline slippage without explanation:</strong> Missed milestones happen in space. But chronic slippage without transparent communication suggests systemic execution problems.</li>
+<li><strong>Revenue projections disconnected from backlog:</strong> Be skeptical of hockey-stick revenue projections that are not supported by contracted backlog or letters of intent.</li>
+<li><strong>Over-reliance on a single customer or contract:</strong> Customer concentration above 40% creates fragility, especially if that customer is a government agency subject to budget cycles.</li>
+<li><strong>Frequent leadership turnover:</strong> Track executive moves using the <a href="/executive-moves">SpaceNexus Executive Moves tracker</a>. High turnover in VP-level engineering or operations roles is concerning.</li>
+<li><strong>Vague technical claims:</strong> Companies that market capabilities they have not demonstrated or use qualitative language instead of quantitative metrics deserve extra scrutiny.</li>
+</ul>
+
+<h2 id="start-your-analysis">Start Your Due Diligence with SpaceNexus</h2>
+
+<p>SpaceNexus provides the data infrastructure for rigorous space company evaluation. With <a href="/company-profiles">200+ company profiles</a>, real-time <a href="/funding-tracker">funding data</a>, <a href="/patents">patent intelligence</a>, and the proprietary <a href="/space-score">SpaceNexus Score</a>, you can conduct thorough due diligence without spending weeks assembling data from scattered sources.</p>
+
+<p><a href="/register">Create your free account</a> and start evaluating space companies with confidence.</p>
+`,
+  },
+  {
+    slug: 'space-sector-ma-trends-analysis',
+    title: 'Space Sector M&A Activity: Key Trends and Analysis',
+    excerpt: 'An analysis of mergers and acquisitions in the space industry — who is buying, what they are acquiring, and what the consolidation patterns reveal about the sector\'s future.',
+    category: 'analysis',
+    author: 'SpaceNexus Intelligence Team',
+    authorRole: 'Market Analysis',
+    publishedAt: '2026-02-28T00:00:00Z',
+    readingTime: 10,
+    keywords: ['space M&A', 'space acquisitions', 'space industry consolidation', 'space sector deals'],
+    featured: false,
+    content: `
+<p>The space industry is entering a period of accelerating consolidation. After a decade of startup formation and venture investment that saw hundreds of new space companies emerge, the sector is now experiencing a natural maturation cycle in which established players acquire innovative startups, competitors merge for scale, and private equity firms roll up fragmented subsectors.</p>
+
+<p>Understanding M&amp;A patterns is critical for every participant in the space ecosystem — whether you are a startup founder evaluating exit options, an investor assessing portfolio positioning, a corporate strategist planning acquisitions, or a professional tracking career opportunities as organizations combine.</p>
+
+<h2 id="ma-volume-and-value">M&amp;A Volume and Value Trends</h2>
+
+<p>Space industry M&amp;A activity has followed a distinct trajectory over the past five years:</p>
+
+<ul>
+<li><strong>2021-2022:</strong> A surge driven by SPAC mergers took multiple space companies public, including Rocket Lab, Virgin Orbit, Spire Global, BlackSky, and AST SpaceMobile. Total announced deal value exceeded $15 billion.</li>
+<li><strong>2023:</strong> A correction year as SPAC performance disappointed and interest rates rose. Deal count dropped 30% but strategic acquisitions continued.</li>
+<li><strong>2024-2025:</strong> Strategic M&amp;A rebounded as defense primes and large operators acquired proven startups at more reasonable valuations. Private equity entered the sector more aggressively.</li>
+<li><strong>2026 outlook:</strong> Consolidation is expected to accelerate, particularly in satellite communications, Earth observation, and launch services where overcapacity is emerging.</li>
+</ul>
+
+<p>Track active deal flow in real time with the <a href="/deal-flow">SpaceNexus Deal Flow module</a>, which aggregates acquisition announcements, partnership deals, and investment rounds across the industry.</p>
+
+<h2 id="acquirer-archetypes">Who Is Buying: Five Acquirer Archetypes</h2>
+
+<h3>1. Defense Primes Acquiring Commercial Innovation</h3>
+
+<p>The largest category of space M&amp;A by dollar value involves defense primes — Lockheed Martin, Northrop Grumman, L3Harris, RTX, and General Dynamics — acquiring commercial space startups to modernize their technology stacks and secure next-generation capabilities.</p>
+
+<p>The pattern is consistent: defense primes face pressure from the DoD to adopt commercial technology, but their internal innovation cycles are too slow to compete with venture-backed startups. Acquisition solves both problems — it brings in proven technology and experienced teams while eliminating a potential competitor.</p>
+
+<p>Notable examples include Northrop Grumman\'s acquisition of Orbital ATK, L3Harris\'s acquisition of Aerojet Rocketdyne, and multiple smaller tuck-in acquisitions of propulsion, sensor, and software companies by each of the major primes.</p>
+
+<h3>2. Horizontal Consolidation Among Operators</h3>
+
+<p>Satellite operators are merging to achieve scale advantages in an increasingly competitive market. The Eutelsat-OneWeb merger exemplified this trend — combining a GEO operator with a LEO constellation to offer multi-orbit connectivity.</p>
+
+<p>Expect more horizontal mergers among Earth observation companies, where the market cannot support a dozen independent constellations. Companies with overlapping capabilities in SAR, optical, or RF sensing are natural consolidation candidates.</p>
+
+<h3>3. Vertical Integration by Launch Providers</h3>
+
+<p>Launch companies are moving up the value chain by acquiring satellite manufacturing, mission integration, and space operations capabilities. Rocket Lab\'s strategy is the clearest example — through acquisitions of SolAero (solar cells), Planetary Systems Corporation (separation systems), and Advanced Solutions Inc. (flight software), Rocket Lab transformed from a pure launch provider into a vertically integrated space company.</p>
+
+<p>This vertical integration pattern makes strategic sense. Launch margins are thin and pricing power is limited when SpaceX sets the market. Moving into higher-margin spacecraft components and services diversifies revenue and creates customer stickiness.</p>
+
+<h3>4. Private Equity Roll-Ups</h3>
+
+<p>Private equity firms are increasingly active in the space sector, particularly in the subsystem and component supply chain where smaller companies with stable government contract revenue can be combined into larger platforms. Ground systems, testing services, and space-qualified electronics are attractive roll-up candidates.</p>
+
+<h3>5. Strategic Partnerships Preceding Acquisitions</h3>
+
+<p>Many space M&amp;A transactions are preceded by strategic partnerships, joint ventures, or minority investments that allow the acquirer to evaluate the target\'s technology and team before committing to a full acquisition. Track these early signals using the <a href="/deal-flow">SpaceNexus Deal Flow module</a> and <a href="/company-profiles">Company Profiles</a>.</p>
+
+<h2 id="sector-hotspots">Sector Hotspots for Consolidation</h2>
+
+<h3>Satellite Communications</h3>
+<p>The LEO broadband race has produced more constellations than the market can likely support long-term. Starlink dominates with 7,000+ operational satellites, and Amazon Kuiper is deploying with a $10 billion war chest. Smaller LEO operators face an existential choice: merge, pivot, or exit. Expect consolidation among tier-2 and tier-3 satcom operators through 2026-2027.</p>
+
+<h3>Earth Observation</h3>
+<p>The EO market is fragmented across SAR, optical, hyperspectral, RF, and thermal modalities. While demand for Earth observation data is growing rapidly (driven by climate, agriculture, defense, and insurance applications), the number of independent constellation operators exceeds what the market will sustain. Multi-modal consolidation — combining different sensor types under one platform — is the logical endgame.</p>
+
+<h3>Launch Services</h3>
+<p>The small-launch segment is particularly ripe for consolidation. Dozens of companies are developing small launch vehicles, but only a handful have reached orbit. SpaceX\'s Falcon 9 rideshare program provides a low-cost alternative that puts price pressure on dedicated small launchers. Expect several small-launch startups to be acquired, merge, or cease operations in the coming years.</p>
+
+<h3>Space Software and Analytics</h3>
+<p>Space situational awareness (SSA), mission planning, ground software, and data analytics companies are attractive acquisition targets because they are asset-light, high-margin, and applicable across multiple end markets. Defense primes and satellite operators are actively acquiring software capabilities to differentiate their offerings.</p>
+
+<h2 id="tracking-executive-moves">Executive Moves as M&amp;A Signals</h2>
+
+<p>Personnel movements often foreshadow M&amp;A activity. Key signals to watch:</p>
+
+<ul>
+<li><strong>Hiring of corporate development staff</strong> at potential acquirers indicates active deal evaluation.</li>
+<li><strong>Departure of founders</strong> from startups can signal an upcoming sale (or can trigger one if tied to investor protections).</li>
+<li><strong>Cross-pollination of board members</strong> between companies that later merge is a recurring pattern.</li>
+<li><strong>Appointment of integration-focused executives</strong> (Chief Integration Officer, VP of M&amp;A Integration) signals that an acquirer is preparing for or executing deals.</li>
+</ul>
+
+<p>Monitor these movements using the <a href="/executive-moves">SpaceNexus Executive Moves tracker</a>, which captures leadership changes across 200+ space companies.</p>
+
+<h2 id="implications-for-stakeholders">Implications for Industry Stakeholders</h2>
+
+<p><strong>For startup founders:</strong> If your company is in a consolidating subsector, M&amp;A is a viable and often attractive exit path. Build relationships with potential acquirers early through partnerships and customer relationships. Ensure your IP is clean, your contracts are transferable, and your team has reasonable retention incentives.</p>
+
+<p><strong>For investors:</strong> Consolidation creates both risks and opportunities. Portfolio companies in overcrowded segments may face down-round acquisitions. But well-positioned companies with differentiated technology or strategic customer relationships can command premium valuations as acquirers compete for the best assets.</p>
+
+<p><strong>For corporate strategists:</strong> The window to acquire innovative space startups at reasonable valuations is closing. As the sector matures and the strongest companies establish track records, acquisition multiples will rise. Early movers in M&amp;A will secure better technology at lower prices.</p>
+
+<p><strong>For professionals:</strong> M&amp;A reshuffles talent across the industry. Acquisitions create opportunities for those who can bridge cultures between acquiring organizations and startup teams. Track which companies are actively acquiring to identify potential employers.</p>
+
+<h2 id="track-with-spacenexus">Track Space M&amp;A with SpaceNexus</h2>
+
+<p>SpaceNexus provides comprehensive tools for monitoring M&amp;A activity across the space industry. The <a href="/deal-flow">Deal Flow module</a> tracks acquisitions, partnerships, and investment rounds. <a href="/company-profiles">Company Profiles</a> provide the financial and operational data needed to evaluate potential targets and acquirers. And the <a href="/executive-moves">Executive Moves tracker</a> captures the personnel signals that often precede major transactions.</p>
+
+<p><a href="/register">Create your free account</a> and start tracking space industry deal flow today.</p>
+`,
+  },
+  {
+    slug: 'track-real-time-satellite-positions-guide',
+    title: 'How to Track Real-Time Satellite Positions: A Complete Guide',
+    excerpt: 'Everything you need to know about satellite tracking — from TLE data and SGP4 propagation to orbit types and real-time visualization tools.',
+    category: 'guide',
+    author: 'SpaceNexus Engineering',
+    authorRole: 'Technical',
+    publishedAt: '2026-02-28T00:00:00Z',
+    readingTime: 8,
+    keywords: ['satellite tracking', 'TLE data', 'satellite position', 'orbit tracking', 'CelesTrak'],
+    featured: false,
+    content: `
+<p>There are over 10,000 active satellites orbiting Earth right now, along with tens of thousands of pieces of tracked debris. Whether you are a satellite operator managing a constellation, a defense analyst monitoring adversary assets, an educator teaching orbital mechanics, or simply someone who wants to know when the ISS will fly overhead, understanding how satellite tracking works is increasingly relevant.</p>
+
+<p>This guide explains the fundamentals of satellite tracking — what the data looks like, how positions are calculated, what the different orbit types mean, and how you can track satellites in real time using the <a href="/satellite-tracker">SpaceNexus Satellite Tracker</a>.</p>
+
+<h2 id="how-satellite-tracking-works">How Satellite Tracking Works</h2>
+
+<p>Satellite tracking begins with observation. The U.S. Space Force\'s 18th Space Defense Squadron operates a global network of radars, telescopes, and sensors that detect and track objects in Earth orbit. This network — the Space Surveillance Network (SSN) — tracks approximately 47,000 objects, including active satellites, spent rocket bodies, and debris fragments larger than about 10 cm.</p>
+
+<p>When sensors detect an object, they measure its position and velocity at a specific time. These measurements are processed into standardized orbital element sets that describe the object\'s orbit mathematically. The most widely used format for distributing this data is the Two-Line Element set, or TLE.</p>
+
+<h2 id="understanding-tle-data">Understanding TLE Data</h2>
+
+<p>A TLE (Two-Line Element set) is a compact, standardized format that encodes enough information to predict a satellite\'s position for several days into the future. Despite its age — the format was developed in the 1960s — it remains the de facto standard for sharing orbital data.</p>
+
+<p>A TLE consists of two 69-character lines preceded by an optional title line. The elements encoded include:</p>
+
+<ul>
+<li><strong>Catalog number:</strong> A unique identifier for each tracked object (e.g., 25544 for the ISS)</li>
+<li><strong>Epoch:</strong> The reference time for the element set — the moment at which the orbital elements are most accurate</li>
+<li><strong>Inclination:</strong> The angle between the orbital plane and the equatorial plane (0 degrees = equatorial, 90 degrees = polar)</li>
+<li><strong>Right Ascension of Ascending Node (RAAN):</strong> The orientation of the orbital plane relative to a fixed reference in space</li>
+<li><strong>Eccentricity:</strong> How elliptical the orbit is (0 = circular, approaching 1 = highly elliptical)</li>
+<li><strong>Argument of Perigee:</strong> The orientation of the orbit\'s lowest point within the orbital plane</li>
+<li><strong>Mean Anomaly:</strong> The satellite\'s position along its orbit at the epoch time</li>
+<li><strong>Mean Motion:</strong> How many orbits the satellite completes per day (a satellite in 90-minute LEO orbit completes about 16 per day)</li>
+<li><strong>Drag term (B*):</strong> A coefficient that models atmospheric drag effects on the orbit</li>
+</ul>
+
+<p>TLE data is freely available from <strong>CelesTrak</strong> (celestrak.org), operated by Dr. T.S. Kelso, which redistributes TLE data from Space-Track.org (the official U.S. government source) in more accessible formats. SpaceNexus sources its orbital data from CelesTrak and updates positions continuously.</p>
+
+<h2 id="sgp4-propagation">SGP4: Predicting Satellite Positions</h2>
+
+<p>TLE data alone tells you where a satellite was at the epoch time. To calculate where it is right now — or where it will be in the future — you need a <strong>propagation algorithm</strong> that models how the orbit evolves over time.</p>
+
+<p>The standard algorithm for TLE-based prediction is <strong>SGP4</strong> (Simplified General Perturbation model 4), developed by the U.S. Air Force. SGP4 accounts for several forces that perturb a satellite\'s orbit:</p>
+
+<ul>
+<li><strong>Earth\'s oblateness (J2):</strong> Earth is not a perfect sphere — it bulges at the equator. This is the dominant perturbation for most orbits, causing the orbital plane to precess (rotate) over time.</li>
+<li><strong>Atmospheric drag:</strong> For LEO satellites (below ~1000 km), atmospheric drag gradually lowers the orbit and eventually causes reentry. The drag term (B*) in the TLE models this effect.</li>
+<li><strong>Solar and lunar gravity:</strong> The gravitational pull of the Sun and Moon perturbs orbits, particularly at higher altitudes.</li>
+<li><strong>Solar radiation pressure:</strong> Photons from the Sun exert a small but measurable force on satellites, especially those with large solar panels or thin structures.</li>
+</ul>
+
+<p>SGP4 is accurate to approximately 1 km for predictions a few days after the TLE epoch, degrading to tens of kilometers after a week or more. This is sufficient for most tracking applications but not for precision tasks like collision avoidance, which require higher-fidelity propagation.</p>
+
+<h2 id="orbit-types-explained">Orbit Types Explained</h2>
+
+<h3>Low Earth Orbit (LEO): 200-2,000 km Altitude</h3>
+
+<p>LEO is the most populated orbital regime, home to the majority of active satellites. Key characteristics:</p>
+
+<ul>
+<li><strong>Orbital period:</strong> 88-127 minutes (approximately 16 orbits per day at 400 km)</li>
+<li><strong>Latency:</strong> 1-4 milliseconds (making LEO ideal for broadband internet)</li>
+<li><strong>Notable occupants:</strong> International Space Station (ISS, 420 km), Starlink (550 km), Planet Labs (500 km), Hubble Space Telescope (540 km)</li>
+<li><strong>Considerations:</strong> Atmospheric drag is significant below ~600 km, requiring periodic reboost. LEO satellites have limited ground coverage per pass, which is why constellations require hundreds or thousands of satellites.</li>
+</ul>
+
+<p>Explore LEO satellites on the <a href="/satellites">SpaceNexus Satellite database</a>, which catalogs operator, mission, orbit parameters, and status for thousands of objects.</p>
+
+<h3>Medium Earth Orbit (MEO): 2,000-35,786 km Altitude</h3>
+
+<p>MEO is primarily used by navigation constellations:</p>
+
+<ul>
+<li><strong>Orbital period:</strong> 2-24 hours</li>
+<li><strong>Notable occupants:</strong> GPS (~20,200 km, 31 operational satellites), Galileo (~23,222 km), GLONASS (~19,100 km), BeiDou MEO satellites</li>
+<li><strong>Considerations:</strong> MEO requires passage through the Van Allen radiation belts, necessitating radiation-hardened electronics. The higher altitude provides larger ground coverage per satellite.</li>
+</ul>
+
+<h3>Geostationary Orbit (GEO): 35,786 km Altitude</h3>
+
+<p>At exactly 35,786 km altitude with zero inclination, a satellite\'s orbital period matches Earth\'s rotation — it appears stationary relative to the ground. This makes GEO invaluable for specific applications:</p>
+
+<ul>
+<li><strong>Communications:</strong> GEO satellites can provide continuous coverage of a fixed region. Three satellites can cover nearly the entire globe (excluding polar regions). Companies like SES, Intelsat, and Viasat operate large GEO fleets.</li>
+<li><strong>Weather monitoring:</strong> GOES (U.S.), Meteosat (Europe), and Himawari (Japan) provide continuous weather imagery from GEO.</li>
+<li><strong>Early warning:</strong> Military early warning satellites in GEO detect missile launches using infrared sensors.</li>
+<li><strong>Orbital slot allocation:</strong> GEO orbital positions are allocated by the ITU and are extremely valuable. Explore allocation data in the <a href="/orbital-slots">SpaceNexus Orbital Slots module</a>.</li>
+</ul>
+
+<h3>Other Notable Orbits</h3>
+
+<ul>
+<li><strong>Sun-Synchronous Orbit (SSO):</strong> A polar LEO orbit where the orbital plane precesses to maintain a constant angle with the Sun. This ensures consistent lighting conditions for Earth observation. Most EO satellites use SSO.</li>
+<li><strong>Molniya Orbit:</strong> A highly elliptical 12-hour orbit with high apogee over the Northern Hemisphere, used by Russia for communications coverage of high-latitude regions.</li>
+<li><strong>Cislunar Orbits:</strong> Orbits extending to the Moon and Lagrange points, increasingly relevant as Artemis and commercial lunar programs expand.</li>
+</ul>
+
+<h2 id="tracking-specific-satellites">Tracking Specific Satellites</h2>
+
+<h3>International Space Station (ISS)</h3>
+<p>The ISS is the brightest artificial object in the night sky and one of the most tracked. Orbiting at approximately 420 km altitude with a 51.6-degree inclination, it completes an orbit every 92 minutes. The ISS is visible to the naked eye during passes over your location — it appears as a bright, steadily moving point of light.</p>
+
+<h3>Starlink Constellation</h3>
+<p>SpaceX\'s Starlink constellation is the largest satellite constellation ever deployed, with over 7,000 operational satellites in LEO at approximately 550 km altitude. Starlink satellites are sometimes visible as "trains" shortly after launch before they raise their orbits and spread out. Track the full constellation using the <a href="/constellations">SpaceNexus Constellation Monitor</a>.</p>
+
+<h3>GPS Constellation</h3>
+<p>The GPS constellation consists of 31 operational satellites in six orbital planes at approximately 20,200 km altitude. Each satellite completes two orbits per day. GPS is a MEO constellation — much higher than Starlink but much lower than GEO communications satellites.</p>
+
+<h2 id="track-with-spacenexus">Track Satellites with SpaceNexus</h2>
+
+<p>The <a href="/satellite-tracker">SpaceNexus Satellite Tracker</a> visualizes 19,000+ tracked objects on an interactive 3D globe with real-time positions calculated from the latest CelesTrak TLE data using SGP4 propagation. Filter satellites by orbit type, operator, constellation, or mission type. Click any satellite to see its orbital parameters, ground track, and operator information.</p>
+
+<p>Beyond tracking, SpaceNexus integrates satellite data with our broader intelligence platform. See which companies operate which satellites through <a href="/company-profiles">Company Profiles</a>. Monitor constellation deployment progress. Track orbital slot utilization in <a href="/orbital-slots">Orbital Slots</a>. And monitor the space environment — debris density, collision risk, and reentry predictions — in our <a href="/space-environment">Space Environment module</a>.</p>
+
+<p><a href="/register">Start tracking satellites for free</a> with SpaceNexus.</p>
+`,
+  },
+  {
+    slug: 'spacenexus-score-company-rating-methodology',
+    title: 'SpaceNexus Score: How We Rate 200+ Space Companies',
+    excerpt: 'A detailed look at the SpaceNexus Score methodology — the six dimensions we evaluate, how they are weighted, and what data sources drive the ratings.',
+    category: 'analysis',
+    author: 'SpaceNexus Intelligence Team',
+    authorRole: 'Data Science',
+    publishedAt: '2026-02-28T00:00:00Z',
+    readingTime: 9,
+    keywords: ['space company rating', 'SpaceNexus Score', 'company evaluation', 'space industry scoring'],
+    featured: false,
+    content: `
+<p>When we set out to build <a href="/company-profiles">SpaceNexus Company Profiles</a>, we faced a fundamental question: how do you objectively compare space companies that operate in different segments, at different stages of maturity, with fundamentally different business models? A pre-revenue launch startup and a profitable GEO satellite operator are not directly comparable on any single metric — yet investors, analysts, and business development professionals need a way to quickly assess and compare companies across the sector.</p>
+
+<p>The SpaceNexus Score is our answer. It is a composite rating from 0-100 that distills six critical dimensions of company health into a single, actionable metric. This article explains exactly how it works — the dimensions we evaluate, the weighting logic, the data sources, and the limitations you should understand.</p>
+
+<h2 id="design-principles">Design Principles</h2>
+
+<p>Before describing the methodology, it is important to understand the principles that guided its design:</p>
+
+<ul>
+<li><strong>Multi-dimensional:</strong> No single metric captures company quality. A company can have excellent technology but poor financial health, or strong revenue but weak competitive positioning. The score must capture multiple independent dimensions.</li>
+<li><strong>Data-driven:</strong> Every component of the score must be derived from observable, verifiable data — not opinions or sentiment. This ensures consistency and reproducibility.</li>
+<li><strong>Segment-aware:</strong> A launch company and an Earth observation company should be evaluated against appropriate benchmarks for their respective segments, not against a universal standard.</li>
+<li><strong>Transparent:</strong> Users should be able to understand why a company received its score and identify the specific dimensions where it is strong or weak.</li>
+<li><strong>Actionable:</strong> The score should be useful for real decisions — investment screening, partnership evaluation, competitive analysis, and risk assessment.</li>
+</ul>
+
+<h2 id="six-dimensions">The Six Scoring Dimensions</h2>
+
+<h3>1. Financial Health (Weight: 20%)</h3>
+
+<p>Financial health measures a company\'s fiscal stability and sustainability. The dimension score is computed from:</p>
+
+<ul>
+<li><strong>Cash position and runway</strong> — Absolute cash reserves and estimated months of operating runway based on reported burn rates. Companies with 24+ months of runway score highest.</li>
+<li><strong>Revenue metrics</strong> — For revenue-generating companies: revenue growth rate, gross margin, and revenue diversification (customer concentration). Pre-revenue companies are scored on funding adequacy relative to milestone timelines.</li>
+<li><strong>Funding trajectory</strong> — Round-over-round valuation progression, investor quality (institutional vs. strategic vs. angel), and funding velocity. Data sourced from the <a href="/funding-tracker">SpaceNexus Funding Tracker</a>.</li>
+<li><strong>Profitability indicators</strong> — Operating margin trajectory, path to profitability credibility, and unit economics where observable.</li>
+</ul>
+
+<p>Data sources: SEC filings (EDGAR), annual reports, Crunchbase, press releases, and SpaceNexus proprietary funding database.</p>
+
+<h3>2. Technology Readiness (Weight: 20%)</h3>
+
+<p>Technology readiness evaluates the maturity and credibility of a company\'s core technology and its intellectual property position.</p>
+
+<ul>
+<li><strong>Technology Readiness Level (TRL)</strong> — Assessed on NASA\'s 1-9 scale based on publicly available test data, mission results, and technical publications. Flight-proven technology (TRL 8-9) scores highest.</li>
+<li><strong>Patent portfolio strength</strong> — Number of granted patents, patent quality (citation count, breadth of claims), geographic coverage, and relevance to the company\'s core business. Data from the <a href="/patents">SpaceNexus Patent Intelligence module</a>.</li>
+<li><strong>Mission and test track record</strong> — Success rates, anomaly frequency and resolution quality, demonstration mission outcomes, and cadence improvement over time.</li>
+<li><strong>Technical team depth</strong> — Senior engineering headcount, credentials of key technical personnel, and retention of critical talent.</li>
+</ul>
+
+<p>Data sources: Patent databases (USPTO, EPO), public mission data, company disclosures, conference proceedings, and SpaceNexus proprietary analysis.</p>
+
+<h3>3. Market Position (Weight: 15%)</h3>
+
+<p>Market position evaluates competitive dynamics and the company\'s ability to capture and defend market share.</p>
+
+<ul>
+<li><strong>Market share</strong> — Estimated share of the company\'s addressable market based on revenue, units deployed, or capacity metrics appropriate to the segment.</li>
+<li><strong>Competitive differentiation</strong> — Assessed qualitatively based on published benchmarks, customer testimonials, and comparative analysis. Factors include price-performance ratio, unique technical capabilities, and switching costs.</li>
+<li><strong>Customer quality and diversity</strong> — A mix of government and commercial customers, blue-chip customer logos, and low customer concentration score highest.</li>
+<li><strong>Backlog strength</strong> — Contracted backlog relative to annual revenue or capacity provides forward visibility. Higher backlog-to-revenue ratios indicate stronger positioning.</li>
+</ul>
+
+<h3>4. Growth Momentum (Weight: 15%)</h3>
+
+<p>Growth momentum captures the velocity and acceleration of key business metrics over the trailing 6-12 months.</p>
+
+<ul>
+<li><strong>Contract and order growth</strong> — Year-over-year change in new contract value or order count. Sourced from the <a href="/deal-flow">SpaceNexus Deal Flow module</a> and public announcements.</li>
+<li><strong>Deployment or production cadence</strong> — For operational companies, the rate of satellite deployment, launch cadence, or unit production compared to prior periods.</li>
+<li><strong>Headcount growth</strong> — Net hiring velocity, weighted toward engineering and operations roles, as a proxy for confidence in the business plan.</li>
+<li><strong>Partnership and ecosystem expansion</strong> — New strategic partnerships, channel agreements, or integration relationships established in the trailing period.</li>
+</ul>
+
+<h3>5. Operational Maturity (Weight: 15%)</h3>
+
+<p>Operational maturity assesses whether a company has the organizational and operational infrastructure to execute at scale.</p>
+
+<ul>
+<li><strong>Manufacturing and production readiness</strong> — Demonstrated ability to produce hardware at the rate required by the business plan. Relevant for hardware-centric companies (launch, satellite manufacturing, components).</li>
+<li><strong>Quality certifications</strong> — AS9100, ISO 9001, CMMI, and other industry certifications indicate process maturity.</li>
+<li><strong>Regulatory compliance</strong> — ITAR/EAR compliance programs, FCC licenses, FAA launch licenses, and other regulatory approvals in place.</li>
+<li><strong>Organizational completeness</strong> — Functional leadership across engineering, operations, finance, legal, and business development. Companies with a complete C-suite and VP-level leadership team score higher.</li>
+</ul>
+
+<h3>6. Risk Profile (Weight: 15%)</h3>
+
+<p>Risk profile identifies and quantifies factors that could materially impair the company\'s ability to execute its business plan.</p>
+
+<ul>
+<li><strong>Key person dependency</strong> — Concentration of critical knowledge or decision-making authority in a single individual. Higher dependency scores result in lower risk ratings.</li>
+<li><strong>Customer concentration</strong> — Revenue or backlog dependency on a single customer exceeding 40% is penalized, with severity increasing with concentration.</li>
+<li><strong>Regulatory and geopolitical risk</strong> — Pending regulatory decisions, export control challenges, or supply chain exposure to geopolitically volatile regions.</li>
+<li><strong>Financial risk indicators</strong> — Going concern warnings, frequent bridge financing, or declining cash reserves without offsetting revenue growth.</li>
+</ul>
+
+<h2 id="scoring-methodology">How the Score Is Calculated</h2>
+
+<p>Each of the six dimensions produces a raw score from 0-100 based on the component metrics described above. The composite SpaceNexus Score is then calculated as the weighted sum:</p>
+
+<p><strong>SpaceNexus Score = (Financial Health x 0.20) + (Technology Readiness x 0.20) + (Market Position x 0.15) + (Growth Momentum x 0.15) + (Operational Maturity x 0.15) + (Risk Profile x 0.15)</strong></p>
+
+<p>Weights reflect our assessment of relative importance for evaluating space companies as a category. Financial health and technology readiness receive the highest weights because inadequacy in either dimension is most likely to be fatal — you cannot build hardware without money, and you cannot generate revenue without working technology.</p>
+
+<p>Within each dimension, component metrics are normalized to 0-100 scales using <strong>segment-specific benchmarks</strong>. A launch company\'s financial health is benchmarked against other launch companies, not against the entire space industry. This prevents cross-segment distortions — a pre-revenue launch startup would always score poorly against a mature satellite operator on absolute financial metrics, but may score well relative to peers at the same stage.</p>
+
+<h2 id="score-interpretation">Interpreting the Score</h2>
+
+<p>SpaceNexus Scores should be interpreted within context:</p>
+
+<ul>
+<li><strong>80-100 (Strong):</strong> Industry leaders with proven technology, solid financials, and strong competitive positions. These are established companies or standout growth-stage companies that have de-risked most critical elements.</li>
+<li><strong>60-79 (Above Average):</strong> Credible companies with demonstrated capability and a clear path to leadership. Typically mid-to-late stage companies that have achieved significant milestones but still face meaningful execution risk.</li>
+<li><strong>40-59 (Average):</strong> Companies with potential but significant remaining risk. Early-to-mid stage companies with promising technology but unproven business models, or established companies facing competitive or financial headwinds.</li>
+<li><strong>20-39 (Below Average):</strong> Companies facing substantial challenges across multiple dimensions. May include pre-revenue companies with unproven technology, companies with deteriorating financial positions, or those in highly competitive segments without clear differentiation.</li>
+<li><strong>0-19 (At Risk):</strong> Companies in distress or with fundamental viability concerns.</li>
+</ul>
+
+<h2 id="limitations">Limitations and Caveats</h2>
+
+<p>No scoring system is perfect, and it is important to understand the limitations of the SpaceNexus Score:</p>
+
+<ul>
+<li><strong>Public data dependency:</strong> The score relies on publicly available data. Private companies that disclose less information may have less accurate scores. When data is unavailable, we use conservative assumptions (which typically result in lower scores).</li>
+<li><strong>Lagging indicators:</strong> Most financial and operational metrics are backward-looking. The score captures where a company has been, not necessarily where it is going. Supplement with forward-looking analysis from the <a href="/deal-flow">Deal Flow</a> and news modules.</li>
+<li><strong>Qualitative factors:</strong> Some important factors — quality of leadership, organizational culture, strategic vision — are difficult to quantify from public data alone.</li>
+<li><strong>Not investment advice:</strong> The SpaceNexus Score is an analytical tool, not a recommendation. It should be one input among many in investment or partnership decisions.</li>
+</ul>
+
+<h2 id="explore-scores">Explore SpaceNexus Scores</h2>
+
+<p>View scores for 200+ space companies in the <a href="/company-profiles">SpaceNexus Company Profiles</a> module. Each profile includes the composite score, dimension-level breakdowns, and the underlying data that drives each rating. Compare companies side-by-side, filter by segment, and track how scores change over time as companies hit milestones or face setbacks.</p>
+
+<p>For a deeper understanding of how to use SpaceNexus Scores in your due diligence workflow, see our companion article: <a href="/blog/space-industry-due-diligence-guide">The Complete Guide to Space Industry Due Diligence</a>.</p>
+
+<p><a href="/register">Create your free account</a> and explore the <a href="/space-score">SpaceNexus Score</a> today.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {
