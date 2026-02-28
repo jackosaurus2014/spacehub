@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, signOut } from 'next-auth/react';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { usePathname } from 'next/navigation';
 import { useSubscription } from './SubscriptionProvider';
 import { useHighContrast } from '@/hooks/useHighContrast';
 import NotificationCenter from './NotificationCenter';
@@ -15,6 +16,24 @@ interface DropdownItem {
   href: string;
   description: string;
 }
+
+interface RecentModule {
+  label: string;
+  href: string;
+}
+
+const RECENT_MODULES_KEY = 'spacenexus-recent-modules';
+const MAX_RECENT_MODULES = 5;
+const MOBILE_INITIAL_ITEMS = 8;
+
+type CategoryKey = 'explore' | 'intelligence' | 'business' | 'tools';
+
+const ALL_CATEGORIES: { key: CategoryKey; label: string; items: DropdownItem[] }[] = [
+  { key: 'explore', label: 'Explore', items: [] },
+  { key: 'intelligence', label: 'Intelligence', items: [] },
+  { key: 'business', label: 'Business', items: [] },
+  { key: 'tools', label: 'Tools', items: [] },
+];
 
 const EXPLORE_ITEMS: DropdownItem[] = [
   { label: "What's New", href: '/changelog', description: 'Latest platform updates and features' },
@@ -150,6 +169,12 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Satellite Buses', href: '/satellite-bus-comparison', description: 'Satellite bus platform comparison tool' },
   { label: 'Propulsion Comparison', href: '/propulsion-comparison', description: 'Compare rocket engines & propulsion systems' },
 ];
+
+// Wire up items to category metadata after const arrays are defined
+ALL_CATEGORIES[0].items = EXPLORE_ITEMS;
+ALL_CATEGORIES[1].items = INTELLIGENCE_ITEMS;
+ALL_CATEGORIES[2].items = BUSINESS_ITEMS;
+ALL_CATEGORIES[3].items = TOOLS_ITEMS;
 
 function DropdownMenu({
   label,
@@ -317,9 +342,96 @@ export default function Navigation() {
   const { data: session, status } = useSession();
   const { isPro } = useSubscription();
   const { isHighContrast, toggleHighContrast } = useHighContrast();
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
+
+  // Mobile menu state
+  const [mobileSearchQuery, setMobileSearchQuery] = useState('');
+  const [expandedCategory, setExpandedCategory] = useState<CategoryKey | null>(null);
+  const [showAllItems, setShowAllItems] = useState<Record<CategoryKey, boolean>>({
+    explore: false,
+    intelligence: false,
+    business: false,
+    tools: false,
+  });
+  const [recentModules, setRecentModules] = useState<RecentModule[]>([]);
+  const mobileSearchRef = useRef<HTMLInputElement>(null);
+
+  // Load recent modules from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(RECENT_MODULES_KEY);
+      if (stored) {
+        setRecentModules(JSON.parse(stored));
+      }
+    } catch {
+      // Ignore parse errors
+    }
+  }, []);
+
+  // Save current page to recent modules on navigation
+  useEffect(() => {
+    if (!pathname || pathname === '/') return;
+
+    // Find matching item across all categories
+    const allItems = [...EXPLORE_ITEMS, ...INTELLIGENCE_ITEMS, ...BUSINESS_ITEMS, ...TOOLS_ITEMS];
+    const match = allItems.find((item) => item.href === pathname);
+    if (!match) return;
+
+    setRecentModules((prev) => {
+      const filtered = prev.filter((m) => m.href !== pathname);
+      const updated = [{ label: match.label, href: match.href }, ...filtered].slice(0, MAX_RECENT_MODULES);
+      try {
+        localStorage.setItem(RECENT_MODULES_KEY, JSON.stringify(updated));
+      } catch {
+        // Ignore storage errors
+      }
+      return updated;
+    });
+  }, [pathname]);
+
+  // Reset mobile menu state when menu closes
+  useEffect(() => {
+    if (!isMenuOpen) {
+      setMobileSearchQuery('');
+      setExpandedCategory(null);
+      setShowAllItems({ explore: false, intelligence: false, business: false, tools: false });
+    }
+  }, [isMenuOpen]);
+
+  // Focus search input when mobile menu opens
+  useEffect(() => {
+    if (isMenuOpen) {
+      requestAnimationFrame(() => {
+        mobileSearchRef.current?.focus();
+      });
+    }
+  }, [isMenuOpen]);
+
+  // Mobile search filtering
+  const mobileFilteredCategories = useMemo(() => {
+    const query = mobileSearchQuery.toLowerCase().trim();
+    if (!query) return ALL_CATEGORIES;
+
+    return ALL_CATEGORIES.map((cat) => ({
+      ...cat,
+      items: cat.items.filter(
+        (item) =>
+          item.label.toLowerCase().includes(query) ||
+          item.description.toLowerCase().includes(query)
+      ),
+    })).filter((cat) => cat.items.length > 0);
+  }, [mobileSearchQuery]);
+
+  const toggleMobileCategory = (key: CategoryKey) => {
+    setExpandedCategory((prev) => (prev === key ? null : key));
+  };
+
+  const toggleShowAll = (key: CategoryKey) => {
+    setShowAllItems((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -596,85 +708,169 @@ export default function Navigation() {
           <div className="lg:hidden fixed inset-0 top-[72px] z-50 animate-fade-in">
             <div className="absolute inset-0 bg-black/50" onClick={() => setIsMenuOpen(false)} role="presentation" aria-hidden="true" />
             <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] backdrop-blur-xl border-l border-cyan-400/30 overflow-y-auto animate-slide-in-right" style={{ background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)', boxShadow: '-8px 0 16px -4px rgba(0, 0, 0, 0.4), -20px 0 40px -10px rgba(0, 0, 0, 0.5)' }}>
-              <div className="p-6 space-y-6">
-                {/* Explore Section */}
-                <div>
-                  <h3 className="text-cyan-400 text-xs uppercase tracking-widest font-medium mb-3">Explore</h3>
-                  <div className="space-y-0.5">
-                    {EXPLORE_ITEMS.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <span className="text-sm font-medium">{item.label}</span>
-                        <p className="text-slate-400 text-xs mt-0.5">{item.description}</p>
-                      </Link>
-                    ))}
-                  </div>
+              <div className="p-6 space-y-4">
+                {/* Mobile Search Input */}
+                <div className="relative">
+                  <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                  </svg>
+                  <input
+                    ref={mobileSearchRef}
+                    type="text"
+                    placeholder="Search modules..."
+                    value={mobileSearchQuery}
+                    onChange={(e) => setMobileSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-colors"
+                    aria-label="Search navigation modules"
+                  />
+                  {mobileSearchQuery && (
+                    <button
+                      onClick={() => setMobileSearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                      aria-label="Clear search"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
 
-                {/* Intelligence Section */}
-                <div>
-                  <h3 className="text-cyan-400 text-xs uppercase tracking-widest font-medium mb-3">Intelligence</h3>
-                  <div className="space-y-0.5">
-                    {INTELLIGENCE_ITEMS.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <span className="text-sm font-medium">{item.label}</span>
-                        <p className="text-slate-400 text-xs mt-0.5">{item.description}</p>
-                      </Link>
-                    ))}
+                {/* Recently Visited Section */}
+                {!mobileSearchQuery && recentModules.length > 0 && (
+                  <div>
+                    <h3 className="text-slate-500 text-xs uppercase tracking-widest font-medium mb-2 flex items-center gap-1.5">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Recently Visited
+                    </h3>
+                    <div className="space-y-0.5">
+                      {recentModules.map((mod) => (
+                        <Link
+                          key={mod.href}
+                          href={mod.href}
+                          className="block px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors text-sm font-medium"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          {mod.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* Business Section */}
-                <div>
-                  <h3 className="text-cyan-400 text-xs uppercase tracking-widest font-medium mb-3">Business</h3>
-                  <div className="space-y-0.5">
-                    {BUSINESS_ITEMS.map((item) => (
-                      <Link
-                        key={item.label}
-                        href={item.href}
-                        className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <span className="text-sm font-medium">{item.label}</span>
-                        <p className="text-slate-400 text-xs mt-0.5">{item.description}</p>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+                {/* Category Accordions */}
+                <div className="space-y-1">
+                  {mobileFilteredCategories.map((category) => {
+                    const isExpanded = mobileSearchQuery ? true : expandedCategory === category.key;
+                    const isShowingAll = showAllItems[category.key] || !!mobileSearchQuery;
+                    const visibleItems = isShowingAll
+                      ? category.items
+                      : category.items.slice(0, MOBILE_INITIAL_ITEMS);
+                    const hiddenCount = category.items.length - MOBILE_INITIAL_ITEMS;
 
-                {/* Tools Section */}
-                <div>
-                  <h3 className="text-cyan-400 text-xs uppercase tracking-widest font-medium mb-3">Tools</h3>
-                  <div className="space-y-0.5">
-                    {TOOLS_ITEMS.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium">{item.label}</span>
-                          {item.href === '/compliance' && !isPro && (
-                            <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                              PRO
+                    return (
+                      <div key={category.key}>
+                        {/* Category Header / Accordion Toggle */}
+                        <button
+                          onClick={() => {
+                            if (!mobileSearchQuery) {
+                              toggleMobileCategory(category.key);
+                            }
+                          }}
+                          className={`w-full flex items-center justify-between px-3 py-3 rounded-lg transition-colors touch-target ${
+                            isExpanded
+                              ? 'bg-slate-700/30 text-cyan-400'
+                              : 'text-cyan-400 hover:bg-slate-700/20'
+                          }`}
+                          aria-expanded={isExpanded}
+                        >
+                          <span className="text-xs uppercase tracking-widest font-medium">
+                            {category.label}
+                            <span className="ml-2 text-slate-500 normal-case tracking-normal">
+                              ({category.items.length})
                             </span>
+                          </span>
+                          {!mobileSearchQuery && (
+                            <svg
+                              className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
                           )}
-                        </div>
-                        <p className="text-slate-400 text-xs mt-0.5">{item.description}</p>
-                      </Link>
-                    ))}
-                  </div>
+                        </button>
+
+                        {/* Category Items */}
+                        {isExpanded && (
+                          <div className="space-y-0.5 mt-1">
+                            {visibleItems.map((item) => (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
+                                onClick={() => setIsMenuOpen(false)}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span className="text-sm font-medium">{item.label}</span>
+                                  {item.href === '/compliance' && !isPro && (
+                                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                                      PRO
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-slate-400 text-xs mt-0.5">{item.description}</p>
+                              </Link>
+                            ))}
+
+                            {/* Show More / Show Less toggle */}
+                            {!mobileSearchQuery && hiddenCount > 0 && (
+                              <button
+                                onClick={() => toggleShowAll(category.key)}
+                                className="w-full px-3 py-2.5 text-sm text-cyan-400 hover:text-cyan-300 font-medium transition-colors flex items-center gap-1.5 justify-center"
+                              >
+                                {isShowingAll ? (
+                                  <>
+                                    Show fewer
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                                    </svg>
+                                  </>
+                                ) : (
+                                  <>
+                                    Show all {category.items.length} items
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                  </>
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
+
+                {/* No results message */}
+                {mobileSearchQuery && mobileFilteredCategories.length === 0 && (
+                  <div className="text-center py-6">
+                    <p className="text-slate-500 text-sm">No modules match &ldquo;{mobileSearchQuery}&rdquo;</p>
+                  </div>
+                )}
 
                 {session?.user?.isAdmin && (
                   <div>
@@ -689,7 +885,7 @@ export default function Navigation() {
                   </div>
                 )}
 
-                {/* Search link (mobile) */}
+                {/* Global Search link (mobile) */}
                 <div className="pt-4 border-t border-slate-700/50">
                   <button
                     className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors text-sm font-medium touch-target"
@@ -713,7 +909,7 @@ export default function Navigation() {
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                     </svg>
-                    Search
+                    Global Search
                     <kbd className="ml-auto px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px] font-mono text-slate-500">
                       Ctrl+K
                     </kbd>

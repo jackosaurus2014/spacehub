@@ -1,5 +1,5 @@
 /**
- * CSV export utility — re-exports from the main export-utils module.
+ * CSV export utility -- re-exports from the main export-utils module.
  *
  * For most cases prefer using `ExportButton` component directly,
  * which wraps `downloadCSV` / `downloadJSON` with a progress UI.

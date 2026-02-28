@@ -229,6 +229,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'debris-catalog': [MODULES.debrisRemediation, MODULES.debrisTracker, MODULES.spaceEnvironment, MODULES.satellites],
   'debris-remediation': [MODULES.debrisCatalog, MODULES.debrisTracker, MODULES.sustainability, MODULES.spaceEnvironment],
   'debris-tracker': [MODULES.debrisCatalog, MODULES.debrisRemediation, MODULES.satellites, MODULES.spaceEnvironment],
+  'satellite-tracker': [MODULES.satellites, MODULES.constellations, MODULES.orbitalSlots, MODULES.spaceEnvironment, MODULES.groundStations],
 
   // ── Talent & Workforce cluster ──
   'space-talent': [MODULES.jobs, MODULES.salaryBenchmarks, MODULES.careerGuide, MODULES.workforceAnalytics, MODULES.educationPathways],

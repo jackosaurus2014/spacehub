@@ -19,6 +19,9 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import ShareButton from '@/components/ui/ShareButton';
 import SocialShare from '@/components/ui/SocialShare';
 import ExportPDFButton from '@/components/ui/ExportPDFButton';
+import { SpaceNexusScoreInline } from '@/components/company/SpaceNexusScore';
+import { calculateSpaceNexusScore, getScoreColor as snxScoreColor, getScoreGrade } from '@/lib/spacenexus-score';
+import { getEntityLinks } from '@/lib/entity-linker';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -280,6 +283,7 @@ const TABS = [
   { id: 'timeline', label: 'Timeline', icon: '📅' },
   { id: 'news', label: 'News', icon: '📰' },
   { id: 'digest', label: 'Weekly Digest', icon: '📊' },
+  { id: 'intelligence', label: 'Intelligence', icon: '🧠' },
   { id: 'relationships', label: 'Relationships', icon: '🔗' },
   { id: 'contact', label: 'Contact', icon: '✉️' },
 ] as const;
@@ -359,9 +363,14 @@ function OverviewTab({ company }: { company: CompanyDetail }) {
         </p>
       </SectionCard>
 
-      {/* Scores */}
+      {/* SpaceNexus Score — Proprietary Company Rating */}
+      <SectionCard title="SpaceNexus Score">
+        <CompanyScoreSection company={company} />
+      </SectionCard>
+
+      {/* Legacy Scores */}
       {company.scores.length > 0 && (
-        <SectionCard title="SpaceNexus Intelligence Scores">
+        <SectionCard title="Detailed Intelligence Scores">
           <div className="flex flex-wrap gap-6 justify-center py-2">
             {company.scores.map(s => (
               <ScoreRing key={s.id} score={s.score} label={s.scoreType.replace('_', ' ')} />
@@ -1045,6 +1054,137 @@ function DigestTab({ companyId, companyName }: { companyId: string; companyName:
   );
 }
 
+function CompanyScoreSection({ company }: { company: CompanyDetail }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const scoreResult = calculateSpaceNexusScore(company as any);
+
+  return (
+    <div className="space-y-4">
+      {/* Score Header */}
+      <div className="flex items-center gap-4">
+        <div className="relative w-20 h-20">
+          <svg width={80} height={80} className="transform -rotate-90">
+            <circle cx={40} cy={40} r={34} fill="none" stroke="rgb(30 41 59 / 0.5)" strokeWidth="5" />
+            <circle
+              cx={40} cy={40} r={34} fill="none"
+              stroke={scoreResult.overall >= 80 ? '#10b981' : scoreResult.overall >= 60 ? '#06b6d4' : scoreResult.overall >= 40 ? '#f59e0b' : '#ef4444'}
+              strokeWidth="5" strokeLinecap="round"
+              strokeDasharray={2 * Math.PI * 34}
+              strokeDashoffset={2 * Math.PI * 34 * (1 - scoreResult.overall / 100)}
+              style={{ transition: 'stroke-dashoffset 1.2s ease-out' }}
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className={`text-lg font-bold ${snxScoreColor(scoreResult.overall)}`}>{scoreResult.overall}</span>
+            <span className="text-[10px] text-slate-500">{scoreResult.grade}</span>
+          </div>
+        </div>
+        <div>
+          <div className="text-lg font-semibold text-white">{scoreResult.label}</div>
+          <div className="text-sm text-slate-400">Data confidence: {Math.round(scoreResult.dataConfidence * 100)}%</div>
+        </div>
+      </div>
+
+      {/* Dimension Breakdown */}
+      <div className="grid grid-cols-2 gap-3">
+        {Object.entries(scoreResult.dimensions).map(([key, dim]) => {
+          const s = dim.score;
+          return (
+            <div key={key} className="bg-slate-800/30 rounded-lg p-2.5">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs text-slate-400 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                <span className={`text-xs font-bold ${getScoreColor(s)}`}>{s}</span>
+              </div>
+              <div className="h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-1000 ease-out ${getScoreBarColor(s)}`}
+                  style={{ width: `${s}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Key Insights */}
+      {scoreResult.insights.length > 0 && (
+        <div className="space-y-1.5">
+          <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">Key Insights</div>
+          {scoreResult.insights.slice(0, 4).map((insight, i) => (
+            <div key={i} className="flex items-start gap-2 text-xs text-slate-400">
+              <span className="text-cyan-400 mt-0.5">•</span>
+              <span>{insight}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function IntelligenceTab({ company }: { company: CompanyDetail }) {
+  const entityLinks = getEntityLinks(company.slug);
+  const links = [
+    { label: 'Related News', description: 'News articles mentioning this company', href: entityLinks.relatedNews, icon: '📰', color: 'border-cyan-500/30 hover:border-cyan-500/50' },
+    { label: 'Patent Filings', description: 'Patents and IP associated with this company', href: entityLinks.relatedPatents, icon: '📋', color: 'border-amber-500/30 hover:border-amber-500/50' },
+    { label: 'Job Postings', description: 'Open positions at this company', href: entityLinks.relatedJobs, icon: '💼', color: 'border-emerald-500/30 hover:border-emerald-500/50' },
+    { label: 'Launch History', description: 'Launches associated with this company', href: entityLinks.relatedLaunches, icon: '🚀', color: 'border-purple-500/30 hover:border-purple-500/50' },
+    { label: 'Contract Awards', description: 'Government contracts awarded', href: entityLinks.relatedContracts, icon: '📜', color: 'border-blue-500/30 hover:border-blue-500/50' },
+    { label: 'SEC Filings', description: 'Securities and financial disclosures', href: entityLinks.relatedSECFilings, icon: '📊', color: 'border-rose-500/30 hover:border-rose-500/50' },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <SectionCard title="Cross-Module Intelligence">
+        <p className="text-sm text-slate-400 mb-4">
+          Explore all intelligence about {company.name} across SpaceNexus modules.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {links.map(link => (
+            <Link key={link.label} href={link.href}>
+              <div className={`bg-slate-800/30 border ${link.color} rounded-lg p-4 transition-all duration-200 hover:bg-slate-800/50`}>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{link.icon}</span>
+                  <div>
+                    <div className="text-sm font-medium text-white">{link.label}</div>
+                    <div className="text-xs text-slate-500">{link.description}</div>
+                  </div>
+                  <svg className="w-4 h-4 text-slate-600 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </SectionCard>
+
+      {/* SpaceNexus Score */}
+      <SectionCard title="SpaceNexus Score Analysis">
+        <CompanyScoreSection company={company} />
+      </SectionCard>
+
+      {/* Industry Context */}
+      <SectionCard title="Industry Context">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { label: 'Sector', value: company.sector || 'Unknown', icon: '🏭' },
+            { label: 'Subsector', value: company.subsector || 'N/A', icon: '🔬' },
+            { label: 'Company Tier', value: `Tier ${company.tier}`, icon: '⭐' },
+            { label: 'Data Quality', value: `${company.dataCompleteness}%`, icon: '📊' },
+          ].map(item => (
+            <div key={item.label} className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3 text-center">
+              <div className="text-lg mb-1">{item.icon}</div>
+              <div className="text-sm font-medium text-white">{item.value}</div>
+              <div className="text-xs text-slate-500">{item.label}</div>
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+    </div>
+  );
+}
+
 function RelationshipsTab({ company }: { company: CompanyDetail }) {
   return (
     <div className="space-y-4">
@@ -1682,6 +1822,7 @@ export default function CompanyProfileDetailPage() {
           {activeTab === 'timeline' && <TimelineTab company={company} />}
           {activeTab === 'news' && <NewsTab companySlug={company.slug} companyName={company.name} />}
           {activeTab === 'digest' && <DigestTab companyId={company.id} companyName={company.name} />}
+          {activeTab === 'intelligence' && <IntelligenceTab company={company} />}
           {activeTab === 'relationships' && <RelationshipsTab company={company} />}
           {activeTab === 'contact' && company.sponsorTier && (
             <SectionCard title={`Contact ${company.name}`}>
