@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 
 export const revalidate = 86400;
@@ -274,6 +275,7 @@ export default function SpaceIndustryMarketSizePage() {
         </header>
 
         {/* Key Stats */}
+        <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-nebula-400 mb-1">$546B</div>
@@ -292,8 +294,10 @@ export default function SpaceIndustryMarketSizePage() {
             <div className="text-xs text-slate-400">Space-faring Nations</div>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Market Segments */}
+        <ScrollReveal delay={0.1}>
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-2">Market Segments Breakdown</h2>
           <p className="text-slate-400 text-sm mb-6">
@@ -343,6 +347,7 @@ export default function SpaceIndustryMarketSizePage() {
             ))}
           </div>
         </section>
+        </ScrollReveal>
 
         {/* Growth Projections Timeline */}
         <section className="mb-12">

@@ -6,6 +6,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ShareButton from '@/components/ui/ShareButton';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -892,6 +894,8 @@ export default function NewsAggregatorPage() {
             You&apos;ve reached the end of the feed.
           </div>
         )}
+
+        <RelatedModules modules={PAGE_RELATIONS['news-aggregator']} />
       </div>
     </div>
   );

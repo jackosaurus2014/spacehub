@@ -7,6 +7,8 @@ import DataFreshness from '@/components/ui/DataFreshness';
 import ExportButton from '@/components/ui/ExportButton';
 import { clientLogger } from '@/lib/client-logger';
 import EmptyState from '@/components/ui/EmptyState';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -788,6 +790,8 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
                 <svg className={`w-4 h-4 inline ${getTrendColor(geo.trend as 'up' | 'stable' | 'down')}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={getTrendIcon(geo.trend as 'up' | 'stable' | 'down')} />
                 </svg>
+
+        <RelatedModules modules={PAGE_RELATIONS['patents']} />
               </div>
             </div>
           ))}

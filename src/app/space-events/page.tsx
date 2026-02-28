@@ -19,6 +19,9 @@ import {
   getEventCountries,
   type SpaceEvent,
 } from '@/lib/space-events-data';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ── Helpers ──
 
@@ -144,7 +147,10 @@ function AddToCalendarDropdown({ event }: { event: SpaceEvent }) {
           </div>
         </>
       )}
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['space-events']} />
+      </div>
   );
 }
 
@@ -1085,17 +1091,19 @@ function SpaceEventsPageInner() {
             className="space-y-3"
           >
             {filteredEvents.length === 0 ? (
-              <div className="card p-10 text-center">
-                <div className="text-slate-500 text-sm mb-2">No events match the selected filters.</div>
-                {hasActiveFilters && (
+              <EmptyState
+                icon={<span className="text-4xl">🚀</span>}
+                title="No events match"
+                description="No events match the selected filters. Try adjusting your criteria."
+                action={hasActiveFilters ? (
                   <button
                     onClick={handleResetFilters}
                     className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
                   >
                     Clear all filters
                   </button>
-                )}
-              </div>
+                ) : undefined}
+              />
             ) : (
               filteredEvents.map((event) => (
                 <EventListCard key={event.id} event={event} onSelect={setSelectedEvent} />

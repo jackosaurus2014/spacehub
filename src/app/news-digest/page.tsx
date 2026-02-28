@@ -5,6 +5,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import SocialShare from '@/components/ui/SocialShare';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface DigestItem {
   headline: string;
@@ -606,6 +608,8 @@ export default function NewsDigestPage() {
             </p>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['news-digest']} />
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PortfolioAnalysis from '@/components/investors/PortfolioAnalysis';
 import { clientLogger } from '@/lib/client-logger';
 import InvestorActivityBadge from '@/components/investors/InvestorActivityBadge';
+import EmptyState from '@/components/ui/EmptyState';
 import type { InvestorActivityResult } from '@/lib/investor-sentiment';
 
 // ────────────────────────────────────────
@@ -326,11 +327,11 @@ function InvestorsPageInner() {
 
         {/* Investor Cards Grid */}
         {filtered.length === 0 ? (
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-8 text-center">
-            <p className="text-slate-400">
-              No investors match your filters.
-            </p>
-          </div>
+          <EmptyState
+            icon={<span className="text-4xl">💰</span>}
+            title="No investors found"
+            description="No investors match your current filters. Try adjusting your search criteria."
+          />
         ) : (
           <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
             {filtered.map((inv) => {

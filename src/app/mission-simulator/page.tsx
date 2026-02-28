@@ -5,6 +5,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ════════════════════════════════════════
 // Types & Constants
@@ -657,6 +659,8 @@ export default function MissionSimulatorPage() {
                                 <h4 className="text-sm font-semibold text-slate-200">{phase.label}</h4>
                               </div>
                               <p className="text-xs text-slate-400">{phase.description}</p>
+
+        <RelatedModules modules={PAGE_RELATIONS['mission-simulator']} />
                             </div>
                           </div>
                         ))}

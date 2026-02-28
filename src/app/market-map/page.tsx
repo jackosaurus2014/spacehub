@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -256,6 +258,8 @@ function StatsBar({ totalCompanies, totalSectors, totalMarketCap }: {
             <div>
               <p className="text-2xl font-bold text-slate-100">{stat.value}</p>
               <p className="text-xs text-slate-400 uppercase tracking-wide">{stat.label}</p>
+
+        <RelatedModules modules={PAGE_RELATIONS['market-map']} />
             </div>
           </div>
         ))}

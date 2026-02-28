@@ -10,6 +10,8 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import AdSlot from '@/components/ads/AdSlot';
 import PremiumGate from '@/components/PremiumGate';
 import EmptyState from '@/components/ui/EmptyState';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -654,6 +656,8 @@ function DealsPageContent() {
                           </div>
                           <div className="text-[9px] text-slate-600">
                             {q.count} deal{q.count !== 1 ? 's' : ''}
+
+        <RelatedModules modules={PAGE_RELATIONS['deals']} />
                           </div>
                         </div>
                       );

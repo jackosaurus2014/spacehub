@@ -14,6 +14,8 @@ import {
   TransferType,
   TRANSFER_TYPES,
 } from '@/types';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -155,6 +157,8 @@ function CountdownTimer({ targetDate }: { targetDate: Date | string }) {
       <div className="text-center">
         <div className="text-2xl font-bold font-display text-cyan-400">{String(timeLeft.seconds).padStart(2, '0')}</div>
         <div className="text-xs text-slate-400 uppercase tracking-widest">Sec</div>
+
+        <RelatedModules modules={PAGE_RELATIONS['launch-windows']} />
       </div>
     </div>
   );

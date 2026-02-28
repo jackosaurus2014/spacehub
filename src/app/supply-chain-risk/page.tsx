@@ -2,7 +2,10 @@
 
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ============================================================================
 // TYPES
@@ -285,6 +288,8 @@ function OverallRiskGauge({
           </svg>
           +{trend} from last quarter
         </span>
+
+        <RelatedModules modules={PAGE_RELATIONS['supply-chain-risk']} />
       </div>
     </div>
   );
@@ -507,6 +512,7 @@ export default function SupplyChainRiskPage() {
         />
 
         {/* ── OVERALL RISK SCORE ──────────────────────────────────────── */}
+        <ScrollReveal>
         <section className="card p-8 mb-8 flex flex-col lg:flex-row items-center gap-8">
           <OverallRiskGauge score={OVERALL_SCORE} trend={OVERALL_TREND} />
 
@@ -571,7 +577,10 @@ export default function SupplyChainRiskPage() {
           </select>
         </div>
 
+        </ScrollReveal>
+
         {/* ── RISK CATEGORY CARDS ─────────────────────────────────────── */}
+        <ScrollReveal delay={0.1}>
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-slate-100 mb-4">Risk Categories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -581,7 +590,10 @@ export default function SupplyChainRiskPage() {
           </div>
         </section>
 
+        </ScrollReveal>
+
         {/* ── CRITICAL COMPONENT WATCH LIST ────────────────────────────── */}
+        <ScrollReveal delay={0.15}>
         <section className="card p-6 mb-10 overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-slate-100">
@@ -625,7 +637,10 @@ export default function SupplyChainRiskPage() {
           )}
         </section>
 
+        </ScrollReveal>
+
         {/* ── LEAD TIME TRACKER ───────────────────────────────────────── */}
+        <ScrollReveal delay={0.2}>
         <section className="card p-6 mb-10">
           <h2 className="text-lg font-semibold text-slate-100 mb-2">Lead Time Tracker</h2>
           <p className="text-sm text-slate-400 mb-6">
@@ -664,7 +679,10 @@ export default function SupplyChainRiskPage() {
           </div>
         </section>
 
+        </ScrollReveal>
+
         {/* ── MITIGATION STRATEGIES ───────────────────────────────────── */}
+        <ScrollReveal delay={0.25}>
         <section className="mb-10">
           <h2 className="text-lg font-semibold text-slate-100 mb-4">
             Supply Chain Mitigation Strategies
@@ -685,6 +703,8 @@ export default function SupplyChainRiskPage() {
             ))}
           </div>
         </section>
+
+        </ScrollReveal>
 
         {/* ── DISCLAIMER ──────────────────────────────────────────────── */}
         <div className="text-center mt-12">

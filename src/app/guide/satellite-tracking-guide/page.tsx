@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
@@ -202,6 +203,7 @@ export default function SatelliteTrackingGuidePage() {
           </nav>
 
           {/* Content */}
+          <ScrollReveal delay={0.1}>
           <article className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-8 space-y-10">
             {/* What Is Satellite Tracking */}
             <section id="what-is-satellite-tracking">
@@ -576,6 +578,7 @@ export default function SatelliteTrackingGuidePage() {
             {/* Guide Navigation */}
             <GuideNavigation currentSlug="satellite-tracking-guide" />
           </article>
+          </ScrollReveal>
 
           {/* FAQ Schema */}
           <FAQSchema items={FAQ_ITEMS} />

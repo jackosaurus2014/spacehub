@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ════════════════════════════════════════════════════════════════
 // TYPES
@@ -724,6 +726,8 @@ function SpectrumBar({
             {band.name}
           </button>
         ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['rf-spectrum']} />
       </div>
     </div>
   );

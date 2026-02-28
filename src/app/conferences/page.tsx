@@ -4,8 +4,12 @@ import React, { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import EventSchema from '@/components/seo/EventSchema';
 import ShareButton from '@/components/ui/ShareButton';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ────────────────────────────────────────
 // Types
@@ -768,6 +772,32 @@ export default function ConferencesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(conferencesSchema).replace(/</g, '\\u003c') }}
       />
+      {CONFERENCES.map((event) => {
+        const dateMatch = event.dates.match(/(\w+)\s+(\d+)-(\d+),\s*(\d{4})/);
+        const monthMap: Record<string, string> = {
+          Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+          Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12',
+        };
+        let startDate: string | undefined;
+        let endDate: string | undefined;
+        if (dateMatch) {
+          const mm = monthMap[dateMatch[1]] || String(event.month).padStart(2, '0');
+          startDate = `${dateMatch[4]}-${mm}-${dateMatch[2].padStart(2, '0')}`;
+          endDate = `${dateMatch[4]}-${mm}-${dateMatch[3].padStart(2, '0')}`;
+        }
+        return (
+          <EventSchema
+            key={event.id}
+            name={event.name}
+            description={event.description}
+            startDate={startDate || event.dates}
+            endDate={endDate}
+            location={event.region !== 'Virtual' ? event.location : undefined}
+            url={`https://${event.website}`}
+            organizer={event.name}
+          />
+        );
+      })}
       <div className="container mx-auto px-4">
         {/* Breadcrumbs */}
         <BreadcrumbSchema items={[
@@ -969,19 +999,19 @@ export default function ConferencesPage() {
 
         {/* No results */}
         {filteredEvents.length === 0 && (
-          <div className="card p-12 text-center">
-            <div className="text-4xl mb-3 opacity-50">&#x1F50D;</div>
-            <h3 className="text-lg font-semibold text-slate-200 mb-2">No events found</h3>
-            <p className="text-sm text-slate-400 mb-4">
-              Try adjusting your filters or search query.
-            </p>
-            <button
-              onClick={clearFilters}
-              className="text-sm text-purple-400 hover:text-purple-300 underline underline-offset-2"
-            >
-              Reset all filters
-            </button>
-          </div>
+          <EmptyState
+            icon={<span className="text-4xl">📅</span>}
+            title="No events found"
+            description="Try adjusting your filters or search query to find matching conferences."
+            action={
+              <button
+                onClick={clearFilters}
+                className="text-sm text-purple-400 hover:text-purple-300 underline underline-offset-2"
+              >
+                Reset all filters
+              </button>
+            }
+          />
         )}
 
         {/* Grid View */}
@@ -1028,6 +1058,8 @@ export default function ConferencesPage() {
                         <CalendarEventCard event={event} />
                       </div>
                     ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['conferences']} />
                   </div>
                 </div>
               ))}

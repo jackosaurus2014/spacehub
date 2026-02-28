@@ -18,6 +18,8 @@ import {
 } from '@/lib/space-score';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ─── Tab Definitions ──────────────────────────────────────────────────────────
 
@@ -164,7 +166,10 @@ function LeaderboardRow({
                 {getDimensionScore(entry, highlightDim)}/200
               </span>
               <span className="text-xs text-slate-500 capitalize">{highlightDim}</span>
-            </div>
+            
+
+        <RelatedModules modules={PAGE_RELATIONS['space-score']} />
+      </div>
           )}
 
           {/* Mini dimension bar */}

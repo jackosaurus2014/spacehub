@@ -2,8 +2,11 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Constants
@@ -403,6 +406,8 @@ function PowerBalanceBar({
           className={`h-full rounded-full transition-all duration-500 ${color}`}
           style={{ width: `${Math.min(Math.max(pct, 0.5), 100)}%` }}
         />
+
+        <RelatedModules modules={PAGE_RELATIONS['thermal-calculator']} />
       </div>
     </div>
   );
@@ -648,6 +653,7 @@ export default function ThermalCalculatorPage() {
         />
 
         {/* Main Layout */}
+        <ScrollReveal>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* ─── Left Column: Inputs ─── */}
           <div className="lg:col-span-1 space-y-6">
@@ -1041,6 +1047,7 @@ export default function ThermalCalculatorPage() {
             </div>
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

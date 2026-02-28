@@ -8,6 +8,8 @@ import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -303,6 +305,8 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
               <div className="text-slate-400 text-xs">
                 {formatCurrency(summary.insurance.totalInsurance.min, true)} - {formatCurrency(summary.insurance.totalInsurance.max, true)}
               </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['mission-cost']} />
             </div>
           </div>
         )}

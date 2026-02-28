@@ -6,6 +6,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import SocialShare from '@/components/ui/SocialShare';
 import ExportPDFButton from '@/components/ui/ExportPDFButton';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface BriefSection {
   category: string;
@@ -234,6 +236,8 @@ export default function IntelligenceBriefPage() {
             ))}
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['intelligence-brief']} />
       </div>
     </div>
   );

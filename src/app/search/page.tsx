@@ -11,6 +11,7 @@ import CompanyIntelCard from '@/components/search/CompanyIntelCard';
 import HighlightedText from '@/components/search/HighlightedText';
 import { detectSearchIntent, getIntentSuggestion } from '@/lib/search-intent';
 import { clientLogger } from '@/lib/client-logger';
+import EmptyState from '@/components/ui/EmptyState';
 
 // --- Types ---
 
@@ -907,33 +908,29 @@ function SearchContent() {
           {/* No results state */}
           {!loading && hasSearched && totalResults === 0 && (
             <ScrollReveal>
-            <div className="card p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-slate-700/40 border border-slate-600/40 flex items-center justify-center">
-                <svg className="w-8 h-8 text-star-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.182 16.318A4.486 4.486 0 0012.016 15a4.486 4.486 0 00-3.198 1.318M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
-                </svg>
-              </div>
-              <h2 className="text-xl font-semibold text-star-100 mb-2">No results found</h2>
-              <p className="text-star-300 mb-4 max-w-md mx-auto">
-                No matches found for &ldquo;{debouncedQuery}&rdquo;{hasActiveFilters ? ' with the current filters' : ''}.
-              </p>
-              <div className="flex flex-wrap justify-center gap-3">
-                {hasActiveFilters && (
+            <EmptyState
+              icon={<span className="text-4xl">🔍</span>}
+              title="No results found"
+              description={`No matches found for "${debouncedQuery}"${hasActiveFilters ? ' with the current filters' : ''}.`}
+              action={
+                <div className="flex flex-wrap justify-center gap-3">
+                  {hasActiveFilters && (
+                    <button
+                      onClick={clearFilters}
+                      className="px-4 py-2 text-sm rounded-xl bg-cyan-400/10 text-cyan-300 border border-cyan-400/30 hover:bg-cyan-400/20 transition-all"
+                    >
+                      Clear Filters
+                    </button>
+                  )}
                   <button
-                    onClick={clearFilters}
-                    className="px-4 py-2 text-sm rounded-xl bg-cyan-400/10 text-cyan-300 border border-cyan-400/30 hover:bg-cyan-400/20 transition-all"
+                    onClick={() => setQuery('')}
+                    className="px-4 py-2 text-sm rounded-xl bg-slate-700/40 text-star-300 border border-slate-600/40 hover:border-cyan-400/30 transition-all"
                   >
-                    Clear Filters
+                    Clear Search
                   </button>
-                )}
-                <button
-                  onClick={() => setQuery('')}
-                  className="px-4 py-2 text-sm rounded-xl bg-slate-700/40 text-star-300 border border-slate-600/40 hover:border-cyan-400/30 transition-all"
-                >
-                  Clear Search
-                </button>
-              </div>
-            </div>
+                </div>
+              }
+            />
             </ScrollReveal>
           )}
 

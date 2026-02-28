@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
 import ShareButton from '@/components/ui/ShareButton';
@@ -221,6 +222,7 @@ export default function SpaceIndustryGuidePage() {
             </aside>
 
             {/* ── Article content ── */}
+            <ScrollReveal delay={0.1}>
             <article className="min-w-0 flex-1 max-w-3xl">
               {/* ──────────────────────────────────── */}
               {/* 1. Introduction                     */}
@@ -957,6 +959,7 @@ export default function SpaceIndustryGuidePage() {
               {/* Guide Navigation */}
               <GuideNavigation currentSlug="space-industry" />
             </article>
+            </ScrollReveal>
           </div>
         </div>
       </div>

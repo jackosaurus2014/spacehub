@@ -6,6 +6,8 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ShareButton from '@/components/ui/ShareButton';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -602,6 +604,8 @@ export default function LaunchEconomicsPage() {
                       <span>{vehicle.reusable ? 'Reusable' : 'Expendable'}</span>
                       <span>{vehicle.provider}</span>
                     </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['launch-economics']} />
                   </div>
                 </div>
               );

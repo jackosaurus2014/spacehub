@@ -5,6 +5,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -1091,6 +1093,8 @@ export default function MissionHeritagePage() {
                       <div>
                         <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Key Achievement</div>
                         <p className="text-sm text-slate-300 leading-relaxed">{mission.keyAchievement}</p>
+
+        <RelatedModules modules={PAGE_RELATIONS['mission-heritage']} />
                       </div>
                     </div>
                   )}

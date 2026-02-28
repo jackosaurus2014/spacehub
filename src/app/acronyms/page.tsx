@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -556,6 +558,8 @@ export default function AcronymsPage() {
             </div>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['acronyms']} />
       </div>
     </div>
   );

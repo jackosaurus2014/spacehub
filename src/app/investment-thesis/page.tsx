@@ -10,6 +10,8 @@ import PremiumGate from '@/components/PremiumGate';
 import ConfidenceBadge from '@/components/ui/ConfidenceBadge';
 import SourceCitation from '@/components/ui/SourceCitation';
 import ExportPDFButton from '@/components/ui/ExportPDFButton';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ============================================================================
 // TYPES
@@ -171,6 +173,8 @@ function RiskGauge({ score, riskLevel }: { score: number; riskLevel: 'low' | 'me
       </div>
       <div className={`mt-2 px-3 py-1 rounded-full ${config.bg} ${config.border} border`}>
         <span className={`text-xs font-bold ${config.text} tracking-wider`}>{config.label} RISK</span>
+
+        <RelatedModules modules={PAGE_RELATIONS['investment-thesis']} />
       </div>
     </div>
   );

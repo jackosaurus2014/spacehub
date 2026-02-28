@@ -221,9 +221,9 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* CTA */}
         <div className="mt-4 p-6 bg-slate-800/60 border border-slate-700/50 rounded-xl text-center">
-          <h3 className="text-lg font-bold text-white mb-2">
+          <h2 className="text-lg font-bold text-white mb-2">
             Get space industry intelligence delivered
-          </h3>
+          </h2>
           <p className="text-slate-400 text-sm mb-4">
             Join SpaceNexus for real-time data, market intelligence, and expert insights.
           </p>
@@ -240,7 +240,7 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="mt-12">
             <div className="flex items-center gap-3 mb-6">
               <div className="h-px flex-1 bg-slate-700/50" />
-              <h3 className="text-lg font-bold text-white whitespace-nowrap">Related Articles</h3>
+              <h2 className="text-lg font-bold text-white whitespace-nowrap">Related Articles</h2>
               <div className="h-px flex-1 bg-slate-700/50" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

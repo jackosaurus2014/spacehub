@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -1073,7 +1074,9 @@ export default function LaunchVehicleComparePage() {
       />
 
       {/* Vehicle Selector */}
-      <VehicleSelector selected={selected} onAdd={handleAdd} onRemove={handleRemove} />
+      <ScrollReveal>
+        <VehicleSelector selected={selected} onAdd={handleAdd} onRemove={handleRemove} />
+      </ScrollReveal>
 
       {/* Comparison content or empty state */}
       {selected.length < 2 ? (
@@ -1129,6 +1132,7 @@ export default function LaunchVehicleComparePage() {
       )}
 
       {/* Quick Stats Footer */}
+      <ScrollReveal delay={0.1}>
       <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="card p-4 text-center">
           <div className="text-2xl font-bold text-cyan-400">{VEHICLES.length}</div>
@@ -1153,8 +1157,10 @@ export default function LaunchVehicleComparePage() {
           <div className="text-xs text-star-300 mt-1">Combined Launches</div>
         </div>
       </div>
+      </ScrollReveal>
 
       {/* Related Links */}
+      <ScrollReveal delay={0.2}>
       <div className="mt-8 card p-5">
         <h3 className="text-sm font-semibold text-white mb-3">Related Pages</h3>
         <div className="flex flex-wrap gap-3">
@@ -1184,6 +1190,7 @@ export default function LaunchVehicleComparePage() {
           </Link>
         </div>
       </div>
+      </ScrollReveal>
     </div>
   );
 }

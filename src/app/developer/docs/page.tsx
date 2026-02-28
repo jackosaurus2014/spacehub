@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { toast } from '@/lib/toast';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import PremiumGate from '@/components/PremiumGate';
 import {
   API_CATEGORIES,
@@ -486,6 +487,7 @@ function ApiDocsPageInner() {
         {/* Main content */}
         <main ref={mainRef} className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-8 space-y-12">
           {/* Overview */}
+          <ScrollReveal>
           <section id="overview" data-section="overview" className="scroll-mt-24">
             <h2 className="text-3xl font-bold mb-4">SpaceNexus API v1</h2>
             <p className="text-slate-400 leading-relaxed max-w-3xl mb-6">
@@ -525,6 +527,7 @@ function ApiDocsPageInner() {
               ))}
             </div>
           </section>
+          </ScrollReveal>
 
           {/* Authentication */}
           <section id="authentication" data-section="authentication" className="scroll-mt-24">

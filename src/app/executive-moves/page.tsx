@@ -10,6 +10,8 @@ import PremiumGate from '@/components/PremiumGate';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import EmptyState from '@/components/ui/EmptyState';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface ExecutiveMove {
   id: string;
@@ -580,6 +582,8 @@ function ExecutiveMovesContent() {
                           {move.fromTitle && (
                             <span className="text-slate-500 ml-1">({move.fromTitle})</span>
                           )}
+
+        <RelatedModules modules={PAGE_RELATIONS['executive-moves']} />
                         </div>
                       </div>
                     )}

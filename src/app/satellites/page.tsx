@@ -13,6 +13,7 @@ import SatelliteCard, {
 } from '@/components/satellites/SatelliteCard';
 import AdSlot from '@/components/ads/AdSlot';
 import PullToRefresh from '@/components/ui/PullToRefresh';
+import EmptyState from '@/components/ui/EmptyState';
 import { clientLogger } from '@/lib/client-logger';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
@@ -550,13 +551,11 @@ function SatelliteTrackerContent() {
 
                 {/* Satellite Grid */}
                 {satellites.length === 0 ? (
-                  <div className="text-center py-16">
-                    <span className="text-5xl block mb-3">🔍</span>
-                    <h3 className="text-xl font-semibold text-white mb-2">No Satellites Found</h3>
-                    <p className="text-slate-400">
-                      Try adjusting your search or filters.
-                    </p>
-                  </div>
+                  <EmptyState
+                    icon={<span className="text-4xl">🛰️</span>}
+                    title="No Satellites Found"
+                    description="Try adjusting your search or filters to find matching satellites."
+                  />
                 ) : (
                   <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                     {satellites.map((sat) => (

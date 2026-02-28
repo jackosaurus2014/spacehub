@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ---------- Types ----------
 
@@ -658,7 +660,10 @@ export default function FundingOpportunitiesPage() {
                 >
                   Next
                 </button>
-              </div>
+              
+
+        <RelatedModules modules={PAGE_RELATIONS['funding-opportunities']} />
+      </div>
             )}
           </>
         )}

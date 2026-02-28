@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -1165,6 +1167,8 @@ export default function LaunchSiteDatabasePage() {
                             <p className="text-xs text-slate-500 italic">No orbital launches yet</p>
                           )}
                         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['launch-sites']} />
                       </div>
                     </div>
                   );

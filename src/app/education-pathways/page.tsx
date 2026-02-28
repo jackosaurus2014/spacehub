@@ -6,6 +6,8 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ShareButton from '@/components/ui/ShareButton';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -363,6 +365,8 @@ function PathwayCard({ pathway }: { pathway: CareerPathway }) {
                 </span>
               ))}
             </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['education-pathways']} />
           </div>
         </div>
       )}

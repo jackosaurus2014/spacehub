@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 
 export const revalidate = 86400;
@@ -278,6 +279,7 @@ export default function SatelliteLaunchCostPage() {
         </header>
 
         {/* Quick Answer */}
+        <ScrollReveal>
         <div className="bg-slate-800/60 border border-nebula-500/30 rounded-xl p-6 mb-12">
           <h2 className="text-lg font-bold text-white mb-4">Quick Answer: Satellite Launch Costs in 2026</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -309,8 +311,10 @@ export default function SatelliteLaunchCostPage() {
             </div>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Cost Breakdown by Provider */}
+        <ScrollReveal delay={0.1}>
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-2">Launch Cost Comparison by Provider</h2>
           <p className="text-slate-400 text-sm mb-6">
@@ -349,6 +353,7 @@ export default function SatelliteLaunchCostPage() {
             estimates, and government contract data. Estimated values marked with (est.).
           </p>
         </section>
+        </ScrollReveal>
 
         {/* Provider Details */}
         <section className="mb-12">

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface ResourceItem { name: string; href: string; description: string }
 interface ResourceCategory { name: string; icon: string; description: string; items: ResourceItem[] }
@@ -153,7 +155,10 @@ export default function ResourcesPage() {
                     <p className="text-sm text-slate-400 mt-2 line-clamp-2">{item.description}</p>
                   </Link>
                 ))}
-              </div>
+              
+
+        <RelatedModules modules={PAGE_RELATIONS['resources']} />
+      </div>
             )}
           </div>
         ) : (

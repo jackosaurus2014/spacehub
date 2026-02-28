@@ -3,7 +3,10 @@
 import React, { useState, useMemo, useRef, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import EmptyState from '@/components/ui/EmptyState';
 import ShareButton from '@/components/ui/ShareButton';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -773,22 +776,22 @@ export default function GlossaryPage() {
 
         {/* ---- Empty state ---- */}
         {visibleCount === 0 && (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4 opacity-40">&#128269;</div>
-            <h3 className="text-xl text-slate-300 font-semibold mb-2">No terms found</h3>
-            <p className="text-slate-400 max-w-md mx-auto">
-              Try adjusting your search query or clearing the category filter to see more results.
-            </p>
-            <button
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedCategory(null);
-              }}
-              className="mt-4 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30 transition-all text-sm font-medium"
-            >
-              Reset filters
-            </button>
-          </div>
+          <EmptyState
+            icon={<span className="text-4xl">🔍</span>}
+            title="No terms found"
+            description="Try adjusting your search query or clearing the category filter to see more results."
+            action={
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory(null);
+                }}
+                className="px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30 transition-all text-sm font-medium"
+              >
+                Reset filters
+              </button>
+            }
+          />
         )}
 
         {/* ---- Footer stats ---- */}
@@ -848,6 +851,8 @@ export default function GlossaryPage() {
             </div>
           </section>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['glossary']} />
       </div>
     </div>
   );

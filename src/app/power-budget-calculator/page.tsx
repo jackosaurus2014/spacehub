@@ -5,6 +5,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Constants & Types
@@ -588,6 +590,8 @@ export default function PowerBudgetCalculatorPage() {
                   <span className="text-sm font-medium text-amber-300">
                     {(sub.power * sub.dutyCycle / 100).toFixed(1)} W
                   </span>
+
+        <RelatedModules modules={PAGE_RELATIONS['power-budget-calculator']} />
                 </div>
               </div>
             ))}

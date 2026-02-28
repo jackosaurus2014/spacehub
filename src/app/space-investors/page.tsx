@@ -7,6 +7,9 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ShareButton from '@/components/ui/ShareButton';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -927,20 +930,23 @@ export default function SpaceInvestorsPage() {
 
         {/* No results */}
         {filtered.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-4xl mb-3">🔍</p>
-            <p className="text-slate-400 text-lg">No investors match your filters.</p>
-            <button
-              onClick={() => {
-                setSearchQuery('');
-                setStageFilter('');
-                setTypeFilter('');
-              }}
-              className="mt-4 px-5 py-2 text-sm text-cyan-400 hover:text-cyan-300 border border-cyan-500/30 rounded-lg hover:border-cyan-500/50 transition-colors"
-            >
-              Reset Filters
-            </button>
-          </div>
+          <EmptyState
+            icon={<span className="text-4xl">💰</span>}
+            title="No investors match your filters"
+            description="Try adjusting your search or filter criteria to find matching investors."
+            action={
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setStageFilter('');
+                  setTypeFilter('');
+                }}
+                className="px-5 py-2 text-sm text-cyan-400 hover:text-cyan-300 border border-cyan-500/30 rounded-lg hover:border-cyan-500/50 transition-colors"
+              >
+                Reset Filters
+              </button>
+            }
+          />
         )}
 
         {/* ── Investor Type Breakdown ──────────────────────────────────── */}
@@ -1061,6 +1067,8 @@ export default function SpaceInvestorsPage() {
         <p className="text-center text-xs text-slate-600 mt-8 mb-4">
           Data compiled from public filings, press releases, and industry reports. AUM figures are approximate and may reflect total firm assets, not space-specific allocations.
         </p>
+
+        <RelatedModules modules={PAGE_RELATIONS['space-investors']} />
       </div>
     </div>
   );

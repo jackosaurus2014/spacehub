@@ -12,6 +12,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import CompanyRequestDialog from '@/components/ui/CompanyRequestDialog';
 import AdSlot from '@/components/ads/AdSlot';
 import PullToRefresh from '@/components/ui/PullToRefresh';
+import EmptyState from '@/components/ui/EmptyState';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { clientLogger } from '@/lib/client-logger';
 import FAQSchema from '@/components/seo/FAQSchema';
@@ -827,13 +828,11 @@ function MarketIntelContent() {
             </button>
           </div>
         ) : companies.length === 0 ? (
-          <div className="card p-12 text-center">
-            <span className="text-6xl block mb-4">🔍</span>
-            <h2 className="text-2xl font-semibold text-white mb-2">No Results</h2>
-            <p className="text-slate-400">
-              No companies match your current filters. Try adjusting your criteria.
-            </p>
-          </div>
+          <EmptyState
+            icon={<span className="text-4xl">🔍</span>}
+            title="No Results"
+            description="No companies match your current filters. Try adjusting your criteria."
+          />
         ) : (
           <div className="space-y-8">
             {/* Publicly Traded Companies */}

@@ -55,6 +55,8 @@ import {
   type DiversityBreakdown,
   type AgeDistribution,
 } from './data';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -220,6 +222,8 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
           )}
         </div>
         <span className="text-xs text-slate-400">{daysAgo(job.postedDate)}</span>
+
+        <RelatedModules modules={PAGE_RELATIONS['space-talent']} />
       </div>
     </div>
   );

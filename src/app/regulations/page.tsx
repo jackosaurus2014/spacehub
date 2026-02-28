@@ -4,6 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -698,7 +701,10 @@ function ComplianceBurdenIndicator({ level }: { level: string }) {
         ))}
       </div>
       <span className={`text-xs font-medium ${config.color}`}>{config.label}</span>
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['regulations']} />
+      </div>
   );
 }
 
@@ -1004,31 +1010,19 @@ export default function SpaceRegulationsExplorerPage() {
           </div>
         ) : (
           <ScrollReveal>
-            <div className="text-center py-16 bg-slate-800/30 border border-slate-700/40 rounded-xl">
-              <svg
-                className="w-12 h-12 mx-auto text-slate-600 mb-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
-                />
-              </svg>
-              <h3 className="text-lg font-semibold text-slate-300 mb-2">No regulations found</h3>
-              <p className="text-sm text-slate-500 mb-4">
-                Try adjusting your search terms or clearing some filters.
-              </p>
-              <button
-                onClick={clearFilters}
-                className="text-sm px-4 py-2 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-lg hover:bg-amber-500/30 transition-colors"
-              >
-                Clear all filters
-              </button>
-            </div>
+            <EmptyState
+              icon={<span className="text-4xl">📜</span>}
+              title="No regulations found"
+              description="Try adjusting your search terms or clearing some filters."
+              action={
+                <button
+                  onClick={clearFilters}
+                  className="text-sm px-4 py-2 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-lg hover:bg-amber-500/30 transition-colors"
+                >
+                  Clear all filters
+                </button>
+              }
+            />
           </ScrollReveal>
         )}
 

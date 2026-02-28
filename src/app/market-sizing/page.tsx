@@ -15,6 +15,8 @@ import {
   type MarketDataPoint,
   type RegionalBreakdown,
 } from '@/lib/market-sizing-data';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ── Formatting helpers ──────────────────────────────────────────────
 
@@ -376,6 +378,8 @@ function SegmentDetailPanel({
                 {d.type === 'projected' ? ' (P)' : ''}
               </span>
             ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['market-sizing']} />
           </div>
         </div>
       )}

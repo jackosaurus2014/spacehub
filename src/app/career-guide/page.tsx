@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -554,6 +556,8 @@ function SalaryOverview({ careers }: { careers: CareerPath[] }) {
         <span>$150K</span>
         <span>$200K</span>
         <span>$250K</span>
+
+        <RelatedModules modules={PAGE_RELATIONS['career-guide']} />
       </div>
     </div>
   );

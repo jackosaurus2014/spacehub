@@ -8,6 +8,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import InlineDisclaimer from '@/components/InlineDisclaimer';
 import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import ExportButton from '@/components/ui/ExportButton';
 import { useSwipeTabs } from '@/hooks/useSwipeTabs';
 
@@ -1041,14 +1042,7 @@ export default function SpaceLawPage() {
           <SpaceLawContent />
         </Suspense>
 
-        <RelatedModules
-          modules={[
-            { name: 'Regulatory Compliance Hub', description: 'FCC filings, FAA licenses, and compliance tracking', href: '/compliance', icon: '\uD83D\uDCCB' },
-            { name: 'Regulatory Calendar', description: 'Upcoming deadlines and filing dates', href: '/regulatory-calendar', icon: '\uD83D\uDCC5' },
-            { name: 'Spectrum Management', description: 'Frequency allocations and orbital slot management', href: '/spectrum', icon: '\uD83D\uDCE1' },
-            { name: 'Space Environment', description: 'Debris tracking and orbital awareness', href: '/space-environment', icon: '\uD83C\uDF0C' },
-          ]}
-        />
+        <RelatedModules modules={PAGE_RELATIONS['space-law']} />
       </div>
     </div>
   );

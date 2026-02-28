@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import PremiumGate from '@/components/PremiumGate';
 import ExportPDFButton from '@/components/ui/ExportPDFButton';
 import { toast } from '@/lib/toast';
@@ -626,6 +627,7 @@ function ReportsPageInner() {
           </div>
 
           {/* Stats bar */}
+          <ScrollReveal>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -650,7 +652,10 @@ function ReportsPageInner() {
             </div>
           </motion.div>
 
+          </ScrollReveal>
+
           {/* Report type cards */}
+          <ScrollReveal delay={0.1}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {REPORT_TYPES.map((rt, idx) => (
               <motion.div
@@ -721,7 +726,10 @@ function ReportsPageInner() {
             ))}
           </div>
 
+          </ScrollReveal>
+
           {/* How it works */}
+          <ScrollReveal delay={0.2}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -764,6 +772,7 @@ function ReportsPageInner() {
               ))}
             </div>
           </motion.div>
+        </ScrollReveal>
         </div>
       </div>
     );

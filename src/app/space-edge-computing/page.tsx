@@ -5,6 +5,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ════════════════════════════════════════
 // Types & Data
@@ -795,6 +797,8 @@ export default function SpaceEdgeComputingPage() {
             </Link>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['space-edge-computing']} />
       </div>
     </div>
   );

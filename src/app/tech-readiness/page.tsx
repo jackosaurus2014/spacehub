@@ -5,6 +5,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -1196,6 +1198,8 @@ export default function TechReadinessPage() {
                                 <span className="text-xs text-slate-500 italic">No tracked technologies at this level</span>
                               )}
                             </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['tech-readiness']} />
                           </div>
                         </div>
                       )}

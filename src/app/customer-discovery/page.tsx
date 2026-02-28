@@ -17,6 +17,8 @@ import {
   type CustomerSegment,
   type ProcurementCategory,
 } from '@/lib/customer-discovery-data';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -489,6 +491,8 @@ export default function CustomerDiscoveryPage() {
                                           {getCategoryName(catId)}
                                         </span>
                                       ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['customer-discovery']} />
                                     </div>
                                   </div>
                                 )}

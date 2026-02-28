@@ -67,8 +67,9 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-slate-400 mb-1">Your Name *</label>
+            <label htmlFor="lead-name" className="block text-sm text-slate-400 mb-1">Your Name *</label>
             <input
+              id="lead-name"
               type="text"
               required
               maxLength={100}
@@ -79,8 +80,9 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
             />
           </div>
           <div>
-            <label className="block text-sm text-slate-400 mb-1">Email *</label>
+            <label htmlFor="lead-email" className="block text-sm text-slate-400 mb-1">Email *</label>
             <input
+              id="lead-email"
               type="email"
               required
               value={formData.email}
@@ -92,8 +94,9 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-slate-400 mb-1">Company</label>
+            <label htmlFor="lead-company" className="block text-sm text-slate-400 mb-1">Company</label>
             <input
+              id="lead-company"
               type="text"
               maxLength={100}
               value={formData.company}
@@ -103,8 +106,9 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
             />
           </div>
           <div>
-            <label className="block text-sm text-slate-400 mb-1">Phone</label>
+            <label htmlFor="lead-phone" className="block text-sm text-slate-400 mb-1">Phone</label>
             <input
+              id="lead-phone"
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData((f) => ({ ...f, phone: e.target.value }))}
@@ -114,8 +118,9 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
           </div>
         </div>
         <div>
-          <label className="block text-sm text-slate-400 mb-1">Message *</label>
+          <label htmlFor="lead-message" className="block text-sm text-slate-400 mb-1">Message *</label>
           <textarea
+            id="lead-message"
             required
             rows={4}
             minLength={10}

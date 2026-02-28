@@ -4,6 +4,8 @@ import { useState, useMemo, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // =============================================================================
 // TYPES
@@ -276,6 +278,8 @@ function StatsSummary({ launches }: { launches: Launch[] }) {
         <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Top Site</p>
         <p className="text-2xl font-bold text-amber-400 text-lg">{topSite?.[0] || 'N/A'}</p>
         <p className="text-xs text-slate-500 mt-1">{topSite?.[1] || 0} launches</p>
+
+        <RelatedModules modules={PAGE_RELATIONS['launch-manifest']} />
       </div>
     </div>
   );

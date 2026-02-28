@@ -4,7 +4,10 @@ import React, { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import { LineChart } from '@/components/charts';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ── Types ───────────────────────────────────────────────────────────
 
@@ -381,6 +384,8 @@ function Slider({
           }}
           aria-label={label}
         />
+
+        <RelatedModules modules={PAGE_RELATIONS['unit-economics']} />
       </div>
     </div>
   );
@@ -622,6 +627,7 @@ export default function UnitEconomicsPage() {
           breadcrumb="Tools"
         />
 
+        <ScrollReveal>
         <div className="max-w-7xl mx-auto">
           {/* ── Section 1: Business Model Selector ──────────────── */}
           <motion.section
@@ -1180,6 +1186,7 @@ export default function UnitEconomicsPage() {
             </motion.div>
           </motion.section>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

@@ -21,6 +21,8 @@ import {
   type EmployerTier,
   type TopEmployer,
 } from './data';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Helper functions
@@ -387,6 +389,8 @@ export default function WorkforceAnalyticsPage() {
                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
                       <span>{emp.hq}</span>
                       <span>{emp.segment}</span>
+
+        <RelatedModules modules={PAGE_RELATIONS['workforce-analytics']} />
                     </div>
                   </div>
                 ))}

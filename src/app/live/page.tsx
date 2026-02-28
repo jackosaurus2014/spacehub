@@ -7,6 +7,7 @@ import TelemetryPanel from '@/components/live/TelemetryPanel';
 import LiveChat from '@/components/live/LiveChat';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import { clientLogger } from '@/lib/client-logger';
 
 interface LiveStream {
@@ -127,6 +128,7 @@ function LiveHubContent() {
         )}
 
         {/* Main Content Grid */}
+        <ScrollReveal>
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-8">
           {/* Stream Embed - Main Column */}
           <div className="xl:col-span-8 space-y-6">
@@ -229,7 +231,10 @@ function LiveHubContent() {
           </div>
         </div>
 
+        </ScrollReveal>
+
         {/* Upcoming Launches Section */}
+        <ScrollReveal delay={0.1}>
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-display font-bold text-white flex items-center gap-2">
@@ -302,7 +307,10 @@ function LiveHubContent() {
           )}
         </div>
 
+        </ScrollReveal>
+
         {/* Related Links */}
+        <ScrollReveal delay={0.2}>
         <div className="card p-6 mb-8">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -341,6 +349,7 @@ function LiveHubContent() {
             </Link>
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

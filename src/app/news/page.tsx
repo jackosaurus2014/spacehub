@@ -13,12 +13,15 @@ import PullToRefresh from '@/components/ui/PullToRefresh';
 import ArticleLimitBanner from '@/components/ui/ArticleLimitBanner';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import AdSlot from '@/components/ads/AdSlot';
+import EmptyState from '@/components/ui/EmptyState';
 import { clientLogger } from '@/lib/client-logger';
 import Link from 'next/link';
 import { BLOG_POSTS } from '@/lib/blog-content';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { NewsArticle } from '@/types';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 function NewsContent() {
   const searchParams = useSearchParams();
@@ -146,17 +149,13 @@ function NewsContent() {
       {loading && articles.length === 0 ? (
         <SkeletonNewsGrid count={6} />
       ) : articles.length === 0 ? (
-        <div className="text-center py-20">
-          <span className="text-6xl block mb-4">🔭</span>
-          <h2 className="text-2xl font-semibold text-slate-100 mb-2">
-            No articles found
-          </h2>
-          <p className="text-slate-400">
-            {selectedCategory
-              ? `No articles in ${selectedCategory} category yet.`
-              : 'No articles available. Try refreshing the page.'}
-          </p>
-        </div>
+        <EmptyState
+          icon={<span className="text-4xl">🔭</span>}
+          title="No articles found"
+          description={selectedCategory
+            ? `No articles in ${selectedCategory} category yet.`
+            : 'No articles available. Try refreshing the page.'}
+        />
       ) : (
         <>
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -259,6 +258,8 @@ export default function NewsPage() {
             </StaggerContainer>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['news']} />
       </div>
     </div>
   );

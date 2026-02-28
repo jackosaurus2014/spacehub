@@ -3,6 +3,8 @@
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface Agency {
   name: string;
@@ -208,6 +210,8 @@ export default function GovernmentBudgetsPage() {
                     <div className="w-full bg-slate-700/40 rounded-full h-3">
                       <div className="h-3 rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 transition-all"
                         style={{ width: `${parseFloat(r.pct)}%` }} />
+
+        <RelatedModules modules={PAGE_RELATIONS['government-budgets']} />
                     </div>
                   </div>
                 ))}

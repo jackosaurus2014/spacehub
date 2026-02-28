@@ -6,6 +6,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import EmptyState from '@/components/ui/EmptyState';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -534,6 +536,8 @@ export default function ContractAwardsPage() {
                   <div className="text-sm">
                     <span className="text-white font-medium">{formatCurrency(data.value)}</span>
                     <span className="text-slate-500 ml-1">({data.count})</span>
+
+        <RelatedModules modules={PAGE_RELATIONS['contract-awards']} />
                   </div>
                 </div>
               ))}

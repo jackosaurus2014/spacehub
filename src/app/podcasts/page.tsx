@@ -4,6 +4,8 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -419,7 +421,10 @@ function StarRating({ rating }: { rating: number }) {
         </svg>
       ))}
       <span className="ml-1.5 text-sm font-semibold text-amber-400">{rating.toFixed(1)}</span>
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['podcasts']} />
+      </div>
   );
 }
 

@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -842,6 +844,8 @@ export default function PropulsionDatabasePage() {
                       <div>
                         <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Heritage &amp; Notes</div>
                         <p className="text-sm text-slate-300 leading-relaxed">{system.heritage}</p>
+
+        <RelatedModules modules={PAGE_RELATIONS['propulsion-database']} />
                       </div>
                     </div>
                   )}

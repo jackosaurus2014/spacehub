@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
 
@@ -202,6 +203,7 @@ export default function ItarComplianceGuidePage() {
             </aside>
 
             {/* ── Article content ── */}
+            <ScrollReveal delay={0.1}>
             <article className="min-w-0 flex-1 max-w-3xl">
               {/* ──────────────────────────────────── */}
               {/* 1. Introduction                     */}
@@ -1010,6 +1012,7 @@ export default function ItarComplianceGuidePage() {
               {/* Guide Navigation */}
               <GuideNavigation currentSlug="itar-compliance-guide" />
             </article>
+            </ScrollReveal>
           </div>
         </div>
       </div>

@@ -6,6 +6,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -867,6 +869,8 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
                 ))}
               </tbody>
             </table>
+
+        <RelatedModules modules={PAGE_RELATIONS['space-stations']} />
           </div>
         </div>
       )}

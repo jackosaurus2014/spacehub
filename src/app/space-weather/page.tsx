@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -726,6 +728,8 @@ export default function SpaceWeatherDashboard() {
                             <span className={`text-[10px] px-1.5 py-0.5 rounded ${ar.config.includes('\u03B4') ? 'bg-red-500/20 text-red-300' : ar.config.includes('\u03B3') ? 'bg-amber-500/20 text-amber-300' : 'bg-green-500/20 text-green-300'}`}>
                               {ar.flares}
                             </span>
+
+        <RelatedModules modules={PAGE_RELATIONS['space-weather']} />
                           </div>
                         </div>
                       ))}

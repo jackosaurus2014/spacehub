@@ -7,6 +7,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Physical Constants
@@ -308,6 +310,8 @@ function DeltaVCalculator() {
           ΔV₁ = √(μ/r₁) * (√(2r₂/(r₁+r₂)) - 1) and ΔV₂ = √(μ/r₂) * (1 - √(2r₁/(r₁+r₂))),
           where μ = 398,600.4418 km³/s² and r = R_E + altitude.
         </p>
+
+        <RelatedModules modules={PAGE_RELATIONS['orbital-calculator']} />
       </div>
     </div>
   );

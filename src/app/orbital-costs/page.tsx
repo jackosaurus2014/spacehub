@@ -15,6 +15,8 @@ import {
   type Subsystem,
   type BOMItem,
 } from '@/lib/orbital-costs-data';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Cost Breakdown Bar Chart
@@ -139,6 +141,8 @@ function BOMTable({ subsystems }: { subsystems: Subsystem[] }) {
                     </tr>
                   </tfoot>
                 </table>
+
+        <RelatedModules modules={PAGE_RELATIONS['orbital-costs']} />
               </div>
             </div>
           )}

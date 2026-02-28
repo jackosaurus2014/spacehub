@@ -3,6 +3,8 @@
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                               */
@@ -579,6 +581,8 @@ export default function MissionStatsPage() {
                           className="h-full rounded-full bg-gradient-to-r from-cyan-600 to-blue-500 transition-all duration-700"
                           style={{ width: `${widthPct}%` }}
                         />
+
+        <RelatedModules modules={PAGE_RELATIONS['mission-stats']} />
                       </div>
                     </div>
                   );

@@ -6,6 +6,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types & Constants
@@ -258,6 +260,8 @@ function DoseBar({ label, dose, maxDose, color, isCalculated = false }: {
           className={`h-full rounded-full transition-all duration-700 ease-out ${isCalculated ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : color}`}
           style={{ width: `${width}%` }}
         />
+
+        <RelatedModules modules={PAGE_RELATIONS['radiation-calculator']} />
       </div>
     </div>
   );

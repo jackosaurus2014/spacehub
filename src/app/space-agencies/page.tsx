@@ -5,6 +5,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ---------------------------------------------------------------------------
 // Types & helpers
@@ -145,6 +147,8 @@ export default function SpaceAgenciesPage() {
                   <div className="flex-1 h-6 bg-slate-800 rounded-full overflow-hidden relative">
                     <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 transition-all duration-700" style={{ width: `${(a.budget / maxBudget) * 100}%` }} />
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-200">{fmtBudget(a.budget)}</span>
+
+        <RelatedModules modules={PAGE_RELATIONS['space-agencies']} />
                   </div>
                 </div>
               ))}

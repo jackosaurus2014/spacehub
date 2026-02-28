@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -991,6 +993,8 @@ export default function CleanRoomReferencePage() {
                 <p className="text-sm text-slate-400 mb-2">Max 3,520,000 particles per m\u00B3 at 0.5\u03BCm</p>
                 <p className="text-sm text-cyan-400">Large structure assembly, solar arrays, antenna reflectors, CubeSats</p>
               </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['clean-room-reference']} />
             </div>
           </div>
         )}

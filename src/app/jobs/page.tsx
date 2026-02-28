@@ -7,7 +7,11 @@ import ScrollReveal, {
   StaggerItem,
 } from '@/components/ui/ScrollReveal';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import JobPostingSchema from '@/components/seo/JobPostingSchema';
 import { motion, AnimatePresence } from 'framer-motion';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ────────────────────────────────────────
 // Types
@@ -1814,6 +1818,16 @@ export default function JobsBoardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      <JobPostingSchema
+        jobs={JOB_POSTINGS.map((job) => ({
+          title: job.title,
+          company: job.company,
+          location: job.location,
+          description: job.description,
+          datePosted: job.postedDate,
+          url: job.applyUrl,
+        }))}
+      />
       <div className="container mx-auto px-4 py-8">
         <Breadcrumbs items={[{ label: 'Jobs' }]} />
 
@@ -1936,22 +1950,19 @@ export default function JobsBoardPage() {
           <main className="flex-1 min-w-0">
             {filteredJobs.length === 0 ? (
               <ScrollReveal>
-                <div className="card p-12 text-center">
-                  <div className="text-4xl mb-4">&#x1F50D;</div>
-                  <h3 className="text-lg font-semibold text-slate-200 mb-2">
-                    No jobs match your filters
-                  </h3>
-                  <p className="text-sm text-slate-400 mb-4">
-                    Try adjusting your search criteria or clearing filters to see
-                    more results.
-                  </p>
-                  <button
-                    onClick={handleClearFilters}
-                    className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm rounded-lg font-medium transition-colors"
-                  >
-                    Clear All Filters
-                  </button>
-                </div>
+                <EmptyState
+                  icon={<span className="text-4xl">🔍</span>}
+                  title="No jobs match your filters"
+                  description="Try adjusting your search criteria or clearing filters to see more results."
+                  action={
+                    <button
+                      onClick={handleClearFilters}
+                      className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm rounded-lg font-medium transition-colors"
+                    >
+                      Clear All Filters
+                    </button>
+                  }
+                />
               </ScrollReveal>
             ) : (
               <StaggerContainer className="space-y-4" staggerDelay={0.05}>
@@ -1992,6 +2003,8 @@ export default function JobsBoardPage() {
             )}
           </main>
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['jobs']} />
       </div>
     </div>
   );

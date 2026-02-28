@@ -47,6 +47,8 @@ import {
   type MegaConstellationInfo,
   type RegulatoryBody,
 } from './data';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -293,6 +295,8 @@ function OrbitTypeCard({ slot }: { slot: OrbitalSlot }) {
         >
           View debris in this orbit &rarr;
         </Link>
+
+        <RelatedModules modules={PAGE_RELATIONS['orbital-slots']} />
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Constants & Types
@@ -235,6 +237,8 @@ function MarginIndicator({ margin }: { margin: number }) {
         <span>-10 dB</span>
         <span className="text-slate-500">0 dB</span>
         <span>+20 dB</span>
+
+        <RelatedModules modules={PAGE_RELATIONS['link-budget-calculator']} />
       </div>
     </div>
   );

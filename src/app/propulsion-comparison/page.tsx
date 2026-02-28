@@ -6,6 +6,8 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ShareButton from '@/components/ui/ShareButton';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -1035,6 +1037,8 @@ export default function PropulsionComparisonPage() {
                                   <p className="text-[10px] text-slate-500">{engine.manufacturer} &middot; {engine.thrustDisplay} &middot; {engine.ispS}s Isp</p>
                                 </div>
                               ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['propulsion-comparison']} />
                             </div>
                           </div>
                         )}

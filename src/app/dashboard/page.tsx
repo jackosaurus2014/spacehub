@@ -26,6 +26,8 @@ import {
   getWidgetTypeIcon,
   type DashboardTemplate,
 } from '@/lib/dashboard/templates';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface ModuleItem {
   label: string;
@@ -352,6 +354,8 @@ export default function DashboardPage() {
                   <p className="text-xs text-slate-400">Categories</p>
                 </div>
               </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['dashboard']} />
             </div>
           </div>
         )}

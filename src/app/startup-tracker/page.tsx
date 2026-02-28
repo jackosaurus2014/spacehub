@@ -10,6 +10,8 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 import AdSlot from '@/components/ads/AdSlot';
 import EmptyState from '@/components/ui/EmptyState';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -221,6 +223,8 @@ function SectorDistributionChart({ startups }: { startups: SpaceStartup[] }) {
               </div>
               <div className="w-8 text-right text-sm font-medium text-slate-400 flex-shrink-0">
                 {count}
+
+        <RelatedModules modules={PAGE_RELATIONS['startup-tracker']} />
               </div>
             </div>
           );

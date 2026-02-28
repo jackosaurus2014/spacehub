@@ -7,6 +7,8 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ShareButton from '@/components/ui/ShareButton';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -433,6 +435,8 @@ function OverallScoreCard() {
             <div className="text-xs text-slate-400 mt-1">Grade</div>
           </div>
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['sustainability-scorecard']} />
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ import React, { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ShareButton from '@/components/ui/ShareButton';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -661,6 +663,8 @@ export default function SpaceTimelinePage() {
                       <div className="flex justify-end">
                         <div className="max-w-md w-full">
                           <TimelineCard event={event} side="left" index={idx} />
+
+        <RelatedModules modules={PAGE_RELATIONS['timeline']} />
                         </div>
                       </div>
                     ) : (

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import RFQCard from '@/components/marketplace/RFQCard';
@@ -11,6 +12,7 @@ import { MARKETPLACE_CATEGORIES, CERTIFICATION_OPTIONS, VERIFICATION_LEVELS } fr
 import { clientLogger } from '@/lib/client-logger';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
 import ExportButton from '@/components/ui/ExportButton';
+import EmptyState from '@/components/ui/EmptyState';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
@@ -148,6 +150,7 @@ function SearchContent() {
         />
 
         {/* Tab Toggle */}
+        <ScrollReveal>
         <div className="flex items-center gap-1 bg-slate-800 rounded-lg p-1 w-fit mb-6">
           {[
             { key: 'listings', label: 'Service Listings' },
@@ -174,6 +177,9 @@ function SearchContent() {
           {showMobileFilters ? 'Hide Filters' : 'Show Filters'}
         </button>
 
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.1}>
         <div className="flex gap-6">
           {/* Sidebar Filters */}
           <div className={`w-56 flex-shrink-0 space-y-4 ${showMobileFilters ? 'block' : 'hidden lg:block'}`}>
@@ -327,10 +333,11 @@ function SearchContent() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-20">
-                  <div className="text-4xl mb-3">📦</div>
-                  <div className="text-slate-400 text-sm">No listings found matching your filters.</div>
-                </div>
+                <EmptyState
+                  icon={<span className="text-4xl">📦</span>}
+                  title="No listings found"
+                  description="No listings match your current filters. Try adjusting your search criteria."
+                />
               )
             ) : rfqs.length > 0 ? (
               <div className={viewMode === 'grid'
@@ -342,10 +349,11 @@ function SearchContent() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20">
-                <div className="text-4xl mb-3">📋</div>
-                <div className="text-slate-400 text-sm">No open RFQs found.</div>
-              </div>
+              <EmptyState
+                icon={<span className="text-4xl">📋</span>}
+                title="No open RFQs found"
+                description="There are no open requests for quotation matching your filters at this time."
+              />
             )}
 
             {/* Pagination */}
@@ -372,6 +380,7 @@ function SearchContent() {
             )}
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

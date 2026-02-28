@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 
 export const revalidate = 86400;
@@ -271,6 +272,7 @@ export default function HowToTrackSatellitesPage() {
         </header>
 
         {/* What is Satellite Tracking */}
+        <ScrollReveal>
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-4">What Is Satellite Tracking?</h2>
           <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-6">
@@ -311,8 +313,10 @@ export default function HowToTrackSatellitesPage() {
             </ul>
           </div>
         </section>
+        </ScrollReveal>
 
         {/* How Tracking Works */}
+        <ScrollReveal delay={0.1}>
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-2">How Satellite Tracking Works</h2>
           <p className="text-slate-400 text-sm mb-6">
@@ -334,6 +338,7 @@ export default function HowToTrackSatellitesPage() {
             ))}
           </div>
         </section>
+        </ScrollReveal>
 
         {/* Orbit Types */}
         <section className="mb-12">

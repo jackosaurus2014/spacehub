@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { toast } from '@/lib/toast';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import PremiumGate from '@/components/PremiumGate';
 import {
   API_CATEGORIES,
@@ -329,6 +330,7 @@ function ApiExplorerPageInner() {
       </div>
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <ScrollReveal>
         <div className="grid lg:grid-cols-2 gap-6">
           {/* ========== Left Panel: Request Builder ========== */}
           <div className="space-y-4">
@@ -687,6 +689,7 @@ function ApiExplorerPageInner() {
             )}
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

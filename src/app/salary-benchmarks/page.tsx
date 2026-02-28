@@ -22,6 +22,8 @@ import {
   filterRoles,
   applyLocationModifier,
 } from '@/lib/salary-data';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // Dynamically import recharts (no SSR)
 const BarChart = dynamic(() => import('recharts').then((m) => m.BarChart), { ssr: false });
@@ -176,6 +178,8 @@ function PercentileBar({
       <div className="flex justify-between text-[9px] text-slate-600 px-0.5">
         <span>Min: {formatSalary(adjMin)}</span>
         <span>Max: {formatSalary(adjMax)}</span>
+
+        <RelatedModules modules={PAGE_RELATIONS['salary-benchmarks']} />
       </div>
     </div>
   );

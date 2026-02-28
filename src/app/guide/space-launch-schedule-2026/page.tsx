@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
@@ -137,6 +138,7 @@ export default function SpaceLaunchSchedule2026Page() {
           </nav>
 
           {/* Content */}
+          <ScrollReveal delay={0.1}>
           <article className="card p-8 space-y-10">
             {/* Overview */}
             <section id="overview">
@@ -381,6 +383,7 @@ export default function SpaceLaunchSchedule2026Page() {
             {/* Guide Navigation */}
             <GuideNavigation currentSlug="space-launch-schedule-2026" />
           </article>
+          </ScrollReveal>
 
           {/* FAQ Schema */}
           <script

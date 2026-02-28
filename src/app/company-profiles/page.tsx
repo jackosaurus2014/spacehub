@@ -12,6 +12,7 @@ import WatchButton from '@/components/watchlist/WatchButton';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
 import ExportButton from '@/components/ui/ExportButton';
 import AdSlot from '@/components/ads/AdSlot';
+import EmptyState from '@/components/ui/EmptyState';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import SponsorBadge from '@/components/company/SponsorBadge';
 import ItemListSchema from '@/components/seo/ItemListSchema';
@@ -563,11 +564,11 @@ export default function CompanyProfilesPage() {
           <LoadingSpinner />
         </div>
       ) : companies.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-xl font-semibold text-white mb-2">No companies found</h3>
-          <p className="text-slate-400">Try adjusting your search or filters</p>
-        </div>
+        <EmptyState
+          icon={<span className="text-4xl">🔍</span>}
+          title="No companies found"
+          description="Try adjusting your search or filters to find matching companies."
+        />
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           <AnimatePresence mode="popLayout">

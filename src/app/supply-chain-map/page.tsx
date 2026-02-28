@@ -23,6 +23,8 @@ import {
   GraphNode,
   GraphEdge,
 } from '@/lib/supply-chain-graph';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ============================================================
 // Layout computation — sector columns
@@ -572,6 +574,8 @@ function DetailPanel({ node, edges, allNodes, onClose }: DetailPanelProps) {
             <div className="text-slate-500 text-xs">Employees</div>
             <div className="text-white font-medium">
               {node.employees.toLocaleString()}
+
+        <RelatedModules modules={PAGE_RELATIONS['supply-chain-map']} />
             </div>
           </div>
         )}

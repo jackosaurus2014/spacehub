@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 
 export const revalidate = 86400;
@@ -549,6 +550,7 @@ export default function SpaceCompaniesPage() {
         </header>
 
         {/* Quick Stats */}
+        <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-nebula-400 mb-1">25</div>
@@ -567,8 +569,10 @@ export default function SpaceCompaniesPage() {
             <div className="text-xs text-slate-400">Emerging Startups</div>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Launch Providers */}
+        <ScrollReveal delay={0.1}>
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-6">
             <h2 className="text-2xl font-bold text-white">Launch Providers</h2>
@@ -583,6 +587,7 @@ export default function SpaceCompaniesPage() {
             {launchProviders.map(renderCompanyCard)}
           </div>
         </section>
+        </ScrollReveal>
 
         {/* Satellite Manufacturers */}
         <section className="mb-12">

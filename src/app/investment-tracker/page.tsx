@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -911,6 +913,8 @@ export default function InvestmentTrackerPage() {
                         className={`bg-gradient-to-r ${geo.color} h-3 rounded-full transition-all duration-700`}
                         style={{ width: `${geo.percentage}%` }}
                       />
+
+        <RelatedModules modules={PAGE_RELATIONS['investment-tracker']} />
                     </div>
                   </div>
                 ))}

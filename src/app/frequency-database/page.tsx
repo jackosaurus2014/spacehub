@@ -4,6 +4,9 @@ import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ────────────────────────────────────────
 // Types
@@ -525,6 +528,8 @@ export default function FrequencyDatabasePage() {
                         </li>
                       ))}
                     </ul>
+
+        <RelatedModules modules={PAGE_RELATIONS['frequency-database']} />
                   </div>
                 </div>
               ))}
@@ -664,19 +669,25 @@ export default function FrequencyDatabasePage() {
                   <tbody className="divide-y divide-slate-700/30">
                     {filteredAllocations.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="px-4 py-12 text-center">
-                          <p className="text-slate-400 text-sm">No allocations match your search criteria.</p>
-                          <button
-                            onClick={() => {
-                              setSearchQuery('');
-                              setBandFilter('all');
-                              setServiceFilter('all');
-                              setRegionFilter('all');
-                            }}
-                            className="mt-2 text-purple-400 hover:text-purple-300 text-sm transition-colors"
-                          >
-                            Clear all filters
-                          </button>
+                        <td colSpan={7} className="px-4 py-12">
+                          <EmptyState
+                            icon={<span className="text-4xl">📡</span>}
+                            title="No allocations found"
+                            description="No allocations match your search criteria. Try adjusting your filters."
+                            action={
+                              <button
+                                onClick={() => {
+                                  setSearchQuery('');
+                                  setBandFilter('all');
+                                  setServiceFilter('all');
+                                  setRegionFilter('all');
+                                }}
+                                className="text-purple-400 hover:text-purple-300 text-sm transition-colors"
+                              >
+                                Clear all filters
+                              </button>
+                            }
+                          />
                         </td>
                       </tr>
                     ) : (

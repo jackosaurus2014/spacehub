@@ -5,6 +5,9 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ────────────────────────────────────────
 // Types
@@ -491,8 +494,12 @@ export default function PortfolioTrackerPage() {
                 <tbody>
                   {filteredCompanies.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center py-8 text-slate-500">
-                        No companies match your search criteria.
+                      <td colSpan={8} className="py-8">
+                        <EmptyState
+                          icon={<span className="text-4xl">📊</span>}
+                          title="No companies found"
+                          description="No companies match your search criteria. Try adjusting your filters."
+                        />
                       </td>
                     </tr>
                   ) : (
@@ -729,6 +736,8 @@ export default function PortfolioTrackerPage() {
             </Link>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['portfolio-tracker']} />
       </div>
     </div>
   );

@@ -10,6 +10,8 @@ import {
   MISC_COST_DATA,
   type LaunchCostData,
 } from '@/lib/mission-cost-data';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // Dynamically import chart to avoid SSR issues with SVG measurement
 const BarChart = dynamic(() => import('@/components/charts/BarChart'), {
@@ -369,6 +371,8 @@ function CostBreakdownCard({
                 className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-500"
                 style={{ width: `${Math.max(item.pct, 1)}%` }}
               />
+
+        <RelatedModules modules={PAGE_RELATIONS['launch-cost-calculator']} />
             </div>
           </div>
         ))}

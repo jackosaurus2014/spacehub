@@ -436,11 +436,12 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="alert-keyword-input" className="block text-sm font-medium text-slate-300 mb-1.5">
                 Keywords
               </label>
               <div className="flex gap-2">
                 <input
+                  id="alert-keyword-input"
                   type="text"
                   value={keywordInput}
                   onChange={(e) => setKeywordInput(e.target.value)}
@@ -472,9 +473,10 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
                       <button
                         type="button"
                         onClick={() => setKeywords(keywords.filter((k) => k !== kw))}
+                        aria-label={`Remove keyword ${kw}`}
                         className="hover:text-white"
                       >
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
@@ -520,8 +522,9 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Ticker Symbol</label>
+              <label htmlFor="alert-ticker" className="block text-sm font-medium text-slate-300 mb-1.5">Ticker Symbol</label>
               <input
+                id="alert-ticker"
                 type="text"
                 value={ticker}
                 onChange={(e) => setTicker(e.target.value.toUpperCase())}
@@ -554,10 +557,11 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="alert-price-value" className="block text-sm font-medium text-slate-300 mb-1.5">
                 {priceCondition === 'percent_change' ? 'Percentage (%)' : 'Price ($)'}
               </label>
               <input
+                id="alert-price-value"
                 type="number"
                 value={priceValue}
                 onChange={(e) => setPriceValue(e.target.value)}
@@ -575,7 +579,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Agencies <span className="text-slate-500 font-normal">(optional -- leave empty for all)</span>
+                Agencies <span className="text-slate-400 font-normal">(optional -- leave empty for all)</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {REGULATORY_AGENCIES.map((agency) => (
@@ -591,7 +595,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Categories <span className="text-slate-500 font-normal">(optional)</span>
+                Categories <span className="text-slate-400 font-normal">(optional)</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {REGULATORY_CATEGORIES.map((cat) => (
@@ -613,7 +617,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Launch Providers <span className="text-slate-500 font-normal">(optional)</span>
+                Launch Providers <span className="text-slate-400 font-normal">(optional)</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {LAUNCH_PROVIDERS.map((p) => (
@@ -629,7 +633,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Status Changes <span className="text-slate-500 font-normal">(optional)</span>
+                Status Changes <span className="text-slate-400 font-normal">(optional)</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {LAUNCH_STATUSES.map((s) => (
@@ -651,7 +655,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Agencies <span className="text-slate-500 font-normal">(optional)</span>
+                Agencies <span className="text-slate-400 font-normal">(optional)</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {CONTRACT_AGENCIES.map((a) => (
@@ -666,10 +670,11 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                NAICS Codes <span className="text-slate-500 font-normal">(comma-separated, optional)</span>
+              <label htmlFor="alert-naics" className="block text-sm font-medium text-slate-300 mb-1.5">
+                NAICS Codes <span className="text-slate-400 font-normal">(comma-separated, optional)</span>
               </label>
               <input
+                id="alert-naics"
                 type="text"
                 value={contractNaics}
                 onChange={(e) => setContractNaics(e.target.value)}
@@ -678,10 +683,11 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="alert-contract-min" className="block text-sm font-medium text-slate-300 mb-1.5">
                 Minimum Value ($M)
               </label>
               <input
+                id="alert-contract-min"
                 type="number"
                 value={contractMinValue}
                 onChange={(e) => setContractMinValue(e.target.value)}
@@ -691,9 +697,10 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Keywords</label>
+              <label htmlFor="alert-contract-keyword" className="block text-sm font-medium text-slate-300 mb-1.5">Keywords</label>
               <div className="flex gap-2">
                 <input
+                  id="alert-contract-keyword"
                   type="text"
                   value={contractKeywordInput}
                   onChange={(e) => setContractKeywordInput(e.target.value)}
@@ -725,9 +732,10 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
                       <button
                         type="button"
                         onClick={() => setContractKeywords(contractKeywords.filter((k) => k !== kw))}
+                        aria-label={`Remove keyword ${kw}`}
                         className="hover:text-white"
                       >
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
@@ -744,7 +752,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Sectors <span className="text-slate-500 font-normal">(optional)</span>
+                Sectors <span className="text-slate-400 font-normal">(optional)</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {FUNDING_SECTORS.map((s) => (
@@ -759,10 +767,11 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="alert-funding-min" className="block text-sm font-medium text-slate-300 mb-1.5">
                 Minimum Amount ($M)
               </label>
               <input
+                id="alert-funding-min"
                 type="number"
                 value={fundingMinAmount}
                 onChange={(e) => setFundingMinAmount(e.target.value)}
@@ -773,7 +782,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Round Types <span className="text-slate-500 font-normal">(optional)</span>
+                Round Types <span className="text-slate-400 font-normal">(optional)</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {ROUND_TYPES.map((rt) => (
@@ -794,10 +803,11 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="alert-kp-index" className="block text-sm font-medium text-slate-300 mb-1.5">
                 Minimum Kp Index: <span className="text-cyan-400 font-bold">{minKpIndex}</span>
               </label>
               <input
+                id="alert-kp-index"
                 type="range"
                 value={minKpIndex}
                 onChange={(e) => setMinKpIndex(parseInt(e.target.value))}
@@ -806,7 +816,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
                 step={1}
                 className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
               />
-              <div className="flex justify-between text-xs text-slate-500 mt-1">
+              <div className="flex justify-between text-xs text-slate-400 mt-1">
                 <span>0 (Quiet)</span>
                 <span>5 (Storm)</span>
                 <span>9 (Extreme)</span>
@@ -825,7 +835,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Alert Types <span className="text-slate-500 font-normal">(optional)</span>
+                Alert Types <span className="text-slate-400 font-normal">(optional)</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {WEATHER_ALERT_TYPES.map((at) => (
@@ -851,8 +861,9 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
     <div className="space-y-5">
       {/* Rule name */}
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-1.5">Rule Name *</label>
+        <label htmlFor="alert-rule-name" className="block text-sm font-medium text-slate-300 mb-1.5">Rule Name *</label>
         <input
+          id="alert-rule-name"
           type="text"
           value={ruleName}
           onChange={(e) => setRuleName(e.target.value)}
@@ -864,8 +875,9 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-1.5">Description</label>
+        <label htmlFor="alert-rule-description" className="block text-sm font-medium text-slate-300 mb-1.5">Description</label>
         <textarea
+          id="alert-rule-description"
           value={ruleDescription}
           onChange={(e) => setRuleDescription(e.target.value)}
           placeholder="Optional -- describe what this alert monitors"
@@ -909,7 +921,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
               </div>
               <div>
                 <p className="text-sm font-medium text-white">{ch.label}</p>
-                <p className="text-xs text-slate-500">{ch.description}</p>
+                <p className="text-xs text-slate-400">{ch.description}</p>
               </div>
             </button>
           ))}
@@ -946,7 +958,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
                 </div>
                 <div>
                   <p className="text-sm font-medium text-white">{opt.label}</p>
-                  <p className="text-xs text-slate-500">{opt.description}</p>
+                  <p className="text-xs text-slate-400">{opt.description}</p>
                 </div>
               </button>
             ))}
@@ -991,7 +1003,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
             />
           ))}
         </div>
-        <p className="text-xs text-slate-500 mt-1.5">
+        <p className="text-xs text-slate-400 mt-1.5">
           Prevents the same alert from firing too frequently
         </p>
       </div>
@@ -1074,6 +1086,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
           </div>
           <button
             onClick={onClose}
+            aria-label="Close alert rule builder"
             className="text-slate-400 hover:text-white transition-colors p-1"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

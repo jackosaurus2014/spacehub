@@ -5,6 +5,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -858,6 +860,8 @@ export default function FundingRoundsPage() {
                       <div className="text-right flex-shrink-0">
                         <p className="text-cyan-400 font-bold">{investor.deals} deals</p>
                         <p className="text-xs text-slate-500">{formatAmount(investor.totalAmount)} total</p>
+
+        <RelatedModules modules={PAGE_RELATIONS['funding-rounds']} />
                       </div>
                     </div>
                   ))}

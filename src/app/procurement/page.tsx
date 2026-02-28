@@ -10,6 +10,8 @@ import PullToRefresh from '@/components/ui/PullToRefresh';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import EmptyState from '@/components/ui/EmptyState';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -296,6 +298,8 @@ function OpportunityCard({ opp }: { opp: ProcurementOpportunity }) {
             </div>
           )}
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['procurement']} />
       </div>
     </div>
   );

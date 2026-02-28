@@ -6,6 +6,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ItemListSchema from '@/components/seo/ItemListSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -239,6 +241,8 @@ function FlowArrow({ fromColor, toColor }: { fromColor: string; toColor: string 
             opacity="0.6"
           />
         </svg>
+
+        <RelatedModules modules={PAGE_RELATIONS['ecosystem-map']} />
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -1030,6 +1032,8 @@ export default function SatelliteBusComparisonPage() {
                   </div>
                 </ScrollReveal>
               ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['satellite-bus-comparison']} />
             </div>
           </div>
         )}

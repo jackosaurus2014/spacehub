@@ -10,6 +10,8 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import ExportButton from '@/components/ui/ExportButton';
 import { clientLogger } from '@/lib/client-logger';
 import AdSlot from '@/components/ads/AdSlot';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const topicColors: Record<string, string> = {
   space_law: 'bg-purple-500',
@@ -461,6 +463,8 @@ export default function BlogsPage() {
         >
           <BlogsContent />
         </Suspense>
+
+        <RelatedModules modules={PAGE_RELATIONS['blogs']} />
       </div>
     </div>
   );

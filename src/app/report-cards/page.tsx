@@ -5,6 +5,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ExportPDFButton from '@/components/ui/ExportPDFButton';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -728,6 +730,8 @@ export default function ReportCardsPage() {
                     <div className="text-xs text-slate-400 truncate">{leader.sector}</div>
                     <div className="text-sm font-semibold text-white truncate">{leader.company}</div>
                     <span className={`text-xs font-bold ${getGradeColor(leader.grade)}`}>{leader.grade}</span>
+
+        <RelatedModules modules={PAGE_RELATIONS['report-cards']} />
                   </div>
                 </div>
               ))}

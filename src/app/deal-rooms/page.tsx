@@ -8,6 +8,8 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PremiumGate from '@/components/PremiumGate';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -503,6 +505,8 @@ function DealRoomsPageInner() {
               </Link>
             </p>
           </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['deal-rooms']} />
         </div>
       </div>
     );

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
@@ -201,6 +202,7 @@ export default function SpaceEconomyInvestmentPage() {
           </div>
 
           {/* Content */}
+          <ScrollReveal delay={0.1}>
           <article className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-8 space-y-10">
             {/* Space Economy Overview */}
             <section id="space-economy-overview">
@@ -641,6 +643,7 @@ export default function SpaceEconomyInvestmentPage() {
             {/* Guide Navigation */}
             <GuideNavigation currentSlug="space-economy-investment" />
           </article>
+          </ScrollReveal>
 
           {/* FAQ Schema */}
           <FAQSchema items={FAQ_ITEMS} />

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -445,6 +447,8 @@ function AltitudeChart() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
         </svg>
         Hover over bars for details. Heights are illustrative, not to linear scale.
+
+        <RelatedModules modules={PAGE_RELATIONS['orbit-guide']} />
       </div>
     </div>
   );

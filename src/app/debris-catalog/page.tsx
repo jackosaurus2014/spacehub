@@ -5,6 +5,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ════════════════════════════════════════
 // Types & Data
@@ -536,6 +538,8 @@ export default function DebrisCatalogPage() {
                     </div>
                   );
                 })}
+
+        <RelatedModules modules={PAGE_RELATIONS['debris-catalog']} />
               </div>
             </div>
           )}

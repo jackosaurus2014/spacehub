@@ -5,6 +5,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -674,6 +676,8 @@ export default function IndustryTrendsPage() {
                             ))}
                           </div>
                         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['industry-trends']} />
                       </div>
                     </div>
                   )}

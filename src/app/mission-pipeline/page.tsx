@@ -3,6 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // --- Types ---
 
@@ -535,7 +537,10 @@ export default function MissionPipelinePage() {
                       {level}
                     </span>
                     <p className="text-xs text-slate-400 leading-relaxed">{descriptions[level]}</p>
-                  </div>
+                  
+
+        <RelatedModules modules={PAGE_RELATIONS['mission-pipeline']} />
+      </div>
                 );
               })}
             </div>

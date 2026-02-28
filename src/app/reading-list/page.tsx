@@ -5,7 +5,11 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import { toast } from '@/lib/toast';
+import EmptyState from '@/components/ui/EmptyState';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface ReadingListItem {
   id: string;
@@ -238,7 +242,7 @@ export default function ReadingListPage() {
       <div className="container mx-auto max-w-7xl">
         <AnimatedPageHeader
           title="Reading List"
-          subtitle={`${items.length} saved article${items.length !== 1 ? 's' : ''}${unreadCount > 0 ? ` \u00B7 ${unreadCount} unread` : ''}`}
+          subtitle={`${items.length} saved article${items.length !== 1 ? 's' : ''}${unreadCount > 0 ? ' · ' + unreadCount + ' unread' : ''}`}
           accentColor="cyan"
           icon={
             <svg
@@ -280,6 +284,7 @@ export default function ReadingListPage() {
         </AnimatedPageHeader>
 
         {/* Filter tabs */}
+        <ScrollReveal>
         {items.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -320,47 +325,24 @@ export default function ReadingListPage() {
           </motion.div>
         )}
 
+        </ScrollReveal>
+
         {/* Empty state */}
+        <ScrollReveal delay={0.1}>
         {items.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-20"
-          >
-            <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center mb-6">
-              <svg
-                className="w-10 h-10 text-cyan-400"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.5}
-                viewBox="0 0 24 24"
+          <EmptyState
+            icon={<span className="text-4xl">🔖</span>}
+            title="Your reading list is empty"
+            description="Browse articles and click the bookmark icon to save them here. Build your personal library of space industry news and research."
+            action={
+              <Link
+                href="/news"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                />
-              </svg>
-            </div>
-            <h2 className="text-xl font-semibold text-white mb-2">
-              Your reading list is empty
-            </h2>
-            <p className="text-slate-400 mb-2 max-w-md mx-auto">
-              Browse articles and click the bookmark icon to save them here.
-            </p>
-            <p className="text-slate-500 text-sm mb-6 max-w-md mx-auto">
-              Build your personal library of space industry news, analysis, and research to read on your schedule.
-            </p>
-            <Link
-              href="/news"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
-              </svg>
-              Browse News Articles
-            </Link>
-          </motion.div>
+                Browse News Articles
+              </Link>
+            }
+          />
         )}
 
         {/* Filtered empty state */}
@@ -378,7 +360,10 @@ export default function ReadingListPage() {
           </motion.div>
         )}
 
+        </ScrollReveal>
+
         {/* Reading list items */}
+        <ScrollReveal delay={0.1}>
         {filteredItems.length > 0 && (
           <motion.div
             variants={staggerContainer}
@@ -521,6 +506,8 @@ export default function ReadingListPage() {
             ))}
           </motion.div>
         )}
+        </ScrollReveal>
+        <RelatedModules modules={PAGE_RELATIONS['reading-list']} />
       </div>
     </main>
   );

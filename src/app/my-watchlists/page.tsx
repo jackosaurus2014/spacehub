@@ -10,6 +10,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { toast } from '@/lib/toast';
 import { clientLogger } from '@/lib/client-logger';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface WatchlistItem {
   id: string;
@@ -369,41 +370,18 @@ function WatchlistsContent() {
               </StaggerContainer>
               </ScrollReveal>
             ) : (
-              <div className="text-center py-20">
-                <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center mb-6">
-                  <svg className="w-10 h-10 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">No watchlists yet</h3>
-                <p className="text-sm text-slate-400 max-w-md mx-auto mb-2">
-                  Create your first watchlist to track companies, launches, and topics that matter to you.
-                </p>
-                <p className="text-xs text-slate-500 max-w-md mx-auto mb-6">
-                  Get notified about breaking news, contract awards, and marketplace activity for the companies you follow.
-                </p>
-                <div className="flex flex-wrap justify-center gap-3">
+              <EmptyState
+                icon={<span className="text-4xl">👁️</span>}
+                title="No watchlists yet"
+                description="Create your first watchlist to track companies, launches, and topics that matter to you."
+                action={
                   <Link href="/company-profiles">
                     <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-semibold transition-colors">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                      </svg>
                       Create Watchlist
                     </button>
                   </Link>
-                  <Link href="/satellites">
-                    <button className="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors">
-                      Track Satellites
-                    </button>
-                  </Link>
-                  <Link href="/launch">
-                    <button className="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors">
-                      View Launches
-                    </button>
-                  </Link>
-                </div>
-              </div>
+                }
+              />
             )}
           </div>
         )}

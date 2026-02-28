@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import MultiLaunchTabs from '@/components/launch/MultiLaunchTabs';
 import CompactLaunchCard from '@/components/launch/CompactLaunchCard';
 import NotificationBell from '@/components/launch/NotificationBell';
@@ -238,6 +239,7 @@ export default function LaunchListPage() {
           accentColor="cyan"
         />
 
+        <ScrollReveal>
         <PullToRefresh onRefresh={async () => { await fetchLaunches(); }}>
         {loading ? (
           <div className="flex justify-center py-20">
@@ -328,6 +330,7 @@ export default function LaunchListPage() {
           </div>
         )}
         </PullToRefresh>
+        </ScrollReveal>
       </div>
     </div>
   );

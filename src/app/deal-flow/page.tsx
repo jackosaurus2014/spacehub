@@ -6,6 +6,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import EmptyState from '@/components/ui/EmptyState';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -836,6 +838,8 @@ export default function DealFlowPage() {
                       <p className="text-sm italic text-slate-500">Undisclosed</p>
                     )}
                   </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['deal-flow']} />
                 </div>
               </div>
             ))}

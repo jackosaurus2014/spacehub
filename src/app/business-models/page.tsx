@@ -7,6 +7,8 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { DonutChart } from '@/components/charts';
 import { BUSINESS_MODELS, type BusinessModelTemplate } from '@/lib/business-model-data';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ── Constants ──
 
@@ -137,7 +139,10 @@ function MetricsTable({ metrics }: { metrics: { label: string; benchmark: string
           ))}
         </tbody>
       </table>
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['business-models']} />
+      </div>
   );
 }
 

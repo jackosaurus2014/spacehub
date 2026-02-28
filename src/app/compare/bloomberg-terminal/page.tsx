@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export const metadata: Metadata = {
   title: 'SpaceNexus vs Bloomberg Terminal for Space Industry | SpaceNexus',
@@ -82,6 +83,7 @@ export default function BloombergComparisonPage() {
           </header>
 
           {/* TL;DR */}
+          <ScrollReveal>
           <div className="card p-6 mb-10 border-l-4 border-cyan-500">
             <h2 className="text-lg font-bold text-white mb-2">TL;DR</h2>
             <p className="text-slate-400 text-sm leading-relaxed">
@@ -93,8 +95,10 @@ export default function BloombergComparisonPage() {
               access for trading, Bloomberg remains unmatched.
             </p>
           </div>
+          </ScrollReveal>
 
           {/* Pricing Comparison */}
+          <ScrollReveal delay={0.1}>
           <section className="mb-10">
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               Pricing Comparison
@@ -141,8 +145,10 @@ export default function BloombergComparisonPage() {
               </p>
             </div>
           </section>
+          </ScrollReveal>
 
           {/* Feature Comparison Table */}
+          <ScrollReveal delay={0.1}>
           <section className="mb-10">
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               Feature-by-Feature Comparison
@@ -182,8 +188,10 @@ export default function BloombergComparisonPage() {
               </table>
             </div>
           </section>
+          </ScrollReveal>
 
           {/* When to Choose Each */}
+          <ScrollReveal delay={0.1}>
           <section className="mb-10">
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               When to Choose Each Platform
@@ -231,8 +239,10 @@ export default function BloombergComparisonPage() {
               </div>
             </div>
           </section>
+          </ScrollReveal>
 
           {/* Why SpaceNexus */}
+          <ScrollReveal delay={0.1}>
           <section className="mb-10">
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               Why Choose SpaceNexus for Space Industry Intelligence
@@ -263,8 +273,10 @@ export default function BloombergComparisonPage() {
               </ul>
             </div>
           </section>
+          </ScrollReveal>
 
           {/* Use Both */}
+          <ScrollReveal delay={0.1}>
           <section className="mb-10">
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               Can You Use Both?
@@ -291,8 +303,10 @@ export default function BloombergComparisonPage() {
               </ul>
             </div>
           </section>
+          </ScrollReveal>
 
           {/* CTA */}
+          <ScrollReveal delay={0.1}>
           <section className="mb-10">
             <div className="card p-10 text-center">
               <h2 className="text-2xl font-bold text-white mb-3">
@@ -312,6 +326,7 @@ export default function BloombergComparisonPage() {
               </div>
             </div>
           </section>
+          </ScrollReveal>
 
           {/* Back Link */}
           <div className="text-center">

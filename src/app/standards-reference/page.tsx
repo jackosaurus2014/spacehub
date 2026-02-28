@@ -2,7 +2,10 @@
 
 import React, { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -789,6 +792,7 @@ export default function StandardsReferencePage() {
         {/* ================================================================ */}
         {/* SECTION 1: Standards Organizations                                */}
         {/* ================================================================ */}
+        <ScrollReveal>
         <section className="mb-12">
           <h2 className="text-xl font-bold text-slate-100 mb-4">Standards Organizations</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -798,9 +802,12 @@ export default function StandardsReferencePage() {
           </div>
         </section>
 
+        </ScrollReveal>
+
         {/* ================================================================ */}
         {/* TAB NAVIGATION                                                   */}
         {/* ================================================================ */}
+        <ScrollReveal delay={0.1}>
         <div className="flex gap-1 mb-6 border-b border-slate-700/50 pb-px overflow-x-auto">
           {([
             { key: 'database' as const, label: 'Standards Database', count: STANDARDS_DATABASE.length },
@@ -1147,6 +1154,9 @@ export default function StandardsReferencePage() {
             of any standard. Export control classifications (ITAR/EAR) should be verified with qualified legal counsel.
           </p>
         </div>
+
+        </ScrollReveal>
+        <RelatedModules modules={PAGE_RELATIONS['standards-reference']} />
       </div>
     </div>
   );

@@ -3,6 +3,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Space Engineering Tools — Interactive Calculators & Analysis | SpaceNexus',
@@ -367,6 +369,9 @@ export default function ToolsHubPage() {
           }).replace(/</g, '\\u003c'),
         }}
       />
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['tools']} />
+      </div>
   );
 }

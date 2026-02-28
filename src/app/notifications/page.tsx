@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import EmptyState from '@/components/ui/EmptyState';
 import {
   getNotifications as getLocalNotifications,
   markAllAsRead as markAllLocalAsRead,
@@ -229,53 +230,25 @@ export default function NotificationsPage() {
             <LoadingSpinner />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="card p-12 text-center">
-            <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-cyan-500/15 border border-emerald-500/20 flex items-center justify-center mb-6">
-              {filter === 'unread' ? (
-                <svg className="w-10 h-10 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              ) : (
-                <svg className="w-10 h-10 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                </svg>
-              )}
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-2">
-              {filter === 'unread' ? 'You\'re all caught up!' : 'No new notifications'}
-            </h3>
-            <p className="text-slate-400 text-sm mb-2">
-              {filter === 'unread'
-                ? 'No unread notifications. Nicely done!'
-                : 'Notifications about launches, watchlist alerts, and community activity will appear here.'}
-            </p>
-            {filter === 'all' && (
-              <p className="text-slate-500 text-xs max-w-sm mx-auto mb-4">
-                Set up watchlist alerts or join community discussions to start receiving updates.
-              </p>
-            )}
-            {filter !== 'all' && filter !== 'unread' && (
-              <p className="text-slate-500 text-xs max-w-sm mx-auto mb-4">
-                No {filter} notifications found. Try a different filter or check back later.
-              </p>
-            )}
-            {filter !== 'all' && (
+          <EmptyState
+            icon={<span className="text-4xl">{filter === 'unread' ? '✅' : '🔔'}</span>}
+            title={filter === 'unread' ? "You're all caught up!" : 'No new notifications'}
+            description={filter === 'unread'
+              ? 'No unread notifications. Nicely done!'
+              : 'Notifications about launches, watchlist alerts, and community activity will appear here.'}
+            action={filter !== 'all' ? (
               <button
                 onClick={() => setFilter('all')}
-                className="mt-2 text-xs text-cyan-400 hover:text-cyan-300 font-medium"
+                className="text-xs text-cyan-400 hover:text-cyan-300 font-medium"
               >
                 View all notifications
               </button>
-            )}
-            {filter === 'all' && (
-              <div className="flex justify-center gap-3 mt-4">
+            ) : (
+              <div className="flex justify-center gap-3">
                 <Link
                   href="/alerts"
                   className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                  </svg>
                   Set Up Alerts
                 </Link>
                 <Link
@@ -286,7 +259,7 @@ export default function NotificationsPage() {
                 </Link>
               </div>
             )}
-          </div>
+          />
         ) : (
           <div className="space-y-2">
             {filtered.map(notif => (

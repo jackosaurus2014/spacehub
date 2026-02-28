@@ -10,6 +10,9 @@ import AlertRuleBuilder from '@/components/alerts/AlertRuleBuilder';
 import PremiumGate from '@/components/PremiumGate';
 import { toast } from '@/lib/toast';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import EmptyState from '@/components/ui/EmptyState';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ============================================================
 // Types
@@ -690,6 +693,8 @@ function AlertsPageInner() {
         <div className="text-center">
           <LoadingSpinner size="lg" />
           <p className="text-slate-400">Loading alerts...</p>
+
+        <RelatedModules modules={PAGE_RELATIONS['alerts']} />
         </div>
       </div>
     );
@@ -928,32 +933,11 @@ function AlertsPageInner() {
       )}
 
       {deliveries.length === 0 ? (
-        <div className="text-center py-20 bg-slate-900/50 border border-slate-800 rounded-xl">
-          <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500/15 to-blue-500/15 border border-cyan-500/20 flex items-center justify-center mb-6">
-            <svg
-              className="w-10 h-10 text-cyan-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-              />
-            </svg>
-          </div>
-          <h3 className="text-xl font-semibold text-white mb-2">No notifications yet</h3>
-          <p className="text-slate-400 mb-2 max-w-sm mx-auto">
-            When your alert rules are triggered, notifications will appear here.
-          </p>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            {rules.length === 0
-              ? 'Create an alert rule first to start receiving notifications.'
-              : `You have ${rules.filter(r => r.isActive).length} active alert rule${rules.filter(r => r.isActive).length !== 1 ? 's' : ''} monitoring for events.`}
-          </p>
-        </div>
+        <EmptyState
+          icon={<span className="text-4xl">🔔</span>}
+          title="No notifications yet"
+          description="When your alert rules are triggered, notifications will appear here."
+        />
       ) : (
         <div className="space-y-2">
           {deliveries.map((delivery) => {

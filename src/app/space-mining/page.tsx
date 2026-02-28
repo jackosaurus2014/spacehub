@@ -23,6 +23,8 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import ExportButton from '@/components/ui/ExportButton';
 import { clientLogger } from '@/lib/client-logger';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -809,6 +811,8 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
                 {resource}: {percent}%
               </span>
             ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['space-mining']} />
           </div>
         </div>
       )}
