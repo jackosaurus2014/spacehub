@@ -27,6 +27,7 @@ import OfflineIndicator from '@/components/ui/OfflineIndicator';
 // Changelog modal removed — no longer shown on visit
 const NpsSurvey = dynamic(() => import('@/components/ui/NpsSurvey'), { ssr: false });
 const ExitIntentPopup = dynamic(() => import('@/components/marketing/ExitIntentPopup'), { ssr: false });
+const QuickStartGuide = dynamic(() => import('@/components/onboarding/QuickStartGuide'), { ssr: false });
 const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), { ssr: false });
 import ModuleNavBar from '@/components/ModuleNavBar';
 import WebVitals from '@/components/analytics/WebVitals';
@@ -218,6 +219,7 @@ export default function RootLayout({
               <ErrorReporter />
               <BackToTop />
               <ExitIntentPopup />
+              <QuickStartGuide />
             </div>
           </SubscriptionProvider>
         </AuthProvider>
