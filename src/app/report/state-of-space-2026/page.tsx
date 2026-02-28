@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ReportGateForm from '@/components/marketing/ReportGateForm';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { getRelatedModules } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'State of the Space Industry 2026 | Free Report | SpaceNexus',
@@ -289,6 +291,11 @@ export default function StateOfSpace2026Page() {
             </div>
           </div>
         </ScrollReveal>
+      </section>
+
+      {/* Related Modules */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
+        <RelatedModules modules={getRelatedModules('report/state-of-space-2026')} title="Explore Related Intelligence" />
       </section>
 
       {/* Bottom CTA */}

@@ -304,6 +304,15 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
 
   // ── Business Models ──
   'business-models': [MODULES.unitEconomics, MODULES.marketSizing, MODULES.businessOps, MODULES.industryTrends],
+
+  // ── Solutions & Marketing pages (Wave 71/72) ──
+  'solutions': [MODULES.companyProfiles, MODULES.marketIntel, MODULES.tools, MODULES.satellites, MODULES.spaceCapital],
+  'solutions/investors': [MODULES.companyProfiles, MODULES.fundingTracker, MODULES.spaceCapital, MODULES.dealFlow, MODULES.investmentThesis],
+  'solutions/analysts': [MODULES.marketIntel, MODULES.industryTrends, MODULES.satellites, MODULES.spaceDefense, MODULES.news],
+  'solutions/engineers': [MODULES.satellites, MODULES.constellationDesigner, MODULES.orbitalCalc, MODULES.linkBudget, MODULES.tools],
+  'solutions/executives': [MODULES.marketIntel, MODULES.executiveMoves, MODULES.marketMap, MODULES.contractAwards, MODULES.intelligenceBrief],
+  'use-cases': [MODULES.companyProfiles, MODULES.satellites, MODULES.marketIntel, MODULES.tools, MODULES.spaceCapital],
+  'report/state-of-space-2026': [MODULES.marketIntel, MODULES.spaceEconomy, MODULES.industryTrends, MODULES.fundingTracker, MODULES.marketSizing],
 };
 
 // Helper to get related modules for a page

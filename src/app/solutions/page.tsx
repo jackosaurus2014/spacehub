@@ -3,6 +3,8 @@ import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { getRelatedModules } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Solutions for Every Space Professional | SpaceNexus',
@@ -176,6 +178,11 @@ export default function SolutionsPage() {
               </div>
             </div>
           </ScrollReveal>
+        </section>
+
+        {/* Related Modules */}
+        <section className="container mx-auto px-4 pb-16">
+          <RelatedModules modules={getRelatedModules('solutions')} title="Explore SpaceNexus Modules" />
         </section>
       </div>
     </>

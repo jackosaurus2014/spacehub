@@ -279,6 +279,18 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/compare/satellites`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/compare/companies`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/compare/launch-vehicles`, changeFrequency: 'monthly' as const, priority: 0.6 },
+
+    // Wave 70 pages
+    { url: `${BASE_URL}/satellite-tracker`, changeFrequency: 'daily' as const, priority: 0.8 },
+
+    // Wave 71 pages (SEO landing pages, content)
+    { url: `${BASE_URL}/solutions`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/solutions/investors`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/solutions/analysts`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/solutions/engineers`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/solutions/executives`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/use-cases`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/report/state-of-space-2026`, changeFrequency: 'monthly' as const, priority: 0.7 },
   ];
 
   return routes.map(route => ({

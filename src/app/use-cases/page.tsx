@@ -3,6 +3,8 @@ import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { getRelatedModules } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Space Intelligence Use Cases | SpaceNexus',
@@ -230,6 +232,11 @@ export default function UseCasesPage() {
             </div>
           </ScrollReveal>
         </div>
+      </section>
+
+      {/* Related Modules */}
+      <section className="container mx-auto px-4 pb-16">
+        <RelatedModules modules={getRelatedModules('use-cases')} />
       </section>
     </div>
   );

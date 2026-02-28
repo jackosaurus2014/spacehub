@@ -4,6 +4,8 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { getRelatedModules } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Space Investment Intelligence for Investors | SpaceNexus',
@@ -230,6 +232,11 @@ export default function InvestorsSolutionPage() {
             </div>
           </ScrollReveal>
         </div>
+      </section>
+
+      {/* Related Modules */}
+      <section className="container mx-auto px-4 pb-16">
+        <RelatedModules modules={getRelatedModules('solutions/investors')} />
       </section>
     </div>
   );
