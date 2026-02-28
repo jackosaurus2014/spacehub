@@ -290,6 +290,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/solutions/engineers`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/solutions/executives`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/use-cases`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/enterprise`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/report/state-of-space-2026`, changeFrequency: 'monthly' as const, priority: 0.7 },
   ];
 

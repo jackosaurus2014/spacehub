@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, Fragment } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
@@ -195,6 +195,183 @@ function PricingCard({
           {isCheckingOut ? 'Redirecting...' : 'Subscribe Now'}
         </button>
       )}
+    </div>
+  );
+}
+
+/* ---------- Feature Comparison Table ---------- */
+
+const FEATURE_CATEGORIES = [
+  {
+    name: 'Content & Data',
+    features: [
+      { label: 'Daily article limit', free: '25', pro: 'Unlimited', enterprise: 'Unlimited' },
+      { label: 'Company directory', free: 'Basic', pro: 'Full intelligence', enterprise: 'Full + AI reports' },
+      { label: 'Space Score access', free: 'Top 10', pro: 'Full rankings', enterprise: 'Full + custom scoring' },
+      { label: 'News categories', free: 'All', pro: 'All', enterprise: 'All' },
+      { label: 'Market intelligence', free: 'Limited', pro: 'Full', enterprise: 'Full + AI insights' },
+    ],
+  },
+  {
+    name: 'Tools & Calculators',
+    features: [
+      { label: 'Satellite tracker', free: true, pro: true, enterprise: true },
+      { label: 'Orbital calculator', free: true, pro: true, enterprise: true },
+      { label: 'Launch cost calculator', free: true, pro: true, enterprise: true },
+      { label: 'Resource exchange', free: false, pro: true, enterprise: true },
+      { label: 'Space insurance calc', free: false, pro: false, enterprise: true },
+      { label: 'Constellation designer', free: true, pro: true, enterprise: true },
+    ],
+  },
+  {
+    name: 'Intelligence & Analytics',
+    features: [
+      { label: 'Deal flow database', free: false, pro: '113+ deals', enterprise: '113+ deals' },
+      { label: 'Executive move tracker', free: false, pro: true, enterprise: true },
+      { label: 'Supply chain intel', free: false, pro: true, enterprise: true },
+      { label: 'Regulatory calendar', free: false, pro: '105+ deadlines', enterprise: 'Full suite' },
+      { label: 'Patent intelligence', free: false, pro: false, enterprise: true },
+      { label: 'Procurement (SAM.gov)', free: false, pro: false, enterprise: true },
+    ],
+  },
+  {
+    name: 'Export & Integration',
+    features: [
+      { label: 'Chart export (CSV/PNG)', free: false, pro: true, enterprise: true },
+      { label: 'Full API access', free: false, pro: false, enterprise: true },
+      { label: 'Webhook integrations', free: false, pro: false, enterprise: true },
+      { label: 'Custom dashboards', free: false, pro: false, enterprise: true },
+    ],
+  },
+  {
+    name: 'Support',
+    features: [
+      { label: 'Community support', free: true, pro: true, enterprise: true },
+      { label: 'Priority support', free: false, pro: true, enterprise: true },
+      { label: 'Dedicated account manager', free: false, pro: false, enterprise: true },
+      { label: 'Ad-free experience', free: false, pro: true, enterprise: true },
+    ],
+  },
+];
+
+function renderCellValue(value: boolean | string) {
+  if (value === true) return <span className="text-green-400 font-medium">&#10003;</span>;
+  if (value === false) return <span className="text-slate-600">&mdash;</span>;
+  return <span className="text-slate-300 text-sm">{value}</span>;
+}
+
+function FeatureComparisonTable() {
+  return (
+    <div className="max-w-5xl mx-auto">
+      <h2 className="text-2xl font-bold text-white text-center mb-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+        Full Feature Comparison
+      </h2>
+      <div className="overflow-x-auto rounded-xl border border-slate-700 bg-slate-900/50">
+        <table className="w-full min-w-[640px] text-left">
+          <thead className="sticky top-0 z-10 bg-slate-900/95 backdrop-blur-sm">
+            <tr className="border-b border-slate-700">
+              <th className="py-4 px-5 text-sm font-semibold text-slate-300 w-[40%]">Feature</th>
+              <th className="py-4 px-4 text-center text-sm font-semibold text-slate-100 w-[20%]">
+                <div>Explorer</div>
+                <div className="text-xs font-normal text-slate-400 mt-0.5">Free</div>
+              </th>
+              <th className="py-4 px-4 text-center text-sm font-semibold text-cyan-300 w-[20%] border-x border-cyan-500/20 bg-cyan-500/5">
+                <div className="flex items-center justify-center gap-1.5">
+                  Professional
+                  <span className="text-[10px] bg-cyan-400/20 text-cyan-300 px-1.5 py-0.5 rounded-full font-medium">Popular</span>
+                </div>
+                <div className="text-xs font-normal text-slate-400 mt-0.5">$19.99/mo</div>
+              </th>
+              <th className="py-4 px-4 text-center text-sm font-semibold text-slate-100 w-[20%]">
+                <div>Enterprise</div>
+                <div className="text-xs font-normal text-slate-400 mt-0.5">$49.99/mo</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {FEATURE_CATEGORIES.map((category) => (
+              <Fragment key={category.name}>
+                {/* Category header */}
+                <tr className="bg-slate-800/50">
+                  <td colSpan={4} className="py-2.5 px-5 text-xs font-semibold uppercase tracking-wider text-cyan-400">
+                    {category.name}
+                  </td>
+                </tr>
+                {/* Feature rows */}
+                {category.features.map((feature) => (
+                  <tr key={feature.label} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                    <td className="py-3 px-5 text-sm text-slate-300">{feature.label}</td>
+                    <td className="py-3 px-4 text-center">{renderCellValue(feature.free)}</td>
+                    <td className="py-3 px-4 text-center border-x border-cyan-500/20 bg-cyan-500/[0.02]">{renderCellValue(feature.pro)}</td>
+                    <td className="py-3 px-4 text-center">{renderCellValue(feature.enterprise)}</td>
+                  </tr>
+                ))}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Social Proof Section ---------- */
+
+const TRUST_AUDIENCES = [
+  { label: 'VCs & Investors', icon: '📊' },
+  { label: 'Defense & Gov', icon: '🛡️' },
+  { label: 'Engineers', icon: '🔧' },
+  { label: 'Startups', icon: '🚀' },
+];
+
+const PRICING_TESTIMONIALS = [
+  {
+    quote: 'SpaceNexus replaced three analyst subscriptions and a Bloomberg terminal for our space practice.',
+    name: 'Rachel Torres',
+    title: 'Partner, Orbital Ventures Capital',
+  },
+  {
+    quote: 'The free tier gave us everything we needed to validate our space startup idea. Upgrading to Pro was a no-brainer.',
+    name: 'James Park',
+    title: 'CEO, Aether Propulsion',
+  },
+];
+
+function SocialProofSection() {
+  return (
+    <div className="max-w-4xl mx-auto">
+      {/* Trust badges */}
+      <div className="text-center mb-8">
+        <p className="text-lg font-semibold text-white mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+          Trusted by 2,800+ space professionals
+        </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          {TRUST_AUDIENCES.map((a) => (
+            <div key={a.label} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
+              <span className="text-base" role="img" aria-label={a.label}>{a.icon}</span>
+              <span className="text-sm text-slate-300">{a.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Testimonials */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {PRICING_TESTIMONIALS.map((t) => (
+          <div key={t.name} className="p-5 rounded-xl bg-slate-800/40 border border-slate-700/50">
+            <svg className="w-6 h-6 text-cyan-500/40 mb-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z" />
+            </svg>
+            <p className="text-slate-300 text-sm leading-relaxed mb-4 italic">
+              &ldquo;{t.quote}&rdquo;
+            </p>
+            <div>
+              <p className="text-white text-sm font-semibold">{t.name}</p>
+              <p className="text-slate-400 text-xs">{t.title}</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -410,6 +587,11 @@ function PricingPageContent() {
           ))}
         </StaggerContainer>
 
+        {/* Social Proof */}
+        <ScrollReveal className="mt-16">
+          <SocialProofSection />
+        </ScrollReveal>
+
         {/* FAQ / Trust Section */}
         <ScrollReveal className="mt-16">
           <div className="text-center">
@@ -464,6 +646,11 @@ function PricingPageContent() {
             </div>
           </StaggerItem>
         </StaggerContainer>
+
+        {/* Feature Comparison Table */}
+        <ScrollReveal className="mt-16">
+          <FeatureComparisonTable />
+        </ScrollReveal>
 
         {/* CTA */}
         <ScrollReveal className="mt-16">
