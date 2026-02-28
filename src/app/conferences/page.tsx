@@ -5,6 +5,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ShareButton from '@/components/ui/ShareButton';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -794,34 +795,35 @@ export default function ConferencesPage() {
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="card p-5 text-center">
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <StaggerItem><div className="card p-5 text-center">
             <div className="text-3xl font-bold text-purple-400">{stats.total}</div>
             <div className="text-sm text-slate-400 mt-1">Events Listed</div>
-          </div>
-          <div className="card p-5 text-center">
+          </div></StaggerItem>
+          <StaggerItem><div className="card p-5 text-center">
             <div className="text-3xl font-bold text-cyan-400">
               {formatAttendance(stats.totalAttendance)}
             </div>
             <div className="text-sm text-slate-400 mt-1">Combined Attendance</div>
-          </div>
-          <div className="card p-5 text-center">
+          </div></StaggerItem>
+          <StaggerItem><div className="card p-5 text-center">
             <div className="text-3xl font-bold text-emerald-400">
               ${stats.avgCost.toLocaleString()}
             </div>
             <div className="text-sm text-slate-400 mt-1">Avg Registration Cost</div>
-          </div>
-          <div className="card p-5 text-center">
+          </div></StaggerItem>
+          <StaggerItem><div className="card p-5 text-center">
             <div className="text-3xl font-bold text-amber-400">
               {stats.topRegion?.[0] || '-'}
             </div>
             <div className="text-sm text-slate-400 mt-1">
               Top Region ({stats.topRegion?.[1] || 0} events)
             </div>
-          </div>
-        </div>
+          </div></StaggerItem>
+        </StaggerContainer>
 
         {/* Filter & Controls Panel */}
+        <ScrollReveal delay={0.1}>
         <div className="card p-4 mb-6">
           {/* Search + View Toggle Row */}
           <div className="flex flex-col md:flex-row gap-3 mb-4">
@@ -963,6 +965,7 @@ export default function ConferencesPage() {
             </div>
           )}
         </div>
+        </ScrollReveal>
 
         {/* No results */}
         {filteredEvents.length === 0 && (
@@ -983,11 +986,13 @@ export default function ConferencesPage() {
 
         {/* Grid View */}
         {viewMode === 'grid' && filteredEvents.length > 0 && (
+          <ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>
+          </ScrollReveal>
         )}
 
         {/* Calendar View */}
@@ -1069,7 +1074,7 @@ function EventCard({ event }: { event: ConferenceEvent }) {
           {event.categories.map((cat) => (
             <span
               key={cat}
-              className={`text-[11px] font-medium px-2 py-0.5 rounded-full border ${CATEGORY_COLORS[cat]}`}
+              className={`text-xs font-medium px-2 py-0.5 rounded-full border ${CATEGORY_COLORS[cat]}`}
             >
               {cat}
             </span>
@@ -1143,13 +1148,13 @@ function EventCard({ event }: { event: ConferenceEvent }) {
           {event.topics.slice(0, expanded ? event.topics.length : 3).map((topic) => (
             <span
               key={topic}
-              className="text-[11px] text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-full border border-slate-700/40"
+              className="text-xs text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-full border border-slate-700/40"
             >
               {topic}
             </span>
           ))}
           {!expanded && event.topics.length > 3 && (
-            <span className="text-[11px] text-slate-500 px-2 py-0.5">
+            <span className="text-xs text-slate-500 px-2 py-0.5">
               +{event.topics.length - 3} more
             </span>
           )}
@@ -1184,7 +1189,7 @@ function CalendarEventCard({ event }: { event: ConferenceEvent }) {
               {event.categories.slice(0, 2).map((cat) => (
                 <span
                   key={cat}
-                  className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${CATEGORY_COLORS[cat]}`}
+                  className={`text-xs font-medium px-1.5 py-0.5 rounded-full border ${CATEGORY_COLORS[cat]}`}
                 >
                   {cat}
                 </span>
@@ -1217,7 +1222,7 @@ function CalendarEventCard({ event }: { event: ConferenceEvent }) {
               {event.topics.slice(0, expanded ? event.topics.length : 3).map((topic) => (
                 <span
                   key={topic}
-                  className="text-[10px] text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-full border border-slate-700/40"
+                  className="text-xs text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-full border border-slate-700/40"
                 >
                   {topic}
                 </span>

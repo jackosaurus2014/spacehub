@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 export const metadata: Metadata = {
   title: 'Press Kit & Media Resources',
@@ -47,6 +48,7 @@ export default function PressPage() {
         <div className="max-w-5xl mx-auto space-y-12">
 
           {/* Company Overview */}
+          <ScrollReveal>
           <section>
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Company Overview</h2>
             <div className="card p-8 space-y-6">
@@ -90,21 +92,24 @@ export default function PressPage() {
             </div>
           </section>
 
+          </ScrollReveal>
+
           {/* Key Statistics */}
           <section>
-            <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Key Statistics</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <ScrollReveal><h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Key Statistics</h2></ScrollReveal>
+            <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {KEY_STATS.map((stat) => (
-                <div key={stat.label} className="card p-6 text-center">
+                <StaggerItem key={stat.label}><div className="card p-6 text-center">
                   <div className="text-3xl font-bold text-cyan-400 mb-1">{stat.value}</div>
                   <div className="text-sm font-semibold text-white">{stat.label}</div>
                   <div className="text-xs text-slate-400 mt-1">{stat.description}</div>
-                </div>
+                </div></StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           </section>
 
           {/* Boilerplate Descriptions */}
+          <ScrollReveal delay={0.1}>
           <section>
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Boilerplate Descriptions</h2>
             <div className="card p-8 space-y-6">
@@ -161,7 +166,10 @@ export default function PressPage() {
             </div>
           </section>
 
+          </ScrollReveal>
+
           {/* Brand Assets */}
+          <ScrollReveal delay={0.2}>
           <section>
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Brand Assets</h2>
             <div className="card p-8">
@@ -218,7 +226,10 @@ export default function PressPage() {
             </div>
           </section>
 
+          </ScrollReveal>
+
           {/* Product Screenshots */}
+          <ScrollReveal delay={0.1}>
           <section>
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Product Screenshots</h2>
             <div className="card p-8">
@@ -254,7 +265,10 @@ export default function PressPage() {
             </div>
           </section>
 
+          </ScrollReveal>
+
           {/* Media Contact */}
+          <ScrollReveal delay={0.1}>
           <section>
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Media Contact</h2>
             <div className="card p-8">
@@ -291,7 +305,10 @@ export default function PressPage() {
             </div>
           </section>
 
+          </ScrollReveal>
+
           {/* Approved Quotes */}
+          <ScrollReveal delay={0.1}>
           <section>
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Approved Quotes</h2>
             <div className="card p-8 space-y-6">
@@ -314,6 +331,8 @@ export default function PressPage() {
               </blockquote>
             </div>
           </section>
+
+          </ScrollReveal>
 
           {/* Related Pages */}
           <section className="flex flex-wrap gap-4 justify-center">

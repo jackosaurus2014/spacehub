@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 // =============================================================================
 // TYPES
@@ -957,9 +958,12 @@ export default function LaunchManifestPage() {
         />
 
         {/* Stats summary */}
+        <ScrollReveal>
         <StatsSummary launches={filteredLaunches} />
+        </ScrollReveal>
 
         {/* View toggle + filter toggle */}
+        <ScrollReveal delay={0.1}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <button
@@ -1026,6 +1030,8 @@ export default function LaunchManifestPage() {
             setSearchQuery={setSearchQuery}
           />
         )}
+
+        </ScrollReveal>
 
         {/* Results count */}
         <p className="text-xs text-slate-500 mb-4">

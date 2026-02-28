@@ -704,7 +704,7 @@ function VehicleSelector({
                         <span className="text-sm font-medium text-white">{v.name}</span>
                         <span className="text-xs text-star-300 ml-2">{v.manufacturer}</span>
                       </div>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${s.bg} ${s.text}`}>
+                      <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${s.bg} ${s.text}`}>
                         {v.status}
                       </span>
                     </button>
@@ -718,7 +718,7 @@ function VehicleSelector({
 
       {/* Quick-pick buttons */}
       <div className="mt-4">
-        <p className="text-[10px] uppercase tracking-widest text-star-300 font-medium mb-2">Quick Pick</p>
+        <p className="text-xs uppercase tracking-widest text-star-300 font-medium mb-2">Quick Pick</p>
         <div className="flex flex-wrap gap-1.5">
           {VEHICLES.filter((v) => !selectedIds.has(v.id))
             .slice(0, 10)
@@ -727,7 +727,7 @@ function VehicleSelector({
                 key={v.id}
                 onClick={() => onAdd(v)}
                 disabled={selected.length >= maxVehicles}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all border ${
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all border ${
                   selected.length >= maxVehicles
                     ? 'opacity-30 cursor-not-allowed bg-slate-800 text-star-300 border-slate-700'
                     : 'bg-slate-800 text-star-300 border-slate-700 hover:border-cyan-500/50 hover:text-cyan-400'
@@ -741,7 +741,7 @@ function VehicleSelector({
 
       {/* Preset comparisons */}
       <div className="mt-4 pt-4 border-t border-slate-700/50">
-        <p className="text-[10px] uppercase tracking-widest text-star-300 font-medium mb-2">Preset Comparisons</p>
+        <p className="text-xs uppercase tracking-widest text-star-300 font-medium mb-2">Preset Comparisons</p>
         <div className="flex flex-wrap gap-2">
           {[
             { label: 'US Heavy Lift', ids: ['falcon-heavy', 'starship', 'new-glenn', 'vulcan-centaur'] },
@@ -791,9 +791,9 @@ function PayloadChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
     <div className="card p-5">
       <div className="flex items-center justify-between mb-1">
         <h3 className="text-sm font-semibold text-white">Payload Capacity Comparison</h3>
-        <span className="text-[10px] text-star-300">Higher is better</span>
+        <span className="text-xs text-star-300">Higher is better</span>
       </div>
-      <div className="flex gap-3 text-[10px] text-star-300 mb-4">
+      <div className="flex gap-3 text-xs text-star-300 mb-4">
         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm opacity-90" style={{ backgroundColor: '#06b6d4' }} /> LEO</span>
         <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm opacity-60" style={{ backgroundColor: '#06b6d4' }} /> GTO</span>
       </div>
@@ -802,7 +802,7 @@ function PayloadChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
           <div key={v.id}>
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-xs font-medium text-white truncate mr-2">{v.name}</span>
-              <span className="text-[10px] text-star-300 shrink-0">{v.manufacturer}</span>
+              <span className="text-xs text-star-300 shrink-0">{v.manufacturer}</span>
             </div>
             {bars.map(([label, getVal], bi) => {
               const val = getVal(v);
@@ -810,16 +810,16 @@ function PayloadChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
               const color = VEHICLE_COLORS[vi % VEHICLE_COLORS.length];
               return (
                 <div key={bi} className="flex items-center gap-2 mb-1">
-                  <span className="w-7 text-[10px] text-star-300 text-right shrink-0">{label}</span>
+                  <span className="w-7 text-xs text-star-300 text-right shrink-0">{label}</span>
                   <div className="flex-1 h-5 bg-slate-800/60 rounded overflow-hidden relative">
                     <div
                       className="h-full rounded transition-all duration-700 ease-out"
                       style={{ width: `${Math.max(pct, 0.5)}%`, backgroundColor: color, opacity: bi === 0 ? 1 : 0.55 }}
                     />
                     {val && val > 0 ? (
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-white font-medium">{fmtPayload(val)}</span>
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-white font-medium">{fmtPayload(val)}</span>
                     ) : (
-                      <span className="absolute left-10 top-1/2 -translate-y-1/2 text-[10px] text-star-300">N/A</span>
+                      <span className="absolute left-10 top-1/2 -translate-y-1/2 text-xs text-star-300">N/A</span>
                     )}
                   </div>
                 </div>
@@ -841,9 +841,9 @@ function CostEfficiencyChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
     <div className="card p-5">
       <div className="flex items-center justify-between mb-1">
         <h3 className="text-sm font-semibold text-white">Cost Efficiency ($/kg to LEO)</h3>
-        <span className="text-[10px] text-star-300">Lower is better</span>
+        <span className="text-xs text-star-300">Lower is better</span>
       </div>
-      <p className="text-[10px] text-star-300 mb-4">Cost per kilogram delivered to Low Earth Orbit</p>
+      <p className="text-xs text-star-300 mb-4">Cost per kilogram delivered to Low Earth Orbit</p>
       <div className="space-y-3">
         {[...vehicles]
           .sort((a, b) => (a.costPerKgLeo ?? Infinity) - (b.costPerKgLeo ?? Infinity))
@@ -858,7 +858,7 @@ function CostEfficiencyChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-medium text-white truncate mr-2">{v.name}</span>
                   <div className="flex items-center gap-2 shrink-0">
-                    {cost !== null && <span className="text-[10px] text-star-300">{formatCost(cost)}/launch</span>}
+                    {cost !== null && <span className="text-xs text-star-300">{formatCost(cost)}/launch</span>}
                     {isBest && <span className="text-[9px] px-1.5 py-0.5 bg-green-900/40 text-green-400 border border-green-500/30 rounded font-medium">BEST</span>}
                   </div>
                 </div>
@@ -866,17 +866,17 @@ function CostEfficiencyChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
                   {cpk && cpk > 0 ? (
                     <>
                       <div className="h-full rounded transition-all duration-700 ease-out" style={{ width: `${Math.max(pct, 2)}%`, backgroundColor: barColor }} />
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-white font-bold">${cpk.toLocaleString()}/kg</span>
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-white font-bold">${cpk.toLocaleString()}/kg</span>
                     </>
                   ) : (
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-star-300">Cost data unavailable</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-star-300">Cost data unavailable</span>
                   )}
                 </div>
               </div>
             );
           })}
       </div>
-      <div className="mt-4 pt-3 border-t border-slate-700/50 flex flex-wrap items-center gap-3 text-[10px] text-star-300">
+      <div className="mt-4 pt-3 border-t border-slate-700/50 flex flex-wrap items-center gap-3 text-xs text-star-300">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-green-500" /> Under $1K/kg</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-cyan-500" /> $1K-$3K/kg</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-amber-500" /> $3K-$5K/kg</span>
@@ -891,9 +891,9 @@ function SuccessRateChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
     <div className="card p-5">
       <div className="flex items-center justify-between mb-1">
         <h3 className="text-sm font-semibold text-white">Reliability & Track Record</h3>
-        <span className="text-[10px] text-star-300">Higher is better</span>
+        <span className="text-xs text-star-300">Higher is better</span>
       </div>
-      <p className="text-[10px] text-star-300 mb-4">Success rate with total launch count</p>
+      <p className="text-xs text-star-300 mb-4">Success rate with total launch count</p>
       <div className="space-y-3">
         {vehicles.map((v) => {
           const rate = v.totalLaunches > 0 ? v.successRate : null;
@@ -904,16 +904,16 @@ function SuccessRateChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
             <div key={v.id}>
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs font-medium text-white truncate mr-2">{v.name}</span>
-                <span className="text-[10px] text-star-300 shrink-0">{v.totalLaunches > 0 ? `${v.totalLaunches} launches` : 'No launches yet'}</span>
+                <span className="text-xs text-star-300 shrink-0">{v.totalLaunches > 0 ? `${v.totalLaunches} launches` : 'No launches yet'}</span>
               </div>
               <div className="flex-1 h-5 bg-slate-800/60 rounded overflow-hidden relative">
                 {rate !== null ? (
                   <>
                     <div className="h-full rounded transition-all duration-700 ease-out" style={{ width: `${rate}%`, backgroundColor: barColor }} />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-white font-bold">{rate.toFixed(1)}%</span>
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-white font-bold">{rate.toFixed(1)}%</span>
                   </>
                 ) : (
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-star-300">No flight data</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-star-300">No flight data</span>
                 )}
               </div>
             </div>
@@ -1024,7 +1024,7 @@ function ComparisonTable({ vehicles }: { vehicles: LaunchVehicle[] }) {
       </div>
 
       {/* Legend */}
-      <div className="px-4 py-3 border-t border-slate-700/50 flex items-center gap-4 text-[11px] text-star-300">
+      <div className="px-4 py-3 border-t border-slate-700/50 flex items-center gap-4 text-xs text-star-300">
         <span className="inline-flex items-center gap-1.5">
           <span className="w-3 h-3 rounded bg-green-400/10 border border-green-400/30" />
           Best value in category

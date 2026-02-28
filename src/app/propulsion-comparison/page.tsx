@@ -5,6 +5,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ShareButton from '@/components/ui/ShareButton';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -868,21 +869,22 @@ export default function PropulsionComparisonPage() {
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
             { label: 'Engine Models', value: stats.totalEngines, color: 'text-cyan-400' },
             { label: 'Technology Types', value: stats.categories, color: 'text-amber-400' },
             { label: 'Manufacturers', value: stats.manufacturers, color: 'text-purple-400' },
             { label: 'Operational', value: stats.operational, color: 'text-emerald-400' },
           ].map((s, i) => (
-            <div key={i} className="card p-4 text-center">
+            <StaggerItem key={i}><div className="card p-4 text-center">
               <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">{s.label}</p>
               <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-            </div>
+            </div></StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* Tabs */}
+        <ScrollReveal delay={0.1}>
         <div className="flex flex-wrap gap-2 mb-6">
           {TABS.map(tab => (
             <button
@@ -899,6 +901,8 @@ export default function PropulsionComparisonPage() {
             </button>
           ))}
         </div>
+
+        </ScrollReveal>
 
         {/* ══════════════════════════════════════ */}
         {/* TAB: Technology Overview               */}

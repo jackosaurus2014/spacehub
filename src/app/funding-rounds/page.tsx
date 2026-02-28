@@ -4,6 +4,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -568,31 +569,32 @@ export default function FundingRoundsPage() {
         />
 
         {/* ── Summary Stats ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="card p-5">
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <StaggerItem><div className="card p-5">
             <p className="text-xs uppercase tracking-wider text-slate-400 mb-1">Total Raised (2025)</p>
             <p className="text-2xl md:text-3xl font-bold text-cyan-400">${(summaryStats.total2025 / 1000).toFixed(1)}B</p>
             <p className="text-sm text-slate-400 mt-1">{summaryStats.deals2025} deals</p>
-          </div>
-          <div className="card p-5">
+          </div></StaggerItem>
+          <StaggerItem><div className="card p-5">
             <p className="text-xs uppercase tracking-wider text-slate-400 mb-1">Avg Round Size</p>
             <p className="text-2xl md:text-3xl font-bold text-emerald-400">${summaryStats.avgRoundSize.toFixed(0)}M</p>
             <p className="text-sm text-slate-400 mt-1">across all 2025 rounds</p>
-          </div>
-          <div className="card p-5">
+          </div></StaggerItem>
+          <StaggerItem><div className="card p-5">
             <p className="text-xs uppercase tracking-wider text-slate-400 mb-1">Largest Round</p>
             <p className="text-2xl md:text-3xl font-bold text-amber-400">{formatAmount(summaryStats.largest.amount)}</p>
             <p className="text-sm text-slate-400 mt-1">{summaryStats.largest.company} {summaryStats.largest.roundType}</p>
-          </div>
-          <div className="card p-5">
+          </div></StaggerItem>
+          <StaggerItem><div className="card p-5">
             <p className="text-xs uppercase tracking-wider text-slate-400 mb-1">Most Active Investors</p>
             <p className="text-sm text-slate-200 font-medium leading-relaxed mt-1">
               Founders Fund, a16z, Google Ventures, Lux Capital
             </p>
-          </div>
-        </div>
+          </div></StaggerItem>
+        </StaggerContainer>
 
         {/* ── Tab Navigation ── */}
+        <ScrollReveal delay={0.1}>
         <div className="flex gap-1 mb-6 p-1 bg-slate-800/60 rounded-xl w-fit">
           {([
             { key: 'table' as const, label: 'Funding Rounds' },
@@ -612,6 +614,7 @@ export default function FundingRoundsPage() {
             </button>
           ))}
         </div>
+        </ScrollReveal>
 
         {/* ── FUNDING ROUNDS TABLE TAB ── */}
         {activeTab === 'table' && (
@@ -843,10 +846,10 @@ export default function FundingRoundsPage() {
                         <p className="text-slate-200 font-medium">{investor.name}</p>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {investor.sectors.slice(0, 4).map(s => (
-                            <span key={s} className={`px-1.5 py-0.5 rounded text-[10px] ${getSectorColor(s)}`}>{s}</span>
+                            <span key={s} className={`px-1.5 py-0.5 rounded text-xs ${getSectorColor(s)}`}>{s}</span>
                           ))}
                           {investor.sectors.length > 4 && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-700 text-slate-400">+{investor.sectors.length - 4}</span>
+                            <span className="px-1.5 py-0.5 rounded text-xs bg-slate-700 text-slate-400">+{investor.sectors.length - 4}</span>
                           )}
                         </div>
                       </div>

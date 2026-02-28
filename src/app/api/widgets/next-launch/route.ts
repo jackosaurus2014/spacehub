@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,7 +44,8 @@ export async function GET() {
       location: event.location || event.pad?.location?.name || 'Unknown',
       date: launchDate.toISOString(),
     });
-  } catch {
+  } catch (error) {
+    logger.warn('Failed to fetch next launch, returning fallback data', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json({
       name: 'Next Launch TBD',
       countdown_seconds: null,

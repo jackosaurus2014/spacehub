@@ -316,7 +316,7 @@ export default function FrequencyBandsPage() {
                       className="text-center flex-shrink-0"
                       style={{ width: `${widthPct}%`, minWidth: '30px' }}
                     >
-                      <span className="text-[10px] text-slate-500 leading-none block truncate">
+                      <span className="text-xs text-slate-500 leading-none block truncate">
                         {band.freqStartGHz >= 1
                           ? `${band.freqStartGHz} GHz`
                           : `${(band.freqStartGHz * 1000).toFixed(0)} MHz`}
@@ -355,7 +355,7 @@ export default function FrequencyBandsPage() {
                       <span className="text-xs font-bold text-white drop-shadow-md truncate px-1">
                         {band.name}
                       </span>
-                      <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-slate-400 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                      <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                         {band.range}
                       </span>
                     </button>
@@ -365,7 +365,7 @@ export default function FrequencyBandsPage() {
 
               {/* End label */}
               <div className="flex justify-end min-w-[800px] mt-1">
-                <span className="text-[10px] text-slate-500">300 GHz</span>
+                <span className="text-xs text-slate-500">300 GHz</span>
               </div>
 
               {/* Optical note */}
@@ -572,13 +572,13 @@ export default function FrequencyBandsPage() {
                     {band.services.slice(0, 2).map((s) => (
                       <span
                         key={s}
-                        className="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400"
+                        className="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-400"
                       >
                         {s}
                       </span>
                     ))}
                     {band.services.length > 2 && (
-                      <span className="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-500">
+                      <span className="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-500">
                         +{band.services.length - 2} more
                       </span>
                     )}

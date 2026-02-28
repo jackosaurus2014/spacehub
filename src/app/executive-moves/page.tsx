@@ -107,7 +107,7 @@ function NotableMovesCard({ move, index }: { move: ExecutiveMove; index: number 
           </div>
           <div>
             <h3 className="font-semibold text-white text-sm">{move.personName}</h3>
-            <p className="text-[11px] text-slate-400">{formatDate(move.date)}</p>
+            <p className="text-xs text-slate-400">{formatDate(move.date)}</p>
           </div>
         </div>
         {getMoveTypeBadge(move.moveType)}
@@ -133,7 +133,7 @@ function NotableMovesCard({ move, index }: { move: ExecutiveMove; index: number 
       </div>
 
       {move.summary && (
-        <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+        <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
           {move.summary}
         </p>
       )}
@@ -489,7 +489,7 @@ function ExecutiveMovesContent() {
                                 />
                               </div>
                               {move.fromTitle && (
-                                <div className="text-[11px] text-slate-500 mt-0.5">{move.fromTitle}</div>
+                                <div className="text-xs text-slate-500 mt-0.5">{move.fromTitle}</div>
                               )}
                             </div>
                           ) : (
@@ -519,7 +519,7 @@ function ExecutiveMovesContent() {
                                 />
                               </div>
                               {move.toTitle && (
-                                <div className="text-[11px] text-slate-500 mt-0.5">{move.toTitle}</div>
+                                <div className="text-xs text-slate-500 mt-0.5">{move.toTitle}</div>
                               )}
                             </div>
                           ) : (
@@ -562,7 +562,7 @@ function ExecutiveMovesContent() {
                       </div>
                       <div>
                         <div className="font-medium text-white text-sm">{move.personName}</div>
-                        <div className="text-[11px] text-slate-500">{formatDate(move.date)}</div>
+                        <div className="text-xs text-slate-500">{formatDate(move.date)}</div>
                       </div>
                     </div>
                     {getMoveTypeBadge(move.moveType)}
@@ -600,7 +600,7 @@ function ExecutiveMovesContent() {
                   </div>
 
                   {move.summary && (
-                    <p className="text-[11px] text-slate-400 mt-2 ml-10 line-clamp-2">
+                    <p className="text-xs text-slate-400 mt-2 ml-10 line-clamp-2">
                       {move.summary}
                     </p>
                   )}

@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -828,6 +829,7 @@ export default function CleanRoomReferencePage() {
         />
 
         {/* Key Standards Bar */}
+        <ScrollReveal>
         <div className="card p-4 mb-8">
           <div className="flex flex-wrap gap-4 justify-center text-xs sm:text-sm">
             <div className="flex items-center gap-2">
@@ -852,8 +854,10 @@ export default function CleanRoomReferencePage() {
             </div>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Section Navigation */}
+        <ScrollReveal delay={0.1}>
         <div className="flex flex-wrap gap-2 mb-8">
           {SECTIONS.map(section => (
             <button
@@ -872,8 +876,10 @@ export default function CleanRoomReferencePage() {
             </button>
           ))}
         </div>
+        </ScrollReveal>
 
         {/* ──────────────────────────── ISO Classification Section ──────────────────────────── */}
+        <ScrollReveal delay={0.2}>
         {activeSection === 'iso-classes' && (
           <div>
             <div className="card p-6 mb-6">
@@ -921,7 +927,7 @@ export default function CleanRoomReferencePage() {
                               <span className="w-3 h-3 rounded-full" style={{ backgroundColor: iso.color }}></span>
                               <span className="font-bold text-slate-100">ISO {iso.isoClass}</span>
                               {(iso.isoClass === 5 || iso.isoClass === 7 || iso.isoClass === 8) && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-400/10 text-cyan-400 border border-cyan-400/30">
+                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-cyan-400/10 text-cyan-400 border border-cyan-400/30">
                                   Common
                                 </span>
                               )}
@@ -1199,10 +1205,10 @@ export default function CleanRoomReferencePage() {
                     >
                       <div className="flex items-center gap-3 flex-wrap flex-1 min-w-0">
                         <h3 className="font-bold text-slate-100 truncate">{mat.name}</h3>
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${getOutgassingColor(mat.outgassingLevel)}`}>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${getOutgassingColor(mat.outgassingLevel)}`}>
                           {mat.outgassingLevel}
                         </span>
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${getPassFailBadge(mat.passesE595)}`}>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getPassFailBadge(mat.passesE595)}`}>
                           {mat.passesE595 ? 'PASSES E595' : 'FAILS E595'}
                         </span>
                       </div>
@@ -1230,28 +1236,28 @@ export default function CleanRoomReferencePage() {
                       <div className="px-5 pb-5 space-y-4 border-t border-slate-700/30 pt-4">
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                           <div className="bg-slate-800/40 rounded-xl p-3 text-center">
-                            <h4 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">TML</h4>
+                            <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">TML</h4>
                             <p className={`text-lg font-mono font-bold ${mat.tml >= 1.0 ? 'text-red-400' : 'text-emerald-400'}`}>
                               {mat.tml.toFixed(2)}%
                             </p>
-                            <p className="text-[10px] text-slate-500">Limit: {'<'}1.0%</p>
+                            <p className="text-xs text-slate-500">Limit: {'<'}1.0%</p>
                           </div>
                           <div className="bg-slate-800/40 rounded-xl p-3 text-center">
-                            <h4 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">CVCM</h4>
+                            <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">CVCM</h4>
                             <p className={`text-lg font-mono font-bold ${mat.cvcm >= 0.1 ? 'text-red-400' : 'text-emerald-400'}`}>
                               {mat.cvcm.toFixed(2)}%
                             </p>
-                            <p className="text-[10px] text-slate-500">Limit: {'<'}0.1%</p>
+                            <p className="text-xs text-slate-500">Limit: {'<'}0.1%</p>
                           </div>
                           <div className="bg-slate-800/40 rounded-xl p-3 text-center">
-                            <h4 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">WVR</h4>
+                            <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">WVR</h4>
                             <p className="text-lg font-mono font-bold text-slate-300">
                               {mat.wvr !== null ? `${mat.wvr.toFixed(2)}%` : '\u2014'}
                             </p>
-                            <p className="text-[10px] text-slate-500">Water Vapor Regained</p>
+                            <p className="text-xs text-slate-500">Water Vapor Regained</p>
                           </div>
                           <div className="bg-slate-800/40 rounded-xl p-3 text-center">
-                            <h4 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Category</h4>
+                            <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Category</h4>
                             <p className="text-sm font-medium text-slate-300">{mat.category}</p>
                           </div>
                         </div>
@@ -1400,38 +1406,38 @@ export default function CleanRoomReferencePage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                     <div className="bg-slate-800/40 rounded-xl p-3">
-                      <h4 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Air Changes/Hour</h4>
+                      <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Air Changes/Hour</h4>
                       <p className="text-sm text-slate-100 font-bold">{hvac.airChangesPerHour}</p>
                     </div>
                     <div className="bg-slate-800/40 rounded-xl p-3">
-                      <h4 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Air Velocity</h4>
+                      <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Air Velocity</h4>
                       <p className="text-sm text-slate-200">{hvac.airVelocity}</p>
                     </div>
                     <div className="bg-slate-800/40 rounded-xl p-3">
-                      <h4 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Pressure Differential</h4>
+                      <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Pressure Differential</h4>
                       <p className="text-sm text-slate-200">{hvac.pressureDifferential}</p>
                     </div>
                     <div className="bg-slate-800/40 rounded-xl p-3">
-                      <h4 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Monitoring</h4>
+                      <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Monitoring</h4>
                       <p className="text-sm text-slate-200">{hvac.monitoringFrequency}</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-slate-800/40 rounded-xl p-3">
-                      <h4 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Filter Type</h4>
+                      <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Filter Type</h4>
                       <p className="text-sm text-cyan-400">{hvac.filterType}</p>
                     </div>
                     <div className="bg-slate-800/40 rounded-xl p-3">
-                      <h4 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Filter Efficiency</h4>
+                      <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Filter Efficiency</h4>
                       <p className="text-sm text-slate-200">{hvac.filterEfficiency}</p>
                     </div>
                     <div className="bg-slate-800/40 rounded-xl p-3">
-                      <h4 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Temperature</h4>
+                      <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Temperature</h4>
                       <p className="text-sm text-slate-200">{hvac.tempRange}</p>
                     </div>
                     <div className="bg-slate-800/40 rounded-xl p-3">
-                      <h4 className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Humidity</h4>
+                      <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Humidity</h4>
                       <p className="text-sm text-slate-200">{hvac.humidityRange}</p>
                     </div>
                   </div>
@@ -1474,6 +1480,7 @@ export default function CleanRoomReferencePage() {
             </div>
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

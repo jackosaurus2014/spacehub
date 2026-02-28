@@ -491,7 +491,7 @@ function ComparisonPanel({
                         </svg>
                       </button>
                     </div>
-                    <span className={`inline-block mt-1 text-[10px] px-2 py-0.5 rounded font-medium ${cc.bg} ${cc.text} border ${cc.border}`}>
+                    <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded font-medium ${cc.bg} ${cc.text} border ${cc.border}`}>
                       {b.busClass}
                     </span>
                   </th>
@@ -551,7 +551,7 @@ function ComparisonPanel({
           </tbody>
         </table>
       </div>
-      <div className="px-4 py-3 border-t border-slate-700/50 flex items-center gap-4 text-[11px] text-slate-400">
+      <div className="px-4 py-3 border-t border-slate-700/50 flex items-center gap-4 text-xs text-slate-400">
         <span className="inline-flex items-center gap-1.5">
           <span className="w-3 h-3 rounded bg-green-400/10 border border-green-400/30" />
           Best value in category
@@ -589,32 +589,32 @@ function BusCard({
           <h3 className="text-sm font-bold text-white">{bus.name}</h3>
           <p className="text-xs text-slate-400 mt-0.5">{bus.manufacturer}</p>
         </div>
-        <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${cc.bg} ${cc.text} border ${cc.border}`}>
+        <span className={`text-xs px-2 py-0.5 rounded font-medium ${cc.bg} ${cc.text} border ${cc.border}`}>
           {bus.busClass}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2 mb-3">
         <div className="bg-slate-800/50 rounded-lg p-2">
-          <div className="text-[10px] text-slate-500 uppercase tracking-wide">Mass</div>
+          <div className="text-xs text-slate-500 uppercase tracking-wide">Mass</div>
           <div className="text-sm font-semibold text-white">{formatMass(bus.massKg)}</div>
         </div>
         <div className="bg-slate-800/50 rounded-lg p-2">
-          <div className="text-[10px] text-slate-500 uppercase tracking-wide">Power</div>
+          <div className="text-xs text-slate-500 uppercase tracking-wide">Power</div>
           <div className="text-sm font-semibold text-white">{formatPower(bus.powerW)}</div>
         </div>
         <div className="bg-slate-800/50 rounded-lg p-2">
-          <div className="text-[10px] text-slate-500 uppercase tracking-wide">Lifetime</div>
+          <div className="text-xs text-slate-500 uppercase tracking-wide">Lifetime</div>
           <div className="text-sm font-semibold text-white">{bus.lifetimeYears} yrs</div>
         </div>
         <div className="bg-slate-800/50 rounded-lg p-2">
-          <div className="text-[10px] text-slate-500 uppercase tracking-wide">Cost</div>
+          <div className="text-xs text-slate-500 uppercase tracking-wide">Cost</div>
           <div className="text-sm font-semibold text-white">{formatCost(bus.costMillions)}</div>
         </div>
       </div>
 
       <div className="mb-3">
-        <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1">Heritage</div>
+        <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Heritage</div>
         <div className="flex items-center gap-2">
           <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
             <div
@@ -629,17 +629,17 @@ function BusCard({
       </div>
 
       <div className="mb-3">
-        <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1">Propulsion</div>
+        <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Propulsion</div>
         <p className="text-xs text-slate-300">{bus.propulsion}</p>
       </div>
 
       <div className="mb-3">
-        <div className="text-[10px] text-slate-500 uppercase tracking-wide mb-1">Applications</div>
+        <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Applications</div>
         <div className="flex flex-wrap gap-1">
           {bus.applications.map((app) => (
             <span
               key={app}
-              className="px-1.5 py-0.5 text-[10px] bg-slate-800 text-slate-400 rounded border border-slate-700"
+              className="px-1.5 py-0.5 text-xs bg-slate-800 text-slate-400 rounded border border-slate-700"
             >
               {app}
             </span>
@@ -803,7 +803,7 @@ export default function SatelliteBusComparisonPage() {
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Class Filter */}
             <div className="flex-1">
-              <label className="text-[10px] uppercase tracking-widest text-slate-400 font-medium block mb-1.5">
+              <label className="text-xs uppercase tracking-widest text-slate-400 font-medium block mb-1.5">
                 Class
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -825,7 +825,7 @@ export default function SatelliteBusComparisonPage() {
 
             {/* Manufacturer Filter */}
             <div className="flex-1">
-              <label className="text-[10px] uppercase tracking-widest text-slate-400 font-medium block mb-1.5">
+              <label className="text-xs uppercase tracking-widest text-slate-400 font-medium block mb-1.5">
                 Manufacturer
               </label>
               <select
@@ -842,7 +842,7 @@ export default function SatelliteBusComparisonPage() {
 
             {/* Application Filter */}
             <div className="flex-1">
-              <label className="text-[10px] uppercase tracking-widest text-slate-400 font-medium block mb-1.5">
+              <label className="text-xs uppercase tracking-widest text-slate-400 font-medium block mb-1.5">
                 Application
               </label>
               <select
@@ -859,7 +859,7 @@ export default function SatelliteBusComparisonPage() {
 
             {/* Sort */}
             <div className="flex-1">
-              <label className="text-[10px] uppercase tracking-widest text-slate-400 font-medium block mb-1.5">
+              <label className="text-xs uppercase tracking-widest text-slate-400 font-medium block mb-1.5">
                 Sort By
               </label>
               <div className="flex gap-2">

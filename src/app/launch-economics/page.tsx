@@ -5,6 +5,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ShareButton from '@/components/ui/ShareButton';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -497,6 +498,7 @@ export default function LaunchEconomicsPage() {
         </div>
 
         {/* ── Filter & Sort Controls ──────────────── */}
+        <ScrollReveal>
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <div className="flex items-center gap-2">
             <span className="text-sm text-slate-400 font-medium">Filter:</span>
@@ -539,9 +541,12 @@ export default function LaunchEconomicsPage() {
           </div>
         </div>
 
+        </ScrollReveal>
+
         {/* ══════════════════════════════════════════
             1. COST PER KILOGRAM COMPARISON
            ══════════════════════════════════════════ */}
+        <ScrollReveal delay={0.1}>
         <section className="card p-6 md:p-8 mb-8">
           <h2 className="text-xl font-bold text-slate-100 mb-2">Cost Per Kilogram to LEO</h2>
           <p className="text-sm text-slate-400 mb-6">
@@ -610,10 +615,12 @@ export default function LaunchEconomicsPage() {
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> In Development</span>
           </div>
         </section>
+        </ScrollReveal>
 
         {/* ══════════════════════════════════════════
             2. COST TREND TIMELINE
            ══════════════════════════════════════════ */}
+        <ScrollReveal delay={0.2}>
         <section className="card p-6 md:p-8 mb-8">
           <h2 className="text-xl font-bold text-slate-100 mb-2">Cost Trend Timeline</h2>
           <p className="text-sm text-slate-400 mb-6">
@@ -661,6 +668,7 @@ export default function LaunchEconomicsPage() {
             costs over the same period.
           </div>
         </section>
+        </ScrollReveal>
 
         {/* ══════════════════════════════════════════
             3. REVENUE MODEL ANALYSIS

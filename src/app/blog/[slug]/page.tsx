@@ -251,10 +251,10 @@ export default async function BlogPostPage({ params }: Props) {
                   className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-nebula-500/40 hover:bg-slate-800/70 transition-all"
                 >
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-nebula-500/15 text-nebula-300 border border-nebula-500/20">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-nebula-500/15 text-nebula-300 border border-nebula-500/20">
                       {BLOG_CATEGORIES.find((c) => c.value === rp.category)?.label || rp.category}
                     </span>
-                    <span className="text-[11px] text-slate-500">{rp.readingTime} min</span>
+                    <span className="text-xs text-slate-500">{rp.readingTime} min</span>
                   </div>
                   <h4 className="text-sm font-semibold text-white group-hover:text-nebula-400 transition-colors line-clamp-2 mb-2">
                     {rp.title}
@@ -262,7 +262,7 @@ export default async function BlogPostPage({ params }: Props) {
                   <p className="text-xs text-slate-400 line-clamp-2 mb-3 flex-1">
                     {rp.excerpt}
                   </p>
-                  <div className="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-700/30">
+                  <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-700/30">
                     <span>{formatDate(rp.publishedAt)}</span>
                     <span className="text-nebula-400 group-hover:text-nebula-300 transition-colors font-medium">
                       Read more &rarr;

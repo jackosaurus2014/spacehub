@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -589,13 +590,14 @@ export default function GroundStationDirectoryPage() {
         />
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {KEY_METRICS.map((metric) => (
-            <StatCard key={metric.label} {...metric} />
+            <StaggerItem key={metric.label}><StatCard {...metric} /></StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* Search & Filters */}
+        <ScrollReveal delay={0.1}>
         <div className="card p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
@@ -670,7 +672,10 @@ export default function GroundStationDirectoryPage() {
           )}
         </div>
 
+        </ScrollReveal>
+
         {/* Section Tabs */}
+        <ScrollReveal delay={0.2}>
         <div className="flex gap-1 mb-6 overflow-x-auto pb-1">
           {sectionTabs.map((tab) => (
             <button
@@ -687,6 +692,7 @@ export default function GroundStationDirectoryPage() {
             </button>
           ))}
         </div>
+        </ScrollReveal>
 
         {/* ── Provider Cards Section ── */}
         {activeSection === 'providers' && (

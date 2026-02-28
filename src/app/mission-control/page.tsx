@@ -13,6 +13,7 @@ import PullToRefresh from '@/components/ui/PullToRefresh';
 import AdSlot from '@/components/ads/AdSlot';
 import { clientLogger } from '@/lib/client-logger';
 import { getCompanyProfileUrl } from '@/lib/company-links';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
   { value: 'all', label: 'All Events', icon: '🌌' },
@@ -1030,6 +1031,7 @@ function MissionControlContent() {
         )}
 
         {/* Filters */}
+        <ScrollReveal>
         <div className="card p-4 mb-8">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
@@ -1083,13 +1085,15 @@ function MissionControlContent() {
           </div>
         </div>
 
+        </ScrollReveal>
+
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="card-elevated p-6 text-center">
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <StaggerItem><div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-cyan-400">{events.length}</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Events</div>
-          </div>
-          <div className="card-elevated p-6 text-center">
+          </div></StaggerItem>
+          <StaggerItem><div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-green-400">
               {events.filter(e => {
                 const d = e.launchDate ? new Date(e.launchDate) : null;
@@ -1097,26 +1101,26 @@ function MissionControlContent() {
               }).length}
             </div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Next 48 Hours</div>
-          </div>
-          <div className="card-elevated p-6 text-center">
+          </div></StaggerItem>
+          <StaggerItem><div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
               {events.filter(e => e.type === 'crewed_mission').length}
             </div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Crewed Missions</div>
-          </div>
-          <div className="card-elevated p-6 text-center">
+          </div></StaggerItem>
+          <StaggerItem><div className="card-elevated p-6 text-center">
             <div className="text-4xl font-bold font-display tracking-tight text-rocket-400">
               {new Set(events.map(e => e.agency).filter(Boolean)).size}
             </div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Agencies</div>
-          </div>
-        </div>
+          </div></StaggerItem>
+        </StaggerContainer>
 
         {/* Live Now Section */}
-        {!loading && <LiveNowSection events={events} />}
+        {!loading && <ScrollReveal delay={0.1}><LiveNowSection events={events} /></ScrollReveal>}
 
         {/* Upcoming in 48 Hours Section */}
-        {!loading && <UpcomingIn48Hours events={events} />}
+        {!loading && <ScrollReveal delay={0.2}><UpcomingIn48Hours events={events} /></ScrollReveal>}
 
         {/* Timeline */}
         {loading ? (

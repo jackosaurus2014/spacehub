@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ════════════════════════════════════════
 // Types & Data
@@ -352,6 +353,7 @@ export default function DebrisCatalogPage() {
         />
 
         {/* ══════════ Search & Filter Bar ══════════ */}
+        <ScrollReveal>
         <div className="card p-4 mb-8">
           <div className="flex flex-col lg:flex-row gap-3 items-start lg:items-center">
             {/* Search */}
@@ -416,26 +418,31 @@ export default function DebrisCatalogPage() {
           </div>
         </div>
 
+        </ScrollReveal>
+
         {/* ══════════ Section 1: Debris Overview Stats ══════════ */}
         <section className="mb-10">
+          <ScrollReveal>
           <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
             <span className="text-cyan-400">{'// '}</span>Orbital Debris Overview
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          </ScrollReveal>
+          <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {OVERVIEW_STATS.map((stat) => (
-              <div key={stat.label} className="card p-5 text-center group">
+              <StaggerItem key={stat.label}><div className="card p-5 text-center group">
                 <div className="text-2xl mb-2">{stat.icon}</div>
                 <div className="text-2xl md:text-3xl font-bold text-slate-100 mb-1 group-hover:text-cyan-400 transition-colors">
                   {stat.value}
                 </div>
                 <div className="text-sm font-medium text-slate-300 mb-0.5">{stat.label}</div>
                 <div className="text-xs text-slate-500">{stat.detail}</div>
-              </div>
+              </div></StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </section>
 
         {/* ══════════ Section 2: Major Debris Events Timeline ══════════ */}
+        <ScrollReveal delay={0.1}>
         <section className="mb-10">
           <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
             <span className="text-cyan-400">{'// '}</span>Major Debris Events
@@ -533,8 +540,10 @@ export default function DebrisCatalogPage() {
             </div>
           )}
         </section>
+        </ScrollReveal>
 
         {/* ══════════ Two-Column Layout: Orbit + Contributors ══════════ */}
+        <ScrollReveal delay={0.2}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
           {/* Section 3: Debris by Orbit */}
           <section>
@@ -772,6 +781,7 @@ export default function DebrisCatalogPage() {
             </div>
           </div>
         </section>
+        </ScrollReveal>
       </div>
     </div>
   );

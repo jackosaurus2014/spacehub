@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import {
   getNotifications as getLocalNotifications,
   markAllAsRead as markAllLocalAsRead,
@@ -173,6 +174,7 @@ export default function NotificationsPage() {
         />
 
         {/* Actions bar */}
+        <ScrollReveal>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
             {FILTER_TABS.map(tab => {
@@ -218,7 +220,10 @@ export default function NotificationsPage() {
           )}
         </div>
 
+        </ScrollReveal>
+
         {/* Notification list */}
+        <ScrollReveal delay={0.1}>
         {loading ? (
           <div className="flex justify-center py-16">
             <LoadingSpinner />
@@ -362,6 +367,8 @@ export default function NotificationsPage() {
         )}
 
         {/* Notification settings link */}
+        </ScrollReveal>
+
         <div className="mt-8 text-center">
           <Link
             href="/account"

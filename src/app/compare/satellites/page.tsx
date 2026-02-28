@@ -447,21 +447,21 @@ function ComparisonChart({ selected }: { selected: SatelliteConstellation[] }) {
 
                   return (
                     <div key={c.id} className="flex items-center gap-3">
-                      <span className="text-[11px] text-slate-500 w-24 truncate">{c.name}</span>
+                      <span className="text-xs text-slate-500 w-24 truncate">{c.name}</span>
                       <div className="flex-1 h-5 bg-slate-800 rounded overflow-hidden">
                         <div
                           className={`h-full rounded transition-all duration-700 ${color.bar} flex items-center justify-end pr-2`}
                           style={{ width: `${Math.max(widthPct, 2)}%` }}
                         >
                           {widthPct > 15 && (
-                            <span className="text-[10px] font-bold text-white">
+                            <span className="text-xs font-bold text-white">
                               {val.toLocaleString()}
                             </span>
                           )}
                         </div>
                       </div>
                       {widthPct <= 15 && (
-                        <span className="text-[11px] text-slate-400">{val.toLocaleString()}</span>
+                        <span className="text-xs text-slate-400">{val.toLocaleString()}</span>
                       )}
                     </div>
                   );
@@ -853,7 +853,7 @@ export default function SatelliteConstellationComparePage() {
           <div className="flex flex-col lg:flex-row lg:items-end gap-4">
             {/* Search */}
             <div className="flex-1">
-              <label className="text-[10px] uppercase tracking-widest text-slate-400 font-medium mb-1.5 block">
+              <label className="text-xs uppercase tracking-widest text-slate-400 font-medium mb-1.5 block">
                 Search
               </label>
               <div className="relative">
@@ -877,7 +877,7 @@ export default function SatelliteConstellationComparePage() {
 
             {/* Orbit Filter */}
             <div>
-              <label className="text-[10px] uppercase tracking-widest text-slate-400 font-medium mb-1.5 block">
+              <label className="text-xs uppercase tracking-widest text-slate-400 font-medium mb-1.5 block">
                 Orbit Type
               </label>
               <select
@@ -894,7 +894,7 @@ export default function SatelliteConstellationComparePage() {
 
             {/* Purpose Filter */}
             <div>
-              <label className="text-[10px] uppercase tracking-widest text-slate-400 font-medium mb-1.5 block">
+              <label className="text-xs uppercase tracking-widest text-slate-400 font-medium mb-1.5 block">
                 Purpose
               </label>
               <select
@@ -911,7 +911,7 @@ export default function SatelliteConstellationComparePage() {
 
             {/* Status Filter */}
             <div>
-              <label className="text-[10px] uppercase tracking-widest text-slate-400 font-medium mb-1.5 block">
+              <label className="text-xs uppercase tracking-widest text-slate-400 font-medium mb-1.5 block">
                 Status
               </label>
               <select
@@ -1156,14 +1156,14 @@ export default function SatelliteConstellationComparePage() {
             )}
 
             {/* Table Legend */}
-            <div className="px-4 py-3 border-t border-slate-700/50 flex flex-wrap items-center gap-4 text-[11px] text-slate-400">
+            <div className="px-4 py-3 border-t border-slate-700/50 flex flex-wrap items-center gap-4 text-xs text-slate-400">
               <span>Click row or checkbox to select for comparison</span>
               <span className="hidden sm:inline">|</span>
               <span className="flex items-center gap-1.5">
-                <span className="px-1.5 py-0.5 rounded bg-cyan-900/30 text-cyan-400 border border-cyan-500/30 text-[10px] font-semibold">LEO</span>
-                <span className="px-1.5 py-0.5 rounded bg-purple-900/30 text-purple-400 border border-purple-500/30 text-[10px] font-semibold">MEO</span>
-                <span className="px-1.5 py-0.5 rounded bg-amber-900/30 text-amber-400 border border-amber-500/30 text-[10px] font-semibold">GEO</span>
-                <span className="px-1.5 py-0.5 rounded bg-emerald-900/30 text-emerald-400 border border-emerald-500/30 text-[10px] font-semibold">SSO</span>
+                <span className="px-1.5 py-0.5 rounded bg-cyan-900/30 text-cyan-400 border border-cyan-500/30 text-xs font-semibold">LEO</span>
+                <span className="px-1.5 py-0.5 rounded bg-purple-900/30 text-purple-400 border border-purple-500/30 text-xs font-semibold">MEO</span>
+                <span className="px-1.5 py-0.5 rounded bg-amber-900/30 text-amber-400 border border-amber-500/30 text-xs font-semibold">GEO</span>
+                <span className="px-1.5 py-0.5 rounded bg-emerald-900/30 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">SSO</span>
               </span>
             </div>
           </div>
@@ -1240,7 +1240,7 @@ export default function SatelliteConstellationComparePage() {
                   }`}
                 >
                   <div className={`text-xl font-bold ${colors.text}`}>{count}</div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">{orbit}</div>
+                  <div className="text-xs text-slate-400 mt-0.5">{orbit}</div>
                 </button>
               );
             })}

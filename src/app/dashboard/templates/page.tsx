@@ -26,7 +26,7 @@ function WidgetPreview({ widget }: { widget: DashboardTemplate['widgets'][0] }) 
     <div className="flex items-center gap-2 text-xs py-1.5 px-2 rounded-lg bg-slate-800/60 border border-slate-700/30">
       <span className="flex-shrink-0">{getWidgetTypeIcon(widget.type)}</span>
       <span className="text-slate-300 truncate flex-1">{widget.title}</span>
-      <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${SIZE_COLORS[widget.size] || SIZE_COLORS.medium}`}>
+      <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${SIZE_COLORS[widget.size] || SIZE_COLORS.medium}`}>
         {getWidgetSizeLabel(widget.size)}
       </span>
     </div>

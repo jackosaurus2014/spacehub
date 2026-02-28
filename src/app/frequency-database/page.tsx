@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types
@@ -465,6 +466,7 @@ export default function FrequencyDatabasePage() {
         />
 
         {/* Section Navigation */}
+        <ScrollReveal>
         <div className="flex flex-wrap gap-2 mb-8">
           {[
             { id: 'all' as const, label: 'All Sections' },
@@ -486,11 +488,13 @@ export default function FrequencyDatabasePage() {
             </button>
           ))}
         </div>
+        </ScrollReveal>
 
         {/* ──────────────────────────────────────── */}
         {/* Section 1: Frequency Band Overview       */}
         {/* ──────────────────────────────────────── */}
         {showOverview && (
+          <ScrollReveal>
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-slate-100 mb-6 flex items-center gap-3">
               <span className="text-purple-400">&#9632;</span>
@@ -512,10 +516,10 @@ export default function FrequencyDatabasePage() {
                     {band.description}
                   </p>
                   <div className="border-t border-slate-700/50 pt-3">
-                    <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">Applications</p>
+                    <p className="text-xs uppercase tracking-wider text-slate-500 mb-1.5">Applications</p>
                     <ul className="space-y-1">
                       {band.applications.map((app, i) => (
-                        <li key={i} className="text-[11px] text-slate-400 flex items-start gap-1.5">
+                        <li key={i} className="text-xs text-slate-400 flex items-start gap-1.5">
                           <span className={`mt-1 w-1 h-1 rounded-full bg-gradient-to-r ${band.color} flex-shrink-0`} />
                           {app}
                         </li>
@@ -526,12 +530,14 @@ export default function FrequencyDatabasePage() {
               ))}
             </div>
           </section>
+          </ScrollReveal>
         )}
 
         {/* ──────────────────────────────────────── */}
         {/* Section 2: Allocation Table               */}
         {/* ──────────────────────────────────────── */}
         {showAllocations && (
+          <ScrollReveal>
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-slate-100 mb-6 flex items-center gap-3">
               <span className="text-cyan-400">&#9632;</span>
@@ -680,7 +686,7 @@ export default function FrequencyDatabasePage() {
                             <div className="font-mono text-xs text-slate-200">
                               {formatFrequencyRange(alloc.frequencyStart, alloc.frequencyEnd)}
                             </div>
-                            <div className="font-mono text-[10px] text-slate-500 mt-0.5">
+                            <div className="font-mono text-xs text-slate-500 mt-0.5">
                               {alloc.frequencyStart.toLocaleString()} - {alloc.frequencyEnd.toLocaleString()} MHz
                             </div>
                           </td>
@@ -689,11 +695,11 @@ export default function FrequencyDatabasePage() {
                           </td>
                           <td className="px-4 py-3">
                             <div className="text-xs font-medium text-purple-300">{alloc.serviceCode}</div>
-                            <div className="text-[10px] text-slate-500 mt-0.5">{alloc.serviceType}</div>
+                            <div className="text-xs text-slate-500 mt-0.5">{alloc.serviceType}</div>
                           </td>
                           <td className="px-4 py-3">
                             <div className="text-xs text-slate-200 font-medium">{alloc.primaryOperator}</div>
-                            <div className="text-[10px] text-slate-400 mt-0.5">{alloc.satelliteSystem}</div>
+                            <div className="text-xs text-slate-400 mt-0.5">{alloc.satelliteSystem}</div>
                           </td>
                           <td className="px-4 py-3">
                             <span className="text-xs text-slate-400">{alloc.region}</span>
@@ -727,12 +733,13 @@ export default function FrequencyDatabasePage() {
                 ].map(svc => (
                   <div key={svc.code} className="flex items-center gap-2">
                     <span className="text-xs font-mono font-bold text-purple-300">{svc.code}</span>
-                    <span className="text-[11px] text-slate-400">{svc.name}</span>
+                    <span className="text-xs text-slate-400">{svc.name}</span>
                   </div>
                 ))}
               </div>
             </div>
           </section>
+          </ScrollReveal>
         )}
 
         {/* ──────────────────────────────────────── */}
@@ -759,28 +766,28 @@ export default function FrequencyDatabasePage() {
 
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Frequency Bands</p>
+                      <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">Frequency Bands</p>
                       <div className="flex flex-wrap gap-1">
                         {constellation.bands.map(band => (
-                          <span key={band} className="inline-block px-2 py-0.5 text-[11px] bg-purple-500/15 text-purple-300 border border-purple-500/20 rounded-md">
+                          <span key={band} className="inline-block px-2 py-0.5 text-xs bg-purple-500/15 text-purple-300 border border-purple-500/20 rounded-md">
                             {band}
                           </span>
                         ))}
                       </div>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Satellites</p>
+                      <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">Satellites</p>
                       <p className="text-xs text-slate-200 font-medium">{constellation.satellites}</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3 border-t border-slate-700/50 pt-3">
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Orbit</p>
+                      <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">Orbit</p>
                       <p className="text-xs text-slate-300">{constellation.orbitType}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Licensed By</p>
+                      <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">Licensed By</p>
                       <p className="text-xs text-slate-300">{constellation.licensedBy}</p>
                     </div>
                   </div>
@@ -826,7 +833,7 @@ export default function FrequencyDatabasePage() {
                       <div className="flex-1 pb-2">
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="text-base font-bold text-slate-100">{step.title}</h3>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-700/50 text-slate-300 border border-slate-600/50">
+                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-700/50 text-slate-300 border border-slate-600/50">
                             {step.duration}
                           </span>
                         </div>
@@ -891,7 +898,7 @@ export default function FrequencyDatabasePage() {
         </div>
 
         {/* Data source attribution */}
-        <p className="text-center text-[11px] text-slate-600 mt-6">
+        <p className="text-center text-xs text-slate-600 mt-6">
           Data compiled from ITU Radio Regulations, FCC filings, Ofcom records, and operator publications. For official allocations, consult the ITU MIFR.
         </p>
       </div>

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/lib/toast';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 interface RelatedCompany {
   name: string;
@@ -212,6 +213,7 @@ export default function CompanyResearchPage() {
       )}
 
       {/* Messages Area */}
+      <ScrollReveal>
       <div className="flex-1 overflow-y-auto mb-4 space-y-4 min-h-[400px] max-h-[calc(100vh-380px)]">
         {messages.length === 0 && (
           <motion.div
@@ -373,8 +375,10 @@ export default function CompanyResearchPage() {
 
         <div ref={messagesEndRef} />
       </div>
+      </ScrollReveal>
 
       {/* Input Area */}
+      <ScrollReveal delay={0.1}>
       <div className="sticky bottom-0 bg-gradient-to-t from-space-900 via-space-900 to-transparent pt-4 pb-2">
         <div className="flex gap-2 items-end">
           <div className="flex-1 relative">
@@ -423,6 +427,7 @@ export default function CompanyResearchPage() {
           )}
         </div>
       </div>
+      </ScrollReveal>
     </div>
   );
 }

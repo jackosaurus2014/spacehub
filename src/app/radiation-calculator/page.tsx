@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
 // Types & Constants
@@ -928,6 +929,7 @@ export default function RadiationCalculatorPage() {
         />
 
         {/* Main Layout: Two Column */}
+        <ScrollReveal>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Left: Input Controls */}
           <div className="lg:col-span-1 space-y-6">
@@ -952,13 +954,19 @@ export default function RadiationCalculatorPage() {
           </div>
         </div>
 
+        </ScrollReveal>
+
         {/* Full Width Sections */}
+        <ScrollReveal delay={0.1}>
         <div className="space-y-6 mb-8">
           <RadiationEffectsTable currentDose={results.totalDose} />
           <ShieldingMaterialsPanel shieldingMm={shielding} orbitDecayLength={orbitConfig.shieldingDecayLength} />
         </div>
 
+        </ScrollReveal>
+
         {/* Methodology & Notes */}
+        <ScrollReveal delay={0.2}>
         <div className="card p-5 mb-8">
           <h3 className="text-lg font-semibold text-slate-100 mb-3">Methodology & Limitations</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-500 leading-relaxed">
@@ -989,7 +997,10 @@ export default function RadiationCalculatorPage() {
           </div>
         </div>
 
+        </ScrollReveal>
+
         {/* Related Tools */}
+        <ScrollReveal delay={0.1}>
         <div className="card p-5 border border-cyan-500/20">
           <h3 className="text-lg font-semibold text-white mb-4">Related Tools</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -1031,6 +1042,7 @@ export default function RadiationCalculatorPage() {
             </Link>
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );

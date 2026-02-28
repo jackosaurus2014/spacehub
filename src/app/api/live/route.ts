@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import {
+  PROVIDER_YOUTUBE_CHANNEL_IDS,
+  PROVIDER_X_HANDLES,
+} from '@/lib/launch-providers';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,28 +16,6 @@ export interface LiveStream {
   description: string;
   isLive: boolean;
 }
-
-// Provider YouTube channel IDs for live streams
-const PROVIDER_CHANNELS: Record<string, string> = {
-  'SpaceX': 'UCtI0Hodo5o5dUb67FeUjDeA', // @SpaceX
-  'United Launch Alliance': 'UCBplVKNY0p2QIwGE9GJQwig', // @ulalaunch
-  'Arianespace': 'UCu0xb5EXcRsjt2u3zCv6mdQ', // @arborealfly
-  'Blue Origin': 'UCVxTHEKKLxNjGcvVaZindlg', // @blueorigin
-  'Rocket Lab': 'UCsWq7LZaizhIi-c-Yo_bcpw', // @RocketLabNZ
-  'NASA': 'UCLA_DiR1FfKNvjuUpBHmylQ', // @NASA
-  'ISRO': 'UCgWHOsQeVwMg_jaQ3Zcpxaw', // @isaborealfly
-};
-
-// Provider X.com (Twitter) handles for live streams
-const PROVIDER_X_HANDLES: Record<string, string> = {
-  'SpaceX': 'SpaceX',
-  'United Launch Alliance': 'ulalaunch',
-  'Arianespace': 'Arianespace',
-  'Blue Origin': 'blueorigin',
-  'Rocket Lab': 'RocketLab',
-  'NASA': 'NASA',
-  'ISRO': 'isro',
-};
 
 export async function GET() {
   try {
@@ -75,7 +57,7 @@ export async function GET() {
       const isLive = event.webcastLive || (diffMinutes >= -90 && diffMinutes <= 30);
 
       // Build YouTube channel URL from provider map
-      const channelId = PROVIDER_CHANNELS[provider] || PROVIDER_CHANNELS['NASA'];
+      const channelId = PROVIDER_YOUTUBE_CHANNEL_IDS[provider] || PROVIDER_YOUTUBE_CHANNEL_IDS['NASA'];
       const youtubeChannelUrl = channelId
         ? `https://www.youtube.com/channel/${channelId}/live`
         : null;
@@ -113,7 +95,7 @@ export async function GET() {
       streams: sortedStreams,
       nextStream: nextStream || null,
       liveNow: sortedStreams.filter((s) => s.isLive),
-      providerChannels: PROVIDER_CHANNELS,
+      providerChannels: PROVIDER_YOUTUBE_CHANNEL_IDS,
       providerXHandles: PROVIDER_X_HANDLES,
     });
   } catch (error) {

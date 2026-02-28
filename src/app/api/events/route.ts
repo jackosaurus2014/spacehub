@@ -3,30 +3,9 @@ import prisma from '@/lib/db';
 import type { MissionPhase } from '@/types';
 import { constrainPagination, constrainOffset, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
+import { PROVIDER_YOUTUBE_URLS, PROVIDER_X_URLS } from '@/lib/launch-providers';
 
 export const dynamic = 'force-dynamic';
-
-// Provider YouTube channel URLs for live streams
-const PROVIDER_YOUTUBE_URLS: Record<string, string> = {
-  'SpaceX': 'https://www.youtube.com/@SpaceX/live',
-  'United Launch Alliance': 'https://www.youtube.com/@ulalaunch/live',
-  'Rocket Lab': 'https://www.youtube.com/@RocketLabNZ/live',
-  'Blue Origin': 'https://www.youtube.com/@blueorigin/live',
-  'NASA': 'https://www.youtube.com/@NASA/live',
-  'Arianespace': 'https://www.youtube.com/@arianespace/live',
-  'ISRO': 'https://www.youtube.com/@isaborealfly/live',
-};
-
-// Provider X.com (Twitter) URLs for live streams
-const PROVIDER_X_URLS: Record<string, string> = {
-  'SpaceX': 'https://x.com/SpaceX',
-  'United Launch Alliance': 'https://x.com/ulalaunch',
-  'Rocket Lab': 'https://x.com/RocketLab',
-  'Blue Origin': 'https://x.com/blueorigin',
-  'NASA': 'https://x.com/NASA',
-  'Arianespace': 'https://x.com/Arianespace',
-  'ISRO': 'https://x.com/isaborealfly',
-};
 
 // Enrich a DB event with computed live/stream fields
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -198,9 +177,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ events: enrichedEvents, total });
   } catch (error) {
     logger.error('Error fetching events', { error: error instanceof Error ? error.message : String(error) });
-    return NextResponse.json(
-      { error: 'Failed to fetch events' },
-      { status: 500 }
-    );
+    return internalError('Failed to fetch events');
   }
 }

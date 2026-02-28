@@ -41,14 +41,16 @@ export async function GET(request: Request) {
     try {
       const { getCronJobStatus } = await import('@/lib/cron-scheduler');
       response.cron = getCronJobStatus();
-    } catch {
+    } catch (error) {
+      logger.warn('Cron scheduler not available for health check', { error: error instanceof Error ? error.message : String(error) });
       response.cron = { error: 'Cron scheduler not available' };
     }
 
     try {
       const { getCircuitBreakerStatus } = await import('@/lib/circuit-breaker');
       response.circuitBreakers = getCircuitBreakerStatus();
-    } catch {
+    } catch (error) {
+      logger.warn('Circuit breaker status not available for health check', { error: error instanceof Error ? error.message : String(error) });
       response.circuitBreakers = { error: 'Not available' };
     }
 
