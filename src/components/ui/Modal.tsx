@@ -86,7 +86,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
         aria-modal="true"
         aria-labelledby="modal-title"
         tabIndex={-1}
-        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-slate-900/95 backdrop-blur-xl border border-cyan-500/20 rounded-2xl shadow-2xl shadow-black/40 p-6 animate-scale-in focus:outline-none"
+        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto overscroll-contain bg-slate-900/95 backdrop-blur-xl border border-cyan-500/20 rounded-2xl shadow-2xl shadow-black/40 p-6 animate-scale-in focus:outline-none"
       >
         {/* Mobile drag handle indicator */}
         <div className="md:hidden flex justify-center pt-2 pb-3">

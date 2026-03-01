@@ -217,6 +217,7 @@ export default function ContactPage() {
                     name="name"
                     type="text"
                     autoComplete="name"
+                    enterKeyHint="next"
                     value={formData.name}
                     onChange={handleChange}
                     onBlur={() => handleBlur('name')}
@@ -241,6 +242,7 @@ export default function ContactPage() {
                     type="email"
                     inputMode="email"
                     autoComplete="email"
+                    enterKeyHint="next"
                     value={formData.email}
                     onChange={handleChange}
                     onBlur={() => handleBlur('email')}
@@ -292,6 +294,8 @@ export default function ContactPage() {
                     onChange={handleChange}
                     onBlur={() => handleBlur('message')}
                     rows={6}
+                    // @ts-expect-error enterkeyhint is valid HTML global attr
+                    enterkeyhint="send"
                     className={`input resize-none ${errors.message ? 'border-red-500' : ''}`}
                     placeholder="How can we help you?"
                     aria-required="true"

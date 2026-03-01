@@ -229,6 +229,7 @@ export default function BookDemoPage() {
                       name="name"
                       required
                       autoComplete="name"
+                      enterKeyHint="next"
                       placeholder="Jane Smith"
                       value={formData.name}
                       onChange={handleChange}
@@ -245,6 +246,8 @@ export default function BookDemoPage() {
                       name="email"
                       required
                       autoComplete="email"
+                      enterKeyHint="next"
+                      inputMode="email"
                       placeholder="jane@company.com"
                       value={formData.email}
                       onChange={handleChange}
@@ -336,6 +339,8 @@ export default function BookDemoPage() {
                     id="message"
                     name="message"
                     rows={4}
+                    // @ts-expect-error enterkeyhint is valid HTML global attr
+                    enterkeyhint="send"
                     placeholder="Tell us about your team's needs or specific features you'd like to see..."
                     value={formData.message}
                     onChange={handleChange}

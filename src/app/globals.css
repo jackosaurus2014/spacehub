@@ -826,6 +826,47 @@ body::after {
   outline: none;
 }
 
+/* ——— Touch-optimized interactive states ——— */
+/* Remove tap highlight and add custom feedback */
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Enhanced active state for touch devices (no hover capability) */
+@media (hover: none) {
+  .card:active,
+  .card-interactive:active,
+  .card-elevated:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+    transition: transform 0.1s ease, opacity 0.1s ease;
+  }
+
+  .btn-primary:active,
+  .btn-secondary:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+  }
+
+  .btn-ghost:active {
+    background: rgba(51, 65, 85, 0.5);
+    transition: background 0.1s ease;
+  }
+}
+
+/* Prevent card hover effects on touch-only devices */
+@media (hover: none) and (pointer: coarse) {
+  .card:hover,
+  .card-elevated:hover {
+    transform: none;
+  }
+
+  .card-interactive:hover {
+    transform: none;
+  }
+}
+
 /* ——— Print-friendly styles ——— */
 @media print {
   /* Page setup */
