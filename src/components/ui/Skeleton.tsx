@@ -1,9 +1,9 @@
 import type { CSSProperties } from 'react';
 
-export function Skeleton({ className = '', style }: { className?: string; style?: CSSProperties }) {
+export function Skeleton({ className = '', style, shimmer = true }: { className?: string; style?: CSSProperties; shimmer?: boolean }) {
   return (
     <div
-      className={`animate-pulse rounded bg-slate-700/50 ${className}`}
+      className={`${shimmer ? 'skeleton-shimmer' : 'animate-pulse bg-slate-700/50'} rounded ${className}`}
       style={style}
     />
   );

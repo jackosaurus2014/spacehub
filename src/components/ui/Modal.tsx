@@ -75,7 +75,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 modal-bottom-sheet">
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
@@ -88,8 +88,12 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
         tabIndex={-1}
         className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-slate-900/95 backdrop-blur-xl border border-cyan-500/20 rounded-2xl shadow-2xl shadow-black/40 p-6 animate-scale-in focus:outline-none"
       >
+        {/* Mobile drag handle indicator */}
+        <div className="md:hidden flex justify-center pt-2 pb-3">
+          <div className="w-10 h-1 rounded-full bg-slate-600" />
+        </div>
         {/* Top gradient accent */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
+        <div className="hidden md:block absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
         <div className="flex items-center justify-between mb-6">
           <h2 id="modal-title" className="text-xl font-display font-bold text-slate-100">{title}</h2>
           <button

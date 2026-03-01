@@ -84,7 +84,7 @@ export default function LandingHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
-            className="text-3xl md:text-5xl lg:text-display-xl font-display font-bold mb-6 leading-tight"
+            className="text-fluid-display font-display font-bold mb-6 leading-tight"
           >
             <span
               className="text-transparent bg-clip-text bg-[length:200%_auto] animate-[gradient-shift_6s_ease_infinite]"
