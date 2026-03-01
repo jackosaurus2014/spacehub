@@ -164,7 +164,7 @@ export default function KPIStrip() {
           }}
         >
           <div className="overflow-x-auto md:overflow-x-visible scrollbar-hide">
-            <div className="grid grid-cols-3 md:grid-cols-6 min-w-[480px] md:min-w-0 divide-x divide-slate-700/30">
+            <div className="grid grid-cols-3 md:grid-cols-6 min-w-0 divide-x divide-slate-700/30">
               {KPI_METRICS.map((metric) => (
                 <AnimatedCounter
                   key={metric.label}

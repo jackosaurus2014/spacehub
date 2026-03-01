@@ -255,7 +255,7 @@ export default function MobileTabBar() {
                     <h3 className="text-xs font-semibold text-cyan-400/80 uppercase tracking-wider mb-2 px-1">
                       {category.title}
                     </h3>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 min-[400px]:grid-cols-3 gap-2">
                       {category.items.map((item) => {
                         const active = isActive(item.href);
                         return (

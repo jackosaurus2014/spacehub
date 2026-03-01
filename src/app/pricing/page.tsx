@@ -266,23 +266,26 @@ function FeatureComparisonTable() {
       <h2 className="text-2xl font-bold text-white text-center mb-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
         Full Feature Comparison
       </h2>
-      <div className="overflow-x-auto rounded-xl border border-slate-700 bg-slate-900/50">
-        <table className="w-full min-w-[640px] text-left">
+      <p className="text-xs text-slate-500 text-center mb-3 md:hidden">
+        Swipe left/right to compare all plans
+      </p>
+      <div className="overflow-x-auto rounded-xl border border-slate-700 bg-slate-900/50 scroll-smooth">
+        <table className="w-full min-w-[520px] text-left">
           <thead className="sticky top-0 z-10 bg-slate-900/95 backdrop-blur-sm">
             <tr className="border-b border-slate-700">
-              <th className="py-4 px-5 text-sm font-semibold text-slate-300 w-[40%]">Feature</th>
-              <th className="py-4 px-4 text-center text-sm font-semibold text-slate-100 w-[20%]">
+              <th className="py-3 px-3 sm:py-4 sm:px-5 text-sm font-semibold text-slate-300 w-[40%]">Feature</th>
+              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-slate-100 w-[20%]">
                 <div>Explorer</div>
                 <div className="text-xs font-normal text-slate-400 mt-0.5">Free</div>
               </th>
-              <th className="py-4 px-4 text-center text-sm font-semibold text-cyan-300 w-[20%] border-x border-cyan-500/20 bg-cyan-500/5">
+              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-cyan-300 w-[20%] border-x border-cyan-500/20 bg-cyan-500/5">
                 <div className="flex items-center justify-center gap-1.5">
                   Professional
                   <span className="text-[10px] bg-cyan-400/20 text-cyan-300 px-1.5 py-0.5 rounded-full font-medium">Popular</span>
                 </div>
                 <div className="text-xs font-normal text-slate-400 mt-0.5">$19.99/mo</div>
               </th>
-              <th className="py-4 px-4 text-center text-sm font-semibold text-slate-100 w-[20%]">
+              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-slate-100 w-[20%]">
                 <div>Enterprise</div>
                 <div className="text-xs font-normal text-slate-400 mt-0.5">$49.99/mo</div>
               </th>
@@ -300,10 +303,10 @@ function FeatureComparisonTable() {
                 {/* Feature rows */}
                 {category.features.map((feature) => (
                   <tr key={feature.label} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
-                    <td className="py-3 px-5 text-sm text-slate-300">{feature.label}</td>
-                    <td className="py-3 px-4 text-center">{renderCellValue(feature.free)}</td>
-                    <td className="py-3 px-4 text-center border-x border-cyan-500/20 bg-cyan-500/[0.02]">{renderCellValue(feature.pro)}</td>
-                    <td className="py-3 px-4 text-center">{renderCellValue(feature.enterprise)}</td>
+                    <td className="py-2.5 px-3 sm:py-3 sm:px-5 text-sm text-slate-300">{feature.label}</td>
+                    <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center">{renderCellValue(feature.free)}</td>
+                    <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center border-x border-cyan-500/20 bg-cyan-500/[0.02]">{renderCellValue(feature.pro)}</td>
+                    <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center">{renderCellValue(feature.enterprise)}</td>
                   </tr>
                 ))}
               </Fragment>

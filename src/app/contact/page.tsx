@@ -216,6 +216,7 @@ export default function ContactPage() {
                     id="name"
                     name="name"
                     type="text"
+                    autoComplete="name"
                     value={formData.name}
                     onChange={handleChange}
                     onBlur={() => handleBlur('name')}
@@ -239,6 +240,7 @@ export default function ContactPage() {
                     name="email"
                     type="email"
                     inputMode="email"
+                    autoComplete="email"
                     value={formData.email}
                     onChange={handleChange}
                     onBlur={() => handleBlur('email')}

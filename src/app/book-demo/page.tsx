@@ -228,6 +228,7 @@ export default function BookDemoPage() {
                       id="name"
                       name="name"
                       required
+                      autoComplete="name"
                       placeholder="Jane Smith"
                       value={formData.name}
                       onChange={handleChange}
@@ -243,6 +244,7 @@ export default function BookDemoPage() {
                       id="email"
                       name="email"
                       required
+                      autoComplete="email"
                       placeholder="jane@company.com"
                       value={formData.email}
                       onChange={handleChange}
@@ -261,6 +263,7 @@ export default function BookDemoPage() {
                       id="company"
                       name="company"
                       required
+                      autoComplete="organization"
                       placeholder="Acme Aerospace"
                       value={formData.company}
                       onChange={handleChange}
@@ -275,6 +278,7 @@ export default function BookDemoPage() {
                       type="text"
                       id="jobTitle"
                       name="jobTitle"
+                      autoComplete="organization-title"
                       placeholder="VP of Strategy"
                       value={formData.jobTitle}
                       onChange={handleChange}
