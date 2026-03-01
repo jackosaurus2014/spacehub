@@ -453,7 +453,7 @@ export default function DashboardPage() {
         {/* Module Sections - matching sidebar order */}
         <ModuleSection
           title="Explore"
-          icon="\u{1F52D}"
+          icon={'\u{1F52D}'}
           modules={filteredExplore}
           sizeClasses={sizeClasses}
           delay="0.1s"
@@ -461,7 +461,7 @@ export default function DashboardPage() {
 
         <ModuleSection
           title="Intelligence"
-          icon="\u{1F4CA}"
+          icon={'\u{1F4CA}'}
           modules={filteredIntelligence}
           sizeClasses={sizeClasses}
           delay="0.15s"
@@ -469,7 +469,7 @@ export default function DashboardPage() {
 
         <ModuleSection
           title="Business"
-          icon="\u{1F4BC}"
+          icon={'\u{1F4BC}'}
           modules={filteredBusiness}
           sizeClasses={sizeClasses}
           delay="0.2s"
@@ -477,7 +477,7 @@ export default function DashboardPage() {
 
         <ModuleSection
           title="Tools"
-          icon="\u{1F6E0}\uFE0F"
+          icon={'\u{1F6E0}\uFE0F'}
           modules={filteredTools}
           sizeClasses={sizeClasses}
           delay="0.25s"
