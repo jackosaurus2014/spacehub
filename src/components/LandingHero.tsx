@@ -117,13 +117,13 @@ export default function LandingHero() {
             className="flex flex-col sm:flex-row gap-4 justify-center mb-6"
           >
             <Link
-              href="/mission-control"
+              href="/mission-control?utm_source=homepage&utm_medium=hero&utm_campaign=explore"
               className="btn-primary text-base py-4 px-10 shadow-lg shadow-nebula-500/30 inline-flex items-center justify-center"
             >
               Explore the Platform
             </Link>
             <Link
-              href="/pricing"
+              href="/pricing?utm_source=homepage&utm_medium=hero&utm_campaign=freetrial"
               className="border-2 border-cyan-400 text-base py-4 px-10 rounded-full font-bold uppercase tracking-wide transition-all duration-300 hover:-translate-y-0.5 active:scale-95 bg-[#0a1628] text-[#e0f7ff] hover:bg-cyan-500 hover:text-white hover:border-cyan-500"
               style={{ textShadow: '0 0 8px rgba(34,211,238,0.4)' }}
             >
@@ -139,14 +139,14 @@ export default function LandingHero() {
             className="flex gap-6 justify-center mb-14"
           >
             <Link
-              href="/register"
+              href="/register?utm_source=homepage&utm_medium=hero&utm_campaign=signup"
               className="text-cyan-300 hover:text-cyan-200 text-sm font-medium transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
             >
               Create Free Account
             </Link>
             <span className="text-cyan-400/50">|</span>
             <Link
-              href="/news"
+              href="/news?utm_source=homepage&utm_medium=hero&utm_campaign=news"
               className="text-cyan-300 hover:text-cyan-200 text-sm font-medium transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
             >
               Browse News

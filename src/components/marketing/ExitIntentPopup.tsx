@@ -4,9 +4,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 
 const BENEFITS = [
-  'Daily curated space industry news & analysis',
-  'Market updates & funding round alerts',
-  'Launch schedule & mission tracking alerts',
+  '30-day Pro trial (normally 14 days)',
+  'Full access to 200+ intelligence modules',
+  'Daily curated space industry alerts',
 ];
 
 const DISMISS_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -19,6 +19,7 @@ export default function ExitIntentPopup() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [countdown, setCountdown] = useState({ hours: 23, minutes: 59, seconds: 59 });
 
   const triggeredRef = useRef(false);
   const pageLoadTimeRef = useRef(Date.now());
@@ -100,6 +101,23 @@ export default function ExitIntentPopup() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [shouldSuppress, showPopup]);
+
+  // Countdown timer for urgency
+  useEffect(() => {
+    if (!visible) return;
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        const totalSeconds = prev.hours * 3600 + prev.minutes * 60 + prev.seconds - 1;
+        if (totalSeconds <= 0) return { hours: 0, minutes: 0, seconds: 0 };
+        return {
+          hours: Math.floor(totalSeconds / 3600),
+          minutes: Math.floor((totalSeconds % 3600) / 60),
+          seconds: totalSeconds % 60,
+        };
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [visible]);
 
   const handleDismiss = () => {
     setVisible(false);
@@ -211,11 +229,29 @@ export default function ExitIntentPopup() {
             </div>
 
             <h3 className="text-xl font-bold text-white text-center mb-2">
-              Before you go...
+              Wait — here&apos;s an exclusive offer
             </h3>
-            <p className="text-sm text-slate-400 text-center mb-6">
-              Get daily space industry intelligence delivered to your inbox
+            <p className="text-sm text-slate-400 text-center mb-3">
+              Subscribe now and get a <span className="text-cyan-400 font-semibold">free extended 30-day trial</span> of SpaceNexus Pro
             </p>
+
+            {/* Countdown timer */}
+            <div className="flex justify-center gap-2 mb-5">
+              {[
+                { value: countdown.hours, label: 'HRS' },
+                { value: countdown.minutes, label: 'MIN' },
+                { value: countdown.seconds, label: 'SEC' },
+              ].map((unit) => (
+                <div key={unit.label} className="text-center">
+                  <div className="w-12 h-12 rounded-lg bg-slate-800 border border-slate-600 flex items-center justify-center">
+                    <span className="text-lg font-bold text-cyan-400 tabular-nums">
+                      {String(unit.value).padStart(2, '0')}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 mt-1 block">{unit.label}</span>
+                </div>
+              ))}
+            </div>
 
             {/* Benefits */}
             <ul className="space-y-2.5 mb-6">
