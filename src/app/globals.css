@@ -258,9 +258,7 @@ body::after {
               inset 0 0 20px rgba(139, 92, 246, 0.1);
 }
 
-.glow-text {
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-}
+/* .glow-text removed — unused */
 
 /* Button Styles */
 .btn-primary {
@@ -582,15 +580,8 @@ body::after {
   background-image: linear-gradient(to right, #8b5cf6, #22d3ee, #fb923c);
 }
 
-.gradient-text-warm {
-  @apply bg-clip-text text-transparent;
-  background-image: linear-gradient(to right, #fb923c, #8b5cf6, #22d3ee);
-}
-
-/* Section Utilities */
-.section-divider {
-  @apply border-t border-slate-700;
-}
+/* .gradient-text-warm removed — unused */
+/* .section-divider removed — unused */
 
 .section-spacer {
   @apply py-16 md:py-24;
@@ -799,22 +790,7 @@ body::after {
   }
 }
 
-/* Animation Delays */
-.animate-delay-100 {
-  animation-delay: 100ms;
-}
-.animate-delay-200 {
-  animation-delay: 200ms;
-}
-.animate-delay-300 {
-  animation-delay: 300ms;
-}
-.animate-delay-400 {
-  animation-delay: 400ms;
-}
-.animate-delay-500 {
-  animation-delay: 500ms;
-}
+/* .animate-delay-* removed — unused */
 
 /* Scroll snap utilities for horizontal card rows */
 .scroll-snap-x {
@@ -833,6 +809,66 @@ body::after {
 /* Remove default focus for mouse users */
 :focus:not(:focus-visible) {
   outline: none;
+}
+
+/* Larger focus rings on touch devices for visibility */
+@media (pointer: coarse) {
+  *:focus-visible {
+    outline-width: 3px;
+    outline-offset: 4px;
+  }
+}
+
+/* ——— Landscape mode handling (phones held sideways) ——— */
+@media (orientation: landscape) and (max-height: 500px) {
+  .min-h-screen {
+    min-height: auto;
+  }
+
+  /* Compact nav in landscape */
+  nav .h-\[72px\] {
+    height: 56px;
+  }
+
+  /* Allow mobile menus to scroll in landscape */
+  .mobile-menu,
+  [role="dialog"] {
+    max-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  /* Reduce hero vertical padding */
+  .section-spacer {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .section-spacer-sm {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* ——— Container queries for component-responsive cards ——— */
+.card-container {
+  container-type: inline-size;
+}
+
+@container (max-width: 300px) {
+  .card-container .card-title {
+    font-size: 1rem;
+  }
+  .card-container .card-meta {
+    font-size: 0.75rem;
+  }
+}
+
+@container (min-width: 500px) {
+  .card-container .card-body-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
 }
 
 /* ——— Touch-optimized interactive states ——— */
