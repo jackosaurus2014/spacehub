@@ -168,13 +168,22 @@ body::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Disable movement-based animations (slide, bounce, parallax, rotate) */
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  }
+  /* Preserve opacity/color transitions — they're safe for vestibular users */
+  *, *::before, *::after {
+    transition-property: opacity, color, background-color, border-color, box-shadow !important;
+    transition-duration: 0.2s !important;
   }
   html {
     scroll-behavior: auto;
+  }
+  /* Allow transform-free transitions to still work */
+  .card, .card-elevated, .card-interactive {
+    transform: none !important;
   }
 }
 

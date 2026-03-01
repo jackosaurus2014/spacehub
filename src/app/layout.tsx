@@ -36,6 +36,7 @@ import ModuleNavBar from '@/components/ModuleNavBar';
 import WebVitals from '@/components/analytics/WebVitals';
 import ErrorReporter from '@/components/ErrorReporter';
 import BackToTop from '@/components/ui/BackToTop';
+import ScrollProgress from '@/components/ui/ScrollProgress';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'swap' });
@@ -222,6 +223,7 @@ export default function RootLayout({
               <InstallPrompt />
               <ErrorReporter />
               <BackToTop />
+              <ScrollProgress />
               <ExitIntentPopup />
               <QuickStartGuide />
             </div>
