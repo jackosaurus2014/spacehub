@@ -207,8 +207,8 @@ export default function FeaturesPage() {
 
       {/* ── Category Sections ── */}
       <div className="container mx-auto px-4 pb-8">
-        {CATEGORIES.map((category) => (
-          <section key={category.id} id={category.id} className="mb-16">
+        {CATEGORIES.map((category, idx) => (
+          <section key={category.id} id={category.id} className={`mb-16${idx > 0 ? ' content-auto' : ''}`}>
             <ScrollReveal>
               <div className="mb-6">
                 <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{category.title}</h2>
@@ -248,7 +248,7 @@ export default function FeaturesPage() {
       </div>
 
       {/* ── Plan Comparison Matrix ── */}
-      <section className="container mx-auto px-4 pb-20">
+      <section className="container mx-auto px-4 pb-20 content-auto">
         <ScrollReveal>
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Compare Plans</h2>
@@ -308,7 +308,7 @@ export default function FeaturesPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="container mx-auto px-4 pb-20">
+      <section className="container mx-auto px-4 pb-20 content-auto">
         <ScrollReveal>
           <div className="text-center rounded-2xl border border-slate-700/50 bg-gradient-to-br from-slate-800/60 to-slate-900/60 p-10 md:p-16">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">

@@ -139,7 +139,7 @@ export default function QuickAccessSidebar() {
     <>
       {/* Sidebar - hidden on mobile */}
       <aside
-        className={`fixed left-0 top-[72px] h-[calc(100vh-72px)] z-[45] hidden lg:flex flex-col transition-all duration-300 ${
+        className={`fixed left-0 top-[72px] h-[calc(100dvh-72px)] z-[45] hidden lg:flex flex-col transition-all duration-300 ${
           isExpanded ? 'w-80' : 'w-16'
         }`}
         style={{

@@ -114,7 +114,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-200px)] flex items-center justify-center py-12 px-4">
+    <div className="relative min-h-[calc(100dvh-200px)] flex items-center justify-center py-12 px-4">
       <div className="absolute top-1/3 -left-32 w-96 h-96 bg-nebula-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/3 -right-32 w-80 h-80 bg-plasma-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center relative">

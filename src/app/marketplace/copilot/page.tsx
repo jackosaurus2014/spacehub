@@ -190,7 +190,7 @@ export default function CopilotPage() {
       </ScrollReveal>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto mb-4 space-y-4 min-h-[400px] max-h-[calc(100vh-280px)]">
+      <div className="flex-1 overflow-y-auto mb-4 space-y-4 min-h-[400px] max-h-[calc(100dvh-280px)]">
         {messages.length === 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

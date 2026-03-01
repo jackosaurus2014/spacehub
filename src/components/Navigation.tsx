@@ -351,6 +351,8 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [navHidden, setNavHidden] = useState(false);
+  const lastScrollY = useRef(0);
 
   // Mobile menu state
   const [mobileSearchQuery, setMobileSearchQuery] = useState('');
@@ -440,11 +442,30 @@ export default function Navigation() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const currentY = window.scrollY;
+      setScrolled(currentY > 20);
+
+      // Auto-hide nav on scroll down, show on scroll up (mobile only)
+      // Only hide after scrolling past 100px to avoid flickering at top
+      if (currentY > 100) {
+        const delta = currentY - lastScrollY.current;
+        if (delta > 10) {
+          // Scrolling down — hide nav (only if no dropdown/menu is open)
+          if (!isMenuOpen && !openDropdown) {
+            setNavHidden(true);
+          }
+        } else if (delta < -5) {
+          // Scrolling up — show nav
+          setNavHidden(false);
+        }
+      } else {
+        setNavHidden(false);
+      }
+      lastScrollY.current = currentY;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isMenuOpen, openDropdown]);
 
   const toggleDropdown = (name: string) => {
     setOpenDropdown(openDropdown === name ? null : name);
@@ -453,7 +474,7 @@ export default function Navigation() {
   return (
     <nav
       aria-label="Main navigation"
-      className={`sticky top-0 z-50 transition-all duration-300 backdrop-blur-xl`}
+      className={`sticky top-0 z-50 transition-all duration-300 backdrop-blur-xl safe-area-pt ${navHidden ? '-translate-y-full' : 'translate-y-0'}`}
       style={{
         background: scrolled
           ? 'linear-gradient(145deg, rgba(3, 7, 18, 0.97) 0%, rgba(15, 23, 42, 0.95) 25%, rgba(15, 23, 42, 0.93) 50%, rgba(15, 23, 42, 0.95) 75%, rgba(3, 7, 18, 0.97) 100%)'

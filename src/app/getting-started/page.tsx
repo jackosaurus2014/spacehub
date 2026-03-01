@@ -272,7 +272,7 @@ export default function GettingStartedPage() {
             </div>
           </ScrollReveal>
 
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto content-auto">
             {USE_CASES.map((uc) => (
               <StaggerItem key={uc.title}>
                 <Link
@@ -309,7 +309,7 @@ export default function GettingStartedPage() {
             </div>
           </ScrollReveal>
 
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto content-auto">
             {PERSONAS.map((persona) => (
               <StaggerItem key={persona.title}>
                 <Link

@@ -38,7 +38,7 @@ export default function TableOfContents({ items }: TableOfContentsProps) {
   if (items.length === 0) return null;
 
   return (
-    <nav className="hidden lg:block sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
+    <nav className="hidden lg:block sticky top-24 max-h-[calc(100dvh-8rem)] overflow-y-auto">
       <div className="card p-4">
         <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">On This Page</h4>
         <ul className="space-y-1">

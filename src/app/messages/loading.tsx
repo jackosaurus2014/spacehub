@@ -7,7 +7,7 @@ export default function Loading() {
           <div className="h-8 w-40 bg-slate-800 rounded animate-pulse mb-3" />
         </div>
 
-        <div className="flex gap-4 h-[calc(100vh-12rem)]">
+        <div className="flex gap-4 h-[calc(100dvh-12rem)]">
           {/* Sidebar - conversation list */}
           <div className="w-80 shrink-0 space-y-2">
             <div className="h-10 w-full bg-slate-800/50 rounded-lg animate-pulse mb-3" />

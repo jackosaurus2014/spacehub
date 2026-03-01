@@ -510,7 +510,7 @@ function DetailPanel({ node, edges, allNodes, onClose }: DetailPanelProps) {
   const color = SECTOR_COLORS[node.sector];
 
   return (
-    <div className="bg-space-800 border border-space-700 rounded-xl p-5 space-y-4 overflow-y-auto max-h-[calc(100vh-220px)]">
+    <div className="bg-space-800 border border-space-700 rounded-xl p-5 space-y-4 overflow-y-auto max-h-[calc(100dvh-220px)]">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
@@ -1181,7 +1181,7 @@ function SupplyChainMapContent() {
           ref={containerRef}
           className="bg-space-800/50 border border-space-700 rounded-xl overflow-hidden relative"
           style={{
-            height: 'calc(100vh - 300px)',
+            height: 'calc(100dvh - 300px)',
             minHeight: '500px',
             cursor: isDragging.current ? 'grabbing' : 'grab',
           }}

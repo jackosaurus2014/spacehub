@@ -177,7 +177,7 @@ function MessagesPageInner() {
 
         {/* Chat layout */}
         <ScrollReveal delay={0.1}>
-        <div className="card overflow-hidden" style={{ height: 'calc(100vh - 260px)', minHeight: '500px' }}>
+        <div className="card overflow-hidden" style={{ height: 'calc(100dvh - 260px)', minHeight: '500px' }}>
           <div className="flex h-full">
             {/* Conversation list — left panel */}
             <div

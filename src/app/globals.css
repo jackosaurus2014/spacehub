@@ -122,7 +122,7 @@ html {
 body {
   color: rgb(var(--foreground-rgb));
   background: #050a15;
-  min-height: 100vh;
+  min-height: 100dvh;
   font-family: 'Inter', sans-serif;
   position: relative;
 }
@@ -621,6 +621,12 @@ body::after {
 .touch-target {
   min-height: 44px;
   min-width: 44px;
+}
+
+/* ——— Content-visibility for off-screen rendering optimization ——— */
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
 }
 
 /* ——— Mobile-friendly table cells ——— */

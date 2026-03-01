@@ -135,7 +135,7 @@ export default function CaseStudiesPage() {
           <StaggerContainer className="space-y-12 max-w-4xl mx-auto">
             {CASE_STUDIES.map((cs) => (
               <StaggerItem key={cs.slug}>
-                <article className="rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm overflow-hidden">
+                <article className="rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm overflow-hidden content-auto">
                   {/* Header */}
                   <div className="p-6 md:p-8 border-b border-slate-700/50">
                     <div className="flex items-start gap-4">
@@ -230,7 +230,7 @@ export default function CaseStudiesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20 content-auto">
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="max-w-2xl mx-auto text-center">

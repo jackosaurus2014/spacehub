@@ -472,7 +472,7 @@ function ApiDocsPageInner() {
 
         {/* Sidebar */}
         <aside
-          className={`fixed lg:sticky top-[57px] left-0 z-20 h-[calc(100vh-57px)] w-72 bg-slate-950 border-r border-slate-800 overflow-y-auto p-4 transition-transform lg:transition-none lg:translate-x-0 ${
+          className={`fixed lg:sticky top-[57px] left-0 z-20 h-[calc(100dvh-57px)] w-72 bg-slate-950 border-r border-slate-800 overflow-y-auto p-4 transition-transform lg:transition-none lg:translate-x-0 ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
