@@ -269,6 +269,9 @@ export default function ExitIntentPopup() {
             <form onSubmit={handleSubmit} className="space-y-3">
               <input
                 type="email"
+                inputMode="email"
+                autoComplete="email"
+                enterKeyHint="send"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email address"

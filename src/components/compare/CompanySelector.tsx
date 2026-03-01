@@ -120,7 +120,7 @@ export default function CompanySelector({
       <div className="relative">
         <input
           ref={inputRef}
-          type="text"
+          type="search"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);

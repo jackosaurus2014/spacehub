@@ -1121,7 +1121,7 @@ export default function PropulsionComparisonPage() {
                 <div className="flex-1 min-w-[200px]">
                   <label className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">Search</label>
                   <input
-                    type="text"
+                    type="search"
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder="Engine name, manufacturer, vehicle..."

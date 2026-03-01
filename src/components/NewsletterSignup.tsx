@@ -104,6 +104,9 @@ export default function NewsletterSignup({
         <form onSubmit={handleSubmit} className="space-y-2">
           <input
             type="email"
+            inputMode="email"
+            autoComplete="email"
+            enterKeyHint="send"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email"
@@ -192,6 +195,9 @@ export default function NewsletterSignup({
               />
               <input
                 type="email"
+                inputMode="email"
+                autoComplete="email"
+                enterKeyHint="send"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"

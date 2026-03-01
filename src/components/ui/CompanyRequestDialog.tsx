@@ -124,6 +124,8 @@ export default function CompanyRequestDialog({ isOpen, onClose }: CompanyRequest
                 <input
                   type="text"
                   id="companyName"
+                  autoComplete="organization"
+                  enterKeyHint="next"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   required
@@ -157,6 +159,8 @@ export default function CompanyRequestDialog({ isOpen, onClose }: CompanyRequest
                 <input
                   type="url"
                   id="website"
+                  inputMode="url"
+                  enterKeyHint="next"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                   className="input"
@@ -171,6 +175,9 @@ export default function CompanyRequestDialog({ isOpen, onClose }: CompanyRequest
                 <input
                   type="email"
                   id="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  enterKeyHint="send"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="input"

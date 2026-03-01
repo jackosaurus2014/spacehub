@@ -807,7 +807,7 @@ export default function SatelliteBusComparisonPage() {
                 <div>
                   <label className="text-xs text-slate-400 mb-1 block">Search</label>
                   <input
-                    type="text"
+                    type="search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Bus name, manufacturer..."

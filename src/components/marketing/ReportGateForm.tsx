@@ -105,6 +105,8 @@ export default function ReportGateForm() {
             <input
               id="report-name"
               type="text"
+              autoComplete="name"
+              enterKeyHint="next"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Jane Smith"
@@ -120,6 +122,9 @@ export default function ReportGateForm() {
             <input
               id="report-email"
               type="email"
+              inputMode="email"
+              autoComplete="email"
+              enterKeyHint="send"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="jane@company.com"

@@ -75,6 +75,8 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
               maxLength={100}
               value={formData.name}
               onChange={(e) => setFormData((f) => ({ ...f, name: e.target.value }))}
+              autoComplete="name"
+              enterKeyHint="next"
               className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
               placeholder="Jane Smith"
             />
@@ -85,6 +87,9 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
               id="lead-email"
               type="email"
               required
+              inputMode="email"
+              autoComplete="email"
+              enterKeyHint="next"
               value={formData.email}
               onChange={(e) => setFormData((f) => ({ ...f, email: e.target.value }))}
               className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
@@ -99,6 +104,8 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
               id="lead-company"
               type="text"
               maxLength={100}
+              autoComplete="organization"
+              enterKeyHint="next"
               value={formData.company}
               onChange={(e) => setFormData((f) => ({ ...f, company: e.target.value }))}
               className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
@@ -110,6 +117,8 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
             <input
               id="lead-phone"
               type="tel"
+              autoComplete="tel"
+              enterKeyHint="next"
               value={formData.phone}
               onChange={(e) => setFormData((f) => ({ ...f, phone: e.target.value }))}
               className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"

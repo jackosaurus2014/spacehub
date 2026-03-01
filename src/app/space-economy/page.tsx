@@ -128,7 +128,7 @@ export default function SpaceEconomyPage() {
         <AnimatedPageHeader
           title="Space Economy Dashboard"
           subtitle="Comprehensive intelligence on the $546B global space economy -- market segments, national budgets, and growth projections"
-          icon="\u{1F4B0}"
+          icon={'\u{1F4B0}'}
           accentColor="emerald"
         />
 

@@ -149,6 +149,8 @@ export default function ServiceListingDialog({ isOpen, onClose }: ServiceListing
                 <input
                   type="url"
                   id="companyWebsite"
+                  inputMode="url"
+                  enterKeyHint="next"
                   value={companyWebsite}
                   onChange={(e) => setCompanyWebsite(e.target.value)}
                   className="input"
@@ -163,6 +165,9 @@ export default function ServiceListingDialog({ isOpen, onClose }: ServiceListing
                 <input
                   type="email"
                   id="contactEmail"
+                  inputMode="email"
+                  autoComplete="email"
+                  enterKeyHint="next"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
                   required
@@ -181,6 +186,7 @@ export default function ServiceListingDialog({ isOpen, onClose }: ServiceListing
                 <input
                   type="text"
                   id="serviceName"
+                  enterKeyHint="next"
                   value={serviceName}
                   onChange={(e) => setServiceName(e.target.value)}
                   required

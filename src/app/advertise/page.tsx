@@ -322,6 +322,8 @@ export default function AdvertisePage() {
                   id="companyName"
                   type="text"
                   required
+                  autoComplete="organization"
+                  enterKeyHint="next"
                   value={formData.companyName}
                   onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                   className="input w-full"
@@ -337,6 +339,8 @@ export default function AdvertisePage() {
                   id="contactName"
                   type="text"
                   required
+                  autoComplete="name"
+                  enterKeyHint="next"
                   value={formData.contactName}
                   onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
                   className="input w-full"
@@ -352,6 +356,9 @@ export default function AdvertisePage() {
                   id="contactEmail"
                   type="email"
                   required
+                  inputMode="email"
+                  autoComplete="email"
+                  enterKeyHint="next"
                   value={formData.contactEmail}
                   onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
                   className="input w-full"
@@ -366,6 +373,8 @@ export default function AdvertisePage() {
                 <input
                   id="website"
                   type="url"
+                  inputMode="url"
+                  enterKeyHint="send"
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                   className="input w-full"

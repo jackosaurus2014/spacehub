@@ -88,16 +88,16 @@ function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
           <button
             onClick={handleSubmit}
             disabled={submitting || !email}
-            className="text-xs px-2.5 py-1 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 text-white rounded font-medium transition-colors"
+            className="text-xs px-2.5 py-1 min-h-[44px] bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 text-white rounded font-medium transition-colors"
           >
             {submitting ? '...' : 'Confirm'}
           </button>
-          <button onClick={() => setShowForm(false)} className="text-xs text-slate-400 hover:text-white">Cancel</button>
+          <button onClick={() => setShowForm(false)} className="text-xs min-h-[44px] text-slate-400 hover:text-white">Cancel</button>
         </div>
       ) : (
         <button
           onClick={() => setShowForm(true)}
-          className="text-xs px-2.5 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-medium transition-colors"
+          className="text-xs px-2.5 py-1 min-h-[44px] bg-cyan-600 hover:bg-cyan-500 text-white rounded font-medium transition-colors"
         >
           Express Interest
         </button>

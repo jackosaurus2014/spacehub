@@ -231,7 +231,7 @@ export default function CompanyFundingComparison({ allRounds }: CompanyFundingCo
             {selectedSlugs.length < 5 && (
               <div className="relative" ref={dropdownRef}>
                 <input
-                  type="text"
+                  type="search"
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);

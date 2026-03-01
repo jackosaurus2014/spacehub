@@ -627,6 +627,15 @@ body::after {
   padding-right: env(safe-area-inset-right, 0px);
 }
 
+/* Prevent iOS auto-zoom on input focus (requires 16px minimum) */
+@media screen and (max-width: 767px) {
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    font-size: max(16px, 1em) !important;
+  }
+}
+
 /* ——— Mobile touch-target helper ——— */
 .touch-target {
   min-height: 44px;

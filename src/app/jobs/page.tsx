@@ -1684,7 +1684,7 @@ export default function JobsBoardPage() {
                 setSelectedExperience(selectedExperience === level ? '' : level);
                 setVisibleCount(15);
               }}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+              className={`text-xs px-3 py-2 rounded-full border transition-colors ${
                 selectedExperience === level
                   ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
                   : 'bg-slate-800/40 border-slate-700 text-slate-400 hover:border-slate-600'
@@ -1709,7 +1709,7 @@ export default function JobsBoardPage() {
                 setSelectedJobType(selectedJobType === type ? '' : type);
                 setVisibleCount(15);
               }}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+              className={`text-xs px-3 py-2 rounded-full border transition-colors ${
                 selectedJobType === type
                   ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
                   : 'bg-slate-800/40 border-slate-700 text-slate-400 hover:border-slate-600'
@@ -1734,7 +1734,7 @@ export default function JobsBoardPage() {
                 setSelectedLocation(selectedLocation === loc ? '' : loc);
                 setVisibleCount(15);
               }}
-              className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+              className={`text-xs px-3 py-2 rounded-full border transition-colors ${
                 selectedLocation === loc
                   ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
                   : 'bg-slate-800/40 border-slate-700 text-slate-400 hover:border-slate-600'
@@ -1754,7 +1754,7 @@ export default function JobsBoardPage() {
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <div className="flex-1">
-              <label className="block text-[10px] text-slate-500 mb-1">Min</label>
+              <label className="block text-xs text-slate-500 mb-1">Min</label>
               <input
                 type="number"
                 value={salaryMin || ''}
@@ -1770,7 +1770,7 @@ export default function JobsBoardPage() {
             </div>
             <span className="text-slate-600 mt-4">-</span>
             <div className="flex-1">
-              <label className="block text-[10px] text-slate-500 mb-1">Max</label>
+              <label className="block text-xs text-slate-500 mb-1">Max</label>
               <input
                 type="number"
                 value={salaryMax >= 400000 ? '' : salaryMax}

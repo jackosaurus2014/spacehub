@@ -132,7 +132,7 @@ export default function DirectoryPage() {
 
             {/* Location filter */}
             <input
-              type="text"
+              type="search"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Location..."

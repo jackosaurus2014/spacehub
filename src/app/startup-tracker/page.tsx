@@ -396,7 +396,7 @@ function StartupTrackerContent() {
         <AnimatedPageHeader
           title="Space Startup Tracker"
           subtitle={`Tracking ${SPACE_STARTUPS.length} innovative space companies across ${activeSectors.length} sectors`}
-          icon="\u{1F680}"
+          icon={'\u{1F680}'}
           accentColor="purple"
         />
 

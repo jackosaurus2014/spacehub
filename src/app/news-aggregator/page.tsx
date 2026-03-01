@@ -632,7 +632,7 @@ export default function NewsAggregatorPage() {
                 />
               </svg>
               <input
-                type="text"
+                type="search"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);

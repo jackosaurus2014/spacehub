@@ -140,6 +140,7 @@ export default function FeatureRequestModal({ isOpen, onClose }: FeatureRequestM
             <input
               id="title"
               type="text"
+              enterKeyHint="next"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -169,6 +170,9 @@ export default function FeatureRequestModal({ isOpen, onClose }: FeatureRequestM
               <input
                 id="email"
                 type="email"
+                inputMode="email"
+                autoComplete="email"
+                enterKeyHint="send"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

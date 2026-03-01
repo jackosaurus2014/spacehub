@@ -84,6 +84,9 @@ export default function HelpRequestModal({ isOpen, onClose }: HelpRequestModalPr
               <input
                 id="help-email"
                 type="email"
+                inputMode="email"
+                autoComplete="email"
+                enterKeyHint="next"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

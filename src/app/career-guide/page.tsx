@@ -653,7 +653,7 @@ export default function CareerGuidePage() {
                 <label htmlFor="career-search" className="block text-xs text-slate-400 mb-1">Search</label>
                 <input
                   id="career-search"
-                  type="text"
+                  type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Title, skill, or company..."

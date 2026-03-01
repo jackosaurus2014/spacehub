@@ -327,7 +327,7 @@ function FilterPanel({
       <div className="mb-4">
         <label className="block text-xs text-slate-400 mb-1">Search payload / mission</label>
         <input
-          type="text"
+          type="search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="e.g. Starlink, GPS, Dragon..."

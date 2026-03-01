@@ -653,7 +653,7 @@ export default function DealFlowPage() {
                 </label>
                 <input
                   id="deal-search"
-                  type="text"
+                  type="search"
                   placeholder="Company, investor, or keyword..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
