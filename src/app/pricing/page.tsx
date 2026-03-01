@@ -11,6 +11,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
+import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 
 const PRICING_FAQ = [
   { question: 'Can I cancel anytime?', answer: 'Yes! You can cancel your subscription at any time. You\'ll continue to have access until the end of your billing period.' },
@@ -670,6 +671,12 @@ function PricingPageContent() {
           </div>
         </ScrollReveal>
       </div>
+
+      <StickyMobileCTA
+        label="Start Free Trial"
+        href="/register"
+        variant="primary"
+      />
     </div>
   );
 }

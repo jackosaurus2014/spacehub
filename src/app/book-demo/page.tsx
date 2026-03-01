@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { toast } from '@/lib/toast';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
+import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 
 interface DemoFormData {
   name: string;
@@ -80,6 +81,14 @@ export default function BookDemoPage() {
   });
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+
+  const handleStickySubmit = useCallback(() => {
+    const btn = document.getElementById('demo-submit-btn');
+    if (btn) {
+      btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => btn.click(), 400);
+    }
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -356,6 +365,7 @@ export default function BookDemoPage() {
 
                 <button
                   type="submit"
+                  id="demo-submit-btn"
                   disabled={status === 'submitting'}
                   className="w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -448,6 +458,12 @@ export default function BookDemoPage() {
           <RelatedModules modules={getRelatedModules('book-demo')} title="Explore SpaceNexus Modules" />
         </div>
       </section>
+
+      <StickyMobileCTA
+        label="Submit Demo Request"
+        onClick={handleStickySubmit}
+        variant="enterprise"
+      />
     </div>
   );
 }

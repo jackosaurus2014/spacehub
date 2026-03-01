@@ -8,7 +8,7 @@ import { toast } from '@/lib/toast';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
-type Section = 'profile' | 'security' | 'notifications' | 'data-privacy';
+type Section = 'profile' | 'security' | 'notifications' | 'appearance' | 'data-privacy';
 
 interface ProfileData {
   id: string;
@@ -34,6 +34,7 @@ const SECTION_TABS: { key: Section; label: string; icon: string }[] = [
   { key: 'profile', label: 'Profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
   { key: 'security', label: 'Security', icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
   { key: 'notifications', label: 'Notifications', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
+  { key: 'appearance', label: 'Appearance', icon: 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' },
   { key: 'data-privacy', label: 'Data & Privacy', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
 ];
 
@@ -109,6 +110,7 @@ export default function AccountPage() {
           {activeSection === 'profile' && <ProfileSection session={session} />}
           {activeSection === 'security' && <SecuritySection />}
           {activeSection === 'notifications' && <NotificationsSection />}
+          {activeSection === 'appearance' && <AppearanceSection />}
           {activeSection === 'data-privacy' && <DataPrivacySection />}
         </ScrollReveal>
 
@@ -687,7 +689,61 @@ function NotificationsSection() {
 }
 
 /* ================================================================
-   Section 4: Data & Privacy
+   Section 4: Appearance
+   ================================================================ */
+
+function AppearanceSection() {
+  const [oledEnabled, setOledEnabled] = useState(false);
+
+  useEffect(() => {
+    setOledEnabled(localStorage.getItem('spacenexus-oled') === 'true');
+  }, []);
+
+  const handleToggleOled = () => {
+    const next = !oledEnabled;
+    setOledEnabled(next);
+    localStorage.setItem('spacenexus-oled', String(next));
+    document.documentElement.classList.toggle('oled', next);
+  };
+
+  return (
+    <section className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
+      <h2 className="text-lg font-semibold mb-2">Appearance</h2>
+      <p className="text-sm text-slate-400 mb-6">
+        Customize how SpaceNexus looks on your device
+      </p>
+
+      <div className="space-y-1">
+        <div className="flex items-center justify-between py-3 border-b border-slate-800/50">
+          <div className="mr-4">
+            <p className="text-sm font-medium text-white">OLED True Black Mode</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Uses pure black backgrounds to save battery on AMOLED screens
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={oledEnabled}
+            onClick={handleToggleOled}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-900 ${
+              oledEnabled ? 'bg-cyan-600' : 'bg-slate-600'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition duration-200 ease-in-out ${
+                oledEnabled ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================
+   Section 5: Data & Privacy
    ================================================================ */
 
 function DataPrivacySection() {

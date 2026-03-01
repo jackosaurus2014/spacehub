@@ -155,6 +155,7 @@ export default function RootLayout({
         <StructuredData />
         {/* Inline service worker registration for PWA crawlers (PWABuilder, Lighthouse) */}
         {/* The full SW lifecycle management is in ServiceWorkerRegistration component */}
+        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem('spacenexus-oled')==='true')document.documentElement.classList.add('oled')}catch(e){}` }} />
         <script dangerouslySetInnerHTML={{ __html: `
           if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js',{scope:'/'})}
         `}} />

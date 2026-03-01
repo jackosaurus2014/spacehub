@@ -120,6 +120,43 @@ html.high-contrast .btn-ghost {
   @apply text-slate-800;
 }
 
+/* ——— OLED True Black mode — saves battery on AMOLED screens ——— */
+html.oled {
+  --oled-bg: #000000;
+  --oled-surface: #0a0a0a;
+  --oled-surface-elevated: #111111;
+  --oled-border: #1a1a1a;
+}
+
+html.oled body {
+  background: #000000;
+}
+
+html.oled body::before,
+html.oled body::after {
+  display: none;
+}
+
+html.oled .card,
+html.oled .card-elevated,
+html.oled .card-interactive {
+  background: var(--oled-surface);
+  border-color: var(--oled-border);
+}
+
+html.oled .card-elevated {
+  background: var(--oled-surface-elevated);
+}
+
+html.oled .glass-panel {
+  background: var(--oled-surface);
+  border-color: var(--oled-border);
+}
+
+html.oled .sticky-section-header {
+  background: var(--oled-bg);
+}
+
 html {
   scroll-behavior: smooth;
 }

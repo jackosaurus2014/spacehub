@@ -7,6 +7,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
+import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 
 const ROICalculator = dynamic(() => import('@/components/billing/ROICalculator'), {
   ssr: false,
@@ -458,6 +459,12 @@ export default function EnterprisePage() {
           />
         </section>
       </div>
+
+      <StickyMobileCTA
+        label="Schedule a Demo"
+        href="/book-demo"
+        variant="enterprise"
+      />
     </>
   );
 }
