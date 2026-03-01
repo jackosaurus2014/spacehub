@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  color-scheme: dark;
+}
+
 :root {
   --foreground-rgb: 226, 232, 240;
   --background-start-rgb: 5, 10, 21;
@@ -1087,6 +1091,21 @@ pre {
     filter: none;
     transform: none;
   }
+}
+
+/* ——— Expandable card height animation (grid-rows trick) ——— */
+.expandable-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease-out;
+}
+
+.expandable-content.expanded {
+  grid-template-rows: 1fr;
+}
+
+.expandable-content > * {
+  overflow: hidden;
 }
 
 /* ——— Print-friendly styles ——— */
