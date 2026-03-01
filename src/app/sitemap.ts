@@ -149,6 +149,9 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/marketplace/copilot`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/marketplace/rfq/new`, changeFrequency: 'monthly' as const, priority: 0.5 },
 
+    // Features directory
+    { url: `${BASE_URL}/features`, changeFrequency: 'weekly' as const, priority: 0.8 },
+
     // Conversion pages
     { url: `${BASE_URL}/pricing`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/developer`, changeFrequency: 'monthly' as const, priority: 0.5 },
@@ -295,6 +298,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/report/state-of-space-2026`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/case-studies`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/book-demo`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/getting-started`, changeFrequency: 'monthly' as const, priority: 0.7 },
   ];
 
   return routes.map(route => ({

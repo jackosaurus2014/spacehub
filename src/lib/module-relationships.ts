@@ -319,6 +319,12 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   // ── Marketing pages ──
   'case-studies': [MODULES.companyProfiles, MODULES.fundingTracker, MODULES.compliance, MODULES.procurement, MODULES.marketIntel],
   'book-demo': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.satellites, MODULES.compliance, MODULES.spaceCapital],
+
+  // ── Features directory ──
+  'features': [MODULES.marketIntel, MODULES.satellites, MODULES.tools, MODULES.compliance, MODULES.spaceCapital],
+
+  // ── Onboarding ──
+  'getting-started': [MODULES.companyProfiles, MODULES.satellites, MODULES.marketIntel, MODULES.tools, MODULES.compliance, MODULES.businessOps],
 };
 
 // Helper to get related modules for a page
