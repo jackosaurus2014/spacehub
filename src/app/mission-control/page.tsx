@@ -110,6 +110,7 @@ function MissionThumbnail({
           src={imageUrl}
           alt=""
           fill
+          sizes={size === 'lg' ? '(max-width: 640px) 100vw, 144px' : size === 'md' ? '(max-width: 640px) 100vw, 128px' : '64px'}
           className="object-cover"
           onError={() => setImgError(true)}
         />

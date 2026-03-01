@@ -162,7 +162,7 @@ function NewsContent() {
             {articles.map((article, index) => (
               <React.Fragment key={article.id}>
                 <StaggerItem>
-                  <NewsCard article={article} />
+                  <NewsCard article={article} priority={index === 0} />
                 </StaggerItem>
                 {(index + 1) % 6 === 0 && index + 1 < articles.length && (
                   <div className="col-span-1 md:col-span-2 lg:col-span-3">

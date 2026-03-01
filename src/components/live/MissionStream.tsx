@@ -185,6 +185,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
                       alt=""
                       width={128}
                       height={128}
+                      sizes="128px"
                       className="object-cover w-full h-full"
                       onError={() => setImgError(true)}
                     />

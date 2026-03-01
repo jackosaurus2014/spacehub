@@ -21,7 +21,6 @@ import ToastContainer from '@/components/ui/Toast';
 import NavigationProgress from '@/components/ui/NavigationProgress';
 const KeyboardShortcutsModal = dynamic(() => import('@/components/ui/KeyboardShortcutsModal'), { ssr: false });
 import PageTracker from '@/components/PageTracker';
-import SwipeModuleNavigation from '@/components/mobile/SwipeModuleNavigation';
 import PageTransitionProvider from '@/components/mobile/PageTransitionProvider';
 import OfflineIndicator from '@/components/ui/OfflineIndicator';
 // Changelog modal removed — no longer shown on visit
@@ -32,11 +31,12 @@ const TrialCountdownBanner = dynamic(() => import('@/components/billing/TrialCou
   ssr: false,
 });
 const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), { ssr: false });
+const SwipeModuleNavigation = dynamic(() => import('@/components/mobile/SwipeModuleNavigation'), { ssr: false });
+const BackToTop = dynamic(() => import('@/components/ui/BackToTop'), { ssr: false });
+const ScrollProgress = dynamic(() => import('@/components/ui/ScrollProgress'), { ssr: false });
 import ModuleNavBar from '@/components/ModuleNavBar';
 import WebVitals from '@/components/analytics/WebVitals';
 import ErrorReporter from '@/components/ErrorReporter';
-import BackToTop from '@/components/ui/BackToTop';
-import ScrollProgress from '@/components/ui/ScrollProgress';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'swap' });

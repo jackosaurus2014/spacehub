@@ -136,7 +136,7 @@
       "id": "com.spacenexus.app"
     }
   ],
-  "prefer_related_applications": true,
+  "prefer_related_applications": false,
   "scope_extensions": [
     { "origin": "*.spacenexus.us" },
     { "origin": "*.railway.app" }

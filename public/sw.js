@@ -92,21 +92,74 @@ function isPageRequest(request) {
          (request.method === 'GET' && request.headers.get('accept')?.includes('text/html'));
 }
 
-// Network-first strategy for API calls
+// Get the TTL for an API endpoint, or a default of 5 minutes
+function getTtlForUrl(url) {
+  const pathname = new URL(url).pathname;
+  for (const [route, ttl] of Object.entries(API_CACHE_TTLS)) {
+    if (pathname.startsWith(route)) {
+      return ttl;
+    }
+  }
+  return 300000; // default 5 min
+}
+
+// Check if a cached response has expired based on its Date header and the endpoint TTL
+function isCacheExpired(cachedResponse, requestUrl) {
+  const dateHeader = cachedResponse.headers.get('date') || cachedResponse.headers.get('sw-cached-at');
+  if (!dateHeader) {
+    return true; // no timestamp, treat as expired
+  }
+  const cachedTime = new Date(dateHeader).getTime();
+  const ttl = getTtlForUrl(requestUrl);
+  return Date.now() - cachedTime > ttl;
+}
+
+// Trim a cache to a maximum number of entries (LRU-style, removes oldest first)
+async function trimCache(cacheName, maxEntries) {
+  const cache = await caches.open(cacheName);
+  const keys = await cache.keys();
+  if (keys.length > maxEntries) {
+    await cache.delete(keys[0]);
+    return trimCache(cacheName, maxEntries);
+  }
+}
+
+const DYNAMIC_CACHE_MAX_ENTRIES = 150;
+
+// Network-first strategy for API calls with TTL-aware caching
 async function networkFirst(request) {
   try {
     const networkResponse = await fetch(request);
     // Clone the response before caching
     if (networkResponse.ok) {
       const cache = await caches.open(DYNAMIC_CACHE_NAME);
-      cache.put(request, networkResponse.clone());
+      // Add a timestamp header so we can check TTL later even if Date header is missing
+      const headers = new Headers(networkResponse.headers);
+      if (!headers.has('date')) {
+        headers.set('sw-cached-at', new Date().toUTCString());
+      }
+      const timedResponse = new Response(await networkResponse.clone().blob(), {
+        status: networkResponse.status,
+        statusText: networkResponse.statusText,
+        headers: headers,
+      });
+      cache.put(request, timedResponse);
+      // Evict old entries if cache is too large
+      trimCache(DYNAMIC_CACHE_NAME, DYNAMIC_CACHE_MAX_ENTRIES);
     }
     return networkResponse;
   } catch (error) {
     console.log('[ServiceWorker] Network failed, trying cache for:', request.url);
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
-      return cachedResponse;
+      // Return cached response only if it has not exceeded its TTL
+      if (!isCacheExpired(cachedResponse, request.url)) {
+        return cachedResponse;
+      }
+      // Expired - delete stale entry
+      const cache = await caches.open(DYNAMIC_CACHE_NAME);
+      await cache.delete(request);
+      console.log('[ServiceWorker] Cache expired for:', request.url);
     }
     // Return a JSON error response for API requests
     return new Response(
@@ -149,6 +202,7 @@ async function staleWhileRevalidate(request) {
     .then((networkResponse) => {
       if (networkResponse.ok) {
         cache.put(request, networkResponse.clone());
+        trimCache(DYNAMIC_CACHE_NAME, DYNAMIC_CACHE_MAX_ENTRIES);
       }
       return networkResponse;
     })
@@ -202,6 +256,7 @@ self.addEventListener('fetch', (event) => {
             const responseClone = response.clone();
             caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
               cache.put(request, responseClone);
+              trimCache(DYNAMIC_CACHE_NAME, DYNAMIC_CACHE_MAX_ENTRIES);
             });
           }
           return response;

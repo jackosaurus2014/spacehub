@@ -7,6 +7,7 @@ import BookmarkButton from '@/components/ui/BookmarkButton';
 interface NewsCardProps {
   article: NewsArticle;
   featured?: boolean;
+  priority?: boolean;
 }
 
 function CompanyBadges({ companies }: { companies: NewsArticleCompanyTag[] }) {
@@ -79,7 +80,7 @@ const CATEGORY_LOGOS: Record<string, string> = {
   'debris': '/logos/logo-news-debris.png',
 };
 
-export default function NewsCard({ article, featured = false }: NewsCardProps) {
+export default function NewsCard({ article, featured = false, priority = false }: NewsCardProps) {
   const categoryColor = categoryColors[article.category] || 'bg-nebula-500';
 
   const formatDate = (date: Date) => {
@@ -114,6 +115,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
               alt={article.title}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              priority={priority}
               className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             />
           ) : (
@@ -198,6 +200,7 @@ export default function NewsCard({ article, featured = false }: NewsCardProps) {
               alt={article.title}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              priority={priority}
               className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             />
           ) : (
