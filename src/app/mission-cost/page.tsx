@@ -667,6 +667,7 @@ function MissionCostContent() {
               </label>
               <input
                 type="number"
+                inputMode="decimal"
                 value={payloadMass}
                 onChange={(e) => setPayloadMass(Math.max(1, parseInt(e.target.value) || 0))}
                 className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
@@ -733,6 +734,7 @@ function MissionCostContent() {
               </label>
               <input
                 type="number"
+                inputMode="decimal"
                 value={payloadValue}
                 onChange={(e) => setPayloadValue(Math.max(0, parseInt(e.target.value) || 0))}
                 className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"

@@ -495,6 +495,7 @@ export default function MissionSimulatorPage() {
                 <label className="block text-sm font-medium text-slate-400 mb-1.5">Payload Mass (kg)</label>
                 <input
                   type="number"
+                  inputMode="decimal"
                   min={1}
                   max={200000}
                   value={payloadMass}

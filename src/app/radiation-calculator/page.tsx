@@ -352,6 +352,7 @@ function OrbitSelectionPanel({
         <div className="flex items-center gap-3 mb-1.5">
           <input
             type="number"
+            inputMode="decimal"
             min={0}
             max={90}
             step={0.1}
@@ -386,6 +387,7 @@ function OrbitSelectionPanel({
         <div className="flex items-center gap-3 mb-1.5">
           <input
             type="number"
+            inputMode="decimal"
             min={1}
             max={1095}
             step={1}
@@ -422,6 +424,7 @@ function OrbitSelectionPanel({
         <div className="flex items-center gap-3 mb-1.5">
           <input
             type="number"
+            inputMode="decimal"
             min={0}
             max={50}
             step={0.5}

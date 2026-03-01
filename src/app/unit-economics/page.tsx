@@ -414,6 +414,7 @@ function DollarInput({
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">$</span>
         <input
           type="number"
+          inputMode="decimal"
           value={value}
           onChange={(e) => onChange(Math.max(0, Number(e.target.value)))}
           className="w-full bg-slate-800/60 border border-slate-700 rounded-lg pl-7 pr-3 py-2 text-sm

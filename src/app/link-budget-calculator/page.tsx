@@ -152,6 +152,7 @@ function SliderInput({
       <div className="flex items-center gap-3 mb-1.5">
         <input
           type="number"
+          inputMode="decimal"
           min={min} max={max} step={step} value={value}
           onChange={handleInput}
           className="w-28 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20"

@@ -326,6 +326,7 @@ function NumberInput({
       <div className="flex items-center gap-3">
         <input
           type="number"
+          inputMode="decimal"
           min={min}
           max={max}
           step={step || 1}

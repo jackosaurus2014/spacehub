@@ -740,6 +740,7 @@ export default function LaunchCostCalculatorPage() {
                 <div className="flex items-center gap-3 mb-2">
                   <input
                     type="number"
+                    inputMode="decimal"
                     min={1}
                     max={100000}
                     value={payloadMass}
@@ -805,6 +806,7 @@ export default function LaunchCostCalculatorPage() {
                 <div className="flex items-center gap-3">
                   <input
                     type="number"
+                    inputMode="decimal"
                     min={0}
                     max={1000}
                     step={0.1}

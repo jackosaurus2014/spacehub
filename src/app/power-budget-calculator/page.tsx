@@ -181,6 +181,7 @@ function SliderInput({
       <div className="flex items-center gap-3 mb-1">
         <input
           type="number"
+          inputMode="decimal"
           min={min}
           max={max}
           step={step}
@@ -550,6 +551,7 @@ export default function PowerBudgetCalculatorPage() {
                   />
                   <input
                     type="number"
+                    inputMode="decimal"
                     min={0}
                     max={sub.maxPower}
                     step={sub.maxPower <= 100 ? 0.5 : 5}
@@ -574,6 +576,7 @@ export default function PowerBudgetCalculatorPage() {
                   />
                   <input
                     type="number"
+                    inputMode="decimal"
                     min={0}
                     max={100}
                     step={5}

@@ -1679,7 +1679,43 @@ function SiteComparisonTable({ activeSpaceports }: { activeSpaceports: Spaceport
         <h2 className="text-lg font-bold text-white">Spaceport Capability Comparison</h2>
         <p className="text-star-300 text-sm mt-1">Side-by-side analysis of all active orbital launch sites</p>
       </div>
-      <div className="overflow-x-auto">
+      {/* Mobile card layout */}
+      <div className="md:hidden space-y-3 p-4">
+        {allSites.map((s) => {
+          const capStyle = CAPABILITY_CONFIG[s.launchCapability];
+          return (
+            <div key={s.id} className="card p-4">
+              <div className="flex items-start justify-between mb-2">
+                <div className="min-w-0 flex-1 mr-2">
+                  <h4 className="text-white font-semibold text-sm truncate">{s.name}</h4>
+                  <p className="text-slate-400 text-xs">{s.country}</p>
+                </div>
+                <span className={`text-xs px-2 py-0.5 rounded bg-cyan-500/10 font-medium flex-shrink-0 ${capStyle.color}`}>{capStyle.label}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div><span className="text-slate-500">Pads:</span> <span className="text-slate-300">{s.launchPads}</span></div>
+                <div><span className="text-slate-500">Payload:</span> <span className="text-slate-300 truncate">{s.maxPayloadClass}</span></div>
+                <div><span className="text-slate-500">Inclination:</span> <span className="text-slate-300">{s.inclinationRange}</span></div>
+                <div><span className="text-slate-500">Reuse:</span> <span className="text-slate-300">{s.reuseLanding.startsWith('None') ? 'None' : s.reuseLanding.length > 25 ? s.reuseLanding.substring(0, 25) + '...' : s.reuseLanding}</span></div>
+                <div><span className="text-slate-500">2025:</span> <span className="text-cyan-400 font-mono font-bold">{s.recentLaunches2025}</span></div>
+                <div><span className="text-slate-500">2024:</span> <span className="text-slate-300 font-mono">{s.recentLaunches2024}</span></div>
+              </div>
+              {s.fuelingTypes.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {s.fuelingTypes.map((f) => (
+                    <span key={f} className="px-1.5 py-0.5 bg-space-700 text-emerald-300 rounded text-xs">
+                      {f}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop table layout */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-white/5">
