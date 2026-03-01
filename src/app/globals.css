@@ -1007,6 +1007,88 @@ button, a, [role="button"] {
   }
 }
 
+/* ——— Skeleton-to-content crossfade ——— */
+@keyframes skeleton-reveal {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+.skeleton-reveal {
+  animation: skeleton-reveal 0.4s ease-out forwards;
+}
+
+/* ——— Text selection UX ——— */
+button,
+[role="button"],
+[role="tab"],
+[role="menuitem"],
+nav a {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+article,
+td,
+code,
+pre {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.select-all {
+  -webkit-user-select: all;
+  user-select: all;
+}
+
+::selection {
+  background: rgba(6, 182, 212, 0.3);
+  color: #e2e8f0;
+}
+
+::-moz-selection {
+  background: rgba(6, 182, 212, 0.3);
+  color: #e2e8f0;
+}
+
+/* ——— Scrollbar-hide utility ——— */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ——— Sticky section header ——— */
+.sticky-section-header {
+  position: sticky;
+  top: 64px;
+  z-index: 10;
+  background: rgba(3, 7, 18, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+  padding: 0.75rem 1rem;
+}
+
+/* Respect reduced-motion for skeleton reveal */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-reveal {
+    animation: none;
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+
 /* ——— Print-friendly styles ——— */
 @media print {
   /* Page setup */
