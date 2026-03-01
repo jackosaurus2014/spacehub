@@ -102,6 +102,7 @@ function getMissionStatus(mission: SpaceEvent): {
 export default function MissionStream({ mission, isLive: propIsLive, onClose }: MissionStreamProps) {
   const [countdown, setCountdown] = useState<string | null>(null);
   const [missionStatus, setMissionStatus] = useState<'upcoming' | 'live' | 'in_progress' | 'completed'>('upcoming');
+  const [imgError, setImgError] = useState(false);
 
   const videoId = extractYouTubeId(mission.streamUrl || mission.videoUrl);
   const typeInfo = EVENT_TYPE_INFO[mission.type] || EVENT_TYPE_INFO.launch;
@@ -177,18 +178,19 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
               </div>
 
               <div className="relative">
-                {mission.imageUrl ? (
+                {mission.imageUrl && !imgError ? (
                   <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-slate-700/50 mb-4 mx-auto">
                     <Image
                       src={mission.imageUrl}
-                      alt={mission.name}
+                      alt=""
                       width={128}
                       height={128}
                       className="object-cover w-full h-full"
+                      onError={() => setImgError(true)}
                     />
                   </div>
                 ) : (
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center border border-cyan-500/30 mb-4 mx-auto">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center border border-cyan-500/30 mb-4 mx-auto" aria-hidden="true">
                     <span className="text-5xl">{typeInfo.icon}</span>
                   </div>
                 )}

@@ -67,6 +67,72 @@ interface DsnAntenna {
 }
 
 // ════════════════════════════════════════
+// Mission Type Logo Mapping
+// ════════════════════════════════════════
+
+const EVENT_TYPE_LOGOS: Partial<Record<SpaceEventType, string>> = {
+  launch: '/logos/logo-event-launch.png',
+  crewed_mission: '/logos/logo-event-crewed.png',
+  moon_mission: '/logos/logo-event-moon.png',
+  mars_mission: '/logos/logo-event-mars.png',
+  satellite: '/logos/logo-event-satellite.png',
+  space_station: '/logos/logo-event-station.png',
+};
+
+function MissionThumbnail({
+  imageUrl,
+  eventType,
+  size = 'md',
+}: {
+  imageUrl: string | null;
+  eventType: SpaceEventType;
+  size?: 'sm' | 'md' | 'lg';
+}) {
+  const [imgError, setImgError] = useState(false);
+  const typeInfo = EVENT_TYPE_INFO[eventType] || EVENT_TYPE_INFO.launch;
+  const logoPath = EVENT_TYPE_LOGOS[eventType];
+
+  const sizeClasses = {
+    sm: 'w-16 h-16 rounded-lg',
+    md: 'w-full h-32 sm:w-32 sm:h-32',
+    lg: 'w-full h-32 sm:w-36 sm:h-40',
+  };
+
+  const iconSizes = { sm: 'text-2xl', md: 'text-4xl', lg: 'text-5xl' };
+  const logoSizes = { sm: 40, md: 64, lg: 80 };
+
+  const showFallback = !imageUrl || imgError;
+
+  return (
+    <div className={`relative ${sizeClasses[size]} flex-shrink-0 bg-slate-800 overflow-hidden`} aria-hidden="true">
+      {!showFallback ? (
+        <Image
+          src={imageUrl}
+          alt=""
+          fill
+          className="object-cover"
+          onError={() => setImgError(true)}
+        />
+      ) : logoPath ? (
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-space-700 to-nebula-500/20">
+          <Image
+            src={logoPath}
+            alt=""
+            width={logoSizes[size]}
+            height={logoSizes[size]}
+            className="object-contain opacity-80"
+          />
+        </div>
+      ) : (
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-space-700 to-nebula-500/20">
+          <span className={iconSizes[size]}>{typeInfo.icon}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════
 // Fallback Data (shown when DB is unseeded)
 // ════════════════════════════════════════
 
@@ -256,21 +322,8 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
         <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-cyan-500/10" />
 
         <div className="relative flex flex-col sm:flex-row items-center sm:items-stretch">
-          {/* Image */}
-          <div className="relative w-full h-32 sm:w-36 sm:h-40 flex-shrink-0 bg-slate-800 overflow-hidden">
-            {event.imageUrl ? (
-              <Image
-                src={event.imageUrl}
-                alt={event.name}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-space-700 to-cyan-500/20">
-                <span className="text-5xl">{typeInfo.icon}</span>
-              </div>
-            )}
-          </div>
+          {/* Mission Type Thumbnail */}
+          <MissionThumbnail imageUrl={event.imageUrl} eventType={event.type} size="lg" />
 
           {/* Content */}
           <div className="flex-1 p-4">
@@ -541,21 +594,8 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  {/* Thumbnail */}
-                  <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-slate-700">
-                    {mission.imageUrl ? (
-                      <Image
-                        src={mission.imageUrl}
-                        alt={mission.name}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-700 to-slate-800">
-                        <span className="text-2xl">{typeInfo.icon}</span>
-                      </div>
-                    )}
-                  </div>
+                  {/* Mission Type Thumbnail */}
+                  <MissionThumbnail imageUrl={mission.imageUrl} eventType={mission.type} size="sm" />
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
@@ -685,21 +725,8 @@ function EventCard({ event }: { event: SpaceEvent }) {
   return (
     <div className={`card overflow-hidden ${isWithin48Hours ? 'border-green-500/50 glow-border' : ''} ${isLiveOrImminent ? 'border-red-500/50' : ''}`}>
       <div className="flex flex-col sm:flex-row items-center sm:items-stretch">
-        {/* Image */}
-        <div className="relative w-full h-32 sm:w-32 sm:h-32 flex-shrink-0 bg-slate-800 overflow-hidden">
-          {event.imageUrl ? (
-            <Image
-              src={event.imageUrl}
-              alt={event.name}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-space-700 to-nebula-500/20">
-              <span className="text-4xl">{typeInfo.icon}</span>
-            </div>
-          )}
-        </div>
+        {/* Mission Type Thumbnail */}
+        <MissionThumbnail imageUrl={event.imageUrl} eventType={event.type} size="md" />
 
         {/* Content */}
         <div className="flex-1 p-4">
