@@ -34,7 +34,7 @@ export default function ChartExportButton({
         type="button"
         onClick={handleCSV}
         className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-slate-100 transition-colors duration-150"
-        title="Export data as CSV"
+        aria-label="Export data as CSV"
       >
         <DownloadIcon />
         CSV
@@ -43,7 +43,7 @@ export default function ChartExportButton({
         type="button"
         onClick={handlePNG}
         className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-slate-100 transition-colors duration-150"
-        title="Export chart as PNG"
+        aria-label="Export chart as PNG"
       >
         <DownloadIcon />
         PNG

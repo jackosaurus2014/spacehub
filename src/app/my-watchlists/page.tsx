@@ -317,7 +317,7 @@ function WatchlistsContent() {
                       <button
                         onClick={() => handleUnwatch(item)}
                         className="text-slate-500 hover:text-red-400 text-xs transition-colors"
-                        title="Remove from watchlist"
+                        aria-label="Remove from watchlist"
                       >
                         ✕
                       </button>
@@ -452,7 +452,7 @@ function WatchlistsContent() {
                         <button
                           onClick={() => handleDeleteSearch(search)}
                           className="text-slate-500 hover:text-red-400 text-xs transition-colors px-1"
-                          title="Delete saved search"
+                          aria-label="Delete saved search"
                         >
                           ✕
                         </button>

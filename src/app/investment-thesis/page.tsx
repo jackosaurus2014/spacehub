@@ -516,7 +516,7 @@ export default function InvestmentThesisPage() {
                 <button
                   onClick={reset}
                   className="text-slate-500 hover:text-slate-300 transition-colors p-1"
-                  title="Clear selection"
+                  aria-label="Clear selection"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

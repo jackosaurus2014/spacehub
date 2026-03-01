@@ -464,7 +464,6 @@ export default function ReadingListPage() {
                       rel="noopener noreferrer"
                       className="p-1.5 rounded-lg text-slate-500 hover:text-cyan-400 hover:bg-slate-700/50 transition-colors"
                       aria-label="Open article"
-                      title="Open article"
                     >
                       <svg
                         className="w-4 h-4"
@@ -484,7 +483,6 @@ export default function ReadingListPage() {
                       onClick={() => removeItem(item.id)}
                       className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
                       aria-label="Remove from reading list"
-                      title="Remove from reading list"
                     >
                       <svg
                         className="w-4 h-4"

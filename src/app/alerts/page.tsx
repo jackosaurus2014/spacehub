@@ -884,7 +884,6 @@ function AlertsPageInner() {
                   className={`p-1.5 text-slate-500 hover:text-red-400 transition-colors rounded-md hover:bg-red-900/20 ${
                     deletingRuleId === rule.id ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
-                  title="Delete alert rule"
                   aria-label="Delete alert rule"
                 >
                   {deletingRuleId === rule.id ? (
@@ -1215,7 +1214,6 @@ function AlertsPageInner() {
                     }}
                     disabled={deletingSavedSearchId === search.id}
                     className="p-1.5 text-slate-500 hover:text-red-400 transition-colors rounded-md hover:bg-red-900/20"
-                    title="Delete saved search"
                     aria-label="Delete saved search"
                   >
                     {deletingSavedSearchId === search.id ? (
@@ -1576,10 +1574,10 @@ function AlertsPageInner() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <button onClick={() => testWebhook(webhook.id)} disabled={testingWebhookId === webhook.id} className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-cyan-400 border border-slate-700 hover:border-cyan-700 hover:bg-cyan-900/20 rounded-lg transition-colors disabled:opacity-50" title="Send a test message" aria-label="Test webhook">
+                  <button onClick={() => testWebhook(webhook.id)} disabled={testingWebhookId === webhook.id} className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-cyan-400 border border-slate-700 hover:border-cyan-700 hover:bg-cyan-900/20 rounded-lg transition-colors disabled:opacity-50" aria-label="Send a test message">
                     {testingWebhookId === webhook.id ? (<span className="flex items-center gap-1"><svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Testing...</span>) : (<span className="flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>Test</span>)}
                   </button>
-                  <button onClick={() => { if (confirm('Remove this webhook integration?')) deleteWebhook(webhook.id); }} disabled={deletingWebhookId === webhook.id} className={`p-1.5 text-slate-500 hover:text-red-400 transition-colors rounded-md hover:bg-red-900/20 ${deletingWebhookId === webhook.id ? 'opacity-50 cursor-not-allowed' : ''}`} title="Remove webhook" aria-label="Remove webhook">
+                  <button onClick={() => { if (confirm('Remove this webhook integration?')) deleteWebhook(webhook.id); }} disabled={deletingWebhookId === webhook.id} className={`p-1.5 text-slate-500 hover:text-red-400 transition-colors rounded-md hover:bg-red-900/20 ${deletingWebhookId === webhook.id ? 'opacity-50 cursor-not-allowed' : ''}`} aria-label="Remove webhook">
                     {deletingWebhookId === webhook.id ? (<svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>) : (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>)}
                   </button>
                 </div>

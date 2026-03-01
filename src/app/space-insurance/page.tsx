@@ -609,7 +609,7 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
             <Link
               href="/resource-exchange"
               className="text-nebula-300 hover:text-nebula-200 underline underline-offset-2 font-medium transition-colors"
-              title="View launch providers in Resource Exchange"
+              aria-label="View launch providers in Resource Exchange"
             >
               {policy.launchVehicle}
             </Link>

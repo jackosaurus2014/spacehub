@@ -71,7 +71,7 @@ export default function TrendingSidebar() {
         <button
           onClick={fetchTrending}
           className="text-slate-500 hover:text-cyan-400 transition-colors p-1 rounded hover:bg-slate-800/50"
-          title="Refresh trending"
+          aria-label="Refresh trending"
           disabled={loading}
         >
           <svg

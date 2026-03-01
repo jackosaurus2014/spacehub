@@ -1047,7 +1047,7 @@ function SupplyChainMapContent() {
             <button
               onClick={zoomOut}
               className="w-8 h-8 bg-space-800 border border-space-700 rounded-lg text-slate-400 hover:text-white hover:border-space-600 flex items-center justify-center transition-colors"
-              title="Zoom out"
+              aria-label="Zoom out"
             >
               -
             </button>
@@ -1057,14 +1057,14 @@ function SupplyChainMapContent() {
             <button
               onClick={zoomIn}
               className="w-8 h-8 bg-space-800 border border-space-700 rounded-lg text-slate-400 hover:text-white hover:border-space-600 flex items-center justify-center transition-colors"
-              title="Zoom in"
+              aria-label="Zoom in"
             >
               +
             </button>
             <button
               onClick={resetView}
               className="px-2 h-8 bg-space-800 border border-space-700 rounded-lg text-slate-400 hover:text-white hover:border-space-600 flex items-center justify-center text-xs transition-colors ml-1"
-              title="Reset view"
+              aria-label="Reset view"
             >
               Reset
             </button>

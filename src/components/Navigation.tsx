@@ -568,7 +568,6 @@ export default function Navigation() {
               }}
               className="relative flex items-center gap-2 px-3 py-1.5 min-h-[44px] rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/40 transition-colors border border-slate-700/50 hover:border-slate-600/50"
               aria-label="Search (Ctrl+K)"
-              title="Search (Ctrl+K)"
             >
               <svg
                 className="w-4 h-4"
@@ -595,7 +594,6 @@ export default function Navigation() {
               }}
               className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-slate-700/40 transition-colors"
               aria-label="Keyboard shortcuts (?)"
-              title="Keyboard shortcuts (?)"
             >
               <svg
                 className="w-4 h-4"
@@ -619,7 +617,6 @@ export default function Navigation() {
               }`}
               aria-label="Toggle high contrast mode"
               aria-pressed={isHighContrast}
-              title="Toggle high contrast mode"
             >
               {/* Eye / contrast icon */}
               <svg

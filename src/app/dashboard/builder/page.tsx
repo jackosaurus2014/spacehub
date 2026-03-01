@@ -440,7 +440,7 @@ export default function DashboardBuilderPage() {
               <button
                 onClick={() => router.push('/dashboard')}
                 className="text-slate-400 hover:text-slate-600 p-1"
-                title="Back to Dashboard"
+                aria-label="Back to Dashboard"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

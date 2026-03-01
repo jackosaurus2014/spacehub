@@ -48,7 +48,7 @@ function CopyButton({ text, className = '' }: { text: string; className?: string
     <button
       onClick={handleCopy}
       className={`text-xs px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors ${className}`}
-      title="Copy to clipboard"
+      aria-label="Copy to clipboard"
     >
       <svg className="w-3.5 h-3.5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
