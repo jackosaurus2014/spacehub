@@ -325,6 +325,7 @@ export function middleware(req: NextRequest) {
 
     // CSRF check for mutating requests
     if (!checkCsrf(req)) {
+      console.warn(`[CSRF_REJECT] ${req.method} ${pathname} from ${getClientIp(req)}`);
       return NextResponse.json(
         {
           success: false,
@@ -342,6 +343,7 @@ export function middleware(req: NextRequest) {
     const { allowed, remaining, retryAfterSeconds } = checkRateLimit(clientIp, pathname);
 
     if (!allowed) {
+      console.warn(`[RATE_LIMIT] ${req.method} ${pathname} from ${clientIp} — retry after ${retryAfterSeconds}s`);
       return NextResponse.json(
         {
           success: false,

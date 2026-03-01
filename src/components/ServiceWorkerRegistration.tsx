@@ -3,6 +3,8 @@
 import { useEffect } from 'react';
 import { isNativePlatform } from '@/lib/capacitor';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export default function ServiceWorkerRegistration() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -41,7 +43,7 @@ export default function ServiceWorkerRegistration() {
 
     // Check if service workers are supported
     if (!('serviceWorker' in navigator)) {
-      console.log('[PWA] Service workers are not supported');
+      if (isDev) console.log('[PWA] Service workers are not supported');
       return () => {
         clearInterval(lastOnlineInterval);
         window.removeEventListener('online', handleOnline);
@@ -56,18 +58,18 @@ export default function ServiceWorkerRegistration() {
           scope: '/',
         });
 
-        console.log('[PWA] Service worker registered successfully:', registration.scope);
+        if (isDev) console.log('[PWA] Service worker registered successfully:', registration.scope);
 
         // Check for updates periodically
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (newWorker) {
-            console.log('[PWA] New service worker installing...');
+            if (isDev) console.log('[PWA] New service worker installing...');
 
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 // New content is available, prompt user to refresh
-                console.log('[PWA] New content available, refresh to update');
+                if (isDev) console.log('[PWA] New content available, refresh to update');
 
                 // Optionally dispatch a custom event that other components can listen to
                 window.dispatchEvent(new CustomEvent('swUpdate', { detail: { registration } }));
@@ -78,7 +80,7 @@ export default function ServiceWorkerRegistration() {
 
         // Check for updates on page load and periodically
         if (registration.waiting) {
-          console.log('[PWA] Update is waiting to be activated');
+          if (isDev) console.log('[PWA] Update is waiting to be activated');
         }
 
         // Register for Background Sync
@@ -95,11 +97,11 @@ export default function ServiceWorkerRegistration() {
 
         // Check for updates every hour
         setInterval(() => {
-          registration.update().catch(console.error);
+          registration.update().catch(isDev ? console.error : () => {});
         }, 60 * 60 * 1000);
 
       } catch (error) {
-        console.error('[PWA] Service worker registration failed:', error);
+        if (isDev) console.error('[PWA] Service worker registration failed:', error);
       }
     };
 
@@ -118,7 +120,7 @@ export default function ServiceWorkerRegistration() {
 
     // Handle controller change (new service worker activated)
     const handleControllerChange = () => {
-      console.log('[PWA] Service worker controller changed');
+      if (isDev) console.log('[PWA] Service worker controller changed');
     };
 
     navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
@@ -136,7 +138,7 @@ export default function ServiceWorkerRegistration() {
 }
 
 async function initCapacitorFeatures() {
-  console.log('[Capacitor] Initializing native features...');
+  if (isDev) console.log('[Capacitor] Initializing native features...');
 
   try {
     // 1. Initialize native push notifications
@@ -168,8 +170,8 @@ async function initCapacitorFeatures() {
       }
     });
 
-    console.log('[Capacitor] Native features initialized');
+    if (isDev) console.log('[Capacitor] Native features initialized');
   } catch (error) {
-    console.error('[Capacitor] Init error:', error);
+    if (isDev) console.error('[Capacitor] Init error:', error);
   }
 }
