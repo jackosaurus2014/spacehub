@@ -16,6 +16,7 @@ import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 import CookieConsent from '@/components/ui/CookieConsent';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 const InstallPrompt = dynamic(() => import('@/components/InstallPrompt'), { ssr: false });
+const IOSInstallPrompt = dynamic(() => import('@/components/mobile/IOSInstallPrompt'), { ssr: false });
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import ToastContainer from '@/components/ui/Toast';
 import NavigationProgress from '@/components/ui/NavigationProgress';
@@ -223,6 +224,7 @@ export default function RootLayout({
               <SwipeModuleNavigation />
               <WebVitals />
               <InstallPrompt />
+              <IOSInstallPrompt />
               <ErrorReporter />
               <BackToTop />
               <ScrollProgress />

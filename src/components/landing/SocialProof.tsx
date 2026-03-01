@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useInView } from 'framer-motion';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 
 const TESTIMONIALS = [
   {
@@ -110,6 +110,43 @@ export default function SocialProof() {
   const statsRef = useRef<HTMLDivElement>(null);
   const statsInView = useInView(statsRef, { once: true, amount: 0.4 });
 
+  // Mobile swipe state
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeCard, setActiveCard] = useState(0);
+
+  // Track which card is visible via IntersectionObserver
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const cards = container.querySelectorAll<HTMLElement>('[data-index]');
+    if (!cards.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const idx = Number((entry.target as HTMLElement).dataset.index);
+            if (!isNaN(idx)) setActiveCard(idx);
+          }
+        });
+      },
+      { root: container, threshold: 0.6 }
+    );
+
+    cards.forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToCard = useCallback((index: number) => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const card = container.querySelector<HTMLElement>(`[data-index="${index}"]`);
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  }, []);
+
   return (
     <section className="py-20 relative z-10">
       <div className="container mx-auto px-4 max-w-6xl">
@@ -145,17 +182,21 @@ export default function SocialProof() {
           <div className="gradient-line max-w-xs mx-auto mt-5" />
         </div>
 
-        {/* Testimonial Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mb-16">
+        {/* Testimonial Cards — horizontal swipe on mobile, grid on desktop */}
+        <div
+          ref={scrollRef}
+          className="flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-7 md:overflow-visible md:snap-none mb-4 md:mb-16"
+        >
           {TESTIMONIALS.map((t, i) => (
             <motion.div
               key={t.name}
-              className="group relative"
+              className="group relative snap-center min-w-[85vw] flex-shrink-0 md:min-w-0 md:flex-shrink md:snap-align-none"
               custom={i}
               variants={cardVariants}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
+              data-index={i}
             >
               {/* Gradient border effect */}
               <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-b from-slate-600/40 via-slate-700/20 to-slate-800/10 group-hover:from-cyan-500/30 group-hover:via-blue-500/15 group-hover:to-transparent transition-all duration-500" />
@@ -195,6 +236,22 @@ export default function SocialProof() {
                 </div>
               </div>
             </motion.div>
+          ))}
+        </div>
+
+        {/* Scroll indicator dots — mobile only */}
+        <div className="flex justify-center gap-2 mb-12 md:hidden" aria-hidden="true">
+          {TESTIMONIALS.map((_, i) => (
+            <button
+              key={i}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                activeCard === i
+                  ? 'bg-cyan-400 w-6'
+                  : 'bg-slate-600 hover:bg-slate-500'
+              }`}
+              onClick={() => scrollToCard(i)}
+              aria-label={`Go to testimonial ${i + 1}`}
+            />
           ))}
         </div>
 
