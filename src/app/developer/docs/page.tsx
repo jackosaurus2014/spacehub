@@ -282,7 +282,7 @@ function Sidebar({
             />
           </svg>
           <input
-            type="text"
+            type="search"
             placeholder="Search endpoints..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}

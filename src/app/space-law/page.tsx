@@ -753,7 +753,7 @@ function TabContent({ entries, tabId }: { entries: SpaceLawEntry[]; tabId: TabId
       <div className="card p-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <input
-            type="text"
+            type="search"
             placeholder="Search treaties, provisions, countries..."
             aria-label={`Search ${tabId} entries`}
             value={searchQuery}

@@ -188,7 +188,7 @@ export default function FAQPage() {
                 </svg>
               </div>
               <input
-                type="text"
+                type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for answers..."

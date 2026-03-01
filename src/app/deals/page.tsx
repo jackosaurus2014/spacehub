@@ -536,7 +536,7 @@ function DealsPageContent() {
               {/* Search */}
               <div className="flex-1 relative">
                 <input
-                  type="text"
+                  type="search"
                   aria-label="Search deals by company, title, or description"
                   placeholder="Search deals by company, title, or description..."
                   value={search}

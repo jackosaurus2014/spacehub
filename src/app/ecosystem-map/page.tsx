@@ -430,7 +430,7 @@ export default function EcosystemMapPage() {
         {/* Search */}
         <div className="card p-4 mb-8">
           <input
-            type="text"
+            type="search"
             aria-label="Search companies across the ecosystem"
             placeholder="Search companies by name, segment, or capability..."
             value={searchQuery}

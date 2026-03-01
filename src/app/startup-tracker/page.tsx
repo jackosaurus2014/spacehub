@@ -446,7 +446,7 @@ function StartupTrackerContent() {
               <label htmlFor="startup-search" className="block text-slate-400 text-sm mb-1">Search</label>
               <input
                 id="startup-search"
-                type="text"
+                type="search"
                 placeholder="Search by name, sector, location, description..."
                 value={searchQuery}
                 onChange={(e) => {

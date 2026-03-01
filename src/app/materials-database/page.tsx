@@ -594,7 +594,7 @@ export default function MaterialsDatabasePage() {
                 />
               </svg>
               <input
-                type="text"
+                type="search"
                 placeholder="Search by name, property, application, or manufacturer..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}

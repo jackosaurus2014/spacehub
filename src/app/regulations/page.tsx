@@ -904,7 +904,7 @@ export default function SpaceRegulationsExplorerPage() {
                 />
               </svg>
               <input
-                type="text"
+                type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search regulations by keyword, authority, activity..."

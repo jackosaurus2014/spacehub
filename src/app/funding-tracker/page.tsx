@@ -592,7 +592,7 @@ function FundingTrackerPageInner() {
                   Investor
                 </label>
                 <input
-                  type="text"
+                  type="search"
                   value={investorSearch}
                   onChange={(e) => setInvestorSearch(e.target.value)}
                   placeholder="Search investor..."

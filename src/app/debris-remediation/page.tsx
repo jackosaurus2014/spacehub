@@ -926,7 +926,7 @@ function CompaniesTab() {
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
               <input
-                type="text"
+                type="search"
                 placeholder="Search companies, missions, or approaches..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -1223,7 +1223,7 @@ function RegulationsTab() {
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
               <input
-                type="text"
+                type="search"
                 placeholder="Search regulations, bodies, or provisions..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -1392,7 +1392,7 @@ function TechnologiesTab() {
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
               <input
-                type="text"
+                type="search"
                 placeholder="Search technologies or developers..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

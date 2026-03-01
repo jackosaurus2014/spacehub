@@ -1552,7 +1552,7 @@ export default function TechReadinessPage() {
                   <div className="flex-1">
                     <label className="block text-xs text-slate-400 mb-1">Search</label>
                     <input
-                      type="text"
+                      type="search"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search technologies, developers..."

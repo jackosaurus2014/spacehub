@@ -331,7 +331,7 @@ function ExecutiveMovesContent() {
           {/* Search */}
           <div className="flex-1 relative">
             <input
-              type="text"
+              type="search"
               aria-label="Search by person name, company, or title"
               placeholder="Search by person name, company, or title..."
               value={searchInput}
@@ -358,7 +358,7 @@ function ExecutiveMovesContent() {
           {/* Company Filter */}
           <div className="relative">
             <input
-              type="text"
+              type="search"
               aria-label="Filter by company"
               placeholder="Filter by company..."
               value={company}

@@ -675,7 +675,7 @@ export default function LaunchSiteDatabasePage() {
               <div className="flex-1 w-full lg:w-auto">
                 <label className="block text-xs text-slate-400 mb-1">Search</label>
                 <input
-                  type="text"
+                  type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name, location, operator, vehicle..."

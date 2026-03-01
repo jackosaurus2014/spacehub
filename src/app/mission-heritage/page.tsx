@@ -873,7 +873,7 @@ export default function MissionHeritagePage() {
                 />
               </svg>
               <input
-                type="text"
+                type="search"
                 placeholder="Search by mission name, agency, destination, or description..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}

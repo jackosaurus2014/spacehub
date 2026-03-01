@@ -692,7 +692,7 @@ export default function PodcastsPage() {
             {/* Search */}
             <div className="flex-1 relative">
               <input
-                type="text"
+                type="search"
                 aria-label="Search podcasts by name, host, or topic"
                 placeholder="Search podcasts by name, host, or topic..."
                 value={search}

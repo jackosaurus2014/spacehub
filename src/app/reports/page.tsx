@@ -870,7 +870,7 @@ function ReportsPageInner() {
                       <div className="relative">
                         <input
                           id="company-search"
-                          type="text"
+                          type="search"
                           value={companySearch.query}
                           onChange={(e) => companySearch.search(e.target.value)}
                           placeholder="Search for a company..."

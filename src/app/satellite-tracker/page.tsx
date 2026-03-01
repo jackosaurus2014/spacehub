@@ -641,7 +641,7 @@ export default function SatelliteTrackerPage() {
                       />
                     </svg>
                     <input
-                      type="text"
+                      type="search"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search by name or NORAD ID..."

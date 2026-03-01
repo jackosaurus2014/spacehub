@@ -302,7 +302,7 @@ export default function AcronymsPage() {
                 </svg>
               </div>
               <input
-                type="text"
+                type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search acronyms, full forms, or definitions..."

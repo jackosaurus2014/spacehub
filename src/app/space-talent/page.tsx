@@ -929,7 +929,7 @@ function TopEmployersSection() {
       {/* Filters & Search */}
       <div className="flex flex-wrap items-center gap-3 mb-5">
         <input
-          type="text"
+          type="search"
           placeholder="Search companies..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -1622,7 +1622,7 @@ function SpaceTalentHubContent() {
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1">
                     <input
-                      type="text"
+                      type="search"
                       aria-label="Search by name, title, organization, or expertise"
                       placeholder="Search by name, title, organization, or expertise..."
                       value={talentSearch}
@@ -2256,7 +2256,7 @@ function SpaceTalentHubContent() {
                 <form onSubmit={handleJobSearch} className="mb-4">
                   <div className="flex gap-2">
                     <input
-                      type="text"
+                      type="search"
                       aria-label="Search jobs by title, company, location, or specialization"
                       placeholder="Search jobs by title, company, location, or specialization..."
                       value={searchInput}

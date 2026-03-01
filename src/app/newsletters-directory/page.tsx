@@ -688,7 +688,7 @@ export default function NewslettersDirectoryPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
-                type="text"
+                type="search"
                 placeholder="Search newsletters by name or topic..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}

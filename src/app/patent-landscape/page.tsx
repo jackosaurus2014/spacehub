@@ -256,7 +256,7 @@ export default function PatentLandscapePage() {
               <div className="flex-1 min-w-[200px]">
                 <label className="block text-slate-400 text-sm mb-1">Search</label>
                 <input
-                  type="text"
+                  type="search"
                   placeholder="Search by company or specialty..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}

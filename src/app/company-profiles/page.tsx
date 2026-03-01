@@ -427,7 +427,7 @@ export default function CompanyProfilesPage() {
             {/* Search */}
             <div className="flex-1 relative">
               <input
-                type="text"
+                type="search"
                 aria-label="Search companies by name, ticker, or location"
                 placeholder="Search companies by name, ticker, or location..."
                 value={search}

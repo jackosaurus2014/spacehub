@@ -504,7 +504,7 @@ export default function FrequencyBandsPage() {
               {/* Search */}
               <div className="relative flex-1 w-full sm:max-w-xs">
                 <input
-                  type="text"
+                  type="search"
                   placeholder="Search bands, services, users..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}

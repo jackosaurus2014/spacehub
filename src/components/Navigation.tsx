@@ -749,7 +749,7 @@ export default function Navigation() {
                   </svg>
                   <input
                     ref={mobileSearchRef}
-                    type="text"
+                    type="search"
                     placeholder="Search modules..."
                     value={mobileSearchQuery}
                     onChange={(e) => setMobileSearchQuery(e.target.value)}

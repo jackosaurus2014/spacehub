@@ -630,7 +630,7 @@ export default function PropulsionDatabasePage() {
                 />
               </svg>
               <input
-                type="text"
+                type="search"
                 placeholder="Search by name, manufacturer, propellant, or application..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}

@@ -891,7 +891,7 @@ export default function CleanRoomReferencePage() {
                 Click any row to see space industry applications.
               </p>
               <input
-                type="text"
+                type="search"
                 placeholder="Search by ISO class, Federal Standard name, or application..."
                 value={isoSearch}
                 onChange={e => setIsoSearch(e.target.value)}
@@ -1180,7 +1180,7 @@ export default function CleanRoomReferencePage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <input
-                  type="text"
+                  type="search"
                   placeholder="Search materials..."
                   value={outgassingSearch}
                   onChange={e => setOutgassingSearch(e.target.value)}

@@ -1002,7 +1002,7 @@ export default function MATrackerPage() {
                 <div className="flex-1 min-w-[200px]">
                   <label className="block text-xs text-slate-400 mb-1">Search</label>
                   <input
-                    type="text"
+                    type="search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search acquirer, target, sector..."

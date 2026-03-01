@@ -689,7 +689,7 @@ function SalaryBenchmarksContent() {
             <div className="flex flex-col md:flex-row gap-3 mb-4">
               <div className="flex-1">
                 <input
-                  type="text"
+                  type="search"
                   aria-label="Search roles by title, skill, or description"
                   placeholder="Search roles by title, skill, or description..."
                   value={searchQuery}

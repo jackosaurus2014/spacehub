@@ -840,7 +840,7 @@ function BlueprintsContent() {
             {/* Search */}
             <div className="flex-1 min-w-64">
               <input
-                type="text"
+                type="search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search blueprints..."

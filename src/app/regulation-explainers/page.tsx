@@ -118,7 +118,7 @@ function ExplainersContent() {
           </select>
 
           <input
-            type="text"
+            type="search"
             placeholder="Search regulations..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}

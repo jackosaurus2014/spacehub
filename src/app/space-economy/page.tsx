@@ -135,7 +135,7 @@ export default function SpaceEconomyPage() {
         {/* ── Search / Filter ────────────────────────────── */}
         <div className="mb-8">
           <input
-            type="text"
+            type="search"
             placeholder="Filter segments, countries..."
             value={search}
             onChange={e => setSearch(e.target.value)}

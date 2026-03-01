@@ -113,7 +113,7 @@ export default function AddWidgetModal({
               {/* Search */}
               <div className="mb-4">
                 <input
-                  type="text"
+                  type="search"
                   placeholder="Search modules..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}

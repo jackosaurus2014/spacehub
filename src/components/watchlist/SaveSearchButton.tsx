@@ -68,7 +68,7 @@ export default function SaveSearchButton({ searchType, filters, query }: SaveSea
   return (
     <div className="flex items-center gap-2">
       <input
-        type="text"
+        type="search"
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Search name..."

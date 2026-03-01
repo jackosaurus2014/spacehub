@@ -207,7 +207,7 @@ export default function SpaceAgenciesPage() {
         <ScrollReveal>
           <div className="bg-slate-900/80 border border-slate-700/60 rounded-xl p-4 mb-6">
             <div className="flex flex-wrap items-center gap-3">
-              <input type="text" placeholder="Search agencies..." value={query} onChange={e => setQuery(e.target.value)} className={`${selectCls} w-full sm:w-48 placeholder-slate-500`} />
+              <input type="search" placeholder="Search agencies..." value={query} onChange={e => setQuery(e.target.value)} className={`${selectCls} w-full sm:w-48 placeholder-slate-500`} />
               <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)} className={selectCls}>
                 <option value="All">All Regions</option>
                 {ALL_REGIONS.map(r => <option key={r} value={r}>{r}</option>)}

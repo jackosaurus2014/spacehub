@@ -484,7 +484,7 @@ function SatelliteTrackerContent() {
                     {/* Search */}
                     <div className="flex-1 min-w-[200px]">
                       <input
-                        type="text"
+                        type="search"
                         aria-label="Search by name, NORAD ID, or operator"
                         placeholder="Search by name, NORAD ID, or operator..."
                         value={searchQuery}

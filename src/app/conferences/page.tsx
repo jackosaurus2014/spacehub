@@ -873,7 +873,7 @@ export default function ConferencesPage() {
                 />
               </svg>
               <input
-                type="text"
+                type="search"
                 placeholder="Search events, topics, locations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}

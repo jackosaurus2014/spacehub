@@ -1186,7 +1186,7 @@ export default function LaunchVehiclesPage() {
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex-1 min-w-[200px]">
                   <input
-                    type="text"
+                    type="search"
                     placeholder="Search by name, manufacturer, country, or propellant..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}

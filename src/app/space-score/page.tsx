@@ -550,7 +550,7 @@ function SpaceScoreContent() {
                   {/* Search */}
                   <div className="flex-1 relative">
                     <input
-                      type="text"
+                      type="search"
                       aria-label="Search companies by name or sector"
                       placeholder="Search companies by name or sector..."
                       value={search}

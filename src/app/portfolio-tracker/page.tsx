@@ -413,7 +413,7 @@ export default function PortfolioTrackerPage() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative">
                   <input
-                    type="text"
+                    type="search"
                     placeholder="Search ticker or name..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}

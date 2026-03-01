@@ -855,7 +855,7 @@ export default function StandardsReferencePage() {
                   />
                 </svg>
                 <input
-                  type="text"
+                  type="search"
                   placeholder="Search by ID, title, or description..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}

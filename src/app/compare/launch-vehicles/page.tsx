@@ -676,7 +676,7 @@ function VehicleSelector({
             </svg>
             <input
               ref={inputRef}
-              type="text"
+              type="search"
               placeholder="Search vehicles... (e.g. Falcon 9, SpaceX, India)"
               value={search}
               onChange={(e) => {

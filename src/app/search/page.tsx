@@ -628,7 +628,7 @@ function SearchContent() {
         </div>
         <input
           ref={inputRef}
-          type="text"
+          type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Search across news, companies, events, opportunities, and blogs"

@@ -1042,7 +1042,7 @@ function MissionControlContent() {
                   🔍
                 </span>
                 <input
-                  type="text"
+                  type="search"
                   placeholder="Search missions, agencies, rockets..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}

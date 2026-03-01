@@ -1203,7 +1203,7 @@ function ProvidersTab() {
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex-1">
           <input
-            type="text"
+            type="search"
             placeholder="Search providers, products, technologies..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

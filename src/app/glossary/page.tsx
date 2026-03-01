@@ -586,7 +586,7 @@ export default function GlossaryPage() {
                 </svg>
               </div>
               <input
-                type="text"
+                type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search terms or definitions..."

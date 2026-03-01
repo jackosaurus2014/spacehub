@@ -712,7 +712,7 @@ export default function SpaceInvestorsPage() {
                     />
                   </svg>
                   <input
-                    type="text"
+                    type="search"
                     placeholder="Search investors, portfolio companies, key people..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}

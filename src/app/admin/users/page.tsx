@@ -265,7 +265,7 @@ function AllUsersTab() {
             </svg>
             <input
               id="user-search"
-              type="text"
+              type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name or email..."
@@ -773,7 +773,7 @@ function AuditLogTab() {
           <label htmlFor="admin-search" className="block text-xs font-medium text-star-400 mb-1">Search by Admin</label>
           <input
             id="admin-search"
-            type="text"
+            type="search"
             value={adminSearch}
             onChange={(e) => setAdminSearch(e.target.value)}
             placeholder="Filter by admin name..."

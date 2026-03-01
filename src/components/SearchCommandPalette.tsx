@@ -710,7 +710,7 @@ export default function SearchCommandPalette() {
           </svg>
           <input
             ref={inputRef}
-            type="text"
+            type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search modules, pages, content..."

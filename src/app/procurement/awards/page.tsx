@@ -259,7 +259,7 @@ export default function ContractAwardsPage() {
           {/* Search */}
           <div className="flex-1 relative">
             <input
-              type="text"
+              type="search"
               aria-label="Search awards by recipient, description, or agency"
               placeholder="Search by recipient, description, or agency..."
               value={search}
