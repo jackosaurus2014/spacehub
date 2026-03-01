@@ -4,6 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { toast } from '@/lib/toast';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { getRelatedModules } from '@/lib/module-relationships';
 
 interface DemoFormData {
   name: string;
@@ -423,6 +426,17 @@ export default function BookDemoPage() {
               </div>
             </ScrollReveal>
           </div>
+        </div>
+      </section>
+
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Book a Demo', href: '/book-demo' },
+      ]} />
+
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <RelatedModules modules={getRelatedModules('book-demo')} title="Explore SpaceNexus Modules" />
         </div>
       </section>
     </div>

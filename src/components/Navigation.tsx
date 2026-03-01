@@ -70,6 +70,8 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Sustainability Scorecard', href: '/sustainability-scorecard', description: 'Space sustainability metrics & ratings' },
   { label: 'FAQ', href: '/faq', description: 'Frequently asked questions' },
   { label: 'Newsletters', href: '/newsletters-directory', description: 'Space industry newsletter directory' },
+  { label: 'All Features & Modules', href: '/features', description: 'Browse 30+ modules in one directory' },
+  { label: 'Getting Started', href: '/getting-started', description: 'New to SpaceNexus? Start here' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
@@ -125,6 +127,9 @@ const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Funding Rounds', href: '/funding-rounds', description: 'Startup funding rounds & investment data' },
   { label: 'M&A Tracker', href: '/ma-tracker', description: 'Mergers & acquisitions deal tracking' },
   { label: 'Conferences', href: '/conferences', description: 'Space industry conferences & events calendar' },
+  { label: 'Case Studies', href: '/case-studies', description: 'Success stories from space organizations' },
+  { label: 'Security & Trust', href: '/security', description: 'How we protect your data' },
+  { label: 'Book a Demo', href: '/book-demo', description: 'Schedule a personalized walkthrough' },
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [
