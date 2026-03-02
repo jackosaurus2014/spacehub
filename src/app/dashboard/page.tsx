@@ -31,6 +31,17 @@ import {
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import StreakBadge from '@/components/mobile/StreakBadge';
+import ExplorationProgress from '@/components/ui/ExplorationProgress';
+import { recordModuleVisit } from '@/lib/exploration-tracker';
+
+/** Returns a time-of-day greeting with the user's name */
+function getTimeGreeting(name: string): string {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour <= 11) return `Good morning, ${name}! \u2600\uFE0F`;
+  if (hour >= 12 && hour <= 16) return `Good afternoon, ${name}! \u{1F324}\uFE0F`;
+  if (hour >= 17 && hour <= 20) return `Good evening, ${name}! \u{1F306}`;
+  return `Night owl mode, ${name}! \u{1F319}`;
+}
 
 interface ModuleItem {
   label: string;
@@ -221,6 +232,11 @@ export default function DashboardPage() {
   const [layoutSelectorOpen, setLayoutSelectorOpen] = useState(false);
   const [moduleConfigOpen, setModuleConfigOpen] = useState(false);
 
+  // Record module visit on mount
+  useEffect(() => {
+    recordModuleVisit('/dashboard');
+  }, []);
+
   // Layout state
   const [gridColumns, setGridColumns] = useState<LayoutGridColumns>(2);
   const [moduleSize, setModuleSize] = useState<ModuleSize>('standard');
@@ -344,7 +360,7 @@ export default function DashboardPage() {
                 <div>
                   <div className="flex items-center gap-2">
                     <AnimatedPageHeader
-                      title={`Welcome back, ${session.user?.name || 'Explorer'}!`}
+                      title={getTimeGreeting(session.user?.name || 'Explorer')}
                       subtitle={session.user?.email || undefined}
                     />
                     <StreakBadge variant="compact" />
@@ -415,6 +431,13 @@ export default function DashboardPage() {
               </div>
               <RecentlyViewedInline />
             </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Exploration Progress */}
+        <ScrollReveal>
+          <div className="mb-8">
+            <ExplorationProgress variant="card" />
           </div>
         </ScrollReveal>
 
