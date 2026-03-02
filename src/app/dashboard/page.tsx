@@ -3,6 +3,8 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { formatCompact } from '@/lib/format-number';
+import { useIsMobile } from '@/hooks/useCompactNumber';
 import Link from 'next/link';
 import DashboardLayoutSelector from '@/components/DashboardLayoutSelector';
 import ModuleConfigurator from '@/components/ModuleConfigurator';
@@ -136,6 +138,7 @@ function AnimatedCounter({ target, duration = 1200 }: { target: number; duration
   const [count, setCount] = useState(0);
   const rafRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (target === 0) {
@@ -165,7 +168,7 @@ function AnimatedCounter({ target, duration = 1200 }: { target: number; duration
     };
   }, [target, duration]);
 
-  return <>{count.toLocaleString()}</>;
+  return <>{isMobile ? formatCompact(count) : count.toLocaleString()}</>;
 }
 
 function ModuleSection({ title, icon, modules, sizeClasses, delay }: {

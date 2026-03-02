@@ -96,10 +96,9 @@ export default function NewsCard({ article, featured = false, priority = false }
     return (
       <div className="card-interactive group block overflow-hidden rounded-2xl relative">
         <BookmarkButton
-          title={article.title}
-          url={article.url}
-          source={article.source}
-          category={article.category}
+          itemId={article.id}
+          itemTitle={article.title}
+          itemUrl={article.url}
           className="absolute top-3 right-3 z-10 bg-black/40 backdrop-blur-sm rounded-lg"
         />
         <Link
@@ -181,10 +180,9 @@ export default function NewsCard({ article, featured = false, priority = false }
   return (
     <div className="card-interactive group flex flex-col overflow-hidden rounded-2xl relative">
       <BookmarkButton
-        title={article.title}
-        url={article.url}
-        source={article.source}
-        category={article.category}
+        itemId={article.id}
+        itemTitle={article.title}
+        itemUrl={article.url}
         className="absolute top-2 right-2 z-10 bg-black/40 backdrop-blur-sm rounded-lg"
       />
       <a

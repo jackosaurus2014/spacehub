@@ -8,6 +8,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { formatCurrency as formatCurrencyShared } from '@/lib/format-number';
 
 // ────────────────────────────────────────
 // Types
@@ -404,9 +405,7 @@ const SORT_OPTIONS = [
 // ────────────────────────────────────────
 
 function formatCurrency(value: number): string {
-  if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(1)}B`;
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(0)}M`;
-  return `$${(value / 1_000).toFixed(0)}K`;
+  return formatCurrencyShared(value, true);
 }
 
 function formatFullCurrency(value: number): string {

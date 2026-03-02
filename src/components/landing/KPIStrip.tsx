@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { formatCompact } from '@/lib/format-number';
 
 interface KPIMetric {
   label: string;
@@ -56,15 +57,13 @@ const KPI_METRICS: KPIMetric[] = [
 ];
 
 function formatNumber(value: number, prefix: string, suffix: string): string {
+  // For values that already carry their own suffix (e.g. "$1.2T", "$8.2B"),
+  // keep the existing format to preserve the intended display.
   if (prefix === '$' && (suffix === 'T' || suffix === 'B')) {
     return `${prefix}${value.toFixed(1)}${suffix}`;
   }
-  if (value >= 1000) {
-    const k = value / 1000;
-    const formatted = k % 1 === 0 ? k.toFixed(0) : k.toFixed(1);
-    return `${prefix}${formatted}K${suffix}`;
-  }
-  return `${prefix}${Math.round(value)}${suffix}`;
+  // Delegate to the shared formatCompact utility for everything else
+  return `${prefix}${formatCompact(value)}${suffix}`;
 }
 
 function easeOutCubic(t: number): number {
