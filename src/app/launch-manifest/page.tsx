@@ -419,7 +419,7 @@ function LaunchDetailModal({
             </div>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-200 transition-colors p-1"
+              className="text-slate-400 hover:text-slate-200 transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="Close detail panel"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

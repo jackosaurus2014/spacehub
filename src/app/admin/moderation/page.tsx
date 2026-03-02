@@ -572,6 +572,7 @@ function UsersTab() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by user name or email..."
+            aria-label="Search by user name or email"
             className="block w-full rounded-md border border-slate-600 bg-slate-800 pl-10 pr-3 py-2 text-sm text-slate-200 placeholder-slate-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
           />
         </div>

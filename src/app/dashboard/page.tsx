@@ -452,6 +452,7 @@ export default function DashboardPage() {
               value={moduleSearch}
               onChange={(e) => setModuleSearch(e.target.value)}
               placeholder={`Search across ${totalModules} modules...`}
+              aria-label={`Search across ${totalModules} modules`}
               className="bg-slate-800/50 border border-slate-700/50 rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-400 focus:border-cyan-400/50 focus:outline-none w-full transition-colors"
             />
             {moduleSearch && (

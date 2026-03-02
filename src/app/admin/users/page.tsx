@@ -351,7 +351,8 @@ function AllUsersTab() {
                 </div>
 
                 {/* Status */}
-                <div className="mt-1 lg:mt-0 flex flex-wrap gap-1">
+                <div className="mt-1 lg:mt-0 flex flex-wrap gap-1 items-center">
+                  <span className="lg:hidden text-xs text-star-500 mr-1">Status:</span>
                   {user.isBanned && (
                     <span className="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
                       Banned
@@ -370,7 +371,8 @@ function AllUsersTab() {
                 </div>
 
                 {/* Role */}
-                <div className="mt-1 lg:mt-0">
+                <div className="mt-1 lg:mt-0 flex items-center gap-1">
+                  <span className="lg:hidden text-xs text-star-500">Role:</span>
                   {user.isAdmin ? (
                     <span className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full ${
                       ROLE_BADGES[user.adminRole || 'admin']?.className || ROLE_BADGES.admin.className
@@ -384,11 +386,13 @@ function AllUsersTab() {
 
                 {/* Reputation */}
                 <div className="mt-1 lg:mt-0 text-star-300 text-sm">
+                  <span className="lg:hidden text-xs text-star-500">Rep: </span>
                   {user.reputation} pts / {user.forumPostCount} posts
                 </div>
 
                 {/* Joined */}
                 <div className="mt-1 lg:mt-0 text-star-400 text-sm">
+                  <span className="lg:hidden text-xs text-star-500">Joined: </span>
                   {new Date(user.createdAt).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
@@ -398,12 +402,12 @@ function AllUsersTab() {
                 </div>
 
                 {/* Actions */}
-                <div className="mt-2 lg:mt-0 flex flex-wrap gap-1">
+                <div className="mt-2 lg:mt-0 flex flex-wrap gap-1.5">
                   {!user.isBanned ? (
                     <button
                       onClick={() => handleQuickAction(user.id, 'ban')}
                       disabled={actioningId === user.id}
-                      className="px-2 py-1 text-xs font-medium rounded border border-red-500/30 text-red-300 hover:bg-red-500/10 disabled:opacity-50 transition-colors"
+                      className="px-3 py-1.5 min-h-[44px] lg:min-h-0 lg:py-1 text-xs font-medium rounded border border-red-500/30 text-red-300 hover:bg-red-500/10 disabled:opacity-50 transition-colors"
                     >
                       Ban
                     </button>
@@ -411,7 +415,7 @@ function AllUsersTab() {
                     <button
                       onClick={() => handleQuickAction(user.id, 'unban')}
                       disabled={actioningId === user.id}
-                      className="px-2 py-1 text-xs font-medium rounded border border-green-500/30 text-green-300 hover:bg-green-500/10 disabled:opacity-50 transition-colors"
+                      className="px-3 py-1.5 min-h-[44px] lg:min-h-0 lg:py-1 text-xs font-medium rounded border border-green-500/30 text-green-300 hover:bg-green-500/10 disabled:opacity-50 transition-colors"
                     >
                       Unban
                     </button>
@@ -420,7 +424,7 @@ function AllUsersTab() {
                     <button
                       onClick={() => handleQuickAction(user.id, 'mute', 1440)}
                       disabled={actioningId === user.id}
-                      className="px-2 py-1 text-xs font-medium rounded border border-amber-500/30 text-amber-300 hover:bg-amber-500/10 disabled:opacity-50 transition-colors"
+                      className="px-3 py-1.5 min-h-[44px] lg:min-h-0 lg:py-1 text-xs font-medium rounded border border-amber-500/30 text-amber-300 hover:bg-amber-500/10 disabled:opacity-50 transition-colors"
                     >
                       Mute
                     </button>
@@ -428,7 +432,7 @@ function AllUsersTab() {
                     <button
                       onClick={() => handleQuickAction(user.id, 'unmute')}
                       disabled={actioningId === user.id}
-                      className="px-2 py-1 text-xs font-medium rounded border border-green-500/30 text-green-300 hover:bg-green-500/10 disabled:opacity-50 transition-colors"
+                      className="px-3 py-1.5 min-h-[44px] lg:min-h-0 lg:py-1 text-xs font-medium rounded border border-green-500/30 text-green-300 hover:bg-green-500/10 disabled:opacity-50 transition-colors"
                     >
                       Unmute
                     </button>
@@ -437,7 +441,7 @@ function AllUsersTab() {
                     <button
                       onClick={() => handlePromoteToAdmin(user.id)}
                       disabled={actioningId === user.id}
-                      className="px-2 py-1 text-xs font-medium rounded border border-purple-500/30 text-purple-300 hover:bg-purple-500/10 disabled:opacity-50 transition-colors"
+                      className="px-3 py-1.5 min-h-[44px] lg:min-h-0 lg:py-1 text-xs font-medium rounded border border-purple-500/30 text-purple-300 hover:bg-purple-500/10 disabled:opacity-50 transition-colors"
                     >
                       Promote
                     </button>

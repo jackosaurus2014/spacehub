@@ -245,7 +245,7 @@ function SystemDetail({ system, onClose }: { system: OrbitalSystem; onClose: () 
         </div>
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-white transition-colors p-1 text-xl leading-none"
+          className="text-slate-400 hover:text-white transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-xl leading-none"
           aria-label="Close detail view"
         >
           &times;
