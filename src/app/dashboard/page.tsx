@@ -30,6 +30,7 @@ import {
 } from '@/lib/dashboard/templates';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import StreakBadge from '@/components/mobile/StreakBadge';
 
 interface ModuleItem {
   label: string;
@@ -341,10 +342,13 @@ export default function DashboardPage() {
                   {session.user?.name?.charAt(0)?.toUpperCase() || 'E'}
                 </div>
                 <div>
-                  <AnimatedPageHeader
-                    title={`Welcome back, ${session.user?.name || 'Explorer'}!`}
-                    subtitle={session.user?.email || undefined}
-                  />
+                  <div className="flex items-center gap-2">
+                    <AnimatedPageHeader
+                      title={`Welcome back, ${session.user?.name || 'Explorer'}!`}
+                      subtitle={session.user?.email || undefined}
+                    />
+                    <StreakBadge variant="compact" />
+                  </div>
                 </div>
               </div>
               <div className="hidden md:flex items-center gap-6 text-center">

@@ -33,6 +33,8 @@ const TrialCountdownBanner = dynamic(() => import('@/components/billing/TrialCou
 });
 const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), { ssr: false });
 const SwipeModuleNavigation = dynamic(() => import('@/components/mobile/SwipeModuleNavigation'), { ssr: false });
+const PushOptInBanner = dynamic(() => import('@/components/mobile/PushOptInBanner'), { ssr: false });
+const WhatsNew = dynamic(() => import('@/components/mobile/WhatsNew').then(m => ({ default: m.default })), { ssr: false });
 const BackToTop = dynamic(() => import('@/components/ui/BackToTop'), { ssr: false });
 const ScrollProgress = dynamic(() => import('@/components/ui/ScrollProgress'), { ssr: false });
 const WebVitals = dynamic(() => import('@/components/analytics/WebVitals'), { ssr: false });
@@ -225,6 +227,8 @@ export default function RootLayout({
               <WebVitals />
               <InstallPrompt />
               <IOSInstallPrompt />
+              <PushOptInBanner />
+              <WhatsNew />
               <ErrorReporter />
               <BackToTop />
               <ScrollProgress />
