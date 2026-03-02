@@ -276,6 +276,7 @@ export default function BookDemoPage() {
                       name="company"
                       required
                       autoComplete="organization"
+                      enterKeyHint="next"
                       placeholder="Acme Aerospace"
                       value={formData.company}
                       onChange={handleChange}
@@ -291,6 +292,7 @@ export default function BookDemoPage() {
                       id="jobTitle"
                       name="jobTitle"
                       autoComplete="organization-title"
+                      enterKeyHint="next"
                       placeholder="VP of Strategy"
                       value={formData.jobTitle}
                       onChange={handleChange}

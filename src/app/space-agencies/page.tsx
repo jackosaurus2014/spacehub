@@ -162,7 +162,7 @@ export default function SpaceAgenciesPage() {
             <div className="bg-slate-900/80 border border-blue-500/40 rounded-xl p-6 mb-8">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-slate-100">Compare Agencies ({comparing.length}/3)</h2>
-                <button onClick={() => setComparing([])} className="text-xs text-slate-400 hover:text-red-400 transition-colors">Clear All</button>
+                <button onClick={() => setComparing([])} className="text-xs text-slate-400 hover:text-red-400 transition-colors min-h-[44px] px-2 inline-flex items-center">Clear All</button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -172,7 +172,7 @@ export default function SpaceAgenciesPage() {
                       {comparedAgencies.map(a => (
                         <th key={a.name} className="text-left text-slate-200 font-medium py-2 px-4 min-w-[180px]">
                           <span className="mr-2">{a.flag}</span>{a.name}
-                          <button onClick={() => toggleCompare(a.name)} className="ml-2 text-slate-500 hover:text-red-400 text-xs">x</button>
+                          <button onClick={() => toggleCompare(a.name)} className="ml-2 text-slate-500 hover:text-red-400 text-xs min-h-[44px] min-w-[44px] inline-flex items-center justify-center">x</button>
                         </th>
                       ))}
                     </tr>
@@ -223,7 +223,7 @@ export default function SpaceAgenciesPage() {
             <div className="flex flex-wrap items-center gap-2 mt-3">
               <span className="text-xs text-slate-400 mr-1">Sort by:</span>
               {([['budget','Budget'],['founded','Founded'],['employees','Employees'],['name','Name']] as [SortKey,string][]).map(([key, label]) => (
-                <button key={key} onClick={() => handleSort(key)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${sortBy === key ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-slate-200'}`}>
+                <button key={key} onClick={() => handleSort(key)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors min-h-[44px] inline-flex items-center ${sortBy === key ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-slate-200'}`}>
                   {label}{sortBy === key && <span className="ml-1">{sortDir === 'desc' ? '\u2193' : '\u2191'}</span>}
                 </button>
               ))}

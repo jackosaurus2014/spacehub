@@ -81,6 +81,9 @@ function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            inputMode="email"
+            enterKeyHint="send"
             aria-label="Contact email"
             placeholder="Contact email"
             className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white w-44"

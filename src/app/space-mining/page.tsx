@@ -1990,19 +1990,19 @@ function SpaceMiningContent() {
                 <div className="text-cyan-400 text-xs uppercase tracking-widest mb-2 font-semibold">Active Companies</div>
                 <div className="text-white font-bold text-2xl mb-1">{MINING_COMPANIES.filter(c => c.status === 'active').length}</div>
                 <p className="text-slate-400 text-xs">Developing asteroid and lunar mining technologies</p>
-                <button onClick={() => handleTabChange('companies')} className="text-cyan-400 hover:text-cyan-300 text-xs mt-2 font-medium">View all companies &rarr;</button>
+                <button onClick={() => handleTabChange('companies')} className="text-cyan-400 hover:text-cyan-300 text-xs mt-2 font-medium min-h-[44px] inline-flex items-center">View all companies &rarr;</button>
               </div>
               <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/30">
                 <div className="text-orange-400 text-xs uppercase tracking-widest mb-2 font-semibold">Mining Technologies</div>
                 <div className="text-white font-bold text-2xl mb-1">{MINING_TECHNOLOGIES.length}</div>
                 <p className="text-slate-400 text-xs">From optical mining to beneficiation in microgravity</p>
-                <button onClick={() => handleTabChange('technologies')} className="text-orange-400 hover:text-orange-300 text-xs mt-2 font-medium">View technologies &rarr;</button>
+                <button onClick={() => handleTabChange('technologies')} className="text-orange-400 hover:text-orange-300 text-xs mt-2 font-medium min-h-[44px] inline-flex items-center">View technologies &rarr;</button>
               </div>
               <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/30">
                 <div className="text-purple-400 text-xs uppercase tracking-widest mb-2 font-semibold">Tracked Resources</div>
                 <div className="text-white font-bold text-2xl mb-1">{RESOURCE_ESTIMATES.length}</div>
                 <p className="text-slate-400 text-xs">Water, PGMs, rare earths, He-3, iron, silicon, carbon</p>
-                <button onClick={() => handleTabChange('resources')} className="text-purple-400 hover:text-purple-300 text-xs mt-2 font-medium">View resource values &rarr;</button>
+                <button onClick={() => handleTabChange('resources')} className="text-purple-400 hover:text-purple-300 text-xs mt-2 font-medium min-h-[44px] inline-flex items-center">View resource values &rarr;</button>
               </div>
             </div>
           </div>

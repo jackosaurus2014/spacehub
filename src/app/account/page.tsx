@@ -247,6 +247,8 @@ function ProfileSection({ session }: { session: any }) {
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
+                autoComplete="name"
+                enterKeyHint="done"
                 className="flex-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 placeholder="Your name"
                 autoFocus
@@ -415,6 +417,7 @@ function SecuritySection() {
               className="w-full px-3 py-2 pr-10 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
               placeholder="Enter current password"
               autoComplete="current-password"
+              enterKeyHint="next"
             />
             <button
               type="button"
@@ -447,6 +450,7 @@ function SecuritySection() {
               className="w-full px-3 py-2 pr-10 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
               placeholder="Enter new password"
               autoComplete="new-password"
+              enterKeyHint="next"
             />
             <button
               type="button"
@@ -482,6 +486,7 @@ function SecuritySection() {
               className="w-full px-3 py-2 pr-10 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
               placeholder="Confirm new password"
               autoComplete="new-password"
+              enterKeyHint="done"
             />
             <button
               type="button"

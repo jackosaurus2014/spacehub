@@ -262,7 +262,7 @@ function RoleCard({
       </div>
 
       {/* Expand/Collapse */}
-      <button onClick={() => setExpanded(!expanded)} className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors">
+      <button onClick={() => setExpanded(!expanded)} className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors min-h-[44px] min-w-[44px] inline-flex items-center">
         {expanded ? 'Show less' : 'Show details'}
       </button>
 
@@ -444,7 +444,7 @@ function LocationModifierSection({
         </svg>
         <h3 className="text-sm font-medium text-white">Adjust for Location</h3>
         {selectedLocation && (
-          <button onClick={() => onSelect('')} className="ml-auto text-xs text-slate-500 hover:text-slate-300 transition-colors">
+          <button onClick={() => onSelect('')} className="ml-auto text-xs text-slate-500 hover:text-slate-300 transition-colors min-h-[44px] min-w-[44px] inline-flex items-center">
             Reset
           </button>
         )}

@@ -2563,7 +2563,7 @@ function RegulatoryHubContent() {
       {error && (
         <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
           <div className="text-red-400 text-sm font-medium mb-2">{error}</div>
-          <button onClick={() => { setError(null); setLoading(true); window.location.reload(); }} className="text-xs text-red-300 hover:text-red-200 underline transition-colors">Try Again</button>
+          <button onClick={() => { setError(null); setLoading(true); window.location.reload(); }} className="text-xs text-red-300 hover:text-red-200 underline transition-colors min-h-[44px] px-4 inline-flex items-center">Try Again</button>
         </div>
       )}
       {/* Stats Overview */}
