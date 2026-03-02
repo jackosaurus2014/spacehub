@@ -1182,6 +1182,17 @@ pre {
   animation: reveal-up-lg 0.5s ease-out forwards;
 }
 
+/* Horizontal reveal for ScrollReveal direction='left'/'right' */
+@keyframes reveal-left {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.animate-reveal-left {
+  opacity: 0;
+  animation: reveal-left 0.5s ease-out forwards;
+}
+
 /* Stagger delay classes matching framer-motion staggerChildren: 0.12 */
 .reveal-delay-1 { animation-delay: 0.12s; }
 .reveal-delay-2 { animation-delay: 0.24s; }
@@ -1190,7 +1201,8 @@ pre {
 /* Respect reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-reveal-up,
-  .animate-reveal-up-lg {
+  .animate-reveal-up-lg,
+  .animate-reveal-left {
     animation: none;
     opacity: 1;
     transform: none;

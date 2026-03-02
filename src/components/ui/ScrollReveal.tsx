@@ -1,7 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { ReactNode, useRef, useEffect, useState, Children, cloneElement, isValidElement } from 'react';
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -10,33 +9,60 @@ interface ScrollRevealProps {
   className?: string;
 }
 
+/**
+ * ScrollReveal — CSS-only entrance animation triggered by IntersectionObserver.
+ * Replaces the previous framer-motion implementation with zero JS-animation overhead.
+ */
 export default function ScrollReveal({
   children,
   delay = 0,
   direction = 'up',
   className = '',
 }: ScrollRevealProps) {
-  const directionOffset = {
-    up: { x: 0, y: 30 },
-    down: { x: 0, y: -30 },
-    left: { x: 30, y: 0 },
-    right: { x: -30, y: 0 },
-  };
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) { setVisible(true); return; }
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '-50px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Map direction to CSS animation class
+  const animClass = direction === 'up' || direction === 'down'
+    ? 'animate-reveal-up'
+    : 'animate-reveal-left';
+
+  const style = delay > 0 ? { animationDelay: `${delay}s` } : undefined;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, ...directionOffset[direction] }}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.6, delay, ease: 'easeOut' }}
-      className={className}
+    <div
+      ref={ref}
+      className={`${className} ${visible ? animClass : 'opacity-0'}`}
+      style={style}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
-// Staggered container for child animations
+// Staggered container — uses IntersectionObserver to trigger sequential child reveals
 export function StaggerContainer({
   children,
   className = '',
@@ -46,42 +72,72 @@ export function StaggerContainer({
   className?: string;
   staggerDelay?: number;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) { setVisible(true); return; }
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '-50px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Inject stagger delay into each StaggerItem child
+  let index = 0;
+  const staggeredChildren = Children.map(children, (child) => {
+    if (isValidElement(child) && (child.type as any).__isStaggerItem) {
+      const i = index++;
+      return cloneElement(child as React.ReactElement<any>, {
+        _visible: visible,
+        _delay: i * staggerDelay,
+      });
+    }
+    return child;
+  });
+
   return (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: '-50px' }}
-      variants={{
-        hidden: {},
-        visible: {
-          transition: {
-            staggerChildren: staggerDelay,
-          },
-        },
-      }}
-      className={className}
-    >
-      {children}
-    </motion.div>
+    <div ref={ref} className={className}>
+      {staggeredChildren}
+    </div>
   );
 }
 
+// Individual stagger item — receives visibility & delay from StaggerContainer
 export function StaggerItem({
   children,
   className = '',
+  _visible = false,
+  _delay = 0,
 }: {
   children: ReactNode;
   className?: string;
+  _visible?: boolean;
+  _delay?: number;
 }) {
   return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 30 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-      }}
-      className={className}
+    <div
+      className={`${className} ${_visible ? 'animate-reveal-up' : 'opacity-0'}`}
+      style={_delay > 0 ? { animationDelay: `${_delay}s` } : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
+
+// Tag for parent identification
+(StaggerItem as any).__isStaggerItem = true;
