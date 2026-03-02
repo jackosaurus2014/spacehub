@@ -420,7 +420,7 @@ function MarketIntelContent() {
     <PullToRefresh onRefresh={async () => { await fetchData(); }}>
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" icon="📊" accentColor="emerald" />
+        <AnimatedPageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" icon="📊" accentColor="emerald" breadcrumb="Dashboard → Intelligence" />
 
         {stats && stats.total > 0 && (
           <>
@@ -797,6 +797,12 @@ function MarketIntelContent() {
         {error && !loading && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
             <div className="text-red-400 text-sm font-medium">{error}</div>
+            <button
+              onClick={() => fetchData()}
+              className="mt-3 px-4 py-2 min-h-[44px] bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors text-sm font-medium"
+            >
+              Try Again
+            </button>
           </div>
         )}
 

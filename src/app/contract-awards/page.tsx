@@ -492,6 +492,7 @@ export default function ContractAwardsPage() {
           subtitle="Track government and commercial space contract awards from NASA, DoD, USSF, NRO, ESA, and commercial entities worldwide."
           icon={<span>&#x1F4DC;</span>}
           accentColor="amber"
+          breadcrumb="Dashboard → Business"
         />
 
         {/* Summary Statistics */}

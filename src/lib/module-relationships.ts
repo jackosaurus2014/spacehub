@@ -297,9 +297,10 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'dashboard': [MODULES.marketIntel, MODULES.news, MODULES.satellites, MODULES.launchManifest],
   'alerts': [MODULES.news, MODULES.marketIntel, MODULES.satellites, MODULES.compliance],
   'reading-list': [MODULES.news, MODULES.blogs, MODULES.resources, MODULES.aiInsights],
+  'my-watchlists': [MODULES.companyProfiles, MODULES.marketIntel, MODULES.alerts, MODULES.news],
   'deals': [MODULES.dealFlow, MODULES.maTracker, MODULES.contractAwards, MODULES.fundingTracker],
   'deal-rooms': [MODULES.deals, MODULES.investmentThesis, MODULES.dealFlow, MODULES.companyResearch],
-  'portfolio-tracker': [MODULES.investmentTracker, MODULES.fundingTracker, MODULES.spaceCapital, MODULES.dealFlow],
+  'portfolio-tracker': [MODULES.investmentTracker, MODULES.fundingTracker, MODULES.spaceCapital, MODULES.marketIntel],
   'customer-discovery': [MODULES.marketSizing, MODULES.companyProfiles, MODULES.marketplace, MODULES.industryTrends],
 
   // ── Business Models ──

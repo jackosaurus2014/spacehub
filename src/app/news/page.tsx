@@ -143,6 +143,12 @@ function NewsContent() {
       {error && !loading && (
         <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
           <div className="text-red-400 text-sm font-medium">{error}</div>
+          <button
+            onClick={() => fetchNews(0)}
+            className="mt-3 px-4 py-2 min-h-[44px] bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors text-sm font-medium"
+          >
+            Try Again
+          </button>
         </div>
       )}
 
@@ -223,7 +229,7 @@ export default function NewsPage() {
         ]}
       />
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader title="Space News" subtitle="Stay up to date with the latest from the space industry" icon="📰" accentColor="cyan" />
+        <AnimatedPageHeader title="Space News" subtitle="Stay up to date with the latest from the space industry" icon="📰" accentColor="cyan" breadcrumb="Dashboard → News & Media" />
 
         <AlertNudge moduleName="Space News" alertType="news" ctaHref="/alerts" className="mb-4" />
 
