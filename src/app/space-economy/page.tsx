@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
+import MobileValueProp from '@/components/marketing/MobileValueProp';
 
 // ── Data ─────────────────────────────────────────────────────
 const MARKET_SEGMENTS = [
@@ -131,6 +132,8 @@ export default function SpaceEconomyPage() {
           icon={'\u{1F4B0}'}
           accentColor="emerald"
         />
+
+        <MobileValueProp feature="space economy market data and projections" />
 
         {/* ── Search / Filter ────────────────────────────── */}
         <div className="mb-8">

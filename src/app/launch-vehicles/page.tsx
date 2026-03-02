@@ -9,6 +9,7 @@ import DataFreshness from '@/components/ui/DataFreshness';
 import ExportButton from '@/components/ui/ExportButton';
 import Link from 'next/link';
 import { clientLogger } from '@/lib/client-logger';
+import MobileValueProp from '@/components/marketing/MobileValueProp';
 import { getCompanyProfileUrl } from '@/lib/company-links';
 
 // ────────────────────────────────────────
@@ -1127,6 +1128,8 @@ export default function LaunchVehiclesPage() {
         />
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
+
+        <MobileValueProp feature="launch vehicle specs and cost data" />
 
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
