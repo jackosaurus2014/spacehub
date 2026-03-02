@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
+import { recordModuleVisit } from '@/lib/exploration-tracker';
 
 /**
  * Maps pathname to a user-friendly page title.
@@ -106,6 +107,8 @@ export default function PageTracker() {
     const title = getTitleForPath(pathname);
     if (title) {
       addPage(pathname, title);
+      // Automatically track every page visit for exploration scoring
+      recordModuleVisit(pathname);
     }
   }, [pathname, addPage]);
 

@@ -1161,6 +1161,42 @@ pre {
   }
 }
 
+/* ——— AnimatedPageHeader reveal animations (replaces framer-motion) ——— */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes reveal-up-lg {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-reveal-up {
+  opacity: 0;
+  animation: reveal-up 0.4s ease-out forwards;
+}
+
+.animate-reveal-up-lg {
+  opacity: 0;
+  animation: reveal-up-lg 0.5s ease-out forwards;
+}
+
+/* Stagger delay classes matching framer-motion staggerChildren: 0.12 */
+.reveal-delay-1 { animation-delay: 0.12s; }
+.reveal-delay-2 { animation-delay: 0.24s; }
+.reveal-delay-3 { animation-delay: 0.36s; }
+
+/* Respect reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-reveal-up,
+  .animate-reveal-up-lg {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* ——— Expandable card height animation (grid-rows trick) ——— */
 .expandable-content {
   display: grid;

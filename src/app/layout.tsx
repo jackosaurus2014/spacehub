@@ -42,7 +42,7 @@ const ErrorReporter = dynamic(() => import('@/components/ErrorReporter'), { ssr:
 import ModuleNavBar from '@/components/ModuleNavBar';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
-const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'swap' });
+const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'optional' });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://spacenexus.us'),
@@ -155,6 +155,12 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="color-scheme" content="dark light" />
+        <link rel="preconnect" href="https://ll.thespacedevs.com" />
+        <link rel="dns-prefetch" href="https://ll.thespacedevs.com" />
+        <link rel="preconnect" href="https://celestrak.org" />
+        <link rel="dns-prefetch" href="https://celestrak.org" />
+        <link rel="preconnect" href="https://images2.imgbox.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://images2.imgbox.com" />
         <StructuredData />
         {/* Inline service worker registration for PWA crawlers (PWABuilder, Lighthouse) */}
         {/* The full SW lifecycle management is in ServiceWorkerRegistration component */}

@@ -1,7 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { ReactNode, useRef, useEffect, useState } from 'react';
 
 interface AnimatedPageHeaderProps {
   title: string;
@@ -20,6 +19,33 @@ export default function AnimatedPageHeader({
   accentColor = 'cyan',
   children,
 }: AnimatedPageHeaderProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    // If IntersectionObserver is not available, show immediately
+    if (typeof IntersectionObserver === 'undefined') {
+      setVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const accentGradients: Record<string, string> = {
     cyan: 'from-cyan-400 to-blue-500',
     purple: 'from-purple-400 to-pink-500',
@@ -30,34 +56,34 @@ export default function AnimatedPageHeader({
 
   const gradient = accentGradients[accentColor] || accentGradients.cyan;
 
+  // Build child index for stagger delays
+  // Order: breadcrumb (if present), title row, subtitle (if present), children (if present)
+  let delayIndex = 0;
+
+  const breadcrumbDelay = breadcrumb ? delayIndex++ : -1;
+  const titleDelay = delayIndex++;
+  const subtitleDelay = subtitle ? delayIndex++ : -1;
+  const childrenDelay = children ? delayIndex++ : -1;
+
+  const delayClass = (idx: number) =>
+    idx === 0 ? '' : idx === 1 ? 'reveal-delay-1' : idx === 2 ? 'reveal-delay-2' : 'reveal-delay-3';
+
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={{
-        hidden: {},
-        visible: { transition: { staggerChildren: 0.12 } },
-      }}
-      className="mb-8"
-    >
+    <div ref={containerRef} className="mb-8">
       {breadcrumb && (
-        <motion.p
-          variants={{
-            hidden: { opacity: 0, y: 10 },
-            visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-          }}
-          className="text-sm text-slate-400 mb-2 tracking-wide uppercase"
+        <p
+          className={`text-sm text-slate-400 mb-2 tracking-wide uppercase ${
+            visible ? `animate-reveal-up ${delayClass(breadcrumbDelay)}` : 'opacity-0'
+          }`}
         >
           {breadcrumb}
-        </motion.p>
+        </p>
       )}
 
-      <motion.div
-        variants={{
-          hidden: { opacity: 0, y: 20 },
-          visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-        }}
-        className="flex items-center gap-4"
+      <div
+        className={`flex items-center gap-4 ${
+          visible ? `animate-reveal-up-lg ${delayClass(titleDelay)}` : 'opacity-0'
+        }`}
       >
         {icon && (
           <span className="text-4xl">{icon}</span>
@@ -68,31 +94,27 @@ export default function AnimatedPageHeader({
           </h1>
           <div className={`h-1 w-16 mt-2 rounded-full bg-gradient-to-r ${gradient}`} />
         </div>
-      </motion.div>
+      </div>
 
       {subtitle && (
-        <motion.p
-          variants={{
-            hidden: { opacity: 0, y: 15 },
-            visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-          }}
-          className="mt-3 text-lg text-slate-300 max-w-3xl"
+        <p
+          className={`mt-3 text-lg text-slate-300 max-w-3xl ${
+            visible ? `animate-reveal-up-lg ${delayClass(subtitleDelay)}` : 'opacity-0'
+          }`}
         >
           {subtitle}
-        </motion.p>
+        </p>
       )}
 
       {children && (
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 10 },
-            visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
-          }}
-          className="mt-4"
+        <div
+          className={`mt-4 ${
+            visible ? `animate-reveal-up ${delayClass(childrenDelay)}` : 'opacity-0'
+          }`}
         >
           {children}
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 }

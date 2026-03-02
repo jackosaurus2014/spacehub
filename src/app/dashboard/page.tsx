@@ -32,7 +32,6 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import StreakBadge from '@/components/mobile/StreakBadge';
 import ExplorationProgress from '@/components/ui/ExplorationProgress';
-import { recordModuleVisit } from '@/lib/exploration-tracker';
 
 /** Returns a time-of-day greeting with the user's name */
 function getTimeGreeting(name: string): string {
@@ -231,11 +230,6 @@ export default function DashboardPage() {
   const router = useRouter();
   const [layoutSelectorOpen, setLayoutSelectorOpen] = useState(false);
   const [moduleConfigOpen, setModuleConfigOpen] = useState(false);
-
-  // Record module visit on mount
-  useEffect(() => {
-    recordModuleVisit('/dashboard');
-  }, []);
 
   // Layout state
   const [gridColumns, setGridColumns] = useState<LayoutGridColumns>(2);
