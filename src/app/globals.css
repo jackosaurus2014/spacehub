@@ -4,6 +4,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* View Transitions API — progressive enhancement for smooth page navigation */
+@view-transition {
+  navigation: auto;
+}
+
+/* Persistent elements across page transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.2s;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Keep navigation bar stable during transitions */
+.nav-persistent {
+  view-transition-name: main-nav;
+}
+::view-transition-old(main-nav),
+::view-transition-new(main-nav) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 html {
   color-scheme: dark;
 }

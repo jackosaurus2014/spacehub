@@ -13,15 +13,15 @@ import StructuredData from '@/components/StructuredData';
 import dynamic from 'next/dynamic';
 const SearchCommandPalette = dynamic(() => import('@/components/SearchCommandPalette'), { ssr: false });
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
-import CookieConsent from '@/components/ui/CookieConsent';
-import PWAInstallPrompt from '@/components/PWAInstallPrompt';
+const CookieConsent = dynamic(() => import('@/components/ui/CookieConsent'), { ssr: false });
+const PWAInstallPrompt = dynamic(() => import('@/components/PWAInstallPrompt'), { ssr: false });
 const InstallPrompt = dynamic(() => import('@/components/InstallPrompt'), { ssr: false });
 const IOSInstallPrompt = dynamic(() => import('@/components/mobile/IOSInstallPrompt'), { ssr: false });
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import ToastContainer from '@/components/ui/Toast';
 import NavigationProgress from '@/components/ui/NavigationProgress';
 const KeyboardShortcutsModal = dynamic(() => import('@/components/ui/KeyboardShortcutsModal'), { ssr: false });
-import PageTracker from '@/components/PageTracker';
+const PageTracker = dynamic(() => import('@/components/PageTracker'), { ssr: false });
 import PageTransitionProvider from '@/components/mobile/PageTransitionProvider';
 import OfflineIndicator from '@/components/ui/OfflineIndicator';
 // Changelog modal removed — no longer shown on visit
@@ -35,9 +35,9 @@ const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), {
 const SwipeModuleNavigation = dynamic(() => import('@/components/mobile/SwipeModuleNavigation'), { ssr: false });
 const BackToTop = dynamic(() => import('@/components/ui/BackToTop'), { ssr: false });
 const ScrollProgress = dynamic(() => import('@/components/ui/ScrollProgress'), { ssr: false });
+const WebVitals = dynamic(() => import('@/components/analytics/WebVitals'), { ssr: false });
+const ErrorReporter = dynamic(() => import('@/components/ErrorReporter'), { ssr: false });
 import ModuleNavBar from '@/components/ModuleNavBar';
-import WebVitals from '@/components/analytics/WebVitals';
-import ErrorReporter from '@/components/ErrorReporter';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'swap' });

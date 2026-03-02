@@ -15,6 +15,7 @@ import { clientLogger } from '@/lib/client-logger';
 import { getCompanyProfileUrl } from '@/lib/company-links';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
+import { BLUR_PLACEHOLDER_1_1 } from '@/lib/blur-placeholder';
 
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
   { value: 'all', label: 'All Events', icon: '🌌' },
@@ -111,6 +112,8 @@ function MissionThumbnail({
           alt=""
           fill
           sizes={size === 'lg' ? '(max-width: 640px) 100vw, 144px' : size === 'md' ? '(max-width: 640px) 100vw, 128px' : '64px'}
+          placeholder="blur"
+          blurDataURL={BLUR_PLACEHOLDER_1_1}
           className="object-cover"
           onError={() => setImgError(true)}
         />

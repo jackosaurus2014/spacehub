@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { NewsArticle, NewsArticleCompanyTag } from '@/types';
 import WhyThisMatters from '@/components/news/WhyThisMatters';
 import BookmarkButton from '@/components/ui/BookmarkButton';
+import { BLUR_PLACEHOLDER_16_9 } from '@/lib/blur-placeholder';
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -115,6 +116,8 @@ export default function NewsCard({ article, featured = false, priority = false }
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               priority={priority}
+              placeholder="blur"
+              blurDataURL={BLUR_PLACEHOLDER_16_9}
               className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             />
           ) : (
@@ -199,6 +202,8 @@ export default function NewsCard({ article, featured = false, priority = false }
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               priority={priority}
+              placeholder="blur"
+              blurDataURL={BLUR_PLACEHOLDER_16_9}
               className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             />
           ) : (

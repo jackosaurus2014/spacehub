@@ -474,7 +474,7 @@ export default function Navigation() {
   return (
     <nav
       aria-label="Main navigation"
-      className={`sticky top-0 z-50 transition-all duration-300 backdrop-blur-xl safe-area-pt ${navHidden ? '-translate-y-full' : 'translate-y-0'}`}
+      className={`nav-persistent sticky top-0 z-50 transition-all duration-300 backdrop-blur-xl safe-area-pt ${navHidden ? '-translate-y-full' : 'translate-y-0'}`}
       style={{
         background: scrolled
           ? 'linear-gradient(145deg, rgba(3, 7, 18, 0.97) 0%, rgba(15, 23, 42, 0.95) 25%, rgba(15, 23, 42, 0.93) 50%, rgba(15, 23, 42, 0.95) 75%, rgba(3, 7, 18, 0.97) 100%)'

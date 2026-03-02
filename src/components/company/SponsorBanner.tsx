@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { BLUR_PLACEHOLDER_16_9 } from '@/lib/blur-placeholder';
 
 interface SponsorBannerProps {
   companyName: string;
@@ -16,7 +17,7 @@ export default function SponsorBanner({ companyName, companySlug, bannerUrl, tag
     <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/5 via-slate-800/50 to-amber-500/5 mb-6">
       {bannerUrl && (
         <div className="absolute inset-0 opacity-20">
-          <Image src={bannerUrl} alt={companyName + ' sponsor banner'} className="w-full h-full object-cover" fill sizes="100vw" unoptimized />
+          <Image src={bannerUrl} alt={companyName + ' sponsor banner'} className="w-full h-full object-cover" fill sizes="100vw" placeholder="blur" blurDataURL={BLUR_PLACEHOLDER_16_9} unoptimized />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent" />
         </div>
       )}
