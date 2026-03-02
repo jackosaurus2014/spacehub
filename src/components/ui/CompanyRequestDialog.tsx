@@ -61,17 +61,21 @@ export default function CompanyRequestDialog({ isOpen, onClose }: CompanyRequest
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center md:p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={handleClose}
       />
 
-      {/* Dialog */}
-      <div className="relative bg-space-800 border border-space-600 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      {/* Dialog — bottom-sheet on mobile, centered on desktop */}
+      <div className="relative bg-space-800 border border-space-600 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-lg max-h-[90vh] overflow-y-auto overscroll-contain">
+        {/* Mobile drag handle */}
+        <div className="md:hidden flex justify-center pt-2 pb-1">
+          <div className="w-10 h-1 rounded-full bg-slate-600" />
+        </div>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-space-700">
+        <div className="flex items-center justify-between p-6 pt-3 md:pt-6 border-b border-space-700">
           <div>
             <h2 className="text-xl font-semibold text-white">Request Company Addition</h2>
             <p className="text-star-300 text-sm mt-1">

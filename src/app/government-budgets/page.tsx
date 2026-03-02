@@ -142,7 +142,8 @@ export default function GovernmentBudgetsPage() {
 
         {/* Agency Budget Table */}
         <ScrollReveal delay={0.2}>
-          <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl overflow-hidden mb-8">
+          {/* Desktop Table */}
+          <div className="hidden md:block bg-slate-800/30 border border-slate-700/50 rounded-2xl overflow-hidden mb-8">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[700px]">
                 <thead>
@@ -192,6 +193,60 @@ export default function GovernmentBudgetsPage() {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-3 mb-8">
+            {filtered.map((agency) => {
+              const perCapita = (agency.budget * 1000) / agency.population;
+              const pctGdp = (agency.budget / agency.gdp) * 100;
+              return (
+                <div key={agency.name} className="card p-4">
+                  {/* Agency header */}
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <span className="text-xl">{agency.flag}</span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">{agency.name}</p>
+                      <p className="text-xs text-slate-500">{agency.country}</p>
+                    </div>
+                  </div>
+
+                  {/* Budget amount */}
+                  <p className="text-2xl font-bold text-white mb-3">${agency.budget.toFixed(1)}B</p>
+
+                  {/* Relative progress bar */}
+                  <div className="w-full bg-slate-700/40 rounded-full h-2 mb-3">
+                    <div
+                      className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 transition-all"
+                      style={{ width: `${(agency.budget / maxBudget) * 100}%` }}
+                    />
+                  </div>
+
+                  {/* Two-column stats */}
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div className="bg-slate-700/30 rounded-lg px-3 py-2">
+                      <p className="text-xs text-slate-500">Per Capita</p>
+                      <p className="text-sm font-medium text-slate-200">${perCapita.toFixed(1)}M/M</p>
+                    </div>
+                    <div className="bg-slate-700/30 rounded-lg px-3 py-2">
+                      <p className="text-xs text-slate-500">% GDP</p>
+                      <p className="text-sm font-medium text-slate-200">{pctGdp.toFixed(2)}%</p>
+                    </div>
+                  </div>
+
+                  {/* YoY change badge */}
+                  <div className="flex items-center">
+                    <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
+                      agency.trend >= 0
+                        ? 'bg-emerald-500/15 text-emerald-400'
+                        : 'bg-red-500/15 text-red-400'
+                    }`}>
+                      {agency.trend >= 0 ? '↑' : '↓'} {agency.trend >= 0 ? '+' : ''}{agency.trend.toFixed(1)}% YoY
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </ScrollReveal>
 
