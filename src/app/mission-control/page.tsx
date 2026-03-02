@@ -11,6 +11,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import MissionStream, { extractYouTubeId } from '@/components/live/MissionStream';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import AdSlot from '@/components/ads/AdSlot';
+import AlertNudge from '@/components/ui/AlertNudge';
 import { clientLogger } from '@/lib/client-logger';
 import { getCompanyProfileUrl } from '@/lib/company-links';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -1055,6 +1056,8 @@ function MissionControlContent() {
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
         <AnimatedPageHeader title="Mission Control" subtitle="Explore all upcoming space missions, launches, and events" icon="🚀" accentColor="cyan" />
+
+        <AlertNudge moduleName="Mission Control" alertType="launch" ctaHref="/alerts" className="mb-4" />
 
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">

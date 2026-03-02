@@ -35,6 +35,8 @@ const OnboardingTour = dynamic(() => import('@/components/ui/OnboardingTour'), {
 const SwipeModuleNavigation = dynamic(() => import('@/components/mobile/SwipeModuleNavigation'), { ssr: false });
 const PushOptInBanner = dynamic(() => import('@/components/mobile/PushOptInBanner'), { ssr: false });
 const WhatsNew = dynamic(() => import('@/components/mobile/WhatsNew').then(m => ({ default: m.default })), { ssr: false });
+const ReferralPrompt = dynamic(() => import('@/components/marketing/ReferralPrompt'), { ssr: false });
+const AppRatingPrompt = dynamic(() => import('@/components/mobile/AppRatingPrompt'), { ssr: false });
 const BackToTop = dynamic(() => import('@/components/ui/BackToTop'), { ssr: false });
 const ScrollProgress = dynamic(() => import('@/components/ui/ScrollProgress'), { ssr: false });
 const WebVitals = dynamic(() => import('@/components/analytics/WebVitals'), { ssr: false });
@@ -235,6 +237,8 @@ export default function RootLayout({
               <IOSInstallPrompt />
               <PushOptInBanner />
               <WhatsNew />
+              <ReferralPrompt />
+              <AppRatingPrompt />
               <ErrorReporter />
               <BackToTop />
               <ScrollProgress />

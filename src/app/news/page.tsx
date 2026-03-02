@@ -13,6 +13,7 @@ import PullToRefresh from '@/components/ui/PullToRefresh';
 import ArticleLimitBanner from '@/components/ui/ArticleLimitBanner';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import AdSlot from '@/components/ads/AdSlot';
+import AlertNudge from '@/components/ui/AlertNudge';
 import EmptyState from '@/components/ui/EmptyState';
 import { clientLogger } from '@/lib/client-logger';
 import Link from 'next/link';
@@ -223,6 +224,8 @@ export default function NewsPage() {
       />
       <div className="container mx-auto px-4">
         <AnimatedPageHeader title="Space News" subtitle="Stay up to date with the latest from the space industry" icon="📰" accentColor="cyan" />
+
+        <AlertNudge moduleName="Space News" alertType="news" ctaHref="/alerts" className="mb-4" />
 
         {/* Content wrapped in Suspense for useSearchParams */}
         <Suspense fallback={
