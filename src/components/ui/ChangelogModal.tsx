@@ -42,7 +42,7 @@ export default function ChangelogModal() {
   if (!isOpen || newEntries.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="changelog-title">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
 
@@ -51,12 +51,12 @@ export default function ChangelogModal() {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50">
           <div>
-            <h2 className="text-lg font-bold text-white">What&apos;s New</h2>
+            <h2 id="changelog-title" className="text-lg font-bold text-white">What&apos;s New</h2>
             <p className="text-sm text-slate-400">Recent updates to SpaceNexus</p>
           </div>
           <button
             onClick={handleClose}
-            className="text-slate-400 hover:text-white transition-colors p-1"
+            className="text-slate-400 hover:text-white transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
             aria-label="Close"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

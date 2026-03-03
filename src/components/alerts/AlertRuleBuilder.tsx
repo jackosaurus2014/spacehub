@@ -1074,12 +1074,12 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
   // ============================================================
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="alert-rule-title">
       <div className="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700 flex-shrink-0">
           <div>
-            <h2 className="text-lg font-bold text-white">Create Alert Rule</h2>
+            <h2 id="alert-rule-title" className="text-lg font-bold text-white">Create Alert Rule</h2>
             <p className="text-xs text-slate-400 mt-0.5">
               Step {step} of 4: {STEP_LABELS[step]}
             </p>
@@ -1087,7 +1087,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
           <button
             onClick={onClose}
             aria-label="Close alert rule builder"
-            className="text-slate-400 hover:text-white transition-colors p-1"
+            className="text-slate-400 hover:text-white transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

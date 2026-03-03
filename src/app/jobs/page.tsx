@@ -1301,7 +1301,7 @@ function JobCard({
   onToggle: () => void;
 }) {
   return (
-    <div className="card p-5 cursor-pointer group" onClick={onToggle}>
+    <div className="card p-5 cursor-pointer group" role="button" tabIndex={0} onClick={onToggle} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}>
       <div className="flex items-start gap-4">
         {/* Company logo placeholder */}
         <div

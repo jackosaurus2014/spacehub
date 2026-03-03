@@ -71,7 +71,7 @@ export default function ServiceListingDialog({ isOpen, onClose }: ServiceListing
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center md:p-4">
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center md:p-4" role="dialog" aria-modal="true" aria-labelledby="service-listing-title">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -87,7 +87,7 @@ export default function ServiceListingDialog({ isOpen, onClose }: ServiceListing
         {/* Header */}
         <div className="flex items-center justify-between p-6 pt-3 md:pt-6 border-b border-space-700">
           <div>
-            <h2 className="text-xl font-semibold text-white">List Your Service</h2>
+            <h2 id="service-listing-title" className="text-xl font-semibold text-white">List Your Service</h2>
             <p className="text-star-300 text-sm mt-1">
               Get your orbital service listed in our marketplace
             </p>

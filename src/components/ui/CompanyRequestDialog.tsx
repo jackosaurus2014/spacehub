@@ -61,7 +61,7 @@ export default function CompanyRequestDialog({ isOpen, onClose }: CompanyRequest
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center md:p-4">
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center md:p-4" role="dialog" aria-modal="true" aria-labelledby="company-request-title">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -77,7 +77,7 @@ export default function CompanyRequestDialog({ isOpen, onClose }: CompanyRequest
         {/* Header */}
         <div className="flex items-center justify-between p-6 pt-3 md:pt-6 border-b border-space-700">
           <div>
-            <h2 className="text-xl font-semibold text-white">Request Company Addition</h2>
+            <h2 id="company-request-title" className="text-xl font-semibold text-white">Request Company Addition</h2>
             <p className="text-star-300 text-sm mt-1">
               Help us expand our database
             </p>
