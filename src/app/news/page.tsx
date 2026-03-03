@@ -14,6 +14,7 @@ import ArticleLimitBanner from '@/components/ui/ArticleLimitBanner';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import AdSlot from '@/components/ads/AdSlot';
 import AlertNudge from '@/components/ui/AlertNudge';
+import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 import EmptyState from '@/components/ui/EmptyState';
 import { clientLogger } from '@/lib/client-logger';
 import Link from 'next/link';
@@ -126,11 +127,14 @@ function NewsContent() {
             ]}
           />
         </div>
-        {lastUpdated && (
-          <p className="text-xs text-slate-500 mb-4">
-            Last updated: {lastUpdated.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
-          </p>
-        )}
+        <div className="mb-4">
+          <DataFreshnessBadge
+            lastUpdated={lastUpdated}
+            source="RSS Feeds"
+            refreshInterval="every 30 min"
+            onRefresh={handleRefresh}
+          />
+        </div>
       </div>
 
       {/* Article Limit Banner */}

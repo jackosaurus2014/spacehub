@@ -13,6 +13,7 @@ import SatelliteCard, {
 } from '@/components/satellites/SatelliteCard';
 import AdSlot from '@/components/ads/AdSlot';
 import PullToRefresh from '@/components/ui/PullToRefresh';
+import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 import EmptyState from '@/components/ui/EmptyState';
 import { clientLogger } from '@/lib/client-logger';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
@@ -130,6 +131,7 @@ function SatelliteTrackerContent() {
   const [data, setData] = useState<SatelliteData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastFetchedAt, setLastFetchedAt] = useState<Date | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
   const [orbitFilter, setOrbitFilter] = useState<OrbitType | ''>(initialOrbit);
   const [statusFilter, setStatusFilter] = useState<SatelliteStatus | ''>(initialStatus);
@@ -186,6 +188,7 @@ function SatelliteTrackerContent() {
 
       if (!result.error) {
         setData(result);
+        setLastFetchedAt(new Date());
       }
     } catch (error) {
       clientLogger.error('Failed to fetch satellite data', { error: error instanceof Error ? error.message : String(error) });
@@ -212,7 +215,14 @@ function SatelliteTrackerContent() {
           subtitle="Track active satellites across all orbital regimes - from ISS to GPS to Starlink"
           icon="🛰️"
           accentColor="cyan"
-        />
+        >
+          <DataFreshnessBadge
+            lastUpdated={lastFetchedAt}
+            source="CelesTrak"
+            refreshInterval="every 6 hours"
+            onRefresh={() => { setLoading(true); fetchData(); }}
+          />
+        </AnimatedPageHeader>
 
         {error && !loading && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">

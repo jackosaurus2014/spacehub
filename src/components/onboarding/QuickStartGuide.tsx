@@ -144,8 +144,8 @@ export default function QuickStartGuide() {
   return (
     <div
       className={`fixed z-50 transition-all duration-500 ease-out
-        bottom-4 right-4 sm:bottom-auto sm:top-20 sm:right-4
-        w-[calc(100vw-2rem)] sm:w-80
+        bottom-20 right-4 sm:bottom-auto sm:top-20 sm:right-4
+        w-[min(calc(100vw-2rem),24rem)] sm:w-80 max-h-[70vh] overflow-y-auto
         ${visible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'}`}
     >
       <div className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl shadow-black/40 overflow-hidden">
