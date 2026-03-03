@@ -204,7 +204,7 @@ function LoginContent() {
             >
               Password
             </label>
-            <Link href="/forgot-password" className="text-sm text-plasma-400 hover:text-plasma-300 transition-colors">
+            <Link href="/forgot-password" className="text-sm text-plasma-400 hover:text-plasma-300 transition-colors py-1 px-2 -mr-2 rounded">
               Forgot password?
             </Link>
           </div>

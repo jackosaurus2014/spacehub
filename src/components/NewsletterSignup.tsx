@@ -118,7 +118,7 @@ export default function NewsletterSignup({
           <button
             type="submit"
             disabled={status === 'loading' || !email}
-            className="w-full px-3 py-2 text-sm font-medium bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+            className="w-full px-3 py-2.5 min-h-[44px] text-sm font-medium bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
           >
             {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
           </button>
@@ -186,6 +186,7 @@ export default function NewsletterSignup({
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <input
                 type="text"
+                autoComplete="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name (optional)"

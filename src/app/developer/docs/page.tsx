@@ -541,7 +541,7 @@ function ApiDocsPageInner() {
                 <div>
                   <p className="text-sm text-slate-400 mb-1.5">Option 1: X-API-Key Header (recommended)</p>
                   <div className="relative">
-                    <pre className="bg-slate-800 rounded p-3 border border-slate-600">
+                    <pre className="bg-slate-800 rounded p-3 border border-slate-600 overflow-x-auto">
                       <code className="text-green-400 text-sm">X-API-Key: snx_YOUR_API_KEY</code>
                     </pre>
                     <div className="absolute top-1.5 right-1.5">
@@ -553,7 +553,7 @@ function ApiDocsPageInner() {
                 <div>
                   <p className="text-sm text-slate-400 mb-1.5">Option 2: Bearer Token</p>
                   <div className="relative">
-                    <pre className="bg-slate-800 rounded p-3 border border-slate-600">
+                    <pre className="bg-slate-800 rounded p-3 border border-slate-600 overflow-x-auto">
                       <code className="text-green-400 text-sm">Authorization: Bearer snx_YOUR_API_KEY</code>
                     </pre>
                     <div className="absolute top-1.5 right-1.5">

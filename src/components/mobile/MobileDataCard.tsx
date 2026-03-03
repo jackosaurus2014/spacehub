@@ -1,7 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
-
 interface SecondaryField {
   label: string;
   value: string | number;
@@ -41,11 +39,10 @@ export default function MobileDataCard({
   const trendStyle = trend ? trendConfig[trend] : null;
 
   return (
-    <motion.div
-      whileTap={onClick ? { scale: 0.98 } : undefined}
+    <div
       onClick={onClick}
-      className={`rounded-xl border border-slate-700/50 p-4 backdrop-blur-sm transition-colors ${
-        onClick ? 'cursor-pointer active:bg-slate-800/60 hover:border-cyan-500/30' : ''
+      className={`rounded-xl border border-slate-700/50 p-4 backdrop-blur-sm transition-all duration-150 ${
+        onClick ? 'cursor-pointer active:scale-[0.98] active:bg-slate-800/60 hover:border-cyan-500/30' : ''
       } ${className}`}
       style={{
         background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.85))',
@@ -92,6 +89,6 @@ export default function MobileDataCard({
           ))}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

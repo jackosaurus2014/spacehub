@@ -118,6 +118,7 @@ export default function EditProfilePage() {
                 <label className="block text-sm font-medium text-slate-400 mb-1">Headline</label>
                 <input
                   type="text"
+                  autoComplete="organization-title"
                   value={form.headline}
                   onChange={(e) => setForm((f) => ({ ...f, headline: e.target.value }))}
                   placeholder="e.g., Propulsion Engineer at SpaceX"
@@ -133,7 +134,7 @@ export default function EditProfilePage() {
                   value={form.bio}
                   onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
                   placeholder="Tell the community about your experience and interests in the space industry..."
-                  rows={5}
+                  rows={3}
                   maxLength={1000}
                   className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
                 />
@@ -162,6 +163,7 @@ export default function EditProfilePage() {
                 <label className="block text-sm font-medium text-slate-400 mb-1">Location</label>
                 <input
                   type="text"
+                  autoComplete="address-level2"
                   value={form.location}
                   onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
                   placeholder="e.g., Los Angeles, CA"
@@ -173,6 +175,7 @@ export default function EditProfilePage() {
                 <label className="block text-sm font-medium text-slate-400 mb-1">LinkedIn URL</label>
                 <input
                   type="url"
+                  autoComplete="url"
                   value={form.linkedinUrl}
                   onChange={(e) => setForm((f) => ({ ...f, linkedinUrl: e.target.value }))}
                   placeholder="https://linkedin.com/in/yourname"

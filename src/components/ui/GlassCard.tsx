@@ -1,7 +1,6 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { motion } from 'framer-motion';
 
 interface GlassCardProps {
   children: ReactNode;
@@ -17,13 +16,13 @@ export default function GlassCard({
   onClick,
 }: GlassCardProps) {
   return (
-    <motion.div
-      whileHover={hoverable ? { y: -4, scale: 1.01 } : undefined}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    <div
       onClick={onClick}
-      className={`card p-6 ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      className={`card p-6 transition-transform duration-200 ${
+        hoverable ? 'hover:-translate-y-1 hover:scale-[1.01]' : ''
+      } ${onClick ? 'cursor-pointer' : ''} ${className}`}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
