@@ -6,6 +6,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
+import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 
 export const metadata: Metadata = {
   title: 'Space Investment Intelligence for Investors | SpaceNexus',
@@ -238,6 +239,11 @@ export default function InvestorsSolutionPage() {
       <section className="container mx-auto px-4 pb-16">
         <RelatedModules modules={getRelatedModules('solutions/investors')} />
       </section>
+
+      <StickyMobileCTA
+        label="Start Free Trial"
+        href="/pricing?ref=investors"
+      />
     </div>
   );
 }

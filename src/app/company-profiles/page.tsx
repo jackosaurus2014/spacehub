@@ -14,6 +14,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import AdSlot from '@/components/ads/AdSlot';
 import EmptyState from '@/components/ui/EmptyState';
 import PullToRefresh from '@/components/ui/PullToRefresh';
+import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 import SponsorBadge from '@/components/company/SponsorBadge';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
@@ -694,6 +695,11 @@ export default function CompanyProfilesPage() {
 
       </div>
     </div>
+    <StickyMobileCTA
+      label="Track Companies"
+      href="/register?ref=company-profiles"
+      icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>}
+    />
     </PullToRefresh>
   );
 }

@@ -6,6 +6,7 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
+import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 
 export const metadata: Metadata = {
   title: 'Space Business Intelligence for Executives | SpaceNexus',
@@ -237,6 +238,12 @@ export default function ExecutivesSolutionPage() {
       <section className="container mx-auto px-4 pb-16">
         <RelatedModules modules={getRelatedModules('solutions/executives')} />
       </section>
+
+      <StickyMobileCTA
+        label="Start Free Trial"
+        href="/pricing?ref=executives"
+        variant="enterprise"
+      />
     </div>
   );
 }
