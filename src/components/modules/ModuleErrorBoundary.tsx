@@ -38,7 +38,7 @@ export default class ModuleErrorBoundary extends Component<Props, State> {
           </p>
           <button
             onClick={() => this.setState({ hasError: false })}
-            className="btn-secondary text-sm py-1.5 px-4"
+            className="btn-secondary text-sm py-2.5 px-6 min-h-[44px]"
           >
             Try Again
           </button>

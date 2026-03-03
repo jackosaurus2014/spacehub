@@ -293,7 +293,7 @@ export default function ContactPage() {
                     value={formData.message}
                     onChange={handleChange}
                     onBlur={() => handleBlur('message')}
-                    rows={6}
+                    rows={4}
                     // @ts-expect-error enterkeyhint is valid HTML global attr
                     enterkeyhint="send"
                     className={`input resize-none ${errors.message ? 'border-red-500' : ''}`}
