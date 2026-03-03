@@ -15,6 +15,8 @@ import { useSubscription } from '@/components/SubscriptionProvider';
 import AdSlot from '@/components/ads/AdSlot';
 import AlertNudge from '@/components/ui/AlertNudge';
 import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
+import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
+import ContentEngagementBadge from '@/components/ui/ContentEngagementBadge';
 import EmptyState from '@/components/ui/EmptyState';
 import { clientLogger } from '@/lib/client-logger';
 import Link from 'next/link';
@@ -257,14 +259,21 @@ export default function NewsPage() {
                     href={`/blog/${post.slug}`}
                     className="group block card p-5 hover:border-nebula-500/50"
                   >
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-nebula-500/20 text-nebula-300 border border-nebula-500/30">
-                      Blog
-                    </span>
-                    <h3 className="text-sm font-semibold text-white group-hover:text-nebula-400 transition-colors mt-3 mb-2 line-clamp-2">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-nebula-500/20 text-nebula-300 border border-nebula-500/30">
+                        Blog
+                      </span>
+                      <ContentEngagementBadge
+                        readTimeMin={post.readingTime}
+                        publishedAt={post.publishedAt}
+                        trending={post.featured}
+                        variant="compact"
+                      />
+                    </div>
+                    <h3 className="text-sm font-semibold text-white group-hover:text-nebula-400 transition-colors mb-2 line-clamp-2">
                       {post.title}
                     </h3>
                     <p className="text-xs text-slate-400 line-clamp-2">{post.excerpt}</p>
-                    <span className="text-xs text-slate-500 mt-2 block">{post.readingTime} min read</span>
                   </Link>
                 </StaggerItem>
               ))}
@@ -274,6 +283,16 @@ export default function NewsPage() {
 
         <RelatedModules modules={PAGE_RELATIONS['news']} />
       </div>
+
+      <StickyMobileCTA
+        label="Get News Alerts"
+        href="/alerts?source=news"
+        icon={
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+        }
+      />
     </div>
   );
 }

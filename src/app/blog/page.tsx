@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { BLOG_POSTS, BLOG_CATEGORIES, type BlogCategory } from '@/lib/blog-content';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import ContentEngagementBadge from '@/components/ui/ContentEngagementBadge';
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -80,7 +81,12 @@ function BlogListingContent() {
                       >
                         {BLOG_CATEGORIES.find((c) => c.value === post.category)?.label}
                       </span>
-                      <span className="text-slate-500 text-xs">{post.readingTime} min read</span>
+                      <ContentEngagementBadge
+                        readTimeMin={post.readingTime}
+                        publishedAt={post.publishedAt}
+                        trending={post.featured}
+                        variant="compact"
+                      />
                     </div>
                     <h2 className="text-xl font-bold text-white group-hover:text-nebula-400 transition-colors mb-3">
                       {post.title}
@@ -144,7 +150,11 @@ function BlogListingContent() {
                   >
                     {BLOG_CATEGORIES.find((c) => c.value === post.category)?.label}
                   </span>
-                  <span className="text-slate-500 text-xs">{post.readingTime} min read</span>
+                  <ContentEngagementBadge
+                    readTimeMin={post.readingTime}
+                    publishedAt={post.publishedAt}
+                    variant="compact"
+                  />
                 </div>
                 <h3 className="text-lg font-bold text-white group-hover:text-nebula-400 transition-colors mb-2">
                   {post.title}
