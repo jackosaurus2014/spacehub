@@ -207,6 +207,7 @@ function SearchContent() {
                   <div className="flex gap-2">
                     <input
                       type="number"
+                      inputMode="numeric"
                       placeholder="Min"
                       aria-label="Minimum price"
                       value={priceMin}
@@ -215,6 +216,7 @@ function SearchContent() {
                     />
                     <input
                       type="number"
+                      inputMode="numeric"
                       placeholder="Max"
                       aria-label="Maximum price"
                       value={priceMax}

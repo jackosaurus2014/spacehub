@@ -214,7 +214,7 @@ export default function RootLayout({
             <div className="relative z-10 min-h-screen flex flex-col">
               <Navigation />
               <QuickAccessSidebar />
-              <main id="main-content" className="flex-1 lg:pl-16 pb-16 lg:pb-0" tabIndex={-1}>
+              <main id="main-content" className="flex-1 lg:pl-16 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0" tabIndex={-1}>
                 <ModuleNavBar />
                 <TrialCountdownBanner />
                 <PageTransitionProvider>

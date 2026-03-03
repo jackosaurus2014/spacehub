@@ -254,6 +254,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               <input
                 id="rfq-budget-min"
                 type="number"
+                inputMode="numeric"
                 min="0"
                 value={form.budgetMin}
                 onChange={(e) => updateField('budgetMin', e.target.value)}
@@ -266,6 +267,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               <input
                 id="rfq-budget-max"
                 type="number"
+                inputMode="numeric"
                 min="0"
                 value={form.budgetMax}
                 onChange={(e) => updateField('budgetMax', e.target.value)}

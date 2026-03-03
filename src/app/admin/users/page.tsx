@@ -129,12 +129,12 @@ export default function AdminUsersPage() {
 
         {/* Tabs */}
         <ScrollReveal delay={0.1}>
-          <div className="flex border-b border-space-600/50 mb-6">
+          <div className="flex overflow-x-auto border-b border-space-600/50 mb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
             {tabs.map((t) => (
               <button
                 key={t.key}
                 onClick={() => setTab(t.key)}
-                className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
+                className={`py-3 px-6 font-medium text-sm whitespace-nowrap transition-colors border-b-2 -mb-px ${
                   tab === t.key
                     ? 'border-nebula-500 text-white'
                     : 'border-transparent text-star-300 hover:text-white'

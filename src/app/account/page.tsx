@@ -877,9 +877,9 @@ function DataPrivacySection() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-6">
-            <h3 className="text-xl font-bold text-red-400 mb-2">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 px-4" role="dialog" aria-modal="true" aria-labelledby="delete-account-title">
+          <div className="bg-slate-900 border border-slate-700 rounded-t-2xl sm:rounded-2xl max-w-md w-full p-6 max-h-[85vh] overflow-y-auto">
+            <h3 id="delete-account-title" className="text-xl font-bold text-red-400 mb-2">
               Delete Account
             </h3>
             <p className="text-sm text-slate-400 mb-4">

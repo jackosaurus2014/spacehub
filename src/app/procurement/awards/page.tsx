@@ -316,6 +316,7 @@ export default function ContractAwardsPage() {
             </span>
             <input
               type="number"
+              inputMode="numeric"
               aria-label="Minimum award amount"
               placeholder="Min amount"
               value={minAmount}

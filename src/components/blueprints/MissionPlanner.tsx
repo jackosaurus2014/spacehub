@@ -443,6 +443,7 @@ export default function MissionPlanner() {
                 <label className="text-xs text-slate-300 block mb-1">Payload Mass (kg)</label>
                 <input
                   type="number"
+                  inputMode="decimal"
                   value={payloadMass}
                   onChange={(e) => setPayloadMass(Math.max(0, parseFloat(e.target.value) || 0))}
                   step={0.1}
@@ -454,6 +455,7 @@ export default function MissionPlanner() {
                 <label className="text-xs text-slate-300 block mb-1">Payload Power (W avg)</label>
                 <input
                   type="number"
+                  inputMode="decimal"
                   value={payloadPower}
                   onChange={(e) => setPayloadPower(Math.max(0, parseFloat(e.target.value) || 0))}
                   step={0.5}

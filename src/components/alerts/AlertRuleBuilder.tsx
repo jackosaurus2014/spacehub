@@ -563,6 +563,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
               <input
                 id="alert-price-value"
                 type="number"
+                inputMode="decimal"
                 value={priceValue}
                 onChange={(e) => setPriceValue(e.target.value)}
                 placeholder={priceCondition === 'percent_change' ? '5' : '100.00'}
@@ -689,6 +690,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
               <input
                 id="alert-contract-min"
                 type="number"
+                inputMode="numeric"
                 value={contractMinValue}
                 onChange={(e) => setContractMinValue(e.target.value)}
                 placeholder="e.g., 10"
@@ -773,6 +775,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
               <input
                 id="alert-funding-min"
                 type="number"
+                inputMode="numeric"
                 value={fundingMinAmount}
                 onChange={(e) => setFundingMinAmount(e.target.value)}
                 placeholder="e.g., 50"

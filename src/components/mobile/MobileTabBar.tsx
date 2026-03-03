@@ -222,7 +222,7 @@ export default function MobileTabBar() {
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 400, damping: 35 }}
             className="fixed left-0 right-0 z-50 lg:hidden"
-            style={{ bottom: '4rem' }}
+            style={{ bottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}
           >
             <div
               className="bg-slate-900 border-t border-slate-800 rounded-t-2xl max-h-[70vh] overflow-y-auto overscroll-contain"
@@ -271,7 +271,7 @@ export default function MobileTabBar() {
                             }`}
                           >
                             <NavIcon icon={item.icon} className="w-6 h-6 mb-1.5" />
-                            <span className="text-[11px] font-medium text-center leading-tight">
+                            <span className="text-xs font-medium text-center leading-tight">
                               {item.label}
                             </span>
                           </Link>

@@ -307,6 +307,7 @@ export default function SpaceInsuranceModule() {
                 </label>
                 <input
                   type="number"
+                  inputMode="decimal"
                   value={calcValue}
                   onChange={(e) => setCalcValue(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"

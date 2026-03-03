@@ -1179,6 +1179,7 @@ export default function PropulsionComparisonPage() {
                   <label className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">Min Thrust (N)</label>
                   <input
                     type="number"
+                    inputMode="decimal"
                     value={filterThrustMin}
                     onChange={e => setFilterThrustMin(e.target.value)}
                     placeholder="0"
@@ -1189,6 +1190,7 @@ export default function PropulsionComparisonPage() {
                   <label className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">Max Thrust (N)</label>
                   <input
                     type="number"
+                    inputMode="decimal"
                     value={filterThrustMax}
                     onChange={e => setFilterThrustMax(e.target.value)}
                     placeholder="Any"

@@ -1750,6 +1750,7 @@ export default function JobsBoardPage() {
               <label className="block text-xs text-slate-500 mb-1">Min</label>
               <input
                 type="number"
+                inputMode="numeric"
                 value={salaryMin || ''}
                 onChange={(e) => {
                   setSalaryMin(Number(e.target.value) || 0);
@@ -1766,6 +1767,7 @@ export default function JobsBoardPage() {
               <label className="block text-xs text-slate-500 mb-1">Max</label>
               <input
                 type="number"
+                inputMode="numeric"
                 value={salaryMax >= 400000 ? '' : salaryMax}
                 onChange={(e) => {
                   setSalaryMax(Number(e.target.value) || 400000);

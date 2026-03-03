@@ -59,6 +59,7 @@ export default function ProposalForm({ rfqId, onSuccess }: ProposalFormProps) {
           <label className="block text-sm text-slate-400 mb-1">Proposed Price ($) <span className="text-slate-600 text-xs">optional</span></label>
           <input
             type="number"
+            inputMode="numeric"
             min="0"
             value={form.price}
             onChange={(e) => updateField('price', e.target.value)}

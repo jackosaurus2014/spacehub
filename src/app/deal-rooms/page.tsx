@@ -518,19 +518,19 @@ function DealRoomsPageInner() {
   const NdaModal = () => {
     if (!showNdaModal || !selectedRoom?.ndaRequired) return null;
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto">
-          <h3 className="text-xl font-bold text-slate-100 mb-2">Non-Disclosure Agreement Required</h3>
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 px-4" role="dialog" aria-modal="true" aria-labelledby="nda-modal-title">
+        <div className="bg-slate-800 border border-slate-700 rounded-t-2xl sm:rounded-2xl p-6 max-w-lg w-full max-h-[85vh] overflow-y-auto">
+          <h3 id="nda-modal-title" className="text-xl font-bold text-slate-100 mb-2">Non-Disclosure Agreement Required</h3>
           <p className="text-sm text-slate-400 mb-4">You must accept the NDA before accessing documents in this room.</p>
           <div className="bg-slate-900/50 border border-slate-700/50 rounded-lg p-4 mb-4 max-h-60 overflow-y-auto">
             <p className="text-sm text-slate-300 whitespace-pre-wrap">
               {selectedRoom.ndaText || 'By accepting this agreement, you acknowledge that all materials shared within this Deal Room are confidential. You agree not to share, distribute, or disclose any documents, data, or information accessed through this room without explicit written consent from the room owner. Violation of this agreement may result in legal action.'}
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={handleAcceptNda}
-              className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition-colors"
+              className="flex-1 px-4 py-2.5 min-h-[44px] bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition-colors"
             >
               I Accept the NDA
             </button>
@@ -540,7 +540,7 @@ function DealRoomsPageInner() {
                 setSelectedRoom(null);
                 setRoomDetail(null);
               }}
-              className="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors"
+              className="px-4 py-2.5 min-h-[44px] bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors"
             >
               Decline
             </button>
@@ -763,6 +763,7 @@ function DealRoomsPageInner() {
                           <label className="block text-sm text-slate-400 mb-1">File Size (bytes)</label>
                           <input
                             type="number"
+                            inputMode="numeric"
                             value={uploadForm.fileSize || ''}
                             onChange={(e) => setUploadForm(f => ({ ...f, fileSize: parseInt(e.target.value) || 0 }))}
                             placeholder="1048576"
