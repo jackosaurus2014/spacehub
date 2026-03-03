@@ -1,7 +1,7 @@
 'use client';
 
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigationDirection } from '@/hooks/useNavigationDirection';
 import { useIsMobile } from '@/hooks/useIsMobile';
 
@@ -9,67 +9,44 @@ interface PageTransitionProviderProps {
   children: React.ReactNode;
 }
 
-const TRANSITION_DURATION = 0.2;
-const TRANSITION_EASE: [number, number, number, number] = [0.32, 0.72, 0, 1];
-
 export default function PageTransitionProvider({ children }: PageTransitionProviderProps) {
   const pathname = usePathname();
   const direction = useNavigationDirection();
-  const prefersReducedMotion = useReducedMotion();
   const isMobile = useIsMobile();
+  const [visible, setVisible] = useState(true);
+  const prevPathRef = useRef(pathname);
+  const prefersReduced = typeof window !== 'undefined'
+    ? window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    : false;
+
+  useEffect(() => {
+    if (!isMobile || prevPathRef.current === pathname) return;
+    prevPathRef.current = pathname;
+
+    // Brief fade out then back in
+    setVisible(false);
+    const timer = setTimeout(() => setVisible(true), 50);
+    return () => clearTimeout(timer);
+  }, [pathname, isMobile]);
 
   // On desktop, skip animations entirely
   if (!isMobile) {
     return <>{children}</>;
   }
 
-  // Reduced motion: simple fade
-  if (prefersReducedMotion) {
-    return (
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={pathname}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.1 }}
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
-    );
-  }
+  const duration = prefersReduced ? '0.1s' : '0.2s';
+  const translateX = prefersReduced ? '0' : direction > 0 ? '8px' : '-8px';
 
   return (
-    <AnimatePresence mode="wait" custom={direction} initial={false}>
-      <motion.div
-        key={pathname}
-        custom={direction}
-        initial="enter"
-        animate="center"
-        exit="exit"
-        variants={{
-          enter: (d: number) => ({
-            x: d > 0 ? '15%' : '-15%',
-            opacity: 0,
-          }),
-          center: {
-            x: 0,
-            opacity: 1,
-          },
-          exit: (d: number) => ({
-            x: d > 0 ? '-15%' : '15%',
-            opacity: 0,
-          }),
-        }}
-        transition={{
-          duration: TRANSITION_DURATION,
-          ease: TRANSITION_EASE,
-        }}
-        style={{ willChange: 'transform, opacity' }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <div
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateX(0)' : `translateX(${translateX})`,
+        transition: `opacity ${duration} ease-out, transform ${duration} ease-out`,
+        willChange: 'opacity, transform',
+      }}
+    >
+      {children}
+    </div>
   );
 }

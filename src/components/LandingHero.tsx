@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 
 /* ------------------------------------------------------------------ */
@@ -51,6 +50,18 @@ const PLATFORM_STATS = [
   { value: 1500, suffix: '+', label: 'Automated Tests', icon: '\u2705' },
 ];
 
+/* Staggered entrance: each child gets an increasing delay */
+function HeroReveal({ children, delay, className = '' }: { children: React.ReactNode; delay: number; className?: string }) {
+  return (
+    <div
+      className={`animate-reveal-up ${className}`}
+      style={{ animationDelay: `${delay}s`, animationFillMode: 'backwards' }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function LandingHero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -80,106 +91,91 @@ export default function LandingHero() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
           {/* Headline with animated gradient */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
-            className="text-fluid-display font-display font-bold mb-6 leading-tight"
-          >
-            <span
-              className="text-transparent bg-clip-text bg-[length:200%_auto] animate-[gradient-shift_6s_ease_infinite]"
-              style={{
-                backgroundImage: 'linear-gradient(90deg, #67e8f9, #c4b5fd, #f9a8d4, #67e8f9)',
-                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.9))',
-              }}
-            >
-              The Space Industry&apos;s Comprehensive Intelligence Platform.
-            </span>
-          </motion.h1>
+          <HeroReveal delay={0.3} className="mb-6">
+            <h1 className="text-fluid-display font-display font-bold leading-tight">
+              <span
+                className="text-transparent bg-clip-text bg-[length:200%_auto] animate-[gradient-shift_6s_ease_infinite]"
+                style={{
+                  backgroundImage: 'linear-gradient(90deg, #67e8f9, #c4b5fd, #f9a8d4, #67e8f9)',
+                  filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.9))',
+                }}
+              >
+                The Space Industry&apos;s Comprehensive Intelligence Platform.
+              </span>
+            </h1>
+          </HeroReveal>
 
           {/* Subtitle -- condensed value proposition */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5, ease: 'easeOut' }}
-            className="text-lg md:text-xl text-slate-200 mb-10 max-w-2xl mx-auto leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]"
-          >
-            Real-time data, interactive tools, regulatory intelligence, and market
-            analytics &mdash; all in one affordable platform for space industry
-            professionals.
-          </motion.p>
+          <HeroReveal delay={0.5} className="mb-10">
+            <p className="text-lg md:text-xl text-slate-200 max-w-2xl mx-auto leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+              Real-time data, interactive tools, regulatory intelligence, and market
+              analytics &mdash; all in one affordable platform for space industry
+              professionals.
+            </p>
+          </HeroReveal>
 
           {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.7, ease: 'easeOut' }}
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-6"
-          >
-            <Link
-              href="/mission-control?utm_source=homepage&utm_medium=hero&utm_campaign=explore"
-              className="btn-primary text-base py-4 px-10 shadow-lg shadow-nebula-500/30 inline-flex items-center justify-center"
-            >
-              Explore the Platform
-            </Link>
-            <Link
-              href="/pricing?utm_source=homepage&utm_medium=hero&utm_campaign=freetrial"
-              className="border-2 border-cyan-400 text-base py-4 px-10 rounded-full font-bold uppercase tracking-wide transition-all duration-300 hover:-translate-y-0.5 active:scale-95 bg-[#0a1628] text-[#e0f7ff] hover:bg-cyan-500 hover:text-white hover:border-cyan-500"
-              style={{ textShadow: '0 0 8px rgba(34,211,238,0.4)' }}
-            >
-              Start Free Trial
-            </Link>
-          </motion.div>
+          <HeroReveal delay={0.7} className="mb-6">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/mission-control?utm_source=homepage&utm_medium=hero&utm_campaign=explore"
+                className="btn-primary text-base py-4 px-10 shadow-lg shadow-nebula-500/30 inline-flex items-center justify-center"
+              >
+                Explore the Platform
+              </Link>
+              <Link
+                href="/pricing?utm_source=homepage&utm_medium=hero&utm_campaign=freetrial"
+                className="border-2 border-cyan-400 text-base py-4 px-10 rounded-full font-bold uppercase tracking-wide transition-all duration-300 hover:-translate-y-0.5 active:scale-95 bg-[#0a1628] text-[#e0f7ff] hover:bg-cyan-500 hover:text-white hover:border-cyan-500"
+                style={{ textShadow: '0 0 8px rgba(34,211,238,0.4)' }}
+              >
+                Start Free Trial
+              </Link>
+            </div>
+          </HeroReveal>
 
           {/* Secondary links */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.9 }}
-            className="flex gap-6 justify-center mb-14"
-          >
-            <Link
-              href="/register?utm_source=homepage&utm_medium=hero&utm_campaign=signup"
-              className="text-cyan-300 hover:text-cyan-200 text-sm font-medium transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
-            >
-              Create Free Account
-            </Link>
-            <span className="text-cyan-400/50">|</span>
-            <Link
-              href="/news?utm_source=homepage&utm_medium=hero&utm_campaign=news"
-              className="text-cyan-300 hover:text-cyan-200 text-sm font-medium transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
-            >
-              Browse News
-            </Link>
-          </motion.div>
+          <HeroReveal delay={0.9} className="mb-14">
+            <div className="flex gap-6 justify-center">
+              <Link
+                href="/register?utm_source=homepage&utm_medium=hero&utm_campaign=signup"
+                className="text-cyan-300 hover:text-cyan-200 text-sm font-medium transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+              >
+                Create Free Account
+              </Link>
+              <span className="text-cyan-400/50">|</span>
+              <Link
+                href="/news?utm_source=homepage&utm_medium=hero&utm_campaign=news"
+                className="text-cyan-300 hover:text-cyan-200 text-sm font-medium transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+              >
+                Browse News
+              </Link>
+            </div>
+          </HeroReveal>
 
           {/* Animated Platform Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 1.1, ease: 'easeOut' }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-3xl mx-auto"
-            role="list"
-            aria-label="Platform statistics"
-          >
-            {PLATFORM_STATS.map((stat, i) => (
-              <StatCounter key={stat.label} stat={stat} index={i} />
-            ))}
-          </motion.div>
+          <HeroReveal delay={1.1}>
+            <div
+              className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-3xl mx-auto"
+              role="list"
+              aria-label="Platform statistics"
+            >
+              {PLATFORM_STATS.map((stat, i) => (
+                <StatCounter key={stat.label} stat={stat} index={i} />
+              ))}
+            </div>
+          </HeroReveal>
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 0.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float"
+      <div
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float animate-reveal-up"
+        style={{ animationDelay: '1.6s', animationFillMode: 'backwards' }}
       >
         <div className="w-6 h-10 border-2 border-cyan-400/50 rounded-full flex items-start justify-center p-1.5 shadow-lg shadow-cyan-500/20">
           <div className="w-1.5 h-2.5 bg-cyan-400/70 rounded-full animate-pulse" />
         </div>
-      </motion.div>
+      </div>
 
       {/* Bottom gradient divider */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#050a15] to-transparent z-[2]" />

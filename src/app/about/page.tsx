@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -124,16 +123,11 @@ export default function AboutPage() {
           {stats.map((stat) => (
             <StaggerItem key={stat.label}>
               <div className="card p-6 text-center">
-                <motion.div
-                  initial={{ scale: 0.5 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
-                >
+                <div>
                   <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                     {stat.value}
                   </p>
-                </motion.div>
+                </div>
                 <p className="text-sm text-slate-400 mt-2 font-medium">{stat.label}</p>
               </div>
             </StaggerItem>
@@ -170,11 +164,7 @@ export default function AboutPage() {
         {/* Contact CTA Section */}
         <ScrollReveal className="mt-16 mb-16">
           <div className="text-center">
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-block"
-            >
+            <div className="inline-block hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200">
               <Link
                 href="/contact"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300"
@@ -184,7 +174,7 @@ export default function AboutPage() {
                 </svg>
                 Get In Touch
               </Link>
-            </motion.div>
+            </div>
           </div>
         </ScrollReveal>
       </div>
