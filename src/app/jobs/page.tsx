@@ -8,7 +8,6 @@ import ScrollReveal, {
 } from '@/components/ui/ScrollReveal';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import JobPostingSchema from '@/components/seo/JobPostingSchema';
-import { motion, AnimatePresence } from 'framer-motion';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import EmptyState from '@/components/ui/EmptyState';
@@ -1380,10 +1379,9 @@ function JobCard({
 
         {/* Expand indicator */}
         <div className="shrink-0 mt-1">
-          <motion.svg
-            animate={{ rotate: isExpanded ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-            className="w-5 h-5 text-slate-500"
+          <svg
+            className="w-5 h-5 text-slate-500 transition-transform duration-200"
+            style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -1394,21 +1392,17 @@ function JobCard({
               strokeWidth={2}
               d="M19 9l-7 7-7-7"
             />
-          </motion.svg>
+          </svg>
         </div>
       </div>
 
       {/* Expanded detail */}
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
+      {isExpanded && (
+        <div
+          className="overflow-hidden animate-reveal-up"
+          style={{ animationDuration: '0.3s' }}
+          onClick={(e) => e.stopPropagation()}
+        >
             <div className="mt-5 pt-5 border-t border-slate-700/50 space-y-4">
               {/* Description */}
               <div>
@@ -1484,9 +1478,8 @@ function JobCard({
                 </span>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 }
@@ -1925,19 +1918,14 @@ export default function JobsBoardPage() {
         </div>
 
         {/* Mobile filter drawer */}
-        <AnimatePresence>
-          {mobileFiltersOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden lg:hidden mb-6"
-            >
-              <div className="card p-5">{filterContent}</div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {mobileFiltersOpen && (
+          <div
+            className="overflow-hidden lg:hidden mb-6 animate-reveal-up"
+            style={{ animationDuration: '0.3s' }}
+          >
+            <div className="card p-5">{filterContent}</div>
+          </div>
+        )}
 
         {/* Main layout */}
         <div className="flex flex-col lg:flex-row gap-8">

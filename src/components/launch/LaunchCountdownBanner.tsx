@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface ActiveLaunch {
   id: string;
@@ -78,14 +77,10 @@ export default function LaunchCountdownBanner() {
   if (!launch || dismissed) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ height: 0, opacity: 0 }}
-        animate={{ height: 'auto', opacity: 1 }}
-        exit={{ height: 0, opacity: 0 }}
-        transition={{ duration: 0.3 }}
-        className="overflow-hidden"
-      >
+    <div
+      className="overflow-hidden animate-reveal-up"
+      style={{ animationDuration: '0.3s' }}
+    >
         <div
           className={`relative px-4 py-2.5 ${
             launch.isLive
@@ -163,7 +158,6 @@ export default function LaunchCountdownBanner() {
             </div>
           </div>
         </div>
-      </motion.div>
-    </AnimatePresence>
+    </div>
   );
 }
