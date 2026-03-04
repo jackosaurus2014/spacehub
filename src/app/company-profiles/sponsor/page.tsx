@@ -6,7 +6,6 @@ import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { toast } from '@/lib/toast';
 
 interface SponsorTierInfo {
@@ -102,11 +101,6 @@ function SponsorPageInner() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Company Profiles', href: '/company-profiles' },
-        { name: 'Sponsor' },
-      ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Sponsor Your Company Profile"

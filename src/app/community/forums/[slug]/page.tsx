@@ -10,7 +10,6 @@ import ITARWarningBanner from '@/components/community/ITARWarningBanner';
 import ThreadTags from '@/components/community/ThreadTags';
 import { toast } from '@/lib/toast';
 import { FORUM_TAGS } from '@/lib/validations';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 interface CategoryInfo {
   id: string;
@@ -147,11 +146,6 @@ export default function ForumCategoryPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Breadcrumbs items={[
-          { label: 'Community', href: '/community' },
-          { label: 'Forums', href: '/community/forums' },
-          { label: category?.name || slug },
-        ]} />
 
         <div className="flex items-center justify-between mb-6">
           <div>

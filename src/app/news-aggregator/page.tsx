@@ -4,7 +4,6 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ShareButton from '@/components/ui/ShareButton';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -513,13 +512,6 @@ export default function NewsAggregatorPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-8">
       <div className="container mx-auto px-4 max-w-7xl">
-        {/* Breadcrumbs */}
-        <Breadcrumbs
-          items={[
-            { label: 'News', href: '/news' },
-            { label: 'News Aggregator' },
-          ]}
-        />
 
         {/* Header */}
         <div className="flex items-start justify-between gap-4">

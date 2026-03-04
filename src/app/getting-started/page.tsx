@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
 
@@ -187,7 +186,6 @@ const PERSONAS = [
 export default function GettingStartedPage() {
   return (
     <div className="min-h-screen pb-16">
-      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Getting Started' }]} />
 
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">

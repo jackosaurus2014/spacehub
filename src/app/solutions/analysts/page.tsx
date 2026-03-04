@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
@@ -80,7 +79,6 @@ const FAQ_ITEMS = [
 export default function AnalystsSolutionPage() {
   return (
     <div className="min-h-screen pb-16">
-      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Solutions', href: '/solutions/analysts' }, { name: 'For Analysts' }]} />
       <FAQSchema items={FAQ_ITEMS} />
 
       {/* Hero */}

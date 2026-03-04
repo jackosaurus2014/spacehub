@@ -3,7 +3,6 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
@@ -203,12 +202,6 @@ const FAQ_ITEMS = [
 export default function EnterprisePage() {
   return (
     <>
-      <BreadcrumbSchema
-        items={[
-          { name: 'Home', href: '/' },
-          { name: 'Enterprise' },
-        ]}
-      />
       <FAQSchema items={FAQ_ITEMS} />
 
       <div className="min-h-screen">

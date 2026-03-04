@@ -4,7 +4,6 @@ import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { toast } from '@/lib/toast';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
@@ -449,11 +448,6 @@ export default function BookDemoPage() {
           </div>
         </div>
       </section>
-
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Book a Demo', href: '/book-demo' },
-      ]} />
 
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">

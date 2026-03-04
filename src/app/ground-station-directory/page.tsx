@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
@@ -573,13 +572,6 @@ export default function GroundStationDirectoryPage() {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
-        {/* Breadcrumbs */}
-        <Breadcrumbs
-          items={[
-            { label: 'Space Operations', href: '/satellites' },
-            { label: 'Ground Station Directory' },
-          ]}
-        />
 
         {/* Header */}
         <AnimatedPageHeader

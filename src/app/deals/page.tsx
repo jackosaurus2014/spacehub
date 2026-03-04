@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import AdSlot from '@/components/ads/AdSlot';
 import PremiumGate from '@/components/PremiumGate';
 import EmptyState from '@/components/ui/EmptyState';
@@ -438,10 +437,6 @@ function DealsPageContent() {
 
   return (
     <div className="min-h-screen bg-slate-900">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Deal Flow Database' },
-      ]} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader

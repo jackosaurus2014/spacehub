@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getCity, SPACE_CITIES } from '@/lib/city-data';
 import FAQSchema from '@/components/seo/FAQSchema';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 export const revalidate = 86400;
 
@@ -91,11 +90,6 @@ export default function CityPage({ params }: Props) {
     <div className="min-h-screen pb-12">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
       <FAQSchema items={faqItems} />
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Space Industry', href: '/space-industry' },
-        { name: city.name },
-      ]} />
 
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Breadcrumb */}

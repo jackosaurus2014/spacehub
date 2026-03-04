@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 
@@ -186,12 +185,6 @@ export default function PatentLandscapePage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
-        <Breadcrumbs
-          items={[
-            { label: 'Business Opportunities', href: '/business-opportunities' },
-            { label: 'Patent Landscape' },
-          ]}
-        />
 
         <AnimatedPageHeader
           title="Space Technology Patent Landscape"

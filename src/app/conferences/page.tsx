@@ -2,8 +2,6 @@
 
 import React, { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import EventSchema from '@/components/seo/EventSchema';
 import ShareButton from '@/components/ui/ShareButton';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -800,15 +798,6 @@ export default function ConferencesPage() {
       })}
       <div className="container mx-auto px-4">
         {/* Breadcrumbs */}
-        <BreadcrumbSchema items={[
-          { name: 'Home', href: '/' },
-          { name: 'Resources', href: '/resources' },
-          { name: 'Conferences' },
-        ]} />
-        <Breadcrumbs items={[
-          { label: 'Resources', href: '/resources' },
-          { label: 'Conferences' },
-        ]} />
 
         {/* Header */}
         <AnimatedPageHeader

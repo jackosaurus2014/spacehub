@@ -26,7 +26,6 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import ExportButton from '@/components/ui/ExportButton';
 import AdSlot from '@/components/ads/AdSlot';
 import PullToRefresh from '@/components/ui/PullToRefresh';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import { useSwipeTabs } from '@/hooks/useSwipeTabs';
 import { clientLogger } from '@/lib/client-logger';
@@ -2642,10 +2641,6 @@ function SpaceTalentHubContent() {
 export default function SpaceTalentHubPage() {
   return (
     <div className="min-h-screen bg-space-900 py-8">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Space Talent Hub' },
-      ]} />
       <ItemListSchema
         name="Space Talent Hub"
         description="Space industry job listings, expert consultants, salary benchmarks, and workforce analytics"

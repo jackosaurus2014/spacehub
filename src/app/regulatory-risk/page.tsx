@@ -5,7 +5,6 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import InlineDisclaimer from '@/components/InlineDisclaimer';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import {
   assessRisk,
@@ -339,10 +338,6 @@ export default function RegulatoryRiskPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pt-24 pb-16 px-4">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Regulatory Risk' },
-      ]} />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <AnimatedPageHeader

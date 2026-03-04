@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
 
@@ -170,12 +169,6 @@ const DATA_PRACTICES = [
 export default function SecurityPage() {
   return (
     <>
-      <BreadcrumbSchema
-        items={[
-          { name: 'Home', href: '/' },
-          { name: 'Security & Trust' },
-        ]}
-      />
 
       <div className="min-h-screen bg-[#050a15]">
         {/* Hero Section */}

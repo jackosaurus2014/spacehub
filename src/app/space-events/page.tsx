@@ -4,7 +4,6 @@ import React, { useState, useMemo, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import EventSchema from '@/components/seo/EventSchema';
 import {
@@ -786,10 +785,6 @@ function SpaceEventsPageInner() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Space Events' },
-      ]} />
       {/* Event schema for first 5 upcoming events */}
       {SPACE_EVENTS
         .filter((e) => (e.endDate || e.startDate) >= nowStr)

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PremiumGate from '@/components/PremiumGate';
 import ConfidenceBadge from '@/components/ui/ConfidenceBadge';
 import SourceCitation from '@/components/ui/SourceCitation';
@@ -387,10 +386,6 @@ export default function InvestmentThesisPage() {
   return (
     <PremiumGate requiredTier="enterprise" context="investment-thesis" showPreview={true}>
       <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pt-24 pb-16 px-4">
-        <BreadcrumbSchema items={[
-          { name: 'Home', href: '/' },
-          { name: 'Investment Thesis' },
-        ]} />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">

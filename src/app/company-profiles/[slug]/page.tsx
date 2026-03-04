@@ -7,7 +7,6 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { clientLogger } from '@/lib/client-logger';
 import OrganizationProfileSchema from '@/components/seo/OrganizationProfileSchema';
 import { toast } from '@/lib/toast';
@@ -1533,11 +1532,6 @@ export default function CompanyProfileDetailPage() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1400px] mx-auto">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Company Profiles', href: '/company-profiles' },
-        { name: company.name },
-      ]} />
       <OrganizationProfileSchema
         name={company.name}
         description={company.description || `${company.name} - Space industry company profile`}

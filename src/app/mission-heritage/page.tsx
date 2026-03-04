@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -772,8 +771,6 @@ export default function MissionHeritagePage() {
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* Breadcrumbs */}
-        <Breadcrumbs items={[{ label: 'Mission Heritage Database' }]} />
 
         {/* Header */}
         <AnimatedPageHeader

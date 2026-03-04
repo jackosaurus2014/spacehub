@@ -3,7 +3,6 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
 // ────────────────────────────────────────
@@ -1061,10 +1060,6 @@ export default function LaunchVehicleComparePage() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
-      <Breadcrumbs items={[
-        { label: 'Compare', href: '/compare' },
-        { label: 'Launch Vehicles' },
-      ]} />
 
       <AnimatedPageHeader
         title="Launch Vehicle Comparison"

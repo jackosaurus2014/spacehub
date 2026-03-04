@@ -6,7 +6,6 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PullToRefresh from '@/components/ui/PullToRefresh';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PremiumGate from '@/components/PremiumGate';
 import { clientLogger } from '@/lib/client-logger';
 import CompanyFundingComparison from '@/components/funding/CompanyFundingComparison';
@@ -226,10 +225,6 @@ function FundingTrackerPageInner() {
   return (
     <PullToRefresh onRefresh={async () => { await fetchRounds(); }}>
     <div className="min-h-screen bg-slate-900">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Funding Tracker' },
-      ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Startup & Funding Tracker"

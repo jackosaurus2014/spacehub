@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import RelatedModules from '@/components/ui/RelatedModules';
@@ -550,10 +549,6 @@ export default function RegulatoryTrackerPage() {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
-        <Breadcrumbs items={[
-          { label: 'Compliance', href: '/compliance' },
-          { label: 'Regulatory Tracker' },
-        ]} />
 
         <AnimatedPageHeader
           title="Space Regulatory Tracker"

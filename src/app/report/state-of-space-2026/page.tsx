@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ReportGateForm from '@/components/marketing/ReportGateForm';
 import RelatedModules from '@/components/ui/RelatedModules';
@@ -43,13 +42,6 @@ const KEY_STATS = [
 export default function StateOfSpace2026Page() {
   return (
     <main className="min-h-screen bg-slate-950">
-      <BreadcrumbSchema
-        items={[
-          { name: 'Home', href: '/' },
-          { name: 'Reports', href: '/report' },
-          { name: 'State of the Space Industry 2026' },
-        ]}
-      />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">

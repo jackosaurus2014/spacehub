@@ -12,7 +12,6 @@ import ConfidenceBadge from '@/components/ui/ConfidenceBadge';
 import SourceCitation from '@/components/ui/SourceCitation';
 import type { Source } from '@/components/ui/SourceCitation';
 import { clientLogger } from '@/lib/client-logger';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 interface Insight {
   id: string;
@@ -235,11 +234,6 @@ export default function AIInsightDetailPage() {
       <div className="container mx-auto px-4 py-8">
         <ScrollReveal>
           <div className="max-w-3xl mx-auto">
-            <BreadcrumbSchema items={[
-              { name: 'Home', href: '/' },
-              { name: 'AI Insights', href: '/ai-insights' },
-              { name: insight.title },
-            ]} />
             <script
               type="application/ld+json"
               dangerouslySetInnerHTML={{ __html: JSON.stringify({

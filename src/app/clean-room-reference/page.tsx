@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -814,10 +813,6 @@ export default function CleanRoomReferencePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <Breadcrumbs items={[
-          { label: 'Tools', href: '/tools' },
-          { label: 'Clean Room Reference' },
-        ]} />
 
         <AnimatedPageHeader
           title="Clean Room & Contamination Control"

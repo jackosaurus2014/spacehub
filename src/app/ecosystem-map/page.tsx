@@ -4,7 +4,6 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -374,12 +373,6 @@ export default function EcosystemMapPage() {
 
   return (
     <div className="min-h-screen bg-space-900 py-8">
-      <BreadcrumbSchema
-        items={[
-          { name: 'Home', href: '/' },
-          { name: 'Ecosystem Map' },
-        ]}
-      />
       <ItemListSchema
         name="Space Industry Ecosystem Map"
         description="Visual map of the space industry value chain showing upstream, midstream, downstream, and cross-cutting segments"

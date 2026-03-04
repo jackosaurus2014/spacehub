@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -739,10 +738,6 @@ export default function SatelliteBusComparisonPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
-        <Breadcrumbs items={[
-          { label: 'Space Operations', href: '/satellites' },
-          { label: 'Satellite Bus Comparison' },
-        ]} />
 
         <AnimatedPageHeader
           title="Satellite Bus Comparison"

@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -950,10 +949,6 @@ export default function LaunchManifestPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(launchesSchema).replace(/</g, '\\u003c') }}
       />
       <div className="container mx-auto px-4 max-w-7xl">
-        <Breadcrumbs items={[
-          { label: 'Launch Dashboard', href: '/launch' },
-          { label: 'Launch Manifest Calendar' },
-        ]} />
 
         <AnimatedPageHeader
           title="Space Launch Manifest"

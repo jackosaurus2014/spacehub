@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import RFQForm from '@/components/marketplace/RFQForm';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export default function NewRFQPage() {
@@ -13,11 +12,6 @@ export default function NewRFQPage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <BreadcrumbSchema items={[
-          { name: 'Home', href: '/' },
-          { name: 'Marketplace', href: '/marketplace' },
-          { name: 'New RFQ' },
-        ]} />
         <nav className="flex items-center gap-2 text-sm text-slate-400 mb-4 overflow-x-auto" aria-label="Breadcrumb">
           <Link href="/" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
           <span className="text-slate-600">/</span>

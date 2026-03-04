@@ -4,7 +4,6 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -110,7 +109,6 @@ export default function ResourcesPage() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
-      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Resources' }]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <AnimatedPageHeader
           title="Platform Resources"

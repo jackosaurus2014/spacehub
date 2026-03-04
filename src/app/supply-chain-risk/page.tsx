@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -495,13 +494,6 @@ export default function SupplyChainRiskPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Breadcrumbs */}
-        <Breadcrumbs
-          items={[
-            { label: 'Business Opportunities', href: '/business-opportunities' },
-            { label: 'Supply Chain Risk' },
-          ]}
-        />
 
         {/* Header */}
         <AnimatedPageHeader

@@ -3,7 +3,6 @@ import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 export const revalidate = 3600;
 
@@ -95,10 +94,6 @@ export default function SpaceLaunchSchedule2026Page() {
     <div className="min-h-screen bg-space-900">
       <div className="container mx-auto px-4 pb-16">
         <div className="pt-6">
-          <Breadcrumbs items={[
-            { label: 'Guides', href: '/guide/space-industry' },
-            { label: 'Launch Schedule 2026' },
-          ]} />
         </div>
 
         <div className="max-w-4xl mx-auto">

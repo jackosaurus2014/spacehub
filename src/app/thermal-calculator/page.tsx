@@ -3,8 +3,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -632,15 +630,6 @@ export default function ThermalCalculatorPage() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
-        <BreadcrumbSchema items={[
-          { name: 'Home', href: '/' },
-          { name: 'Tools' },
-          { name: 'Thermal Calculator' },
-        ]} />
-        <Breadcrumbs items={[
-          { label: 'Tools' },
-          { label: 'Thermal Calculator' },
-        ]} />
 
         <AnimatedPageHeader
           title="Spacecraft Thermal Analysis"

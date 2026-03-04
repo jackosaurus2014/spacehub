@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/lib/toast';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
 interface RelatedCompany {
@@ -177,13 +176,6 @@ export default function CompanyResearchPage() {
 
   return (
     <div className="min-h-screen flex flex-col max-w-7xl mx-auto p-4 sm:p-6">
-      <BreadcrumbSchema
-        items={[
-          { name: 'Home', href: '/' },
-          { name: 'Company Profiles', href: '/company-profiles' },
-          { name: 'Research Assistant' },
-        ]}
-      />
 
       <AnimatedPageHeader
         title="Company Research Assistant"

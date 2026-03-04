@@ -4,7 +4,6 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -114,7 +113,6 @@ export default function SpaceAgenciesPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
-      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Space Agencies' }]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader title="Space Agency Profiles" subtitle="Comprehensive directory of the world's space agencies -- budgets, capabilities, missions, and leadership." icon={<span>{'\u{1F3DB}\u{FE0F}'}</span>} accentColor="blue" />
 

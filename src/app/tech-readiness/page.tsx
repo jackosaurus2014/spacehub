@@ -3,7 +3,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -974,11 +973,6 @@ export default function TechReadinessPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumbs */}
-        <Breadcrumbs items={[
-          { label: 'Tools', href: '/tools' },
-          { label: 'Technology Readiness Assessment' },
-        ]} />
 
         {/* Header */}
         <AnimatedPageHeader

@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
 
@@ -339,12 +338,6 @@ export default function FeaturesPage() {
       {/* ── Breadcrumb Schema + Related Modules ── */}
       <div className="container mx-auto px-4 pb-16">
         <RelatedModules modules={related} title="Explore More" />
-        <BreadcrumbSchema
-          items={[
-            { name: 'Home', href: '/' },
-            { name: 'Features' },
-          ]}
-        />
       </div>
     </div>
   );

@@ -4,7 +4,6 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 const whatWeDoCards = [
   {
@@ -57,8 +56,6 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* Breadcrumbs */}
-        <Breadcrumbs items={[{ label: 'About' }]} />
 
         {/* Hero Section */}
         <AnimatedPageHeader

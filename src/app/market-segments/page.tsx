@@ -2,8 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ShareButton from '@/components/ui/ShareButton';
 import { motion } from 'framer-motion';
@@ -686,15 +684,6 @@ export default function MarketSegmentsPage() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Breadcrumbs */}
-        <BreadcrumbSchema items={[
-          { name: 'Home', href: '/' },
-          { name: 'Intelligence', href: '/market-intel' },
-          { name: 'Market Segments' },
-        ]} />
-        <Breadcrumbs items={[
-          { label: 'Intelligence', href: '/market-intel' },
-          { label: 'Market Segments' },
-        ]} />
 
         {/* Header */}
         <AnimatedPageHeader

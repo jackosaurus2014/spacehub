@@ -5,7 +5,6 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { clientLogger } from '@/lib/client-logger';
@@ -431,13 +430,6 @@ export default function SatelliteTrackerPage() {
   // ─── Render ────────────────────────────────────────────────────────────────
   return (
     <>
-      <BreadcrumbSchema
-        items={[
-          { name: 'Home', href: '/' },
-          { name: 'Satellites', href: '/satellites' },
-          { name: 'Live Satellite Tracker' },
-        ]}
-      />
 
       <div className="min-h-screen">
         <div className="container mx-auto px-4">

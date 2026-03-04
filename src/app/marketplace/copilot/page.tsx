@@ -7,8 +7,6 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/lib/toast';
 import { getCategoryLabel, getCategoryIcon, formatPrice } from '@/lib/marketplace-types';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
@@ -165,15 +163,6 @@ export default function CopilotPage() {
 
   return (
     <div className="min-h-screen flex flex-col max-w-7xl mx-auto p-4">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Marketplace', href: '/marketplace' },
-        { name: 'AI Copilot' },
-      ]} />
-      <Breadcrumbs items={[
-        { label: 'Marketplace', href: '/marketplace' },
-        { label: 'AI Copilot' },
-      ]} />
 
       {/* Header */}
       <ScrollReveal>

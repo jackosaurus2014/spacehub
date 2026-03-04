@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -758,12 +757,6 @@ export default function SpaceEdgeComputingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <Breadcrumbs
-          items={[
-            { label: 'Business Opportunities', href: '/business-opportunities' },
-            { label: 'Space Edge Computing' },
-          ]}
-        />
 
         <AnimatedPageHeader
           title="Space-Based Data Processing & Edge Computing"

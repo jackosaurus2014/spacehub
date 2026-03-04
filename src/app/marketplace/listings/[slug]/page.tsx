@@ -16,7 +16,6 @@ import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { getCategoryIcon, getCategoryLabel, getSubcategoryLabel } from '@/lib/marketplace-types';
 import ServiceSchema from '@/components/seo/ServiceSchema';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 export default function ListingDetailPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
@@ -58,11 +57,6 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
 
   return (
     <div className="min-h-screen">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Marketplace', href: '/marketplace' },
-        { name: listing.title },
-      ]} />
       <ServiceSchema
         name={listing.title}
         description={listing.description || `${listing.title} - Space industry service`}

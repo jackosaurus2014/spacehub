@@ -6,7 +6,6 @@ import { useSearchParams } from 'next/navigation';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PortfolioAnalysis from '@/components/investors/PortfolioAnalysis';
 import { clientLogger } from '@/lib/client-logger';
 import InvestorActivityBadge from '@/components/investors/InvestorActivityBadge';
@@ -197,10 +196,6 @@ function InvestorsPageInner() {
 
   return (
     <div className="min-h-screen bg-slate-900">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Investor Hub' },
-      ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Industry Investors"

@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
 import LaunchDayDashboard from '@/components/launch/LaunchDayDashboard';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 interface LaunchPageProps {
   params: { eventId: string };
@@ -69,11 +68,6 @@ export default async function LaunchPage({ params }: LaunchPageProps) {
 
   return (
     <>
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Launch Schedule', href: '/mission-control' },
-        { name: event.name },
-      ]} />
       <div className="max-w-[1400px] mx-auto px-4 pt-4">
         <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
           <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>

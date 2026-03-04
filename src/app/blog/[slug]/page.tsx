@@ -6,7 +6,6 @@ import { getBlogPost, BLOG_POSTS, BLOG_CATEGORIES } from '@/lib/blog-content';
 import FAQSchema from '@/components/seo/FAQSchema';
 import SocialShare from '@/components/ui/SocialShare';
 import ShareButton from '@/components/ui/ShareButton';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 const SAFE_HTML_CONFIG: sanitizeHtml.IOptions = {
   allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'blockquote', 'code', 'pre', 'img', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
@@ -155,12 +154,6 @@ export default async function BlogPostPage({ params }: Props) {
       />
 
       <article className="container mx-auto px-4 max-w-3xl">
-        <div className="pt-8">
-          <Breadcrumbs items={[
-            { label: 'Blog', href: '/blog' },
-            { label: post.title },
-          ]} />
-        </div>
 
         {/* Header */}
         <header className="mb-10">

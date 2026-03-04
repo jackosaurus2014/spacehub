@@ -13,8 +13,6 @@ import { clientLogger } from '@/lib/client-logger';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
 import ExportButton from '@/components/ui/ExportButton';
 import EmptyState from '@/components/ui/EmptyState';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -133,16 +131,7 @@ function SearchContent() {
 
   return (
     <div className="min-h-screen">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Marketplace', href: '/marketplace' },
-        { name: 'Search' },
-      ]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Breadcrumbs items={[
-          { label: 'Marketplace', href: '/marketplace' },
-          { label: 'Search' },
-        ]} />
 
         <AnimatedPageHeader
           title="Marketplace Search"

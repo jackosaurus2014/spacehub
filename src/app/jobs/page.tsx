@@ -6,7 +6,6 @@ import ScrollReveal, {
   StaggerContainer,
   StaggerItem,
 } from '@/components/ui/ScrollReveal';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import JobPostingSchema from '@/components/seo/JobPostingSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -1824,7 +1823,6 @@ export default function JobsBoardPage() {
         }))}
       />
       <div className="container mx-auto px-4 py-8">
-        <Breadcrumbs items={[{ label: 'Jobs' }]} />
 
         <AnimatedPageHeader
           title="Space Industry Jobs"

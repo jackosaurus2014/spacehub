@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -444,10 +443,6 @@ export default function FundingOpportunitiesPage() {
 
   return (
     <div className="min-h-screen">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Funding Opportunities' },
-      ]} />
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-slate-700/50">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 via-slate-900 to-cyan-900/20" />

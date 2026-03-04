@@ -6,7 +6,6 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PremiumGate from '@/components/PremiumGate';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import {
   GRAPH_NODES,
@@ -1418,10 +1417,6 @@ function SupplyChainMapContent() {
 export default function SupplyChainMapPage() {
   return (
     <div className="min-h-screen bg-space-900">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Supply Chain Map' },
-      ]} />
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
           title="Supply Chain Relationship Map"

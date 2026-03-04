@@ -6,7 +6,6 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ExportButton from '@/components/ui/ExportButton';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 import AdSlot from '@/components/ads/AdSlot';
 import EmptyState from '@/components/ui/EmptyState';
@@ -646,11 +645,6 @@ function StartupTrackerContent() {
 export default function StartupTrackerPage() {
   return (
     <>
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Market Intelligence', href: '/market-intel' },
-        { name: 'Startup Tracker' },
-      ]} />
       <FAQSchema items={[
         { question: 'How many space startups does SpaceNexus track?', answer: `SpaceNexus tracks ${SPACE_STARTUPS.length}+ innovative space startups across multiple sectors including launch, Earth observation, in-space transport, satellites, communications, defense, and more.` },
         { question: 'What funding information is available?', answer: 'Each startup profile includes total funding raised, current funding stage (Early, Series A/B, Late, Public), company status, employee estimates, and headquarters location.' },

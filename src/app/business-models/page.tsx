@@ -6,7 +6,6 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { DonutChart } from '@/components/charts';
 import { BUSINESS_MODELS, type BusinessModelTemplate } from '@/lib/business-model-data';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -487,10 +486,6 @@ export default function BusinessModelsPage() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Business Models' },
-      ]} />
       <AnimatedPageHeader
         title="Space Business Model Templates"
         subtitle="Use real industry benchmarks to build your financial projections"

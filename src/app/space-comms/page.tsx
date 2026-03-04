@@ -5,7 +5,6 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 
@@ -1730,12 +1729,6 @@ function SpaceCommsContent() {
   return (
     <main className="min-h-screen py-8 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
-        <BreadcrumbSchema
-          items={[
-            { name: 'Home', href: '/' },
-            { name: 'Space Communications' },
-          ]}
-        />
         <FAQSchema items={FAQ_ITEMS} />
 
         {/* Header */}

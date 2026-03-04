@@ -2,8 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ShareButton from '@/components/ui/ShareButton';
 import RelatedModules from '@/components/ui/RelatedModules';
@@ -448,15 +446,6 @@ export default function EducationPathwaysPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-12 md:px-8">
       <div className="max-w-7xl mx-auto">
-        <BreadcrumbSchema items={[
-          { name: 'Home', href: '/' },
-          { name: 'Resources', href: '/resources' },
-          { name: 'Education Pathways' },
-        ]} />
-        <Breadcrumbs items={[
-          { label: 'Resources', href: '/resources' },
-          { label: 'Education Pathways' },
-        ]} />
 
         <AnimatedPageHeader
           title="Space Industry Education & Career Pathways"

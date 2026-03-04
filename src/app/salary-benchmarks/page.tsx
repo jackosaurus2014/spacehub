@@ -6,7 +6,6 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import {
   SALARY_ROLES,
@@ -1014,9 +1013,6 @@ function SalaryBenchmarksContent() {
 export default function SalaryBenchmarksPage() {
   return (
     <div className="min-h-screen bg-space-900 py-8">
-      <BreadcrumbSchema
-        items={[{ name: 'Home', href: '/' }, { name: 'Space Talent Hub', href: '/space-talent' }, { name: 'Salary Benchmarks' }]}
-      />
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
           title="Space Industry Salary Benchmarks"

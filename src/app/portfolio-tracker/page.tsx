@@ -4,7 +4,6 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import EmptyState from '@/components/ui/EmptyState';
@@ -304,11 +303,6 @@ export default function PortfolioTrackerPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-8">
       <div className="container mx-auto px-4">
-        {/* Breadcrumbs */}
-        <Breadcrumbs items={[
-          { label: 'Market Intelligence', href: '/market-intel' },
-          { label: 'Portfolio Tracker' },
-        ]} />
 
         {/* Header */}
         <AnimatedPageHeader

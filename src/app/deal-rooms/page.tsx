@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import PremiumGate from '@/components/PremiumGate';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -1088,10 +1087,6 @@ function DealRoomsPageInner() {
   // ────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      <BreadcrumbSchema items={[
-        { name: 'Home', href: '/' },
-        { name: 'Deal Rooms' },
-      ]} />
       <NdaModal />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

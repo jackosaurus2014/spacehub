@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -1265,12 +1264,6 @@ export default function RFSpectrumPage() {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
-        <Breadcrumbs
-          items={[
-            { label: 'Spectrum', href: '/spectrum' },
-            { label: 'RF Spectrum Visualization' },
-          ]}
-        />
 
         <AnimatedPageHeader
           title="RF Spectrum Visualization"

@@ -3,7 +3,6 @@
 import React, { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -779,8 +778,6 @@ export default function StandardsReferencePage() {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
-        {/* Breadcrumbs */}
-        <Breadcrumbs items={[{ label: 'Standards Reference' }]} />
 
         {/* Header */}
         <AnimatedPageHeader
