@@ -6,6 +6,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { toast } from '@/lib/toast';
+import { extractApiError } from '@/lib/errors';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 
 type SubjectType = 'general' | 'technical' | 'billing' | 'partnership';
@@ -119,7 +120,7 @@ export default function ContactPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to submit contact form');
+        throw new Error(extractApiError(data, 'Failed to submit contact form'));
       }
 
       setStatus('success');

@@ -13,6 +13,7 @@ import AcceptedAnswerBadge from '@/components/community/AcceptedAnswerBadge';
 import SubscribeButton from '@/components/community/SubscribeButton';
 import ThreadTags from '@/components/community/ThreadTags';
 import { toast } from '@/lib/toast';
+import { extractApiError } from '@/lib/errors';
 import { useSession } from 'next-auth/react';
 
 // Lazy-load MarkdownContent (react-markdown + remark-gfm are heavy)
@@ -200,7 +201,7 @@ export default function ThreadDetailPage() {
         }
       } else {
         const data = await res.json();
-        toast.error(data.error || 'Failed to post reply');
+        toast.error(extractApiError(data, 'Failed to post reply'));
       }
     } catch {
       toast.error('Network error. Please try again.');

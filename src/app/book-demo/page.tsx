@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { toast } from '@/lib/toast';
+import { extractApiError } from '@/lib/errors';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
@@ -136,7 +137,7 @@ export default function BookDemoPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong');
+        throw new Error(extractApiError(data, 'Something went wrong'));
       }
 
       setStatus('success');

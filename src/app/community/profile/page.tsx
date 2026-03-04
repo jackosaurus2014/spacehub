@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { toast } from '@/lib/toast';
+import { extractApiError } from '@/lib/errors';
 
 interface ProfileForm {
   headline: string;
@@ -82,7 +83,7 @@ export default function EditProfilePage() {
         toast.success(hasProfile ? 'Profile updated successfully' : 'Profile created successfully');
       } else {
         const data = await res.json();
-        toast.error(data.error || 'Failed to save profile');
+        toast.error(extractApiError(data, 'Failed to save profile'));
       }
     } catch {
       toast.error('Network error. Please try again.');

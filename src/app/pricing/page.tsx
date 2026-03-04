@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { SUBSCRIPTION_PLANS, SubscriptionTier } from '@/types';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import { toast } from '@/lib/toast';
+import { extractApiError } from '@/lib/errors';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -432,7 +433,7 @@ function PricingPageContent() {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error || 'Failed to start trial.');
+        toast.error(extractApiError(data, 'Failed to start trial.'));
         return;
       }
 

@@ -309,3 +309,30 @@ export function requireCronSecret(request: Request): NextResponse<ApiErrorRespon
 
   return null;
 }
+
+/**
+ * Extract a human-readable error message from an API error response.
+ *
+ * The standard API error shape is `{ success: false, error: { code, message } }`,
+ * but some endpoints return `{ error: "string" }` or `{ message: "string" }`.
+ * This helper normalises all of these to a plain string so that callers can
+ * safely pass the result to `setError()` / `toast.error()` without crashing
+ * React (which throws when an object is rendered as a child).
+ */
+export function extractApiError(
+  data: Record<string, unknown> | null | undefined,
+  fallback = 'Something went wrong. Please try again.'
+): string {
+  if (!data) return fallback;
+
+  const err = data.error;
+  if (typeof err === 'string') return err;
+  if (err && typeof err === 'object' && 'message' in err) {
+    const msg = (err as { message: unknown }).message;
+    if (typeof msg === 'string') return msg;
+  }
+
+  if (typeof data.message === 'string') return data.message;
+
+  return fallback;
+}

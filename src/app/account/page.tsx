@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from '@/lib/toast';
+import { extractApiError } from '@/lib/errors';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
@@ -812,7 +813,7 @@ function DataPrivacySection() {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error || 'Failed to delete account');
+        toast.error(extractApiError(data, 'Failed to delete account'));
         setIsDeleting(false);
         return;
       }

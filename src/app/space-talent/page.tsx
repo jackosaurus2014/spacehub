@@ -56,6 +56,7 @@ import {
 } from './data';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { extractApiError } from '@/lib/errors';
 
 // ────────────────────────────────────────
 // Types
@@ -1968,7 +1969,7 @@ function SpaceTalentHubContent() {
                               }
                               setSpFormErrors(serverErrors);
                             } else {
-                              setSpFormErrors({ _form: data.error || 'Something went wrong. Please try again.' });
+                              setSpFormErrors({ _form: extractApiError(data, 'Something went wrong. Please try again.') });
                             }
                           }
                         } catch {

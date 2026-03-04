@@ -12,6 +12,7 @@ import ClarificationThread from '@/components/marketplace/ClarificationThread';
 import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { getCategoryIcon, getCategoryLabel, formatPrice, RFQ_STATUSES } from '@/lib/marketplace-types';
 import { toast } from '@/lib/toast';
+import { extractApiError } from '@/lib/errors';
 
 export default function RFQDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -26,7 +27,7 @@ export default function RFQDetailPage({ params }: { params: { id: string } }) {
         const res = await fetch(`/api/marketplace/rfq/${id}`);
         if (!res.ok) {
           const data = await res.json();
-          throw new Error(data.error || 'Failed to load RFQ');
+          throw new Error(extractApiError(data, 'Failed to load RFQ'));
         }
         setRfq(await res.json());
       } catch (err: any) {

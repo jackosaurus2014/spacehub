@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ConversationList, { Conversation } from '@/components/community/ConversationList';
 import MessageThread, { Message } from '@/components/community/MessageThread';
 import { toast } from '@/lib/toast';
+import { extractApiError } from '@/lib/errors';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
 
@@ -126,7 +127,7 @@ function MessagesPageInner() {
         fetchConversations();
       } else {
         const data = await res.json();
-        toast.error(data.error || 'Failed to send message');
+        toast.error(extractApiError(data, 'Failed to send message'));
       }
     } catch {
       toast.error('Network error. Please try again.');

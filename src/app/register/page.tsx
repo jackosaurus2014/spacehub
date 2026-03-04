@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import LegalDisclaimerModal from '@/components/LegalDisclaimerModal';
 import { toast } from '@/lib/toast';
+import { extractApiError } from '@/lib/errors';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 
 function getPasswordStrength(password: string): { score: number; label: string; color: string } {
@@ -77,8 +78,8 @@ export default function RegisterPage() {
       return;
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
       return;
     }
 
@@ -99,8 +100,9 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Registration failed');
-        toast.error(data.error || 'Registration failed');
+        const msg = extractApiError(data, 'Registration failed');
+        setError(msg);
+        toast.error(msg);
         return;
       }
 

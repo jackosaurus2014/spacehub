@@ -9,6 +9,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { extractApiError } from '@/lib/errors';
 
 // ────────────────────────────────────────
 // Types
@@ -225,7 +226,7 @@ function DealRoomsPageInner() {
       if (res.ok) {
         setRooms(data.rooms || []);
       } else {
-        setError(data.error || 'Failed to fetch rooms');
+        setError(extractApiError(data, 'Failed to fetch rooms'));
       }
     } catch {
       setError('Network error');
@@ -256,7 +257,7 @@ function DealRoomsPageInner() {
           setShowNdaModal(true);
         }
       } else {
-        setError(data.error || 'Failed to fetch room');
+        setError(extractApiError(data, 'Failed to fetch room'));
       }
     } catch {
       setError('Network error');
@@ -289,7 +290,7 @@ function DealRoomsPageInner() {
         // Open the newly created room
         fetchRoomDetail(data.room.id);
       } else {
-        setError(data.error || 'Failed to create room');
+        setError(extractApiError(data, 'Failed to create room'));
       }
     } catch {
       setError('Network error');
@@ -315,7 +316,7 @@ function DealRoomsPageInner() {
           fetchRoomDetail(data.roomId);
         }
       } else {
-        setError(data.error || 'Failed to join room');
+        setError(extractApiError(data, 'Failed to join room'));
       }
     } catch {
       setError('Network error');
@@ -342,7 +343,7 @@ function DealRoomsPageInner() {
         setInviteForm({ email: '', role: 'viewer' });
         fetchRoomDetail(selectedRoom.id);
       } else {
-        setError(data.error || 'Failed to invite member');
+        setError(extractApiError(data, 'Failed to invite member'));
       }
     } catch {
       setError('Network error');
@@ -362,7 +363,7 @@ function DealRoomsPageInner() {
       if (res.ok) {
         fetchRoomDetail(selectedRoom.id);
       } else {
-        setError(data.error || 'Failed to remove member');
+        setError(extractApiError(data, 'Failed to remove member'));
       }
     } catch {
       setError('Network error');
@@ -389,7 +390,7 @@ function DealRoomsPageInner() {
         setUploadForm({ name: '', category: 'general', fileType: 'pdf', fileSize: 0, description: '' });
         fetchRoomDetail(selectedRoom.id);
       } else {
-        setError(data.error || 'Failed to upload document');
+        setError(extractApiError(data, 'Failed to upload document'));
       }
     } catch {
       setError('Network error');
@@ -430,7 +431,7 @@ function DealRoomsPageInner() {
         fetchRoomDetail(selectedRoom.id);
         fetchRooms();
       } else {
-        setError(data.error || 'Failed to update room');
+        setError(extractApiError(data, 'Failed to update room'));
       }
     } catch {
       setError('Network error');
