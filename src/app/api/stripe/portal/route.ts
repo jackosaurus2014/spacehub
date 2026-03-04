@@ -4,6 +4,7 @@ import prisma from '@/lib/db';
 import { getStripe } from '@/lib/stripe';
 import { unauthorizedError, internalError, createSuccessResponse } from '@/lib/errors';
 import { logger } from '@/lib/logger';
+import { APP_URL } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,8 +28,6 @@ export async function POST() {
     if (!user?.stripeCustomerId) {
       return unauthorizedError('No active subscription found. Please subscribe first.');
     }
-
-    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 
     // Create Stripe billing portal session
     const portalSession = await getStripe().billingPortal.sessions.create({

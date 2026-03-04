@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
   title: 'Spacecraft Thermal Analysis Calculator | SpaceNexus',
@@ -42,5 +43,14 @@ export default function ThermalCalculatorLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <JsonLd data={toolJsonLd({
+        name: 'Spacecraft Thermal Analysis Calculator',
+        description: 'Calculate spacecraft equilibrium temperatures across orbital configurations. Evaluate surface materials and thermal control strategies.',
+        url: 'https://spacenexus.us/thermal-calculator',
+      })} />
+      {children}
+    </>
+  );
 }

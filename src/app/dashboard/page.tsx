@@ -265,23 +265,24 @@ export default function DashboardPage() {
 
   // Fetch overview stats
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
     async function fetchStats() {
       try {
-        const res = await fetch('/api/dashboard/overview');
+        const res = await fetch('/api/dashboard/overview', { signal: controller.signal });
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
-        if (!cancelled && data.stats) {
+        if (data.stats) {
           setOverviewStats(data.stats);
         }
-      } catch {
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
         // Silently fail - stats are non-critical
       } finally {
-        if (!cancelled) setStatsLoading(false);
+        if (!controller.signal.aborted) setStatsLoading(false);
       }
     }
     fetchStats();
-    return () => { cancelled = true; };
+    return () => controller.abort();
   }, []);
 
   const handleLayoutChange = () => {

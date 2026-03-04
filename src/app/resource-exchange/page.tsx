@@ -18,6 +18,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
+import { sanitizeCommentary } from '@/lib/sanitize';
 
 const DEFAULT_LAUNCH_COST = 2720;
 
@@ -642,7 +643,7 @@ function DynamicResourceContent() {
 
             {showFullCommentary && (
               <div className="prose prose-sm max-w-none text-slate-400 mb-4">
-                <div dangerouslySetInnerHTML={{ __html: commentary.content.replace(/\n/g, '<br/>').replace(/## /g, '<strong>').replace(/\n/g, '</strong><br/>') }} />
+                <div dangerouslySetInnerHTML={{ __html: sanitizeCommentary(commentary.content) }} />
               </div>
             )}
 

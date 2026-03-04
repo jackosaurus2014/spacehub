@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { logger } from '@/lib/logger';
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
+import { APP_URL } from '@/lib/constants';
 
 /**
  * Process watchlist alerts: check for new news, contracts, and listings

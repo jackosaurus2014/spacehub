@@ -5,6 +5,7 @@ import { getStripe, getPriceIds } from '@/lib/stripe';
 import { stripeCheckoutSchema, validateBody } from '@/lib/validations';
 import { unauthorizedError, validationError, internalError, createSuccessResponse } from '@/lib/errors';
 import { logger } from '@/lib/logger';
+import { APP_URL } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
 
@@ -84,8 +85,6 @@ export async function POST(req: Request) {
     // Only grant trial if user hasn't had a trial before
     const hasHadTrial = user.trialTier !== null || user.trialEndDate !== null;
     const trialPeriodDays = hasHadTrial ? undefined : 14;
-
-    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 
     // Create Stripe Checkout Session
     const checkoutSession = await getStripe().checkout.sessions.create({

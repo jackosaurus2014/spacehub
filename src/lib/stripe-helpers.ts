@@ -1,6 +1,5 @@
 import { escapeHtml } from '@/lib/errors';
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
+import { APP_URL } from '@/lib/constants';
 
 /**
  * Generate an email warning the user about a failed payment.

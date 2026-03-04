@@ -160,7 +160,7 @@ export default function Footer() {
                 height={70}
                 className="h-8 w-auto mb-3 opacity-80"
               />
-              <p className="text-slate-500 text-xs uppercase tracking-wider font-medium mb-1">
+              <p className="text-slate-400 text-xs uppercase tracking-wider font-medium mb-1">
                 Space Industry Intelligence Platform
               </p>
               <p className="text-slate-400 text-sm leading-relaxed mb-4">
@@ -205,7 +205,7 @@ export default function Footer() {
               {/* Newsletter inline */}
               <Suspense fallback={
                 <div>
-                  <p className="text-slate-500 text-xs mb-2">Loading newsletter...</p>
+                  <p className="text-slate-400 text-xs mb-2">Loading newsletter...</p>
                 </div>
               }>
                 <NewsletterSignup variant="footer" source="footer" />
@@ -237,27 +237,27 @@ export default function Footer() {
           {/* Bottom bar */}
           <div className="border-t border-slate-800/60 py-5 flex flex-col md:flex-row items-center justify-between gap-4 pb-24 lg:pb-5">
             {/* Copyright */}
-            <p className="text-slate-500 text-xs">
+            <p className="text-slate-400 text-xs">
               &copy; {new Date().getFullYear()} SpaceNexus LLC. All rights reserved.
             </p>
 
             {/* Legal links */}
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
-              <Link href="/privacy" className="text-slate-500 hover:text-cyan-400 text-xs transition-colors">
+              <Link href="/privacy" className="text-slate-400 hover:text-cyan-400 text-xs transition-colors">
                 Privacy
               </Link>
-              <Link href="/terms" className="text-slate-500 hover:text-cyan-400 text-xs transition-colors">
+              <Link href="/terms" className="text-slate-400 hover:text-cyan-400 text-xs transition-colors">
                 Terms
               </Link>
-              <Link href="/legal/dmca" className="text-slate-500 hover:text-cyan-400 text-xs transition-colors">
+              <Link href="/legal/dmca" className="text-slate-400 hover:text-cyan-400 text-xs transition-colors">
                 DMCA
               </Link>
-              <Link href="/cookies" className="text-slate-500 hover:text-cyan-400 text-xs transition-colors">
+              <Link href="/cookies" className="text-slate-400 hover:text-cyan-400 text-xs transition-colors">
                 Cookie Policy
               </Link>
               <button
                 onClick={() => setDisclaimerOpen(true)}
-                className="text-slate-500 hover:text-cyan-400 text-xs transition-colors"
+                className="text-slate-400 hover:text-cyan-400 text-xs transition-colors"
               >
                 Legal Disclaimer
               </button>
@@ -268,7 +268,7 @@ export default function Footer() {
                     (opener as () => void)();
                   }
                 }}
-                className="text-slate-500 hover:text-cyan-400 text-xs transition-colors flex items-center gap-1"
+                className="text-slate-400 hover:text-cyan-400 text-xs transition-colors flex items-center gap-1"
                 aria-label="Open keyboard shortcuts help"
               >
                 Press
@@ -279,7 +279,7 @@ export default function Footer() {
               </button>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="text-slate-500 hover:text-cyan-400 text-xs transition-colors flex items-center gap-1"
+                className="text-slate-400 hover:text-cyan-400 text-xs transition-colors flex items-center gap-1"
                 aria-label="Back to top"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

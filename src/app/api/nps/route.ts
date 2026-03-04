@@ -4,6 +4,7 @@ import { z } from 'zod';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { authOptions } from '@/lib/auth';
+import { APP_URL } from '@/lib/constants';
 
 const npsSchema = z.object({
   score: z.number().int().min(0).max(10),
@@ -70,7 +71,6 @@ export async function GET(request: Request) {
     const score = parseInt(scoreParam, 10);
     if (score >= 0 && score <= 10) {
       // Redirect to app with score pre-filled (handled by client-side)
-      const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
       return NextResponse.redirect(`${APP_URL}/mission-control?nps=${score}`);
     }
   }

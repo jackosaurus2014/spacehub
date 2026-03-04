@@ -365,10 +365,36 @@ export function middleware(req: NextRequest) {
     // Proceed with the request, adding rate limit headers
     const response = NextResponse.next();
     response.headers.set('X-RateLimit-Remaining', String(remaining));
+
+    // Default Cache-Control for GET API requests (routes can override)
+    if (req.method === 'GET') {
+      const privatePaths = [
+        '/api/account', '/api/alerts', '/api/watchlist', '/api/notifications',
+        '/api/messages', '/api/saved-searches', '/api/reading-list',
+        '/api/dashboard', '/api/admin', '/api/developer/keys',
+        '/api/developer/usage', '/api/subscription', '/api/deal-rooms',
+        '/api/auth', '/api/nps', '/api/community/profiles',
+      ];
+      const isPrivate = privatePaths.some(p => pathname.startsWith(p));
+
+      if (isPrivate) {
+        response.headers.set('Cache-Control', 'private, no-cache');
+      } else {
+        response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=30');
+      }
+    }
+
     return response;
   }
 
-  return NextResponse.next();
+  // Add security headers to all non-API responses
+  const response = NextResponse.next();
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-DNS-Prefetch-Control', 'on');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  return response;
 }
 
 export const config = {

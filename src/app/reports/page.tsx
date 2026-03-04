@@ -8,6 +8,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import PremiumGate from '@/components/PremiumGate';
 import ExportPDFButton from '@/components/ui/ExportPDFButton';
 import { toast } from '@/lib/toast';
+import { sanitizeRenderedMarkdown } from '@/lib/sanitize';
 
 // ---------------------------------------------------------------------------
 // Types (mirroring report-templates.ts for the client)
@@ -1234,7 +1235,7 @@ function ReportsPageInner() {
                         </div>
                         <div
                           className="prose prose-sm prose-slate max-w-none text-slate-300 print:text-gray-700 [&_table]:w-full [&_table]:border-collapse [&_th]:text-left [&_td]:text-left"
-                          dangerouslySetInnerHTML={{ __html: renderMarkdown(section.content) }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeRenderedMarkdown(renderMarkdown(section.content)) }}
                         />
                       </motion.div>
                     ))}

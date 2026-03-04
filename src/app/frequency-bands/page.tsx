@@ -612,28 +612,28 @@ export default function FrequencyBandsPage() {
                 title="Highest Bandwidth"
                 bandName="Optical / Laser"
                 detail="Tbps-class links possible with no spectrum licensing"
-                icon="&#x1F4A1;"
+                icon="💡"
                 accent="#fbbf24"
               />
               <ComparisonCard
                 title="Best Rain Resilience"
                 bandName="UHF / L-band"
                 detail="Sub-3 GHz bands offer <0.5 dB attenuation in heavy rain"
-                icon="&#x1F327;&#xFE0F;"
+                icon="🌧️"
                 accent="#22c55e"
               />
               <ComparisonCard
                 title="Fastest Growing"
                 bandName="Ka-band / V-band"
                 detail="Mega-constellations driving explosive demand for HTS capacity"
-                icon="&#x1F4C8;"
+                icon="📈"
                 accent="#8b5cf6"
               />
               <ComparisonCard
                 title="Most Secure"
                 bandName="EHF (30-300 GHz)"
                 detail="Narrow beams and anti-jam properties for military SATCOM"
-                icon="&#x1F512;"
+                icon="🔒"
                 accent="#ef4444"
               />
             </div>
@@ -741,25 +741,25 @@ export default function FrequencyBandsPage() {
                 href="/spectrum"
                 title="Spectrum Management"
                 description="Track allocations, auctions, and interference events"
-                icon="&#x1F4E1;"
+                icon="📡"
               />
               <RelatedLink
                 href="/link-budget-calculator"
                 title="Link Budget Calculator"
                 description="Calculate signal margins for any frequency band"
-                icon="&#x1F4CA;"
+                icon="📊"
               />
               <RelatedLink
                 href="/satellites"
                 title="Satellite Tracker"
                 description="Track active satellites and their communication bands"
-                icon="&#x1F6F0;&#xFE0F;"
+                icon="🛰️"
               />
               <RelatedLink
                 href="/tech-readiness"
                 title="Technology Readiness"
                 description="Assess TRL for emerging frequency technologies"
-                icon="&#x1F52C;"
+                icon="🔬"
               />
             </div>
           </section>
@@ -807,7 +807,7 @@ function ComparisonCard({
       className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 hover:bg-slate-900/70 transition-colors"
     >
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-xl" dangerouslySetInnerHTML={{ __html: icon }} />
+        <span className="text-xl" aria-hidden="true">{icon}</span>
         <h3 className="text-sm font-semibold text-slate-300">{title}</h3>
       </div>
       <p className="text-lg font-bold mb-1" style={{ color: accent }}>
@@ -853,7 +853,7 @@ function RelatedLink({
       className="group block rounded-xl border border-slate-800 bg-slate-900/40 p-4 hover:bg-slate-900/70 hover:border-purple-500/30 transition-all"
     >
       <div className="flex items-center gap-2 mb-1.5">
-        <span className="text-lg" dangerouslySetInnerHTML={{ __html: icon }} />
+        <span className="text-lg" aria-hidden="true">{icon}</span>
         <h3 className="text-sm font-semibold text-slate-200 group-hover:text-purple-300 transition-colors">
           {title}
         </h3>

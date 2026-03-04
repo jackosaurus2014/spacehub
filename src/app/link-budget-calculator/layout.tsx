@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
   title: 'Link Budget Calculator | SpaceNexus',
@@ -19,5 +20,14 @@ export const metadata: Metadata = {
 };
 
 export default function LinkBudgetCalculatorLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <JsonLd data={toolJsonLd({
+        name: 'Link Budget Calculator',
+        description: 'Calculate satellite communication link budgets including path loss, antenna gain, and signal-to-noise ratios.',
+        url: 'https://spacenexus.us/link-budget-calculator',
+      })} />
+      {children}
+    </>
+  );
 }

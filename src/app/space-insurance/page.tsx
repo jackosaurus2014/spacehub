@@ -16,6 +16,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { clientLogger } from '@/lib/client-logger';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
+import { sanitizeCommentary } from '@/lib/sanitize';
 
 // ────────────────────────────────────────
 // Types
@@ -1984,7 +1985,7 @@ function DynamicInsuranceContent() {
 
             {showFullCommentary ? (
               <div className="prose prose-sm max-w-none text-slate-300 mb-4">
-                <div dangerouslySetInnerHTML={{ __html: commentary.content.replace(/\n/g, '<br/>').replace(/## /g, '<strong>').replace(/\n/g, '</strong><br/>') }} />
+                <div dangerouslySetInnerHTML={{ __html: sanitizeCommentary(commentary.content) }} />
               </div>
             ) : null}
 

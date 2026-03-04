@@ -1,7 +1,7 @@
 // Welcome email drip sequence — 6 emails over 14 days
 // Uses same dark-themed, inline CSS pattern as main email-templates.ts
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
+import { APP_URL } from '@/lib/constants';
 
 const styles = {
   bgDark: '#0a0a1a',

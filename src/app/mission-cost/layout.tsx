@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
   title: 'Mission Planning - Launch Cost Estimation & Analysis',
@@ -29,5 +30,14 @@ export const metadata: Metadata = {
 };
 
 export default function MissionCostLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <JsonLd data={toolJsonLd({
+        name: 'Launch Cost Estimation & Mission Planning Tool',
+        description: 'Plan space missions with detailed cost estimation, launch vehicle comparison, insurance analysis, and orbital mechanics tools.',
+        url: 'https://spacenexus.us/mission-cost',
+      })} />
+      {children}
+    </>
+  );
 }

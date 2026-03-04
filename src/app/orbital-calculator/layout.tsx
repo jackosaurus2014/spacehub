@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
   title: 'Orbital Mechanics Calculator - Delta-V, Period & Escape Velocity | SpaceNexus',
@@ -20,5 +21,14 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <JsonLd data={toolJsonLd({
+        name: 'Orbital Mechanics Calculator',
+        description: 'Calculate Hohmann transfer delta-v, orbital periods, escape velocities, and satellite orbital decay.',
+        url: 'https://spacenexus.us/orbital-calculator',
+      })} />
+      {children}
+    </>
+  );
 }

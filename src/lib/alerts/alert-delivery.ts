@@ -8,8 +8,7 @@ import {
   queueForDigest,
   type DigestItem,
 } from '@/lib/alerts/alert-digest';
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
+import { APP_URL } from '@/lib/constants';
 
 /** Maximum push notifications per user per day */
 const DAILY_PUSH_LIMIT = 5;

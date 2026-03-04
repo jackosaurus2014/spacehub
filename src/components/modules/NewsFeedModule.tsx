@@ -24,19 +24,22 @@ export default function NewsFeedModule() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
     const fetchNews = async () => {
       try {
-        const res = await fetch('/api/news?limit=6');
+        const res = await fetch('/api/news?limit=6', { signal: controller.signal });
         const data = await res.json();
         setArticles(data.articles || []);
       } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
         clientLogger.error('Failed to fetch news', { error: error instanceof Error ? error.message : String(error) });
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
 
     fetchNews();
+    return () => controller.abort();
   }, []);
 
   if (loading) {

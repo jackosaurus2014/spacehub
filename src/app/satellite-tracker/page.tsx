@@ -268,10 +268,10 @@ export default function SatelliteTrackerPage() {
   const timeRef = useRef<number>(0);
 
   // ─── Fetch TLE data ───────────────────────────────────────────────────────
-  const fetchTLEData = useCallback(async () => {
+  const fetchTLEData = useCallback(async (signal?: AbortSignal) => {
     try {
       setError(null);
-      const res = await fetch('/api/satellites/tle?limit=200');
+      const res = await fetch('/api/satellites/tle?limit=200', { signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
 
@@ -282,6 +282,7 @@ export default function SatelliteTrackerPage() {
         throw new Error(json.error?.message || 'Unknown error');
       }
     } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       clientLogger.error('Failed to fetch TLE data', {
         error: err instanceof Error ? err.message : String(err),
       });
@@ -293,9 +294,10 @@ export default function SatelliteTrackerPage() {
 
   // Initial load + auto-refresh every 30 seconds
   useEffect(() => {
-    fetchTLEData();
-    const interval = setInterval(fetchTLEData, 30000);
-    return () => clearInterval(interval);
+    const controller = new AbortController();
+    fetchTLEData(controller.signal);
+    const interval = setInterval(() => fetchTLEData(controller.signal), 30000);
+    return () => { controller.abort(); clearInterval(interval); };
   }, [fetchTLEData]);
 
   // ─── Canvas rendering ─────────────────────────────────────────────────────
@@ -518,7 +520,7 @@ export default function SatelliteTrackerPage() {
             <div className="card p-4 border border-red-500/20 bg-red-500/5 text-center mb-6">
               <div className="text-red-400 text-sm font-medium">{error}</div>
               <button
-                onClick={fetchTLEData}
+                onClick={() => fetchTLEData()}
                 className="mt-2 px-4 py-1.5 text-sm bg-red-500/20 text-red-300 rounded-lg hover:bg-red-500/30 transition-colors"
               >
                 Retry Now

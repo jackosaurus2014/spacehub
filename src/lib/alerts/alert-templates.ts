@@ -3,7 +3,7 @@
  * Uses dark-themed, inline CSS consistent with existing SpaceNexus email templates.
  */
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
+import { APP_URL } from '@/lib/constants';
 
 function escapeHtml(str: string): string {
   return str

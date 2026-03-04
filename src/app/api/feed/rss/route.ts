@@ -1,6 +1,5 @@
 import { BLOG_POSTS } from '@/lib/blog-content';
-
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
+import { APP_URL as SITE_URL } from '@/lib/constants';
 
 function escapeXml(str: string): string {
   return str

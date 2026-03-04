@@ -13,6 +13,7 @@ import {
   generateIntelligenceBriefPlainText,
 } from './intelligence-brief-template';
 import { Resend } from 'resend';
+import { APP_URL } from '@/lib/constants';
 
 // Re-export for external use
 export type { BriefSection, BriefItem };
@@ -24,7 +25,6 @@ export type { BriefSection, BriefItem };
 const BATCH_SIZE = 50;
 const BATCH_DELAY_MS = 1000;
 const FROM_EMAIL = process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <newsletter@spacenexus.us>';
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
 
 // Lazy Resend client
 let resendClient: Resend | null = null;

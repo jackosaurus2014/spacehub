@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
   title: 'Power Budget Calculator | SpaceNexus',
@@ -19,5 +20,14 @@ export const metadata: Metadata = {
 };
 
 export default function PowerBudgetCalculatorLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <JsonLd data={toolJsonLd({
+        name: 'Power Budget Calculator',
+        description: 'Design satellite power systems with solar panel sizing, battery capacity, and power budget analysis tools.',
+        url: 'https://spacenexus.us/power-budget-calculator',
+      })} />
+      {children}
+    </>
+  );
 }
