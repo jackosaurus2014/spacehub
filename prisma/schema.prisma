@@ -4018,3 +4018,18 @@ model NotificationPreference {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
+
+// ---------------------------------------------------------------------------
+// Blog Analytics
+// ---------------------------------------------------------------------------
+
+model BlogPostView {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  viewCount   Int      @default(0)
+  publishedAt DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([viewCount])
+}

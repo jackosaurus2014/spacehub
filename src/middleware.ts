@@ -78,6 +78,10 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   ) {
     return { maxRequests: 10, windowMs: 60 * 1000 }; // 10 req/minute
   }
+  // Blog view tracking — lightweight but frequent
+  if (pathname.startsWith('/api/blog/views')) {
+    return { maxRequests: 60, windowMs: 60 * 1000 }; // 60 req/minute
+  }
   // All other /api/* routes
   return { maxRequests: 200, windowMs: 60 * 1000 }; // 200 req/minute
 }
@@ -171,6 +175,8 @@ function checkRateLimit(
     routeKey = 'marketplace-copilot';
   } else if (pathname.startsWith('/api/company-research')) {
     routeKey = 'company-research';
+  } else if (pathname.startsWith('/api/blog/views')) {
+    routeKey = 'blog-views';
   } else if (
     pathname.startsWith('/api/search/ai-intent') ||
     pathname.startsWith('/api/opportunities/moonshots') ||
