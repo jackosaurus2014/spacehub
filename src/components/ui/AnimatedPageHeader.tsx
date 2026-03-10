@@ -69,7 +69,7 @@ export default function AnimatedPageHeader({
     idx === 0 ? '' : idx === 1 ? 'reveal-delay-1' : idx === 2 ? 'reveal-delay-2' : 'reveal-delay-3';
 
   return (
-    <div ref={containerRef} className="mb-8">
+    <div ref={containerRef} className="mb-10">
       {breadcrumb && (
         <p
           className={`text-sm text-slate-400 mb-2 tracking-wide uppercase ${
@@ -98,7 +98,7 @@ export default function AnimatedPageHeader({
 
       {subtitle && (
         <p
-          className={`mt-3 text-lg text-slate-300 max-w-3xl ${
+          className={`mt-3 text-lg text-slate-300 max-w-3xl leading-relaxed ${
             visible ? `animate-reveal-up-lg ${delayClass(subtitleDelay)}` : 'opacity-0'
           }`}
         >

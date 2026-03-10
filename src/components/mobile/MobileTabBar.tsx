@@ -391,7 +391,7 @@ export default function MobileTabBar() {
 
                   {/* Label */}
                   <motion.span
-                    className="mt-1 text-xs font-medium truncate max-w-[60px]"
+                    className="mt-1 text-[11px] font-medium truncate max-w-[72px]"
                     animate={{ opacity: active ? 1 : 0.6 }}
                   >
                     {tab.name}
