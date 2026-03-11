@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Industry News Aggregator | SpaceNexus',
+  title: 'Space Industry News Aggregator',
   description:
     'Real-time aggregated news from 50+ space industry sources. Filter by category, source, and topic.',
   keywords: [

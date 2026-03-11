@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Marketplace AI Copilot | SpaceNexus',
+  title: 'Marketplace AI Copilot',
   description:
     'AI-powered procurement assistant for the space industry. Describe your needs and get matched with qualified service providers instantly.',
   keywords: [

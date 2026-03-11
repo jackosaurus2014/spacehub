@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Industry Glossary | SpaceNexus',
+  title: 'Space Industry Glossary',
   description: 'Comprehensive glossary of 200+ space industry terms, acronyms, and technical definitions for professionals and enthusiasts.',
   openGraph: {
     type: 'website',

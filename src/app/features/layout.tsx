@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Features & Modules | SpaceNexus',
+  title: 'Features & Modules',
   description: 'Explore 30+ space industry intelligence modules. Market data, satellite tracking, regulatory compliance, mission planning, and more — all in one platform.',
   keywords: [
     'space industry platform features',

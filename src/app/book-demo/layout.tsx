@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Book a Demo | SpaceNexus',
+  title: 'Book a Demo',
   description: 'Schedule a personalized demo of SpaceNexus. See how our space industry intelligence platform can accelerate your team\'s research and decision-making.',
   openGraph: {
     type: 'website',

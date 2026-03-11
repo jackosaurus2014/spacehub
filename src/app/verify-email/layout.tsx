@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Verify Email | SpaceNexus',
+  title: 'Verify Email',
   description: 'Verify your email address to complete your SpaceNexus account registration.',
   openGraph: {
     title: 'Verify Email | SpaceNexus',

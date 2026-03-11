@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | SpaceNexus',
+  title: 'Privacy Policy',
   description: 'Learn how SpaceNexus collects, uses, and protects your personal information.',
   openGraph: {
     title: 'Privacy Policy | SpaceNexus',

@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { title: true, summary: true, category: true },
   });
 
-  if (!insight) return { title: 'AI Insight Not Found | SpaceNexus' };
+  if (!insight) return { title: 'AI Insight Not Found' };
 
   const desc = insight.summary?.slice(0, 160) || `${insight.title} - AI-generated space industry insight on SpaceNexus`;
 

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Debris Tracker | SpaceNexus',
+  title: 'Space Debris Tracker',
   description: 'Track orbital debris, collision risks, and space sustainability metrics with real-time data visualization.',
   openGraph: {
     title: 'Space Debris Tracker | SpaceNexus',

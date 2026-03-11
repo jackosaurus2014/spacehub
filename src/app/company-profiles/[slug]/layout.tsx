@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { name: true, description: true, logoUrl: true, sector: true, headquarters: true },
   });
 
-  if (!company) return { title: 'Company Not Found | SpaceNexus' };
+  if (!company) return { title: 'Company Not Found' };
 
   const desc = company.description?.slice(0, 160) || `${company.name} - space industry company profile on SpaceNexus`;
 

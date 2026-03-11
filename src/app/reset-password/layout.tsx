@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Reset Password | SpaceNexus',
+  title: 'Reset Password',
   description: 'Reset your SpaceNexus account password securely.',
   openGraph: {
     title: 'Reset Password | SpaceNexus',

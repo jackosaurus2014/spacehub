@@ -232,7 +232,7 @@ export default function HeroStats() {
               ? `Top performer: ${market.topGainer.name} (${market.topGainer.ticker}) ${market.topGainer.change >= 0 ? '+' : ''}${market.topGainer.change.toFixed(1)}%`
               : 'No market data'
         }. ${news ? `Latest news: ${news.headline} from ${news.source}` : 'No recent news'}. ${
-          solar ? `Space weather: ${solarStatusLabels[solar.status]}, Kp index ${solar.kpIndex}${solar.flareClass ? `, latest flare ${solar.flareClass}` : ''}` : 'Solar data loading'
+          solar ? `Space weather: ${solarStatusLabels[solar.status]}, Kp index ${Number(solar.kpIndex).toFixed(1)}${solar.flareClass ? `, latest flare ${solar.flareClass}` : ''}` : 'Solar data loading'
         }.`}
       </span>
       {/* Next Launch */}
@@ -328,7 +328,7 @@ export default function HeroStats() {
               {solar.flareClass && (
                 <span>Latest: {solar.flareClass}</span>
               )}
-              <span>Kp: {solar.kpIndex}</span>
+              <span>Kp: {Number(solar.kpIndex).toFixed(1)}</span>
             </div>
           </>
         ) : (

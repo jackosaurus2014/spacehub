@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: {
     template: '%s | SpaceNexus Blog',
-    default: 'Blog Post | SpaceNexus',
+    default: 'Blog Post',
   },
   description: 'Read in-depth space industry analysis, market intelligence, and expert insights on the SpaceNexus blog.',
   openGraph: {

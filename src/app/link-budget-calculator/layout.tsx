@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
-  title: 'Link Budget Calculator | SpaceNexus',
+  title: 'Link Budget Calculator',
   description: 'Calculate satellite communication link budgets including path loss, antenna gain, and signal-to-noise ratios.',
   openGraph: {
     title: 'Link Budget Calculator | SpaceNexus',

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Industry Trends & Analysis | SpaceNexus',
+  title: 'Industry Trends & Analysis',
   description: 'Data-backed analysis of the top trends shaping the space industry from reusability to AI operations.',
   openGraph: {
     title: 'Industry Trends & Analysis | SpaceNexus',

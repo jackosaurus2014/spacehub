@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: {
     template: 'Space Industry in %s | SpaceNexus',
-    default: 'Space Industry by City | SpaceNexus',
+    default: 'Space Industry by City',
   },
   description: 'Explore the space industry ecosystem by city. Discover local companies, facilities, job opportunities, and economic impact in key space hubs.',
   openGraph: {

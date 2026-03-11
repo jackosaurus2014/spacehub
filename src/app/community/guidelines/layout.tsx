@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Community Guidelines | SpaceNexus',
+  title: 'Community Guidelines',
   description: 'Community guidelines and code of conduct for SpaceNexus. Includes ITAR/EAR export control obligations, content policies, and professional standards.',
   openGraph: {
     title: 'Community Guidelines | SpaceNexus',

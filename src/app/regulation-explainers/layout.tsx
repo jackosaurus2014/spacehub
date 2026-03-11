@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Regulation Explainers | SpaceNexus',
+  title: 'Space Regulation Explainers',
   description:
     'Plain-language explainers of space regulations, treaties, and compliance requirements. Understand ITAR, EAR, ITU regulations, spectrum licensing, and orbital debris policies.',
   keywords: [

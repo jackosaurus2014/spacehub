@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Regulations Explorer | SpaceNexus',
+  title: 'Space Regulations Explorer',
   description: 'Searchable database of space regulations, treaties, and legal frameworks across 10+ jurisdictions.',
   openGraph: {
     title: 'Space Regulations Explorer | SpaceNexus',

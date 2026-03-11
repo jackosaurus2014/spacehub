@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
-  title: 'Orbital Mechanics Calculator - Delta-V, Period & Escape Velocity | SpaceNexus',
+  title: 'Orbital Mechanics Calculator - Delta-V, Period & Escape Velocity',
   description: 'Calculate Hohmann transfer delta-v, orbital periods, escape velocities, and satellite orbital decay. Interactive tools for mission planning with real physics formulas.',
   openGraph: {
     title: 'Orbital Mechanics Calculator - Delta-V, Period & Escape Velocity | SpaceNexus',

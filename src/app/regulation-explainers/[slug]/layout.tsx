@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { title: true, summary: true, agency: true, category: true },
   });
 
-  if (!explainer) return { title: 'Regulation Explainer Not Found | SpaceNexus' };
+  if (!explainer) return { title: 'Regulation Explainer Not Found' };
 
   const desc = explainer.summary?.slice(0, 160) || `${explainer.title} - space regulation explainer on SpaceNexus`;
 

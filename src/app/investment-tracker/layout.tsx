@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Investment Tracker | SpaceNexus',
+  title: 'Investment Tracker',
   description: 'Track space industry investment trends, top deals, and leading investors.',
   openGraph: {
     title: 'Investment Tracker | SpaceNexus',

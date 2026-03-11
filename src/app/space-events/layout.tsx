@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Industry Event Calendar 2026-2027 | SpaceNexus',
+  title: 'Space Industry Event Calendar 2026-2027',
   description: 'Browse 55+ space industry conferences, trade shows, webinars, and policy events for 2026-2027. Filter by type, country, and cost. Export events to your calendar with .ics download or Google Calendar.',
   keywords: [
     'space industry events',

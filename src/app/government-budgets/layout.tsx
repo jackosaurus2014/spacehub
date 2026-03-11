@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Government Space Budgets | SpaceNexus',
+  title: 'Government Space Budgets',
   description: 'Track global space agency budgets, programs, and per-capita spending across 15+ agencies.',
   openGraph: {
     title: 'Government Space Budgets | SpaceNexus',

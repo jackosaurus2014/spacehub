@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
-  title: 'Spacecraft Thermal Analysis Calculator | SpaceNexus',
+  title: 'Spacecraft Thermal Analysis Calculator',
   description:
     'Interactive spacecraft thermal analysis tool. Calculate equilibrium temperatures, hot/cold case scenarios, and power balance for any orbit configuration. Evaluate surface coatings, MLI, and thermal control strategies.',
   keywords: [

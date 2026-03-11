@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'RF Spectrum Visualization | SpaceNexus',
+  title: 'RF Spectrum Visualization',
   description:
     'Interactive visualization of radio frequency spectrum allocations for space communications. Explore band details, link budgets, regulatory regions, and emerging spectrum trends.',
   keywords: [

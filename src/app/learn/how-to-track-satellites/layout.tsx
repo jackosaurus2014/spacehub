@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'How to Track Satellites in Real Time | SpaceNexus',
+  title: 'How to Track Satellites in Real Time',
   description: 'Complete guide to tracking satellites in real time. Learn about tools, techniques, and platforms for monitoring objects in orbit.',
   openGraph: {
     title: 'How to Track Satellites in Real Time | SpaceNexus',

@@ -41,9 +41,10 @@ html {
   --fs-h2: clamp(1.5rem, 0.909vw + 1.318rem, 2rem);
   --fs-h3: clamp(1.25rem, 0.455vw + 1.159rem, 1.5rem);
 
-  /* High-contrast CSS custom properties — default (normal) values */
+  /* Text hierarchy — 3 levels for clear visual hierarchy */
   --hc-text-primary: #f1f5f9;     /* slate-100 */
   --hc-text-secondary: #94a3b8;   /* slate-400 */
+  --hc-text-tertiary: #64748b;    /* slate-500 — timestamps, metadata, captions */
   --hc-text-muted: #94a3b8;       /* slate-400 — improved contrast for muted text */
   --hc-border-default: rgba(6, 182, 212, 0.3);  /* cyan-400/30 */
   --hc-border-strong: rgba(6, 182, 212, 0.5);
@@ -372,8 +373,8 @@ body::after {
 .card-interactive:hover {
   background: rgba(20, 30, 52, 0.9);
   box-shadow:
-    0 8px 24px -6px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(6, 182, 212, 0.15);
+    0 0 0 1px rgba(6, 182, 212, 0.2),
+    0 0 20px -5px rgba(6, 182, 212, 0.08);
 }
 
 /* Colored Card Variants */
@@ -573,11 +574,43 @@ body::after {
   @apply py-10 md:py-14;
 }
 
+.section-spacer-xs {
+  @apply py-6 md:py-10;
+}
+
 /* Glass Panel */
 .glass-panel {
   @apply backdrop-blur-md border border-slate-700/50 rounded-xl;
   background: rgba(15, 23, 42, 0.7);
   box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.3);
+}
+
+/* Elevated glass panel with inner highlight */
+.glass-panel-elevated {
+  @apply backdrop-blur-xl border border-slate-700/40 rounded-xl;
+  background: rgba(15, 23, 42, 0.6);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 24px -8px rgba(0, 0, 0, 0.4);
+}
+
+/* Tabular numerics — ensures fixed-width digits for data-heavy displays */
+.font-mono, [data-stat], .stat-value,
+.font-tabular { font-variant-numeric: tabular-nums; }
+
+/* Compact card padding for data-dense dashboard pages */
+.card-compact {
+  @apply p-3 sm:p-4 md:p-5;
+}
+
+/* Text overline — category labels, metadata tags, section eyebrows */
+.text-overline {
+  @apply text-[0.6875rem] font-semibold uppercase tracking-[0.08em] leading-tight;
+}
+
+/* Tertiary text utility */
+.text-tertiary {
+  color: var(--hc-text-tertiary);
 }
 
 /* Gradient Section Divider */
@@ -1123,6 +1156,71 @@ pre {
     animation: none;
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ——— CSS-only stagger animation for card grids ——— */
+@keyframes stagger-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stagger-grid > * {
+  opacity: 0;
+  animation: stagger-fade-in 0.35s ease-out forwards;
+}
+.stagger-grid > *:nth-child(1) { animation-delay: 0s; }
+.stagger-grid > *:nth-child(2) { animation-delay: 0.05s; }
+.stagger-grid > *:nth-child(3) { animation-delay: 0.05s; }
+.stagger-grid > *:nth-child(4) { animation-delay: 0.1s; }
+.stagger-grid > *:nth-child(5) { animation-delay: 0.1s; }
+.stagger-grid > *:nth-child(6) { animation-delay: 0.15s; }
+.stagger-grid > *:nth-child(7) { animation-delay: 0.15s; }
+.stagger-grid > *:nth-child(8) { animation-delay: 0.2s; }
+.stagger-grid > *:nth-child(9) { animation-delay: 0.2s; }
+.stagger-grid > *:nth-child(n+10) { animation-delay: 0.25s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-grid > * {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ——— Horizontal scroll container for data cards on mobile ——— */
+@media (max-width: 640px) {
+  .data-scroll-mobile {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 0.75rem;
+    padding: 0 1rem;
+    margin: 0 -1rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .data-scroll-mobile::-webkit-scrollbar { display: none; }
+  .data-scroll-mobile > * {
+    scroll-snap-align: start;
+    min-width: 280px;
+    flex-shrink: 0;
+  }
+}
+
+/* ——— Sticky first column for data tables on mobile ——— */
+@media (max-width: 767px) {
+  .table-sticky-col {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .table-sticky-col th:first-child,
+  .table-sticky-col td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: rgba(15, 23, 42, 0.95);
+    border-right: 1px solid rgba(6, 182, 212, 0.15);
   }
 }
 

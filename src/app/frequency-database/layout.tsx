@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Satellite Frequency Allocation Database - SpaceNexus',
+  title: 'Satellite Frequency Allocation Database',
   description: 'Searchable database of satellite frequency allocations across L-band, S-band, C-band, X-band, Ku-band, Ka-band, V-band, and Q-band. ITU filing process, constellation summaries, and interference risk analysis.',
   keywords: ['satellite frequency', 'frequency allocation', 'ITU filing', 'spectrum management', 'Ku-band', 'Ka-band', 'satellite communications', 'Starlink frequency', 'OneWeb spectrum'],
   openGraph: {

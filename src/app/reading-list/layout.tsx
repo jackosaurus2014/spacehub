@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Reading List | SpaceNexus',
+  title: 'Reading List',
   description: 'Your saved articles, reports, and bookmarked content from across SpaceNexus.',
   openGraph: {
     title: 'Reading List | SpaceNexus',

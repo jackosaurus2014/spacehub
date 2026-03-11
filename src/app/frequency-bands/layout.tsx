@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Frequency Allocations | SpaceNexus',
+  title: 'Space Frequency Allocations',
   description: 'Visual reference for RF frequency bands used in space communications with spectrum chart and band comparison.',
   openGraph: {
     title: 'Space Frequency Allocations | SpaceNexus',

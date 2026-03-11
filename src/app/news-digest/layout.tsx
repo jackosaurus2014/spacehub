@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Daily Space Digest | SpaceNexus',
+  title: 'Daily Space Digest',
   description: 'Quick-scan daily headlines covering launches, funding, regulatory changes, and technology breakthroughs.',
   openGraph: {
     title: 'Daily Space Digest | SpaceNexus',

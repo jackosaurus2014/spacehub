@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Satellite Launch Cost Guide | SpaceNexus',
+  title: 'Satellite Launch Cost Guide',
   description: 'How much does it cost to launch a satellite? Comprehensive breakdown of launch costs by vehicle, orbit, and payload size.',
   openGraph: {
     title: 'Satellite Launch Cost Guide | SpaceNexus',

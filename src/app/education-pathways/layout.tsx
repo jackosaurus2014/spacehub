@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Industry Education & Career Pathways | SpaceNexus',
+  title: 'Space Industry Education & Career Pathways',
   description: 'Comprehensive guide to education and career paths in the space industry. Top universities, certifications, salary data, internships, and skills in demand.',
   openGraph: {
     type: 'website',

@@ -17,14 +17,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   });
 
-  if (!thread) return { title: 'Thread Not Found | SpaceNexus' };
+  if (!thread) return { title: 'Thread Not Found' };
 
   const desc =
     thread.content.slice(0, 160).replace(/\n/g, ' ') ||
     `Discussion thread in ${thread.category.name} on SpaceNexus`;
 
   return {
-    title: `${thread.title} | SpaceNexus Community`,
+    title: `${thread.title} - Community Discussion`,
     description: desc,
     openGraph: {
       title: `${thread.title} | SpaceNexus Community`,

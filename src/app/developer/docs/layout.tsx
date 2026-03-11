@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'API Documentation | SpaceNexus Developer API',
+  title: 'API Documentation - Developer API',
   description:
     'Complete API reference for the SpaceNexus space industry data API. Endpoints for satellite tracking, launch schedules, company profiles, space weather, regulatory intelligence, and more.',
   keywords: [

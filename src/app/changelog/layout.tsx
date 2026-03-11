@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Changelog - Platform Updates & New Features | SpaceNexus',
+  title: 'Changelog - Platform Updates & New Features',
   description:
     'Track every update, feature, and improvement shipped to SpaceNexus. From company intelligence to marketplace, mobile apps, and 100+ space industry tools.',
   keywords: [

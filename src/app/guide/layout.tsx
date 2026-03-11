@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: {
     template: '%s | SpaceNexus Guide',
-    default: 'Space Industry Guides & Resources | SpaceNexus',
+    default: 'Space Industry Guides & Resources',
   },
   description:
     'In-depth guides on the space industry covering satellite tracking, ITAR compliance, launch costs, market sizing, regulatory compliance, and business opportunities.',

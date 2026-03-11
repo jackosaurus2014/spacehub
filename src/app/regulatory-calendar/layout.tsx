@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Regulatory Deadline Calendar | SpaceNexus',
+  title: 'Space Regulatory Deadline Calendar',
   description:
     'Track 100+ space industry regulatory deadlines including FCC space filings, FAA launch license windows, ITU coordination milestones, DoD procurement, and international treaty sessions for 2026-2027.',
   keywords: [

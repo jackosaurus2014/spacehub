@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Deal Flow Database | SpaceNexus',
+  title: 'Deal Flow Database',
   description: 'Track space industry funding rounds, M&A, partnerships, and government contracts.',
   openGraph: {
     title: 'Deal Flow Database | SpaceNexus',

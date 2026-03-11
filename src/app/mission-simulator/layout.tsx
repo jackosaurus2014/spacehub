@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Mission Simulator | SpaceNexus',
+  title: 'Space Mission Simulator',
   description:
     'Plan and simulate space missions with real vehicle data. Calculate delta-V, costs, timelines, and compare launch vehicles for LEO, GEO, lunar, and interplanetary missions.',
   keywords: [

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Constellation Designer | SpaceNexus',
+  title: 'Constellation Designer',
   description: 'Design satellite constellations with Walker formulas, coverage analysis, and cost estimation.',
   openGraph: {
     title: 'Constellation Designer | SpaceNexus',

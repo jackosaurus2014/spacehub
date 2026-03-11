@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Submit a Request for Quote | SpaceNexus',
+  title: 'Submit a Request for Quote',
   description: 'Post a Request for Quote (RFQ) to connect with verified space industry providers. Get competitive proposals for launch services, satellite components, engineering, and more.',
   openGraph: {
     title: 'Submit a Request for Quote | SpaceNexus',

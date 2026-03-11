@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'SpaceNexus vs Payload Space | SpaceNexus',
+  title: 'SpaceNexus vs Payload Space',
   description: 'Compare SpaceNexus with Payload Space for space industry news and intelligence. Feature comparison, real-time data, and platform capabilities.',
   openGraph: {
     title: 'SpaceNexus vs Payload Space | SpaceNexus',

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Regulatory Compliance Guide | SpaceNexus',
+  title: 'Space Regulatory Compliance Guide',
   description: 'Navigate space regulatory compliance with this guide. FCC licensing, FAA launch permits, ITU spectrum coordination, ITAR/EAR export controls, and international treaties.',
   openGraph: {
     title: 'Space Regulatory Compliance Guide | SpaceNexus',

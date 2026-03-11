@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Next Launch Widget | SpaceNexus',
+  title: 'Next Launch Widget',
   description: 'Embeddable countdown widget for the next upcoming space launch. Shows mission details, rocket type, launch site, and live countdown timer.',
   openGraph: {
     title: 'Next Launch Widget | SpaceNexus',

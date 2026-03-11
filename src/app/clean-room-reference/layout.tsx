@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Clean Room & Contamination Control Reference | SpaceNexus',
+  title: 'Clean Room & Contamination Control Reference',
   description: 'Comprehensive reference for spacecraft manufacturing clean room requirements, ISO classifications, outgassing data, and contamination control procedures.',
   openGraph: {
     title: 'Clean Room & Contamination Control Reference | SpaceNexus',

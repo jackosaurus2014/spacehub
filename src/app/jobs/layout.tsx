@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Industry Jobs | SpaceNexus',
+  title: 'Space Industry Jobs',
   description:
     'Browse 500+ space industry job openings from top companies like SpaceX, Blue Origin, and NASA. Filter by role, location, salary, and experience level.',
   keywords: [

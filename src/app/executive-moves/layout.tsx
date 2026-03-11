@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Executive Move Tracker | SpaceNexus',
+  title: 'Executive Move Tracker',
   description: 'Track C-suite and VP-level leadership changes across the space industry. Monitor hiring, departures, and promotions at SpaceX, Blue Origin, and 100+ space companies.',
   keywords: ['space executive moves', 'aerospace leadership changes', 'space industry hiring', 'space CEO changes', 'defense space executives'],
   openGraph: {

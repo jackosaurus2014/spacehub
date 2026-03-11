@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Contract Awards | Federal Procurement Intelligence | SpaceNexus',
+  title: 'Space Contract Awards | Federal Procurement Intelligence',
   description:
     'Track federal contract awards in the space industry. Monitor NASA, DoD, and agency spending on space technology, satellites, and launch services.',
   openGraph: {

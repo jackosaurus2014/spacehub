@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Case Studies | SpaceNexus',
+  title: 'Case Studies',
   description: 'See how space industry organizations use SpaceNexus to accelerate research, improve deal flow, and gain competitive intelligence.',
   openGraph: {
     type: 'website',

@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: {
     template: '%s | SpaceNexus vs Competitors',
-    default: 'SpaceNexus Comparison - Bloomberg Terminal, Payload Space, Quilty Analytics Alternatives | SpaceNexus',
+    default: 'SpaceNexus Comparison - Bloomberg Terminal, Payload Space, Quilty Analytics Alternatives',
   },
   description:
     'See how SpaceNexus compares to Bloomberg Terminal, Payload Space, and Quilty Analytics for space industry intelligence, satellite tracking, and market data.',

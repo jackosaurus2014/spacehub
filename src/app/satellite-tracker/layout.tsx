@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Satellite Tracker - Real-Time Orbital Tracking | SpaceNexus',
+  title: 'Satellite Tracker - Real-Time Orbital Tracking',
   description: 'Track satellites in real-time with SpaceNexus. Monitor orbital positions, TLE data, ISS tracking, Starlink constellation, and space debris with our interactive 2D map.',
   keywords: [
     'satellite tracker',

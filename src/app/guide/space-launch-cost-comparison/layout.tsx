@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Launch Cost Comparison Guide | SpaceNexus',
+  title: 'Space Launch Cost Comparison Guide',
   description: 'Compare space launch costs across providers and vehicles. Cost per kilogram data for SpaceX, ULA, Arianespace, Rocket Lab, and more.',
   openGraph: {
     title: 'Space Launch Cost Comparison Guide | SpaceNexus',

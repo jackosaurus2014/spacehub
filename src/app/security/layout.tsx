@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Security & Trust | SpaceNexus',
+  title: 'Security & Trust',
   description: 'Learn how SpaceNexus protects your data with enterprise-grade security, encryption, access controls, and compliance with industry standards.',
   openGraph: {
     title: 'Security & Trust | SpaceNexus',

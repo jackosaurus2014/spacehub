@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Industry Workforce Analytics | SpaceNexus',
+  title: 'Space Industry Workforce Analytics',
   description: 'Comprehensive space industry workforce data and trends. Explore employment by sector, top employers, skills gap analysis, geographic distribution, diversity metrics, and salary benchmarks.',
   keywords: [
     'space workforce analytics',

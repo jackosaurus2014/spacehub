@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Investment Portfolio Tracker | SpaceNexus',
+  title: 'Space Investment Portfolio Tracker',
   description: 'Track space industry stocks, market caps, and investment theses. Monitor 20+ publicly traded space companies and sector performance.',
   keywords: ['space stocks', 'space investment', 'space portfolio tracker', 'space industry stocks', 'space market cap', 'space SPACs', 'space IPOs'],
   openGraph: {

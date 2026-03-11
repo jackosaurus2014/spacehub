@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Industry Deal Flow Database | SpaceNexus',
+  title: 'Space Industry Deal Flow Database',
   description: 'Track 100+ space industry deals including funding rounds, M&A, IPOs, SPACs, and major contract wins. Comprehensive deal flow intelligence for SpaceX, Rocket Lab, Blue Origin, and the entire space ecosystem.',
   keywords: [
     'space industry deals',

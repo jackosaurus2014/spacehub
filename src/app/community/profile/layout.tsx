@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'My Profile | SpaceNexus',
+  title: 'My Profile',
   description: 'Manage your SpaceNexus community profile. Update your expertise, bio, and professional details to connect with space industry peers.',
   openGraph: {
     title: 'My Profile | SpaceNexus',

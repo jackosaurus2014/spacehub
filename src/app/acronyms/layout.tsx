@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Industry Acronyms | SpaceNexus',
+  title: 'Space Industry Acronyms',
   description: 'Searchable A-Z reference of 100+ space industry acronyms and abbreviations.',
   openGraph: {
     title: 'Space Industry Acronyms | SpaceNexus',

@@ -13,14 +13,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { name: true, description: true },
   });
 
-  if (!category) return { title: 'Forum Not Found | SpaceNexus' };
+  if (!category) return { title: 'Forum Not Found' };
 
   const desc =
     category.description?.slice(0, 160) ||
     `${category.name} - community forum discussions on SpaceNexus`;
 
   return {
-    title: `${category.name} - Community Forum | SpaceNexus`,
+    title: `${category.name} - Community Forum`,
     description: desc,
     openGraph: {
       title: `${category.name} | SpaceNexus Community`,

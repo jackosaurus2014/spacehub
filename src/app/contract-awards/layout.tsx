@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Contract Awards Feed | SpaceNexus',
+  title: 'Contract Awards Feed',
   description: 'Government and commercial space contract awards from NASA, DoD, USSF, ESA, and more.',
   openGraph: {
     title: 'Contract Awards Feed | SpaceNexus',

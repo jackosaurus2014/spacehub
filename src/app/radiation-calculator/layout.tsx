@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
-  title: 'Space Radiation Environment Calculator | SpaceNexus',
+  title: 'Space Radiation Environment Calculator',
   description: 'Calculate radiation exposure for spacecraft and astronauts across different orbits. Model trapped radiation, GCR, SPE, and shielding effectiveness.',
   openGraph: {
     title: 'Space Radiation Environment Calculator | SpaceNexus',

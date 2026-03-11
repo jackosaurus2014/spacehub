@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Content Moderation | SpaceNexus',
+  title: 'Content Moderation',
   description: 'Review and moderate user-generated content, manage reports, and enforce community guidelines across the SpaceNexus platform.',
   openGraph: {
     title: 'Content Moderation | SpaceNexus',

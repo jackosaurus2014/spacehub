@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
-  title: 'Power Budget Calculator | SpaceNexus',
+  title: 'Power Budget Calculator',
   description: 'Design satellite power systems with solar panel sizing, battery capacity, and power budget analysis tools.',
   openGraph: {
     title: 'Power Budget Calculator | SpaceNexus',

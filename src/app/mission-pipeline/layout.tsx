@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Mission Pipeline | SpaceNexus',
+  title: 'Mission Pipeline',
   description: 'Upcoming space missions 2025-2030 with confidence levels and mission details.',
   openGraph: {
     title: 'Mission Pipeline | SpaceNexus',

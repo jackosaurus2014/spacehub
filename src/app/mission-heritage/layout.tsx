@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Space Mission Heritage Database | SpaceNexus',
+  title: 'Space Mission Heritage Database',
   description: 'Searchable database of 40+ notable space missions spanning planetary exploration, Earth observation, human spaceflight, astronomy, and communications.',
   openGraph: {
     title: 'Space Mission Heritage Database | SpaceNexus',

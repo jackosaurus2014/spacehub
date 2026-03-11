@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'My Watchlists | SpaceNexus',
+  title: 'My Watchlists',
   description:
     'Track your favorite satellites, companies, launches, and space events with personalized watchlists on SpaceNexus.',
   keywords: [

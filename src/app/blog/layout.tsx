@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Blog - Space Industry Analysis & Insights | SpaceNexus',
+  title: 'Blog - Space Industry Analysis & Insights',
   description:
     'Original analysis, market intelligence, guides, and insights on the space industry from the SpaceNexus team. Space economy, satellite tracking, procurement, and more.',
   keywords: [

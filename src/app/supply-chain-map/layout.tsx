@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Supply Chain Relationship Map | SpaceNexus',
+  title: 'Supply Chain Relationship Map',
   description:
     'Interactive visualization of supplier-customer relationships across the space industry. Explore 80+ companies and 150+ connections spanning launch, satellite, defense, and infrastructure sectors.',
   keywords: [
