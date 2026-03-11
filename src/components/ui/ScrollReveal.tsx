@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useRef, useEffect, useState, Children, cloneElement, isValidElement } from 'react';
+import React, { ReactNode, useRef, useEffect, useState, Children, cloneElement, isValidElement } from 'react';
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -97,18 +97,28 @@ export function StaggerContainer({
     return () => observer.disconnect();
   }, []);
 
-  // Inject stagger delay into each StaggerItem child
+  // Inject stagger delay into each StaggerItem child (traverses Fragments)
   let index = 0;
-  const staggeredChildren = Children.map(children, (child) => {
-    if (isValidElement(child) && (child.type as any).__isStaggerItem) {
-      const i = index++;
-      return cloneElement(child as React.ReactElement<any>, {
-        _visible: visible,
-        _delay: i * staggerDelay,
-      });
-    }
-    return child;
-  });
+  function processChildren(kids: ReactNode): ReactNode {
+    return Children.map(kids, (child) => {
+      if (isValidElement(child) && (child.type as any).__isStaggerItem) {
+        const i = index++;
+        return cloneElement(child as React.ReactElement<any>, {
+          _visible: visible,
+          _delay: i * staggerDelay,
+        });
+      }
+      // Traverse into Fragment children so StaggerItems inside Fragments are found
+      if (isValidElement(child) && child.type === React.Fragment) {
+        const fragmentProps = child.props as { children?: ReactNode };
+        if (fragmentProps.children) {
+          return cloneElement(child, {}, processChildren(fragmentProps.children));
+        }
+      }
+      return child;
+    });
+  }
+  const staggeredChildren = processChildren(children);
 
   return (
     <div ref={ref} className={className}>

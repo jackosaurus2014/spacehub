@@ -171,18 +171,21 @@ function NewsContent() {
       ) : (
         <>
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map((article, index) => (
-              <React.Fragment key={article.id}>
-                <StaggerItem>
+            {articles.flatMap((article, index) => {
+              const items: React.ReactNode[] = [
+                <StaggerItem key={article.id}>
                   <NewsCard article={article} priority={index === 0} />
-                </StaggerItem>
-                {(index + 1) % 6 === 0 && index + 1 < articles.length && (
-                  <div className="col-span-1 md:col-span-2 lg:col-span-3">
+                </StaggerItem>,
+              ];
+              if ((index + 1) % 6 === 0 && index + 1 < articles.length) {
+                items.push(
+                  <div key={`ad-${index}`} className="col-span-1 md:col-span-2 lg:col-span-3">
                     <AdSlot position="in_feed" module="news-feed" />
                   </div>
-                )}
-              </React.Fragment>
-            ))}
+                );
+              }
+              return items;
+            })}
           </StaggerContainer>
 
           {/* Footer Ad */}
