@@ -692,6 +692,20 @@ export default function Navigation() {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center space-x-2">
+            {/* Mobile search button — opens command palette */}
+            <button
+              type="button"
+              onClick={() => {
+                const opener = (window as unknown as Record<string, unknown>).__openSearchPalette;
+                if (typeof opener === 'function') opener();
+              }}
+              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-cyan-300 transition-colors"
+              aria-label="Search"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
             <NotificationBell />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}

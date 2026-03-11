@@ -323,7 +323,7 @@ export default function MobileTabBar() {
                 type="button"
                 onClick={() => {
                   haptics.trigger('light');
-                  router.push('/');
+                  router.push(parentHref || '/');
                 }}
                 whileTap={{ scale: 0.85 }}
                 className="relative flex flex-col items-center justify-center flex-1 h-full min-w-[44px] min-h-[44px] px-1 text-slate-400 hover:text-slate-200"
