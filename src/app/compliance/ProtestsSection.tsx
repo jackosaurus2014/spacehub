@@ -31,6 +31,8 @@ export interface BidProtest {
   keyFindings: string[];
 }
 
+const DEFAULT_PROTEST_STYLE = { bg: 'bg-slate-500/20', text: 'text-slate-400', label: 'Unknown' };
+
 const PROTEST_OUTCOME_STYLES: Record<ProtestOutcome, { bg: string; text: string; label: string }> = {
   denied: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Denied' },
   sustained: { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Sustained' },
@@ -112,16 +114,16 @@ function ProtestsOverviewTab({ protests }: { protests: BidProtest[] }) {
 
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
         <input type="search" placeholder="Search case, protester, awardee..." aria-label="Search bid protests" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none" />
-        <select value={forumFilter} onChange={(e) => setForumFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Forums</option>{uniqueForums.map((f) => (<option key={f} value={f}>{PROTEST_FORUM_STYLES[f].label}</option>))}</select>
-        <select value={outcomeFilter} onChange={(e) => setOutcomeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Outcomes</option>{uniqueOutcomes.map((o) => (<option key={o} value={o}>{PROTEST_OUTCOME_STYLES[o].label}</option>))}</select>
+        <select value={forumFilter} onChange={(e) => setForumFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Forums</option>{uniqueForums.map((f) => (<option key={f} value={f}>{(PROTEST_FORUM_STYLES[f] || DEFAULT_PROTEST_STYLE).label}</option>))}</select>
+        <select value={outcomeFilter} onChange={(e) => setOutcomeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Outcomes</option>{uniqueOutcomes.map((o) => (<option key={o} value={o}>{(PROTEST_OUTCOME_STYLES[o] || DEFAULT_PROTEST_STYLE).label}</option>))}</select>
         <select value={programFilter} onChange={(e) => setProgramFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Programs</option>{uniquePrograms.map((p) => (<option key={p} value={p}>{PROTEST_PROGRAM_LABELS[p]}</option>))}</select>
         <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} cases</span>
       </div></div>
 
       <div className="space-y-4">{filtered.map((protest) => {
-        const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome];
-        const forumStyle = PROTEST_FORUM_STYLES[protest.forum];
+        const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome] || DEFAULT_PROTEST_STYLE;
+        const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
         const isExpanded = expandedId === protest.id;
         return (
           <div key={protest.id} className="card p-5 hover:border-nebula-500/50 transition-all">
@@ -226,8 +228,8 @@ function ProtestsTimelineTab({ protests }: { protests: BidProtest[] }) {
                 const monthB = new Date(b.decisionDate).getTime();
                 return (isNaN(monthB) ? 0 : monthB) - (isNaN(monthA) ? 0 : monthA);
               }).map((protest) => {
-                const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome];
-                const forumStyle = PROTEST_FORUM_STYLES[protest.forum];
+                const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome] || DEFAULT_PROTEST_STYLE;
+                const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
                 return (
                   <div key={protest.id} className="card p-4 hover:border-nebula-500/50 transition-all relative">
                     <div className={`absolute left-[-28px] top-4 w-3 h-3 rounded-full ${outcomeColors[protest.outcome]} border-2 border-slate-900`} />
@@ -372,7 +374,7 @@ function ProtestsAnalysisTab({ protests }: { protests: BidProtest[] }) {
           <h4 className="text-sm font-semibold text-star-300 uppercase tracking-wider mb-4">Outcomes Breakdown</h4>
           <div className="space-y-3">
             {byOutcome.map(([outcome, count]) => {
-              const style = PROTEST_OUTCOME_STYLES[outcome as ProtestOutcome];
+              const style = PROTEST_OUTCOME_STYLES[outcome as ProtestOutcome] || DEFAULT_PROTEST_STYLE;
               const pct = totalProtests > 0 ? Math.round((count / totalProtests) * 100) : 0;
               return (
                 <div key={outcome}>
@@ -434,8 +436,8 @@ function ProtestsAnalysisTab({ protests }: { protests: BidProtest[] }) {
             </thead>
             <tbody>
               {[...protests].sort((a, b) => b.yearDecided - a.yearDecided).map((protest) => {
-                const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome];
-                const forumStyle = PROTEST_FORUM_STYLES[protest.forum];
+                const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome] || DEFAULT_PROTEST_STYLE;
+                const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
                 return (
                   <tr key={protest.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                     <td className="py-2.5 px-3"><span className="text-white font-medium">{protest.shortTitle}</span><br /><span className="text-star-300 text-xs font-mono">{protest.caseNumber}</span></td>
@@ -454,8 +456,8 @@ function ProtestsAnalysisTab({ protests }: { protests: BidProtest[] }) {
         {/* Mobile Card View */}
         <div className="md:hidden space-y-3">
           {[...protests].sort((a, b) => b.yearDecided - a.yearDecided).map((protest) => {
-            const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome];
-            const forumStyle = PROTEST_FORUM_STYLES[protest.forum];
+            const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome] || DEFAULT_PROTEST_STYLE;
+            const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
             return (
               <div key={protest.id} className="bg-white/5 border border-white/10 rounded-lg p-3">
                 <div className="flex items-start justify-between gap-2 mb-2">

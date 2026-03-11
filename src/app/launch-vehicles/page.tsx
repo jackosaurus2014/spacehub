@@ -961,7 +961,16 @@ export default function LaunchVehiclesPage() {
         const res = await fetch('/api/content/launch-vehicles?section=vehicles');
         const data = await res.json();
         if (data.data && data.data.length > 0) {
-          setVehicles(data.data);
+          // API returns [{ vehicles: [...] }] — unwrap nested structure
+          const first = data.data[0];
+          if (first?.vehicles && Array.isArray(first.vehicles)) {
+            setVehicles(first.vehicles);
+          } else if (first?.name) {
+            // Already flat vehicle objects
+            setVehicles(data.data);
+          } else {
+            setVehicles(VEHICLES);
+          }
         } else {
           setVehicles(VEHICLES);
         }

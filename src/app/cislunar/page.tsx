@@ -1534,14 +1534,23 @@ function CislunarEcosystemContent() {
           )
         );
 
-        ARTEMIS_MISSIONS = results[0]?.data || [];
-        CLPS_MISSIONS = results[1]?.data || [];
-        ISRU_PROGRAMS = results[2]?.data || [];
-        INFRASTRUCTURE = results[3]?.data || [];
-        INVESTMENTS = results[4]?.data || [];
-        GATEWAY_MODULES = results[5]?.data || [];
-        GATEWAY_ARTEMIS_MISSIONS = results[6]?.data || [];
-        INTERNATIONAL_PARTNERS = results[7]?.data || [];
+        // Validate that API data matches expected array-of-objects shape.
+        // The content API may return wrapper objects; only use data if items have expected fields.
+        const safeArray = (data: unknown[], requiredField: string): any[] => {
+          if (!Array.isArray(data) || data.length === 0) return [];
+          // If items have the required field, data matches the expected shape
+          if (data[0] && typeof data[0] === 'object' && requiredField in (data[0] as Record<string, unknown>)) return data;
+          return [];
+        };
+
+        ARTEMIS_MISSIONS = safeArray(results[0]?.data, 'name');
+        CLPS_MISSIONS = safeArray(results[1]?.data, 'name');
+        ISRU_PROGRAMS = safeArray(results[2]?.data, 'name');
+        INFRASTRUCTURE = safeArray(results[3]?.data, 'name');
+        INVESTMENTS = safeArray(results[4]?.data, 'company');
+        GATEWAY_MODULES = safeArray(results[5]?.data, 'name');
+        GATEWAY_ARTEMIS_MISSIONS = safeArray(results[6]?.data, 'name');
+        INTERNATIONAL_PARTNERS = safeArray(results[7]?.data, 'agency');
 
         const firstMeta = results.find((r) => r?.meta?.lastRefreshed)?.meta;
         if (firstMeta?.lastRefreshed) {

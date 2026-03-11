@@ -57,24 +57,33 @@ export async function GET(request: Request) {
       // DynamicContent stores each section as a single JSON blob containing the full array
       let hasDbData = false;
       let latestRefresh: Date | null = null;
+      // Helper: unwrap nested data (DB may store as { companies: [...] } wrapper)
+      const unwrap = <T,>(raw: unknown, arrayKey: string, requiredField: string): T[] | null => {
+        if (Array.isArray(raw) && raw.length > 0 && raw[0] && typeof raw[0] === 'object' && requiredField in (raw[0] as Record<string, unknown>)) {
+          return raw as T[];
+        }
+        if (raw && typeof raw === 'object' && !Array.isArray(raw) && arrayKey in (raw as Record<string, unknown>)) {
+          const nested = (raw as Record<string, unknown>)[arrayKey];
+          if (Array.isArray(nested) && nested.length > 0) return nested as T[];
+        }
+        return null;
+      };
+
       if (dynamicCompanies.length > 0) {
-        const data = dynamicCompanies[0].data;
-        allCompanies = Array.isArray(data) ? data : [data];
-        hasDbData = true;
+        const parsed = unwrap<SupplyChainCompany>(dynamicCompanies[0].data, 'companies', 'name');
+        if (parsed) { allCompanies = parsed; hasDbData = true; }
         latestRefresh = dynamicCompanies[0].refreshedAt;
       }
       if (dynamicRelationships.length > 0) {
-        const data = dynamicRelationships[0].data;
-        allRelationships = Array.isArray(data) ? data : [data];
-        hasDbData = true;
+        const parsed = unwrap<SupplyRelationship>(dynamicRelationships[0].data, 'relationships', 'supplierId');
+        if (parsed) { allRelationships = parsed; hasDbData = true; }
         if (!latestRefresh || dynamicRelationships[0].refreshedAt > latestRefresh) {
           latestRefresh = dynamicRelationships[0].refreshedAt;
         }
       }
       if (dynamicShortages.length > 0) {
-        const data = dynamicShortages[0].data;
-        allShortages = Array.isArray(data) ? data : [data];
-        hasDbData = true;
+        const parsed = unwrap<SupplyShortage>(dynamicShortages[0].data, 'shortages', 'material');
+        if (parsed) { allShortages = parsed; hasDbData = true; }
         if (!latestRefresh || dynamicShortages[0].refreshedAt > latestRefresh) {
           latestRefresh = dynamicShortages[0].refreshedAt;
         }

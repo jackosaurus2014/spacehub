@@ -187,12 +187,16 @@ interface EstrackStation {
 // Status & Capability Configs
 // ────────────────────────────────────────
 
+const DEFAULT_STATUS_STYLE = { label: 'Unknown', bg: 'bg-slate-900/30', text: 'text-slate-400', border: 'border-slate-500/40' };
+
 const STATUS_CONFIG: Record<SpaceportStatus, { label: string; bg: string; text: string; border: string }> = {
   operational: { label: 'Operational', bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/40' },
   'under-construction': { label: 'Under Construction', bg: 'bg-amber-900/30', text: 'text-amber-400', border: 'border-amber-500/40' },
   planned: { label: 'Planned', bg: 'bg-purple-900/30', text: 'text-purple-400', border: 'border-purple-500/40' },
   limited: { label: 'Limited Operations', bg: 'bg-yellow-900/30', text: 'text-yellow-400', border: 'border-yellow-500/40' },
 };
+
+const DEFAULT_CAPABILITY_STYLE = { label: 'Unknown', color: 'text-slate-400' };
 
 const CAPABILITY_CONFIG: Record<LaunchCapability, { label: string; color: string }> = {
   orbital: { label: 'Orbital', color: 'text-cyan-400' },
@@ -1393,8 +1397,8 @@ function HeroStats({ activeSpaceports, emergingSpaceports, trafficData }: {
 
 function SpaceportCard({ spaceport, maxLaunches }: { spaceport: Spaceport; maxLaunches: number }) {
   const [expanded, setExpanded] = useState(false);
-  const statusStyle = STATUS_CONFIG[spaceport.status];
-  const capStyle = CAPABILITY_CONFIG[spaceport.launchCapability];
+  const statusStyle = STATUS_CONFIG[spaceport.status] || DEFAULT_STATUS_STYLE;
+  const capStyle = CAPABILITY_CONFIG[spaceport.launchCapability] || DEFAULT_CAPABILITY_STYLE;
   const launchBarWidth = maxLaunches > 0 ? (spaceport.recentLaunches2025 / maxLaunches) * 100 : 0;
   const launchBar2024Width = maxLaunches > 0 ? (spaceport.recentLaunches2024 / maxLaunches) * 100 : 0;
 
@@ -1582,7 +1586,7 @@ function SpaceportCard({ spaceport, maxLaunches }: { spaceport: Spaceport; maxLa
 
 function EmergingSpaceportCard({ spaceport }: { spaceport: EmergingSpaceport }) {
   const [expanded, setExpanded] = useState(false);
-  const statusStyle = STATUS_CONFIG[spaceport.status];
+  const statusStyle = STATUS_CONFIG[spaceport.status] || DEFAULT_STATUS_STYLE;
 
   return (
     <div className="card-elevated p-6 border border-space-700 hover:border-amber-500/30 transition-all">
@@ -1682,7 +1686,7 @@ function SiteComparisonTable({ activeSpaceports }: { activeSpaceports: Spaceport
       {/* Mobile card layout */}
       <div className="md:hidden space-y-3 p-4">
         {allSites.map((s) => {
-          const capStyle = CAPABILITY_CONFIG[s.launchCapability];
+          const capStyle = CAPABILITY_CONFIG[s.launchCapability] || DEFAULT_CAPABILITY_STYLE;
           return (
             <div key={s.id} className="card p-4">
               <div className="flex items-start justify-between mb-2">
@@ -1733,7 +1737,7 @@ function SiteComparisonTable({ activeSpaceports }: { activeSpaceports: Spaceport
           </thead>
           <tbody className="divide-y divide-white/5">
             {allSites.map((s) => {
-              const capStyle = CAPABILITY_CONFIG[s.launchCapability];
+              const capStyle = CAPABILITY_CONFIG[s.launchCapability] || DEFAULT_CAPABILITY_STYLE;
               return (
                 <tr key={s.id} className="hover:bg-white/5 transition-colors">
                   <td className="px-4 py-3 font-semibold text-white whitespace-nowrap">{s.name}</td>
