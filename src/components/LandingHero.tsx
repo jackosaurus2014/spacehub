@@ -55,7 +55,7 @@ function HeroReveal({ children, delay, className = '' }: { children: React.React
   return (
     <div
       className={`animate-reveal-up ${className}`}
-      style={{ animationDelay: `${delay}s`, animationFillMode: 'backwards' }}
+      style={{ animationDelay: `${delay}s`, animationFillMode: 'both' }}
     >
       {children}
     </div>
@@ -170,7 +170,7 @@ export default function LandingHero() {
       {/* Scroll indicator */}
       <div
         className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float animate-reveal-up"
-        style={{ animationDelay: '1.6s', animationFillMode: 'backwards' }}
+        style={{ animationDelay: '1.6s', animationFillMode: 'both' }}
       >
         <div className="w-6 h-10 border-2 border-cyan-400/50 rounded-full flex items-start justify-center p-1.5 shadow-lg shadow-cyan-500/20">
           <div className="w-1.5 h-2.5 bg-cyan-400/70 rounded-full animate-pulse" />
