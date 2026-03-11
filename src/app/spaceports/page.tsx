@@ -1842,7 +1842,7 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
               <span className="text-green-400 font-bold text-lg">+{((totalByYear.y2025 / totalByYear.y2021 - 1) * 100).toFixed(0)}%</span>
               <span className="text-star-300/60 text-xs ml-2">since 2021</span>
             </div>
-            <span className="text-white/10">|</span>
+            <span className="text-slate-600">|</span>
             <div>
               <span className="text-green-400 font-bold text-lg">+{((totalByYear.y2025 / totalByYear.y2024 - 1) * 100).toFixed(0)}%</span>
               <span className="text-star-300/60 text-xs ml-2">YoY (2024 to 2025)</span>

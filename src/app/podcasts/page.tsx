@@ -784,7 +784,7 @@ export default function PodcastsPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 stagger-grid">
           <AnimatePresence mode="popLayout">
             {filteredPodcasts.map((podcast, i) => (
               <PodcastCard key={podcast.id} podcast={podcast} index={i} />

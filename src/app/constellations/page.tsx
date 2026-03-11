@@ -545,7 +545,7 @@ function ConstellationCard({ constellation }: { constellation: Constellation }) 
       {/* Footer */}
       <div className="flex items-center gap-3 mt-4 pt-3 border-t border-white/5 text-xs text-star-300/50">
         <span>Latency: <span className="text-star-300">{constellation.latencyEstimate}</span></span>
-        <span className="text-white/10">|</span>
+        <span className="text-slate-600">|</span>
         <span>First launch: <span className="text-star-300">{constellation.firstLaunch}</span></span>
       </div>
     </div>
@@ -559,7 +559,7 @@ function ComparisonTable({ constellations }: { constellations: Constellation[] }
         <h2 className="text-lg font-bold text-white">Constellation Comparison</h2>
         <p className="text-star-300 text-sm mt-1">Side-by-side analysis of all tracked constellations</p>
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto data-scroll-mobile">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-white/5">

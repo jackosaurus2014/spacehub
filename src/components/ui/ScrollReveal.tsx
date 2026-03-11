@@ -31,6 +31,13 @@ export default function ScrollReveal({
       return;
     }
 
+    // Check if already in viewport (above-the-fold content)
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -38,7 +45,7 @@ export default function ScrollReveal({
           observer.disconnect();
         }
       },
-      { rootMargin: '-50px' }
+      { rootMargin: '0px' }
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -49,7 +56,7 @@ export default function ScrollReveal({
     ? 'animate-reveal-up'
     : 'animate-reveal-left';
 
-  const style = delay > 0 ? { animationDelay: `${delay}s` } : undefined;
+  const style = delay > 0 ? { animationDelay: `${delay}s`, animationFillMode: 'both' as const } : undefined;
 
   return (
     <div
@@ -84,6 +91,13 @@ export function StaggerContainer({
       return;
     }
 
+    // Check if already in viewport (above-the-fold content)
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -91,7 +105,7 @@ export function StaggerContainer({
           observer.disconnect();
         }
       },
-      { rootMargin: '-50px' }
+      { rootMargin: '0px' }
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -142,7 +156,7 @@ export function StaggerItem({
   return (
     <div
       className={`${className} ${_visible ? 'animate-reveal-up' : 'opacity-0'}`}
-      style={_delay > 0 ? { animationDelay: `${_delay}s` } : undefined}
+      style={_delay > 0 ? { animationDelay: `${_delay}s`, animationFillMode: 'both' } : undefined}
     >
       {children}
     </div>

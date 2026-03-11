@@ -1144,9 +1144,9 @@ pre {
 }
 
 /* Stagger delay classes matching framer-motion staggerChildren: 0.12 */
-.reveal-delay-1 { animation-delay: 0.12s; }
-.reveal-delay-2 { animation-delay: 0.24s; }
-.reveal-delay-3 { animation-delay: 0.36s; }
+.reveal-delay-1 { animation-delay: 0.12s; animation-fill-mode: both; }
+.reveal-delay-2 { animation-delay: 0.24s; animation-fill-mode: both; }
+.reveal-delay-3 { animation-delay: 0.36s; animation-fill-mode: both; }
 
 /* Respect reduced-motion */
 @media (prefers-reduced-motion: reduce) {

@@ -1291,7 +1291,7 @@ function MissionControlContent() {
                   NASA Image Gallery
                   <span className="ml-2 text-slate-400 text-sm font-normal">Image & Video Library</span>
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 stagger-grid">
                   {nasaImages.map((img) => (
                     <div key={img.nasa_id} className="card overflow-hidden">
                       <div className="relative h-40 bg-slate-800">

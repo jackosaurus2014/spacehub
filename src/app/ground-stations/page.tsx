@@ -660,7 +660,7 @@ function NetworkCard({ network }: { network: GroundStationNetwork }) {
 
 function ComparisonTable({ networks }: { networks: GroundStationNetwork[] }) {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto data-scroll-mobile">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-space-700">

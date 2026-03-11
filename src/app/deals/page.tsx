@@ -615,7 +615,7 @@ function DealsPageContent() {
               transition={{ duration: 0.3 }}
               className="overflow-hidden mb-6"
             >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 stagger-grid">
                 {/* Quarterly Volume Bar Chart (CSS-based) */}
                 <div className="card p-6">
                   <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">

@@ -149,17 +149,17 @@ function ProtestsOverviewTab({ protests }: { protests: BidProtest[] }) {
                 <div><h5 className="text-xs font-semibold text-star-300 mb-1 uppercase tracking-wider">Significance</h5><p className="text-xs text-star-300">{protest.significance}</p></div>
                 <div className="text-xs text-star-300">
                   <span className="font-medium text-white">{protest.title}</span>
-                  <span className="mx-2 text-white/20">|</span>
+                  <span className="mx-2 text-slate-600">|</span>
                   <span>Program: <span className="text-nebula-300">{PROTEST_PROGRAM_LABELS[protest.program]}</span></span>
-                  {protest.judge && (<><span className="mx-2 text-white/20">|</span><span>{protest.judge}</span></>)}
+                  {protest.judge && (<><span className="mx-2 text-slate-600">|</span><span>{protest.judge}</span></>)}
                 </div>
               </div>
             )}
             <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10 mt-3">
               <span>Filed: <span className="text-white font-medium">{protest.yearFiled}</span></span>
-              <span className="text-white/20">|</span>
+              <span className="text-slate-600">|</span>
               <span>Decided: <span className="text-white font-medium">{protest.decisionDate}</span></span>
-              <span className="text-white/20">|</span>
+              <span className="text-slate-600">|</span>
               <span className="text-nebula-300">{PROTEST_PROGRAM_LABELS[protest.program]}</span>
             </div>
           </div>
@@ -243,11 +243,11 @@ function ProtestsTimelineTab({ protests }: { protests: BidProtest[] }) {
                     </div>
                     <div className="flex items-center gap-4 mt-2 text-xs text-star-300">
                       <span>{protest.caseNumber}</span>
-                      <span className="text-white/20">|</span>
+                      <span className="text-slate-600">|</span>
                       <span>{protest.agency}</span>
-                      <span className="text-white/20">|</span>
+                      <span className="text-slate-600">|</span>
                       <span className="text-white font-medium">{protest.contractValue}</span>
-                      <span className="text-white/20">|</span>
+                      <span className="text-slate-600">|</span>
                       <span>{protest.decisionDate}</span>
                     </div>
                   </div>

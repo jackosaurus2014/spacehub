@@ -639,7 +639,7 @@ function FilingsFCCTab() {
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{filing.applicant}</h4><span className="text-star-300 text-xs font-mono">{filing.fileNumber}</span></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${orbitStyle.bg} ${orbitStyle.text}`}>{filing.orbitType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
           <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Band</span><span className="text-nebula-300 text-sm font-mono">{filing.band}</span></div>{filing.satelliteCount && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satelliteCount.toLocaleString()}</span></div>)}</div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{filing.summary}</p>
-          <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Filed: <span className="text-white font-medium">{filing.dateFiled}</span></span>{filing.dateActedOn && (<><span className="text-white/20">|</span><span>Acted: <span className="text-white font-medium">{filing.dateActedOn}</span></span></>)}{filing.docket && (<><span className="text-white/20">|</span><span className="text-nebula-300 font-mono">{filing.docket}</span></>)}</div>
+          <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Filed: <span className="text-white font-medium">{filing.dateFiled}</span></span>{filing.dateActedOn && (<><span className="text-slate-600">|</span><span>Acted: <span className="text-white font-medium">{filing.dateActedOn}</span></span></>)}{filing.docket && (<><span className="text-slate-600">|</span><span className="text-nebula-300 font-mono">{filing.docket}</span></>)}</div>
         </div>); })}</div>
       {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setOrbitFilter(''); setStatusFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
@@ -669,7 +669,7 @@ function FilingsFAATab() {
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{license.licensee}</h4><span className="text-star-300 text-xs font-mono">{license.licenseNumber}</span></div><div className="flex items-center gap-2 shrink-0"><span className="text-xs font-medium px-2 py-1 rounded bg-blue-500/20 text-blue-400">{license.licenseType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3"><div><span className="text-star-300 text-xs block">Vehicle</span><span className="text-white text-sm font-medium">{license.vehicle}</span></div><div><span className="text-star-300 text-xs block">Launch Site</span><span className="text-nebula-300 text-sm">{license.launchSite}</span></div>{license.missionsAuthorized > 0 && (<div><span className="text-star-300 text-xs block">Missions</span><span className="text-white text-sm font-bold">{license.missionsAuthorized}</span></div>)}</div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{license.summary}</p>
-          <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Issued: <span className="text-white font-medium">{license.dateIssued}</span></span><span className="text-white/20">|</span><span>Expires: <span className="text-white font-medium">{license.expirationDate}</span></span></div>
+          <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Issued: <span className="text-white font-medium">{license.dateIssued}</span></span><span className="text-slate-600">|</span><span>Expires: <span className="text-white font-medium">{license.expirationDate}</span></span></div>
         </div>); })}</div>
       {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No licenses match your search</h3><button onClick={() => { setSearch(''); setTypeFilter(''); setStatusFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
@@ -764,7 +764,7 @@ function FilingsFederalRegisterTab() {
         <div key={entry.id} className="card p-5 hover:border-nebula-500/50 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-nebula-300 shrink-0">{entry.agency}</div><div><h4 className="font-semibold text-white text-base">{entry.title}</h4><span className="text-star-300 text-xs font-mono">FR {entry.federalRegisterNumber}</span></div></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{entry.documentType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${impactStyle.bg} ${impactStyle.text}`}>{entry.impact.charAt(0).toUpperCase() + entry.impact.slice(1)} Impact</span></div></div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{entry.summary}</p>
-          <div className="flex items-center flex-wrap gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Published: <span className="text-white font-medium">{entry.publishedDate}</span></span>{entry.effectiveDate && (<><span className="text-white/20">|</span><span>Effective: <span className="text-white font-medium">{entry.effectiveDate}</span></span></>)}{entry.commentDeadline && (<><span className="text-white/20">|</span><span className={new Date(entry.commentDeadline) > new Date() ? 'text-yellow-400 font-semibold' : 'text-star-300'}>Comments Due: {entry.commentDeadline}</span></>)}{entry.docket && (<><span className="text-white/20">|</span><span className="text-nebula-300 font-mono">{entry.docket}</span></>)}</div>
+          <div className="flex items-center flex-wrap gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Published: <span className="text-white font-medium">{entry.publishedDate}</span></span>{entry.effectiveDate && (<><span className="text-slate-600">|</span><span>Effective: <span className="text-white font-medium">{entry.effectiveDate}</span></span></>)}{entry.commentDeadline && (<><span className="text-slate-600">|</span><span className={new Date(entry.commentDeadline) > new Date() ? 'text-yellow-400 font-semibold' : 'text-star-300'}>Comments Due: {entry.commentDeadline}</span></>)}{entry.docket && (<><span className="text-slate-600">|</span><span className="text-nebula-300 font-mono">{entry.docket}</span></>)}</div>
         </div>); })}</div>
       {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No entries match your search</h3><button onClick={() => { setSearch(''); setAgencyFilter(''); setTypeFilter(''); setImpactFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
@@ -915,17 +915,17 @@ function ProtestsOverviewTab() {
                 <div><h5 className="text-xs font-semibold text-star-300 mb-1 uppercase tracking-wider">Significance</h5><p className="text-xs text-star-300">{protest.significance}</p></div>
                 <div className="text-xs text-star-300">
                   <span className="font-medium text-white">{protest.title}</span>
-                  <span className="mx-2 text-white/20">|</span>
+                  <span className="mx-2 text-slate-600">|</span>
                   <span>Program: <span className="text-nebula-300">{PROTEST_PROGRAM_LABELS[protest.program]}</span></span>
-                  {protest.judge && (<><span className="mx-2 text-white/20">|</span><span>{protest.judge}</span></>)}
+                  {protest.judge && (<><span className="mx-2 text-slate-600">|</span><span>{protest.judge}</span></>)}
                 </div>
               </div>
             )}
             <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10 mt-3">
               <span>Filed: <span className="text-white font-medium">{protest.yearFiled}</span></span>
-              <span className="text-white/20">|</span>
+              <span className="text-slate-600">|</span>
               <span>Decided: <span className="text-white font-medium">{protest.decisionDate}</span></span>
-              <span className="text-white/20">|</span>
+              <span className="text-slate-600">|</span>
               <span className="text-nebula-300">{PROTEST_PROGRAM_LABELS[protest.program]}</span>
             </div>
           </div>
@@ -1009,11 +1009,11 @@ function ProtestsTimelineTab() {
                     </div>
                     <div className="flex items-center gap-4 mt-2 text-xs text-star-300">
                       <span>{protest.caseNumber}</span>
-                      <span className="text-white/20">|</span>
+                      <span className="text-slate-600">|</span>
                       <span>{protest.agency}</span>
-                      <span className="text-white/20">|</span>
+                      <span className="text-slate-600">|</span>
                       <span className="text-white font-medium">{protest.contractValue}</span>
-                      <span className="text-white/20">|</span>
+                      <span className="text-slate-600">|</span>
                       <span>{protest.decisionDate}</span>
                     </div>
                   </div>

@@ -32,6 +32,13 @@ export default function AnimatedPageHeader({
       return;
     }
 
+    // Check if already in viewport (headers are typically above-the-fold)
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {

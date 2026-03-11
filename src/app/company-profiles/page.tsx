@@ -571,7 +571,7 @@ export default function CompanyProfilesPage() {
           description="Try adjusting your search or filters to find matching companies."
         />
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 stagger-grid">
           <AnimatePresence mode="popLayout">
             {companies.map((company, i) => (
               <React.Fragment key={company.id}>

@@ -639,7 +639,7 @@ export default function FrequencyBandsPage() {
             </div>
 
             {/* Quick comparison table */}
-            <div className="mt-6 overflow-x-auto">
+            <div className="mt-6 overflow-x-auto data-scroll-mobile">
               <table className="w-full text-sm border-collapse min-w-[700px]">
                 <thead>
                   <tr className="border-b border-slate-800">

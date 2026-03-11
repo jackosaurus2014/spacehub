@@ -1030,7 +1030,7 @@ export default function SpaceRegulationsExplorerPage() {
         <ScrollReveal delay={0.2}>
           <div className="mt-12 bg-slate-800/40 border border-slate-700/50 rounded-xl p-6">
             <h2 className="text-lg font-semibold text-slate-100 mb-4">Related Resources</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 stagger-grid">
               <Link
                 href="/compliance"
                 className="flex items-center gap-3 p-3 bg-slate-900/50 border border-slate-700/40 rounded-lg hover:border-amber-500/30 hover:bg-slate-800/50 transition-all group"

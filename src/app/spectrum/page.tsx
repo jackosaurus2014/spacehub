@@ -1899,7 +1899,7 @@ function SpectrumContent() {
 
                   <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10">
                     <span>Status: <span className="text-white font-medium">{proc.status}</span></span>
-                    <span className="text-white/20">|</span>
+                    <span className="text-slate-600">|</span>
                     <span>Timeline: <span className="text-white font-medium">{proc.date}</span></span>
                   </div>
                 </div>

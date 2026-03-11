@@ -869,7 +869,7 @@ function MarketIntelContent() {
                 </div>
                 {/* Desktop Table */}
                 <div className="card overflow-hidden hidden md:block">
-                  <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
+                  <div className="max-h-[500px] overflow-y-auto overflow-x-auto data-scroll-mobile">
                     <table className="w-full min-w-[640px]">
                       <thead className="sticky top-0 z-10">
                         <tr className="bg-slate-800/80 border-b border-slate-700/50">
@@ -1048,7 +1048,7 @@ function MarketIntelContent() {
                 </div>
                 {/* Desktop Table */}
                 <div className="card overflow-hidden hidden md:block">
-                  <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
+                  <div className="max-h-[500px] overflow-y-auto overflow-x-auto data-scroll-mobile">
                     <table className="w-full min-w-[720px]">
                       <thead className="sticky top-0 z-10">
                         <tr className="bg-slate-800/80 border-b border-slate-700/50">

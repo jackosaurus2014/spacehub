@@ -137,9 +137,16 @@ export default function KPIStrip() {
     const el = containerRef.current;
     if (!el) return;
 
+    // Check if already visible (above-the-fold on page load)
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setIsVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(handleIntersection, {
       threshold: 0.2,
-      rootMargin: '0px 0px -50px 0px',
+      rootMargin: '0px',
     });
 
     observer.observe(el);
