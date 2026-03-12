@@ -405,6 +405,30 @@ export default function DashboardPage() {
           </StaggerContainer>
         </ScrollReveal>
 
+        {/* Quick Actions */}
+        <ScrollReveal>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            {[
+              { label: 'Latest News', href: '/news', icon: '📰', color: 'from-cyan-500/20 to-blue-500/20 border-cyan-500/30 hover:border-cyan-400/50' },
+              { label: 'Company Intel', href: '/company-profiles', icon: '🏢', color: 'from-purple-500/20 to-pink-500/20 border-purple-500/30 hover:border-purple-400/50' },
+              { label: 'Launch Schedule', href: '/mission-control', icon: '🚀', color: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30 hover:border-emerald-400/50' },
+              { label: 'Market Data', href: '/market-intel', icon: '📊', color: 'from-amber-500/20 to-orange-500/20 border-amber-500/30 hover:border-amber-400/50' },
+            ].map((action) => (
+              <Link
+                key={action.href}
+                href={action.href}
+                className={`group flex items-center gap-3 p-3.5 rounded-xl bg-gradient-to-r ${action.color} border transition-all hover:shadow-lg hover:shadow-slate-900/50`}
+              >
+                <span className="text-2xl group-hover:scale-110 transition-transform">{action.icon}</span>
+                <span className="text-sm font-semibold text-white group-hover:text-cyan-300 transition-colors">{action.label}</span>
+                <svg className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 ml-auto transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            ))}
+          </div>
+        </ScrollReveal>
+
         {/* Launch Countdown Widget */}
         <ScrollReveal>
           <div className="mb-8">
@@ -474,6 +498,21 @@ export default function DashboardPage() {
               Showing {totalFilteredModules} of {totalModules} modules
             </p>
           )}
+          {/* Category pills with counts */}
+          <div className="flex flex-wrap gap-2 mt-3">
+            {[
+              { label: 'Explore', count: filteredExplore.length, total: EXPLORE_MODULES.length, icon: '🔭' },
+              { label: 'Intelligence', count: filteredIntelligence.length, total: INTELLIGENCE_MODULES.length, icon: '📊' },
+              { label: 'Business', count: filteredBusiness.length, total: BUSINESS_MODULES.length, icon: '💼' },
+              { label: 'Tools', count: filteredTools.length, total: TOOLS_MODULES.length, icon: '🛠️' },
+            ].map((cat) => (
+              <span key={cat.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/40 text-xs text-slate-300">
+                <span>{cat.icon}</span>
+                <span className="font-medium">{cat.label}</span>
+                <span className="text-slate-500 tabular-nums">{moduleSearch ? cat.count : cat.total}</span>
+              </span>
+            ))}
+          </div>
         </div>
         </ScrollReveal>
 

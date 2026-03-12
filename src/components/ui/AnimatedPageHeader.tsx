@@ -1,6 +1,26 @@
 'use client';
 
 import { ReactNode, useRef, useEffect, useState } from 'react';
+import Link from 'next/link';
+
+/** Map breadcrumb labels to their routes */
+const BREADCRUMB_ROUTES: Record<string, string> = {
+  'Dashboard': '/dashboard',
+  'News & Media': '/news',
+  'Intelligence': '/market-intel',
+  'Business': '/business-opportunities',
+  'Tools': '/tools',
+  'Explore': '/features',
+  'Market Intel': '/market-intel',
+  'Company Profiles': '/company-profiles',
+  'Marketplace': '/marketplace',
+  'Compliance': '/compliance',
+  'Space Talent': '/space-talent',
+  'Mission Planning': '/mission-cost',
+  'Space Operations': '/satellites',
+  'Solar System': '/solar-exploration',
+  'Space Environment': '/space-environment',
+};
 
 interface AnimatedPageHeaderProps {
   title: string;
@@ -78,13 +98,30 @@ export default function AnimatedPageHeader({
   return (
     <div ref={containerRef} className="mb-10">
       {breadcrumb && (
-        <p
+        <nav
+          aria-label="Breadcrumb"
           className={`text-sm text-slate-400 mb-2 tracking-wide uppercase ${
             visible ? `animate-reveal-up ${delayClass(breadcrumbDelay)}` : 'opacity-0'
           }`}
         >
-          {breadcrumb}
-        </p>
+          <ol className="flex items-center gap-1.5">
+            {breadcrumb.split('→').map((segment, i, arr) => {
+              const label = segment.trim();
+              const route = BREADCRUMB_ROUTES[label];
+              const isLast = i === arr.length - 1;
+              return (
+                <li key={i} className="flex items-center gap-1.5">
+                  {i > 0 && <span className="text-slate-600">→</span>}
+                  {!isLast && route ? (
+                    <Link href={route} className="hover:text-cyan-400 transition-colors">{label}</Link>
+                  ) : (
+                    <span className={isLast ? 'text-slate-300' : ''}>{label}</span>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
       )}
 
       <div

@@ -13,6 +13,7 @@ import CompanyRequestDialog from '@/components/ui/CompanyRequestDialog';
 import AdSlot from '@/components/ads/AdSlot';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import EmptyState from '@/components/ui/EmptyState';
+import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 import { clientLogger } from '@/lib/client-logger';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
@@ -262,6 +263,7 @@ function MarketIntelContent() {
   const [etfFilter, setEtfFilter] = useState<'all' | 'pure_space' | 'aerospace_defense'>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [initializing, setInitializing] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(searchParams.get('country') || '');
   const [selectedType, setSelectedType] = useState<'' | 'public' | 'private'>(
@@ -396,6 +398,7 @@ function MarketIntelContent() {
       setError('Failed to load data.');
     } finally {
       setLoading(false);
+      setLastUpdated(new Date());
     }
   }, [selectedCountry, selectedType, selectedFocus, fetchStockData, fetchEtfData]);
 
@@ -419,7 +422,16 @@ function MarketIntelContent() {
     <PullToRefresh onRefresh={async () => { await fetchData(); }}>
     <div className="min-h-screen">
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" icon="📊" accentColor="emerald" breadcrumb="Dashboard → Intelligence" />
+        <AnimatedPageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" icon="📊" accentColor="emerald" breadcrumb="Dashboard → Market Intel" />
+
+        <div className="mb-4">
+          <DataFreshnessBadge
+            lastUpdated={lastUpdated}
+            source="SEC & Market Data"
+            refreshInterval="on page load"
+            onRefresh={() => fetchData()}
+          />
+        </div>
 
         {stats && stats.total > 0 && (
           <>
@@ -807,8 +819,26 @@ function MarketIntelContent() {
 
         {/* Companies Table */}
         {loading ? (
-          <div className="flex justify-center py-20">
-            <LoadingSpinner size="lg" />
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {Array.from({ length: 9 }).map((_, i) => (
+              <div key={i} className="card p-5 animate-pulse">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 rounded bg-slate-800" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-slate-800 rounded w-2/3" />
+                    <div className="h-3 bg-slate-800 rounded w-1/3" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 mb-3">
+                  <div className="h-8 bg-slate-800 rounded flex-1" />
+                  <div className="h-8 w-20 bg-slate-800 rounded" />
+                </div>
+                <div className="flex gap-1">
+                  <div className="h-5 w-16 bg-slate-800 rounded-full" />
+                  <div className="h-5 w-20 bg-slate-800 rounded-full" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : companies.length === 0 && !stats?.total ? (
           <div className="card p-12 text-center">
@@ -1257,8 +1287,18 @@ export default function MarketIntelPage() {
     ]} />
     <Suspense
       fallback={
-        <div className="min-h-screen flex justify-center py-20">
-          <LoadingSpinner size="lg" />
+        <div className="min-h-screen container mx-auto px-4 py-12">
+          <div className="h-10 w-48 bg-slate-800 rounded mb-6 animate-pulse" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="card p-6 animate-pulse"><div className="h-10 bg-slate-800 rounded mb-2" /><div className="h-3 bg-slate-800 rounded w-2/3 mx-auto" /></div>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="card p-5 animate-pulse"><div className="h-4 bg-slate-800 rounded w-3/4 mb-3" /><div className="h-8 bg-slate-800 rounded mb-2" /><div className="flex gap-1"><div className="h-5 w-16 bg-slate-800 rounded-full" /><div className="h-5 w-20 bg-slate-800 rounded-full" /></div></div>
+            ))}
+          </div>
         </div>
       }
     >
