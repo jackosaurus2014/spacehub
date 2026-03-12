@@ -204,6 +204,24 @@ export default function FeaturesPage() {
         </div>
       </section>
 
+      {/* ── Category Quick Nav ── */}
+      <div className="container mx-auto px-4 mb-10">
+        <ScrollReveal delay={0.25}>
+          <div className="flex flex-wrap justify-center gap-3">
+            {CATEGORIES.map((cat) => (
+              <a
+                key={cat.id}
+                href={`#${cat.id}`}
+                className="group flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-800/60 border border-slate-700/40 hover:border-cyan-500/40 hover:bg-cyan-500/10 transition-all text-sm text-slate-300 hover:text-cyan-300"
+              >
+                <span className="font-medium">{cat.title}</span>
+                <span className="text-xs text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded-full group-hover:text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">{cat.modules.length}</span>
+              </a>
+            ))}
+          </div>
+        </ScrollReveal>
+      </div>
+
       {/* ── Category Sections ── */}
       <div className="container mx-auto px-4 pb-8">
         {CATEGORIES.map((category, idx) => (
@@ -233,9 +251,12 @@ export default function FeaturesPage() {
                         {mod.tier}
                       </span>
                     )}
-                    <span className="text-2xl mb-3">{mod.icon}</span>
-                    <h3 className="text-base font-semibold text-white group-hover:text-cyan-400 transition-colors mb-1">
+                    <span className="text-2xl mb-3 group-hover:scale-110 transition-transform duration-200">{mod.icon}</span>
+                    <h3 className="text-base font-semibold text-white group-hover:text-cyan-400 transition-colors mb-1 flex items-center gap-1.5">
                       {mod.name}
+                      <svg className="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </h3>
                     <p className="text-sm text-slate-400 leading-relaxed">{mod.description}</p>
                   </Link>

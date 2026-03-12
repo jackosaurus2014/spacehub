@@ -43,10 +43,10 @@ export default function NewsFilter({
       <div className="flex gap-2 overflow-x-auto flex-nowrap sm:flex-wrap pb-1 scrollbar-hide">
         <button
           onClick={() => onCategoryChange(null)}
-          className={`flex-shrink-0 px-4 py-2 min-h-[44px] rounded-lg font-medium transition-all duration-200 ${
+          className={`flex-shrink-0 px-4 py-2 min-h-[44px] rounded-full font-medium text-sm transition-all duration-200 ${
             selectedCategory === null
-              ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
-              : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
+              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10'
+              : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-700/50 hover:border-slate-600/50'
           }`}
         >
           All
@@ -55,10 +55,10 @@ export default function NewsFilter({
           <button
             key={category.slug}
             onClick={() => onCategoryChange(category.slug)}
-            className={`flex-shrink-0 px-4 py-2 min-h-[44px] rounded-lg font-medium transition-all duration-200 flex items-center gap-2 ${
+            className={`flex-shrink-0 px-4 py-2 min-h-[44px] rounded-full font-medium text-sm transition-all duration-200 flex items-center gap-2 ${
               selectedCategory === category.slug
-                ? 'bg-nebula-500 text-white shadow-lg shadow-nebula-500/25'
-                : 'bg-space-700/50 text-star-200 hover:bg-space-600/50 border border-space-600'
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10'
+                : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-700/50 hover:border-slate-600/50'
             }`}
           >
             {CATEGORY_LOGOS[category.slug] ? (

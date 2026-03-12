@@ -170,7 +170,7 @@ function NewsContent() {
         />
       ) : (
         <>
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-grid">
             {articles.flatMap((article, index) => {
               const items: React.ReactNode[] = [
                 <StaggerItem key={article.id}>

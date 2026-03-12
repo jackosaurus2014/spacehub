@@ -64,10 +64,10 @@ function PricingCard({
 
   return (
     <div
-      className={`card p-6 relative ${
+      className={`card p-6 relative transition-all duration-300 ${
         plan.highlighted
-          ? 'border-nebula-500 glow-border'
-          : 'border-slate-700/50'
+          ? 'border-cyan-500/50 shadow-lg shadow-cyan-500/10 hover:shadow-xl hover:shadow-cyan-500/15 scale-[1.02]'
+          : 'border-slate-700/50 hover:border-slate-600/50'
       } ${isCurrentPlan ? 'ring-2 ring-green-500' : ''}`}
     >
       {plan.highlighted && (
