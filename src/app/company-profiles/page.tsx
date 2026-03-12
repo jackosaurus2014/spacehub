@@ -539,7 +539,7 @@ export default function CompanyProfilesPage() {
                     <button
                       key={s.sector}
                       onClick={() => setSector(s.sector || '')}
-                      className="px-3 py-1.5 min-h-[44px] rounded bg-slate-800/50 hover:bg-slate-700/50 transition-colors whitespace-nowrap flex-shrink-0 text-xs"
+                      className="px-3 py-1.5 min-h-[44px] rounded bg-slate-800/50 hover:bg-slate-700/50 transition-colors whitespace-nowrap flex-shrink-0 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
                     >
                       {getSectorIcon(s.sector)} {s.sector} ({s.count})
                     </button>

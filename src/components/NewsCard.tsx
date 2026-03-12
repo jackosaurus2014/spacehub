@@ -40,7 +40,7 @@ function CompanyBadges({ companies }: { companies: NewsArticleCompanyTag[] }) {
               window.location.href = `/company-profiles/${company.slug}`;
             }
           }}
-          className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 min-h-[32px] rounded border transition-colors cursor-pointer ${tierColors[company.tier] || tierColors[3]}`}
+          className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 min-h-[32px] rounded border transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:ring-offset-1 focus:ring-offset-slate-900 ${tierColors[company.tier] || tierColors[3]}`}
         >
           {company.logoUrl && (
             <Image src={company.logoUrl} alt={`${company.name} logo`} width={12} height={12} className="rounded-sm" />
@@ -161,7 +161,7 @@ export default function NewsCard({ article, featured = false, priority = false }
                         window.location.href = `/company-profiles/${company.slug}`;
                       }
                     }}
-                    className="inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
                   >
                     {company.name}
                   </span>
