@@ -181,7 +181,7 @@ export default function NewsCard({ article, featured = false, priority = false }
   }
 
   return (
-    <div className="card-interactive group flex flex-col overflow-hidden rounded-2xl relative">
+    <div className="card-interactive group flex flex-col overflow-hidden rounded-2xl relative hover:shadow-lg hover:shadow-cyan-500/[0.07] transition-shadow duration-300">
       <BookmarkButton
         itemId={article.id}
         itemTitle={article.title}

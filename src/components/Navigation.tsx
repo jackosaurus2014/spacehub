@@ -309,10 +309,10 @@ function DropdownMenu({
           role="menu"
           aria-label={`${label} submenu`}
           onKeyDown={handleMenuKeyDown}
-          className="absolute top-full left-0 mt-3 w-64 backdrop-blur-xl border border-cyan-400/30 rounded-xl overflow-hidden animate-fade-in-down z-50"
+          className={`absolute top-full left-0 mt-3 backdrop-blur-xl border border-cyan-400/30 rounded-xl overflow-hidden animate-fade-in-down z-50 ${items.length > 12 ? 'w-[32rem]' : 'w-72'}`}
           style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)', boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.15)' }}
         >
-          <div className="p-2">
+          <div className={`p-2 max-h-[70vh] overflow-y-auto scrollbar-hide ${items.length > 12 ? 'grid grid-cols-2 gap-x-1' : ''}`}>
             {items.map((item, index) => (
               <Link
                 key={item.href}
@@ -320,7 +320,7 @@ function DropdownMenu({
                 href={item.href}
                 role="menuitem"
                 tabIndex={-1}
-                className={`block px-3 py-2.5 rounded-lg hover:bg-slate-700/50 transition-colors group ${focusedIndex === index ? 'bg-slate-700/50' : ''}`}
+                className={`block px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-all duration-150 group ${focusedIndex === index ? 'bg-slate-700/50' : ''}`}
                 onClick={onToggle}
                 onMouseEnter={() => setFocusedIndex(index)}
               >
@@ -334,7 +334,7 @@ function DropdownMenu({
                     </span>
                   )}
                 </div>
-                <p className="text-slate-400 text-xs mt-0.5">{item.description}</p>
+                <p className="text-slate-400 text-xs mt-0.5 line-clamp-1">{item.description}</p>
               </Link>
             ))}
           </div>
