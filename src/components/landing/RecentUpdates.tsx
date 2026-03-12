@@ -5,6 +5,16 @@ import { motion } from 'framer-motion';
 
 const RECENT_UPDATES = [
   {
+    date: 'Mar 2026',
+    title: 'Modern Mobile-First Redesign',
+    description:
+      'Glassmorphism design system, content-shaped skeleton loaders, pill-style navigation, stagger animations, and trust signals across every page.',
+    href: '/features',
+    badge: 'New',
+    badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+    icon: '\u2728',
+  },
+  {
     date: 'Feb 2026',
     title: 'AI-Powered Marketplace Copilot',
     description:
@@ -33,16 +43,6 @@ const RECENT_UPDATES = [
     badge: 'New',
     badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
     icon: '\uD83D\uDED2',
-  },
-  {
-    date: 'Jan 2026',
-    title: 'Real-Time Launch Dashboard',
-    description:
-      'Live countdown timers, launch weather, streaming links, and mission details for every upcoming launch worldwide.',
-    href: '/mission-control',
-    badge: 'Enhanced',
-    badgeColor: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-    icon: '\uD83D\uDE80',
   },
 ];
 

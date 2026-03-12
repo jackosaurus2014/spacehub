@@ -224,7 +224,7 @@ describe('GET /api/ai-insights/[slug]', () => {
     (mockPrisma.aIInsight.findFirst as jest.Mock).mockResolvedValue(insight);
 
     const req = new NextRequest('http://localhost/api/ai-insights/space-economy-growth-forecast-2026');
-    const res = await detailGET(req, { params: { slug: 'space-economy-growth-forecast-2026' } });
+    const res = await detailGET(req, { params: Promise.resolve({ slug: 'space-economy-growth-forecast-2026' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -237,7 +237,7 @@ describe('GET /api/ai-insights/[slug]', () => {
     (mockPrisma.aIInsight.findFirst as jest.Mock).mockResolvedValue(makeInsight());
 
     const req = new NextRequest('http://localhost/api/ai-insights/test-slug');
-    await detailGET(req, { params: { slug: 'test-slug' } });
+    await detailGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
 
     expect(mockPrisma.aIInsight.findFirst).toHaveBeenCalledWith({
       where: { slug: 'test-slug', status: 'published' },
@@ -248,7 +248,7 @@ describe('GET /api/ai-insights/[slug]', () => {
     (mockPrisma.aIInsight.findFirst as jest.Mock).mockResolvedValue(null);
 
     const req = new NextRequest('http://localhost/api/ai-insights/nonexistent-slug');
-    const res = await detailGET(req, { params: { slug: 'nonexistent-slug' } });
+    const res = await detailGET(req, { params: Promise.resolve({ slug: 'nonexistent-slug' }) });
     const body = await res.json();
 
     expect(res.status).toBe(404);
@@ -260,7 +260,7 @@ describe('GET /api/ai-insights/[slug]', () => {
     (mockPrisma.aIInsight.findFirst as jest.Mock).mockResolvedValue(null);
 
     const req = new NextRequest('http://localhost/api/ai-insights/draft-insight');
-    const res = await detailGET(req, { params: { slug: 'draft-insight' } });
+    const res = await detailGET(req, { params: Promise.resolve({ slug: 'draft-insight' }) });
     const body = await res.json();
 
     expect(res.status).toBe(404);
@@ -271,7 +271,7 @@ describe('GET /api/ai-insights/[slug]', () => {
     (mockPrisma.aIInsight.findFirst as jest.Mock).mockRejectedValue(new Error('DB error'));
 
     const req = new NextRequest('http://localhost/api/ai-insights/some-slug');
-    const res = await detailGET(req, { params: { slug: 'some-slug' } });
+    const res = await detailGET(req, { params: Promise.resolve({ slug: 'some-slug' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);
@@ -299,7 +299,7 @@ describe('GET /api/ai-insights/[slug]/approve', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-approve/approve?token=valid-token-123'
     );
-    const res = await approveGET(req, { params: { slug: 'test-approve' } });
+    const res = await approveGET(req, { params: Promise.resolve({ slug: 'test-approve' }) });
 
     // Token-based approve redirects to the article page
     expect(res.status).toBe(307);
@@ -318,7 +318,7 @@ describe('GET /api/ai-insights/[slug]/approve', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/my-slug/approve?token=secret-review-token'
     );
-    await approveGET(req, { params: { slug: 'my-slug' } });
+    await approveGET(req, { params: Promise.resolve({ slug: 'my-slug' }) });
 
     expect(mockPrisma.aIInsight.findFirst).toHaveBeenCalledWith({
       where: { slug: 'my-slug', reviewToken: 'secret-review-token' },
@@ -338,7 +338,7 @@ describe('GET /api/ai-insights/[slug]/approve', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-slug/approve?token=valid-token'
     );
-    await approveGET(req, { params: { slug: 'test-slug' } });
+    await approveGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
 
     expect(mockPrisma.aIInsight.update).toHaveBeenCalledWith({
       where: { slug: 'test-slug' },
@@ -360,7 +360,7 @@ describe('GET /api/ai-insights/[slug]/approve', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/admin-approve-slug/approve'
     );
-    const res = await approveGET(req, { params: { slug: 'admin-approve-slug' } });
+    const res = await approveGET(req, { params: Promise.resolve({ slug: 'admin-approve-slug' }) });
     const body = await res.json();
 
     // Admin session (no token) returns JSON, not redirect
@@ -378,7 +378,7 @@ describe('GET /api/ai-insights/[slug]/approve', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-slug/approve?token=bad-token'
     );
-    const res = await approveGET(req, { params: { slug: 'test-slug' } });
+    const res = await approveGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
     const body = await res.json();
 
     expect(res.status).toBe(401);
@@ -392,7 +392,7 @@ describe('GET /api/ai-insights/[slug]/approve', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-slug/approve'
     );
-    const res = await approveGET(req, { params: { slug: 'test-slug' } });
+    const res = await approveGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
     const body = await res.json();
 
     expect(res.status).toBe(401);
@@ -405,7 +405,7 @@ describe('GET /api/ai-insights/[slug]/approve', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-slug/approve'
     );
-    const res = await approveGET(req, { params: { slug: 'test-slug' } });
+    const res = await approveGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
     const body = await res.json();
 
     expect(res.status).toBe(401);
@@ -419,7 +419,7 @@ describe('GET /api/ai-insights/[slug]/approve', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-slug/approve?token=valid-token'
     );
-    const res = await approveGET(req, { params: { slug: 'test-slug' } });
+    const res = await approveGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);
@@ -438,7 +438,7 @@ describe('GET /api/ai-insights/[slug]/approve', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-slug/approve'
     );
-    await approveGET(req, { params: { slug: 'test-slug' } });
+    await approveGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
 
     // findFirst should NOT be called since token is null
     expect(mockPrisma.aIInsight.findFirst).not.toHaveBeenCalled();
@@ -464,7 +464,7 @@ describe('GET /api/ai-insights/[slug]/reject', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-reject/reject?token=valid-token-456'
     );
-    const res = await rejectGET(req, { params: { slug: 'test-reject' } });
+    const res = await rejectGET(req, { params: Promise.resolve({ slug: 'test-reject' }) });
 
     // Token-based reject redirects to the insights list
     expect(res.status).toBe(307);
@@ -483,7 +483,7 @@ describe('GET /api/ai-insights/[slug]/reject', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/my-slug/reject?token=review-token-xyz'
     );
-    await rejectGET(req, { params: { slug: 'my-slug' } });
+    await rejectGET(req, { params: Promise.resolve({ slug: 'my-slug' }) });
 
     expect(mockPrisma.aIInsight.findFirst).toHaveBeenCalledWith({
       where: { slug: 'my-slug', reviewToken: 'review-token-xyz' },
@@ -503,7 +503,7 @@ describe('GET /api/ai-insights/[slug]/reject', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-slug/reject?token=valid-token'
     );
-    await rejectGET(req, { params: { slug: 'test-slug' } });
+    await rejectGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
 
     expect(mockPrisma.aIInsight.update).toHaveBeenCalledWith({
       where: { slug: 'test-slug' },
@@ -524,7 +524,7 @@ describe('GET /api/ai-insights/[slug]/reject', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/admin-reject-slug/reject'
     );
-    const res = await rejectGET(req, { params: { slug: 'admin-reject-slug' } });
+    const res = await rejectGET(req, { params: Promise.resolve({ slug: 'admin-reject-slug' }) });
     const body = await res.json();
 
     // Admin session (no token) returns JSON, not redirect
@@ -542,7 +542,7 @@ describe('GET /api/ai-insights/[slug]/reject', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-slug/reject?token=bad-token'
     );
-    const res = await rejectGET(req, { params: { slug: 'test-slug' } });
+    const res = await rejectGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
     const body = await res.json();
 
     expect(res.status).toBe(401);
@@ -555,7 +555,7 @@ describe('GET /api/ai-insights/[slug]/reject', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-slug/reject'
     );
-    const res = await rejectGET(req, { params: { slug: 'test-slug' } });
+    const res = await rejectGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
     const body = await res.json();
 
     expect(res.status).toBe(401);
@@ -568,7 +568,7 @@ describe('GET /api/ai-insights/[slug]/reject', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-slug/reject'
     );
-    const res = await rejectGET(req, { params: { slug: 'test-slug' } });
+    const res = await rejectGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
     const body = await res.json();
 
     expect(res.status).toBe(401);
@@ -582,7 +582,7 @@ describe('GET /api/ai-insights/[slug]/reject', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-slug/reject?token=valid-token'
     );
-    const res = await rejectGET(req, { params: { slug: 'test-slug' } });
+    const res = await rejectGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);
@@ -601,7 +601,7 @@ describe('GET /api/ai-insights/[slug]/reject', () => {
     const req = new NextRequest(
       'http://localhost/api/ai-insights/test-slug/reject'
     );
-    await rejectGET(req, { params: { slug: 'test-slug' } });
+    await rejectGET(req, { params: Promise.resolve({ slug: 'test-slug' }) });
 
     // findFirst should NOT be called since token is null
     expect(mockPrisma.aIInsight.findFirst).not.toHaveBeenCalled();

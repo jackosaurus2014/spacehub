@@ -44,10 +44,10 @@ function useCountUp(end: number, duration = 2000, startDelay = 0) {
 /*  Platform stat definitions                                          */
 /* ------------------------------------------------------------------ */
 const PLATFORM_STATS = [
-  { value: 200, suffix: '+', label: 'Pages & Tools', icon: '\uD83D\uDCCA' },
-  { value: 100, suffix: '+', label: 'Companies Profiled', icon: '\uD83C\uDFE2' },
-  { value: 50, suffix: '+', label: 'Interactive Tools', icon: '\u2699\uFE0F' },
-  { value: 1500, suffix: '+', label: 'Automated Tests', icon: '\u2705' },
+  { value: 236, suffix: '+', label: 'Pages & Tools', icon: '\uD83D\uDCCA' },
+  { value: 101, suffix: '+', label: 'Companies Profiled', icon: '\uD83C\uDFE2' },
+  { value: 50, suffix: '+', label: 'Data Sources', icon: '\uD83D\uDE80' },
+  { value: 1589, suffix: '+', label: 'Automated Tests', icon: '\u2705' },
 ];
 
 /* Staggered entrance: each child gets an increasing delay */

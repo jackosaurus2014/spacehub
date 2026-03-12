@@ -28,6 +28,7 @@ import OfflineIndicator from '@/components/ui/OfflineIndicator';
 const NpsSurvey = dynamic(() => import('@/components/ui/NpsSurvey'), { ssr: false });
 const ExitIntentPopup = dynamic(() => import('@/components/marketing/ExitIntentPopup'), { ssr: false });
 const QuickStartGuide = dynamic(() => import('@/components/onboarding/QuickStartGuide'), { ssr: false });
+const AnnouncementBanner = dynamic(() => import('@/components/AnnouncementBanner'), { ssr: false });
 const TrialCountdownBanner = dynamic(() => import('@/components/billing/TrialCountdownBanner'), {
   ssr: false,
 });
@@ -212,6 +213,7 @@ export default function RootLayout({
             <DataInitializer />
             <Starfield />
             <div className="relative z-10 min-h-screen flex flex-col">
+              <AnnouncementBanner />
               <Navigation />
               <QuickAccessSidebar />
               <main id="main-content" className="flex-1 lg:pl-16 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0" tabIndex={-1}>

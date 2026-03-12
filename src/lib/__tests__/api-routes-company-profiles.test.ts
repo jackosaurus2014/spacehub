@@ -376,7 +376,7 @@ describe('GET /api/company-profiles/[slug]', () => {
     (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue(company);
 
     const req = new NextRequest('http://localhost/api/company-profiles/spacex');
-    const res = await detailGET(req, { params: { slug: 'spacex' } });
+    const res = await detailGET(req, { params: Promise.resolve({ slug: 'spacex' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -391,7 +391,7 @@ describe('GET /api/company-profiles/[slug]', () => {
     (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue(company);
 
     const req = new NextRequest('http://localhost/api/company-profiles/spacex');
-    const res = await detailGET(req, { params: { slug: 'spacex' } });
+    const res = await detailGET(req, { params: Promise.resolve({ slug: 'spacex' }) });
     const body = await res.json();
 
     expect(body.summary).toBeDefined();
@@ -410,7 +410,7 @@ describe('GET /api/company-profiles/[slug]', () => {
     (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue(null);
 
     const req = new NextRequest('http://localhost/api/company-profiles/nonexistent-corp');
-    const res = await detailGET(req, { params: { slug: 'nonexistent-corp' } });
+    const res = await detailGET(req, { params: Promise.resolve({ slug: 'nonexistent-corp' }) });
     const body = await res.json();
 
     expect(res.status).toBe(404);
@@ -433,7 +433,7 @@ describe('GET /api/company-profiles/[slug]', () => {
     (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue(company);
 
     const req = new NextRequest('http://localhost/api/company-profiles/new-startup');
-    const res = await detailGET(req, { params: { slug: 'new-startup' } });
+    const res = await detailGET(req, { params: Promise.resolve({ slug: 'new-startup' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -447,7 +447,7 @@ describe('GET /api/company-profiles/[slug]', () => {
     (mockPrisma.companyProfile.findUnique as jest.Mock).mockRejectedValue(new Error('DB error'));
 
     const req = new NextRequest('http://localhost/api/company-profiles/spacex');
-    const res = await detailGET(req, { params: { slug: 'spacex' } });
+    const res = await detailGET(req, { params: Promise.resolve({ slug: 'spacex' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);
@@ -492,7 +492,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
     ]);
 
     const req = makeClaimRequest({ contactEmail: 'user@spacex.com' });
-    const res = await claimPOST(req, { params: { slug: 'spacex' } });
+    const res = await claimPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -524,7 +524,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
     ]);
 
     const req = makeClaimRequest({ contactEmail: 'someone@gmail.com' });
-    const res = await claimPOST(req, { params: { slug: 'small-space-co' } });
+    const res = await claimPOST(req, { params: Promise.resolve({ slug: 'small-space-co' }) });
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -536,7 +536,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
     mockGetServerSession.mockResolvedValue(null);
 
     const req = makeClaimRequest({ contactEmail: 'user@spacex.com' });
-    const res = await claimPOST(req, { params: { slug: 'spacex' } });
+    const res = await claimPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
     const body = await res.json();
 
     expect(res.status).toBe(401);
@@ -555,7 +555,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
     });
 
     const req = makeClaimRequest({ contactEmail: 'user@spacex.com' });
-    const res = await claimPOST(req, { params: { slug: 'spacex' } });
+    const res = await claimPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
     const body = await res.json();
 
     expect(res.status).toBe(409);
@@ -574,7 +574,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
     });
 
     const req = makeClaimRequest({ contactEmail: 'user@spacex.com' });
-    const res = await claimPOST(req, { params: { slug: 'spacex' } });
+    const res = await claimPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
     const body = await res.json();
 
     expect(res.status).toBe(409);
@@ -594,7 +594,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
     (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue({ claimedCompanyId: 'company-1' });
 
     const req = makeClaimRequest({ contactEmail: 'user@blueorigin.com' });
-    const res = await claimPOST(req, { params: { slug: 'blue-origin' } });
+    const res = await claimPOST(req, { params: Promise.resolve({ slug: 'blue-origin' }) });
     const body = await res.json();
 
     expect(res.status).toBe(409);
@@ -606,7 +606,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
     (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue(null);
 
     const req = makeClaimRequest({ contactEmail: 'user@example.com' });
-    const res = await claimPOST(req, { params: { slug: 'nonexistent' } });
+    const res = await claimPOST(req, { params: Promise.resolve({ slug: 'nonexistent' }) });
     const body = await res.json();
 
     expect(res.status).toBe(404);
@@ -626,7 +626,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
     (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue({ claimedCompanyId: null });
 
     const req = makeClaimRequest({ contactEmail: 'user@gmail.com' });
-    const res = await claimPOST(req, { params: { slug: 'spacex' } });
+    const res = await claimPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
     const body = await res.json();
 
     expect(res.status).toBe(403);
@@ -638,7 +638,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
     mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
 
     const req = makeClaimRequest({});
-    const res = await claimPOST(req, { params: { slug: 'spacex' } });
+    const res = await claimPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
     const body = await res.json();
 
     expect(res.status).toBe(400);
@@ -659,7 +659,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
     (mockPrisma.$transaction as jest.Mock).mockRejectedValue(new Error('Transaction failed'));
 
     const req = makeClaimRequest({ contactEmail: 'user@smallco.com' });
-    const res = await claimPOST(req, { params: { slug: 'small-co' } });
+    const res = await claimPOST(req, { params: Promise.resolve({ slug: 'small-co' }) });
     const body = await res.json();
 
     expect(res.status).toBe(500);

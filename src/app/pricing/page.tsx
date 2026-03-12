@@ -15,10 +15,12 @@ import FAQSchema from '@/components/seo/FAQSchema';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 
 const PRICING_FAQ = [
-  { question: 'Can I cancel anytime?', answer: 'Yes! You can cancel your subscription at any time. You\'ll continue to have access until the end of your billing period.' },
-  { question: 'What payment methods do you accept?', answer: 'We accept all major credit cards, PayPal, and Apple Pay through our secure payment processor, Stripe.' },
-  { question: 'Is there a free trial?', answer: 'Yes! All paid plans include a 14-day free trial. Try any plan with full access before you subscribe — no credit card required.' },
-  { question: 'Do you offer team discounts?', answer: 'Yes! Contact us for Enterprise pricing with team collaboration features and volume discounts.' },
+  { question: 'Is there a free trial?', answer: 'Yes! All paid plans include a 14-day free trial with full access to every feature. No credit card required to start — you only pay if you choose to continue after the trial ends.' },
+  { question: 'Can I cancel anytime?', answer: 'Absolutely. Cancel with one click from your account settings. No contracts, no cancellation fees. You keep full access until the end of your billing period.' },
+  { question: 'What payment methods do you accept?', answer: 'We accept all major credit cards, PayPal, and Apple Pay through Stripe — the same payment processor trusted by Amazon, Google, and thousands of enterprises.' },
+  { question: 'How does SpaceNexus compare to building this in-house?', answer: 'Companies typically spend $50K–$200K/year aggregating the same data from NASA, NOAA, SEC, SAM.gov, and 40+ other sources. SpaceNexus gives you all of it for under $50/month — with AI analysis included.' },
+  { question: 'Do you offer team or enterprise pricing?', answer: 'Yes! Enterprise plans include team collaboration, custom dashboards, API access, SSO, and dedicated support. Contact us for a tailored quote.' },
+  { question: 'What data sources does SpaceNexus use?', answer: 'We aggregate real-time data from NASA, NOAA, ESA, SpaceTrack, SEC filings, SAM.gov procurement, 53+ RSS feeds, and proprietary AI analysis — all automatically updated.' },
 ];
 
 function TrialDaysLeft(trialEndsAt: Date | null): number {
@@ -348,7 +350,7 @@ function SocialProofSection() {
       {/* Trust badges */}
       <div className="text-center mb-8">
         <p className="text-lg font-semibold text-white mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-          Trusted by 2,800+ space professionals
+          Trusted by 3,000+ space professionals
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           {TRUST_AUDIENCES.map((a) => (
@@ -573,6 +575,18 @@ function PricingPageContent() {
           </div>
         </ScrollReveal>
 
+        {/* ROI Value Prop */}
+        <ScrollReveal className="mb-10">
+          <div className="max-w-3xl mx-auto rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 text-center">
+            <p className="text-sm text-emerald-400 font-semibold mb-1">
+              Companies typically spend $50K&ndash;$200K/year on space industry data
+            </p>
+            <p className="text-slate-300 text-sm">
+              SpaceNexus aggregates 50+ sources including NASA, NOAA, SEC, and SAM.gov &mdash; starting at <span className="font-bold text-white">$0/month</span>
+            </p>
+          </div>
+        </ScrollReveal>
+
         {/* Pricing Cards */}
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" staggerDelay={0.15}>
           {SUBSCRIPTION_PLANS.map((plan) => (
@@ -608,50 +622,18 @@ function PricingPageContent() {
           </div>
         </ScrollReveal>
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left" staggerDelay={0.1}>
-          <StaggerItem>
-            <div className="card p-6">
-              <h3 className="font-semibold text-white mb-2">
-                Can I cancel anytime?
-              </h3>
-              <p className="text-slate-400 text-sm">
-                Yes! You can cancel your subscription at any time. You&apos;ll continue
-                to have access until the end of your billing period.
-              </p>
-            </div>
-          </StaggerItem>
-          <StaggerItem>
-            <div className="card p-6">
-              <h3 className="font-semibold text-white mb-2">
-                What payment methods do you accept?
-              </h3>
-              <p className="text-slate-400 text-sm">
-                We accept all major credit cards, PayPal, and Apple Pay through
-                our secure payment processor, Stripe.
-              </p>
-            </div>
-          </StaggerItem>
-          <StaggerItem>
-            <div className="card p-6">
-              <h3 className="font-semibold text-white mb-2">
-                Is there a free trial?
-              </h3>
-              <p className="text-slate-400 text-sm">
-                Yes! All paid plans include a 14-day free trial. Try any plan with
-                full access before you subscribe &mdash; no credit card required.
-              </p>
-            </div>
-          </StaggerItem>
-          <StaggerItem>
-            <div className="card p-6">
-              <h3 className="font-semibold text-white mb-2">
-                Do you offer team discounts?
-              </h3>
-              <p className="text-slate-400 text-sm">
-                Yes! Contact us for Enterprise pricing with team collaboration
-                features and volume discounts.
-              </p>
-            </div>
-          </StaggerItem>
+          {PRICING_FAQ.map((faq) => (
+            <StaggerItem key={faq.question}>
+              <div className="card p-6 hover:border-cyan-500/30 transition-colors">
+                <h3 className="font-semibold text-white mb-2">
+                  {faq.question}
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed">
+                  {faq.answer}
+                </p>
+              </div>
+            </StaggerItem>
+          ))}
         </StaggerContainer>
 
         {/* Feature Comparison Table */}
