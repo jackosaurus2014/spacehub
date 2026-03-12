@@ -82,6 +82,7 @@ export default function RecentUpdates() {
               variants={cardVariants}
               initial="hidden"
               whileInView="visible"
+              whileHover={{ x: 4, transition: { duration: 0.15 } }}
               viewport={{ once: true, amount: 0.3 }}
               custom={i}
             >

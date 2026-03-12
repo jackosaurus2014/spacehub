@@ -78,10 +78,11 @@ export default function IndustrySnapshot() {
           {SNAPSHOT_METRICS.map((metric, i) => (
             <motion.div
               key={metric.label}
-              className="card p-4 rounded-2xl border border-slate-700/50 hover:border-cyan-500/30 transition-colors"
+              className="card p-4 rounded-2xl border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-200"
               variants={cardVariants}
               initial="hidden"
               whileInView="visible"
+              whileHover={{ y: -3, transition: { duration: 0.2 } }}
               viewport={{ once: true, amount: 0.3 }}
               custom={i}
             >

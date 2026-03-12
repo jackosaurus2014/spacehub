@@ -108,13 +108,13 @@ function AnimatedCounter({ metric, shouldAnimate }: { metric: KPIMetric; shouldA
   const formatted = formatNumber(displayValue, metric.prefix, metric.suffix);
 
   return (
-    <div className="flex flex-col items-center text-center px-2 py-3 md:py-4">
+    <div className="group/kpi flex flex-col items-center text-center px-2 py-3 md:py-4 transition-colors duration-200 hover:bg-white/[0.02] cursor-default">
       <span
-        className={`text-2xl md:text-3xl font-bold tabular-nums ${metric.colorClass} animate-pulse-subtle`}
+        className={`text-2xl md:text-3xl font-bold tabular-nums ${metric.colorClass} animate-pulse-subtle group-hover/kpi:drop-shadow-[0_0_8px_currentColor] transition-[filter] duration-300`}
       >
         {formatted}
       </span>
-      <span className="text-xs md:text-sm text-slate-400 mt-1 font-medium whitespace-nowrap">
+      <span className="text-xs md:text-sm text-slate-400 mt-1 font-medium whitespace-nowrap group-hover/kpi:text-slate-300 transition-colors duration-200">
         {metric.label}
       </span>
     </div>

@@ -50,7 +50,7 @@ export default function CompetitiveComparison() {
               </thead>
               <tbody>
                 {FEATURES.map((row, i) => (
-                  <tr key={i} className="border-b border-slate-800/60 last:border-b-0">
+                  <tr key={i} className="border-b border-slate-800/60 last:border-b-0 hover:bg-white/[0.02] transition-colors duration-150">
                     <td className="p-4 text-slate-300 font-medium">{row.feature}</td>
                     <td className="p-4 text-center text-slate-400">{row.consulting}</td>
                     <td className="p-4 text-center"><CellValue value={row.bloomberg} /></td>

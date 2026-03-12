@@ -198,9 +198,9 @@ function StatCounter({
   return (
     <div
       role="listitem"
-      className="relative rounded-2xl border border-slate-700/40 bg-slate-900/60 backdrop-blur-md px-4 py-5 text-center hover:border-cyan-500/40 transition-colors"
+      className="group/stat relative rounded-2xl border border-slate-700/40 bg-slate-900/60 backdrop-blur-md px-4 py-5 text-center hover:border-cyan-500/40 hover:bg-slate-900/70 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10"
     >
-      <span className="text-2xl mb-1 block" aria-hidden="true">{stat.icon}</span>
+      <span className="text-2xl mb-1 block group-hover/stat:scale-110 transition-transform duration-200" aria-hidden="true">{stat.icon}</span>
       <span
         ref={ref}
         className="text-3xl md:text-4xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-b from-cyan-300 to-cyan-500"

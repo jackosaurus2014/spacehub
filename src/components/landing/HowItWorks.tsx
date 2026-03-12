@@ -64,14 +64,19 @@ export default function HowItWorks() {
           <div className="hidden md:block absolute top-10 left-[calc(16.67%+24px)] right-[calc(16.67%+24px)] border-t-2 border-dashed border-cyan-500/30" />
 
           {STEPS.map((s) => (
-            <motion.div key={s.step} variants={item} className="flex flex-col items-center text-center">
-              <div className="relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 mb-5">
+            <motion.div
+              key={s.step}
+              variants={item}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="group flex flex-col items-center text-center cursor-default"
+            >
+              <div className="relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 mb-5 group-hover:shadow-xl group-hover:shadow-cyan-500/30 transition-shadow duration-300">
                 <span className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-slate-900 border-2 border-cyan-400 text-xs font-bold text-cyan-300 flex items-center justify-center">
                   {s.step}
                 </span>
                 <span className="text-white">{s.icon}</span>
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">{s.title}</h3>
+              <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors duration-200">{s.title}</h3>
               <p className="text-sm text-slate-400 leading-relaxed max-w-xs">{s.description}</p>
             </motion.div>
           ))}

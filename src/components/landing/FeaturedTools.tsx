@@ -90,19 +90,21 @@ export default function FeaturedTools() {
               variants={cardVariants}
               initial="hidden"
               whileInView="visible"
+              whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
+              whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
               viewport={{ once: true, amount: 0.2 }}
               custom={i}
             >
               <Link
                 href={tool.href}
-                className={`group relative card p-5 rounded-2xl border border-slate-700/50 ${tool.borderHover} transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-1 block h-full`}
+                className={`group relative card p-5 rounded-2xl border border-slate-700/50 ${tool.borderHover} transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 block h-full`}
               >
                 {/* Subtle gradient background */}
                 <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${tool.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
 
                 <div className="relative">
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-3xl" role="img" aria-hidden="true">{tool.icon}</span>
+                    <span className="text-3xl group-hover:scale-110 transition-transform duration-200" role="img" aria-hidden="true">{tool.icon}</span>
                     <h3 className="text-lg font-semibold text-white group-hover:text-cyan-300 transition-colors">
                       {tool.title}
                     </h3>
@@ -125,17 +127,23 @@ export default function FeaturedTools() {
         </div>
 
         {/* See all tools link */}
-        <div className="text-center mt-8">
+        <motion.div
+          className="text-center mt-8"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5, duration: 0.4 }}
+        >
           <Link
             href="/mission-cost"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800/80 border border-slate-700/50 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/40 transition-all duration-200 text-sm font-medium"
+            className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800/80 border border-slate-700/50 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/40 hover:bg-slate-800/90 transition-all duration-200 text-sm font-medium"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
             </svg>
             Browse All Tools &amp; Calculators
           </Link>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
