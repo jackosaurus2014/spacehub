@@ -169,7 +169,7 @@ export default function OrbitalServicesModule() {
           Orbital Services Marketplace
         </h2>
         <Link
-          href="/orbital-services"
+          href="/marketplace"
           className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
         >
           Browse All →

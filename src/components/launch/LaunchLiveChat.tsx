@@ -187,7 +187,7 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
         {!session?.user ? (
           <div className="text-center py-2">
             <a
-              href="/auth/login"
+              href="/login"
               className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm font-medium"
             >
               Sign in to join the chat
