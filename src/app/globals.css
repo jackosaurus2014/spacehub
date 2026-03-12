@@ -385,7 +385,16 @@ body::after {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 0 0 1px rgba(6, 182, 212, 0.2),
-    0 0 20px -5px rgba(6, 182, 212, 0.1);
+    0 0 20px -5px rgba(6, 182, 212, 0.12),
+    0 8px 24px -8px rgba(0, 0, 0, 0.3);
+}
+
+/* Keyboard focus ring — visible on focus-visible only */
+.card-interactive:focus-visible,
+.card:focus-visible,
+.card-elevated:focus-visible {
+  outline: 2px solid rgba(6, 182, 212, 0.6);
+  outline-offset: 2px;
 }
 
 /* Colored Card Variants */
@@ -631,6 +640,17 @@ body::after {
 .gradient-line {
   @apply h-px w-full relative;
   background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.4), transparent);
+  overflow: hidden;
+}
+.gradient-line::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -100%;
+  width: 50%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.6), transparent);
+  animation: gradient-shimmer 4s ease-in-out infinite;
 }
 .gradient-line::after {
   content: '';
@@ -639,6 +659,13 @@ body::after {
   background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.15), transparent);
   filter: blur(4px);
   pointer-events: none;
+}
+@keyframes gradient-shimmer {
+  0% { left: -50%; }
+  100% { left: 150%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gradient-line::before { animation: none; opacity: 0; }
 }
 
 /* ——— Safe Area Insets for notched / home-indicator devices ——— */
@@ -1223,6 +1250,79 @@ pre {
 @media (prefers-reduced-motion: reduce) {
   .animate-float { animation: none; }
 }
+
+/* ——— CTA pulse glow — draws attention to primary action buttons ——— */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4); }
+  50% { box-shadow: 0 0 16px 4px rgba(6, 182, 212, 0.15); }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-glow { animation: none; }
+}
+
+/* ——— Badge notification pulse — subtle dot animation ——— */
+@keyframes badge-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.85; }
+}
+.animate-badge-pulse {
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-badge-pulse { animation: none; }
+}
+
+/* ——— Animated underline for text links ——— */
+.link-underline {
+  position: relative;
+  text-decoration: none;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: currentColor;
+  transition: width 0.25s ease;
+}
+.link-underline:hover::after {
+  width: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .link-underline::after { transition: none; }
+}
+
+/* ——— Scroll fade indicators for horizontally scrollable containers ——— */
+.scroll-fade-x {
+  position: relative;
+}
+.scroll-fade-x::before,
+.scroll-fade-x::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.scroll-fade-x::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(5, 10, 21, 0.9), transparent);
+}
+.scroll-fade-x::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(5, 10, 21, 0.9), transparent);
+}
+.scroll-fade-x.has-scroll-left::before { opacity: 1; }
+.scroll-fade-x.has-scroll-right::after { opacity: 1; }
 
 /* ——— Horizontal scroll container for data cards on mobile ——— */
 @media (max-width: 640px) {

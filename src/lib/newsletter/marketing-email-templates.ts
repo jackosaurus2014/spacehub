@@ -127,7 +127,7 @@ SpaceNexus LLC | spacenexus.us`;
  * Email 2: Feature Highlight (Day 3)
  */
 export function generateFeatureHighlightEmail(): { html: string; plain: string; subject: string } {
-  const subject = '10 modules, 200+ companies, real-time data — a tour of SpaceNexus';
+  const subject = '30+ modules, 200+ companies, real-time data — a tour of SpaceNexus';
 
   const modules = [
     { name: 'Mission Control', desc: 'Real-time dashboard with launches, markets, and news', icon: '🎯' },
@@ -149,7 +149,7 @@ export function generateFeatureHighlightEmail(): { html: string; plain: string; 
 
   const html = wrapInLayout(subject, `
     <h1 style="color:${styles.textWhite};font-size:22px;margin:0 0 16px;text-align:center;">
-      10 Modules of Space Intelligence
+      30+ Modules of Space Intelligence
     </h1>
     <p style="color:${styles.textLight};font-size:15px;line-height:1.6;margin:0 0 20px;">
       SpaceNexus isn't just a news feed or a satellite tracker. It's a complete intelligence
@@ -164,7 +164,7 @@ export function generateFeatureHighlightEmail(): { html: string; plain: string; 
     ${ctaButton('Explore All Modules', `${APP_URL}/mission-control`)}
   `);
 
-  const plain = `10 Modules of Space Intelligence
+  const plain = `30+ Modules of Space Intelligence
 
 SpaceNexus isn't just a news feed or a satellite tracker. It's a complete intelligence platform with 10 integrated modules:
 

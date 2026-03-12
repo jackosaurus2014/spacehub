@@ -132,11 +132,11 @@ export default function RegisterPage() {
           <ul className="space-y-4 text-left">
             <li className="flex items-start gap-3">
               <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
-              <span className="text-slate-200 text-sm">10+ integrated modules covering every dimension of the space industry</span>
+              <span className="text-slate-200 text-sm">30+ integrated modules covering every dimension of the space industry</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
-              <span className="text-slate-200 text-sm">Real-time data from 40+ government and industry sources</span>
+              <span className="text-slate-200 text-sm">Real-time data from 50+ government and industry sources</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>

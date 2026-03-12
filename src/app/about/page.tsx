@@ -46,10 +46,10 @@ const whatWeDoCards = [
 ];
 
 const stats = [
-  { value: '100+', label: 'Companies Tracked' },
+  { value: '200+', label: 'Companies Profiled' },
   { value: '50+', label: 'Data Sources' },
-  { value: '10+', label: 'Analysis Tools' },
-  { value: '1000+', label: 'Industry Data Points' },
+  { value: '30+', label: 'Intelligence Modules' },
+  { value: '19,000+', label: 'Satellites Tracked' },
 ];
 
 export default function AboutPage() {

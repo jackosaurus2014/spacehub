@@ -334,22 +334,28 @@ export default function FeaturesPage() {
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
               Start Building Your Space Intelligence Stack
             </h2>
-            <p className="text-slate-400 max-w-xl mx-auto mb-8">
+            <p className="text-slate-400 max-w-xl mx-auto mb-6">
               Whether you are tracking launches, analyzing markets, or planning missions &mdash;
               SpaceNexus has the tools you need.
             </p>
+            <p className="text-sm text-slate-500 mb-8">
+              No credit card required &bull; 14-day free trial &bull; Cancel anytime
+            </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/pricing"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition-colors"
+                href="/register"
+                className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold transition-all shadow-lg shadow-cyan-500/25"
               >
-                View Pricing
+                Get Started Free
+                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </Link>
               <Link
-                href="/book-demo"
+                href="/pricing"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-slate-600 hover:border-slate-500 text-slate-300 hover:text-white font-semibold transition-colors"
               >
-                Book a Demo
+                Compare Plans
               </Link>
             </div>
           </div>

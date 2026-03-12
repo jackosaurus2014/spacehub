@@ -60,8 +60,8 @@ export default function HowItWorks() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
         >
-          {/* Connecting dashed lines (desktop only) */}
-          <div className="hidden md:block absolute top-10 left-[calc(16.67%+24px)] right-[calc(16.67%+24px)] border-t-2 border-dashed border-cyan-500/30" />
+          {/* Connecting gradient lines (desktop only) */}
+          <div className="hidden md:block absolute top-10 left-[calc(16.67%+24px)] right-[calc(16.67%+24px)] h-0.5 bg-gradient-to-r from-cyan-500/40 via-blue-500/30 to-cyan-500/40 rounded-full" />
 
           {STEPS.map((s) => (
             <motion.div
@@ -70,8 +70,8 @@ export default function HowItWorks() {
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
               className="group flex flex-col items-center text-center cursor-default"
             >
-              <div className="relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 mb-5 group-hover:shadow-xl group-hover:shadow-cyan-500/30 transition-shadow duration-300">
-                <span className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-slate-900 border-2 border-cyan-400 text-xs font-bold text-cyan-300 flex items-center justify-center">
+              <div className="relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 mb-5 group-hover:shadow-xl group-hover:shadow-cyan-500/30 transition-all duration-300 ring-4 ring-cyan-500/10 group-hover:ring-cyan-500/20">
+                <span className="absolute -top-1.5 -right-1.5 w-7 h-7 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-cyan-400 text-xs font-bold text-cyan-300 flex items-center justify-center shadow-md">
                   {s.step}
                 </span>
                 <span className="text-white">{s.icon}</span>

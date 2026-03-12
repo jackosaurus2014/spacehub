@@ -288,7 +288,7 @@ export default function PayloadComparisonPage() {
                 {[
                   { title: 'From information to action', desc: 'SpaceNexus does not just inform you — it gives you tools to act. Find a procurement opportunity, connect with a vendor, track a competitor, and monitor a satellite fleet, all in one platform.' },
                   { title: 'Real-time, always current', desc: 'No waiting for tomorrow morning\'s newsletter. SpaceNexus data updates continuously from NASA, NOAA, SAM.gov, and 50+ feeds.' },
-                  { title: '10 modules, one platform', desc: 'Mission Control, satellite tracking, market intelligence, procurement, company profiles, marketplace, regulatory tracking — integrated and cross-referenced.' },
+                  { title: '30+ modules, one platform', desc: 'Mission Control, satellite tracking, market intelligence, procurement, company profiles, marketplace, regulatory tracking — integrated and cross-referenced.' },
                   { title: 'AI-powered analysis', desc: 'The Claude-powered copilot answers your questions, matches your capabilities to opportunities, and surfaces insights you would miss manually.' },
                   { title: 'Free to start', desc: 'Like Payload, SpaceNexus has a free tier. Unlike Payload, that free tier includes satellite tracking, launch monitoring, and company research tools.' },
                 ].map((item) => (

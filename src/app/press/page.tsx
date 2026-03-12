@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 const KEY_STATS = [
-  { label: 'Modules', value: '10+', description: 'Integrated intelligence modules' },
+  { label: 'Modules', value: '30+', description: 'Integrated intelligence modules' },
   { label: 'Company Profiles', value: '200+', description: 'Space companies tracked' },
   { label: 'News Sources', value: '50+', description: 'Curated RSS feeds and blogs' },
   { label: 'Satellites Tracked', value: '19,000+', description: 'Active orbital objects' },
@@ -80,7 +80,7 @@ export default function PressPage() {
                 <div>
                   <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-2">Key Differentiators</h4>
                   <ul className="text-slate-400 space-y-1 text-sm list-disc list-inside">
-                    <li>Only platform combining 10 modules of space intelligence</li>
+                    <li>Only platform combining 30+ modules of space intelligence</li>
                     <li>Freemium model vs. $10K+ enterprise-only competitors</li>
                     <li>Real-time data vs. periodic static reports</li>
                     <li>AI-powered insights via Claude</li>

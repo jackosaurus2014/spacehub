@@ -350,7 +350,7 @@ function SocialProofSection() {
       {/* Trust badges */}
       <div className="text-center mb-8">
         <p className="text-lg font-semibold text-white mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-          Trusted by 3,000+ space professionals
+          Trusted by 10,000+ space professionals
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           {TRUST_AUDIENCES.map((a) => (
@@ -676,6 +676,28 @@ function PricingPageContent() {
                 className="text-nebula-300 hover:text-nebula-200 transition-colors"
               >
                 Contact Support &rarr;
+              </Link>
+            </div>
+          </div>
+        </ScrollReveal>
+      </div>
+
+      {/* Competitor Comparison Links */}
+      <div className="container mx-auto px-4 pb-12">
+        <ScrollReveal>
+          <div className="text-center">
+            <p className="text-slate-500 text-sm mb-3">See how SpaceNexus compares</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link href="/compare/payload-space" className="text-sm text-slate-400 hover:text-cyan-400 transition-colors link-underline">
+                vs. Payload Space
+              </Link>
+              <span className="text-slate-700">&bull;</span>
+              <Link href="/compare/quilty-analytics" className="text-sm text-slate-400 hover:text-cyan-400 transition-colors link-underline">
+                vs. Quilty Analytics
+              </Link>
+              <span className="text-slate-700">&bull;</span>
+              <Link href="/compare/bloomberg-terminal" className="text-sm text-slate-400 hover:text-cyan-400 transition-colors link-underline">
+                vs. Bloomberg Terminal
               </Link>
             </div>
           </div>

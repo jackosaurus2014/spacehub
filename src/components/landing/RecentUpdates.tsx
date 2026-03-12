@@ -113,7 +113,7 @@ export default function RecentUpdates() {
 
                 {/* Arrow */}
                 <svg
-                  className="w-5 h-5 text-slate-600 group-hover:text-cyan-400 transition-colors flex-shrink-0 mt-1"
+                  className="w-5 h-5 text-slate-600 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all duration-200 flex-shrink-0 mt-1"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
