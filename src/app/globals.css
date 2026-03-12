@@ -1212,6 +1212,18 @@ pre {
   }
 }
 
+/* ——— Float animation for empty states and decorative elements ——— */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-float { animation: none; }
+}
+
 /* ——— Horizontal scroll container for data cards on mobile ——— */
 @media (max-width: 640px) {
   .data-scroll-mobile {

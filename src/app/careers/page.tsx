@@ -73,10 +73,10 @@ export default function CareersPage() {
         </div>
 
         {/* Values */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-20 max-w-5xl mx-auto">
+        <div className="stagger-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-20 max-w-5xl mx-auto">
           {VALUES.map((value) => (
-            <div key={value.title} className="card p-6 text-center">
-              <span className="text-3xl mb-3 block">{value.icon}</span>
+            <div key={value.title} className="card p-6 text-center hover:border-cyan-500/30 transition-colors group">
+              <span className="text-3xl mb-3 block group-hover:scale-110 transition-transform duration-200">{value.icon}</span>
               <h3 className="text-lg font-semibold text-white mb-2">{value.title}</h3>
               <p className="text-sm text-slate-400 leading-relaxed">{value.description}</p>
             </div>
@@ -92,11 +92,11 @@ export default function CareersPage() {
             All roles are remote-friendly. We value talent over location.
           </p>
 
-          <div className="space-y-4">
+          <div className="stagger-grid space-y-4">
             {OPEN_ROLES.map((role) => (
-              <div key={role.title} className="card p-6 hover:border-cyan-500/30 transition-colors">
+              <div key={role.title} className="card p-6 hover:border-cyan-500/30 transition-colors group">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-                  <h3 className="text-lg font-semibold text-white">{role.title}</h3>
+                  <h3 className="text-lg font-semibold text-white group-hover:text-cyan-300 transition-colors">{role.title}</h3>
                   <div className="flex gap-2 flex-wrap">
                     <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
                       {role.department}
@@ -109,7 +109,13 @@ export default function CareersPage() {
                     </span>
                   </div>
                 </div>
-                <p className="text-sm text-slate-400">{role.description}</p>
+                <p className="text-sm text-slate-400 leading-relaxed">{role.description}</p>
+                <div className="mt-3 flex items-center gap-1 text-xs text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-medium">
+                  Apply for this role
+                  <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
               </div>
             ))}
           </div>
