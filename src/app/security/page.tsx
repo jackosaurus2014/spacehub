@@ -181,7 +181,7 @@ export default function SecurityPage() {
                 </svg>
                 Enterprise-Grade Protection
               </div>
-              <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 font-[family-name:var(--font-orbitron)]">
+              <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
                 Security &amp; Trust
               </h1>
               <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-6">

@@ -309,8 +309,8 @@ function DropdownMenu({
           role="menu"
           aria-label={`${label} submenu`}
           onKeyDown={handleMenuKeyDown}
-          className={`absolute top-full left-0 mt-3 backdrop-blur-xl border border-cyan-400/30 rounded-xl overflow-hidden animate-fade-in-down z-50 ${items.length > 12 ? 'w-[32rem]' : 'w-72'}`}
-          style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)', boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.15)' }}
+          className={`absolute top-full left-0 mt-3 backdrop-blur-xl border border-white/[0.08] rounded-xl overflow-hidden animate-fade-in-down z-50 ${items.length > 12 ? 'w-[32rem]' : 'w-72'}`}
+          style={{ background: 'rgba(15, 23, 42, 0.95)', boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06)' }}
         >
           <div className={`p-2 max-h-[70vh] overflow-y-auto scrollbar-hide ${items.length > 12 ? 'grid grid-cols-2 gap-x-1' : ''}`}>
             {items.map((item, index) => (
@@ -325,11 +325,11 @@ function DropdownMenu({
                 onMouseEnter={() => setFocusedIndex(index)}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-200 text-sm font-medium group-hover:text-cyan-300 transition-colors">
+                  <span className="text-slate-200 text-sm font-medium group-hover:text-white transition-colors">
                     {item.label}
                   </span>
                   {item.href === '/compliance' && !isPro && (
-                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
                       PRO
                     </span>
                   )}
@@ -481,12 +481,12 @@ export default function Navigation() {
           ? 'linear-gradient(145deg, rgba(3, 7, 18, 0.97) 0%, rgba(15, 23, 42, 0.95) 25%, rgba(15, 23, 42, 0.93) 50%, rgba(15, 23, 42, 0.95) 75%, rgba(3, 7, 18, 0.97) 100%)'
           : 'linear-gradient(145deg, rgba(3, 7, 18, 0.9) 0%, rgba(15, 23, 42, 0.87) 25%, rgba(15, 23, 42, 0.85) 50%, rgba(15, 23, 42, 0.87) 75%, rgba(3, 7, 18, 0.9) 100%)',
         boxShadow: scrolled
-          ? '0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 10px 20px -5px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(6, 182, 212, 0.15)'
-          : 'inset 0 -1px 0 rgba(6, 182, 212, 0.1)'
+          ? '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 10px 20px -5px rgba(0, 0, 0, 0.3)'
+          : 'none'
       }}
     >
       {/* Bottom gradient border */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-white/[0.06]" />
 
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-[72px]">
@@ -500,7 +500,7 @@ export default function Navigation() {
               className="h-5 w-auto"
               priority
             />
-            <span className="text-slate-200 hover:text-cyan-300 text-sm font-medium transition-colors">Home</span>
+            <span className="text-slate-200 hover:text-white text-sm font-medium transition-colors">Home</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -554,7 +554,7 @@ export default function Navigation() {
             {!isPro && (
               <Link
                 href="/pricing"
-                className="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors"
+                className="text-slate-300 hover:text-white text-sm font-medium transition-colors"
               >
                 Upgrade
               </Link>
@@ -593,7 +593,7 @@ export default function Navigation() {
                   (opener as () => void)();
                 }
               }}
-              className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-slate-700/40 transition-colors"
+              className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/40 transition-colors"
               aria-label="Keyboard shortcuts (?)"
             >
               <svg
@@ -660,11 +660,11 @@ export default function Navigation() {
             <NotificationBell />
             <NotificationCenter />
             {status === 'loading' ? (
-              <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
             ) : session ? (
               <div className="flex items-center space-x-3">
                 {isPro && (
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
                     PRO
                   </span>
                 )}
@@ -744,7 +744,7 @@ export default function Navigation() {
         {isMenuOpen && createPortal(
           <div className="lg:hidden fixed inset-0 top-[72px] z-[60] animate-fade-in">
             <div className="absolute inset-0 bg-black/50" onClick={() => setIsMenuOpen(false)} role="presentation" aria-hidden="true" />
-            <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] backdrop-blur-xl border-l border-cyan-400/30 overflow-y-auto animate-slide-in-right" style={{ background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)', boxShadow: '-8px 0 16px -4px rgba(0, 0, 0, 0.4), -20px 0 40px -10px rgba(0, 0, 0, 0.5)' }}>
+            <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] backdrop-blur-xl border-l border-white/[0.06] overflow-y-auto animate-slide-in-right" style={{ background: 'rgba(15, 23, 42, 0.97)', boxShadow: '-8px 0 24px -4px rgba(0, 0, 0, 0.5)' }}>
               <div className="p-6 space-y-4">
                 {/* Mobile Search Input */}
                 <div className="relative">
@@ -764,7 +764,7 @@ export default function Navigation() {
                     placeholder="Search modules..."
                     value={mobileSearchQuery}
                     onChange={(e) => setMobileSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-800/50 border border-white/[0.08] text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/10 transition-colors"
                     aria-label="Search navigation modules"
                   />
                   {mobileSearchQuery && (
@@ -825,8 +825,8 @@ export default function Navigation() {
                           }}
                           className={`w-full flex items-center justify-between px-3 py-3 rounded-lg transition-colors touch-target ${
                             isExpanded
-                              ? 'bg-slate-700/30 text-cyan-400'
-                              : 'text-cyan-400 hover:bg-slate-700/20'
+                              ? 'bg-slate-700/30 text-slate-300'
+                              : 'text-slate-300 hover:bg-slate-700/20'
                           }`}
                           aria-expanded={isExpanded}
                         >
@@ -863,7 +863,7 @@ export default function Navigation() {
                                 <div className="flex items-center justify-between">
                                   <span className="text-sm font-medium">{item.label}</span>
                                   {item.href === '/compliance' && !isPro && (
-                                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
                                       PRO
                                     </span>
                                   )}
@@ -876,7 +876,7 @@ export default function Navigation() {
                             {!mobileSearchQuery && hiddenCount > 0 && (
                               <button
                                 onClick={() => toggleShowAll(category.key)}
-                                className="w-full px-3 py-2.5 text-sm text-cyan-400 hover:text-cyan-300 font-medium transition-colors flex items-center gap-1.5 justify-center"
+                                className="w-full px-3 py-2.5 text-sm text-slate-300 hover:text-white font-medium transition-colors flex items-center gap-1.5 justify-center"
                               >
                                 {isShowingAll ? (
                                   <>
@@ -911,7 +911,7 @@ export default function Navigation() {
 
                 {session?.user?.isAdmin && (
                   <div>
-                    <h3 className="text-cyan-400 text-xs uppercase tracking-widest font-medium mb-3">Admin</h3>
+                    <h3 className="text-slate-300 text-xs uppercase tracking-widest font-medium mb-3">Admin</h3>
                     <Link
                       href="/admin"
                       className="block px-3 py-2.5 rounded-lg text-amber-400 hover:bg-slate-700/50 hover:text-amber-300 transition-colors text-sm font-medium"
@@ -1009,7 +1009,7 @@ export default function Navigation() {
                   {!isPro && (
                     <Link
                       href="/pricing"
-                      className="block text-cyan-400 hover:text-cyan-300 active:text-cyan-200 font-medium text-center py-3 text-sm touch-target"
+                      className="block text-slate-300 hover:text-white active:text-cyan-200 font-medium text-center py-3 text-sm touch-target"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Upgrade to Pro
@@ -1021,7 +1021,7 @@ export default function Navigation() {
                         signOut();
                         setIsMenuOpen(false);
                       }}
-                      className="w-full text-sm py-3 px-4 rounded-lg border border-cyan-400/30 text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
+                      className="w-full text-sm py-3 px-4 rounded-lg border border-white/[0.08] text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
                     >
                       Sign Out
                     </button>

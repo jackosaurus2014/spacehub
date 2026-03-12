@@ -66,15 +66,15 @@ function PricingCard({
 
   return (
     <div
-      className={`card p-6 relative transition-all duration-300 ${
+      className={`card p-6 relative transition-all duration-200 ${
         plan.highlighted
-          ? 'border-cyan-500/50 shadow-lg shadow-cyan-500/10 hover:shadow-xl hover:shadow-cyan-500/15 scale-[1.02]'
-          : 'border-slate-700/50 hover:border-slate-600/50'
-      } ${isCurrentPlan ? 'ring-2 ring-green-500' : ''}`}
+          ? 'border-white/[0.15] scale-[1.02]'
+          : 'hover:border-white/[0.1]'
+      } ${isCurrentPlan ? 'ring-1 ring-green-500/50' : ''}`}
     >
       {plan.highlighted && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="bg-nebula-500 text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
+          <span className="bg-white text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
             Most Popular
           </span>
         </div>
@@ -162,10 +162,10 @@ function PricingCard({
           <button
             onClick={() => onStartTrial(plan.id)}
             disabled={isStartingTrial}
-            className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
+            className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
               plan.highlighted
-                ? 'bg-nebula-500 text-slate-900 hover:bg-nebula-600'
-                : 'bg-slate-600/50 text-slate-100 hover:bg-slate-500/50 border border-slate-500/30'
+                ? 'bg-white text-slate-900 hover:bg-slate-100'
+                : 'bg-white/10 text-slate-100 hover:bg-white/15 border border-white/10'
             } ${isStartingTrial ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isStartingTrial ? 'Starting Trial...' : `Start ${plan.trialDays}-Day Free Trial`}
@@ -190,10 +190,10 @@ function PricingCard({
             onSubscribe(plan.id, isYearly ? 'year' : 'month');
           }}
           disabled={isCheckingOut}
-          className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
+          className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
             plan.highlighted
-              ? 'bg-nebula-500 text-slate-900 hover:bg-nebula-600'
-              : 'bg-slate-600/50 text-slate-100 hover:bg-slate-500/50 border border-slate-500/30'
+              ? 'bg-white text-slate-900 hover:bg-slate-100'
+              : 'bg-white/10 text-slate-100 hover:bg-white/15 border border-white/10'
           } ${isCheckingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {isCheckingOut ? 'Redirecting...' : 'Subscribe Now'}

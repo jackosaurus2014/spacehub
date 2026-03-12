@@ -377,7 +377,7 @@ export default function MobileBottomNav() {
           <div className="px-4 pb-6 pt-2 space-y-5">
             {MORE_MENU_CATEGORIES.map((category) => (
               <div key={category.title}>
-                <h3 className="text-xs font-semibold text-cyan-400/80 uppercase tracking-wider mb-2 px-1">
+                <h3 className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-2 px-1">
                   {category.title}
                 </h3>
                 <div className="grid grid-cols-3 gap-2">
@@ -390,7 +390,7 @@ export default function MobileBottomNav() {
                         aria-current={active ? 'page' : undefined}
                         className={`flex flex-col items-center justify-center min-h-[72px] min-w-[44px] px-2 py-3 rounded-xl transition-all duration-200 ${
                           active
-                            ? 'bg-cyan-500/15 text-cyan-400 ring-1 ring-cyan-500/30'
+                            ? 'bg-white/10 text-white ring-1 ring-white/10'
                             : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 active:bg-slate-800'
                         }`}
                       >
@@ -420,7 +420,7 @@ export default function MobileBottomNav() {
         }}
       >
         {/* Top gradient border */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-white/[0.06]" />
 
         <div className="flex items-center justify-around h-16 px-2 safe-area-pb">
           {/* Primary items */}
@@ -435,13 +435,13 @@ export default function MobileBottomNav() {
                 aria-current={active ? 'page' : undefined}
                 className={`relative flex flex-col items-center justify-center flex-1 h-full min-w-[44px] min-h-[44px] px-2 transition-all duration-200 ${
                   active
-                    ? 'text-cyan-400'
-                    : 'text-slate-400 hover:text-slate-200 active:text-cyan-400'
+                    ? 'text-white'
+                    : 'text-slate-400 hover:text-slate-200 active:text-white'
                 }`}
               >
                 {/* Active indicator */}
                 {active && (
-                  <div className="absolute top-0 w-12 h-0.5 rounded-b-full bg-cyan-400 shadow-lg shadow-cyan-400/50" />
+                  <div className="absolute top-0 w-12 h-0.5 rounded-b-full bg-white shadow-sm" />
                 )}
 
                 {/* Icon */}
@@ -461,7 +461,7 @@ export default function MobileBottomNav() {
                 {/* Label */}
                 <span
                   className={`mt-1 text-xs font-medium transition-colors duration-200 ${
-                    active ? 'text-cyan-400' : 'text-slate-400'
+                    active ? 'text-white' : 'text-slate-400'
                   }`}
                 >
                   {item.name}
@@ -479,13 +479,13 @@ export default function MobileBottomNav() {
             aria-haspopup="dialog"
             className={`relative flex flex-col items-center justify-center flex-1 h-full min-w-[44px] min-h-[44px] px-2 transition-all duration-200 ${
               moreOpen || moreRouteActive
-                ? 'text-cyan-400'
-                : 'text-slate-400 hover:text-slate-200 active:text-cyan-400'
+                ? 'text-white'
+                : 'text-slate-400 hover:text-slate-200 active:text-white'
             }`}
           >
             {/* Active indicator when a "more" route is active */}
             {moreRouteActive && !moreOpen && (
-              <div className="absolute top-0 w-12 h-0.5 rounded-b-full bg-cyan-400 shadow-lg shadow-cyan-400/50" />
+              <div className="absolute top-0 w-12 h-0.5 rounded-b-full bg-white shadow-sm" />
             )}
 
             <div
@@ -503,7 +503,7 @@ export default function MobileBottomNav() {
 
             <span
               className={`mt-1 text-xs font-medium transition-colors duration-200 ${
-                moreOpen || moreRouteActive ? 'text-cyan-400' : 'text-slate-400'
+                moreOpen || moreRouteActive ? 'text-white' : 'text-slate-400'
               }`}
             >
               More

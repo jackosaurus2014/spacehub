@@ -83,53 +83,41 @@ export default function LandingHero() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#050a15]/80 via-[#050a15]/60 to-[#050a15]/95" />
       </div>
 
-      {/* Decorative atmospheric glow orbs */}
-      <div className="absolute top-1/4 -left-48 w-[500px] h-[500px] bg-nebula-500/20 rounded-full blur-[160px] pointer-events-none z-[1]" />
-      <div className="absolute bottom-1/4 -right-48 w-[400px] h-[400px] bg-plasma-500/15 rounded-full blur-[160px] pointer-events-none z-[1]" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[200px] pointer-events-none z-[1]" />
+      {/* Subtle atmospheric accent — single, restrained */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-slate-400/5 rounded-full blur-[200px] pointer-events-none z-[1]" />
 
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
-          {/* Headline with animated gradient */}
+          {/* Headline — clean Inter, tight tracking */}
           <HeroReveal delay={0.3} className="mb-6">
-            <h1 className="text-fluid-display font-display font-bold leading-tight">
-              <span
-                className="text-transparent bg-clip-text bg-[length:200%_auto] animate-[gradient-shift_6s_ease_infinite]"
-                style={{
-                  backgroundImage: 'linear-gradient(90deg, #67e8f9, #c4b5fd, #f9a8d4, #67e8f9)',
-                  filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.9))',
-                }}
-              >
-                The Space Industry&apos;s Comprehensive Intelligence Platform.
-              </span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.05] text-white">
+              Space Industry<br />Intelligence Platform
             </h1>
           </HeroReveal>
 
           {/* Subtitle -- condensed value proposition */}
           <HeroReveal delay={0.5} className="mb-10">
-            <p className="text-lg md:text-xl text-slate-200 max-w-2xl mx-auto leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+            <p className="text-base md:text-lg text-slate-400 max-w-xl mx-auto leading-relaxed">
               Real-time data, interactive tools, regulatory intelligence, and market
-              analytics &mdash; all in one affordable platform for space industry
-              professionals.
+              analytics — all in one platform for space industry professionals.
             </p>
           </HeroReveal>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons — clean, minimal */}
           <HeroReveal delay={0.7} className="mb-6">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/mission-control?utm_source=homepage&utm_medium=hero&utm_campaign=explore"
-                className="btn-primary text-base py-4 px-10 shadow-lg shadow-nebula-500/30 inline-flex items-center justify-center"
+                className="bg-white text-slate-900 font-medium text-sm py-3 px-8 rounded-lg transition-all duration-200 hover:bg-slate-100 active:scale-[0.98] inline-flex items-center justify-center"
               >
-                Explore the Platform
+                Get Started
               </Link>
               <Link
                 href="/pricing?utm_source=homepage&utm_medium=hero&utm_campaign=freetrial"
-                className="border-2 border-cyan-400 text-base py-4 px-10 rounded-full font-bold uppercase tracking-wide transition-all duration-300 hover:-translate-y-0.5 active:scale-95 bg-[#0a1628] text-[#e0f7ff] hover:bg-cyan-500 hover:text-white hover:border-cyan-500"
-                style={{ textShadow: '0 0 8px rgba(34,211,238,0.4)' }}
+                className="border border-white/20 text-white font-medium text-sm py-3 px-8 rounded-lg transition-all duration-200 hover:bg-white/10 active:scale-[0.98] inline-flex items-center justify-center"
               >
-                Start Free Trial
+                View Pricing
               </Link>
             </div>
           </HeroReveal>
@@ -149,35 +137,25 @@ export default function LandingHero() {
             <div className="flex gap-6 justify-center">
               <Link
                 href="/register?utm_source=homepage&utm_medium=hero&utm_campaign=signup"
-                className="text-cyan-300 hover:text-cyan-200 text-sm font-medium transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+                className="text-slate-400 hover:text-white text-sm transition-colors"
               >
                 Create Free Account
               </Link>
-              <span className="text-cyan-400/50">|</span>
+              <span className="text-slate-600">·</span>
               <Link
                 href="/news?utm_source=homepage&utm_medium=hero&utm_campaign=news"
-                className="text-cyan-300 hover:text-cyan-200 text-sm font-medium transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+                className="text-slate-400 hover:text-white text-sm transition-colors"
               >
                 Browse News
               </Link>
             </div>
           </HeroReveal>
 
-          {/* Trust Signal Strip */}
+          {/* Trust Signal Strip — minimal */}
           <HeroReveal delay={1.0}>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6 text-sm text-slate-400">
-              <div className="flex -space-x-2">
-                {['SA', 'MR', 'JL', 'TK', 'EP'].map((initials, i) => (
-                  <div key={i} className="w-7 h-7 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 border-2 border-slate-900 flex items-center justify-center text-[10px] font-medium text-slate-300">
-                    {initials}
-                  </div>
-                ))}
-              </div>
-              <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                Used by analysts at{' '}
-                <span className="text-white font-medium">SpaceX</span>,{' '}
-                <span className="text-white font-medium">NASA</span>,{' '}
-                <span className="text-white font-medium">L3Harris</span> &amp; 200+ firms
+            <div className="flex items-center justify-center gap-2 mb-8 text-xs text-slate-500">
+              <span>
+                Trusted by teams at SpaceX, NASA, L3Harris &amp; 200+ firms
               </span>
             </div>
           </HeroReveal>
@@ -228,16 +206,16 @@ function StatCounter({
   return (
     <div
       role="listitem"
-      className="group/stat relative rounded-2xl border border-slate-700/40 bg-slate-900/60 backdrop-blur-md px-4 py-5 text-center hover:border-cyan-500/40 hover:bg-slate-900/70 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10"
+      className="relative rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-5 text-center hover:border-white/[0.12] transition-all duration-200"
     >
-      <span className="text-2xl mb-1 block group-hover/stat:scale-110 transition-transform duration-200" aria-hidden="true">{stat.icon}</span>
+      <span className="text-xl mb-1 block" aria-hidden="true">{stat.icon}</span>
       <span
         ref={ref}
-        className="text-3xl md:text-4xl font-bold font-mono text-transparent bg-clip-text bg-gradient-to-b from-cyan-300 to-cyan-500"
+        className="text-2xl md:text-3xl font-semibold font-mono text-white tracking-tight"
       >
         {count.toLocaleString()}{stat.suffix}
       </span>
-      <span className="block text-xs md:text-sm text-slate-300 mt-1 font-medium tracking-wide">
+      <span className="block text-xs text-slate-500 mt-1">
         {stat.label}
       </span>
     </div>

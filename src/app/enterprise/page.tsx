@@ -214,7 +214,7 @@ export default function EnterprisePage() {
               </svg>
               Enterprise-Grade Intelligence
             </div>
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 font-[family-name:var(--font-orbitron)]">
+            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
               Space Intelligence for Your
               <span className="block bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                 Entire Organization

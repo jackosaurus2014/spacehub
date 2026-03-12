@@ -73,16 +73,6 @@ export default function AnimatedPageHeader({
     return () => observer.disconnect();
   }, []);
 
-  const accentGradients: Record<string, string> = {
-    cyan: 'from-cyan-400 to-blue-500',
-    purple: 'from-purple-400 to-pink-500',
-    emerald: 'from-emerald-400 to-teal-500',
-    amber: 'from-amber-400 to-orange-500',
-    red: 'from-red-400 to-rose-500',
-  };
-
-  const gradient = accentGradients[accentColor] || accentGradients.cyan;
-
   // Build child index for stagger delays
   // Order: breadcrumb (if present), title row, subtitle (if present), children (if present)
   let delayIndex = 0;
@@ -133,10 +123,9 @@ export default function AnimatedPageHeader({
           <span className="text-4xl">{icon}</span>
         )}
         <div>
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-slate-100">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-100">
             {title}
           </h1>
-          <div className={`h-1 w-16 mt-2 rounded-full bg-gradient-to-r ${gradient}`} />
         </div>
       </div>
 

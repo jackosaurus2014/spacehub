@@ -98,7 +98,7 @@ export default function SolutionsPage() {
         {/* Hero */}
         <section className="container mx-auto px-4 pt-12 pb-16 text-center">
           <ScrollReveal>
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 font-[family-name:var(--font-orbitron)]">
+            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
               Solutions for Every Space Professional
             </h1>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
