@@ -159,6 +159,8 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="color-scheme" content="dark light" />
+        {/* Preload hero poster image for faster LCP on homepage */}
+        <link rel="preload" as="image" href="/SpaceNexus%20background.jpg" />
         <link rel="preconnect" href="https://ll.thespacedevs.com" />
         <link rel="dns-prefetch" href="https://ll.thespacedevs.com" />
         <link rel="preconnect" href="https://celestrak.org" />
