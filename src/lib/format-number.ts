@@ -47,6 +47,39 @@ export function formatPercentage(value: number, decimals = 1): string {
 }
 
 /**
+ * Format a monetary value in compact notation with $ prefix.
+ * Handles null/undefined gracefully. Alias for formatCurrency(value, true).
+ * 1500000 → "$1.5M", 500000 → "$500.0K", null → ""
+ */
+export function formatMoney(value: number | null | undefined, compact = true): string {
+  if (value == null || value === 0) return '';
+  if (compact) {
+    const abs = Math.abs(value);
+    const sign = value < 0 ? '-' : '';
+    if (abs >= 1e9) return `${sign}$${(abs / 1e9).toFixed(1)}B`;
+    if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(1)}M`;
+    if (abs >= 1e3) return `${sign}$${(abs / 1e3).toFixed(0)}K`;
+    return `${sign}$${abs.toFixed(0)}`;
+  }
+  return formatCurrency(value);
+}
+
+/** Alias for formatMoney — formats funding amounts in compact notation */
+export const formatFunding = formatMoney;
+
+/**
+ * Get tier label and color for company tiers.
+ */
+export function getTierInfo(tier: number): { label: string; color: string } {
+  switch (tier) {
+    case 1: return { label: 'Tier 1', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
+    case 2: return { label: 'Tier 2', color: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' };
+    case 3: return { label: 'Tier 3', color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' };
+    default: return { label: `Tier ${tier}`, color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' };
+  }
+}
+
+/**
  * Format a relative time string ("2h ago", "3d ago", "just now")
  */
 export function formatRelativeTime(date: Date | string): string {

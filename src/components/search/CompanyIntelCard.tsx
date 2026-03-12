@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { formatFunding, getTierInfo } from '@/lib/format-number';
 
 interface CompanyIntelResult {
   id: string;
@@ -26,25 +27,8 @@ interface CompanyIntelResult {
   };
 }
 
-function formatFunding(amount: number | null): string {
-  if (!amount) return '';
-  if (amount >= 1e9) return `$${(amount / 1e9).toFixed(1)}B`;
-  if (amount >= 1e6) return `$${(amount / 1e6).toFixed(0)}M`;
-  if (amount >= 1e3) return `$${(amount / 1e3).toFixed(0)}K`;
-  return `$${amount}`;
-}
-
-function getTierLabel(tier: number): { label: string; color: string } {
-  switch (tier) {
-    case 1: return { label: 'Tier 1', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
-    case 2: return { label: 'Tier 2', color: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' };
-    case 3: return { label: 'Tier 3', color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' };
-    default: return { label: `Tier ${tier}`, color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' };
-  }
-}
-
 export default function CompanyIntelCard({ item }: { item: CompanyIntelResult }) {
-  const tierInfo = getTierLabel(item.tier);
+  const tierInfo = getTierInfo(item.tier);
   const counts = item._count;
   const hasModuleData = counts.newsArticles > 0 || counts.contracts > 0 || counts.serviceListings > 0 ||
     counts.satelliteAssets > 0 || counts.fundingRounds > 0 || counts.products > 0;

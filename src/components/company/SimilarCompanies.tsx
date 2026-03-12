@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { formatFunding } from '@/lib/format-number';
 
 // ────────────────────────────────────────
 // Types
@@ -48,13 +49,6 @@ function getSectorIcon(s: string | null): string {
   return m[s || ''] || '🏢';
 }
 
-function formatFunding(value: number | null): string {
-  if (!value) return '';
-  if (value >= 1e9) return `$${(value / 1e9).toFixed(1)}B`;
-  if (value >= 1e6) return `$${(value / 1e6).toFixed(0)}M`;
-  if (value >= 1e3) return `$${(value / 1e3).toFixed(0)}K`;
-  return `$${value.toFixed(0)}`;
-}
 
 function getReasonColor(reason: string): string {
   if (reason === 'Competitor') return 'bg-red-500/20 text-red-400';

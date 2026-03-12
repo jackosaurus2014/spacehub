@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { formatMoney } from '@/lib/format-number';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -139,14 +140,6 @@ const AGENCY_ICONS: Record<string, string> = {
 };
 
 // ---------- Helpers ----------
-
-function formatMoney(value: number | null): string {
-  if (!value) return '';
-  if (value >= 1e9) return `$${(value / 1e9).toFixed(1)}B`;
-  if (value >= 1e6) return `$${(value / 1e6).toFixed(1)}M`;
-  if (value >= 1e3) return `$${(value / 1e3).toFixed(0)}K`;
-  return `$${value.toLocaleString()}`;
-}
 
 function formatAmountRange(min: number | null, max: number | null): string {
   if (min && max) return `${formatMoney(min)} - ${formatMoney(max)}`;
