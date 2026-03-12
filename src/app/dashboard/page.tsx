@@ -347,33 +347,34 @@ export default function DashboardPage() {
         {/* Welcome Header - replaced h1 with AnimatedPageHeader */}
         {isSectionVisible('welcome', sections) && (
           <div className="bg-gradient-to-r from-slate-800/80 via-slate-800/60 to-slate-800/80 border border-slate-700/50 rounded-2xl p-6 mb-8 animate-fade-in">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center text-white text-xl font-bold">
-                  {session.user?.name?.charAt(0)?.toUpperCase() || 'E'}
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center text-white text-xl font-bold shrink-0">
+                    {session.user?.name?.charAt(0)?.toUpperCase() || 'E'}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <AnimatedPageHeader
+                        title={getTimeGreeting(session.user?.name || 'Explorer')}
+                        subtitle={session.user?.email || undefined}
+                      />
+                      <StreakBadge variant="compact" />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <AnimatedPageHeader
-                      title={getTimeGreeting(session.user?.name || 'Explorer')}
-                      subtitle={session.user?.email || undefined}
-                    />
-                    <StreakBadge variant="compact" />
+                <div className="hidden md:flex items-center gap-6 text-center">
+                  <div>
+                    <p className="text-2xl font-bold text-cyan-400">{totalModules}</p>
+                    <p className="text-xs text-slate-400">Modules</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-purple-400">4</p>
+                    <p className="text-xs text-slate-400">Categories</p>
                   </div>
                 </div>
               </div>
-              <div className="hidden md:flex items-center gap-6 text-center">
-                <div>
-                  <p className="text-2xl font-bold text-cyan-400">{totalModules}</p>
-                  <p className="text-xs text-slate-400">Modules</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-purple-400">4</p>
-                  <p className="text-xs text-slate-400">Categories</p>
-                </div>
-              </div>
-
-        <RelatedModules modules={PAGE_RELATIONS['dashboard']} />
+              <RelatedModules modules={PAGE_RELATIONS['dashboard']} />
             </div>
           </div>
         )}

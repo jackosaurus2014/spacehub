@@ -152,6 +152,25 @@ export default function LandingHero() {
             </div>
           </HeroReveal>
 
+          {/* Trust Signal Strip */}
+          <HeroReveal delay={1.0}>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6 text-sm text-slate-400">
+              <div className="flex -space-x-2">
+                {['SA', 'MR', 'JL', 'TK', 'EP'].map((initials, i) => (
+                  <div key={i} className="w-7 h-7 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 border-2 border-slate-900 flex items-center justify-center text-[10px] font-medium text-slate-300">
+                    {initials}
+                  </div>
+                ))}
+              </div>
+              <span className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                Used by analysts at{' '}
+                <span className="text-white font-medium">SpaceX</span>,{' '}
+                <span className="text-white font-medium">NASA</span>,{' '}
+                <span className="text-white font-medium">L3Harris</span> &amp; 200+ firms
+              </span>
+            </div>
+          </HeroReveal>
+
           {/* Animated Platform Stats */}
           <HeroReveal delay={1.1}>
             <div

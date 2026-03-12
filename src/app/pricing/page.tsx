@@ -385,7 +385,7 @@ function PricingPageContent() {
   const { data: session } = useSession();
   const { tier, isTrialing, trialEndsAt, refreshSubscription } = useSubscription();
   const searchParams = useSearchParams();
-  const [isYearly, setIsYearly] = useState(false);
+  const [isYearly, setIsYearly] = useState(true);
   const [isStartingTrial, setIsStartingTrial] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
@@ -565,8 +565,10 @@ function PricingPageContent() {
               />
             </button>
             <span className={`text-sm font-medium ${isYearly ? 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]' : 'text-slate-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'}`}>
-              Yearly
-              <span className="ml-1 text-green-400 text-xs drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">Save up to 17%</span>
+              Annual
+            </span>
+            <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-full font-semibold">
+              Save up to 17%
             </span>
           </div>
         </ScrollReveal>

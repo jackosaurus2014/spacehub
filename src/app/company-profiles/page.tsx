@@ -561,8 +561,30 @@ export default function CompanyProfilesPage() {
 
       {/* Companies Grid/List */}
       {loading ? (
-        <div className="flex justify-center py-20">
-          <LoadingSpinner />
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <div key={i} className="card p-5 animate-pulse">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-lg bg-slate-800" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-slate-800 rounded w-3/4" />
+                  <div className="h-3 bg-slate-800 rounded w-1/2" />
+                </div>
+              </div>
+              <div className="space-y-2 mb-3">
+                <div className="h-3 bg-slate-800 rounded" />
+                <div className="h-3 bg-slate-800 rounded w-5/6" />
+              </div>
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                <div className="h-12 bg-slate-800 rounded-lg" />
+                <div className="h-12 bg-slate-800 rounded-lg" />
+              </div>
+              <div className="flex gap-1">
+                <div className="h-5 w-20 bg-slate-800 rounded-full" />
+                <div className="h-5 w-16 bg-slate-800 rounded-full" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : companies.length === 0 ? (
         <EmptyState
@@ -587,6 +609,17 @@ export default function CompanyProfilesPage() {
         </div>
       ) : (
         <div className="space-y-2">
+          {/* Sticky column header */}
+          <div className="sticky top-0 z-10 hidden md:flex items-center gap-4 px-4 py-2.5 bg-slate-900/95 backdrop-blur-md border border-slate-700/40 rounded-xl text-xs font-semibold uppercase tracking-wider text-slate-400">
+            <div className="w-10 flex-shrink-0" />
+            <div className="flex-1 min-w-0">Company</div>
+            <div className="flex items-center gap-6">
+              <div className="w-24 text-right">Funding</div>
+              <div className="w-24 text-right">Market Cap</div>
+              <div className="w-20 text-right">Employees</div>
+            </div>
+            <div className="w-4" />
+          </div>
           <AnimatePresence mode="popLayout">
             {companies.map((company, i) => (
               <motion.div

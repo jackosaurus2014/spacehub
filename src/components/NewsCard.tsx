@@ -56,16 +56,16 @@ function CompanyBadges({ companies }: { companies: NewsArticleCompanyTag[] }) {
 }
 
 const categoryColors: Record<string, string> = {
-  launches: 'bg-rocket-500',
-  missions: 'bg-nebula-500',
-  companies: 'bg-blue-500',
-  satellites: 'bg-cyan-500',
-  defense: 'bg-slate-500',
-  earnings: 'bg-green-500',
-  mergers: 'bg-purple-500',
-  development: 'bg-yellow-500',
-  policy: 'bg-red-500',
-  debris: 'bg-orange-500',
+  launches: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
+  missions: 'bg-violet-500/20 text-violet-300 border border-violet-500/30',
+  companies: 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
+  satellites: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30',
+  defense: 'bg-slate-500/20 text-slate-300 border border-slate-500/30',
+  earnings: 'bg-green-500/20 text-green-300 border border-green-500/30',
+  mergers: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
+  development: 'bg-amber-500/20 text-amber-300 border border-amber-500/30',
+  policy: 'bg-red-500/20 text-red-300 border border-red-500/30',
+  debris: 'bg-orange-500/20 text-orange-300 border border-orange-500/30',
 };
 
 const CATEGORY_LOGOS: Record<string, string> = {
@@ -132,7 +132,7 @@ export default function NewsCard({ article, featured = false, priority = false }
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6">
             <span
-              className={`${categoryColor} text-white text-xs font-semibold px-2 py-1 rounded uppercase tracking-wide inline-flex items-center gap-1.5`}
+              className={`${categoryColor} text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide inline-flex items-center gap-1.5`}
             >
               {CATEGORY_LOGOS[article.category] && (
                 <Image src={CATEGORY_LOGOS[article.category]} alt={article.category + ' category'} width={16} height={16} className="inline-block" />
@@ -226,7 +226,7 @@ export default function NewsCard({ article, featured = false, priority = false }
         >
           <div className="flex items-center gap-2 mb-1.5">
             <span
-              className={`${categoryColor} text-white text-xs font-semibold px-2 py-0.5 rounded uppercase tracking-wide inline-flex items-center gap-1`}
+              className={`${categoryColor} text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide inline-flex items-center gap-1`}
             >
               {CATEGORY_LOGOS[article.category] && (
                 <Image src={CATEGORY_LOGOS[article.category]} alt={article.category + ' category'} width={12} height={12} className="inline-block" />
