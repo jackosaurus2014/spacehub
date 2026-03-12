@@ -36,7 +36,7 @@ export default function CompetitiveComparison() {
 
         {/* Desktop table */}
         <ScrollReveal delay={0.15} className="hidden md:block max-w-5xl mx-auto">
-          <div className="rounded-2xl border border-slate-700/50 overflow-hidden bg-slate-900/50 backdrop-blur-sm">
+          <div className="card overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-700/50">
@@ -79,7 +79,7 @@ export default function CompetitiveComparison() {
         <div className="md:hidden space-y-4 max-w-lg mx-auto">
           {FEATURES.map((row, i) => (
             <ScrollReveal key={i} delay={i * 0.07}>
-              <div className="rounded-xl border border-slate-700/50 bg-slate-900/50 p-4">
+              <div className="card p-4">
                 <h3 className="text-white font-semibold mb-3">{row.feature}</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
