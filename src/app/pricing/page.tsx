@@ -659,18 +659,43 @@ function PricingPageContent() {
           <FeatureComparisonTable />
         </ScrollReveal>
 
-        {/* CTA */}
+        {/* Trust Guarantees */}
         <ScrollReveal className="mt-16">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+            {[
+              { icon: '🔒', title: 'Secure Payments', desc: 'Powered by Stripe with bank-level encryption' },
+              { icon: '⚡', title: 'Instant Access', desc: 'Start exploring modules immediately after signup' },
+              { icon: '🛡️', title: '14-Day Free Trial', desc: 'Full access, no credit card required, cancel anytime' },
+            ].map((item) => (
+              <div key={item.title} className="text-center p-4">
+                <span className="text-2xl mb-2 block">{item.icon}</span>
+                <h4 className="text-sm font-semibold text-white mb-1">{item.title}</h4>
+                <p className="text-xs text-slate-400">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </ScrollReveal>
+
+        {/* CTA */}
+        <ScrollReveal className="mt-12">
           <div className="text-center">
             <p className="text-slate-200 mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               Have questions? We&apos;re here to help.
             </p>
-            <Link
-              href="mailto:support@spacenexus.us"
-              className="text-nebula-300 hover:text-nebula-200 transition-colors"
-            >
-              Contact Support &rarr;
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                href="/book-demo"
+                className="btn-primary px-8 py-3"
+              >
+                Book a Demo
+              </Link>
+              <Link
+                href="mailto:support@spacenexus.us"
+                className="text-nebula-300 hover:text-nebula-200 transition-colors"
+              >
+                Contact Support &rarr;
+              </Link>
+            </div>
           </div>
         </ScrollReveal>
       </div>
