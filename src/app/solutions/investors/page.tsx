@@ -109,7 +109,7 @@ export default function InvestorsSolutionPage() {
                   Start Free &mdash; No Credit Card Required
                 </Link>
                 <Link
-                  href="/companies"
+                  href="/company-profiles"
                   className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-slate-600 text-slate-200 font-semibold hover:bg-slate-800/50 transition-colors"
                 >
                   Explore Company Profiles

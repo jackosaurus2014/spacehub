@@ -64,9 +64,9 @@ const FEATURES = [
   { name: 'Satellite Tracker', desc: 'Live 3D tracking of 10,000+ satellites with TLE data, orbit visualization, and pass predictions.', href: '/satellites' },
   { name: 'Constellation Designer', desc: 'Design and optimize satellite constellations with coverage analysis, inter-satellite links, and ground station placement.', href: '/constellation-designer' },
   { name: 'Orbital Calculator', desc: 'Delta-v budgets, transfer orbit calculations, Hohmann transfers, and bi-elliptic maneuver planning.', href: '/orbital-calculator' },
-  { name: 'Link Budget Tool', desc: 'Complete RF link budget analysis with atmospheric losses, antenna gain patterns, and margin calculations.', href: '/link-budget' },
+  { name: 'Link Budget Tool', desc: 'Complete RF link budget analysis with atmospheric losses, antenna gain patterns, and margin calculations.', href: '/link-budget-calculator' },
   { name: 'Thermal Calculator', desc: 'Spacecraft thermal analysis for orbit-averaged temperatures, eclipse durations, and radiator sizing.', href: '/thermal-calculator' },
-  { name: 'Mission Planner', desc: 'End-to-end mission planning from launch vehicle selection to concept-of-operations timeline generation.', href: '/mission-planner' },
+  { name: 'Mission Planner', desc: 'End-to-end mission planning from launch vehicle selection to concept-of-operations timeline generation.', href: '/mission-simulator' },
 ];
 
 const FAQ_ITEMS = [

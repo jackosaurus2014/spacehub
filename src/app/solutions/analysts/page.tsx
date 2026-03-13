@@ -62,10 +62,10 @@ const PAIN_POINTS = [
 
 const FEATURES = [
   { name: 'Market Intelligence', desc: 'Industry news, trend analysis, and competitive landscape tracking updated in real time.', href: '/market-intel' },
-  { name: 'Industry Trends', desc: 'Data-driven trend reports covering launch cadence, funding flows, spectrum allocations, and market shifts.', href: '/trends' },
+  { name: 'Industry Trends', desc: 'Data-driven trend reports covering launch cadence, funding flows, spectrum allocations, and market shifts.', href: '/industry-trends' },
   { name: 'Export & Reporting', desc: 'One-click CSV, PDF, and chart exports for seamless integration into your deliverables.', href: '/dashboard' },
   { name: 'Satellite Tracker', desc: 'Live orbital tracking for 10,000+ active satellites with filtering by operator, orbit, and mission type.', href: '/satellites' },
-  { name: 'Launch Manifest', desc: 'Comprehensive database of past, present, and upcoming launches with payload and vehicle details.', href: '/launches' },
+  { name: 'Launch Manifest', desc: 'Comprehensive database of past, present, and upcoming launches with payload and vehicle details.', href: '/launch-manifest' },
   { name: 'Spectrum Analysis', desc: 'ITU filing tracker and spectrum allocation database across S, C, Ku, Ka, and V bands.', href: '/spectrum' },
 ];
 

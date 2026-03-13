@@ -71,7 +71,7 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
       {/* All guides link */}
       <div className="mt-4 text-center">
         <Link
-          href="/guide"
+          href="/getting-started"
           className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
         >
           View all guides

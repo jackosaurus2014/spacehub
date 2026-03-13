@@ -66,8 +66,8 @@ const FEATURES = [
   { name: 'Intelligence Brief', desc: 'Daily curated briefings on the most important space industry developments, delivered to your inbox.', href: '/market-intel' },
   { name: 'Executive Moves', desc: 'Track C-suite appointments, board changes, and leadership transitions across the space industry.', href: '/market-intel' },
   { name: 'Market Map', desc: 'Interactive visualization of the entire space value chain with company positioning and competitive dynamics.', href: '/market-map' },
-  { name: 'Contract Awards', desc: 'Real-time tracking of government and commercial contract awards with value, duration, and competitive intelligence.', href: '/contracts' },
-  { name: 'Industry KPIs', desc: 'Benchmark your company against industry metrics for revenue growth, launch cadence, funding efficiency, and more.', href: '/trends' },
+  { name: 'Contract Awards', desc: 'Real-time tracking of government and commercial contract awards with value, duration, and competitive intelligence.', href: '/contract-awards' },
+  { name: 'Industry KPIs', desc: 'Benchmark your company against industry metrics for revenue growth, launch cadence, funding efficiency, and more.', href: '/industry-trends' },
 ];
 
 const FAQ_ITEMS = [
