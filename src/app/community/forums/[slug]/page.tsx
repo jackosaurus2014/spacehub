@@ -159,7 +159,7 @@ export default function ForumCategoryPage() {
           <button
             onClick={() => setShowNewThread(!showNewThread)}
             disabled={categoryNotFound}
-            className="px-4 py-2.5 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors flex items-center gap-2 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-900 font-medium rounded-lg transition-colors flex items-center gap-2 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -229,7 +229,7 @@ export default function ForumCategoryPage() {
                 <button
                   type="submit"
                   disabled={creating}
-                  className="px-5 py-2 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="px-5 py-2 bg-white hover:bg-slate-100 text-slate-900 font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
                   {creating ? (
                     <>
@@ -271,7 +271,7 @@ export default function ForumCategoryPage() {
             <p className="text-sm text-slate-400 mb-4">Be the first to start a discussion in this category.</p>
             <button
               onClick={() => setShowNewThread(true)}
-              className="px-5 py-2.5 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors"
+              className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 font-medium rounded-lg transition-colors"
             >
               Start a Thread
             </button>

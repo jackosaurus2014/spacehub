@@ -136,7 +136,7 @@ export default function AdminUsersPage() {
                 onClick={() => setTab(t.key)}
                 className={`py-3 px-6 font-medium text-sm whitespace-nowrap transition-colors border-b-2 -mb-px ${
                   tab === t.key
-                    ? 'border-nebula-500 text-white'
+                    ? 'border-white/15 text-white'
                     : 'border-transparent text-star-300 hover:text-white'
                 }`}
               >
@@ -660,7 +660,7 @@ function AdminManagementTab({ currentUserId }: { currentUserId: string }) {
                         <button
                           onClick={() => handleRoleChange(admin.id, true, editRole || null)}
                           disabled={isSaving}
-                          className="px-3 py-1.5 text-xs font-medium rounded bg-nebula-600 text-white hover:bg-nebula-500 disabled:opacity-50 transition-colors"
+                          className="px-3 py-1.5 text-xs font-medium rounded bg-white text-slate-900 hover:bg-slate-100 disabled:opacity-50 transition-colors"
                         >
                           {isSaving ? 'Saving...' : 'Save'}
                         </button>
@@ -886,7 +886,7 @@ function AuditLogTab() {
                       {log.details && (
                         <button
                           onClick={() => setExpandedId(isExpanded ? null : log.id)}
-                          className="text-xs text-nebula-400 hover:text-nebula-300 transition-colors"
+                          className="text-xs text-slate-300 hover:text-white transition-colors"
                         >
                           {isExpanded ? 'Hide details' : 'Show details'}
                         </button>

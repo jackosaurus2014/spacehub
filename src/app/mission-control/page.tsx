@@ -119,7 +119,7 @@ function MissionThumbnail({
           onError={() => setImgError(true)}
         />
       ) : logoPath ? (
-        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-space-700 to-nebula-500/20">
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-space-700 to-slate-200/20">
           <Image
             src={logoPath}
             alt=""
@@ -129,7 +129,7 @@ function MissionThumbnail({
           />
         </div>
       ) : (
-        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-space-700 to-nebula-500/20">
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-space-700 to-slate-200/20">
           <span className={iconSizes[size]}>{typeInfo.icon}</span>
         </div>
       )}
@@ -804,7 +804,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
           </div>
 
           {event.rocket && (
-            <p className="text-nebula-300 text-xs mt-2">
+            <p className="text-slate-200 text-xs mt-2">
               <span>🚀</span> {event.rocket}
             </p>
           )}
@@ -855,7 +855,7 @@ function EventCard({ event }: { event: SpaceEvent }) {
             {event.type === 'satellite' && (
               <Link
                 href="/orbital-slots?tab=operators"
-                className="text-xs text-nebula-300 hover:text-nebula-200 bg-nebula-500/10 px-3 py-2 rounded transition-colors"
+                className="text-xs text-slate-200 hover:text-white bg-white/10 px-3 py-2 rounded transition-colors"
               >
                 Orbital slots
               </Link>
@@ -1093,7 +1093,7 @@ function MissionControlContent() {
                   onClick={() => setSelectedType(type.value)}
                   className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-1 text-sm ${
                     selectedType === type.value
-                      ? 'bg-white/10 text-white border-white/15 shadow-glow-sm'
+                      ? 'bg-white/10 text-slate-900 border-white/15'
                       : 'bg-transparent text-slate-300 border border-slate-700/50 hover:border-slate-600'
                   }`}
                 >
@@ -1138,7 +1138,7 @@ function MissionControlContent() {
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Next 48 Hours</div>
           </div></StaggerItem>
           <StaggerItem><div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
+            <div className="text-4xl font-bold font-display tracking-tight text-slate-200">
               {events.filter(e => e.type === 'crewed_mission').length}
             </div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Crewed Missions</div>
@@ -1177,18 +1177,18 @@ function MissionControlContent() {
             {years.map((year) => (
               <div key={year}>
                 <h2 className="text-2xl font-display font-bold text-white mb-6 flex items-center gap-3 sticky top-16 bg-slate-950/95 backdrop-blur-sm py-3 z-10">
-                  <span className="text-nebula-300">📅</span>
+                  <span className="text-slate-200">📅</span>
                   {year}
                   <span className="text-slate-400 text-sm font-normal">
                     ({Object.values(groupedEvents[year]).flat().length} events)
                   </span>
                 </h2>
 
-                <div className="space-y-8 pl-4 border-l-2 border-nebula-500/30">
+                <div className="space-y-8 pl-4 border-l-2 border-white/10">
                   {Object.entries(groupedEvents[year]).map(([month, monthEvents]) => (
                     <div key={`${year}-${month}`} className="relative">
                       {/* Month marker */}
-                      <div className="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-nebula-500 flex items-center justify-center">
+                      <div className="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-white flex items-center justify-center">
                         <span className="text-slate-900 text-xs font-bold">
                           {month.substring(0, 3)}
                         </span>
@@ -1381,19 +1381,19 @@ function MissionControlContent() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <Link href="/space-environment?tab=weather" className="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-200 group-hover:text-nebula-200">☀️ Solar Flares</div>
+                <div className="text-sm font-medium text-slate-200 group-hover:text-white">☀️ Solar Flares</div>
                 <p className="text-xs text-slate-400 mt-1">Solar weather can delay launches</p>
               </Link>
               <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-200 group-hover:text-nebula-200">🛰️ Debris Monitor</div>
+                <div className="text-sm font-medium text-slate-200 group-hover:text-white">🛰️ Debris Monitor</div>
                 <p className="text-xs text-slate-400 mt-1">Track orbital debris near missions</p>
               </Link>
               <Link href="/orbital-slots" className="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-200 group-hover:text-nebula-200">📡 Orbital Slots</div>
+                <div className="text-sm font-medium text-slate-200 group-hover:text-white">📡 Orbital Slots</div>
                 <p className="text-xs text-slate-400 mt-1">Satellite registry and congestion</p>
               </Link>
               <Link href="/space-insurance" className="p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors group">
-                <div className="text-sm font-medium text-slate-200 group-hover:text-nebula-200">🛡️ Space Insurance</div>
+                <div className="text-sm font-medium text-slate-200 group-hover:text-white">🛡️ Space Insurance</div>
                 <p className="text-xs text-slate-400 mt-1">Mission risk and coverage data</p>
               </Link>
             </div>

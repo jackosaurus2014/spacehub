@@ -227,7 +227,7 @@ export default function BOMRiskAnalysisTab() {
                 setBomCategoryFilter('');
                 setBomSystemFilter('');
               }}
-              className="mt-2 text-sm text-nebula-300 hover:text-nebula-200"
+              className="mt-2 text-sm text-slate-200 hover:text-white"
             >
               Clear all filters
             </button>
@@ -324,7 +324,7 @@ export default function BOMRiskAnalysisTab() {
                       {item.usedIn.map((sys) => (
                         <span
                           key={sys}
-                          className="px-2 py-1 rounded bg-nebula-500/10 text-nebula-300 text-xs border border-nebula-500/30"
+                          className="px-2 py-1 rounded bg-white/10 text-slate-200 text-xs border border-white/10"
                         >
                           {ORBITAL_SYSTEM_NAMES[sys] || sys}
                         </span>

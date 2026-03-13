@@ -390,7 +390,7 @@ export default function MobileBottomNav() {
                         aria-current={active ? 'page' : undefined}
                         className={`flex flex-col items-center justify-center min-h-[72px] min-w-[44px] px-2 py-3 rounded-xl transition-all duration-200 ${
                           active
-                            ? 'bg-white/10 text-white ring-1 ring-white/10'
+                            ? 'bg-white/10 text-slate-900 ring-1 ring-white/10'
                             : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 active:bg-slate-800'
                         }`}
                       >

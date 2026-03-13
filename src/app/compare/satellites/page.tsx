@@ -1016,7 +1016,7 @@ export default function SatelliteConstellationComparePage() {
                   disabled={selectedIds.size < 2}
                   className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
                     selectedIds.size >= 2
-                      ? 'bg-white text-white hover:bg-slate-100 shadow-lg shadow-black/20/25'
+                      ? 'bg-white text-slate-900 hover:bg-slate-100 shadow-lg shadow-black/20/25'
                       : 'bg-slate-700 text-slate-400 cursor-not-allowed'
                   }`}
                 >

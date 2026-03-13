@@ -68,7 +68,7 @@ export default function OrbitalSlotsModule() {
           </h2>
         </div>
         <div className="card p-8 text-center">
-          <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderWidth: '3px' }} />
+          <div className="w-10 h-10 border-3 border-white/15 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderWidth: '3px' }} />
         </div>
       </div>
     );
@@ -101,7 +101,7 @@ export default function OrbitalSlotsModule() {
         </h2>
         <Link
           href="/orbital-slots"
-          className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
+          className="text-slate-200 hover:text-white transition-colors text-sm"
         >
           Full Dashboard →
         </Link>

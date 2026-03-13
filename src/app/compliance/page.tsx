@@ -154,11 +154,11 @@ function PolicyCard({ policy }: { policy: PolicyChange }) {
   const deadline = policy.commentDeadline ? new Date(policy.commentDeadline) : null;
   const isUrgent = deadline && deadline > new Date() && deadline < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   return (
-    <div className="card p-5 hover:border-nebula-500/50 transition-all">
+    <div className="card p-5 hover:border-white/15/50 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-xl">{agencyIcons[policy.agency] || '\uD83D\uDCCB'}</span>
-          <span className="text-xs font-bold text-nebula-300 bg-slate-700/60 px-2 py-1 rounded">{policy.agency}</span>
+          <span className="text-xs font-bold text-slate-200 bg-slate-700/60 px-2 py-1 rounded">{policy.agency}</span>
           <span className={`text-xs px-2 py-1 rounded ${statusColors[policy.status]}`}>{policy.status.charAt(0).toUpperCase() + policy.status.slice(1)}</span>
         </div>
         <span className={`text-xs px-2 py-1 rounded border ${severityColors[policy.impactSeverity]}`}>{policy.impactSeverity.toUpperCase()} Impact</span>
@@ -171,7 +171,7 @@ function PolicyCard({ policy }: { policy: PolicyChange }) {
       </div>
       <div className="flex flex-wrap gap-1 mb-3">
         {policy.affectedParties.slice(0, 3).map((party, i) => (
-          <span key={i} className="text-xs bg-nebula-500/10 text-nebula-300 px-2 py-0.5 rounded">{party.replace(/_/g, ' ')}</span>
+          <span key={i} className="text-xs bg-white/10 text-slate-200 px-2 py-0.5 rounded">{party.replace(/_/g, ' ')}</span>
         ))}
         {policy.affectedParties.length > 3 && (<span className="text-xs text-slate-400">+{policy.affectedParties.length - 3} more</span>)}
       </div>
@@ -179,7 +179,7 @@ function PolicyCard({ policy }: { policy: PolicyChange }) {
         <span className="text-slate-400">{policy.federalRegisterCitation || `Published: ${new Date(policy.publishedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}`}</span>
         {deadline && (<span className={`${isUrgent ? 'text-yellow-500 font-semibold' : 'text-slate-400'}`}>{isUrgent && '\u26A0\uFE0F '}Comments due: {deadline.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}</span>)}
       </div>
-      <a href={policy.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm text-nebula-300 hover:text-nebula-200 mt-3">View Full Policy &rarr;</a>
+      <a href={policy.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm text-slate-200 hover:text-white mt-3">View Full Policy &rarr;</a>
     </div>
   );
 }
@@ -228,7 +228,7 @@ function LicenseCard({ license }: { license: LicenseRequirement }) {
   const [expanded, setExpanded] = useState(false);
   const agencyColors: Record<string, string> = { FAA: 'bg-orange-500/20 text-orange-400 border-orange-500/30', FCC: 'bg-blue-500/20 text-blue-400 border-blue-500/30', NOAA: 'bg-white/10 text-slate-300 border-white/10' };
   return (
-    <div className="card p-5 hover:border-nebula-500/50 transition-all">
+    <div className="card p-5 hover:border-white/15/50 transition-all">
       <div className="flex items-start justify-between mb-3">
         <span className={`text-xs font-bold px-2 py-1 rounded border ${agencyColors[license.agency] || 'bg-slate-700/60 text-slate-300'}`}>{license.agency}</span>
         <span className="text-xs text-slate-400">{license.processingTimeMin}-{license.processingTimeMax} days</span>
@@ -240,15 +240,15 @@ function LicenseCard({ license }: { license: LicenseRequirement }) {
         {license.annualFee && (<span>Annual: ${license.annualFee.toLocaleString()}</span>)}
         {license.validityYears && (<span>Valid: {license.validityYears} years</span>)}
       </div>
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200 mb-3">{expanded ? 'Hide Requirements \u25B2' : 'Show Requirements \u25BC'}</button>
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-200 hover:text-white mb-3">{expanded ? 'Hide Requirements \u25B2' : 'Show Requirements \u25BC'}</button>
       {expanded && (
         <div className="bg-slate-800/50 rounded-lg p-3 mt-2">
           <h5 className="text-xs font-semibold text-slate-300 mb-2">Requirements Checklist</h5>
           <ul className="space-y-1">
-            {(JSON.parse(JSON.stringify(license.requirements)) as string[]).map((req, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-400"><span className="text-nebula-300 mt-0.5">{'\u2610'}</span>{req}</li>))}
+            {(JSON.parse(JSON.stringify(license.requirements)) as string[]).map((req, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-400"><span className="text-slate-200 mt-0.5">{'\u2610'}</span>{req}</li>))}
           </ul>
           <div className="mt-3 pt-3 border-t border-slate-700"><h5 className="text-xs font-semibold text-slate-300 mb-1">Regulatory Basis</h5><p className="text-xs text-slate-400">{license.regulatoryBasis}</p></div>
-          {license.applicationUrl && (<a href={license.applicationUrl} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-xs text-nebula-300 hover:text-nebula-200">Apply Now &rarr;</a>)}
+          {license.applicationUrl && (<a href={license.applicationUrl} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-xs text-slate-200 hover:text-white">Apply Now &rarr;</a>)}
         </div>
       )}
     </div>
@@ -261,8 +261,8 @@ function ComplianceWizardTab() {
   const filteredLicenses = LICENSE_REQUIREMENTS.filter(l => { if (categoryFilter && l.category !== categoryFilter) return false; if (agencyFilter && l.agency !== agencyFilter) return false; return true; });
   return (
     <div>
-      <div className="bg-nebula-500/10 border border-nebula-500/30 rounded-lg p-4 mb-6">
-        <h4 className="font-semibold text-nebula-300 mb-2">License Requirements Guide</h4>
+      <div className="bg-white/10 border border-white/10 rounded-lg p-4 mb-6">
+        <h4 className="font-semibold text-slate-200 mb-2">License Requirements Guide</h4>
         <p className="text-sm text-slate-400">Select your mission type below to see required licenses. Each license includes a checklist of requirements, processing times, fees, and links to application forms.</p>
       </div>
       <div className="flex flex-wrap gap-3 mb-6">
@@ -282,7 +282,7 @@ function ComplianceWizardTab() {
               <div className="flex items-start justify-between mb-2"><h4 className="font-semibold text-white">{treaty.name}</h4>{treaty.usRatified && (<span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">US Ratified</span>)}</div>
               <p className="text-xs text-slate-400 mb-2">{treaty.fullName}</p>
               <div className="text-xs text-slate-400"><p><strong>Parties:</strong> {treaty.parties} nations</p><p className="mt-1"><strong>US Implementation:</strong> {treaty.usImplementation}</p></div>
-              <a href={treaty.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-xs text-nebula-300 hover:text-nebula-200">View Treaty Text &rarr;</a>
+              <a href={treaty.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-xs text-slate-200 hover:text-white">View Treaty Text &rarr;</a>
             </div>
           ))}
         </div>
@@ -296,7 +296,7 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
   const outcomeColors = { plaintiff_victory: 'bg-green-500/20 text-green-400', defendant_victory: 'bg-red-500/20 text-red-400', settlement: 'bg-yellow-500/20 text-yellow-400', dismissed: 'bg-slate-800/500/20 text-slate-400', pending: 'bg-blue-500/20 text-blue-400', vacated: 'bg-purple-500/20 text-purple-400' };
   const jurisdictionIcons = { federal: '\uD83C\uDFDB\uFE0F', international: '\uD83C\uDF0D', arbitration: '\u2696\uFE0F', state: '\uD83C\uDFE2', gao: '\uD83D\uDCCA' };
   return (
-    <div className="card p-5 hover:border-nebula-500/50 transition-all">
+    <div className="card p-5 hover:border-white/15/50 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2"><span className="text-xl">{jurisdictionIcons[lawCase.jurisdiction]}</span><span className="text-xs text-slate-400">{lawCase.year}</span></div>
         <span className={`text-xs px-2 py-1 rounded ${outcomeColors[lawCase.outcome]}`}>{lawCase.outcome.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
@@ -304,9 +304,9 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
       <h4 className="font-semibold text-white mb-1">{lawCase.caseName}</h4>
       {lawCase.citation && (<p className="text-xs text-slate-400 mb-2 font-mono">{lawCase.citation}</p>)}
       <p className="text-slate-400 text-sm mb-3 line-clamp-3">{lawCase.summary}</p>
-      <div className="flex flex-wrap gap-1 mb-3">{lawCase.subjectMatter.map((subject, i) => (<span key={i} className="text-xs bg-nebula-500/10 text-nebula-300 px-2 py-0.5 rounded">{subject.replace(/_/g, ' ')}</span>))}</div>
+      <div className="flex flex-wrap gap-1 mb-3">{lawCase.subjectMatter.map((subject, i) => (<span key={i} className="text-xs bg-white/10 text-slate-200 px-2 py-0.5 rounded">{subject.replace(/_/g, ' ')}</span>))}</div>
       {lawCase.damages && (<div className="text-sm font-semibold text-green-400 mb-3">Damages: ${lawCase.damages.toLocaleString()}</div>)}
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200">{expanded ? 'Show Less \u25B2' : 'Read More \u25BC'}</button>
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-200 hover:text-white">{expanded ? 'Show Less \u25B2' : 'Read More \u25BC'}</button>
       {expanded && (
         <div className="mt-4 space-y-4">
           <div><h5 className="text-xs font-semibold text-slate-300 mb-1">Parties</h5><p className="text-xs text-slate-400"><strong>Plaintiff:</strong> {lawCase.parties.plaintiff}<br /><strong>Defendant:</strong> {lawCase.parties.defendant}</p></div>
@@ -314,8 +314,8 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
           <div><h5 className="text-xs font-semibold text-slate-300 mb-1">Holdings</h5><ul className="text-xs text-slate-400 list-disc list-inside space-y-1">{lawCase.holdings.map((holding, i) => (<li key={i}>{holding}</li>))}</ul></div>
           <div><h5 className="text-xs font-semibold text-slate-300 mb-1">Significance</h5><p className="text-xs text-slate-400">{lawCase.significance}</p></div>
           <div><h5 className="text-xs font-semibold text-slate-300 mb-1">Precedent Value</h5><p className="text-xs text-slate-400">{lawCase.precedentValue}</p></div>
-          {lawCase.keyQuotes && lawCase.keyQuotes.length > 0 && (<div><h5 className="text-xs font-semibold text-slate-300 mb-1">Key Quotes</h5>{lawCase.keyQuotes.map((quote, i) => (<blockquote key={i} className="text-xs text-slate-400 italic border-l-2 border-nebula-500 pl-2 mb-1">&ldquo;{quote}&rdquo;</blockquote>))}</div>)}
-          {lawCase.sourceUrl && (<a href={lawCase.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-block text-xs text-nebula-300 hover:text-nebula-200">View Source &rarr;</a>)}
+          {lawCase.keyQuotes && lawCase.keyQuotes.length > 0 && (<div><h5 className="text-xs font-semibold text-slate-300 mb-1">Key Quotes</h5>{lawCase.keyQuotes.map((quote, i) => (<blockquote key={i} className="text-xs text-slate-400 italic border-l-2 border-white/15 pl-2 mb-1">&ldquo;{quote}&rdquo;</blockquote>))}</div>)}
+          {lawCase.sourceUrl && (<a href={lawCase.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-block text-xs text-slate-200 hover:text-white">View Source &rarr;</a>)}
         </div>
       )}
     </div>
@@ -333,7 +333,7 @@ function CaseLawArchiveTab() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-white">{filteredCases.length}</div><div className="text-xs text-slate-400">Cases</div></div>
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-green-400">${(totalDamages / 1e9).toFixed(2)}B</div><div className="text-xs text-slate-400">Total Damages</div></div>
-        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-nebula-300">{filteredCases.filter(c => c.outcome === 'plaintiff_victory').length}</div><div className="text-xs text-slate-400">Plaintiff Wins</div></div>
+        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-slate-200">{filteredCases.filter(c => c.outcome === 'plaintiff_victory').length}</div><div className="text-xs text-slate-400">Plaintiff Wins</div></div>
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-yellow-400">{filteredCases.filter(c => c.outcome === 'settlement').length}</div><div className="text-xs text-slate-400">Settlements</div></div>
       </div>
       <div className="flex flex-wrap gap-3 mb-6">
@@ -402,8 +402,8 @@ function ExpertCommentaryTab() {
   const typeLabels: Record<string, { label: string; icon: string; color: string }> = { law_firm: { label: 'Law Firms', icon: '\u2696\uFE0F', color: 'bg-purple-500/20 text-purple-400' }, think_tank: { label: 'Think Tanks', icon: '\uD83D\uDCA1', color: 'bg-yellow-500/20 text-yellow-400' }, government: { label: 'Government', icon: '\uD83C\uDFDB\uFE0F', color: 'bg-blue-500/20 text-blue-400' }, academic: { label: 'Academic', icon: '\uD83C\uDF93', color: 'bg-green-500/20 text-green-400' }, industry_association: { label: 'Industry', icon: '\uD83C\uDFE2', color: 'bg-orange-500/20 text-orange-400' } };
   return (
     <div>
-      <div className="bg-nebula-500/10 border border-nebula-500/30 rounded-lg p-4 mb-6">
-        <h4 className="font-semibold text-nebula-300 mb-2">Expert Sources & Commentary</h4>
+      <div className="bg-white/10 border border-white/10 rounded-lg p-4 mb-6">
+        <h4 className="font-semibold text-slate-200 mb-2">Expert Sources & Commentary</h4>
         <p className="text-sm text-slate-400">Curated collection of authoritative sources for space law, policy analysis, and industry commentary. Follow these sources for the latest expert insights on regulatory developments.</p>
       </div>
       <div className="flex flex-wrap gap-2 mb-6">
@@ -412,9 +412,9 @@ function ExpertCommentaryTab() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredSources.map((source) => { const typeInfo = typeLabels[source.type]; return (
-          <a key={source.id} href={source.url} target="_blank" rel="noopener noreferrer" className="card p-5 hover:border-nebula-500/50 transition-all group">
+          <a key={source.id} href={source.url} target="_blank" rel="noopener noreferrer" className="card p-5 hover:border-white/15/50 transition-all group">
             <div className="flex items-start justify-between mb-3"><span className="text-3xl">{typeInfo?.icon || '\uD83D\uDCCB'}</span><span className={`text-xs px-2 py-1 rounded ${typeInfo?.color || 'bg-slate-700'}`}>{typeInfo?.label || source.type}</span></div>
-            <h4 className="font-semibold text-white mb-1 group-hover:text-nebula-300 transition-colors">{source.name}</h4>
+            <h4 className="font-semibold text-white mb-1 group-hover:text-slate-200 transition-colors">{source.name}</h4>
             {source.organization && (<p className="text-sm text-slate-400 mb-2">{source.organization}</p>)}
             <p className="text-xs text-slate-400 mb-3 line-clamp-2">{source.description}</p>
             <div className="flex flex-wrap gap-1">{source.topics.slice(0, 3).map((topic, i) => (<span key={i} className="text-xs bg-slate-700/60 text-slate-300 px-2 py-0.5 rounded">{topic.replace(/_/g, ' ')}</span>))}</div>
@@ -434,7 +434,7 @@ function TreatyCard({ treaty }: { treaty: Treaty }) {
   const [expanded, setExpanded] = useState(false);
   const statusConfig = TREATY_STATUS_CONFIG[treaty.status] || DEFAULT_TREATY_STATUS;
   return (
-    <div className="card p-5 hover:border-nebula-500/30 transition-all">
+    <div className="card p-5 hover:border-white/10 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-lg">{treaty.name}</h4><p className="text-slate-400 text-xs mt-0.5 line-clamp-2">{treaty.fullName}</p></div>
         <span className={`text-xs font-bold px-2.5 py-1 rounded border flex-shrink-0 ml-3 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>{statusConfig.label}</span>
@@ -445,7 +445,7 @@ function TreatyCard({ treaty }: { treaty: Treaty }) {
         <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 text-center"><div className="text-slate-100 font-bold text-xl">{treaty.entryIntoForceYear}</div><div className="text-slate-400 text-xs">In Force</div></div>
       </div>
       <p className="text-slate-500 text-sm mb-3 line-clamp-3">{treaty.description}</p>
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors">{expanded ? 'Show Less' : 'View Key Provisions'}</button>
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-200 hover:text-white transition-colors">{expanded ? 'Show Less' : 'View Key Provisions'}</button>
       {expanded && (
         <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-3">
           <div><h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Provisions</h5><ul className="space-y-1.5">{treaty.keyProvisions.map((provision, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><span className="text-slate-300 mt-0.5 flex-shrink-0">*</span>{provision}</li>))}</ul></div>
@@ -475,7 +475,7 @@ function NationalLawCard({ law }: { law: NationalLaw }) {
   const [expanded, setExpanded] = useState(false);
   const statusConfig = NATIONAL_STATUS_CONFIG[law.status] || DEFAULT_NATIONAL_STATUS;
   return (
-    <div className="card p-5 hover:border-nebula-500/30 transition-all">
+    <div className="card p-5 hover:border-white/10 transition-all">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-slate-800/50 border border-slate-600/40 flex items-center justify-center text-sm font-bold text-slate-400">{law.countryCode}</div>
@@ -483,10 +483,10 @@ function NationalLawCard({ law }: { law: NationalLaw }) {
         </div>
         <span className={`text-xs font-bold px-2.5 py-1 rounded border flex-shrink-0 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>{statusConfig.label}</span>
       </div>
-      <h5 className="text-sm font-medium text-nebula-300 mb-1">{law.lawName}</h5>
+      <h5 className="text-sm font-medium text-slate-200 mb-1">{law.lawName}</h5>
       <div className="flex items-center gap-3 text-xs text-slate-400 mb-3"><span>Year: {law.year}</span><span>Scope: {law.scope}</span></div>
       <p className="text-slate-500 text-sm mb-3 line-clamp-2">{law.description}</p>
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors">{expanded ? 'Show Less' : 'View Key Features'}</button>
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-200 hover:text-white transition-colors">{expanded ? 'Show Less' : 'View Key Features'}</button>
       {expanded && (
         <div className="mt-3 pt-3 border-t border-slate-700/50"><h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Features</h5><ul className="space-y-1.5">{law.keyFeatures.map((feature, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><svg className="w-3 h-3 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{feature}</li>))}</ul></div>
       )}
@@ -505,7 +505,7 @@ function SpaceLawNationalTab() {
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
         <div><label className="block text-slate-400 text-sm mb-1">Country</label><select value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Countries</option>{countries.map(c => (<option key={c} value={c}>{c}</option>))}</select></div>
         <div><label className="block text-slate-400 text-sm mb-1">Status</label><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Statuses</option><option value="enacted">Enacted</option><option value="amended">Amended</option><option value="proposed">Proposed</option><option value="under_review">Under Review</option></select></div>
-        {(countryFilter || statusFilter) && (<button onClick={() => { setCountryFilter(''); setStatusFilter(''); }} className="text-sm text-nebula-300 hover:text-nebula-200 py-2">Clear Filters</button>)}
+        {(countryFilter || statusFilter) && (<button onClick={() => { setCountryFilter(''); setStatusFilter(''); }} className="text-sm text-slate-200 hover:text-white py-2">Clear Filters</button>)}
       </div></div>
       <div className="flex items-center justify-between mb-4"><span className="text-sm text-slate-400">Showing {filteredLaws.length} of {NATIONAL_LAWS.length} laws</span></div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">{filteredLaws.map((law) => (<NationalLawCard key={law.id} law={law} />))}</div>
@@ -529,12 +529,12 @@ function SpaceLawArtemisTab() {
           <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-purple-400">{ARTEMIS_PRINCIPLES.length}</div><div className="text-slate-400 text-xs">Core Principles</div></div>
         </div>
       </div>
-      <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-white mb-4">Core Principles</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-3">{ARTEMIS_PRINCIPLES.map((principle, i) => (<div key={i} className="bg-slate-800/50/50 border border-slate-700/30 rounded-lg p-4"><div className="flex items-center gap-2 mb-1"><span className="w-6 h-6 rounded-full bg-white/10 text-slate-300 text-xs font-bold flex items-center justify-center">{i + 1}</span><h5 className="font-medium text-white text-sm">{principle.title}</h5></div><p className="text-xs text-slate-500 ml-8">{principle.description}</p></div>))}</div></div>
+      <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-white mb-4">Core Principles</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-3">{ARTEMIS_PRINCIPLES.map((principle, i) => (<div key={i} className="bg-slate-800/50/50 border border-slate-700/30 rounded-lg p-4"><div className="flex items-center gap-2 mb-1"><span className="w-6 h-6 rounded-full bg-white/10 text-slate-300 text-xs font-bold flex items-center justify-center">{i + 1}</span><h5 className="font-medium text-slate-900 text-sm">{principle.title}</h5></div><p className="text-xs text-slate-500 ml-8">{principle.description}</p></div>))}</div></div>
       <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-white mb-3">Regional Distribution</h3><div className="space-y-3">{Object.entries(regionCounts).sort((a, b) => b[1] - a[1]).map(([region, count]) => { const maxCount = Math.max(...Object.values(regionCounts)); const pct = (count / maxCount) * 100; return (<div key={region}><div className="flex items-center justify-between mb-1"><span className="text-sm text-slate-400 font-medium">{region}</span><span className="text-sm text-slate-400">{count} signatories</span></div><div className="h-3 bg-slate-700 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-white to-blue-400 rounded-full transition-all" style={{ width: `${pct}%` }} /></div></div>); })}</div></div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
-        <div className="flex-1 min-w-[200px]"><label className="block text-slate-400 text-sm mb-1">Search</label><input type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search countries, agencies..." className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500 placeholder:text-slate-400" /></div>
+        <div className="flex-1 min-w-[200px]"><label className="block text-slate-400 text-sm mb-1">Search</label><input type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search countries, agencies..." className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400" /></div>
         <div><label className="block text-slate-400 text-sm mb-1">Region</label><select value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Regions</option>{regions.map(r => (<option key={r} value={r}>{r} ({regionCounts[r]})</option>))}</select></div>
-        {(regionFilter || searchQuery) && (<button onClick={() => { setRegionFilter(''); setSearchQuery(''); }} className="text-sm text-nebula-300 hover:text-nebula-200 py-2">Clear Filters</button>)}
+        {(regionFilter || searchQuery) && (<button onClick={() => { setRegionFilter(''); setSearchQuery(''); }} className="text-sm text-slate-200 hover:text-white py-2">Clear Filters</button>)}
       </div></div>
       <div className="flex items-center justify-between mb-4"><span className="text-sm text-slate-400">Showing {filteredSignatories.length} of {ARTEMIS_SIGNATORIES.length} signatories</span></div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{filteredSignatories.map((signatory) => { const status = ARTEMIS_STATUS_CONFIG[signatory.implementationStatus] || DEFAULT_ARTEMIS_STATUS; return (<div key={signatory.id} className="card p-4 hover:border-white/10 transition-all"><div className="flex items-start justify-between mb-2"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-slate-800/50 border border-slate-600/40 flex items-center justify-center text-sm font-bold text-slate-400">{signatory.countryCode}</div><div><h4 className="font-semibold text-white text-sm">{signatory.country}</h4><span className="text-slate-400 text-xs">{signatory.spaceAgency}</span></div></div><span className={`text-xs px-2 py-0.5 rounded border ${status.bg} ${status.text} ${status.border}`}>{status.label}</span></div><div className="flex items-center gap-3 text-xs text-slate-400 mb-2"><span>Signed: {new Date(signatory.dateSigned).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</span><span>{signatory.region}</span></div><p className="text-xs text-slate-500 line-clamp-2">{signatory.notes}</p></div>); })}</div>
@@ -546,11 +546,11 @@ function ProceedingCard({ proceeding }: { proceeding: LegalProceeding }) {
   const [expanded, setExpanded] = useState(false);
   const statusConfig = PROCEEDING_STATUS_CONFIG[proceeding.status] || DEFAULT_PROCEEDING_STATUS;
   return (
-    <div className="card p-5 hover:border-nebula-500/30 transition-all">
+    <div className="card p-5 hover:border-white/10 transition-all">
       <div className="flex items-start justify-between mb-2"><div className="flex items-center gap-2"><span className="text-xs text-slate-400 bg-slate-800/50 border border-slate-600/40 px-2 py-0.5 rounded font-medium">{proceeding.type}</span><span className="text-xs text-slate-400">{proceeding.year}</span></div><span className={`text-xs font-bold px-2.5 py-1 rounded border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>{statusConfig.label}</span></div>
       <h4 className="font-semibold text-white mb-1">{proceeding.title}</h4><p className="text-xs text-slate-400 mb-3">{proceeding.parties}</p>
       <p className="text-slate-500 text-sm mb-3 line-clamp-3">{proceeding.description}</p>
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors">{expanded ? 'Show Less' : 'View Details'}</button>
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-200 hover:text-white transition-colors">{expanded ? 'Show Less' : 'View Details'}</button>
       {expanded && (<div className="mt-3 pt-3 border-t border-slate-700/50 space-y-3"><div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Jurisdiction</h5><p className="text-xs text-slate-500">{proceeding.jurisdiction}</p></div><div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Significance</h5><p className="text-xs text-slate-500">{proceeding.significance}</p></div><div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Outcome</h5><p className="text-xs text-slate-500">{proceeding.outcome}</p></div></div>)}
     </div>
   );
@@ -573,7 +573,7 @@ function SpaceLawProceedingsTab() {
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
         <div><label className="block text-slate-400 text-sm mb-1">Case Type</label><select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Types</option>{types.map(t => (<option key={t} value={t}>{t}</option>))}</select></div>
         <div><label className="block text-slate-400 text-sm mb-1">Status</label><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Statuses</option><option value="active">Active</option><option value="resolved">Resolved</option><option value="pending">Pending</option><option value="advisory">Advisory</option></select></div>
-        {(typeFilter || statusFilter) && (<button onClick={() => { setTypeFilter(''); setStatusFilter(''); }} className="text-sm text-nebula-300 hover:text-nebula-200 py-2">Clear Filters</button>)}
+        {(typeFilter || statusFilter) && (<button onClick={() => { setTypeFilter(''); setStatusFilter(''); }} className="text-sm text-slate-200 hover:text-white py-2">Clear Filters</button>)}
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{filteredProceedings.map((p) => (<ProceedingCard key={p.id} proceeding={p} />))}</div>
     </div>
@@ -584,12 +584,12 @@ function BodyCard({ body }: { body: RegulatoryBody }) {
   const [expanded, setExpanded] = useState(false);
   const typeConfig = BODY_TYPE_CONFIG[body.type] || DEFAULT_BODY_TYPE;
   return (
-    <div className="card p-5 hover:border-nebula-500/30 transition-all">
+    <div className="card p-5 hover:border-white/10 transition-all">
       <div className="flex items-start justify-between mb-3"><div><div className="flex items-center gap-2 mb-1"><h4 className="font-semibold text-white">{body.abbreviation}</h4><span className={`text-xs px-2 py-0.5 rounded border ${typeConfig.bg} ${typeConfig.text} ${typeConfig.border}`}>{typeConfig.label}</span></div><p className="text-slate-400 text-sm">{body.name}</p></div></div>
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400 mb-3"><span>Est. {body.established}</span><span>{body.headquarters}</span><span>{body.members}</span></div>
       <p className="text-slate-500 text-sm mb-3 line-clamp-2">{body.mandate}</p>
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors">{expanded ? 'Show Less' : 'View Functions'}</button>
-      {expanded && (<div className="mt-3 pt-3 border-t border-slate-700/50"><h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Functions</h5><ul className="space-y-1.5">{body.keyFunctions.map((func, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><svg className="w-3 h-3 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{func}</li>))}</ul><a href={body.website} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-xs text-nebula-300 hover:text-nebula-200">Visit Website</a></div>)}
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-200 hover:text-white transition-colors">{expanded ? 'Show Less' : 'View Functions'}</button>
+      {expanded && (<div className="mt-3 pt-3 border-t border-slate-700/50"><h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Functions</h5><ul className="space-y-1.5">{body.keyFunctions.map((func, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><svg className="w-3 h-3 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{func}</li>))}</ul><a href={body.website} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-xs text-slate-200 hover:text-white">Visit Website</a></div>)}
     </div>
   );
 }
@@ -602,11 +602,11 @@ function SpaceLawBodiesTab() {
     <div>
       <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4 mb-6"><h4 className="font-semibold text-purple-400 mb-2">Space Regulatory Bodies Directory</h4><p className="text-sm text-slate-400">Comprehensive directory of international, regional, and national regulatory bodies governing space activities. From UN organizations to national licensing authorities and industry coordination groups.</p></div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
-        <div className="flex-1 min-w-[200px]"><label className="block text-slate-400 text-sm mb-1">Search</label><input type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search bodies, functions..." className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500 placeholder:text-slate-400" /></div>
+        <div className="flex-1 min-w-[200px]"><label className="block text-slate-400 text-sm mb-1">Search</label><input type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search bodies, functions..." className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400" /></div>
         <div><label className="block text-slate-400 text-sm mb-1">Type</label><select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Types</option><option value="un">UN Bodies</option><option value="national">National</option><option value="regional">Regional</option><option value="industry">Industry</option></select></div>
-        {(typeFilter || searchQuery) && (<button onClick={() => { setTypeFilter(''); setSearchQuery(''); }} className="text-sm text-nebula-300 hover:text-nebula-200 py-2">Clear Filters</button>)}
+        {(typeFilter || searchQuery) && (<button onClick={() => { setTypeFilter(''); setSearchQuery(''); }} className="text-sm text-slate-200 hover:text-white py-2">Clear Filters</button>)}
       </div></div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">{(Object.entries(BODY_TYPE_CONFIG) as [BodyType, typeof BODY_TYPE_CONFIG[BodyType]][]).map(([type, config]) => { const count = REGULATORY_BODIES.filter(b => b.type === type).length; return (<button key={type} onClick={() => setTypeFilter(typeFilter === type ? '' : type)} className={`card-elevated p-4 text-center transition-all cursor-pointer ${typeFilter === type ? 'ring-2 ring-nebula-500/50' : ''}`}><div className={`text-2xl font-bold font-display ${config.text}`}>{count}</div><div className="text-slate-400 text-xs uppercase tracking-widest font-medium">{config.label}</div></button>); })}</div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">{(Object.entries(BODY_TYPE_CONFIG) as [BodyType, typeof BODY_TYPE_CONFIG[BodyType]][]).map(([type, config]) => { const count = REGULATORY_BODIES.filter(b => b.type === type).length; return (<button key={type} onClick={() => setTypeFilter(typeFilter === type ? '' : type)} className={`card-elevated p-4 text-center transition-all cursor-pointer ${typeFilter === type ? 'ring-2 ring-white/15' : ''}`}><div className={`text-2xl font-bold font-display ${config.text}`}>{count}</div><div className="text-slate-400 text-xs uppercase tracking-widest font-medium">{config.label}</div></button>); })}</div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">{filteredBodies.map((body) => (<BodyCard key={body.id} body={body} />))}</div>
     </div>
   );
@@ -635,13 +635,13 @@ function FilingsFCCTab() {
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const statusStyle = FILING_STATUS_STYLES[filing.status] || DEFAULT_FILING_STATUS_STYLE; const orbitStyle = FILING_ORBIT_STYLES[filing.orbitType] || DEFAULT_FILING_ORBIT_STYLE; return (
-        <div key={filing.id} className="card p-5 hover:border-nebula-500/50 transition-all">
+        <div key={filing.id} className="card p-5 hover:border-white/15/50 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{filing.applicant}</h4><span className="text-star-300 text-xs font-mono">{filing.fileNumber}</span></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${orbitStyle.bg} ${orbitStyle.text}`}>{filing.orbitType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
-          <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Band</span><span className="text-nebula-300 text-sm font-mono">{filing.band}</span></div>{filing.satelliteCount && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satelliteCount.toLocaleString()}</span></div>)}</div>
+          <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Band</span><span className="text-slate-200 text-sm font-mono">{filing.band}</span></div>{filing.satelliteCount && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satelliteCount.toLocaleString()}</span></div>)}</div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{filing.summary}</p>
-          <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Filed: <span className="text-white font-medium">{filing.dateFiled}</span></span>{filing.dateActedOn && (<><span className="text-slate-600">|</span><span>Acted: <span className="text-white font-medium">{filing.dateActedOn}</span></span></>)}{filing.docket && (<><span className="text-slate-600">|</span><span className="text-nebula-300 font-mono">{filing.docket}</span></>)}</div>
+          <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Filed: <span className="text-white font-medium">{filing.dateFiled}</span></span>{filing.dateActedOn && (<><span className="text-slate-600">|</span><span>Acted: <span className="text-white font-medium">{filing.dateActedOn}</span></span></>)}{filing.docket && (<><span className="text-slate-600">|</span><span className="text-slate-200 font-mono">{filing.docket}</span></>)}</div>
         </div>); })}</div>
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setOrbitFilter(''); setStatusFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setOrbitFilter(''); setStatusFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -665,13 +665,13 @@ function FilingsFAATab() {
         <span className="text-xs text-star-300 ml-auto">{filtered.length} licenses</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((license) => { const statusStyle = FILING_STATUS_STYLES[license.status] || DEFAULT_FILING_STATUS_STYLE; return (
-        <div key={license.id} className="card p-5 hover:border-nebula-500/50 transition-all">
+        <div key={license.id} className="card p-5 hover:border-white/15/50 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{license.licensee}</h4><span className="text-star-300 text-xs font-mono">{license.licenseNumber}</span></div><div className="flex items-center gap-2 shrink-0"><span className="text-xs font-medium px-2 py-1 rounded bg-blue-500/20 text-blue-400">{license.licenseType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3"><div><span className="text-star-300 text-xs block">Vehicle</span><span className="text-white text-sm font-medium">{license.vehicle}</span></div><div><span className="text-star-300 text-xs block">Launch Site</span><span className="text-nebula-300 text-sm">{license.launchSite}</span></div>{license.missionsAuthorized > 0 && (<div><span className="text-star-300 text-xs block">Missions</span><span className="text-white text-sm font-bold">{license.missionsAuthorized}</span></div>)}</div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3"><div><span className="text-star-300 text-xs block">Vehicle</span><span className="text-white text-sm font-medium">{license.vehicle}</span></div><div><span className="text-star-300 text-xs block">Launch Site</span><span className="text-slate-200 text-sm">{license.launchSite}</span></div>{license.missionsAuthorized > 0 && (<div><span className="text-star-300 text-xs block">Missions</span><span className="text-white text-sm font-bold">{license.missionsAuthorized}</span></div>)}</div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{license.summary}</p>
           <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Issued: <span className="text-white font-medium">{license.dateIssued}</span></span><span className="text-slate-600">|</span><span>Expires: <span className="text-white font-medium">{license.expirationDate}</span></span></div>
         </div>); })}</div>
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No licenses match your search</h3><button onClick={() => { setSearch(''); setTypeFilter(''); setStatusFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No licenses match your search</h3><button onClick={() => { setSearch(''); setTypeFilter(''); setStatusFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -696,13 +696,13 @@ function FilingsITUTab() {
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const statusStyle = FILING_STATUS_STYLES[filing.status] || DEFAULT_FILING_STATUS_STYLE; const orbitStyle = FILING_ORBIT_STYLES[filing.orbitType] || DEFAULT_FILING_ORBIT_STYLE; return (
-        <div key={filing.id} className="card p-5 hover:border-nebula-500/50 transition-all">
+        <div key={filing.id} className="card p-5 hover:border-white/15/50 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base font-mono">{filing.networkName}</h4><span className="text-star-300 text-sm">{filing.administration}</span></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${orbitStyle.bg} ${orbitStyle.text}`}>{filing.orbitType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
-          <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Filing Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Service Band</span><span className="text-nebula-300 text-sm font-mono">{filing.serviceBand}</span></div>{filing.satellites && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satellites.toLocaleString()}</span></div>)}</div>
+          <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Filing Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Service Band</span><span className="text-slate-200 text-sm font-mono">{filing.serviceBand}</span></div>{filing.satellites && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satellites.toLocaleString()}</span></div>)}</div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{filing.summary}</p>
           <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Filed: <span className="text-white font-medium">{filing.dateFiled}</span></span></div>
         </div>); })}</div>
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setOrbitFilter(''); setTypeFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setOrbitFilter(''); setTypeFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -727,13 +727,13 @@ function FilingsSECTab() {
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const typeColor = filingTypeColors[filing.filingType] || { bg: 'bg-slate-800/500/20', text: 'text-slate-400' }; return (
-        <div key={filing.id} className="card p-5 hover:border-nebula-500/50 transition-all">
-          <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{filing.company}</h4><div className="flex items-center gap-2 mt-1"><span className="text-nebula-300 text-sm font-bold font-mono">${filing.ticker}</span>{filing.period && (<span className="text-star-300 text-xs">({filing.period})</span>)}</div></div><span className={`text-xs font-medium px-2.5 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{filing.filingType}</span></div>
+        <div key={filing.id} className="card p-5 hover:border-white/15/50 transition-all">
+          <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{filing.company}</h4><div className="flex items-center gap-2 mt-1"><span className="text-slate-200 text-sm font-bold font-mono">${filing.ticker}</span>{filing.period && (<span className="text-star-300 text-xs">({filing.period})</span>)}</div></div><span className={`text-xs font-medium px-2.5 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{filing.filingType}</span></div>
           {filing.keyMetric && (<div className="flex items-center gap-4 mb-3"><div className="card-elevated px-4 py-2 rounded-lg"><span className="text-star-300 text-xs block">{filing.keyMetricLabel}</span><span className="text-white text-lg font-bold font-display">{filing.keyMetric}</span></div></div>)}
           <p className="text-star-300 text-sm leading-relaxed mb-3">{filing.summary}</p>
-          <div className="flex items-center justify-between text-xs text-star-300 pt-3 border-t border-white/10"><span>Filed: <span className="text-white font-medium">{filing.dateFiled}</span></span><a href={filing.url} target="_blank" rel="noopener noreferrer" className="text-nebula-300 hover:text-white transition-colors">View on EDGAR</a></div>
+          <div className="flex items-center justify-between text-xs text-star-300 pt-3 border-t border-white/10"><span>Filed: <span className="text-white font-medium">{filing.dateFiled}</span></span><a href={filing.url} target="_blank" rel="noopener noreferrer" className="text-slate-200 hover:text-white transition-colors">View on EDGAR</a></div>
         </div>); })}</div>
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setTypeFilter(''); setCompanyFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setTypeFilter(''); setCompanyFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -746,7 +746,7 @@ function FilingsFederalRegisterTab() {
   const openForComment = FEDERAL_REGISTER_ENTRIES.filter((e) => { if (!e.commentDeadline) return false; return new Date(e.commentDeadline) > new Date(); });
   return (
     <div>
-      {openForComment.length > 0 && (<div className="card p-5 mb-6 border border-yellow-500/30 bg-yellow-500/5"><h3 className="text-yellow-400 font-semibold mb-3">Open Comment Periods</h3><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">{openForComment.map((entry) => (<div key={entry.id} className="card p-3"><div className="flex items-center justify-between mb-1"><span className="text-xs font-bold text-nebula-300">{entry.agency}</span><span className="text-xs text-yellow-400">Due: {entry.commentDeadline}</span></div><p className="text-sm text-white line-clamp-2">{entry.title}</p></div>))}</div></div>)}
+      {openForComment.length > 0 && (<div className="card p-5 mb-6 border border-yellow-500/30 bg-yellow-500/5"><h3 className="text-yellow-400 font-semibold mb-3">Open Comment Periods</h3><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">{openForComment.map((entry) => (<div key={entry.id} className="card p-3"><div className="flex items-center justify-between mb-1"><span className="text-xs font-bold text-slate-200">{entry.agency}</span><span className="text-xs text-yellow-400">Due: {entry.commentDeadline}</span></div><p className="text-sm text-white line-clamp-2">{entry.title}</p></div>))}</div></div>)}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-white">{FEDERAL_REGISTER_ENTRIES.length}</div><div className="text-star-300 text-xs uppercase tracking-widest">Total Entries</div></div>
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-green-400">{FEDERAL_REGISTER_ENTRIES.filter((e) => e.documentType === 'Final Rule').length}</div><div className="text-star-300 text-xs uppercase tracking-widest">Final Rules</div></div>
@@ -761,12 +761,12 @@ function FilingsFederalRegisterTab() {
         <span className="text-xs text-star-300 ml-auto">{filtered.length} entries</span>
       </div></div>
       <div className="space-y-4">{filtered.map((entry) => { const typeColor = docTypeColors[entry.documentType] || { bg: 'bg-slate-800/500/20', text: 'text-slate-400' }; const impactStyle = FILING_IMPACT_STYLES[entry.impact] || DEFAULT_FILING_IMPACT_STYLE; return (
-        <div key={entry.id} className="card p-5 hover:border-nebula-500/50 transition-all">
-          <div className="flex items-start justify-between mb-3 gap-3"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-nebula-300 shrink-0">{entry.agency}</div><div><h4 className="font-semibold text-white text-base">{entry.title}</h4><span className="text-star-300 text-xs font-mono">FR {entry.federalRegisterNumber}</span></div></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{entry.documentType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${impactStyle.bg} ${impactStyle.text}`}>{entry.impact.charAt(0).toUpperCase() + entry.impact.slice(1)} Impact</span></div></div>
+        <div key={entry.id} className="card p-5 hover:border-white/15/50 transition-all">
+          <div className="flex items-start justify-between mb-3 gap-3"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-slate-200 shrink-0">{entry.agency}</div><div><h4 className="font-semibold text-slate-900 text-base">{entry.title}</h4><span className="text-star-300 text-xs font-mono">FR {entry.federalRegisterNumber}</span></div></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{entry.documentType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${impactStyle.bg} ${impactStyle.text}`}>{entry.impact.charAt(0).toUpperCase() + entry.impact.slice(1)} Impact</span></div></div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{entry.summary}</p>
-          <div className="flex items-center flex-wrap gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Published: <span className="text-white font-medium">{entry.publishedDate}</span></span>{entry.effectiveDate && (<><span className="text-slate-600">|</span><span>Effective: <span className="text-white font-medium">{entry.effectiveDate}</span></span></>)}{entry.commentDeadline && (<><span className="text-slate-600">|</span><span className={new Date(entry.commentDeadline) > new Date() ? 'text-yellow-400 font-semibold' : 'text-star-300'}>Comments Due: {entry.commentDeadline}</span></>)}{entry.docket && (<><span className="text-slate-600">|</span><span className="text-nebula-300 font-mono">{entry.docket}</span></>)}</div>
+          <div className="flex items-center flex-wrap gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Published: <span className="text-white font-medium">{entry.publishedDate}</span></span>{entry.effectiveDate && (<><span className="text-slate-600">|</span><span>Effective: <span className="text-white font-medium">{entry.effectiveDate}</span></span></>)}{entry.commentDeadline && (<><span className="text-slate-600">|</span><span className={new Date(entry.commentDeadline) > new Date() ? 'text-yellow-400 font-semibold' : 'text-star-300'}>Comments Due: {entry.commentDeadline}</span></>)}{entry.docket && (<><span className="text-slate-600">|</span><span className="text-slate-200 font-mono">{entry.docket}</span></>)}</div>
         </div>); })}</div>
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No entries match your search</h3><button onClick={() => { setSearch(''); setAgencyFilter(''); setTypeFilter(''); setImpactFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No entries match your search</h3><button onClick={() => { setSearch(''); setAgencyFilter(''); setTypeFilter(''); setImpactFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -892,7 +892,7 @@ function ProtestsOverviewTab() {
         const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
         const isExpanded = expandedId === protest.id;
         return (
-          <div key={protest.id} className="card p-5 hover:border-nebula-500/50 transition-all">
+          <div key={protest.id} className="card p-5 hover:border-white/15/50 transition-all">
             <div className="flex items-start justify-between mb-3 gap-3">
               <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-white text-base">{protest.shortTitle}</h4>
@@ -905,12 +905,12 @@ function ProtestsOverviewTab() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
               <div><span className="text-star-300 text-xs block">Protester</span><span className="text-white text-sm font-medium">{protest.protester}</span></div>
-              <div><span className="text-star-300 text-xs block">Awardee</span><span className="text-nebula-300 text-sm">{protest.awardee}</span></div>
+              <div><span className="text-star-300 text-xs block">Awardee</span><span className="text-slate-200 text-sm">{protest.awardee}</span></div>
               <div><span className="text-star-300 text-xs block">Agency</span><span className="text-white text-sm">{protest.agency}</span></div>
               <div><span className="text-star-300 text-xs block">Contract Value</span><span className="text-white text-sm font-bold">{protest.contractValue}</span></div>
             </div>
             <p className="text-star-300 text-sm leading-relaxed mb-3">{protest.description}</p>
-            <button onClick={() => setExpandedId(isExpanded ? null : protest.id)} className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors mb-2">{isExpanded ? 'Show Less' : 'View Key Findings & Significance'}</button>
+            <button onClick={() => setExpandedId(isExpanded ? null : protest.id)} className="text-sm text-slate-200 hover:text-white transition-colors mb-2">{isExpanded ? 'Show Less' : 'View Key Findings & Significance'}</button>
             {isExpanded && (
               <div className="mt-3 pt-3 border-t border-white/10 space-y-3">
                 <div><h5 className="text-xs font-semibold text-star-300 mb-2 uppercase tracking-wider">Key Findings</h5><ul className="space-y-1.5">{protest.keyFindings.map((finding, i) => (<li key={i} className="flex items-start gap-2 text-xs text-star-300"><svg className="w-3 h-3 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{finding}</li>))}</ul></div>
@@ -918,7 +918,7 @@ function ProtestsOverviewTab() {
                 <div className="text-xs text-star-300">
                   <span className="font-medium text-white">{protest.title}</span>
                   <span className="mx-2 text-slate-600">|</span>
-                  <span>Program: <span className="text-nebula-300">{PROTEST_PROGRAM_LABELS[protest.program]}</span></span>
+                  <span>Program: <span className="text-slate-200">{PROTEST_PROGRAM_LABELS[protest.program]}</span></span>
                   {protest.judge && (<><span className="mx-2 text-slate-600">|</span><span>{protest.judge}</span></>)}
                 </div>
               </div>
@@ -928,13 +928,13 @@ function ProtestsOverviewTab() {
               <span className="text-slate-600">|</span>
               <span>Decided: <span className="text-white font-medium">{protest.decisionDate}</span></span>
               <span className="text-slate-600">|</span>
-              <span className="text-nebula-300">{PROTEST_PROGRAM_LABELS[protest.program]}</span>
+              <span className="text-slate-200">{PROTEST_PROGRAM_LABELS[protest.program]}</span>
             </div>
           </div>
         );
       })}</div>
 
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No protests match your search</h3><button onClick={() => { setSearch(''); setForumFilter(''); setOutcomeFilter(''); setProgramFilter(''); setAgencyFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No protests match your search</h3><button onClick={() => { setSearch(''); setForumFilter(''); setOutcomeFilter(''); setProgramFilter(''); setAgencyFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -984,7 +984,7 @@ function ProtestsTimelineTab() {
         {years.map((year) => (
           <div key={year} className="mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-nebula-500 flex items-center justify-center text-white text-xs font-bold relative z-10">{protestsByYear[year].length}</div>
+              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-white text-xs font-bold relative z-10">{protestsByYear[year].length}</div>
               <h3 className="text-xl font-bold font-display text-white">{year}</h3>
               <div className="h-px flex-1 bg-white/10" />
             </div>
@@ -997,7 +997,7 @@ function ProtestsTimelineTab() {
                 const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome] || DEFAULT_PROTEST_STYLE;
                 const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
                 return (
-                  <div key={protest.id} className="card p-4 hover:border-nebula-500/50 transition-all relative">
+                  <div key={protest.id} className="card p-4 hover:border-white/15/50 transition-all relative">
                     <div className={`absolute left-[-28px] top-4 w-3 h-3 rounded-full ${outcomeColors[protest.outcome]} border-2 border-slate-900`} />
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
@@ -1127,7 +1127,7 @@ function ProtestsAnalysisTab() {
               <div key={year} className="flex items-center gap-3">
                 <span className="text-xs text-star-300 w-10 text-right font-mono">{year}</span>
                 <div className="flex-1 h-6 bg-white/5 rounded overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-nebula-500 to-slate-400 rounded flex items-center justify-end pr-2" style={{ width: `${(volumeByYear[year] / maxVolume) * 100}%` }}>
+                  <div className="h-full bg-gradient-to-r from-white to-slate-400 rounded flex items-center justify-end pr-2" style={{ width: `${(volumeByYear[year] / maxVolume) * 100}%` }}>
                     <span className="text-xs text-white font-bold">{volumeByYear[year]}</span>
                   </div>
                 </div>
@@ -1165,7 +1165,7 @@ function ProtestsAnalysisTab() {
             {byProgram.map(([program, count]) => (
               <div key={program} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                 <span className="text-sm text-white">{PROTEST_PROGRAM_LABELS[program as ProtestProgram]}</span>
-                <span className="text-sm font-bold text-nebula-300">{count}</span>
+                <span className="text-sm font-bold text-slate-200">{count}</span>
               </div>
             ))}
           </div>
@@ -1177,7 +1177,7 @@ function ProtestsAnalysisTab() {
             {byAgency.map(([agency, count]) => (
               <div key={agency} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                 <span className="text-sm text-white">{agency}</span>
-                <span className="text-sm font-bold text-nebula-300">{count}</span>
+                <span className="text-sm font-bold text-slate-200">{count}</span>
               </div>
             ))}
           </div>
@@ -1899,7 +1899,7 @@ function RegulatoryBodiesRefTab() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search regulatory bodies..."
               aria-label="Search regulatory bodies"
-              className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500 placeholder:text-slate-400"
+              className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400"
             />
           </div>
           <div>
@@ -1916,7 +1916,7 @@ function RegulatoryBodiesRefTab() {
             </select>
           </div>
           {(searchQuery || categoryFilter) && (
-            <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-sm text-nebula-300 hover:text-nebula-200 py-2">Clear Filters</button>
+            <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-sm text-slate-200 hover:text-white py-2">Clear Filters</button>
           )}
         </div>
       </div>
@@ -1928,7 +1928,7 @@ function RegulatoryBodiesRefTab() {
             <button
               key={cat}
               onClick={() => setCategoryFilter(categoryFilter === cat ? '' : cat)}
-              className={`card-elevated p-4 text-center transition-all cursor-pointer ${categoryFilter === cat ? 'ring-2 ring-nebula-500/50' : ''}`}
+              className={`card-elevated p-4 text-center transition-all cursor-pointer ${categoryFilter === cat ? 'ring-2 ring-white/15' : ''}`}
             >
               <div className={`text-2xl font-bold font-display ${config.text}`}>{count}</div>
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">{config.label}</div>
@@ -1942,7 +1942,7 @@ function RegulatoryBodiesRefTab() {
           const catConfig = REGULATORY_BODY_REF_CATEGORY_CONFIG[body.category];
           const isExpanded = expandedId === body.id;
           return (
-            <div key={body.id} className="card p-5 hover:border-nebula-500/30 transition-all">
+            <div key={body.id} className="card p-5 hover:border-white/10 transition-all">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-1">
@@ -1956,12 +1956,12 @@ function RegulatoryBodiesRefTab() {
                 <span>Jurisdiction: {body.jurisdiction}</span>
               </div>
               <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 mb-3">
-                <p className="text-sm text-nebula-300 font-medium">{body.primaryFunction}</p>
+                <p className="text-sm text-slate-200 font-medium">{body.primaryFunction}</p>
               </div>
               <p className="text-slate-400 text-sm mb-3 leading-relaxed">{body.description}</p>
               <button
                 onClick={() => setExpandedId(isExpanded ? null : body.id)}
-                className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors"
+                className="text-sm text-slate-200 hover:text-white transition-colors"
               >
                 {isExpanded ? 'Show Less' : 'View Details'}
               </button>
@@ -1995,7 +1995,7 @@ function RegulatoryBodiesRefTab() {
                   </div>
                   <div className="flex items-center gap-4 text-xs text-slate-400 pt-2">
                     <span>{body.contactInfo}</span>
-                    <a href={body.website} target="_blank" rel="noopener noreferrer" className="text-nebula-300 hover:text-nebula-200">Visit Website &rarr;</a>
+                    <a href={body.website} target="_blank" rel="noopener noreferrer" className="text-slate-200 hover:text-white">Visit Website &rarr;</a>
                   </div>
                 </div>
               )}
@@ -2006,7 +2006,7 @@ function RegulatoryBodiesRefTab() {
       {filtered.length === 0 && (
         <div className="text-center py-20">
           <h3 className="text-xl font-semibold text-white mb-2">No regulatory bodies match your search</h3>
-          <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button>
+          <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button>
         </div>
       )}
     </div>
@@ -2052,7 +2052,7 @@ function KeyRegulationsTab() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search regulations, treaties, CFR references..."
               aria-label="Search regulations"
-              className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-nebula-500 placeholder:text-slate-400"
+              className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400"
             />
           </div>
           <div>
@@ -2069,7 +2069,7 @@ function KeyRegulationsTab() {
             </select>
           </div>
           {(searchQuery || categoryFilter) && (
-            <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-sm text-nebula-300 hover:text-nebula-200 py-2">Clear Filters</button>
+            <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-sm text-slate-200 hover:text-white py-2">Clear Filters</button>
           )}
         </div>
       </div>
@@ -2081,7 +2081,7 @@ function KeyRegulationsTab() {
             <button
               key={cat}
               onClick={() => setCategoryFilter(categoryFilter === cat ? '' : cat)}
-              className={`card-elevated p-4 text-center transition-all cursor-pointer ${categoryFilter === cat ? 'ring-2 ring-nebula-500/50' : ''}`}
+              className={`card-elevated p-4 text-center transition-all cursor-pointer ${categoryFilter === cat ? 'ring-2 ring-white/15' : ''}`}
             >
               <div className={`text-2xl font-bold font-display ${config.text}`}>{count}</div>
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">{config.label}</div>
@@ -2095,7 +2095,7 @@ function KeyRegulationsTab() {
           const catConfig = REGULATION_CATEGORY_CONFIG[reg.category];
           const isExpanded = expandedId === reg.id;
           return (
-            <div key={reg.id} className="card p-5 hover:border-nebula-500/30 transition-all">
+            <div key={reg.id} className="card p-5 hover:border-white/10 transition-all">
               <div className="flex items-start justify-between mb-3 gap-3">
                 <div className="flex-1 min-w-0">
                   <h4 className="font-semibold text-white text-lg mb-1">{reg.shortName}</h4>
@@ -2106,12 +2106,12 @@ function KeyRegulationsTab() {
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400 mb-3">
                 <span>Year: {reg.year}</span>
                 <span>Authority: {reg.authority}</span>
-                {reg.cfrReference && <span className="font-mono text-nebula-300">{reg.cfrReference}</span>}
+                {reg.cfrReference && <span className="font-mono text-slate-200">{reg.cfrReference}</span>}
               </div>
               <p className="text-slate-400 text-sm mb-3 leading-relaxed line-clamp-3">{reg.description}</p>
               <button
                 onClick={() => setExpandedId(isExpanded ? null : reg.id)}
-                className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors"
+                className="text-sm text-slate-200 hover:text-white transition-colors"
               >
                 {isExpanded ? 'Show Less' : 'View Full Details'}
               </button>
@@ -2149,7 +2149,7 @@ function KeyRegulationsTab() {
                       ))}
                     </ul>
                   </div>
-                  <a href={reg.furtherReading} target="_blank" rel="noopener noreferrer" className="inline-block text-xs text-nebula-300 hover:text-nebula-200">View Full Text / Further Reading &rarr;</a>
+                  <a href={reg.furtherReading} target="_blank" rel="noopener noreferrer" className="inline-block text-xs text-slate-200 hover:text-white">View Full Text / Further Reading &rarr;</a>
                 </div>
               )}
             </div>
@@ -2159,7 +2159,7 @@ function KeyRegulationsTab() {
       {filtered.length === 0 && (
         <div className="text-center py-20">
           <h3 className="text-xl font-semibold text-white mb-2">No regulations match your search</h3>
-          <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button>
+          <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button>
         </div>
       )}
     </div>
@@ -2218,7 +2218,7 @@ function ComplianceChecklistsTab() {
                 onClick={() => { setSelectedChecklist(cl.id); setCompletedSteps(new Set()); setSearchQuery(''); }}
                 className={`flex flex-col items-start px-4 py-3 rounded-lg transition-all whitespace-nowrap min-w-[180px] ${
                   selectedChecklist === cl.id
-                    ? 'bg-nebula-500/20 text-white border border-nebula-500/50'
+                    ? 'bg-white/10 text-white border border-white/15/50'
                     : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-600/50'
                 }`}
               >
@@ -2247,11 +2247,11 @@ function ComplianceChecklistsTab() {
         <div className="mt-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-slate-400">Progress: {completionCount}/{checklist.steps.length} steps</span>
-            <span className="text-sm font-bold text-nebula-300">{completionPct}%</span>
+            <span className="text-sm font-bold text-slate-200">{completionPct}%</span>
           </div>
           <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-nebula-500 to-slate-400 rounded-full transition-all duration-300"
+              className="h-full bg-gradient-to-r from-white to-slate-400 rounded-full transition-all duration-300"
               style={{ width: `${completionPct}%` }}
             />
           </div>
@@ -2266,7 +2266,7 @@ function ComplianceChecklistsTab() {
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search within checklist steps..."
           aria-label="Search checklist steps"
-          className="w-full md:w-96 bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-4 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:border-nebula-500"
+          className="w-full md:w-96 bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-4 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:border-white/15"
         />
       </div>
 
@@ -2277,7 +2277,7 @@ function ComplianceChecklistsTab() {
           return (
             <div
               key={step.step}
-              className={`card p-4 transition-all ${isCompleted ? 'border-green-500/30 bg-green-500/5' : 'hover:border-nebula-500/30'}`}
+              className={`card p-4 transition-all ${isCompleted ? 'border-green-500/30 bg-green-500/5' : 'hover:border-white/10'}`}
             >
               <div className="flex items-start gap-4">
                 <button
@@ -2285,7 +2285,7 @@ function ComplianceChecklistsTab() {
                   className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
                     isCompleted
                       ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                      : 'bg-slate-800/50 text-slate-400 border border-slate-600/40 hover:border-nebula-500/50'
+                      : 'bg-slate-800/50 text-slate-400 border border-slate-600/40 hover:border-white/15/50'
                   }`}
                   aria-label={`${isCompleted ? 'Uncheck' : 'Check'} step ${step.step}`}
                 >
@@ -2299,7 +2299,7 @@ function ComplianceChecklistsTab() {
                   <div className="flex items-start justify-between gap-3 mb-1">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-bold text-nebula-300 bg-slate-700/60 px-2 py-0.5 rounded">{step.agency}</span>
+                        <span className="text-xs font-bold text-slate-200 bg-slate-700/60 px-2 py-0.5 rounded">{step.agency}</span>
                         <h4 className={`font-semibold text-sm ${isCompleted ? 'text-green-400 line-through' : 'text-white'}`}>{step.requirement}</h4>
                       </div>
                     </div>
@@ -2576,7 +2576,7 @@ function RegulatoryHubContent() {
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Policy Changes</div>
         </div>
         <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{stats.totalLicenseTypes}</div>
+          <div className="text-4xl font-bold font-display tracking-tight text-slate-200">{stats.totalLicenseTypes}</div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">License Types</div>
         </div>
         <div className="card-elevated p-6 text-center">
@@ -2604,7 +2604,7 @@ function RegulatoryHubContent() {
               onClick={() => handleSectionChange(section.id)}
               className={`flex items-center gap-2 px-4 sm:px-5 py-3 min-h-[44px] rounded-lg font-semibold text-sm transition-all whitespace-nowrap touch-target ${
                 activeSection === section.id
-                  ? 'bg-nebula-500 text-white shadow-glow-sm'
+                  ? 'bg-white text-slate-900'
                   : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-600/50'
               }`}
             >
@@ -2626,7 +2626,7 @@ function RegulatoryHubContent() {
                 onClick={() => setActiveSubTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-lg font-medium transition-all whitespace-nowrap touch-target ${
                   activeSubTab === tab.id
-                    ? 'bg-slate-700/80 text-slate-100 border-slate-500/50 shadow-glow-sm'
+                    ? 'bg-slate-700/80 text-slate-100 border-slate-500/50'
                     : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
                 }`}
               >
@@ -2647,7 +2647,7 @@ function RegulatoryHubContent() {
               onClick={() => setActiveSubTab(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeSubTab === tab.id
-                  ? 'bg-slate-700/80 text-slate-100 border border-slate-500/50 shadow-glow-sm'
+                  ? 'bg-slate-700/80 text-slate-100 border border-slate-500/50'
                   : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
               }`}
             >
@@ -2666,12 +2666,12 @@ function RegulatoryHubContent() {
                 onClick={() => setActiveSubTab(tab.id)}
                 className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   activeSubTab === tab.id
-                    ? 'bg-nebula-500 text-white shadow-glow-sm'
+                    ? 'bg-white text-slate-900'
                     : 'bg-white/5 text-star-300 hover:bg-white/10'
                 }`}
               >
                 {tab.label}
-                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeSubTab === tab.id ? 'bg-white/20 text-white' : 'bg-white/10 text-star-300'}`}>{tab.count}</span>
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeSubTab === tab.id ? 'bg-white/20 text-slate-900' : 'bg-white/10 text-star-300'}`}>{tab.count}</span>
               </button>
             ))}
           </div>
@@ -2687,7 +2687,7 @@ function RegulatoryHubContent() {
               onClick={() => setActiveSubTab(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeSubTab === tab.id
-                  ? 'bg-slate-700/80 text-slate-100 border border-slate-500/50 shadow-glow-sm'
+                  ? 'bg-slate-700/80 text-slate-100 border border-slate-500/50'
                   : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
               }`}
             >
@@ -2705,7 +2705,7 @@ function RegulatoryHubContent() {
               onClick={() => setActiveSubTab(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeSubTab === tab.id
-                  ? 'bg-slate-700/80 text-slate-100 border border-slate-500/50 shadow-glow-sm'
+                  ? 'bg-slate-700/80 text-slate-100 border border-slate-500/50'
                   : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
               }`}
             >

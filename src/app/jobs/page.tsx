@@ -1454,7 +1454,7 @@ function JobCard({
               <div className="flex items-center gap-3 pt-2">
                 <a
                   href={job.applyUrl}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm rounded-lg font-medium transition-colors"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <svg
@@ -1899,7 +1899,7 @@ export default function JobsBoardPage() {
             </svg>
             Filters
             {activeFilterCount > 0 && (
-              <span className="w-5 h-5 rounded-full bg-white text-white text-[10px] flex items-center justify-center font-bold">
+              <span className="w-5 h-5 rounded-full bg-white text-slate-900 text-[10px] flex items-center justify-center font-bold">
                 {activeFilterCount}
               </span>
             )}
@@ -1945,7 +1945,7 @@ export default function JobsBoardPage() {
                   action={
                     <button
                       onClick={handleClearFilters}
-                      className="px-5 py-2.5 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors"
+                      className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm rounded-lg font-medium transition-colors"
                     >
                       Clear All Filters
                     </button>

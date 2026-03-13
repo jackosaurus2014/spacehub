@@ -145,7 +145,7 @@ export default function LaunchWindowsModule() {
           <button
             onClick={handleLoadData}
             disabled={initializing}
-            className="px-6 py-3 bg-nebula-600 hover:bg-nebula-500 disabled:bg-nebula-800 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+            className="px-6 py-3 bg-white hover:bg-slate-100 disabled:bg-slate-700 disabled:cursor-not-allowed text-slate-900 font-medium rounded-lg transition-colors"
           >
             {initializing ? (
               <span className="flex items-center gap-2">
@@ -171,7 +171,7 @@ export default function LaunchWindowsModule() {
         </h2>
         <Link
           href="/launch-windows"
-          className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
+          className="text-slate-200 hover:text-white transition-colors text-sm"
         >
           Full Planner →
         </Link>
@@ -186,7 +186,7 @@ export default function LaunchWindowsModule() {
           <div className="text-slate-400 text-sm">Total Destinations</div>
         </div>
         <div className="card p-4 text-center">
-          <div className="text-3xl font-bold text-nebula-300">
+          <div className="text-3xl font-bold text-slate-200">
             {data.stats.upcomingWindows}
           </div>
           <div className="text-slate-400 text-sm">Upcoming Windows</div>

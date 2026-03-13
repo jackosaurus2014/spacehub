@@ -10,7 +10,7 @@ export default function LoadingSpinner({ size = 'md' }: { size?: 'sm' | 'md' | '
       <div className="relative">
         {/* Outer ring */}
         <div
-          className={`${sizes[size]} border-nebula-500/30 rounded-full animate-spin`}
+          className={`${sizes[size]} border-white/10 rounded-full animate-spin`}
           style={{ borderWidth: '3px', borderTopColor: '#4c1d95' }}
         />
         {/* Inner ring */}

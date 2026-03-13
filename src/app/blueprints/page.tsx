@@ -220,16 +220,16 @@ function BlueprintCard({ blueprint, onClick }: { blueprint: Blueprint; onClick: 
   return (
     <div
       onClick={onClick}
-      className="card p-5 border border-slate-700/50 hover:border-nebula-500/50 transition-all cursor-pointer group"
+      className="card p-5 border border-slate-700/50 hover:border-white/15/50 transition-all cursor-pointer group"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-nebula-500/20 to-rocket-500/20 flex items-center justify-center text-xl font-bold text-nebula-300">
+          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-white/20 to-rocket-500/20 flex items-center justify-center text-xl font-bold text-slate-200">
             {getCategoryIcon(blueprint.category)}
           </div>
           <div>
-            <h3 className="text-white font-semibold text-lg group-hover:text-nebula-600 transition-colors">
+            <h3 className="text-white font-semibold text-lg group-hover:text-slate-400 transition-colors">
               {blueprint.name}
             </h3>
             <span className="text-slate-400 text-sm">{blueprint.manufacturer}</span>
@@ -343,7 +343,7 @@ function BlueprintCard({ blueprint, onClick }: { blueprint: Blueprint; onClick: 
           )}
         </div>
         {blueprint.missionsFlown !== undefined && blueprint.missionsFlown > 0 && (
-          <span className="text-xs bg-nebula-100 text-nebula-700 px-2 py-1 rounded-full font-medium">
+          <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full font-medium">
             {formatNumber(blueprint.missionsFlown)} missions
           </span>
         )}
@@ -385,7 +385,7 @@ function BlueprintDetailModal({
           {/* Header */}
           <div className="sticky top-0 bg-slate-800 border-b border-slate-700/50 px-6 py-4 flex items-center justify-between z-10">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-nebula-500/20 to-rocket-500/20 flex items-center justify-center text-2xl font-bold text-nebula-300">
+              <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-white/20 to-rocket-500/20 flex items-center justify-center text-2xl font-bold text-slate-200">
                 {getCategoryIcon(blueprint.category)}
               </div>
               <div>
@@ -609,7 +609,7 @@ function BlueprintDetailModal({
                 <ul className="space-y-2">
                   {blueprint.keyInnovations.map((innovation, index) => (
                     <li key={index} className="flex items-start gap-3">
-                      <span className="flex-shrink-0 w-6 h-6 bg-nebula-100 text-nebula-700 rounded-full flex items-center justify-center text-xs font-bold">
+                      <span className="flex-shrink-0 w-6 h-6 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center text-xs font-bold">
                         {index + 1}
                       </span>
                       <span className="text-slate-300">{innovation}</span>
@@ -622,9 +622,9 @@ function BlueprintDetailModal({
             {/* Mission Info */}
             <div className="grid grid-cols-2 gap-4">
               {blueprint.firstFlight && (
-                <div className="bg-nebula-50 p-4 rounded-lg">
-                  <span className="text-xs text-nebula-600 block mb-1">First Flight</span>
-                  <span className="text-lg font-bold text-nebula-900">{formatDate(blueprint.firstFlight)}</span>
+                <div className="bg-slate-50 p-4 rounded-lg">
+                  <span className="text-xs text-slate-400 block mb-1">First Flight</span>
+                  <span className="text-lg font-bold text-slate-700">{formatDate(blueprint.firstFlight)}</span>
                 </div>
               )}
               {blueprint.missionsFlown !== undefined && blueprint.missionsFlown > 0 && (
@@ -646,7 +646,7 @@ function BlueprintDetailModal({
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-nebula-600 hover:text-nebula-700 transition-colors text-sm"
+                      className="flex items-center gap-2 text-slate-400 hover:text-slate-500 transition-colors text-sm"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -680,7 +680,7 @@ function StatsCards({ stats }: { stats: BlueprintStats }) {
       <StaggerItem>
         <div className="card p-4">
           <span className="text-xs text-slate-300 block mb-1">Rocket Engines</span>
-          <span className="text-2xl font-bold text-nebula-600">{stats.byCategory['engine'] || 0}</span>
+          <span className="text-2xl font-bold text-slate-400">{stats.byCategory['engine'] || 0}</span>
         </div>
       </StaggerItem>
       <StaggerItem>
@@ -809,7 +809,7 @@ function BlueprintsContent() {
               onClick={() => updateParams({ tab: tab.id === 'all' ? null : tab.id })}
               className={`flex items-center gap-2 py-4 border-b-2 text-sm font-medium transition-colors ${
                 activeTab === tab.id
-                  ? 'border-nebula-500 text-nebula-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
+                  ? 'border-white/15 text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
                   : 'border-transparent text-slate-200 hover:text-white hover:border-slate-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
               }`}
             >
@@ -844,7 +844,7 @@ function BlueprintsContent() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search blueprints..."
-                className="w-full px-4 py-2 border border-slate-700/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-nebula-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-slate-700/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/15 focus:border-transparent"
               />
             </div>
 

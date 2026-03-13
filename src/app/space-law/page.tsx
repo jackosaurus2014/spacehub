@@ -591,7 +591,7 @@ function EntryCard({ entry }: { entry: SpaceLawEntry }) {
   const typeStyle = TYPE_CONFIG[entry.type];
 
   return (
-    <div className="card p-5 hover:border-nebula-500/50 transition-all">
+    <div className="card p-5 hover:border-white/15/50 transition-all">
       {/* Header */}
       <div className="flex items-start justify-between mb-3 gap-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -650,7 +650,7 @@ function EntryCard({ entry }: { entry: SpaceLawEntry }) {
       {/* Expand button */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors"
+        className="text-sm text-slate-200 hover:text-white transition-colors"
       >
         {expanded ? 'Hide Key Provisions \u25B2' : 'View Key Provisions \u25BC'}
       </button>
@@ -827,7 +827,7 @@ function TabContent({ entries, tabId }: { entries: SpaceLawEntry[]; tabId: TabId
           <p className="text-slate-400 text-sm mb-4">Try adjusting your filters or search terms</p>
           <button
             onClick={handleClearFilters}
-            className="text-nebula-300 hover:text-white text-sm transition-colors"
+            className="text-slate-200 hover:text-white text-sm transition-colors"
           >
             Clear All Filters
           </button>
@@ -939,7 +939,7 @@ function SpaceLawContent() {
 
       {/* Timeline Overview */}
       <ScrollReveal delay={0.1}>
-        <div className="card p-5 mb-8 border border-nebula-500/20 bg-nebula-500/5">
+        <div className="card p-5 mb-8 border border-white/15/20 bg-white/5">
           <h3 className="text-white font-semibold mb-3">Evolution of Space Law</h3>
           <div className="relative">
             <div className="absolute left-4 top-0 bottom-0 w-px bg-slate-700" />
@@ -975,7 +975,7 @@ function SpaceLawContent() {
               onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-2 px-4 sm:px-5 py-3 min-h-[44px] rounded-lg font-semibold text-sm transition-all whitespace-nowrap touch-target ${
                 activeTab === tab.id
-                  ? 'bg-nebula-500 text-white shadow-glow-sm'
+                  ? 'bg-white text-slate-900'
                   : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-600/50'
               }`}
             >
@@ -984,7 +984,7 @@ function SpaceLawContent() {
               <span
                 className={`text-xs px-1.5 py-0.5 rounded-full ${
                   activeTab === tab.id
-                    ? 'bg-white/20 text-white'
+                    ? 'bg-white/20 text-slate-900'
                     : 'bg-white/10 text-slate-400'
                 }`}
               >

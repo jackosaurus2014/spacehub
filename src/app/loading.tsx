@@ -6,7 +6,7 @@ export default function Loading() {
         <div className="animate-pulse text-center py-16 mb-12">
           <div className="h-10 w-80 bg-slate-800 rounded-lg mx-auto mb-4" />
           <div className="h-5 w-[32rem] max-w-full bg-slate-800/60 rounded mx-auto mb-6" />
-          <div className="h-12 w-48 bg-nebula-600/30 rounded-xl mx-auto" />
+          <div className="h-12 w-48 bg-white/30 rounded-xl mx-auto" />
         </div>
 
         {/* Stats bar skeleton */}

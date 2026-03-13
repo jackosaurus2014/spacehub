@@ -255,10 +255,10 @@ export default function NewsPage() {
                 <StaggerItem key={post.slug}>
                   <Link
                     href={`/blog/${post.slug}`}
-                    className="group block card p-5 hover:border-nebula-500/50"
+                    className="group block card p-5 hover:border-white/15/50"
                   >
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-nebula-500/20 text-nebula-300 border border-nebula-500/30">
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-slate-200 border border-white/10">
                         Blog
                       </span>
                       <ContentEngagementBadge
@@ -268,7 +268,7 @@ export default function NewsPage() {
                         variant="compact"
                       />
                     </div>
-                    <h3 className="text-sm font-semibold text-white group-hover:text-nebula-400 transition-colors mb-2 line-clamp-2">
+                    <h3 className="text-sm font-semibold text-white group-hover:text-slate-300 transition-colors mb-2 line-clamp-2">
                       {post.title}
                     </h3>
                     <p className="text-xs text-slate-400 line-clamp-2">{post.excerpt}</p>

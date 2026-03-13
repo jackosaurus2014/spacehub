@@ -213,7 +213,7 @@ export default function EditProfilePage() {
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-2.5 bg-white hover:bg-slate-100 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="px-6 py-2.5 bg-white hover:bg-slate-100 text-slate-900 font-semibold rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
             >
               {saving ? (
                 <>

@@ -723,7 +723,7 @@ function AlertsPageInner() {
           </p>
           <Link
             href="/login"
-            className="inline-block px-6 py-3 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors"
+            className="inline-block px-6 py-3 bg-white hover:bg-slate-100 text-slate-900 font-medium rounded-lg transition-colors"
           >
             Sign In
           </Link>
@@ -764,7 +764,7 @@ function AlertsPageInner() {
           </p>
           <button
             onClick={() => setShowRuleBuilder(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 font-medium rounded-lg transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -1118,7 +1118,7 @@ function AlertsPageInner() {
           <div className="flex flex-wrap gap-3 justify-center">
             <Link
               href="/company-profiles"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-100 text-white text-sm font-medium rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm font-medium rounded-lg transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -1482,7 +1482,7 @@ function AlertsPageInner() {
         <button
           onClick={savePreferences}
           disabled={savingPrefs}
-          className="inline-flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 font-medium rounded-lg transition-colors"
         >
           {savingPrefs ? (
             <>
@@ -1542,7 +1542,7 @@ function AlertsPageInner() {
           <input id="webhook-url" type="url" autoComplete="url" inputMode="url" enterKeyHint="done" value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} placeholder={webhookType === 'slack' ? 'https://hooks.slack.com/services/...' : 'https://discord.com/api/webhooks/...'} className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent font-mono" />
           <p className="text-xs text-slate-500 mt-1">{webhookType === 'slack' ? 'Create an Incoming Webhook in your Slack workspace settings.' : 'Create a webhook in your Discord server\'s channel Integrations settings.'}</p>
         </div>
-        <button onClick={addWebhook} disabled={addingWebhook || !webhookName.trim() || !webhookUrl.trim()} className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 disabled:bg-slate-700 disabled:text-slate-500 text-white font-medium rounded-lg transition-colors text-sm">
+        <button onClick={addWebhook} disabled={addingWebhook || !webhookName.trim() || !webhookUrl.trim()} className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 disabled:bg-slate-700 disabled:text-slate-500 text-slate-900 font-medium rounded-lg transition-colors text-sm">
           {addingWebhook ? (<span className="flex items-center gap-2"><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Adding...</span>) : (<span className="flex items-center gap-2"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>Add Webhook</span>)}
         </button>
       </div>
@@ -1622,7 +1622,7 @@ function AlertsPageInner() {
           >
             <button
               onClick={() => setShowRuleBuilder(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors mt-2"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-900 font-medium rounded-lg transition-colors mt-2"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -1672,7 +1672,7 @@ function AlertsPageInner() {
             onClick={() => setTab('alerts')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               currentTab === 'alerts'
-                ? 'bg-white text-white shadow-lg shadow-black/15'
+                ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -1685,7 +1685,7 @@ function AlertsPageInner() {
             onClick={() => setTab('notifications')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors relative ${
               currentTab === 'notifications'
-                ? 'bg-white text-white shadow-lg shadow-black/15'
+                ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -1703,7 +1703,7 @@ function AlertsPageInner() {
             onClick={() => setTab('saved-searches')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               currentTab === 'saved-searches'
-                ? 'bg-white text-white shadow-lg shadow-black/15'
+                ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -1721,7 +1721,7 @@ function AlertsPageInner() {
             onClick={() => setTab('webhooks')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               currentTab === 'webhooks'
-                ? 'bg-white text-white shadow-lg shadow-black/15'
+                ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -1739,7 +1739,7 @@ function AlertsPageInner() {
             onClick={() => setTab('preferences')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               currentTab === 'preferences'
-                ? 'bg-white text-white shadow-lg shadow-black/15'
+                ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
                 : 'text-slate-400 hover:text-white'
             }`}
           >

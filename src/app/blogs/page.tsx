@@ -47,7 +47,7 @@ const BLOG_EXPORT_COLUMNS = [
 function BlogPostCard({ post }: { post: BlogPost }) {
   const topic = BLOG_TOPICS.find(t => t.value === post.topic);
   const authorIcon = authorTypeIcons[post.source.authorType] || '👤';
-  const topicColor = topicColors[post.topic || 'exploration'] || 'bg-nebula-500';
+  const topicColor = topicColors[post.topic || 'exploration'] || 'bg-white';
   const isComplianceRelated = post.topic && COMPLIANCE_TOPICS.includes(post.topic);
 
   const formatDate = (date: Date) => {
@@ -61,7 +61,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
   };
 
   return (
-    <div className="card p-5 hover:border-nebula-500/50 transition-all group block">
+    <div className="card p-5 hover:border-white/15/50 transition-all group block">
       <a
         href={post.url}
         target="_blank"
@@ -83,7 +83,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
                 {post.source.name}
               </span>
             </div>
-            <h3 className="font-semibold text-white text-lg group-hover:text-nebula-200 transition-colors line-clamp-2">
+            <h3 className="font-semibold text-white text-lg group-hover:text-white transition-colors line-clamp-2">
               {post.title}
             </h3>
             {post.excerpt && (
@@ -238,7 +238,7 @@ function BlogsContent() {
                 onClick={() => handleTopicChange(null)}
                 className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm ${
                   selectedTopic === null
-                    ? 'bg-slate-700 text-white border-slate-600 shadow-glow-sm'
+                    ? 'bg-slate-700 text-white border-slate-600'
                     : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
                 }`}
               >
@@ -250,7 +250,7 @@ function BlogsContent() {
                   onClick={() => handleTopicChange(topic.value)}
                   className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm flex items-center gap-1 ${
                     selectedTopic === topic.value
-                      ? 'bg-slate-700 text-white border-slate-600 shadow-glow-sm'
+                      ? 'bg-slate-700 text-white border-slate-600'
                       : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
                   }`}
                 >
@@ -269,7 +269,7 @@ function BlogsContent() {
                 onClick={() => handleAuthorTypeChange(null)}
                 className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm ${
                   selectedAuthorType === null
-                    ? 'bg-slate-700 text-white border-slate-600 shadow-glow-sm'
+                    ? 'bg-slate-700 text-white border-slate-600'
                     : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
                 }`}
               >
@@ -281,7 +281,7 @@ function BlogsContent() {
                   onClick={() => handleAuthorTypeChange(type.value)}
                   className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm flex items-center gap-1 ${
                     selectedAuthorType === type.value
-                      ? 'bg-slate-700 text-white border-slate-600 shadow-glow-sm'
+                      ? 'bg-slate-700 text-white border-slate-600'
                       : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
                   }`}
                 >
@@ -314,7 +314,7 @@ function BlogsContent() {
         </StaggerItem>
         <StaggerItem>
           <div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{BLOG_TOPICS.length}</div>
+            <div className="text-4xl font-bold font-display tracking-tight text-slate-200">{BLOG_TOPICS.length}</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Topics</div>
           </div>
         </StaggerItem>

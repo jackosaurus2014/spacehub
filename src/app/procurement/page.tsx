@@ -1008,7 +1008,7 @@ function ProcurementContent() {
                 <div className="text-4xl mb-3">🔒</div>
                 <h3 className="text-lg font-semibold text-white mb-2">Sign In Required</h3>
                 <p className="text-slate-400 text-sm mb-4">Sign in with a Pro or Enterprise account to create saved searches and receive alerts.</p>
-                <Link href="/login" className="px-4 py-2 bg-white text-white rounded hover:bg-slate-700 text-sm font-medium">
+                <Link href="/login" className="px-4 py-2 bg-white text-slate-900 rounded hover:bg-slate-700 text-sm font-medium">
                   Sign In
                 </Link>
               </div>

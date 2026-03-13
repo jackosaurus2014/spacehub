@@ -149,7 +149,7 @@ function SearchContent() {
               key={t.key}
               onClick={() => { setTab(t.key); setPage(1); }}
               className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
-                tab === t.key ? 'bg-white text-white' : 'text-slate-400 hover:text-white'
+                tab === t.key ? 'bg-white text-slate-900' : 'text-slate-400 hover:text-slate-900'
               }`}
             >
               {t.label}
@@ -285,13 +285,13 @@ function SearchContent() {
                 <div className="flex bg-slate-800 rounded overflow-hidden">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`px-2 py-1.5 text-xs ${viewMode === 'grid' ? 'bg-white text-white' : 'text-slate-400'}`}
+                    className={`px-2 py-1.5 text-xs ${viewMode === 'grid' ? 'bg-white text-slate-900' : 'text-slate-400'}`}
                   >
                     Grid
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`px-2 py-1.5 text-xs ${viewMode === 'list' ? 'bg-white text-white' : 'text-slate-400'}`}
+                    className={`px-2 py-1.5 text-xs ${viewMode === 'list' ? 'bg-white text-slate-900' : 'text-slate-400'}`}
                   >
                     List
                   </button>

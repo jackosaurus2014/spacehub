@@ -201,7 +201,7 @@ function SectorDistributionChart({ startups }: { startups: SpaceStartup[] }) {
   return (
     <div className="card p-5 mb-6">
       <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-        <svg className="w-5 h-5 text-nebula-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-5 h-5 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
         Sector Distribution
@@ -239,7 +239,7 @@ function SectorDistributionChart({ startups }: { startups: SpaceStartup[] }) {
 
 function StartupCard({ startup }: { startup: SpaceStartup }) {
   return (
-    <div className="card p-5 transition-all hover:border-nebula-500/40 h-full flex flex-col">
+    <div className="card p-5 transition-all hover:border-white/15/40 h-full flex flex-col">
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="min-w-0 flex-1">
@@ -409,7 +409,7 @@ function StartupTrackerContent() {
           </StaggerItem>
           <StaggerItem>
             <div className="card-elevated p-6 text-center">
-              <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{formatTotalFunding(totalFundingMillions)}</div>
+              <div className="text-4xl font-bold font-display tracking-tight text-slate-200">{formatTotalFunding(totalFundingMillions)}</div>
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">Total Funding</div>
             </div>
           </StaggerItem>
@@ -544,7 +544,7 @@ function StartupTrackerContent() {
                   setSortBy('funding');
                   router.replace(pathname, { scroll: false });
                 }}
-                className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors min-h-[44px]"
+                className="text-sm text-slate-200 hover:text-white transition-colors min-h-[44px]"
               >
                 Clear All Filters
               </button>

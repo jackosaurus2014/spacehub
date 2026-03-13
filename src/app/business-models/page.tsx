@@ -72,7 +72,7 @@ function ModelCard({
         <button
           className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
             isCompareSelected
-              ? 'bg-white border-white/15 text-white'
+              ? 'bg-white border-white/15 text-slate-900'
               : 'border-slate-600 hover:border-white/10 text-transparent hover:text-slate-500'
           }`}
           title="Select for comparison"

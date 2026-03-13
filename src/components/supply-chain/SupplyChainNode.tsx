@@ -273,7 +273,7 @@ export default function SupplyChainNode({
                   e.stopPropagation();
                   onSelectCompany(company.id);
                 }}
-                className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors"
+                className="text-sm text-slate-200 hover:text-white transition-colors"
               >
                 View Full Supply Chain →
               </button>

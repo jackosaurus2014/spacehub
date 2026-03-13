@@ -160,7 +160,7 @@ export default function WorkforceAnalyticsPage() {
                 onClick={() => setActiveSection(sec.id)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all min-h-[44px] ${
                   activeSection === sec.id
-                    ? 'bg-white text-white shadow-lg shadow-black/15'
+                    ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
                     : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 hover:text-white'
                 }`}
               >
@@ -410,7 +410,7 @@ export default function WorkforceAnalyticsPage() {
                       onClick={() => setSkillCategoryFilter('')}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all min-h-[36px] ${
                         !skillCategoryFilter
-                          ? 'bg-white text-white'
+                          ? 'bg-white text-slate-900'
                           : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60'
                       }`}
                     >

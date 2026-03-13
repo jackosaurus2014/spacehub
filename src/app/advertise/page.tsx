@@ -148,8 +148,8 @@ export default function AdvertisePage() {
           <StaggerContainer className="grid md:grid-cols-3 gap-6">
             <StaggerItem>
               <div className="card p-6">
-                <div className="w-10 h-10 rounded-lg bg-nebula-500/20 flex items-center justify-center mb-4">
-                  <svg className="w-5 h-5 text-nebula-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center mb-4">
+                  <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </div>
@@ -228,12 +228,12 @@ export default function AdvertisePage() {
               <StaggerItem key={plan.name}>
                 <div
                   className={`card p-6 relative ${
-                    plan.popular ? 'border-nebula-500 glow-border' : ''
+                    plan.popular ? 'border-white/15 glow-border' : ''
                   }`}
                 >
                   {plan.popular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-nebula-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                      <span className="bg-white text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
                         Most Popular
                       </span>
                     </div>
@@ -292,7 +292,7 @@ export default function AdvertisePage() {
               </p>
               <Link
                 href="/advertise/dashboard"
-                className="text-nebula-400 hover:text-nebula-300 text-sm font-medium"
+                className="text-slate-300 hover:text-white text-sm font-medium"
               >
                 Go to Advertiser Dashboard
               </Link>
@@ -307,7 +307,7 @@ export default function AdvertisePage() {
               </Link>
               <p className="text-star-300 text-sm mt-4">
                 Don&apos;t have an account?{' '}
-                <Link href="/register" className="text-nebula-400 hover:text-nebula-300">
+                <Link href="/register" className="text-slate-300 hover:text-white">
                   Register for free
                 </Link>
               </p>

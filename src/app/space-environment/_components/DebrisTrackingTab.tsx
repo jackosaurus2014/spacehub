@@ -164,7 +164,7 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
               {primaryIsOperator && (
                 <Link
                   href="/orbital-slots?tab=operators"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
                 >
                   View {event.primaryObject} operator &rarr;
                 </Link>
@@ -172,7 +172,7 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
               {secondaryIsOperator && (
                 <Link
                   href="/orbital-slots?tab=operators"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
                 >
                   View {event.secondaryObject} operator &rarr;
                 </Link>
@@ -260,7 +260,7 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
           {isActivePayload && (
             <Link
               href="/orbital-slots?tab=operators"
-              className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+              className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
             >
               View in Operator Registry &rarr;
             </Link>
@@ -298,7 +298,7 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
       {obj.deorbitDate && (
         <div className="mt-2 text-xs">
           <span className="text-slate-400">Est. Deorbit: </span>
-          <span className="text-nebula-300 font-medium">
+          <span className="text-slate-200 font-medium">
             {new Date(obj.deorbitDate).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
@@ -440,7 +440,7 @@ export default function DebrisTrackingTab() {
           <div className="text-red-400 text-sm font-medium mb-3">{error}</div>
           <button
             onClick={fetchData}
-            className="px-4 py-2 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors"
+            className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors"
           >
             Try Again
           </button>
@@ -499,14 +499,14 @@ export default function DebrisTrackingTab() {
             onClick={() => handleSubTabChange(tab.id)}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeSubTab === tab.id
-                ? 'bg-nebula-500 text-white shadow-glow-sm'
+                ? 'bg-white text-slate-900'
                 : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
             }`}
           >
             {tab.label}
             {tab.count !== undefined && tab.count > 0 && (
               <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                activeSubTab === tab.id ? 'bg-white/20 text-white' : 'bg-slate-700/50 text-slate-500'
+                activeSubTab === tab.id ? 'bg-white/20 text-slate-900' : 'bg-slate-700/50 text-slate-500'
               }`}>
                 {tab.count}
               </span>
@@ -607,7 +607,7 @@ export default function DebrisTrackingTab() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Critical & High-Risk Events</h3>
-                <button onClick={() => handleSubTabChange('conjunctions')} className="text-nebula-300 hover:text-nebula-200 text-sm transition-colors">
+                <button onClick={() => handleSubTabChange('conjunctions')} className="text-slate-200 hover:text-white text-sm transition-colors">
                   View All &rarr;
                 </button>
               </div>
@@ -647,7 +647,7 @@ export default function DebrisTrackingTab() {
                 scenarios based on real-world debris events and orbital mechanics. Object counts align with
                 ESA Space Environment Report and USSPACECOM public catalog data.
               </p>
-              <Link href="/orbital-slots" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30 whitespace-nowrap">
+              <Link href="/orbital-slots" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10 whitespace-nowrap">
                 See tracked operators &rarr;
               </Link>
             </div>
@@ -661,7 +661,7 @@ export default function DebrisTrackingTab() {
           <div className="card p-4 mb-6">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-slate-400 text-sm mr-2">Filter by risk:</span>
-              <button onClick={() => setRiskFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${riskFilter === '' ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm' : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'}`}>
+              <button onClick={() => setRiskFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${riskFilter === '' ? 'bg-slate-700/50 text-white border border-slate-700/50' : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'}`}>
                 All ({conjunctions.length})
               </button>
               {(['critical', 'high', 'moderate', 'low'] as ConjunctionRisk[]).map((level) => {
@@ -701,13 +701,13 @@ export default function DebrisTrackingTab() {
           <div className="card p-4 mb-6">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-slate-400 text-sm mr-2">Filter by type:</span>
-              <button onClick={() => setObjectTypeFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${objectTypeFilter === '' ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm' : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'}`}>
+              <button onClick={() => setObjectTypeFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${objectTypeFilter === '' ? 'bg-slate-700/50 text-white border border-slate-700/50' : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'}`}>
                 All ({notableDebris.length})
               </button>
               {DEBRIS_OBJECT_TYPES.map((type) => {
                 const count = notableDebris.filter((o) => o.objectType === type.value).length;
                 return (
-                  <button key={type.value} onClick={() => setObjectTypeFilter(type.value)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${objectTypeFilter === type.value ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm' : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'}`}>
+                  <button key={type.value} onClick={() => setObjectTypeFilter(type.value)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${objectTypeFilter === type.value ? 'bg-slate-700/50 text-white border border-slate-700/50' : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'}`}>
                     <span>{type.icon}</span>
                     {type.label} ({count})
                   </button>

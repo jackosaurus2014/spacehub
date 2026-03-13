@@ -137,7 +137,7 @@ export default function OrbitalServicesModule() {
           </h2>
         </div>
         <div className="card p-8 text-center">
-          <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderWidth: '3px' }} />
+          <div className="w-10 h-10 border-3 border-white/15 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderWidth: '3px' }} />
         </div>
       </div>
     );
@@ -170,7 +170,7 @@ export default function OrbitalServicesModule() {
         </h2>
         <Link
           href="/marketplace"
-          className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
+          className="text-slate-200 hover:text-white transition-colors text-sm"
         >
           Browse All →
         </Link>
@@ -185,7 +185,7 @@ export default function OrbitalServicesModule() {
           <div className="text-slate-400 text-sm">Services Listed</div>
         </div>
         <div className="card p-4 text-center">
-          <div className="text-3xl font-bold text-nebula-300">
+          <div className="text-3xl font-bold text-slate-200">
             {Object.keys(data.stats.byCategory).length}
           </div>
           <div className="text-slate-400 text-sm">Categories</div>
@@ -236,7 +236,7 @@ export default function OrbitalServicesModule() {
                   {typeServices.length > 2 && (
                     <Link
                       href={`/orbital-services?category=${typeInfo.category}`}
-                      className="text-nebula-300 text-xs hover:text-nebula-200"
+                      className="text-slate-200 text-xs hover:text-white"
                     >
                       +{typeServices.length - 2} more services →
                     </Link>
@@ -264,7 +264,7 @@ export default function OrbitalServicesModule() {
               >
                 <span className="text-2xl block mb-1">{category.icon}</span>
                 <span className="text-slate-200 font-medium text-sm block">{category.label}</span>
-                <span className="text-nebula-300 text-xs">{count} services</span>
+                <span className="text-slate-200 text-xs">{count} services</span>
               </Link>
             );
           })}

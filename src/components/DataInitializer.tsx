@@ -82,8 +82,8 @@ export default function DataInitializer() {
     <div className="fixed inset-0 bg-space-900/95 z-50 flex items-center justify-center">
       <div className="text-center">
         <div className="relative w-16 h-16 mx-auto mb-4">
-          <div className="absolute inset-0 border-4 border-nebula-500/30 rounded-full" />
-          <div className="absolute inset-0 border-4 border-nebula-500 border-t-transparent rounded-full animate-spin" />
+          <div className="absolute inset-0 border-4 border-white/10 rounded-full" />
+          <div className="absolute inset-0 border-4 border-white/15 border-t-transparent rounded-full animate-spin" />
         </div>
         <p className="text-white text-lg font-medium mb-2">Initializing SpaceNexus</p>
         <p className="text-star-300 text-sm">{message || 'Loading space industry data...'}</p>

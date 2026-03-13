@@ -156,7 +156,7 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
                       <button
                         onClick={() => handleAnswer(c.id)}
                         disabled={submitting || !answerText.trim()}
-                        className="px-3 py-1.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 text-white text-xs rounded font-medium"
+                        className="px-3 py-1.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 text-slate-900 text-xs rounded font-medium"
                       >
                         {submitting ? 'Submitting...' : 'Submit Answer'}
                       </button>
@@ -213,7 +213,7 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
             <button
               type="submit"
               disabled={submitting || !question.trim()}
-              className="px-4 py-1.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 text-white text-xs rounded-lg font-medium"
+              className="px-4 py-1.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 text-slate-900 text-xs rounded-lg font-medium"
             >
               {submitting ? 'Submitting...' : 'Submit Question'}
             </button>

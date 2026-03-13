@@ -1014,7 +1014,7 @@ function TechnologiesTab() {
               onClick={() => setCategoryFilter(cat)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 categoryFilter === cat
-                  ? 'bg-nebula-500 text-white shadow-glow-sm'
+                  ? 'bg-white text-slate-900'
                   : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50 border border-slate-700/30'
               }`}
             >
@@ -1198,7 +1198,7 @@ function LocationsTab() {
               onClick={() => setBodyFilter(body)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 bodyFilter === body
-                  ? 'bg-nebula-500 text-white shadow-glow-sm'
+                  ? 'bg-white text-slate-900'
                   : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50 border border-slate-700/30'
               }`}
             >
@@ -1383,7 +1383,7 @@ function CompaniesTab() {
               onClick={() => setTypeFilter(type)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 typeFilter === type
-                  ? 'bg-nebula-500 text-white shadow-glow-sm'
+                  ? 'bg-white text-slate-900'
                   : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50 border border-slate-700/30'
               }`}
             >
@@ -1516,7 +1516,7 @@ function EconomicsTab() {
               onClick={() => setSelectedScenario(s.id)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 selectedScenario === s.id
-                  ? 'bg-nebula-500 text-white shadow-glow-sm'
+                  ? 'bg-white text-slate-900'
                   : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50 border border-slate-700/30'
               }`}
             >
@@ -1826,7 +1826,7 @@ function ISRUContent() {
               onClick={() => handleTabChange(tab.id)}
               className={`flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap touch-target ${
                 activeTab === tab.id
-                  ? 'bg-nebula-500 text-white shadow-glow-sm'
+                  ? 'bg-white text-slate-900'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
               }`}
             >
@@ -1903,7 +1903,7 @@ export default function ISRUPage() {
       fallback={
         <div className="min-h-screen flex items-center justify-center py-20">
           <div
-            className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin"
+            className="w-12 h-12 border-3 border-white/15 border-t-transparent rounded-full animate-spin"
             style={{ borderWidth: '3px' }}
           />
         </div>

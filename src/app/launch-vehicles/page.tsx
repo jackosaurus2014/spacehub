@@ -1174,7 +1174,7 @@ export default function LaunchVehiclesPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
+                  ? 'bg-white text-slate-900'
                   : 'bg-slate-800/50 text-star-300 hover:bg-slate-700/50 hover:text-white'
               }`}
             >

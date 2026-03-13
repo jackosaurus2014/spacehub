@@ -139,7 +139,7 @@ export default function AdminPage() {
             onClick={() => setTab('feature')}
             className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
               tab === 'feature'
-                ? 'border-nebula-500 text-white'
+                ? 'border-white/15 text-white'
                 : 'border-transparent text-star-300 hover:text-white'
             }`}
           >
@@ -149,7 +149,7 @@ export default function AdminPage() {
             onClick={() => setTab('help')}
             className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
               tab === 'help'
-                ? 'border-nebula-500 text-white'
+                ? 'border-white/15 text-white'
                 : 'border-transparent text-star-300 hover:text-white'
             }`}
           >
@@ -159,7 +159,7 @@ export default function AdminPage() {
             onClick={() => setTab('data-status')}
             className={`py-3 px-6 font-medium text-sm transition-colors border-b-2 -mb-px ${
               tab === 'data-status'
-                ? 'border-nebula-500 text-white'
+                ? 'border-white/15 text-white'
                 : 'border-transparent text-star-300 hover:text-white'
             }`}
           >

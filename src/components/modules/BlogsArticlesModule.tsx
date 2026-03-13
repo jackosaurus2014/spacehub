@@ -54,7 +54,7 @@ const authorTypeIcons: Record<string, string> = {
 function BlogPostCard({ post }: { post: BlogPost }) {
   const topic = BLOG_TOPICS.find(t => t.value === post.topic);
   const authorIcon = authorTypeIcons[post.source.authorType] || '👤';
-  const topicColor = topicColors[post.topic || 'exploration'] || 'bg-nebula-500';
+  const topicColor = topicColors[post.topic || 'exploration'] || 'bg-white';
   const topicLogo = getBlogTopicLogo(post.topic);
 
   const formatDate = (date: Date) => {
@@ -70,7 +70,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
       href={post.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="card p-4 hover:border-nebula-500/50 transition-all group block"
+      className="card p-4 hover:border-white/15/50 transition-all group block"
     >
       <div className="flex items-start gap-3">
         {topicLogo ? (
@@ -86,7 +86,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
               </span>
             )}
           </div>
-          <h3 className="font-semibold text-slate-200 text-sm line-clamp-2 group-hover:text-nebula-200 transition-colors">
+          <h3 className="font-semibold text-slate-200 text-sm line-clamp-2 group-hover:text-white transition-colors">
             {post.title}
           </h3>
           {post.excerpt && (
@@ -133,7 +133,7 @@ export default function BlogsArticlesModule() {
             </h2>
           </div>
           <div className="flex justify-center py-12">
-            <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+            <div className="w-10 h-10 border-3 border-white/15 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
           </div>
         </div>
       </Link>
@@ -142,12 +142,12 @@ export default function BlogsArticlesModule() {
 
   return (
     <Link href="/blogs" className="block">
-      <div className="card p-6 glow-border hover:border-nebula-400/50 transition-all cursor-pointer group">
+      <div className="card p-6 glow-border hover:border-white/10/50 transition-all cursor-pointer group">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-display font-bold text-slate-200 flex items-center gap-2">
             <span>✍️</span> Blogs & Articles
           </h2>
-          <span className="text-slate-400 text-sm group-hover:text-nebula-200 transition-colors flex items-center gap-1">
+          <span className="text-slate-400 text-sm group-hover:text-white transition-colors flex items-center gap-1">
             View All <span>→</span>
           </span>
         </div>
@@ -189,7 +189,7 @@ export default function BlogsArticlesModule() {
         )}
 
         <div className="mt-4 pt-4 border-t border-slate-700/50 text-center">
-          <span className="text-nebula-300 text-sm group-hover:text-nebula-200 transition-colors">
+          <span className="text-slate-200 text-sm group-hover:text-white transition-colors">
             Click to explore all expert insights →
           </span>
         </div>

@@ -37,10 +37,10 @@ export default function NativeAd({
             className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-slate-800 to-nebula-900 flex items-center justify-center">
-            <div className="w-12 h-12 rounded-full bg-nebula-500/20 flex items-center justify-center">
+          <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-800 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
               <svg
-                className="w-6 h-6 text-nebula-300"
+                className="w-6 h-6 text-slate-200"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

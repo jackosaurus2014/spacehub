@@ -33,7 +33,7 @@ export default function BackToTop() {
       {visible && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-white/90 hover:bg-slate-100 text-white shadow-lg shadow-black/10 transition-all duration-300 flex items-center justify-center group"
+          className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-white/90 hover:bg-slate-100 text-slate-900 shadow-lg shadow-black/10 transition-all duration-300 flex items-center justify-center group"
           aria-label="Back to top"
         >
           {/* Circular progress ring */}

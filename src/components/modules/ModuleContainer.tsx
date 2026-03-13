@@ -14,7 +14,7 @@ import { clientLogger } from '@/lib/client-logger';
 function ModuleLoadingFallback() {
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-4">
-      <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+      <div className="w-10 h-10 border-3 border-white/15 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
       <p className="text-slate-400 text-sm">Loading module...</p>
     </div>
   );
@@ -193,7 +193,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-4">
-        <div className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+        <div className="w-12 h-12 border-3 border-white/15 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
         <p className="text-slate-400 text-sm">Loading modules...</p>
       </div>
     );

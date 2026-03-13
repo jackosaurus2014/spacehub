@@ -35,7 +35,7 @@ function OpportunityCard({ opportunity }: { opportunity: BusinessOpportunity }) 
     : null;
 
   return (
-    <div className="card p-4 hover:border-nebula-500/50 transition-all">
+    <div className="card p-4 hover:border-white/15/50 transition-all">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
           <span
@@ -263,7 +263,7 @@ export default function BusinessOpportunitiesModule() {
             <div className="text-slate-400 text-xs">This Week</div>
           </div>
           <div className="card p-3 text-center">
-            <div className="text-2xl font-bold text-nebula-300">
+            <div className="text-2xl font-bold text-slate-200">
               {stats.byType?.ai_insight || 0}
             </div>
             <div className="text-slate-400 text-xs">AI Insights</div>
@@ -291,7 +291,7 @@ export default function BusinessOpportunitiesModule() {
             </div>
             <button
               onClick={() => setShowMoonshots(!showMoonshots)}
-              className="text-nebula-300 hover:text-nebula-200 text-sm"
+              className="text-slate-200 hover:text-white text-sm"
             >
               {showMoonshots ? 'Hide' : 'Show'} Moonshots
             </button>
@@ -363,7 +363,7 @@ export default function BusinessOpportunitiesModule() {
                     </p>
                   </div>
                 </div>
-                <span className="text-nebula-300 text-sm">Click to explore →</span>
+                <span className="text-slate-200 text-sm">Click to explore →</span>
               </div>
             </div>
           )}

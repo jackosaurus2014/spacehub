@@ -471,7 +471,7 @@ function ConstellationCard({ constellation }: { constellation: Constellation }) 
   const serviceColor = SERVICE_COLORS[constellation.serviceType] || 'text-white';
 
   return (
-    <div className="card p-6 hover:border-nebula-500/30 transition-all duration-300">
+    <div className="card p-6 hover:border-white/10 transition-all duration-300">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1 min-w-0">
@@ -897,7 +897,7 @@ export default function ConstellationTrackerPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-nebula-500 text-white shadow-glow-sm'
+                  ? 'bg-white text-slate-900'
                   : 'bg-white/5 text-star-300 hover:bg-white/10'
               }`}
             >
@@ -917,7 +917,7 @@ export default function ConstellationTrackerPage() {
                   onClick={() => setStatusFilter('')}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                     statusFilter === ''
-                      ? 'bg-white/10 text-white border border-white/20'
+                      ? 'bg-white/10 text-slate-900 border border-white/20'
                       : 'bg-transparent text-star-300 border border-white/10 hover:border-white/20'
                   }`}
                 >

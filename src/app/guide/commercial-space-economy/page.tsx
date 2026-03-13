@@ -133,7 +133,7 @@ export default function CommercialSpaceEconomyPage() {
         <header className="relative overflow-hidden py-20 md:py-28">
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-b from-nebula-600/30 via-space-900/80 to-transparent pointer-events-none"
+            className="absolute inset-0 bg-gradient-to-b from-slate-200/30 via-space-900/80 to-transparent pointer-events-none"
           />
           <div className="relative container mx-auto px-4 text-center max-w-4xl">
             <nav className="flex items-center justify-center gap-2 text-sm text-slate-400 mb-4 overflow-x-auto" aria-label="Breadcrumb">
@@ -160,7 +160,7 @@ export default function CommercialSpaceEconomyPage() {
               <span className="hidden sm:inline text-star-300/40">|</span>
               <span>By SpaceNexus Research</span>
             </div>
-            <div className="w-24 h-[3px] bg-gradient-to-r from-nebula-500 to-plasma-400 rounded-full mx-auto mt-8" />
+            <div className="w-24 h-[3px] bg-gradient-to-r from-white to-plasma-400 rounded-full mx-auto mt-8" />
           </div>
         </header>
 
@@ -304,18 +304,18 @@ export default function CommercialSpaceEconomyPage() {
                     economically impossible a decade ago.
                   </p>
 
-                  <div className="card p-6 my-8 border-l-4 border-l-nebula-400">
+                  <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-nebula-300">6,000+</div>
+                        <div className="text-3xl font-display font-bold text-slate-200">6,000+</div>
                         <div className="text-star-300 text-sm mt-1">Starlink Satellites Deployed</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-nebula-300">$6-8B</div>
+                        <div className="text-3xl font-display font-bold text-slate-200">$6-8B</div>
                         <div className="text-star-300 text-sm mt-1">Starlink Annual Revenue (est.)</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-nebula-300">4M+</div>
+                        <div className="text-3xl font-display font-bold text-slate-200">4M+</div>
                         <div className="text-star-300 text-sm mt-1">Starlink Subscribers (est.)</div>
                       </div>
                     </div>

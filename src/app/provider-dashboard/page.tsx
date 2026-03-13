@@ -118,7 +118,7 @@ function DashboardContent() {
             Search for your company in our directory and claim it to start listing services and responding to RFQs.
           </p>
           <Link href="/company-profiles">
-            <button className="px-6 py-2.5 bg-white hover:bg-slate-100 text-white rounded-lg font-semibold transition-colors">
+            <button className="px-6 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg font-semibold transition-colors">
               Browse Company Profiles
             </button>
           </Link>
@@ -181,7 +181,7 @@ function DashboardContent() {
               key={t.key}
               onClick={() => setTab(t.key)}
               className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
-                tab === t.key ? 'bg-white text-white' : 'text-slate-400 hover:text-white'
+                tab === t.key ? 'bg-white text-slate-900' : 'text-slate-400 hover:text-slate-900'
               }`}
             >
               {t.label}
@@ -337,7 +337,7 @@ function DashboardContent() {
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
                   <Link href="/marketplace">
-                    <button className="px-5 py-2.5 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-semibold transition-colors">
+                    <button className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-semibold transition-colors">
                       Go to Marketplace
                     </button>
                   </Link>
@@ -365,7 +365,7 @@ function DashboardContent() {
                 <div className="text-4xl mb-3">📬</div>
                 <p className="text-sm text-slate-400 mb-4">No proposals yet. Browse open RFQs to submit your first proposal.</p>
                 <Link href="/marketplace/search?tab=rfqs">
-                  <button className="px-5 py-2 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors">
+                  <button className="px-5 py-2 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors">
                     Browse Open RFQs
                   </button>
                 </Link>

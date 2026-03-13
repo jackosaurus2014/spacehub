@@ -482,7 +482,7 @@ function CompanyProfiles() {
               onClick={() => setFilter(btn.value)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 filter === btn.value
-                  ? 'bg-white text-white'
+                  ? 'bg-white text-slate-900'
                   : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 hover:text-white'
               }`}
             >

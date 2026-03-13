@@ -213,7 +213,7 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
       {claimed && contactEmail && (
         <a
           href={`mailto:${contactEmail}`}
-          className="text-xs px-3 py-1.5 bg-white hover:bg-slate-100 text-white rounded-lg font-medium transition-colors"
+          className="text-xs px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg font-medium transition-colors"
         >
           Contact Provider
         </a>
@@ -254,7 +254,7 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
           <button
             onClick={handleClaim}
             disabled={claiming || !claimEmail}
-            className="text-xs px-3 py-1.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 text-white rounded-lg font-medium transition-colors"
+            className="text-xs px-3 py-1.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 text-slate-900 rounded-lg font-medium transition-colors"
           >
             {claiming ? 'Claiming...' : 'Confirm'}
           </button>
@@ -1514,7 +1514,7 @@ export default function CompanyProfileDetailPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={() => { setLoading(true); setError(null); setCompany(null); window.location.reload(); }}
-              className="px-5 py-2.5 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors"
+              className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm rounded-lg font-medium transition-colors"
             >
               Try Again
             </button>

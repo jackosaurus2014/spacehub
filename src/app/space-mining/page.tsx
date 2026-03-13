@@ -1538,7 +1538,7 @@ function SpaceMiningContent() {
               onClick={() => handleTabChange(tab.id)}
               className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                 activeTab === tab.id
-                  ? 'border-nebula-500 text-nebula-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
+                  ? 'border-white/15 text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
                   : 'border-transparent text-slate-200 hover:text-white hover:border-slate-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
               }`}
             >
@@ -1880,7 +1880,7 @@ function SpaceMiningContent() {
                                 <span className="px-1.5 py-0.5 bg-slate-700/50 text-slate-300 rounded text-xs">{target.spec_T}</span>
                               )}
                               {target.spec_B && (
-                                <span className="px-1.5 py-0.5 bg-nebula-500/10 text-nebula-400 rounded text-xs">{target.spec_B}</span>
+                                <span className="px-1.5 py-0.5 bg-white/10 text-slate-300 rounded text-xs">{target.spec_B}</span>
                               )}
                               {!target.spec_T && !target.spec_B && (
                                 <span className="text-slate-400 text-xs">--</span>

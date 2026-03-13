@@ -91,7 +91,7 @@ function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
           <button
             onClick={handleSubmit}
             disabled={submitting || !email}
-            className="text-xs px-2.5 py-1 min-h-[44px] bg-white hover:bg-slate-100 disabled:bg-slate-700 text-white rounded font-medium transition-colors"
+            className="text-xs px-2.5 py-1 min-h-[44px] bg-white hover:bg-slate-100 disabled:bg-slate-700 text-slate-900 rounded font-medium transition-colors"
           >
             {submitting ? '...' : 'Confirm'}
           </button>
@@ -100,7 +100,7 @@ function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
       ) : (
         <button
           onClick={() => setShowForm(true)}
-          className="text-xs px-2.5 py-1 min-h-[44px] bg-white hover:bg-slate-100 text-white rounded font-medium transition-colors"
+          className="text-xs px-2.5 py-1 min-h-[44px] bg-white hover:bg-slate-100 text-slate-900 rounded font-medium transition-colors"
         >
           Express Interest
         </button>
@@ -187,7 +187,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             {opportunity.aiConfidence && (
               <div className="flex items-center gap-1">
                 <span className="text-slate-400">Confidence:</span>
-                <span className="text-nebula-300">
+                <span className="text-slate-200">
                   {Math.round(opportunity.aiConfidence * 100)}%
                 </span>
               </div>
@@ -218,7 +218,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
           <div className="flex flex-wrap gap-2 mb-3">
             <Link
               href="/market-intel"
-              className="text-xs text-nebula-300 hover:text-nebula-200 bg-nebula-500/10 px-2 py-1 rounded transition-colors"
+              className="text-xs text-slate-200 hover:text-white bg-white/10 px-2 py-1 rounded transition-colors"
             >
               View related companies →
             </Link>
@@ -246,7 +246,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             <div>
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="text-nebula-300 hover:text-nebula-200 text-sm flex items-center gap-1"
+                className="text-slate-200 hover:text-white text-sm flex items-center gap-1"
               >
                 {expanded ? '▼ Hide Analysis' : '▶ Show Full Analysis'}
               </button>
@@ -273,7 +273,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
                         {(opportunity.relatedTrends as string[]).map((trend) => (
                           <span
                             key={trend}
-                            className="text-xs bg-nebula-500/20 text-nebula-300 px-2 py-1 rounded"
+                            className="text-xs bg-white/10 text-slate-200 px-2 py-1 rounded"
                           >
                             #{trend.replace(/_/g, ' ')}
                           </span>
@@ -413,7 +413,7 @@ function BusinessOpportunitiesContent() {
             onClick={() => setActiveTab('opportunities')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'opportunities'
-                ? 'bg-nebula-600 text-white'
+                ? 'bg-white text-white'
                 : 'text-slate-400 hover:text-white hover:bg-slate-700'
             }`}
           >
@@ -423,7 +423,7 @@ function BusinessOpportunitiesContent() {
             onClick={() => setActiveTab('contracts')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'contracts'
-                ? 'bg-nebula-600 text-white'
+                ? 'bg-white text-white'
                 : 'text-slate-400 hover:text-white hover:bg-slate-700'
             }`}
           >
@@ -471,7 +471,7 @@ function BusinessOpportunitiesContent() {
               </StaggerItem>
               <StaggerItem>
                 <div className="card-elevated p-6 text-center">
-                  <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
+                  <div className="text-4xl font-bold font-display tracking-tight text-slate-200">
                     {stats.byType?.ai_insight || 0}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">AI Insights</div>
@@ -564,7 +564,7 @@ function BusinessOpportunitiesContent() {
                         setSelectedAudience('');
                         setSelectedDifficulty('');
                       }}
-                      className="text-sm text-nebula-300 hover:text-nebula-200 py-2"
+                      className="text-sm text-slate-200 hover:text-white py-2"
                     >
                       Clear Filters
                     </button>

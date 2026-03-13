@@ -1590,7 +1590,7 @@ function DebrisRemediationContent() {
                 onClick={() => handleTabChange(tab.id)}
                 className={`flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap touch-target ${
                   activeTab === tab.id
-                    ? 'bg-nebula-500 text-white shadow-glow-sm'
+                    ? 'bg-white text-slate-900'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
                 }`}
               >
@@ -1630,7 +1630,7 @@ export default function DebrisRemediationPage() {
       fallback={
         <div className="min-h-screen flex items-center justify-center py-20">
           <div
-            className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin"
+            className="w-12 h-12 border-3 border-white/15 border-t-transparent rounded-full animate-spin"
             style={{ borderWidth: '3px' }}
           />
         </div>

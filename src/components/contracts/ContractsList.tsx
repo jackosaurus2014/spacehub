@@ -146,7 +146,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
         <button
           onClick={handleInitialize}
           disabled={initializing}
-          className="bg-nebula-600 hover:bg-nebula-500 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+          className="bg-white hover:bg-slate-100 text-slate-900 px-6 py-2 rounded-lg font-medium transition-colors"
         >
           {initializing ? (
             <span className="flex items-center gap-2">
@@ -261,7 +261,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
                   setStatusFilter('');
                   setCategoryFilter('');
                 }}
-                className="text-sm text-nebula-300 hover:text-nebula-200 py-2 transition-colors"
+                className="text-sm text-slate-200 hover:text-white py-2 transition-colors"
               >
                 Clear Filters
               </button>
@@ -291,7 +291,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
               <button
                 key={contract.id}
                 onClick={() => setSelectedContract(contract)}
-                className="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-4 hover:border-nebula-500/50 hover:bg-slate-800 transition-all text-left"
+                className="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-4 hover:border-white/15/50 hover:bg-slate-800 transition-all text-left"
               >
                 <div className="flex flex-wrap items-start gap-3">
                   {/* Agency Badge */}

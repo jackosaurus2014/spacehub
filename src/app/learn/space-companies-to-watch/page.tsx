@@ -479,7 +479,7 @@ export default function SpaceCompaniesPage() {
       <div className="flex items-start justify-between gap-4 mb-3">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <span className="text-xs font-bold text-nebula-400 bg-nebula-500/10 border border-nebula-500/20 rounded-full w-7 h-7 flex items-center justify-center">
+            <span className="text-xs font-bold text-slate-300 bg-white/10 border border-white/15/20 rounded-full w-7 h-7 flex items-center justify-center">
               {company.rank}
             </span>
             <h3 className="text-white font-semibold text-lg">{company.name}</h3>
@@ -490,7 +490,7 @@ export default function SpaceCompaniesPage() {
         </div>
         <Link
           href={`/company-profiles/${company.slug}`}
-          className="text-xs text-nebula-400 hover:underline shrink-0"
+          className="text-xs text-slate-300 hover:underline shrink-0"
         >
           Full profile
         </Link>
@@ -531,7 +531,7 @@ export default function SpaceCompaniesPage() {
         {/* Hero */}
         <header className="mb-10">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-nebula-500/10 text-nebula-400 border border-nebula-500/20">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15/20">
               Industry Analysis
             </span>
             <span className="text-xs text-slate-500">Updated February 2026</span>
@@ -553,19 +553,19 @@ export default function SpaceCompaniesPage() {
         <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-nebula-400 mb-1">25</div>
+            <div className="text-2xl font-bold text-slate-300 mb-1">25</div>
             <div className="text-xs text-slate-400">Companies Profiled</div>
           </div>
           <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-nebula-400 mb-1">5</div>
+            <div className="text-2xl font-bold text-slate-300 mb-1">5</div>
             <div className="text-xs text-slate-400">Industry Sectors</div>
           </div>
           <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-nebula-400 mb-1">$800B+</div>
+            <div className="text-2xl font-bold text-slate-300 mb-1">$800B+</div>
             <div className="text-xs text-slate-400">Combined Valuation</div>
           </div>
           <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-nebula-400 mb-1">8</div>
+            <div className="text-2xl font-bold text-slate-300 mb-1">8</div>
             <div className="text-xs text-slate-400">Emerging Startups</div>
           </div>
         </div>
@@ -668,13 +668,13 @@ export default function SpaceCompaniesPage() {
                   <h3 className="text-white font-semibold">{startup.name}</h3>
                   <Link
                     href={`/company-profiles/${startup.slug}`}
-                    className="text-xs text-nebula-400 hover:underline"
+                    className="text-xs text-slate-300 hover:underline"
                   >
                     Profile
                   </Link>
                 </div>
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-nebula-500/10 text-nebula-400 border border-nebula-500/20">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15/20">
                     {startup.focus}
                   </span>
                   <span className="text-xs text-slate-500">{startup.valuation}</span>
@@ -691,23 +691,23 @@ export default function SpaceCompaniesPage() {
           <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-6">
             <div className="space-y-4">
               <div className="flex items-start gap-3 text-slate-300 text-sm">
-                <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                 <span><strong className="text-white">Launch consolidation</strong> — The market is converging around reusable vehicles. Companies without a reusability roadmap face existential risk. SpaceX dominance is driving competitors to innovate faster.</span>
               </div>
               <div className="flex items-start gap-3 text-slate-300 text-sm">
-                <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                 <span><strong className="text-white">Defense spending acceleration</strong> — US Space Force and SDA budgets are growing 15-20% annually. Proliferated LEO is the new architecture paradigm, creating demand for mass-produced satellites.</span>
               </div>
               <div className="flex items-start gap-3 text-slate-300 text-sm">
-                <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                 <span><strong className="text-white">EO data monetization</strong> — Earth observation is shifting from &quot;selling images&quot; to &quot;selling insights.&quot; AI analytics companies command higher margins than raw imagery providers.</span>
               </div>
               <div className="flex items-start gap-3 text-slate-300 text-sm">
-                <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                 <span><strong className="text-white">Commercial stations timeline</strong> — ISS retirement (late 2020s to early 2030s) creates urgency. NASA has committed $3.6B to ensure no gap in US human presence in LEO. Multiple contenders are in development.</span>
               </div>
               <div className="flex items-start gap-3 text-slate-300 text-sm">
-                <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                 <span><strong className="text-white">Vertical integration trend</strong> — Leading companies (SpaceX, Rocket Lab) are integrating across launch, satellite manufacturing, and services. This trend is likely to continue as margins compress in commoditized segments.</span>
               </div>
             </div>
@@ -715,7 +715,7 @@ export default function SpaceCompaniesPage() {
         </section>
 
         {/* CTA */}
-        <div className="bg-slate-800/60 border border-nebula-500/30 rounded-xl p-6 text-center mb-12">
+        <div className="bg-slate-800/60 border border-white/10 rounded-xl p-6 text-center mb-12">
           <h3 className="text-xl font-bold text-white mb-2">Explore All Company Profiles</h3>
           <p className="text-slate-400 text-sm mb-4">
             SpaceNexus tracks 200+ space companies with detailed profiles, financial data, satellite
@@ -725,7 +725,7 @@ export default function SpaceCompaniesPage() {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/company-profiles"
-              className="inline-block bg-nebula-500 hover:bg-nebula-600 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+              className="inline-block bg-white hover:bg-slate-100 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
             >
               Browse Company Profiles
             </Link>
@@ -757,28 +757,28 @@ export default function SpaceCompaniesPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Link
               href="/company-profiles"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Company Profiles</div>
               <div className="text-slate-500 text-xs">200+ companies</div>
             </Link>
             <Link
               href="/market-intel"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Market Intel</div>
               <div className="text-slate-500 text-xs">Live data</div>
             </Link>
             <Link
               href="/space-economy"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Economy</div>
               <div className="text-slate-500 text-xs">Investment trends</div>
             </Link>
             <Link
               href="/space-talent"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Talent</div>
               <div className="text-slate-500 text-xs">Jobs & careers</div>
@@ -792,21 +792,21 @@ export default function SpaceCompaniesPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Link
               href="/learn/satellite-launch-cost"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Satellite Launch Costs</div>
               <div className="text-slate-500 text-xs">Complete cost breakdown</div>
             </Link>
             <Link
               href="/learn/space-industry-market-size"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Industry Market Size</div>
               <div className="text-slate-500 text-xs">$1.8 trillion and growing</div>
             </Link>
             <Link
               href="/learn/how-to-track-satellites"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">How to Track Satellites</div>
               <div className="text-slate-500 text-xs">Real-time tracking guide</div>

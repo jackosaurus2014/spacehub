@@ -143,7 +143,7 @@ function PricingCard({
             disabled={isCheckingOut}
             className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
               plan.highlighted
-                ? 'bg-nebula-500 text-slate-900 hover:bg-nebula-600'
+                ? 'bg-white text-slate-900 hover:bg-white'
                 : 'bg-slate-600/50 text-slate-100 hover:bg-slate-500/50 border border-slate-500/30'
             } ${isCheckingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
@@ -541,7 +541,7 @@ function PricingPageContent() {
             <button
               onClick={handleManageSubscription}
               disabled={isOpeningPortal}
-              className="px-6 py-3 rounded-lg bg-nebula-500 text-slate-900 font-semibold hover:bg-nebula-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 rounded-lg bg-white text-slate-900 font-semibold hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isOpeningPortal ? 'Opening Portal...' : 'Manage Subscription'}
             </button>
@@ -557,7 +557,7 @@ function PricingPageContent() {
             <button
               onClick={() => setIsYearly(!isYearly)}
               className={`relative w-14 h-7 rounded-full transition-colors overflow-hidden ${
-                isYearly ? 'bg-nebula-500' : 'bg-slate-500'
+                isYearly ? 'bg-white' : 'bg-slate-500'
               }`}
             >
               <span
@@ -673,7 +673,7 @@ function PricingPageContent() {
               </Link>
               <Link
                 href="mailto:support@spacenexus.us"
-                className="text-nebula-300 hover:text-nebula-200 transition-colors"
+                className="text-slate-200 hover:text-white transition-colors"
               >
                 Contact Support &rarr;
               </Link>

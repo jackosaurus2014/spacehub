@@ -70,7 +70,7 @@ export default function ChangelogModal() {
           {newEntries.map((entry) => (
             <div key={entry.version}>
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-xs font-mono font-bold text-nebula-400 bg-nebula-500/10 px-2 py-0.5 rounded">
+                <span className="text-xs font-mono font-bold text-slate-300 bg-white/10 px-2 py-0.5 rounded">
                   v{entry.version}
                 </span>
                 <span className="text-xs text-slate-500">
@@ -104,7 +104,7 @@ export default function ChangelogModal() {
         <div className="px-6 py-4 border-t border-slate-700/50">
           <button
             onClick={handleClose}
-            className="w-full bg-nebula-500 hover:bg-nebula-600 text-white font-medium py-2.5 rounded-lg transition-colors"
+            className="w-full bg-white hover:bg-slate-100 text-white font-medium py-2.5 rounded-lg transition-colors"
           >
             Got it
           </button>

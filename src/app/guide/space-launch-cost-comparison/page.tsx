@@ -131,7 +131,7 @@ export default function SpaceLaunchCostComparisonPage() {
         <header className="relative overflow-hidden py-20 md:py-28">
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-b from-nebula-600/30 via-space-900/80 to-transparent pointer-events-none"
+            className="absolute inset-0 bg-gradient-to-b from-slate-200/30 via-space-900/80 to-transparent pointer-events-none"
           />
           <div className="relative container mx-auto px-4 text-center max-w-4xl">
             <div className="flex items-center justify-center gap-2 text-star-300 text-sm mb-4">
@@ -158,7 +158,7 @@ export default function SpaceLaunchCostComparisonPage() {
               <span className="hidden sm:inline text-star-300/40">|</span>
               <span>By SpaceNexus Research</span>
             </div>
-            <div className="w-24 h-[3px] bg-gradient-to-r from-nebula-500 to-plasma-400 rounded-full mx-auto mt-8" />
+            <div className="w-24 h-[3px] bg-gradient-to-r from-white to-plasma-400 rounded-full mx-auto mt-8" />
           </div>
         </header>
 
@@ -592,26 +592,26 @@ export default function SpaceLaunchCostComparisonPage() {
                     for national security payloads.
                   </p>
 
-                  <div className="card p-6 my-8 border-l-4 border-l-nebula-400">
+                  <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
                       U.S. Government Launch Contract Values
                     </h3>
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">NSSL Phase 2 (SpaceX, avg.)</span>
-                        <span className="text-nebula-300 font-semibold">~$95M-$110M</span>
+                        <span className="text-slate-200 font-semibold">~$95M-$110M</span>
                       </div>
                       <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">NSSL Phase 2 (ULA, avg.)</span>
-                        <span className="text-nebula-300 font-semibold">~$130M-$180M</span>
+                        <span className="text-slate-200 font-semibold">~$130M-$180M</span>
                       </div>
                       <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">NASA CRS-2 (SpaceX, per mission)</span>
-                        <span className="text-nebula-300 font-semibold">~$150M-$170M</span>
+                        <span className="text-slate-200 font-semibold">~$150M-$170M</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-star-300">SDA Tranche missions (various)</span>
-                        <span className="text-nebula-300 font-semibold">$30M-$60M</span>
+                        <span className="text-slate-200 font-semibold">$30M-$60M</span>
                       </div>
                     </div>
                     <p className="text-star-300/60 text-xs mt-4">

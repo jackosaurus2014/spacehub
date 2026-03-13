@@ -1080,7 +1080,7 @@ export default function GroundStationDirectoryPage() {
             </div>
             <a
               href="/ground-stations"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors whitespace-nowrap"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm rounded-lg font-medium transition-colors whitespace-nowrap"
             >
               View Ground Station Map
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

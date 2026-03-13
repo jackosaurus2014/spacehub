@@ -940,7 +940,7 @@ export default function ReportCardsPage() {
               <div className="text-lg text-slate-300">No companies match the selected filters.</div>
               <button
                 onClick={() => { setGradeFilter(''); setSectorFilter(''); setOutlookFilter(''); }}
-                className="mt-4 px-4 py-2 text-sm bg-white hover:bg-slate-100 text-white rounded-lg transition-colors"
+                className="mt-4 px-4 py-2 text-sm bg-white hover:bg-slate-100 text-slate-900 rounded-lg transition-colors"
               >
                 Clear Filters
               </button>

@@ -124,7 +124,7 @@ export default function GovernmentBudgetsPage() {
             <span className="text-sm text-slate-400">Region:</span>
             {REGIONS.map(r => (
               <button key={r} onClick={() => setRegionFilter(r)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${regionFilter === r ? 'bg-white/10 text-slate-200 border border-white/10/40' : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'}`}>
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${regionFilter === r ? 'bg-white/10 text-slate-200 border border-white/10/40' : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-slate-900'}`}>
                 {r}
               </button>
             ))}

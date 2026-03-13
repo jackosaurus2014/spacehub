@@ -86,7 +86,7 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
           {webinar.isLive || webinar.registrationUrl ? (
             <a
               href={webinar.isLive ? '#' : webinar.registrationUrl || '#'}
-              className="text-xs bg-white hover:bg-slate-700 text-white px-3 py-1 rounded transition-colors"
+              className="text-xs bg-white hover:bg-slate-700 text-slate-900 px-3 py-1 rounded transition-colors"
             >
               {webinar.isLive ? 'Join Now' : 'Register'}
             </a>
@@ -171,7 +171,7 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
             href={webinar.registrationUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 bg-white hover:bg-slate-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors text-center"
+            className="flex-1 bg-white hover:bg-slate-700 text-slate-900 text-sm font-medium py-2 px-4 rounded-lg transition-colors text-center"
           >
             Register for Webinar
           </a>
@@ -180,7 +180,7 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
             href={webinar.recordingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 bg-white hover:bg-slate-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors text-center"
+            className="flex-1 bg-white hover:bg-slate-700 text-slate-900 text-sm font-medium py-2 px-4 rounded-lg transition-colors text-center"
           >
             Watch Recording
           </a>

@@ -55,10 +55,10 @@ const STATUS_OPTIONS: { value: SatelliteStatus; label: string; color: string }[]
 // ISS Position Card
 function ISSHighlight({ iss }: { iss: Satellite }) {
   return (
-    <div className="card p-6 border border-nebula-500/50 bg-gradient-to-br from-nebula-900/20 to-transparent">
+    <div className="card p-6 border border-white/15/50 bg-gradient-to-br from-slate-800/20 to-transparent">
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-xl bg-nebula-500/20 flex items-center justify-center text-4xl border border-nebula-500/30">
+          <div className="w-16 h-16 rounded-xl bg-white/10 flex items-center justify-center text-4xl border border-white/10">
             🏠
           </div>
           <div>
@@ -77,7 +77,7 @@ function ISSHighlight({ iss }: { iss: Satellite }) {
             <div className="text-slate-400 text-xs uppercase tracking-widest">Altitude</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-nebula-300">{iss.velocity.toFixed(2)} km/s</div>
+            <div className="text-2xl font-bold text-slate-200">{iss.velocity.toFixed(2)} km/s</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest">Velocity</div>
           </div>
           <div className="text-center">
@@ -279,7 +279,7 @@ function SatelliteTrackerContent() {
                 </div>
               </div>
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-nebula-300">
+                <div className="text-2xl font-bold font-display text-slate-200">
                   {stats?.topOperators?.length || 0}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -302,7 +302,7 @@ function SatelliteTrackerContent() {
                     onClick={() => handleTabChange(tab.id)}
                     className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                       activeTab === tab.id
-                        ? 'bg-nebula-500 text-slate-900 shadow-glow-sm'
+                        ? 'bg-white text-slate-900'
                         : 'bg-slate-800/50 text-slate-500 hover:bg-slate-700'
                     }`}
                   >
@@ -355,7 +355,7 @@ function SatelliteTrackerContent() {
                             </div>
                             <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
                               <div
-                                className="h-full bg-gradient-to-r from-nebula-500 to-nebula-400 rounded-full transition-all"
+                                className="h-full bg-gradient-to-r from-white to-slate-400 rounded-full transition-all"
                                 style={{ width: `${Math.min(pct, 100)}%` }}
                               />
                             </div>
@@ -420,7 +420,7 @@ function SatelliteTrackerContent() {
                     </h3>
                     <button
                       onClick={() => handleTabChange('satellites')}
-                      className="text-nebula-300 hover:text-nebula-200 text-sm transition-colors"
+                      className="text-slate-200 hover:text-white text-sm transition-colors"
                     >
                       View All &rarr;
                     </button>
@@ -469,15 +469,15 @@ function SatelliteTrackerContent() {
                 {/* Related Tools */}
                 <div className="mt-6 flex flex-wrap items-center gap-3">
                   <span className="text-xs text-slate-500 uppercase tracking-wider">Related:</span>
-                  <Link href="/space-environment" className="text-xs text-slate-400 hover:text-nebula-400 transition-colors">
+                  <Link href="/space-environment" className="text-xs text-slate-400 hover:text-slate-300 transition-colors">
                     Space Weather &amp; Debris &rarr;
                   </Link>
                   <span className="text-slate-300">|</span>
-                  <Link href="/constellations" className="text-xs text-slate-400 hover:text-nebula-400 transition-colors">
+                  <Link href="/constellations" className="text-xs text-slate-400 hover:text-slate-300 transition-colors">
                     Constellation Tracker &rarr;
                   </Link>
                   <span className="text-slate-300">|</span>
-                  <Link href="/blog/satellite-tracking-explained-beginners-guide" className="text-xs text-slate-400 hover:text-nebula-400 transition-colors">
+                  <Link href="/blog/satellite-tracking-explained-beginners-guide" className="text-xs text-slate-400 hover:text-slate-300 transition-colors">
                     Guide: How Satellite Tracking Works &rarr;
                   </Link>
                 </div>
@@ -498,7 +498,7 @@ function SatelliteTrackerContent() {
                         placeholder="Search by name, NORAD ID, or operator..."
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="w-full px-4 py-2 h-11 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-nebula-500 focus:ring-1 focus:ring-nebula-500 text-sm"
+                        className="w-full px-4 py-2 h-11 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/15 text-sm"
                       />
                     </div>
 
@@ -551,7 +551,7 @@ function SatelliteTrackerContent() {
                         setSearchQuery('');
                         updateUrl({ orbit: '', status: '', search: '' });
                       }}
-                      className="ml-2 text-nebula-300 hover:text-nebula-200"
+                      className="ml-2 text-slate-200 hover:text-white"
                     >
                       Clear filters
                     </button>
@@ -602,7 +602,7 @@ function SatelliteTrackerContent() {
                           </div>
                           <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-gradient-to-r from-nebula-500 to-plasma-400 rounded-full transition-all"
+                              className="h-full bg-gradient-to-r from-white to-plasma-400 rounded-full transition-all"
                               style={{ width: `${Math.min(pct * 3, 100)}%` }}
                             />
                           </div>
@@ -613,7 +613,7 @@ function SatelliteTrackerContent() {
                 </div>
 
                 {/* Link to Orbital Slots */}
-                <div className="card p-5 border border-nebula-500/30 bg-gradient-to-br from-nebula-900/10 to-transparent">
+                <div className="card p-5 border border-white/10 bg-gradient-to-br from-slate-800/10 to-transparent">
                   <div className="flex items-center justify-between flex-wrap gap-4">
                     <div>
                       <h3 className="text-lg font-semibold text-white mb-1">
@@ -625,7 +625,7 @@ function SatelliteTrackerContent() {
                     </div>
                     <Link
                       href="/orbital-slots?tab=operators"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-nebula-500 text-white font-medium hover:bg-nebula-600 transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-slate-900 font-medium hover:bg-white transition-colors"
                     >
                       View Orbital Slots
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

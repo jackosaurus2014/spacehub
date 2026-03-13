@@ -117,7 +117,7 @@ export default function PrivacyPolicyPage() {
                 <li>Detecting, preventing, and addressing technical issues and fraud</li>
                 <li>Complying with legal obligations</li>
                 <li>Moderating community content for compliance with our{' '}
-                  <Link href="/community/guidelines" className="text-nebula-300 hover:text-nebula-200 underline">
+                  <Link href="/community/guidelines" className="text-slate-200 hover:text-white underline">
                     Community Guidelines
                   </Link>
                 </li>
@@ -172,7 +172,7 @@ export default function PrivacyPolicyPage() {
               </p>
               <p className="text-slate-400 leading-relaxed">
                 For more detailed information about the cookies we use, please see our{' '}
-                <Link href="/cookies" className="text-nebula-300 hover:text-nebula-200 underline">
+                <Link href="/cookies" className="text-slate-200 hover:text-white underline">
                   Cookie Policy
                 </Link>.
               </p>
@@ -217,7 +217,7 @@ export default function PrivacyPolicyPage() {
               <p className="text-slate-400 leading-relaxed mt-4">
                 To exercise any of these rights, please contact us using the information provided below.
                 You can also export all of your data at any time from your{' '}
-                <Link href="/account" className="text-nebula-300 hover:text-nebula-200 underline">
+                <Link href="/account" className="text-slate-200 hover:text-white underline">
                   Account Settings
                 </Link>{' '}page.
               </p>
@@ -235,7 +235,7 @@ export default function PrivacyPolicyPage() {
                   href="https://globalprivacycontrol.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   globalprivacycontrol.org
                 </a>.
@@ -325,25 +325,25 @@ export default function PrivacyPolicyPage() {
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/terms"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Terms of Service
                 </Link>
                 <Link
                   href="/cookies"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Cookie Policy
                 </Link>
                 <Link
                   href="/community/guidelines"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Community Guidelines
                 </Link>
                 <Link
                   href="/legal/dmca"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   DMCA Policy
                 </Link>

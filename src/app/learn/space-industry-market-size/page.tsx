@@ -257,7 +257,7 @@ export default function SpaceIndustryMarketSizePage() {
         {/* Hero */}
         <header className="mb-10">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-nebula-500/10 text-nebula-400 border border-nebula-500/20">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15/20">
               Market Intelligence
             </span>
             <span className="text-xs text-slate-500">Updated February 2026</span>
@@ -278,19 +278,19 @@ export default function SpaceIndustryMarketSizePage() {
         <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-nebula-400 mb-1">$546B</div>
+            <div className="text-2xl font-bold text-slate-300 mb-1">$546B</div>
             <div className="text-xs text-slate-400">2025 Market Size</div>
           </div>
           <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-nebula-400 mb-1">$1.8T</div>
+            <div className="text-2xl font-bold text-slate-300 mb-1">$1.8T</div>
             <div className="text-xs text-slate-400">2035 Projection</div>
           </div>
           <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-nebula-400 mb-1">12.7%</div>
+            <div className="text-2xl font-bold text-slate-300 mb-1">12.7%</div>
             <div className="text-xs text-slate-400">10-Year CAGR</div>
           </div>
           <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-nebula-400 mb-1">90+</div>
+            <div className="text-2xl font-bold text-slate-300 mb-1">90+</div>
             <div className="text-xs text-slate-400">Space-faring Nations</div>
           </div>
         </div>
@@ -310,7 +310,7 @@ export default function SpaceIndustryMarketSizePage() {
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                   <h3 className="text-white font-semibold text-lg">{seg.segment}</h3>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-nebula-500/10 text-nebula-400 border border-nebula-500/20">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15/20">
                       {seg.share} of total
                     </span>
                     <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">
@@ -330,7 +330,7 @@ export default function SpaceIndustryMarketSizePage() {
                   </div>
                   <div>
                     <div className="text-xs text-slate-500">2035 (proj.)</div>
-                    <div className="text-nebula-400 font-semibold">{seg.size2035}</div>
+                    <div className="text-slate-300 font-semibold">{seg.size2035}</div>
                   </div>
                 </div>
                 <div>
@@ -370,7 +370,7 @@ export default function SpaceIndustryMarketSizePage() {
                 {projections.map((p) => (
                   <tr key={p.year} className="border-b border-slate-700/30">
                     <td className="py-3 pr-4 text-white font-medium">{p.year}</td>
-                    <td className="py-3 pr-4 text-nebula-400 font-semibold">{p.size}</td>
+                    <td className="py-3 pr-4 text-slate-300 font-semibold">{p.size}</td>
                     <td className="py-3 text-slate-400 text-sm">{p.label}</td>
                   </tr>
                 ))}
@@ -438,12 +438,12 @@ export default function SpaceIndustryMarketSizePage() {
                       <div className="text-white font-medium">{company.name}</div>
                       <div className="text-xs text-slate-500">{company.highlight}</div>
                     </td>
-                    <td className="py-3 pr-4 text-nebula-400 font-medium">{company.revenue}</td>
+                    <td className="py-3 pr-4 text-slate-300 font-medium">{company.revenue}</td>
                     <td className="py-3 pr-4 text-slate-400 text-xs">{company.segment}</td>
                     <td className="py-3">
                       <Link
                         href={`/company-profiles/${company.slug}`}
-                        className="text-nebula-400 hover:underline text-sm"
+                        className="text-slate-300 hover:underline text-sm"
                       >
                         View profile
                       </Link>
@@ -454,7 +454,7 @@ export default function SpaceIndustryMarketSizePage() {
             </table>
           </div>
           <p className="text-slate-500 text-sm mt-4">
-            <Link href="/company-profiles" className="text-nebula-400 hover:underline">
+            <Link href="/company-profiles" className="text-slate-300 hover:underline">
               Browse all 200+ space company profiles on SpaceNexus
             </Link>
           </p>
@@ -480,23 +480,23 @@ export default function SpaceIndustryMarketSizePage() {
               <h4 className="text-white font-semibold text-sm">Top Investment Themes (2025-2026)</h4>
               <ul className="space-y-2">
                 <li className="flex items-start gap-3 text-slate-300 text-sm">
-                  <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                  <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                   <span><strong className="text-white">Satellite broadband</strong> — $4.2B invested in 2025. Starlink competitors raising capital to close coverage gaps.</span>
                 </li>
                 <li className="flex items-start gap-3 text-slate-300 text-sm">
-                  <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                  <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                   <span><strong className="text-white">Earth observation AI</strong> — $2.8B invested. AI-powered analytics layered on top of satellite imagery data.</span>
                 </li>
                 <li className="flex items-start gap-3 text-slate-300 text-sm">
-                  <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                  <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                   <span><strong className="text-white">Defense & dual-use</strong> — $3.1B invested. Government demand for resilient, proliferated satellite architectures.</span>
                 </li>
                 <li className="flex items-start gap-3 text-slate-300 text-sm">
-                  <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                  <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                   <span><strong className="text-white">In-space services</strong> — $1.5B invested. Debris removal, satellite servicing, and space logistics.</span>
                 </li>
                 <li className="flex items-start gap-3 text-slate-300 text-sm">
-                  <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                  <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                   <span><strong className="text-white">Launch vehicle development</strong> — $2.4B invested. New reusable vehicles from Rocket Lab (Neutron), Relativity, and others.</span>
                 </li>
               </ul>
@@ -510,7 +510,7 @@ export default function SpaceIndustryMarketSizePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">United States</h3>
-              <div className="text-xl font-bold text-nebula-400 mb-2">~55% market share</div>
+              <div className="text-xl font-bold text-slate-300 mb-2">~55% market share</div>
               <p className="text-slate-400 text-sm">
                 Dominant position driven by SpaceX, defense primes, NASA budgets ($25B+), Space Force ($30B+),
                 and a thriving VC ecosystem. Home to most commercial space startups.
@@ -518,7 +518,7 @@ export default function SpaceIndustryMarketSizePage() {
             </div>
             <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Europe</h3>
-              <div className="text-xl font-bold text-nebula-400 mb-2">~15% market share</div>
+              <div className="text-xl font-bold text-slate-300 mb-2">~15% market share</div>
               <p className="text-slate-400 text-sm">
                 ESA budget of $7.7B+, Arianespace launch services, Airbus and Thales satellite manufacturing.
                 Strong in Earth observation (Copernicus) and navigation (Galileo).
@@ -526,7 +526,7 @@ export default function SpaceIndustryMarketSizePage() {
             </div>
             <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">China</h3>
-              <div className="text-xl font-bold text-nebula-400 mb-2">~12% market share</div>
+              <div className="text-xl font-bold text-slate-300 mb-2">~12% market share</div>
               <p className="text-slate-400 text-sm">
                 Rapidly growing with government-backed programs (Tiangong station, Chang&apos;e lunar missions)
                 and an emerging commercial sector. 60+ launches annually. BeiDou navigation fully operational.
@@ -534,7 +534,7 @@ export default function SpaceIndustryMarketSizePage() {
             </div>
             <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Rest of World</h3>
-              <div className="text-xl font-bold text-nebula-400 mb-2">~18% market share</div>
+              <div className="text-xl font-bold text-slate-300 mb-2">~18% market share</div>
               <p className="text-slate-400 text-sm">
                 Japan (JAXA, ispace), India (ISRO, IN-SPACe), South Korea, UAE, Australia, and emerging
                 space nations in Africa and Southeast Asia. India&apos;s commercial space sector growing rapidly.
@@ -544,7 +544,7 @@ export default function SpaceIndustryMarketSizePage() {
         </section>
 
         {/* CTA */}
-        <div className="bg-slate-800/60 border border-nebula-500/30 rounded-xl p-6 text-center mb-12">
+        <div className="bg-slate-800/60 border border-white/10 rounded-xl p-6 text-center mb-12">
           <h3 className="text-xl font-bold text-white mb-2">Track the Space Economy in Real Time</h3>
           <p className="text-slate-400 text-sm mb-4">
             SpaceNexus Market Intelligence provides live data on space industry deals, company financials,
@@ -553,7 +553,7 @@ export default function SpaceIndustryMarketSizePage() {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/market-intel"
-              className="inline-block bg-nebula-500 hover:bg-nebula-600 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+              className="inline-block bg-white hover:bg-slate-100 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
             >
               Open Market Intelligence
             </Link>
@@ -585,28 +585,28 @@ export default function SpaceIndustryMarketSizePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Link
               href="/market-intel"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Market Intel</div>
               <div className="text-slate-500 text-xs">Live data</div>
             </Link>
             <Link
               href="/company-profiles"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Company Profiles</div>
               <div className="text-slate-500 text-xs">200+ companies</div>
             </Link>
             <Link
               href="/space-economy"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Economy</div>
               <div className="text-slate-500 text-xs">Trends & data</div>
             </Link>
             <Link
               href="/space-capital"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Capital</div>
               <div className="text-slate-500 text-xs">Investment tracking</div>
@@ -620,21 +620,21 @@ export default function SpaceIndustryMarketSizePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Link
               href="/learn/satellite-launch-cost"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Satellite Launch Costs</div>
               <div className="text-slate-500 text-xs">Complete cost breakdown</div>
             </Link>
             <Link
               href="/learn/how-to-track-satellites"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">How to Track Satellites</div>
               <div className="text-slate-500 text-xs">Real-time tracking guide</div>
             </Link>
             <Link
               href="/learn/space-companies-to-watch"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Top Space Companies 2026</div>
               <div className="text-slate-500 text-xs">25 companies to watch</div>

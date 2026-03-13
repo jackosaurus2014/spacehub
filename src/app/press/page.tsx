@@ -321,7 +321,7 @@ export default function PressPage() {
                 <cite className="text-slate-500 text-sm mt-2 block">&mdash; Founder, SpaceNexus</cite>
               </blockquote>
 
-              <blockquote className="border-l-4 border-nebula-500 pl-4">
+              <blockquote className="border-l-4 border-white/15 pl-4">
                 <p className="text-slate-400 italic leading-relaxed">
                   &quot;Our competitors charge $10,000 to $50,000 per year for narrow datasets. SpaceNexus offers
                   10 integrated modules starting at free. We believe democratizing space intelligence accelerates

@@ -157,11 +157,11 @@ export default function SatelliteTrackingGuidePage() {
         {/* Breadcrumbs */}
         <nav className="pt-6 mb-4" aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm text-slate-400">
-            <li><Link href="/" className="hover:text-nebula-400 transition-colors">Home</Link></li>
+            <li><Link href="/" className="hover:text-slate-300 transition-colors">Home</Link></li>
             <li>/</li>
-            <li><Link href="/guide/space-industry" className="hover:text-nebula-400 transition-colors">Guides</Link></li>
+            <li><Link href="/guide/space-industry" className="hover:text-slate-300 transition-colors">Guides</Link></li>
             <li>/</li>
-            <li className="text-nebula-400">Satellite Tracking Guide</li>
+            <li className="text-slate-300">Satellite Tracking Guide</li>
           </ol>
         </nav>
 
@@ -193,7 +193,7 @@ export default function SatelliteTrackingGuidePage() {
                 <li key={item.id}>
                   <a
                     href={`#${item.id}`}
-                    className="text-nebula-400 hover:underline text-sm transition-colors"
+                    className="text-slate-300 hover:underline text-sm transition-colors"
                   >
                     {i + 1}. {item.label}
                   </a>
@@ -336,7 +336,7 @@ export default function SatelliteTrackingGuidePage() {
                 and speeds.
               </p>
               <p className="text-slate-300 text-sm mt-4">
-                <Link href="/orbital-slots" className="text-nebula-400 hover:underline">
+                <Link href="/orbital-slots" className="text-slate-300 hover:underline">
                   Explore orbital slot allocations and availability on SpaceNexus &rarr;
                 </Link>
               </p>
@@ -394,19 +394,19 @@ export default function SatelliteTrackingGuidePage() {
               <h3 className="text-xl font-bold text-white mb-3 mt-6">Step-by-Step: Track the ISS</h3>
               <ol className="text-slate-300 space-y-2 mb-4">
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
-                  <span>Visit the <Link href="/satellites" className="text-nebula-400 hover:underline">SpaceNexus Satellite Tracker</Link> and search for &quot;ISS&quot; (NORAD ID 25544).</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
+                  <span>Visit the <Link href="/satellites" className="text-slate-300 hover:underline">SpaceNexus Satellite Tracker</Link> and search for &quot;ISS&quot; (NORAD ID 25544).</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
                   <span>Enter your location to see upcoming visible passes with azimuth, elevation, and timing data.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
                   <span>Look for passes that reach at least 40 degrees elevation for the best viewing. The ISS appears as a bright, steady light moving across the sky in 3-5 minutes.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>
                   <span>Best visibility occurs during twilight (just after sunset or before sunrise) when the sky is dark but the ISS is still illuminated by the Sun.</span>
                 </li>
               </ol>
@@ -414,19 +414,19 @@ export default function SatelliteTrackingGuidePage() {
               <h3 className="text-xl font-bold text-white mb-3 mt-6">Other Notable Objects to Track</h3>
               <ul className="text-slate-300 space-y-2">
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Tiangong Space Station</strong> &mdash; China&apos;s modular space station orbiting at ~390 km. Visible as a bright, steady moving object.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Hubble Space Telescope</strong> &mdash; Orbiting at ~540 km, visible as a moderately bright object (magnitude +1 to +2).</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Starlink Trains</strong> &mdash; Newly deployed Starlink satellites form a visible &quot;train&quot; of lights before dispersing to operational altitude.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Envisat</strong> &mdash; The largest piece of space debris (8 tons), defunct since 2012, tracked closely due to collision risk.</span>
                 </li>
               </ul>
@@ -462,7 +462,7 @@ export default function SatelliteTrackingGuidePage() {
                 Committee (IADC) are developing best practices for responsible space operations.
               </p>
               <p className="text-slate-300 text-sm mt-4">
-                <Link href="/space-environment" className="text-nebula-400 hover:underline">
+                <Link href="/space-environment" className="text-slate-300 hover:underline">
                   Monitor conjunction events and debris alerts on SpaceNexus &rarr;
                 </Link>
               </p>
@@ -510,24 +510,24 @@ export default function SatelliteTrackingGuidePage() {
               </p>
               <ol className="text-slate-300 space-y-2 mb-6">
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
                   <span><strong className="text-white">Search and filter</strong> &mdash; Find any satellite by name, NORAD ID, or COSPAR designator. Filter by orbit type, country, operator, or constellation.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
                   <span><strong className="text-white">Real-time visualization</strong> &mdash; View satellite positions on an interactive 3D globe or 2D ground track map with orbital paths projected forward in time.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
-                  <span><strong className="text-white">Constellation view</strong> &mdash; Monitor entire constellations like Starlink, OneWeb, or GPS with our <Link href="/constellations" className="text-nebula-400 hover:underline">Constellation Tracker</Link>.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
+                  <span><strong className="text-white">Constellation view</strong> &mdash; Monitor entire constellations like Starlink, OneWeb, or GPS with our <Link href="/constellations" className="text-slate-300 hover:underline">Constellation Tracker</Link>.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>
                   <span><strong className="text-white">Conjunction alerts</strong> &mdash; Get notified when tracked objects have close approaches, with risk assessments and maneuver recommendations.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">5</span>
-                  <span><strong className="text-white">Debris monitoring</strong> &mdash; Track debris clouds from breakup events and their evolution over time via our <Link href="/space-environment" className="text-nebula-400 hover:underline">Space Environment dashboard</Link>.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">5</span>
+                  <span><strong className="text-white">Debris monitoring</strong> &mdash; Track debris clouds from breakup events and their evolution over time via our <Link href="/space-environment" className="text-slate-300 hover:underline">Space Environment dashboard</Link>.</span>
                 </li>
               </ol>
               <div className="mt-6 flex flex-wrap gap-3">
@@ -560,16 +560,16 @@ export default function SatelliteTrackingGuidePage() {
             <section className="pt-6 border-t border-slate-700/50">
               <h3 className="text-lg font-bold text-white mb-4">Related Guides</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Link href="/guide/how-satellite-tracking-works" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/how-satellite-tracking-works" className="text-slate-300 hover:underline text-sm transition-colors">
                   How Satellite Tracking Works &rarr;
                 </Link>
-                <Link href="/guide/space-launch-schedule-2026" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-launch-schedule-2026" className="text-slate-300 hover:underline text-sm transition-colors">
                   2026 Space Launch Schedule &rarr;
                 </Link>
-                <Link href="/guide/space-regulatory-compliance" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-regulatory-compliance" className="text-slate-300 hover:underline text-sm transition-colors">
                   Space Regulatory Compliance Guide &rarr;
                 </Link>
-                <Link href="/guide/space-industry-market-size" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-industry-market-size" className="text-slate-300 hover:underline text-sm transition-colors">
                   Space Industry Market Size &rarr;
                 </Link>
               </div>

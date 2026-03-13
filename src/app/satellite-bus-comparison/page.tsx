@@ -776,7 +776,7 @@ export default function SatelliteBusComparisonPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
-                  ? 'bg-white text-white shadow-lg shadow-black/10'
+                  ? 'bg-white text-slate-900 shadow-lg shadow-black/10'
                   : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700/60 hover:text-slate-200'
               }`}
             >
@@ -1047,7 +1047,7 @@ export default function SatelliteBusComparisonPage() {
                 </p>
                 <button
                   onClick={() => setActiveTab('database')}
-                  className="px-5 py-2.5 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors"
+                  className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm rounded-lg font-medium transition-colors"
                 >
                   Go to Bus Database
                 </button>
@@ -1570,7 +1570,7 @@ export default function SatelliteBusComparisonPage() {
                     },
                   ].map(step => (
                     <div key={step.step} className="bg-slate-800/40 rounded-xl p-4 relative">
-                      <div className="absolute -top-3 -left-1 w-7 h-7 bg-white rounded-full flex items-center justify-center text-white text-xs font-bold">
+                      <div className="absolute -top-3 -left-1 w-7 h-7 bg-white rounded-full flex items-center justify-center text-slate-900 text-xs font-bold">
                         {step.step}
                       </div>
                       <h5 className="text-sm font-bold text-white mt-2 mb-2">{step.title}</h5>

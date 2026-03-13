@@ -584,7 +584,7 @@ function DetailPanel({ node, edges, allNodes, onClose }: DetailPanelProps) {
       {node.slug && (
         <Link
           href={`/company-profiles/${node.slug}`}
-          className="block text-sm text-nebula-300 hover:text-nebula-200 transition-colors"
+          className="block text-sm text-slate-200 hover:text-white transition-colors"
         >
           View full company profile &rarr;
         </Link>
@@ -986,7 +986,7 @@ function SupplyChainMapContent() {
               placeholder="Search companies..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-space-800 border border-space-700 text-slate-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:border-nebula-500 focus:outline-none"
+              className="w-full bg-space-800 border border-space-700 text-slate-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:border-white/15 focus:outline-none"
             />
           </div>
 
@@ -995,7 +995,7 @@ function SupplyChainMapContent() {
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               showFilters || sectorFilters.size > 0 || typeFilters.size > 0
-                ? 'bg-nebula-500/20 text-nebula-300 border border-nebula-500/50'
+                ? 'bg-white/10 text-slate-200 border border-white/15/50'
                 : 'bg-space-800 text-slate-400 border border-space-700 hover:border-space-600'
             }`}
           >
@@ -1012,7 +1012,7 @@ function SupplyChainMapContent() {
             </svg>
             Filters
             {(sectorFilters.size > 0 || typeFilters.size > 0) && (
-              <span className="bg-nebula-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="bg-white text-slate-900 text-xs w-4 h-4 rounded-full flex items-center justify-center">
                 {sectorFilters.size + typeFilters.size}
               </span>
             )}

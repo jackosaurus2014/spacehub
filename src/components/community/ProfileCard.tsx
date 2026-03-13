@@ -134,7 +134,7 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
               className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                 following
                   ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                  : 'bg-white text-white hover:bg-slate-100'
+                  : 'bg-white text-slate-900 hover:bg-slate-100'
               } disabled:opacity-50`}
             >
               {loading ? '...' : following ? 'Following' : 'Follow'}

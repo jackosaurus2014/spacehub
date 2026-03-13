@@ -122,7 +122,7 @@ export default function DebrisMonitorModule() {
           <button
             onClick={handleInitialize}
             disabled={initializing}
-            className="px-6 py-3 bg-nebula-500 hover:bg-nebula-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-3 bg-white hover:bg-slate-100 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {initializing ? 'Loading Data...' : 'Load Data'}
           </button>
@@ -182,7 +182,7 @@ export default function DebrisMonitorModule() {
         </h2>
         <Link
           href="/space-environment?tab=debris"
-          className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
+          className="text-slate-200 hover:text-white transition-colors text-sm"
         >
           Full Dashboard &rarr;
         </Link>

@@ -337,7 +337,7 @@ export default function MarketplacePage() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/company-profiles">
-              <button className="px-5 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors">
+              <button className="px-5 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors">
                 Claim Your Profile
               </button>
             </Link>

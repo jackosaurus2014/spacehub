@@ -127,7 +127,7 @@ export default function TermsOfServicePage() {
               <p className="text-slate-400 leading-relaxed mb-4">
                 SpaceNexus provides community features including forums, direct messaging, and a professional
                 directory. By using these features, you agree to follow our{' '}
-                <Link href="/community/guidelines" className="text-nebula-300 hover:text-nebula-200 underline">
+                <Link href="/community/guidelines" className="text-slate-200 hover:text-white underline">
                   Community Guidelines
                 </Link>, which are incorporated into these Terms by reference.
               </p>
@@ -173,7 +173,7 @@ export default function TermsOfServicePage() {
                 SpaceNexus complies with the Digital Millennium Copyright Act (17 U.S.C. Section 512).
                 If you believe that your copyrighted work has been copied in a way that constitutes
                 copyright infringement, please submit a claim in accordance with our{' '}
-                <Link href="/legal/dmca" className="text-nebula-300 hover:text-nebula-200 underline">
+                <Link href="/legal/dmca" className="text-slate-200 hover:text-white underline">
                   DMCA Policy
                 </Link>.
               </p>
@@ -188,7 +188,7 @@ export default function TermsOfServicePage() {
               <p className="text-slate-400 leading-relaxed mb-4">
                 SpaceNexus complies with the TAKE IT DOWN Act for the removal of non-consensual intimate
                 images. If you need to report such content, please submit a report to{' '}
-                <a href="mailto:takedown@spacenexus.us" className="text-nebula-300 hover:text-nebula-200 underline">
+                <a href="mailto:takedown@spacenexus.us" className="text-slate-200 hover:text-white underline">
                   takedown@spacenexus.us
                 </a>.
               </p>
@@ -378,25 +378,25 @@ export default function TermsOfServicePage() {
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/privacy"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Privacy Policy
                 </Link>
                 <Link
                   href="/cookies"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Cookie Policy
                 </Link>
                 <Link
                   href="/community/guidelines"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Community Guidelines
                 </Link>
                 <Link
                   href="/legal/dmca"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   DMCA Policy
                 </Link>

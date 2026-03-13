@@ -881,7 +881,7 @@ export default function PropulsionComparisonPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
-                  ? 'bg-white text-white shadow-lg shadow-black/10'
+                  ? 'bg-white text-slate-900 shadow-lg shadow-black/10'
                   : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 hover:text-white'
               }`}
             >

@@ -145,11 +145,11 @@ export default function SpaceEconomyInvestmentPage() {
         {/* Breadcrumbs */}
         <nav className="pt-6 mb-4" aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm text-slate-400">
-            <li><Link href="/" className="hover:text-nebula-400 transition-colors">Home</Link></li>
+            <li><Link href="/" className="hover:text-slate-300 transition-colors">Home</Link></li>
             <li>/</li>
-            <li><Link href="/guide/space-industry" className="hover:text-nebula-400 transition-colors">Guides</Link></li>
+            <li><Link href="/guide/space-industry" className="hover:text-slate-300 transition-colors">Guides</Link></li>
             <li>/</li>
-            <li className="text-nebula-400">Space Economy Investment</li>
+            <li className="text-slate-300">Space Economy Investment</li>
           </ol>
         </nav>
 
@@ -182,7 +182,7 @@ export default function SpaceEconomyInvestmentPage() {
                 <li key={item.id}>
                   <a
                     href={`#${item.id}`}
-                    className="text-nebula-400 hover:underline text-sm transition-colors"
+                    className="text-slate-300 hover:underline text-sm transition-colors"
                   >
                     {i + 1}. {item.label}
                   </a>
@@ -260,7 +260,7 @@ export default function SpaceEconomyInvestmentPage() {
                     {SPACE_STOCKS.map((stock) => (
                       <tr key={stock.company} className="bg-slate-800/60 border-b border-slate-700/50">
                         <td className="py-3 pr-4 text-white font-medium">{stock.company}</td>
-                        <td className="py-3 pr-4 text-nebula-400 font-semibold">{stock.ticker}</td>
+                        <td className="py-3 pr-4 text-slate-300 font-semibold">{stock.ticker}</td>
                         <td className="py-3 pr-4 text-slate-300">{stock.marketCap}</td>
                         <td className="py-3 text-slate-300">{stock.focusArea}</td>
                       </tr>
@@ -277,7 +277,7 @@ export default function SpaceEconomyInvestmentPage() {
                 space sensors and satellite communications systems.
               </p>
               <p className="text-slate-300 text-sm mt-4">
-                <Link href="/company-profiles" className="text-nebula-400 hover:underline">
+                <Link href="/company-profiles" className="text-slate-300 hover:underline">
                   Research detailed profiles for 200+ space companies on SpaceNexus &rarr;
                 </Link>
               </p>
@@ -349,27 +349,27 @@ export default function SpaceEconomyInvestmentPage() {
               </p>
               <ul className="text-slate-300 space-y-2 mb-4">
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Space Capital</strong> &mdash; Dedicated space economy VC with $100M+ under management. Led by Chad Anderson, former managing director of Space Angels. Focus on early-stage companies across the space value chain.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Seraphim Space</strong> &mdash; London-based, publicly listed space VC (SSIT on LSE). Europe&apos;s largest space tech fund with investments in Spire, Arqit, D-Orbit, and others.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Bessemer Venture Partners</strong> &mdash; Generalist tier-1 VC with a strong space portfolio including Rocket Lab, Spire, and multiple space infrastructure companies.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Founders Fund</strong> &mdash; Peter Thiel&apos;s fund, early investors in SpaceX. Portfolio includes multiple defense-tech and space companies.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Type One Ventures</strong> &mdash; Deep-tech VC focused on space, defense, and frontier technologies. Based in Washington, DC, close to the government customer base.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Lockheed Martin Ventures, Boeing HorizonX, RTX Ventures</strong> &mdash; Corporate venture arms of defense primes, providing strategic investment alongside financial returns.</span>
                 </li>
               </ul>
@@ -478,27 +478,27 @@ export default function SpaceEconomyInvestmentPage() {
               </p>
               <ul className="text-slate-300 space-y-2 mb-4">
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Technical and launch risk</strong> &mdash; Rocket explosions, satellite failures, and on-orbit anomalies can destroy hundreds of millions in value in seconds. Even mature providers experience failures: a single launch failure can set a company back 12-18 months.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Long development timelines</strong> &mdash; Satellite and launch vehicle development takes 3-7 years from concept to operational service. Revenue generation may be years away from the initial investment, testing investor patience.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Regulatory risk</strong> &mdash; Licensing delays at the FCC, FAA, or ITAR can derail business plans. Regulatory changes (such as the FCC&apos;s 5-year deorbit rule) can impose significant costs on operators.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">SpaceX competition</strong> &mdash; SpaceX&apos;s dominance in launch, its Starlink broadband service, and its rapid innovation pace create competitive pressure across nearly every segment of the space economy.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Capital intensity and dilution</strong> &mdash; Building space infrastructure requires enormous capital. Many space companies must raise multiple rounds of funding, diluting early investors. Positive unit economics do not guarantee positive total return if dilution is excessive.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Government budget dependency</strong> &mdash; Many space companies derive a significant portion of revenue from government contracts. Budget sequestration, shifting political priorities, or program cancellations can materially impact revenue.</span>
                 </li>
               </ul>
@@ -560,7 +560,7 @@ export default function SpaceEconomyInvestmentPage() {
                 </div>
               </div>
               <p className="text-slate-300 text-sm mt-4">
-                <Link href="/space-economy" className="text-nebula-400 hover:underline">
+                <Link href="/space-economy" className="text-slate-300 hover:underline">
                   Track space economy trends and data on SpaceNexus &rarr;
                 </Link>
               </p>
@@ -575,23 +575,23 @@ export default function SpaceEconomyInvestmentPage() {
               </p>
               <ol className="text-slate-300 space-y-2 mb-6">
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
-                  <span><strong className="text-white">Market Intelligence Dashboard</strong> &mdash; Track market trends, segment growth, and competitive dynamics on our <Link href="/market-intel" className="text-nebula-400 hover:underline">Market Intel page</Link>.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
+                  <span><strong className="text-white">Market Intelligence Dashboard</strong> &mdash; Track market trends, segment growth, and competitive dynamics on our <Link href="/market-intel" className="text-slate-300 hover:underline">Market Intel page</Link>.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
-                  <span><strong className="text-white">Company Profiles</strong> &mdash; Access detailed profiles for 200+ space companies, including financial data, key contracts, and competitive positioning via our <Link href="/company-profiles" className="text-nebula-400 hover:underline">Company Directory</Link>.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
+                  <span><strong className="text-white">Company Profiles</strong> &mdash; Access detailed profiles for 200+ space companies, including financial data, key contracts, and competitive positioning via our <Link href="/company-profiles" className="text-slate-300 hover:underline">Company Directory</Link>.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
-                  <span><strong className="text-white">Investment Activity Tracker</strong> &mdash; Monitor funding rounds, M&A deals, and IPOs across the space sector via <Link href="/space-capital" className="text-nebula-400 hover:underline">Space Capital tracking</Link>.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
+                  <span><strong className="text-white">Investment Activity Tracker</strong> &mdash; Monitor funding rounds, M&A deals, and IPOs across the space sector via <Link href="/space-capital" className="text-slate-300 hover:underline">Space Capital tracking</Link>.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>
                   <span><strong className="text-white">News and Analysis</strong> &mdash; Stay informed with curated space industry news, auto-tagged by company and market segment.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">5</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">5</span>
                   <span><strong className="text-white">Custom Alerts</strong> &mdash; Set up notifications for companies, market segments, or events that matter to your investment thesis.</span>
                 </li>
               </ol>
@@ -625,16 +625,16 @@ export default function SpaceEconomyInvestmentPage() {
             <section className="pt-6 border-t border-slate-700/50">
               <h3 className="text-lg font-bold text-white mb-4">Related Guides</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Link href="/guide/space-industry-market-size" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-industry-market-size" className="text-slate-300 hover:underline text-sm transition-colors">
                   Space Industry Market Size &rarr;
                 </Link>
-                <Link href="/guide/space-business-opportunities" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-business-opportunities" className="text-slate-300 hover:underline text-sm transition-colors">
                   Space Business Opportunities &rarr;
                 </Link>
-                <Link href="/guide/commercial-space-economy" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/commercial-space-economy" className="text-slate-300 hover:underline text-sm transition-colors">
                   Commercial Space Economy Guide &rarr;
                 </Link>
-                <Link href="/guide/space-launch-schedule-2026" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-launch-schedule-2026" className="text-slate-300 hover:underline text-sm transition-colors">
                   2026 Space Launch Schedule &rarr;
                 </Link>
               </div>

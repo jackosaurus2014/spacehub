@@ -23,9 +23,9 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
               key={i}
               className={`h-1 rounded-full transition-colors ${
                 i === currentIndex
-                  ? 'w-4 bg-nebula-400'
+                  ? 'w-4 bg-slate-400'
                   : i < currentIndex
-                    ? 'w-2 bg-nebula-500/40'
+                    ? 'w-2 bg-white/40'
                     : 'w-2 bg-slate-700'
               }`}
             />
@@ -38,12 +38,12 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
         {prev ? (
           <Link
             href={`/guide/${prev.slug}`}
-            className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-nebula-500/40 hover:bg-slate-800/70 transition-all"
+            className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/15/40 hover:bg-slate-800/70 transition-all"
           >
             <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-2">
               &larr; Previous Guide
             </span>
-            <span className="text-sm font-semibold text-white group-hover:text-nebula-400 transition-colors line-clamp-2">
+            <span className="text-sm font-semibold text-white group-hover:text-slate-300 transition-colors line-clamp-2">
               {prev.shortTitle}
             </span>
           </Link>
@@ -54,12 +54,12 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
         {next ? (
           <Link
             href={`/guide/${next.slug}`}
-            className="group flex flex-col items-end text-right bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-nebula-500/40 hover:bg-slate-800/70 transition-all"
+            className="group flex flex-col items-end text-right bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/15/40 hover:bg-slate-800/70 transition-all"
           >
             <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-2">
               Next Guide &rarr;
             </span>
-            <span className="text-sm font-semibold text-white group-hover:text-nebula-400 transition-colors line-clamp-2">
+            <span className="text-sm font-semibold text-white group-hover:text-slate-300 transition-colors line-clamp-2">
               {next.shortTitle}
             </span>
           </Link>
@@ -72,7 +72,7 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
       <div className="mt-4 text-center">
         <Link
           href="/guide"
-          className="text-xs text-slate-500 hover:text-nebula-400 transition-colors"
+          className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
         >
           View all guides
         </Link>

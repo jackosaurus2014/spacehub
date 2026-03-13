@@ -1171,7 +1171,7 @@ function SpaceForceCard({ force }: { force: SpaceForce }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="card p-5 hover:border-nebula-500/40">
+    <div className="card p-5 hover:border-white/15/40">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-slate-700/50 flex items-center justify-center text-xs font-bold text-white">
@@ -1217,7 +1217,7 @@ function SpaceForceCard({ force }: { force: SpaceForce }) {
           <ul className="mt-1 space-y-1">
             {force.fieldCommands.map((cmd) => (
               <li key={cmd} className="text-star-300 text-sm flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-nebula-500 mt-1.5 flex-shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-white mt-1.5 flex-shrink-0" />
                 {cmd}
               </li>
             ))}
@@ -1229,7 +1229,7 @@ function SpaceForceCard({ force }: { force: SpaceForce }) {
         <span className="text-star-400 text-xs uppercase tracking-widest">Key Programs</span>
         <div className="flex flex-wrap gap-1.5 mt-1">
           {force.keyPrograms.map((program) => (
-            <span key={program} className="px-2 py-0.5 bg-nebula-500/10 text-nebula-400 rounded text-xs font-medium">
+            <span key={program} className="px-2 py-0.5 bg-white/10 text-slate-300 rounded text-xs font-medium">
               {program}
             </span>
           ))}
@@ -1238,7 +1238,7 @@ function SpaceForceCard({ force }: { force: SpaceForce }) {
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-xs text-nebula-400 hover:text-nebula-300 transition-colors flex items-center gap-1"
+        className="text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1"
       >
         <svg
           className={`w-3 h-3 transition-transform ${expanded ? 'rotate-90' : ''}`}
@@ -1265,11 +1265,11 @@ function ProgramCard({ program }: { program: DefenseProgram }) {
   const catStyle = CATEGORY_STYLES[program.category] || DEFAULT_CATEGORY_STYLE;
 
   return (
-    <div className="card p-5 hover:border-nebula-500/40">
+    <div className="card p-5 hover:border-white/15/40">
       <div className="flex items-start justify-between mb-2">
         <div>
           <div className="flex items-center gap-2 flex-wrap mb-1">
-            <span className="text-nebula-400 font-mono font-bold text-sm">{program.abbreviation}</span>
+            <span className="text-slate-300 font-mono font-bold text-sm">{program.abbreviation}</span>
             <span className={`text-xs font-medium px-2 py-0.5 rounded ${statusStyle.bg} ${statusStyle.color}`}>
               {statusStyle.label}
             </span>
@@ -1321,7 +1321,7 @@ function ProgramCard({ program }: { program: DefenseProgram }) {
       {program.description.length > 180 && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-xs text-nebula-400 hover:text-nebula-300 transition-colors flex items-center gap-1"
+          className="text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1"
         >
           <svg
             className={`w-3 h-3 transition-transform ${expanded ? 'rotate-90' : ''}`}
@@ -1340,7 +1340,7 @@ function ProgramCard({ program }: { program: DefenseProgram }) {
 
 function ContractCard({ contract }: { contract: ContractAward }) {
   return (
-    <div className="card p-5 hover:border-nebula-500/40">
+    <div className="card p-5 hover:border-white/15/40">
       <div className="flex items-start justify-between mb-2">
         <h3 className="text-white font-semibold">{contract.title}</h3>
         <span className="text-green-400 font-bold text-sm whitespace-nowrap ml-3">{contract.value}</span>
@@ -1370,7 +1370,7 @@ function ContractCard({ contract }: { contract: ContractAward }) {
         )}
         <div className="flex items-center gap-2 text-sm">
           <span className="text-star-400 min-w-[80px]">Category:</span>
-          <span className="px-2 py-0.5 bg-nebula-500/10 text-nebula-400 rounded text-xs font-medium">{contract.category}</span>
+          <span className="px-2 py-0.5 bg-white/10 text-slate-300 rounded text-xs font-medium">{contract.category}</span>
         </div>
       </div>
       <p className="text-star-300 text-sm leading-relaxed">{contract.description}</p>
@@ -1433,13 +1433,13 @@ function AllianceCard({ alliance }: { alliance: Alliance }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="card p-5 hover:border-nebula-500/40">
+    <div className="card p-5 hover:border-white/15/40">
       <div className="flex items-start justify-between mb-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-white font-bold">{alliance.name}</h3>
             {alliance.abbreviation && (
-              <span className="text-nebula-400 font-mono text-sm">({alliance.abbreviation})</span>
+              <span className="text-slate-300 font-mono text-sm">({alliance.abbreviation})</span>
             )}
           </div>
           <span className="text-star-400 text-sm">Est. {alliance.established}</span>
@@ -1465,7 +1465,7 @@ function AllianceCard({ alliance }: { alliance: Alliance }) {
         <ul className="mt-1 space-y-1">
           {alliance.keyActivities.slice(0, expanded ? undefined : 3).map((activity) => (
             <li key={activity} className="text-star-300 text-sm flex items-start gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-nebula-500 mt-1.5 flex-shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-white mt-1.5 flex-shrink-0" />
               {activity}
             </li>
           ))}
@@ -1474,7 +1474,7 @@ function AllianceCard({ alliance }: { alliance: Alliance }) {
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-xs text-nebula-400 hover:text-nebula-300 transition-colors flex items-center gap-1"
+        className="text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1"
       >
         <svg
           className={`w-3 h-3 transition-transform ${expanded ? 'rotate-90' : ''}`}
@@ -1520,7 +1520,7 @@ function SpendingTrends() {
             <span className="text-star-400 text-sm font-mono w-16 flex-shrink-0">{row.year}</span>
             <div className="flex-1 flex gap-1">
               <div
-                className="h-6 rounded-l bg-nebula-500/60 flex items-center pl-2"
+                className="h-6 rounded-l bg-white/60 flex items-center pl-2"
                 style={{ width: `${(row.ussf / maxVal) * 100}%` }}
               >
                 <span className="text-white text-xs font-medium whitespace-nowrap">${row.ussf}B</span>
@@ -1537,7 +1537,7 @@ function SpendingTrends() {
       </div>
       <div className="flex gap-6 mt-4 text-xs text-star-400">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-nebula-500/60" />
+          <div className="w-3 h-3 rounded bg-white/60" />
           <span>USSF Budget</span>
         </div>
         <div className="flex items-center gap-2">
@@ -1591,7 +1591,7 @@ function ThreatCategoryCard({ cat, style }: {
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-xs text-nebula-400 hover:text-nebula-300 transition-colors flex items-center gap-1"
+        className="text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1"
       >
         <svg
           className={`w-3 h-3 transition-transform ${expanded ? 'rotate-90' : ''}`}
@@ -1910,7 +1910,7 @@ export default function SpaceDefensePage() {
                 }}
                 className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-nebula-500 text-nebula-300'
+                    ? 'border-white/15 text-slate-200'
                     : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'
                 }`}
               >
@@ -1950,7 +1950,7 @@ export default function SpaceDefensePage() {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4">
-                  <h4 className="text-nebula-400 font-semibold mb-2">Space Operations Command (SpOC)</h4>
+                  <h4 className="text-slate-300 font-semibold mb-2">Space Operations Command (SpOC)</h4>
                   <p className="text-star-400 text-sm">
                     Peterson SFB, CO. Operates the nation&apos;s military space forces including GPS, missile warning,
                     space surveillance, and satellite communications operations. Houses the Combined Space Operations
@@ -1958,14 +1958,14 @@ export default function SpaceDefensePage() {
                   </p>
                 </div>
                 <div className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4">
-                  <h4 className="text-nebula-400 font-semibold mb-2">Space Systems Command (SSC)</h4>
+                  <h4 className="text-slate-300 font-semibold mb-2">Space Systems Command (SSC)</h4>
                   <p className="text-star-400 text-sm">
                     Los Angeles AFB, CA. Responsible for developing, acquiring, and sustaining lethal and resilient
                     space capabilities. Manages NSSL, GPS, SBIRS/Next-Gen OPIR, WGS, AEHF/ESS, and other programs.
                   </p>
                 </div>
                 <div className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4">
-                  <h4 className="text-nebula-400 font-semibold mb-2">Space Training & Readiness Command (STARCOM)</h4>
+                  <h4 className="text-slate-300 font-semibold mb-2">Space Training & Readiness Command (STARCOM)</h4>
                   <p className="text-star-400 text-sm">
                     Peterson SFB, CO. Responsible for training, testing, and developing tactics, techniques, and
                     procedures for space operations. Operates the National Space Test and Training Complex.
@@ -2009,7 +2009,7 @@ export default function SpaceDefensePage() {
                     onClick={() => setProgramCategoryFilter('')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       programCategoryFilter === ''
-                        ? 'bg-nebula-500 text-slate-900'
+                        ? 'bg-white text-slate-900'
                         : 'bg-slate-700 text-star-400 hover:bg-slate-600'
                     }`}
                   >
@@ -2024,7 +2024,7 @@ export default function SpaceDefensePage() {
                         onClick={() => setProgramCategoryFilter(cat)}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                           programCategoryFilter === cat
-                            ? `bg-nebula-500/20 ${style.color} border border-nebula-500/40`
+                            ? `bg-white/10 ${style.color} border border-white/15/40`
                             : 'bg-slate-700 text-star-400 hover:bg-slate-600'
                         }`}
                       >
@@ -2063,7 +2063,7 @@ export default function SpaceDefensePage() {
                 ].map((layer) => (
                   <div key={layer.layer} className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4 text-center">
                     <span className="text-2xl block mb-2">{layer.icon}</span>
-                    <h4 className="text-nebula-400 font-semibold text-sm">{layer.layer}</h4>
+                    <h4 className="text-slate-300 font-semibold text-sm">{layer.layer}</h4>
                     <p className="text-star-400 text-xs mt-1">{layer.purpose}</p>
                   </div>
                 ))}
@@ -2173,7 +2173,7 @@ export default function SpaceDefensePage() {
                     focus: ['LEO PNT constellations', 'Terrestrial eLoran modernization', 'Quantum-inertial navigation'],
                   },
                 ].map((opp) => (
-                  <div key={opp.title} className="card p-5 hover:border-nebula-500/40">
+                  <div key={opp.title} className="card p-5 hover:border-white/15/40">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <h3 className="text-white font-semibold text-sm">{opp.title}</h3>
                       <span className={`text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap ${opp.statusBg} ${opp.statusColor}`}>
@@ -2197,7 +2197,7 @@ export default function SpaceDefensePage() {
                     <p className="text-star-300 text-xs leading-relaxed mb-3">{opp.description}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {opp.focus.map((f) => (
-                        <span key={f} className="px-2 py-0.5 bg-nebula-500/10 text-nebula-400 rounded text-xs">
+                        <span key={f} className="px-2 py-0.5 bg-white/10 text-slate-300 rounded text-xs">
                           {f}
                         </span>
                       ))}
@@ -2209,7 +2209,7 @@ export default function SpaceDefensePage() {
                 Note: Procurement status and values are based on public RFIs, BAAs, and official acquisition announcements.
                 Visit SAM.gov for current solicitation details and response deadlines. For comprehensive procurement
                 intelligence including SBIR/STTR topics, see the{' '}
-                <a href="/business-opportunities?tab=procurement" className="text-nebula-400 hover:text-nebula-300 transition-colors underline">
+                <a href="/business-opportunities?tab=procurement" className="text-slate-300 hover:text-white transition-colors underline">
                   Procurement Intelligence module
                 </a>.
               </p>
@@ -2235,7 +2235,7 @@ export default function SpaceDefensePage() {
                     const typeStyle = typeStyles[opp.type || 'solicitation'] || typeStyles.solicitation;
 
                     return (
-                      <div key={opp.id} className="card p-4 hover:border-nebula-500/40">
+                      <div key={opp.id} className="card p-4 hover:border-white/15/40">
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <h3 className="text-white font-semibold text-sm line-clamp-2">{opp.title}</h3>
                           <span className={`text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap ${typeStyle.bg} ${typeStyle.color}`}>
@@ -2272,7 +2272,7 @@ export default function SpaceDefensePage() {
                             href={opp.samUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-nebula-400 hover:text-nebula-300 transition-colors flex items-center gap-1"
+                            className="text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1"
                           >
                             View on SAM.gov
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -2288,7 +2288,7 @@ export default function SpaceDefensePage() {
             )}
 
             {/* Related News Cross-Link (replaces embedded news articles) */}
-            <div className="card p-5 border border-nebula-500/20 bg-nebula-500/5 backdrop-blur">
+            <div className="card p-5 border border-white/15/20 bg-white/5 backdrop-blur">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-white font-semibold mb-1">Defense & National Security News</h3>
@@ -2299,7 +2299,7 @@ export default function SpaceDefensePage() {
                 </div>
                 <a
                   href="/news?category=space-defense"
-                  className="flex-shrink-0 ml-4 px-4 py-2 bg-nebula-500/20 hover:bg-nebula-500/30 text-nebula-300 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                  className="flex-shrink-0 ml-4 px-4 py-2 bg-white/10 hover:bg-white/15 text-slate-200 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
                 >
                   View Defense News
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -2330,7 +2330,7 @@ export default function SpaceDefensePage() {
                   'Cybersecurity for space systems',
                 ].map((topic) => (
                   <div key={topic} className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-nebula-500 mt-1.5 flex-shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-white mt-1.5 flex-shrink-0" />
                     <span className="text-star-300 text-sm">{topic}</span>
                   </div>
                 ))}
@@ -2366,7 +2366,7 @@ export default function SpaceDefensePage() {
                     onClick={() => setThreatTypeFilter('')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       threatTypeFilter === ''
-                        ? 'bg-nebula-500 text-slate-900'
+                        ? 'bg-white text-slate-900'
                         : 'bg-slate-700 text-star-400 hover:bg-slate-600'
                     }`}
                   >
@@ -2474,7 +2474,7 @@ export default function SpaceDefensePage() {
                   },
                 ].map((framework) => (
                   <div key={framework.name} className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4">
-                    <h4 className="text-nebula-400 font-semibold mb-2">{framework.name}</h4>
+                    <h4 className="text-slate-300 font-semibold mb-2">{framework.name}</h4>
                     <p className="text-star-400 text-sm mb-2">{framework.description}</p>
                     <span className="text-star-500 text-xs">Partners: {framework.partners}</span>
                   </div>

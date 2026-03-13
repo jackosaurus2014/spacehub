@@ -237,7 +237,7 @@ function OrbitTypeCard({ slot }: { slot: OrbitalSlot }) {
         </div>
         <div className="h-3 bg-slate-700/50 rounded-full overflow-hidden">
           <div
-            className={`h-full bg-gradient-to-r ${congestion?.barColor || 'from-nebula-500 to-nebula-400'} rounded-full transition-all`}
+            className={`h-full bg-gradient-to-r ${congestion?.barColor || 'from-white to-slate-400'} rounded-full transition-all`}
             style={{ width: `${Math.min(utilization, 100)}%` }}
           />
         </div>
@@ -291,7 +291,7 @@ function OrbitTypeCard({ slot }: { slot: OrbitalSlot }) {
       <div className="mt-3 pt-3 border-t border-slate-700/50">
         <Link
           href="/space-environment?tab=debris"
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
         >
           View debris in this orbit &rarr;
         </Link>
@@ -330,7 +330,7 @@ function OperatorCard({ operator, rank }: { operator: SatelliteOperator; rank: n
               {operator.constellationName && (
                 <>
                   <span className="text-slate-400">|</span>
-                  <span className="text-nebula-300 text-xs">{operator.constellationName}</span>
+                  <span className="text-slate-200 text-xs">{operator.constellationName}</span>
                 </>
               )}
             </div>
@@ -364,7 +364,7 @@ function OperatorCard({ operator, rank }: { operator: SatelliteOperator; rank: n
                   </div>
                   <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-nebula-500 to-nebula-400 rounded-full transition-all"
+                      className="h-full bg-gradient-to-r from-white to-slate-400 rounded-full transition-all"
                       style={{ width: `${Math.min(pct, 100)}%` }}
                     />
                   </div>
@@ -399,7 +399,7 @@ function OperatorCard({ operator, rank }: { operator: SatelliteOperator; rank: n
       <div className="mt-3 pt-3 border-t border-slate-700/50 flex flex-wrap gap-2">
         <Link
           href="/space-environment?tab=debris"
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
         >
           View Debris &rarr;
         </Link>
@@ -494,7 +494,7 @@ function EventCard({ event }: { event: OrbitalEvent }) {
         <div className="mt-3 pt-3 border-t border-slate-700/50">
           <Link
             href="/space-environment?tab=debris"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
           >
             View in Debris Monitor &rarr;
           </Link>
@@ -878,7 +878,7 @@ function OrbitalManagementContent() {
                   )}
                 </div>
                 <div className="card-elevated p-4 text-center">
-                  <div className="text-2xl font-bold font-display text-nebula-300">
+                  <div className="text-2xl font-bold font-display text-slate-200">
                     {operators.length || MEGA_CONSTELLATIONS.length}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -946,7 +946,7 @@ function OrbitalManagementContent() {
             {/* ──────────────── Provider CTA (services tabs) ──────────────── */}
             {isServicesTab && (
               <div className="mb-6">
-                <div className="card p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-nebula-600/10 to-rocket-600/10 border border-nebula-500/20">
+                <div className="card p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-slate-200/10 to-rocket-600/10 border border-white/15/20">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{'\u{1F680}'}</span>
                     <p className="text-slate-500">
@@ -1010,7 +1010,7 @@ function OrbitalManagementContent() {
                   onClick={() => handleTabChange(tab.id)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === tab.id
-                      ? 'bg-nebula-500 text-white shadow-glow-sm'
+                      ? 'bg-white text-slate-900'
                       : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
                   }`}
                 >
@@ -1019,7 +1019,7 @@ function OrbitalManagementContent() {
                   {tab.count > 0 && (
                     <span
                       className={`text-xs px-1.5 py-0.5 rounded-full ${
-                        activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-slate-700/50 text-slate-500'
+                        activeTab === tab.id ? 'bg-white/20 text-slate-900' : 'bg-slate-700/50 text-slate-500'
                       }`}
                     >
                       {tab.count}
@@ -1067,7 +1067,7 @@ function OrbitalManagementContent() {
                       onClick={() => setRegimeFilter('')}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         regimeFilter === ''
-                          ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                          ? 'bg-slate-700/50 text-white border border-slate-700/50'
                           : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                       }`}
                     >
@@ -1081,7 +1081,7 @@ function OrbitalManagementContent() {
                           onClick={() => setRegimeFilter(regime.abbreviation === regimeFilter ? '' : regime.abbreviation)}
                           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                             regimeFilter === regime.abbreviation
-                              ? `${congestionStyle.bg} ${congestionStyle.text} border ${congestionStyle.border} shadow-glow-sm`
+                              ? `${congestionStyle.bg} ${congestionStyle.text} border ${congestionStyle.border}`
                               : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                           }`}
                         >
@@ -1143,7 +1143,7 @@ function OrbitalManagementContent() {
                               <div className="text-slate-400 text-xs uppercase tracking-widest">Min Alt (km)</div>
                             </div>
                             <div className="bg-slate-700/50 rounded-lg p-3 text-center">
-                              <div className="text-2xl font-bold font-display text-nebula-300">{regime.notableConstellations.length}</div>
+                              <div className="text-2xl font-bold font-display text-slate-200">{regime.notableConstellations.length}</div>
                               <div className="text-slate-400 text-xs uppercase tracking-widest">Key Systems</div>
                             </div>
                             <div className="bg-slate-700/50 rounded-lg p-3 text-center">
@@ -1177,7 +1177,7 @@ function OrbitalManagementContent() {
                               <h4 className="text-white font-medium text-sm mb-2 uppercase tracking-widest">Key Uses</h4>
                               <div className="flex flex-wrap gap-2">
                                 {regime.keyUses.map((use) => (
-                                  <span key={use} className="text-xs px-2.5 py-1 rounded-full bg-nebula-500/10 text-nebula-300 border border-nebula-500/20">
+                                  <span key={use} className="text-xs px-2.5 py-1 rounded-full bg-white/10 text-slate-200 border border-white/15/20">
                                     {use}
                                   </span>
                                 ))}
@@ -1214,7 +1214,7 @@ function OrbitalManagementContent() {
                           <div className="mt-4 pt-4 border-t border-slate-700/50 flex flex-wrap gap-2">
                             <Link
                               href="/space-environment?tab=debris"
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
                             >
                               View debris in this orbit &rarr;
                             </Link>
@@ -1313,7 +1313,7 @@ function OrbitalManagementContent() {
                         onClick={() => setGeoSortBy(option.value)}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                           geoSortBy === option.value
-                            ? 'bg-white/10 text-slate-200 border border-white/10 shadow-glow-sm'
+                            ? 'bg-white/10 text-slate-200 border border-white/10'
                             : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                         }`}
                       >
@@ -1394,7 +1394,7 @@ function OrbitalManagementContent() {
                             )}
                             <Link
                               href="/spectrum"
-                              className="inline-flex items-center gap-1 text-xs text-nebula-300 hover:text-nebula-200 transition-colors"
+                              className="inline-flex items-center gap-1 text-xs text-slate-200 hover:text-white transition-colors"
                             >
                               Spectrum Filings &rarr;
                             </Link>
@@ -1496,7 +1496,7 @@ function OrbitalManagementContent() {
                       onClick={() => setConstellationStatusFilter('')}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         constellationStatusFilter === ''
-                          ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                          ? 'bg-slate-700/50 text-white border border-slate-700/50'
                           : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                       }`}
                     >
@@ -1516,7 +1516,7 @@ function OrbitalManagementContent() {
                           onClick={() => setConstellationStatusFilter(status === constellationStatusFilter ? '' : status)}
                           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                             constellationStatusFilter === status
-                              ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                              ? 'bg-slate-700/50 text-white border border-slate-700/50'
                               : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                           }`}
                         >
@@ -1658,7 +1658,7 @@ function OrbitalManagementContent() {
                                     href={constellation.website}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-nebula-300 hover:text-nebula-200 text-xs transition-colors"
+                                    className="text-slate-200 hover:text-white text-xs transition-colors"
                                   >
                                     Visit &rarr;
                                   </a>
@@ -1677,7 +1677,7 @@ function OrbitalManagementContent() {
                             </Link>
                             <Link
                               href="/space-environment?tab=debris"
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
                             >
                               Debris Impact &rarr;
                             </Link>
@@ -1867,7 +1867,7 @@ function OrbitalManagementContent() {
                             </Link>
                             <Link
                               href="/compliance?tab=filings"
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
                             >
                               Regulatory Filings &rarr;
                             </Link>
@@ -1925,7 +1925,7 @@ function OrbitalManagementContent() {
                       onClick={() => handleOrbitFilterChange('')}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         orbitFilter === ''
-                          ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                          ? 'bg-slate-700/50 text-white border border-slate-700/50'
                           : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                       }`}
                     >
@@ -1945,7 +1945,7 @@ function OrbitalManagementContent() {
                           onClick={() => handleOrbitFilterChange(orbit)}
                           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
                             orbitFilter === orbit
-                              ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                              ? 'bg-slate-700/50 text-white border border-slate-700/50'
                               : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                           }`}
                         >
@@ -1978,7 +1978,7 @@ function OrbitalManagementContent() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold font-display text-nebula-300">
+                      <div className="text-2xl font-bold font-display text-slate-200">
                         +{formatNumber(filteredOperators.reduce((sum, op) => sum + op.planned1Year, 0))}
                       </div>
                       <div className="text-slate-400 text-xs">Planned (1Y)</div>
@@ -2210,7 +2210,7 @@ function OrbitalManagementContent() {
                                           href={service.providerWebsite}
                                           target="_blank"
                                           rel="noopener noreferrer"
-                                          className="mt-3 text-nebula-300 hover:text-nebula-200 text-sm inline-flex items-center gap-1"
+                                          className="mt-3 text-slate-200 hover:text-white text-sm inline-flex items-center gap-1"
                                         >
                                           Visit Provider
                                           <span>&rarr;</span>

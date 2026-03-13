@@ -23,7 +23,7 @@ const HeroStats = nextDynamic(() => import('@/components/HeroStats'), {
 });
 const NewsletterSignup = nextDynamic(() => import('@/components/NewsletterSignup'), {
   ssr: false,
-  loading: () => <div className="relative card p-10 md:p-16 text-center rounded-3xl overflow-hidden"><div className="animate-pulse"><div className="h-8 bg-slate-700/50 rounded w-3/4 mx-auto mb-4"></div><div className="h-4 bg-slate-700/50 rounded w-2/3 mx-auto mb-8"></div><div className="h-12 bg-nebula-600/50 rounded-xl w-48 mx-auto"></div></div></div>,
+  loading: () => <div className="relative card p-10 md:p-16 text-center rounded-3xl overflow-hidden"><div className="animate-pulse"><div className="h-8 bg-slate-700/50 rounded w-3/4 mx-auto mb-4"></div><div className="h-4 bg-slate-700/50 rounded w-2/3 mx-auto mb-8"></div><div className="h-12 bg-white/50 rounded-xl w-48 mx-auto"></div></div></div>,
 });
 const AdBanner = nextDynamic(() => import('@/components/ads').then(mod => ({ default: mod.AdBanner })), {
   ssr: false,

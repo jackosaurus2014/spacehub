@@ -95,7 +95,7 @@ function BlogListingContent() {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group block bg-slate-800/60 border border-slate-700/50 rounded-xl overflow-hidden hover:border-nebula-500/50 transition-all duration-300"
+                  className="group block bg-slate-800/60 border border-slate-700/50 rounded-xl overflow-hidden hover:border-white/15/50 transition-all duration-300"
                 >
                   <div className="p-6">
                     <div className="flex items-center gap-3 mb-3">
@@ -111,7 +111,7 @@ function BlogListingContent() {
                         variant="compact"
                       />
                     </div>
-                    <h2 className="text-xl font-bold text-white group-hover:text-nebula-400 transition-colors mb-3">
+                    <h2 className="text-xl font-bold text-white group-hover:text-slate-300 transition-colors mb-3">
                       {post.title}
                     </h2>
                     <p className="text-slate-400 text-sm leading-relaxed line-clamp-3">
@@ -134,7 +134,7 @@ function BlogListingContent() {
             onClick={() => handleCategoryChange(null)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               !selectedCategory
-                ? 'bg-nebula-500 text-white'
+                ? 'bg-white text-slate-900'
                 : 'bg-slate-800/60 text-slate-400 hover:text-white border border-slate-700/50'
             }`}
           >
@@ -149,7 +149,7 @@ function BlogListingContent() {
                 onClick={() => handleCategoryChange(cat.value)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedCategory === cat.value
-                    ? 'bg-nebula-500 text-white'
+                    ? 'bg-white text-slate-900'
                     : 'bg-slate-800/60 text-slate-400 hover:text-white border border-slate-700/50'
                 }`}
               >
@@ -165,7 +165,7 @@ function BlogListingContent() {
             <StaggerItem key={post.slug}>
               <Link
                 href={`/blog/${post.slug}`}
-                className="group block bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 hover:border-nebula-500/50 transition-all duration-300 h-full"
+                className="group block bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 hover:border-white/15/50 transition-all duration-300 h-full"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <span
@@ -179,7 +179,7 @@ function BlogListingContent() {
                     variant="compact"
                   />
                 </div>
-                <h3 className="text-lg font-bold text-white group-hover:text-nebula-400 transition-colors mb-2">
+                <h3 className="text-lg font-bold text-white group-hover:text-slate-300 transition-colors mb-2">
                   {post.title}
                 </h3>
                 <p className="text-slate-400 text-sm leading-relaxed line-clamp-3 mb-4">
@@ -214,7 +214,7 @@ function BlogListingContent() {
               <Link
                 key={tool.href}
                 href={tool.href}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-nebula-500/50 transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-white/15/50 transition-all"
               >
                 {tool.label}
               </Link>
@@ -226,7 +226,7 @@ function BlogListingContent() {
         <div className="mt-12 text-center">
           <a
             href="/api/feed/rss"
-            className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-nebula-400 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-300 transition-colors"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1Z" />

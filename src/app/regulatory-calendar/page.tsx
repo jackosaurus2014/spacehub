@@ -270,7 +270,7 @@ function DeadlineDetailPanel({
           <div className="flex flex-wrap gap-3 pt-4 border-t border-slate-700/50">
             <button
               onClick={() => downloadICS(deadline)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-nebula-600 hover:bg-nebula-500 text-white rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white hover:bg-slate-100 text-slate-900 rounded-lg transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -371,7 +371,7 @@ function MonthView({
                 onClick={() => setSelectedDay(isSelected ? null : day)}
                 className={`h-24 md:h-28 p-1.5 md:p-2 text-left transition-colors relative group ${
                   isSelected
-                    ? 'bg-slate-700/60 ring-1 ring-nebula-500/60'
+                    ? 'bg-slate-700/60 ring-1 ring-white/20'
                     : 'bg-slate-900/60 hover:bg-slate-800/60'
                 }`}
                 aria-label={`${MONTH_NAMES[month]} ${day}, ${year}. ${dayItems.length} deadline${dayItems.length !== 1 ? 's' : ''}.`}
@@ -648,7 +648,7 @@ export default function RegulatoryCalendarPage() {
         >
           <Link
             href="/compliance"
-            className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-nebula-300 transition-colors"
+            className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-slate-200 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -691,7 +691,7 @@ export default function RegulatoryCalendarPage() {
               onClick={() => setViewMode('month')}
               className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 viewMode === 'month'
-                  ? 'bg-nebula-600 text-white shadow-sm'
+                  ? 'bg-white text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -701,7 +701,7 @@ export default function RegulatoryCalendarPage() {
               onClick={() => setViewMode('agenda')}
               className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 viewMode === 'agenda'
-                  ? 'bg-nebula-600 text-white shadow-sm'
+                  ? 'bg-white text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >

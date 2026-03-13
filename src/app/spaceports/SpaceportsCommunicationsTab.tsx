@@ -515,7 +515,7 @@ export default function SpaceportsCommunicationsTab({
             <div className="flex flex-wrap items-center gap-3 mb-6">
               <span className="text-slate-400 text-sm">Filter by status:</span>
               {['', 'operational', 'deploying', 'development'].map((status) => (
-                <button key={status} onClick={() => setRelayFilter(status)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${relayFilter === status ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-space-800 text-slate-400 border border-space-700 hover:border-space-600 hover:text-white'}`}>
+                <button key={status} onClick={() => setRelayFilter(status)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${relayFilter === status ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-space-800 text-slate-400 border border-space-700 hover:border-space-600 hover:text-slate-900'}`}>
                   {status ? status.charAt(0).toUpperCase() + status.slice(1) : 'All'}
                 </button>
               ))}

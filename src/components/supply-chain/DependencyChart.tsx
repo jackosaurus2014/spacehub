@@ -156,7 +156,7 @@ export default function DependencyChart({
                   onClick={() => setViewMode(option.value as typeof viewMode)}
                   className={`px-3 py-1.5 text-xs font-medium transition-colors ${
                     viewMode === option.value
-                      ? 'bg-nebula-500 text-white'
+                      ? 'bg-white text-slate-900'
                       : 'bg-space-700 text-slate-400 hover:text-white'
                   }`}
                 >
@@ -231,7 +231,7 @@ export default function DependencyChart({
                     onClick={() => onSelectCompany?.(isSelected ? null : company.id)}
                     className={`
                       relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                      ${isSelected ? 'ring-2 ring-nebula-500 ring-offset-2 ring-offset-space-800' : ''}
+                      ${isSelected ? 'ring-2 ring-white/15 ring-offset-2 ring-offset-space-800' : ''}
                       ${isHovered ? 'scale-105 z-10' : ''}
                       ${connected && !isSelected && !isHovered ? 'opacity-100' : ''}
                       ${!connected && (hoveredCompany || selectedCompanyId) && !isSelected && !isHovered ? 'opacity-40' : ''}

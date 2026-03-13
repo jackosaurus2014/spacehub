@@ -42,7 +42,7 @@ export default function AnnouncementBanner() {
           </p>
           <Link
             href={ANNOUNCEMENT.href}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/15 text-white text-xs font-semibold hover:bg-white/25 transition-colors whitespace-nowrap border border-white/20"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/15 text-slate-900 text-xs font-semibold hover:bg-white/25 transition-colors whitespace-nowrap border border-white/20"
           >
             {ANNOUNCEMENT.cta}
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

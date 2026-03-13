@@ -145,7 +145,7 @@ function MessagesPageInner() {
       <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Sign in to access messages</h2>
-          <Link href="/login" className="px-6 py-3 bg-white hover:bg-slate-100 text-white rounded-lg min-h-[44px] inline-flex items-center">
+          <Link href="/login" className="px-6 py-3 bg-white hover:bg-slate-100 text-slate-900 rounded-lg min-h-[44px] inline-flex items-center">
             Sign In
           </Link>
         </div>
@@ -240,7 +240,7 @@ function MessagesPageInner() {
                     action={conversations.length === 0 ? (
                       <Link
                         href="/community"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors"
                       >
                         Browse Community
                       </Link>

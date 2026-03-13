@@ -235,7 +235,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
               {listing.company.contactEmail && (
                 <a
                   href={`mailto:${listing.company.contactEmail}`}
-                  className="block w-full text-center py-2 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors mb-2"
+                  className="block w-full text-center py-2 bg-white hover:bg-slate-100 text-slate-900 text-sm rounded-lg font-medium transition-colors mb-2"
                 >
                   Contact Provider
                 </a>

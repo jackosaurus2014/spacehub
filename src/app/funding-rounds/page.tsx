@@ -597,7 +597,7 @@ export default function FundingRoundsPage() {
               onClick={() => setActiveTab(tab.key)}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all min-h-[44px] ${
                 activeTab === tab.key
-                  ? 'bg-white text-white shadow-lg shadow-black/10'
+                  ? 'bg-white text-slate-900 shadow-lg shadow-black/10'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
               }`}
             >

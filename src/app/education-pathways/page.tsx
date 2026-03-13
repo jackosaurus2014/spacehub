@@ -470,7 +470,7 @@ export default function EducationPathwaysPage() {
                 onClick={() => setActiveSection(section.id)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   activeSection === section.id
-                    ? 'bg-white text-white shadow-lg shadow-black/10'
+                    ? 'bg-white text-slate-900 shadow-lg shadow-black/10'
                     : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-700/50'
                 }`}
               >
@@ -494,7 +494,7 @@ export default function EducationPathwaysPage() {
                       onClick={() => setActiveFilter(key)}
                       className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                         activeFilter === key
-                          ? 'bg-white text-white'
+                          ? 'bg-white text-slate-900'
                           : `bg-slate-800/60 ${val.color} hover:bg-slate-700/60 border border-slate-700/50`
                       }`}
                     >

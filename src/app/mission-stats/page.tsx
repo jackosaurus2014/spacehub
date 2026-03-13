@@ -440,7 +440,7 @@ export default function MissionStatsPage() {
                 onClick={() => setSelectedYear(d.year)}
                 className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
                   selectedYear === d.year
-                    ? 'bg-white text-white shadow-lg shadow-black/20/25'
+                    ? 'bg-white text-slate-900 shadow-lg shadow-black/20/25'
                     : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80'
                 }`}
               >

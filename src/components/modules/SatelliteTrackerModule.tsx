@@ -133,7 +133,7 @@ export default function SatelliteTrackerModule() {
         </h2>
         <Link
           href="/satellites"
-          className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
+          className="text-slate-200 hover:text-white transition-colors text-sm"
         >
           Full Tracker &rarr;
         </Link>
@@ -172,10 +172,10 @@ export default function SatelliteTrackerModule() {
 
       {/* ISS Highlight */}
       {iss && (
-        <div className="card p-5 border border-nebula-500/50 bg-gradient-to-br from-nebula-900/20 to-transparent">
+        <div className="card p-5 border border-white/15/50 bg-gradient-to-br from-slate-800/20 to-transparent">
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-nebula-500/20 flex items-center justify-center text-2xl border border-nebula-500/30">
+              <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center text-2xl border border-white/10">
                 🏠
               </div>
               <div>
@@ -194,7 +194,7 @@ export default function SatelliteTrackerModule() {
                 <div className="text-slate-400 text-xs">Altitude</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-nebula-300">{iss.velocity.toFixed(2)} km/s</div>
+                <div className="text-lg font-bold text-slate-200">{iss.velocity.toFixed(2)} km/s</div>
                 <div className="text-slate-400 text-xs">Velocity</div>
               </div>
             </div>
@@ -287,7 +287,7 @@ export default function SatelliteTrackerModule() {
                   </div>
                   <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-nebula-500 to-plasma-400 rounded-full"
+                      className="h-full bg-gradient-to-r from-white to-plasma-400 rounded-full"
                       style={{ width: `${Math.min(pct * 4, 100)}%` }}
                     />
                   </div>
@@ -302,7 +302,7 @@ export default function SatelliteTrackerModule() {
       <div className="flex flex-wrap gap-2">
         <Link
           href="/orbital-slots"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
         >
           View Orbital Slots &rarr;
         </Link>

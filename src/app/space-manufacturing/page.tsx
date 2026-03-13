@@ -120,15 +120,15 @@ function OverviewTab() {
       {/* Landscape Overview */}
       <ScrollReveal><div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🌐</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">🌐</span>
           In-Space Manufacturing Landscape
         </h2>
         <div className="space-y-4 text-star-300 leading-relaxed">
           <p>
             <span className="text-white font-semibold">In-space manufacturing</span> represents one of the most
             transformative emerging sectors of the space economy. By leveraging the unique properties of the space
-            environment -- <span className="text-nebula-400">microgravity</span>, <span className="text-nebula-400">ultra-vacuum</span>,
-            and <span className="text-nebula-400">extreme temperature differentials</span> -- companies are producing
+            environment -- <span className="text-slate-300">microgravity</span>, <span className="text-slate-300">ultra-vacuum</span>,
+            and <span className="text-slate-300">extreme temperature differentials</span> -- companies are producing
             materials and products impossible or impractical to manufacture on Earth.
           </p>
           <p>
@@ -153,7 +153,7 @@ function OverviewTab() {
       {/* Market Projection Chart */}
       <ScrollReveal><div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">📈</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">📈</span>
           Market Growth Projections
         </h2>
         <p className="text-star-300 text-sm mb-6">
@@ -169,17 +169,17 @@ function OverviewTab() {
                 <div className="flex-1 relative h-8">
                   {/* High range */}
                   <div
-                    className="absolute inset-y-0 left-0 bg-nebula-500/10 rounded"
+                    className="absolute inset-y-0 left-0 bg-white/10 rounded"
                     style={{ width: `${(proj.high / maxVal) * 100}%` }}
                   />
                   {/* Mid range */}
                   <div
-                    className="absolute inset-y-0 left-0 bg-nebula-500/25 rounded"
+                    className="absolute inset-y-0 left-0 bg-white/25 rounded"
                     style={{ width: `${(proj.mid / maxVal) * 100}%` }}
                   />
                   {/* Low range */}
                   <div
-                    className="absolute inset-y-0 left-0 bg-nebula-500/50 rounded"
+                    className="absolute inset-y-0 left-0 bg-white/50 rounded"
                     style={{ width: `${(proj.low / maxVal) * 100}%` }}
                   />
                   <div className="absolute inset-y-0 flex items-center pl-2">
@@ -188,20 +188,20 @@ function OverviewTab() {
                     </span>
                   </div>
                 </div>
-                <span className="text-nebula-400 text-sm font-semibold w-16 text-right">{formatMarketValue(proj.mid)}</span>
+                <span className="text-slate-300 text-sm font-semibold w-16 text-right">{formatMarketValue(proj.mid)}</span>
               </div>
             );
           })}
         </div>
         <div className="flex items-center gap-6 mt-4 text-xs text-star-400">
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-nebula-500/50" /> Conservative
+            <span className="w-3 h-3 rounded bg-white/50" /> Conservative
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-nebula-500/25" /> Mid-range
+            <span className="w-3 h-3 rounded bg-white/25" /> Mid-range
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-nebula-500/10" /> Optimistic
+            <span className="w-3 h-3 rounded bg-white/10" /> Optimistic
           </span>
         </div>
       </div></ScrollReveal>
@@ -209,7 +209,7 @@ function OverviewTab() {
       {/* Key Product Categories Quick View */}
       <ScrollReveal><div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🔬</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">🔬</span>
           Key Product Categories
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -232,7 +232,7 @@ function OverviewTab() {
       {/* Key Enablers */}
       <ScrollReveal><div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🚀</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">🚀</span>
           Key Market Enablers
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -266,7 +266,7 @@ function OverviewTab() {
               <div className="flex items-start justify-between mb-2">
                 <h3 className="text-white font-semibold">{enabler.title}</h3>
                 <div className="text-right">
-                  <div className="text-nebula-400 font-bold text-lg">{enabler.metric}</div>
+                  <div className="text-slate-300 font-bold text-lg">{enabler.metric}</div>
                   <div className="text-star-400 text-xs">{enabler.metricLabel}</div>
                 </div>
               </div>
@@ -279,7 +279,7 @@ function OverviewTab() {
       {/* Space Environment Advantages */}
       <ScrollReveal><div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🌌</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">🌌</span>
           Why Manufacture in Space?
         </h2>
         <p className="text-star-300 text-sm mb-6 leading-relaxed">
@@ -288,7 +288,7 @@ function OverviewTab() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {SPACE_ENVIRONMENT_ADVANTAGES.map((advantage) => (
-            <div key={advantage.id} className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30 hover:border-nebula-500/30 transition-all">
+            <div key={advantage.id} className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30 hover:border-white/10 transition-all">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-2xl">{advantage.icon}</span>
                 <h3 className="text-white font-semibold text-sm">{advantage.name}</h3>
@@ -296,7 +296,7 @@ function OverviewTab() {
               <p className="text-star-300 text-xs mb-3 leading-relaxed">{advantage.description}</p>
               <div className="flex flex-wrap gap-1.5">
                 {advantage.enabledProducts.slice(0, 4).map((product) => (
-                  <span key={product} className="px-1.5 py-0.5 bg-nebula-500/10 text-nebula-300 rounded text-xs">
+                  <span key={product} className="px-1.5 py-0.5 bg-white/10 text-slate-200 rounded text-xs">
                     {product}
                   </span>
                 ))}
@@ -309,7 +309,7 @@ function OverviewTab() {
       {/* In-Space Manufacturing Market Snapshot */}
       <ScrollReveal><div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">💰</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">💰</span>
           Market Snapshot
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -318,8 +318,8 @@ function OverviewTab() {
             <div className="text-star-400 text-xs uppercase tracking-widest mt-1">By 2030 (Conservative)</div>
             <p className="text-star-300 text-xs mt-2">Focused on near-term products: ZBLAN fiber optics, pharmaceutical crystallization, and bioprinting research services.</p>
           </div>
-          <div className="bg-slate-700/30 rounded-lg p-4 border border-nebula-500/20">
-            <div className="text-nebula-400 font-bold text-2xl">~$18B</div>
+          <div className="bg-slate-700/30 rounded-lg p-4 border border-white/15/20">
+            <div className="text-slate-300 font-bold text-2xl">~$18B</div>
             <div className="text-star-400 text-xs uppercase tracking-widest mt-1">By 2030 (Mid-range)</div>
             <p className="text-star-300 text-xs mt-2">Includes commercial station manufacturing, semiconductor production, and early ISRU operations on the Moon.</p>
           </div>
@@ -393,7 +393,7 @@ function CompaniesTab() {
           return (
             <div
               key={company.id}
-              className="card p-5 hover:border-nebula-500/40"
+              className="card p-5 hover:border-white/15/40"
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-3">
@@ -402,7 +402,7 @@ function CompaniesTab() {
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-star-400 text-sm">{company.hq}</span>
                     {company.ticker && (
-                      <span className="text-nebula-400 text-xs font-mono font-bold bg-nebula-500/10 px-1.5 py-0.5 rounded">
+                      <span className="text-slate-300 text-xs font-mono font-bold bg-white/10 px-1.5 py-0.5 rounded">
                         {company.ticker}
                       </span>
                     )}
@@ -446,7 +446,7 @@ function CompaniesTab() {
                   {(company.keyProducts || []).map((product) => (
                     <span
                       key={product}
-                      className="px-2 py-0.5 bg-nebula-500/10 text-nebula-300 rounded text-xs font-medium"
+                      className="px-2 py-0.5 bg-white/10 text-slate-200 rounded text-xs font-medium"
                     >
                       {product}
                     </span>
@@ -460,7 +460,7 @@ function CompaniesTab() {
                 <ul className="space-y-1">
                   {(company.milestones || []).slice(0, 3).map((milestone, i) => (
                     <li key={i} className="text-star-300 text-xs flex items-start gap-1.5">
-                      <span className="text-nebula-400 mt-0.5">&#9656;</span>
+                      <span className="text-slate-300 mt-0.5">&#9656;</span>
                       {milestone}
                     </li>
                   ))}
@@ -473,7 +473,7 @@ function CompaniesTab() {
                   href={company.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-nebula-300 hover:text-nebula-200 text-sm inline-flex items-center gap-1"
+                  className="text-slate-200 hover:text-white text-sm inline-flex items-center gap-1"
                 >
                   Visit Website &rarr;
                 </a>
@@ -518,15 +518,15 @@ function ProcessesTab() {
       {/* Introduction */}
       <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">⚙️</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">⚙️</span>
           Manufacturing Processes for Space
         </h2>
         <p className="text-star-300 leading-relaxed">
           In-space manufacturing encompasses a diverse range of processes, from additive manufacturing (3D printing) of
           metals, polymers, and ceramics to crystal growth, fiber optic production, bioprinting, and regolith processing
           for lunar/Mars construction. Each process leverages specific advantages of the space environment --
-          <span className="text-nebula-400"> microgravity</span>, <span className="text-nebula-400">ultra-vacuum</span>,
-          and <span className="text-nebula-400">extreme temperatures</span> -- to produce materials and products with
+          <span className="text-slate-300"> microgravity</span>, <span className="text-slate-300">ultra-vacuum</span>,
+          and <span className="text-slate-300">extreme temperatures</span> -- to produce materials and products with
           properties unachievable on Earth.
         </p>
       </div>
@@ -560,7 +560,7 @@ function ProcessesTab() {
           onClick={() => setCategoryFilter('')}
           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
             categoryFilter === ''
-              ? 'bg-nebula-500/20 text-nebula-300 border border-nebula-500/50'
+              ? 'bg-white/10 text-slate-200 border border-white/15/50'
               : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'
           }`}
         >
@@ -574,7 +574,7 @@ function ProcessesTab() {
               onClick={() => setCategoryFilter(cat)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 categoryFilter === cat
-                  ? 'bg-nebula-500/20 text-nebula-300 border border-nebula-500/50'
+                  ? 'bg-white/10 text-slate-200 border border-white/15/50'
                   : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'
               }`}
             >
@@ -592,7 +592,7 @@ function ProcessesTab() {
           return (
             <div
               key={process.id}
-              className="card overflow-hidden hover:border-nebula-500/30"
+              className="card overflow-hidden hover:border-white/10"
             >
               <button
                 onClick={() => setSelectedProcess(isExpanded ? null : process.id)}
@@ -632,8 +632,8 @@ function ProcessesTab() {
                   </div>
 
                   {/* Microgravity Advantage */}
-                  <div className="bg-gradient-to-r from-nebula-500/10 to-purple-500/10 rounded-lg p-4 border border-nebula-500/20">
-                    <h4 className="text-nebula-300 font-semibold text-sm mb-2 flex items-center gap-2">
+                  <div className="bg-gradient-to-r from-white/10 to-purple-500/10 rounded-lg p-4 border border-white/15/20">
+                    <h4 className="text-slate-200 font-semibold text-sm mb-2 flex items-center gap-2">
                       <span>🪶</span> Microgravity / Space Advantage
                     </h4>
                     <p className="text-star-300 text-sm leading-relaxed">{process.microgravityAdvantage}</p>
@@ -674,7 +674,7 @@ function ProcessesTab() {
                       <ul className="space-y-1.5">
                         {process.techniques.map((technique, i) => (
                           <li key={i} className="text-star-300 text-xs flex items-start gap-2">
-                            <span className="text-nebula-400 mt-0.5">&#9656;</span>
+                            <span className="text-slate-300 mt-0.5">&#9656;</span>
                             {technique}
                           </li>
                         ))}
@@ -686,7 +686,7 @@ function ProcessesTab() {
                         {process.materials.map((material) => (
                           <span
                             key={material}
-                            className="px-2 py-0.5 bg-nebula-500/10 text-nebula-300 rounded text-xs"
+                            className="px-2 py-0.5 bg-white/10 text-slate-200 rounded text-xs"
                           >
                             {material}
                           </span>
@@ -741,7 +741,7 @@ function ProcessesTab() {
       {/* Process Comparison Matrix */}
       <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">📋</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">📋</span>
           Process Comparison Matrix
         </h2>
         <div className="overflow-x-auto">
@@ -791,7 +791,7 @@ function ProcessesTab() {
       {/* Space Environment Physics */}
       <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🔬</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">🔬</span>
           Space Environment Advantages -- The Physics
         </h2>
         <p className="text-star-300 text-sm mb-6 leading-relaxed">
@@ -809,7 +809,7 @@ function ProcessesTab() {
                 </div>
               </div>
               <div className="card p-4 mb-3">
-                <h4 className="text-nebula-300 text-xs uppercase tracking-widest mb-2">Physics Explanation</h4>
+                <h4 className="text-slate-200 text-xs uppercase tracking-widest mb-2">Physics Explanation</h4>
                 <p className="text-star-300 text-sm leading-relaxed">{advantage.physicsExplanation}</p>
               </div>
               <div>
@@ -840,14 +840,14 @@ function ISSLabTab() {
       {/* ISS Lab Overview */}
       <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🛸</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">🛸</span>
           ISS National Laboratory
         </h2>
         <div className="space-y-3 text-star-300 leading-relaxed">
           <p>
             The <span className="text-white font-semibold">ISS National Laboratory</span>, managed by the Center
             for the Advancement of Science in Space (CASIS), has facilitated over{' '}
-            <span className="text-nebula-400 font-semibold">{totalExperiments.toLocaleString()}+ experiments</span> since
+            <span className="text-slate-300 font-semibold">{totalExperiments.toLocaleString()}+ experiments</span> since
             the station was designated as a U.S. National Laboratory in 2005. These span materials science,
             pharmaceutical development, biological research, technology demonstrations, and fundamental physics.
           </p>
@@ -908,7 +908,7 @@ function ISSLabTab() {
                     </div>
                     <div className="w-full bg-slate-700/50 rounded-full h-2">
                       <div
-                        className="bg-nebula-500/60 h-2 rounded-full transition-all duration-500"
+                        className="bg-white/60 h-2 rounded-full transition-all duration-500"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
@@ -931,7 +931,7 @@ function ISSLabTab() {
                       <ul className="space-y-2">
                         {(category.keyResults || []).map((result, i) => (
                           <li key={i} className="text-star-300 text-sm flex items-start gap-2">
-                            <span className="text-nebula-400 mt-0.5">&#9656;</span>
+                            <span className="text-slate-300 mt-0.5">&#9656;</span>
                             {result}
                           </li>
                         ))}
@@ -948,7 +948,7 @@ function ISSLabTab() {
       {/* Key ISS Manufacturing Facilities */}
       <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">🔧</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">🔧</span>
           Active Manufacturing Facilities on ISS
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -998,7 +998,7 @@ function ISSLabTab() {
           ].map((facility) => (
             <div key={facility.name} className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
               <h3 className="text-white font-semibold text-sm mb-1">{facility.name}</h3>
-              <p className="text-nebula-400 text-xs mb-2">{facility.operator}</p>
+              <p className="text-slate-300 text-xs mb-2">{facility.operator}</p>
               <p className="text-star-300 text-xs mb-3">{facility.capability}</p>
               <div className="flex items-center gap-3 text-xs">
                 <span className="text-green-400 font-medium">{facility.parts} produced</span>
@@ -1021,7 +1021,7 @@ function ProductsTab() {
       {/* Overview */}
       <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">📊</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">📊</span>
           Product Categories & Market Analysis
         </h2>
         <p className="text-star-300 leading-relaxed">
@@ -1039,7 +1039,7 @@ function ProductsTab() {
           return (
             <div
               key={product.id}
-              className="card overflow-hidden hover:border-nebula-500/30"
+              className="card overflow-hidden hover:border-white/10"
             >
               <button
                 onClick={() => setSelectedProduct(isExpanded ? null : product.id)}
@@ -1081,7 +1081,7 @@ function ProductsTab() {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-star-400 text-xs">Timeline:</span>
-                    <span className="text-nebula-400 text-sm font-medium">{product.timeToMarket}</span>
+                    <span className="text-slate-300 text-sm font-medium">{product.timeToMarket}</span>
                   </div>
                 </div>
               </button>
@@ -1128,7 +1128,7 @@ function ProductsTab() {
                       {(product.leaders || []).map((leader) => (
                         <span
                           key={leader}
-                          className="px-2 py-0.5 bg-nebula-500/10 text-nebula-300 rounded text-xs font-medium"
+                          className="px-2 py-0.5 bg-white/10 text-slate-200 rounded text-xs font-medium"
                         >
                           {leader}
                         </span>
@@ -1145,7 +1145,7 @@ function ProductsTab() {
       {/* Market Comparison Table */}
       <div className="card p-6">
         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-nebula-500/20 flex items-center justify-center text-lg">📋</span>
+          <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">📋</span>
           Product Comparison Matrix
         </h2>
         <div className="overflow-x-auto">
@@ -1364,10 +1364,10 @@ function ImageryMarketplaceContent() {
         <div>
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className="text-star-400 text-sm">Filter by sensor:</span>
-            <button onClick={() => setSensorFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === '' ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>All ({IMG_PROVIDERS.length})</button>
+            <button onClick={() => setSensorFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === '' ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-slate-900'}`}>All ({IMG_PROVIDERS.length})</button>
             {sensorTypes.map((type) => {
               const count = IMG_PROVIDERS.filter((p) => p.sensorType === type).length;
-              return (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>{type} ({count})</button>);
+              return (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-slate-900'}`}>{type} ({count})</button>);
             })}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -1392,8 +1392,8 @@ function ImageryMarketplaceContent() {
         <div>
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className="text-star-400 text-sm">Filter by sensor:</span>
-            <button onClick={() => setSensorFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === '' ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>All</button>
-            {sensorTypes.map((type) => (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>{type}</button>))}
+            <button onClick={() => setSensorFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === '' ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-slate-900'}`}>All</button>
+            {sensorTypes.map((type) => (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-slate-900'}`}>{type}</button>))}
           </div>
           <ImgComparisonTable sensorFilter={sensorFilter} />
           <div className="mt-6 card p-6">
@@ -1626,7 +1626,7 @@ function ManufacturingAndImageryContent() {
               href="/space-manufacturing"
               className={`px-5 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
                 topTab === 'manufacturing'
-                  ? 'border-nebula-500 text-nebula-300'
+                  ? 'border-white/15 text-slate-200'
                   : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'
               }`}
             >
@@ -1659,7 +1659,7 @@ function ManufacturingAndImageryContent() {
                     onClick={() => setMfgTab(tab.id)}
                     className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                       mfgTab === tab.id
-                        ? 'border-nebula-500 text-nebula-300'
+                        ? 'border-white/15 text-slate-200'
                         : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'
                     }`}
                   >

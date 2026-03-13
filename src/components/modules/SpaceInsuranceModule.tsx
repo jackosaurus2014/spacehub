@@ -191,7 +191,7 @@ export default function SpaceInsuranceModule() {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="card p-3 text-center">
-          <div className="text-2xl font-bold text-nebula-300">
+          <div className="text-2xl font-bold text-slate-200">
             {formatCurrency(stats.totalPremiums)}
           </div>
           <div className="text-slate-400 text-xs">Total Premiums</div>
@@ -266,11 +266,11 @@ export default function SpaceInsuranceModule() {
                     <span className="text-xs text-slate-400 w-16">Premiums</span>
                     <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-nebula-500 to-nebula-400 rounded-full"
+                        className="h-full bg-gradient-to-r from-white to-slate-400 rounded-full"
                         style={{ width: `${Math.min(premiumWidth, 100)}%` }}
                       />
                     </div>
-                    <span className="text-xs text-nebula-300 w-16 text-right">
+                    <span className="text-xs text-slate-200 w-16 text-right">
                       {formatCurrency(year.totalPremiums)}
                     </span>
                   </div>
@@ -358,7 +358,7 @@ export default function SpaceInsuranceModule() {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-400">Est. Premium:</span>
-                    <span className="text-nebula-300 font-bold">
+                    <span className="text-slate-200 font-bold">
                       {formatCurrency(premiumEstimate.premiumAmount)}
                     </span>
                   </div>
@@ -421,7 +421,7 @@ export default function SpaceInsuranceModule() {
                         {missionInfo?.icon} {missionInfo?.label || policy.missionType}
                       </span>
                     </td>
-                    <td className="py-2 pr-4 text-right text-nebula-300 font-mono">
+                    <td className="py-2 pr-4 text-right text-slate-200 font-mono">
                       {policy.premiumRate.toFixed(2)}%
                     </td>
                     <td className="py-2 pr-4 text-right text-slate-400 font-mono">

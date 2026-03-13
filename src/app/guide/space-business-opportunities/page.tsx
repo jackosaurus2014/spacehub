@@ -178,7 +178,7 @@ export default function SpaceBusinessOpportunitiesPage() {
                 <li key={item.id}>
                   <a
                     href={`#${item.id}`}
-                    className="text-nebula-400 hover:underline text-sm transition-colors"
+                    className="text-slate-300 hover:underline text-sm transition-colors"
                   >
                     {i + 1}. {item.label}
                   </a>
@@ -242,7 +242,7 @@ export default function SpaceBusinessOpportunitiesPage() {
                     {MARKET_SEGMENTS.map((seg) => (
                       <tr key={seg.segment} className="bg-slate-800/60 border-b border-slate-700/50">
                         <td className="py-3 pr-4 text-white font-medium">{seg.segment}</td>
-                        <td className="py-3 pr-4 text-nebula-400 font-semibold">{seg.marketSize}</td>
+                        <td className="py-3 pr-4 text-slate-300 font-semibold">{seg.marketSize}</td>
                         <td className="py-3 pr-4 text-slate-300">{seg.growthRate}</td>
                         <td className="py-3 text-slate-300">{seg.keyPlayers}</td>
                       </tr>
@@ -251,7 +251,7 @@ export default function SpaceBusinessOpportunitiesPage() {
                 </table>
               </div>
               <p className="text-slate-300 text-sm mt-4">
-                <Link href="/market-intel" className="text-nebula-400 hover:underline">
+                <Link href="/market-intel" className="text-slate-300 hover:underline">
                   Explore detailed market intelligence on SpaceNexus &rarr;
                 </Link>
               </p>
@@ -304,7 +304,7 @@ export default function SpaceBusinessOpportunitiesPage() {
                 from small task orders to multi-billion-dollar satellite programs.
               </p>
               <p className="text-slate-300 text-sm mt-4">
-                <Link href="/procurement" className="text-nebula-400 hover:underline">
+                <Link href="/procurement" className="text-slate-300 hover:underline">
                   Search active government space contracts on SpaceNexus &rarr;
                 </Link>
               </p>
@@ -351,19 +351,19 @@ export default function SpaceBusinessOpportunitiesPage() {
               </p>
               <ul className="text-slate-300 space-y-2 mb-4">
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Components and subsystems</strong> &mdash; Solar cells, reaction wheels, star trackers, propulsion systems, and radiation-hardened electronics are in high demand. Companies like Rocket Lab (formerly SolAero) and Redwire are vertically integrating to capture this market.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Materials and manufacturing</strong> &mdash; Carbon fiber composites, specialty alloys, additive manufacturing, and thermal management materials are all growth areas. Relativity Space and Launcher have pioneered 3D-printed rocket components.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Test and integration</strong> &mdash; Thermal vacuum testing, vibration testing, EMC/EMI testing, and spacecraft integration services are bottlenecks as production volumes increase.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Software and simulation</strong> &mdash; Mission planning tools, digital twins, constellation management software, and data analytics platforms are all high-growth niches.</span>
                 </li>
               </ul>
@@ -373,7 +373,7 @@ export default function SpaceBusinessOpportunitiesPage() {
                 lower costs, or alternative sourcing are well-positioned to capture share.
               </p>
               <p className="text-slate-300 text-sm mt-4">
-                <Link href="/supply-chain" className="text-nebula-400 hover:underline">
+                <Link href="/supply-chain" className="text-slate-300 hover:underline">
                   Map the space supply chain on SpaceNexus &rarr;
                 </Link>
               </p>
@@ -438,7 +438,7 @@ export default function SpaceBusinessOpportunitiesPage() {
                 with significant growth potential.
               </p>
               <p className="text-slate-300 text-sm mt-4">
-                <Link href="/company-profiles" className="text-nebula-400 hover:underline">
+                <Link href="/company-profiles" className="text-slate-300 hover:underline">
                   Research 200+ space companies in the SpaceNexus directory &rarr;
                 </Link>
               </p>
@@ -453,24 +453,24 @@ export default function SpaceBusinessOpportunitiesPage() {
               </p>
               <ol className="text-slate-300 space-y-2 mb-6">
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
-                  <span><strong className="text-white">Procurement Intelligence</strong> &mdash; Search active SAM.gov contracts, NASA solicitations, and Space Force opportunities on our <Link href="/procurement" className="text-nebula-400 hover:underline">Procurement page</Link>.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
+                  <span><strong className="text-white">Procurement Intelligence</strong> &mdash; Search active SAM.gov contracts, NASA solicitations, and Space Force opportunities on our <Link href="/procurement" className="text-slate-300 hover:underline">Procurement page</Link>.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
-                  <span><strong className="text-white">Marketplace</strong> &mdash; Connect with buyers and sellers of space products and services on the <Link href="/marketplace" className="text-nebula-400 hover:underline">SpaceNexus Marketplace</Link>.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
+                  <span><strong className="text-white">Marketplace</strong> &mdash; Connect with buyers and sellers of space products and services on the <Link href="/marketplace" className="text-slate-300 hover:underline">SpaceNexus Marketplace</Link>.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
-                  <span><strong className="text-white">Company Intelligence</strong> &mdash; Research potential customers, partners, and competitors in our <Link href="/company-profiles" className="text-nebula-400 hover:underline">company database</Link> with 200+ profiles.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
+                  <span><strong className="text-white">Company Intelligence</strong> &mdash; Research potential customers, partners, and competitors in our <Link href="/company-profiles" className="text-slate-300 hover:underline">company database</Link> with 200+ profiles.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>
-                  <span><strong className="text-white">Market Intelligence</strong> &mdash; Track market trends, investment activity, and competitive dynamics on the <Link href="/market-intel" className="text-nebula-400 hover:underline">Market Intel dashboard</Link>.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>
+                  <span><strong className="text-white">Market Intelligence</strong> &mdash; Track market trends, investment activity, and competitive dynamics on the <Link href="/market-intel" className="text-slate-300 hover:underline">Market Intel dashboard</Link>.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">5</span>
-                  <span><strong className="text-white">Business Opportunities Hub</strong> &mdash; Our dedicated <Link href="/business-opportunities" className="text-nebula-400 hover:underline">Business Opportunities page</Link> aggregates RFPs, RFIs, subcontracting opportunities, and partnership requests.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">5</span>
+                  <span><strong className="text-white">Business Opportunities Hub</strong> &mdash; Our dedicated <Link href="/business-opportunities" className="text-slate-300 hover:underline">Business Opportunities page</Link> aggregates RFPs, RFIs, subcontracting opportunities, and partnership requests.</span>
                 </li>
               </ol>
               <div className="mt-6 flex flex-wrap gap-3">
@@ -503,16 +503,16 @@ export default function SpaceBusinessOpportunitiesPage() {
             <section className="pt-6 border-t border-slate-700/50">
               <h3 className="text-lg font-bold text-white mb-4">Related Guides</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Link href="/guide/space-industry-market-size" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-industry-market-size" className="text-slate-300 hover:underline text-sm transition-colors">
                   Space Industry Market Size &rarr;
                 </Link>
-                <Link href="/guide/space-economy-investment" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-economy-investment" className="text-slate-300 hover:underline text-sm transition-colors">
                   Investing in the Space Economy &rarr;
                 </Link>
-                <Link href="/guide/space-regulatory-compliance" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-regulatory-compliance" className="text-slate-300 hover:underline text-sm transition-colors">
                   Space Regulatory Compliance Guide &rarr;
                 </Link>
-                <Link href="/guide/space-launch-schedule-2026" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-launch-schedule-2026" className="text-slate-300 hover:underline text-sm transition-colors">
                   2026 Space Launch Schedule &rarr;
                 </Link>
               </div>

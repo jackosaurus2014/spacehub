@@ -26,7 +26,7 @@ const PlanetaryScene = dynamic(
       <div className="h-[500px] flex items-center justify-center bg-slate-800/50 rounded-lg">
         <div className="text-center">
           <div
-            className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"
+            className="w-10 h-10 border-3 border-white/15 border-t-transparent rounded-full animate-spin mx-auto mb-3"
             style={{ borderWidth: '3px' }}
           />
           <p className="text-slate-400 text-sm">Loading 3D visualization...</p>
@@ -330,7 +330,7 @@ function SolarExplorationContent() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center py-20">
             <div
-              className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin"
+              className="w-12 h-12 border-3 border-white/15 border-t-transparent rounded-full animate-spin"
               style={{ borderWidth: '3px' }}
             />
           </div>
@@ -386,7 +386,7 @@ function SolarExplorationContent() {
               onClick={() => setSelectedBodySlug(body.slug)}
               className={`px-5 py-3 rounded-lg font-medium transition-all ${
                 selectedBodySlug === body.slug
-                  ? 'bg-slate-700 text-white border-slate-600 shadow-glow-sm'
+                  ? 'bg-slate-700 text-white border-slate-600'
                   : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
               }`}
             >
@@ -510,7 +510,7 @@ function SolarExplorationContent() {
             {exoplanetsLoading ? (
               <div className="flex items-center justify-center py-8">
                 <div
-                  className="w-8 h-8 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin"
+                  className="w-8 h-8 border-3 border-white/15 border-t-transparent rounded-full animate-spin"
                   style={{ borderWidth: '3px' }}
                 />
               </div>
@@ -612,19 +612,19 @@ function SolarExplorationContent() {
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <Link href="/mission-control?type=moon_mission" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-nebula-200">🌙 Moon Missions</div>
+              <div className="text-sm font-medium text-white group-hover:text-white">🌙 Moon Missions</div>
               <p className="text-xs text-slate-400 mt-1">Upcoming lunar launch schedule</p>
             </Link>
             <Link href="/mission-control?type=mars_mission" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-nebula-200">🔴 Mars Missions</div>
+              <div className="text-sm font-medium text-white group-hover:text-white">🔴 Mars Missions</div>
               <p className="text-xs text-slate-400 mt-1">Upcoming Mars launch windows</p>
             </Link>
             <Link href="/resource-exchange" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-nebula-200">🚀 Launch Providers</div>
+              <div className="text-sm font-medium text-white group-hover:text-white">🚀 Launch Providers</div>
               <p className="text-xs text-slate-400 mt-1">Vehicles and launch services</p>
             </Link>
             <Link href="/space-insurance?tab=policies" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-nebula-200">🛡️ Mission Insurance</div>
+              <div className="text-sm font-medium text-white group-hover:text-white">🛡️ Mission Insurance</div>
               <p className="text-xs text-slate-400 mt-1">Coverage for exploration missions</p>
             </Link>
           </div>
@@ -691,7 +691,7 @@ function LoadingFallback() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center py-20">
           <div
-            className="w-12 h-12 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin"
+            className="w-12 h-12 border-3 border-white/15 border-t-transparent rounded-full animate-spin"
             style={{ borderWidth: '3px' }}
           />
         </div>

@@ -160,10 +160,10 @@ function ProviderCard({
     <div
       className={`card p-5 relative ${
         !isViable ? 'opacity-60' : ''
-      } ${isRecommended ? 'ring-2 ring-nebula-500/50' : ''}`}
+      } ${isRecommended ? 'ring-2 ring-white/15' : ''}`}
     >
       {isRecommended && (
-        <div className="absolute -top-2 -right-2 px-2 py-1 bg-nebula-500 text-white text-xs font-bold rounded-full">
+        <div className="absolute -top-2 -right-2 px-2 py-1 bg-white text-slate-900 text-xs font-bold rounded-full">
           Best Value
         </div>
       )}
@@ -182,7 +182,7 @@ function ProviderCard({
           </div>
         </div>
         <div className="text-right">
-          <div className={`text-xl font-bold font-display ${isViable ? 'text-nebula-300' : 'text-slate-400'}`}>
+          <div className={`text-xl font-bold font-display ${isViable ? 'text-slate-200' : 'text-slate-400'}`}>
             {formatCurrency(provider.typicalCost, true)}
           </div>
           <div className="text-slate-400 text-xs">typical cost</div>
@@ -249,7 +249,7 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
   const viableProviders = data.providers.filter(p => p.supportsOrbit && p.supportsPayload);
 
   return (
-    <div className="card-elevated p-6 border border-nebula-500/20">
+    <div className="card-elevated p-6 border border-white/15/20">
       <div className="flex items-center gap-3 mb-6">
         <span className="text-3xl">💰</span>
         <div>
@@ -261,10 +261,10 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
       </div>
 
       {/* Total cost highlight */}
-      <div className="bg-gradient-to-r from-nebula-500/10 to-plasma-500/10 rounded-xl p-6 mb-6">
+      <div className="bg-gradient-to-r from-white/10 to-plasma-500/10 rounded-xl p-6 mb-6">
         <div className="text-center">
           <div className="text-slate-400 text-sm mb-2">Estimated Total Mission Cost</div>
-          <div className="text-4xl font-display font-bold text-nebula-300 mb-2">
+          <div className="text-4xl font-display font-bold text-slate-200 mb-2">
             {formatCurrency(summary.totalCost.typical, true)}
           </div>
           <div className="text-slate-400 text-sm">
@@ -372,7 +372,7 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
 
   return (
     <div className="space-y-4">
-      <div className="card-elevated p-5 border border-nebula-500/20">
+      <div className="card-elevated p-5 border border-white/15/20">
         <div className="flex items-center gap-3 mb-4">
           <span className="text-2xl">🛡️</span>
           <div>
@@ -388,7 +388,7 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
                 <span className="text-lg">{coverage.icon}</span>
                 <span className="text-white font-medium">{coverage.name}</span>
               </div>
-              <div className="text-2xl font-bold text-nebula-300 mb-1">
+              <div className="text-2xl font-bold text-slate-200 mb-1">
                 {formatCurrency(coverage.data.typical, true)}
               </div>
               <div className="text-slate-400 text-xs mb-2">
@@ -404,7 +404,7 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
           <div className="flex items-center justify-between">
             <span className="text-white font-medium">Total Insurance Premium</span>
             <div className="text-right">
-              <div className="text-xl font-bold text-nebula-300">
+              <div className="text-xl font-bold text-slate-200">
                 {formatCurrency(insurance.totalInsurance.typical, true)}
               </div>
               <div className="text-slate-400 text-xs">
@@ -454,7 +454,7 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
 
   return (
     <div className="space-y-4">
-      <div className="card-elevated p-5 border border-nebula-500/20">
+      <div className="card-elevated p-5 border border-white/15/20">
         <div className="flex items-center gap-3 mb-4">
           <span className="text-2xl">📋</span>
           <div>
@@ -480,10 +480,10 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
           ))}
         </div>
 
-        <div className="mt-4 p-4 bg-gradient-to-r from-nebula-500/10 to-plasma-500/10 rounded-lg">
+        <div className="mt-4 p-4 bg-gradient-to-r from-white/10 to-plasma-500/10 rounded-lg">
           <div className="flex items-center justify-between">
             <span className="text-white font-semibold">Total Regulatory Fees</span>
-            <div className="text-xl font-bold text-nebula-300">{formatCurrency(fees.totalFees)}</div>
+            <div className="text-xl font-bold text-slate-200">{formatCurrency(fees.totalFees)}</div>
           </div>
         </div>
       </div>
@@ -494,7 +494,7 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
           <ul className="space-y-2">
             {fees.notes.map((note, idx) => (
               <li key={idx} className="flex items-start gap-2 text-sm text-slate-400">
-                <span className="text-nebula-300 mt-0.5">*</span>
+                <span className="text-slate-200 mt-0.5">*</span>
                 {note}
               </li>
             ))}
@@ -681,7 +681,7 @@ function MissionCostContent() {
                     onClick={() => setPayloadMass(mass)}
                     className={`px-2 py-1 text-xs rounded ${
                       payloadMass === mass
-                        ? 'bg-nebula-500 text-white'
+                        ? 'bg-white text-slate-900'
                         : 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50'
                     }`}
                   >
@@ -747,7 +747,7 @@ function MissionCostContent() {
                     onClick={() => setPayloadValue(val)}
                     className={`px-2 py-1 text-xs rounded ${
                       payloadValue === val
-                        ? 'bg-nebula-500 text-white'
+                        ? 'bg-white text-slate-900'
                         : 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50'
                     }`}
                   >
@@ -765,7 +765,7 @@ function MissionCostContent() {
                 type="checkbox"
                 checked={includeInsurance}
                 onChange={(e) => setIncludeInsurance(e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 text-nebula-300 focus:ring-nebula-500"
+                className="w-4 h-4 rounded border-slate-300 text-slate-200 focus:ring-white/15"
               />
               <span className="text-sm text-slate-400">Include Insurance Estimate</span>
             </label>
@@ -775,7 +775,7 @@ function MissionCostContent() {
                 type="checkbox"
                 checked={includeRegulatory}
                 onChange={(e) => setIncludeRegulatory(e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 text-nebula-300 focus:ring-nebula-500"
+                className="w-4 h-4 rounded border-slate-300 text-slate-200 focus:ring-white/15"
               />
               <span className="text-sm text-slate-400">Include Regulatory Fees</span>
             </label>
@@ -826,7 +826,7 @@ function MissionCostContent() {
                   onClick={() => handleTabChange(tab.id)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === tab.id
-                      ? 'bg-nebula-500 text-white shadow-glow-sm'
+                      ? 'bg-white text-slate-900'
                       : 'bg-slate-800/60 text-slate-200 hover:bg-slate-700/70 hover:text-white border border-slate-600/30'
                   }`}
                 >
@@ -836,7 +836,7 @@ function MissionCostContent() {
                     <span
                       className={`text-xs px-1.5 py-0.5 rounded-full ${
                         activeTab === tab.id
-                          ? 'bg-white/20 text-white'
+                          ? 'bg-white/20 text-slate-900'
                           : 'bg-slate-600/50 text-slate-200'
                       }`}
                     >
@@ -864,7 +864,7 @@ function MissionCostContent() {
                   {bestValueProvider && (
                     <div className="text-right">
                       <span className="text-slate-400 text-sm">Best value:</span>
-                      <span className="ml-2 text-nebula-300 font-bold">
+                      <span className="ml-2 text-slate-200 font-bold">
                         {bestValueProvider.providerName} {bestValueProvider.vehicleName}
                       </span>
                     </div>
@@ -945,14 +945,14 @@ function MissionCostContent() {
         </Link></ScrollReveal>
 
         {/* Related Links */}
-        <ScrollReveal><div className="card p-5 mt-4 border border-nebula-500/20">
+        <ScrollReveal><div className="card p-5 mt-4 border border-white/15/20">
           <h3 className="text-lg font-semibold text-white mb-4">Related Resources</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <Link
               href="/space-insurance"
               className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-nebula-200">
+              <div className="text-sm font-medium text-white group-hover:text-white">
                 🛡️ Space Insurance
               </div>
               <p className="text-xs text-slate-400 mt-1">Market data and policy information</p>
@@ -961,7 +961,7 @@ function MissionCostContent() {
               href="/resource-exchange"
               className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-nebula-200">
+              <div className="text-sm font-medium text-white group-hover:text-white">
                 💰 Resource Exchange
               </div>
               <p className="text-xs text-slate-400 mt-1">Space commodities pricing</p>
@@ -970,7 +970,7 @@ function MissionCostContent() {
               href="/compliance"
               className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-nebula-200">
+              <div className="text-sm font-medium text-white group-hover:text-white">
                 ⚖️ Compliance
               </div>
               <p className="text-xs text-slate-400 mt-1">Export controls and regulations</p>
@@ -979,7 +979,7 @@ function MissionCostContent() {
               href="/launch-windows"
               className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-nebula-200">
+              <div className="text-sm font-medium text-white group-hover:text-white">
                 🪟 Launch Windows
               </div>
               <p className="text-xs text-slate-400 mt-1">Optimal launch timing</p>
@@ -988,7 +988,7 @@ function MissionCostContent() {
               href="/orbital-calculator"
               className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-nebula-200">
+              <div className="text-sm font-medium text-white group-hover:text-white">
                 🌐 Orbital Calculator
               </div>
               <p className="text-xs text-slate-400 mt-1">Delta-v, periods & decay</p>

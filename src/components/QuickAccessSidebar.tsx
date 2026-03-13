@@ -200,7 +200,7 @@ export default function QuickAccessSidebar() {
                           onClick={() => toggleParent(module.moduleId)}
                           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full text-left ${
                             active
-                              ? 'bg-white/10 text-white'
+                              ? 'bg-white/10 text-slate-900'
                               : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
                           }`}
                         >
@@ -238,7 +238,7 @@ export default function QuickAccessSidebar() {
                           href={getModuleRoute(module.moduleId)}
                           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full ${
                             active
-                              ? 'bg-white/10 text-white'
+                              ? 'bg-white/10 text-slate-900'
                               : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
                           }`}
                         >
@@ -337,7 +337,7 @@ export default function QuickAccessSidebar() {
                               href={getModuleRoute(child.moduleId)}
                               className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-all duration-200 text-sm ${
                                 childActive
-                                  ? 'bg-white/10 text-white'
+                                  ? 'bg-white/10 text-slate-900'
                                   : 'text-slate-400 hover:bg-slate-700/40 hover:text-white'
                               }`}
                             >
@@ -370,7 +370,7 @@ export default function QuickAccessSidebar() {
             href="/blog"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/blog')
-                ? 'bg-white/10 text-white'
+                ? 'bg-white/10 text-slate-900'
                 : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
@@ -391,7 +391,7 @@ export default function QuickAccessSidebar() {
             href="/ai-insights"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/ai-insights')
-                ? 'bg-white/10 text-white'
+                ? 'bg-white/10 text-slate-900'
                 : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
@@ -412,7 +412,7 @@ export default function QuickAccessSidebar() {
             href="/marketplace"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/marketplace') || pathname?.startsWith('/provider-dashboard')
-                ? 'bg-white/10 text-white'
+                ? 'bg-white/10 text-slate-900'
                 : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
@@ -429,7 +429,7 @@ export default function QuickAccessSidebar() {
             href="/community/forums"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/community')
-                ? 'bg-white/10 text-white'
+                ? 'bg-white/10 text-slate-900'
                 : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
@@ -450,7 +450,7 @@ export default function QuickAccessSidebar() {
             href="/deal-rooms"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/deal-rooms')
-                ? 'bg-white/10 text-white'
+                ? 'bg-white/10 text-slate-900'
                 : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
@@ -471,7 +471,7 @@ export default function QuickAccessSidebar() {
             href="/funding-opportunities"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/funding-opportunities')
-                ? 'bg-white/10 text-white'
+                ? 'bg-white/10 text-slate-900'
                 : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
@@ -488,7 +488,7 @@ export default function QuickAccessSidebar() {
             href="/customer-discovery"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/customer-discovery')
-                ? 'bg-white/10 text-white'
+                ? 'bg-white/10 text-slate-900'
                 : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
@@ -509,7 +509,7 @@ export default function QuickAccessSidebar() {
             href="/my-watchlists"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname === '/my-watchlists'
-                ? 'bg-white/10 text-white'
+                ? 'bg-white/10 text-slate-900'
                 : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
@@ -526,7 +526,7 @@ export default function QuickAccessSidebar() {
             href="/dashboard"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname === '/dashboard'
-                ? 'bg-white/10 text-white'
+                ? 'bg-white/10 text-slate-900'
                 : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >

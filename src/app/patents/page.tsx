@@ -701,7 +701,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
         </StaggerItem>
         <StaggerItem>
           <div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">{holdersData.length}</div>
+            <div className="text-4xl font-bold font-display tracking-tight text-slate-200">{holdersData.length}</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Major Holders Tracked</div>
           </div>
         </StaggerItem>
@@ -717,7 +717,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
       <ScrollReveal>
       <div className="card p-6">
         <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
-          <svg className="w-5 h-5 text-nebula-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-5 h-5 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
           </svg>
           Global Space Patent Filings by Year
@@ -737,7 +737,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
                   <div
                     className={`w-full max-w-[44px] rounded-t-md transition-all duration-500 ${
                       isLatest
-                        ? 'bg-gradient-to-t from-nebula-600 to-nebula-400'
+                        ? 'bg-gradient-to-t from-slate-200 to-slate-400'
                         : 'bg-gradient-to-t from-slate-300 to-slate-200'
                     }`}
                     style={{ height: `${heightPct * 1.8}px` }}
@@ -815,7 +815,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
           {[...categoriesData].sort((a, b) => b.totalPatents - a.totalPatents).map((cat) => {
             const accBadge = getAccelerationBadge(cat.acceleration);
             return (
-              <div key={cat.id} className="card p-4 hover:border-nebula-500/30">
+              <div key={cat.id} className="card p-4 hover:border-white/10">
                 <div className="flex items-center justify-between mb-2">
                   <span className={`font-medium text-sm ${cat.color}`}>{cat.name}</span>
                   <span className={`text-xs px-2 py-0.5 rounded font-medium ${accBadge.color} ${accBadge.bg}`}>
@@ -914,7 +914,7 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
                 </div>
                 <p className="text-xs text-slate-500">{lcase.summary}</p>
                 <div className="mt-2">
-                  <span className="text-xs text-nebula-300">{lcase.category}</span>
+                  <span className="text-xs text-slate-200">{lcase.category}</span>
                 </div>
               </div>
             );
@@ -989,7 +989,7 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search organizations, technologies..."
-                className="w-full bg-slate-700/50 border border-slate-700/50 text-white rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:border-nebula-500 placeholder:text-slate-400"
+                className="w-full bg-slate-700/50 border border-slate-700/50 text-white rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400"
               />
             </div>
           </div>
@@ -1025,7 +1025,7 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
           {(searchQuery || countryFilter) && (
             <button
               onClick={() => { setSearchQuery(''); setCountryFilter(''); }}
-              className="text-sm text-nebula-300 hover:text-nebula-200 py-2"
+              className="text-sm text-slate-200 hover:text-white py-2"
             >
               Clear Filters
             </button>
@@ -1088,7 +1088,7 @@ function CompanyPortfolioCard({ holder }: { holder: PatentHolder }) {
 
   return (
     <div
-      className="card p-5 hover:border-nebula-500/30 transition-all cursor-pointer"
+      className="card p-5 hover:border-white/10 transition-all cursor-pointer"
       onClick={() => setExpanded(!expanded)}
     >
       <div className="flex items-start justify-between mb-3">
@@ -1135,7 +1135,7 @@ function CompanyPortfolioCard({ holder }: { holder: PatentHolder }) {
         {(holder.keyAreas || []).map((area) => (
           <span
             key={area}
-            className="px-2 py-0.5 bg-nebula-500/10 text-nebula-600 rounded text-xs font-medium"
+            className="px-2 py-0.5 bg-white/10 text-slate-400 rounded text-xs font-medium"
           >
             {area}
           </span>
@@ -1151,7 +1151,7 @@ function CompanyPortfolioCard({ holder }: { holder: PatentHolder }) {
             <ul className="space-y-1">
               {(holder.notablePatents || []).map((patent) => (
                 <li key={patent} className="text-xs text-slate-500 flex items-center gap-1.5">
-                  <span className="w-1 h-1 bg-nebula-400 rounded-full flex-shrink-0" />
+                  <span className="w-1 h-1 bg-slate-400 rounded-full flex-shrink-0" />
                   {patent}
                 </li>
               ))}
@@ -1297,7 +1297,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
               <div className="mb-4">
                 <div className="w-full bg-slate-700/50 rounded-full h-3">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-nebula-600 to-nebula-400 transition-all duration-700"
+                    className="h-full rounded-full bg-gradient-to-r from-slate-200 to-slate-400 transition-all duration-700"
                     style={{ width: `${barWidth}%` }}
                   />
                 </div>
@@ -1424,7 +1424,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Available for License</div>
         </div>
         <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">10</div>
+          <div className="text-4xl font-bold font-display tracking-tight text-slate-200">10</div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">NASA Centers</div>
         </div>
         <div className="card-elevated p-6 text-center">
@@ -1495,7 +1495,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
           {(categoryFilter || statusFilter) && (
             <button
               onClick={() => { setCategoryFilter(''); setStatusFilter(''); }}
-              className="text-sm text-nebula-300 hover:text-nebula-200 py-2"
+              className="text-sm text-slate-200 hover:text-white py-2"
             >
               Clear Filters
             </button>
@@ -1537,12 +1537,12 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
         {filtered.map((patent) => {
           const statusBadge = getStatusBadge(patent.status);
           return (
-            <div key={patent.id} className="card p-5 hover:border-nebula-500/30 transition-all">
+            <div key={patent.id} className="card p-5 hover:border-white/10 transition-all">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1 min-w-0">
                   <h4 className="font-semibold text-white text-sm leading-tight mb-1">{patent.title}</h4>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-nebula-300 font-mono">{patent.patentNumber}</span>
+                    <span className="text-xs text-slate-200 font-mono">{patent.patentNumber}</span>
                     <span className="text-xs text-slate-400">{patent.year}</span>
                   </div>
                 </div>
@@ -1589,11 +1589,11 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
             { name: 'Ames Research Center', location: 'Mountain View, CA', focus: 'AI/ML, thermal protection, astrobiology', patents: 260 },
             { name: 'Stennis Space Center', location: 'Hancock County, MS', focus: 'Engine testing, propulsion validation', patents: 120 },
           ].map((center) => (
-            <div key={center.name} className="card p-4 hover:border-nebula-500/30">
+            <div key={center.name} className="card p-4 hover:border-white/10">
               <div className="font-medium text-white text-sm mb-0.5">{center.name}</div>
               <div className="text-xs text-slate-400 mb-2">{center.location}</div>
               <div className="text-xs text-slate-500 mb-2">{center.focus}</div>
-              <div className="text-xs text-nebula-300 font-medium">~{formatNumber(center.patents)} patents</div>
+              <div className="text-xs text-slate-200 font-medium">~{formatNumber(center.patents)} patents</div>
             </div>
           ))}
         </div>
@@ -1640,7 +1640,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
               <h4 className="font-medium text-white text-sm mb-1">{opp.area}</h4>
               <p className="text-xs text-slate-500 mb-2">{opp.description}</p>
               <div className="flex items-center gap-3 text-xs">
-                <span className="text-nebula-300">Readiness: {opp.readiness}</span>
+                <span className="text-slate-200">Readiness: {opp.readiness}</span>
                 <span className="text-green-400 font-medium">Potential: {opp.potential}</span>
               </div>
             </div>
@@ -1751,7 +1751,7 @@ export default function PatentTrackerPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors flex items-center gap-2 ${
                   activeTab === tab.id
-                    ? 'border-nebula-500 text-nebula-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
+                    ? 'border-white/15 text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
                     : 'border-transparent text-slate-200 hover:text-white hover:border-slate-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
                 }`}
               >

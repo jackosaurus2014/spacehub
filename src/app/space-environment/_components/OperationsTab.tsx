@@ -323,7 +323,7 @@ function SpectrumAlertCard({ alert }: { alert: SpectrumAlert }) {
       </div>
 
       <div className="flex items-center gap-3 mb-3">
-        <div className="bg-nebula-500/20 text-nebula-300 px-3 py-1 rounded text-sm font-medium">
+        <div className="bg-white/10 text-slate-200 px-3 py-1 rounded text-sm font-medium">
           {alert.frequencyBand}
         </div>
         {alert.affectedService && (
@@ -475,7 +475,7 @@ export default function OperationsTab() {
           <div className="text-red-400 text-sm font-medium mb-3">{error}</div>
           <button
             onClick={fetchData}
-            className="px-4 py-2 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors"
+            className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors"
           >
             Try Again
           </button>
@@ -543,7 +543,7 @@ export default function OperationsTab() {
             onClick={() => handleSubTabChange(tab.id)}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeSubTab === tab.id
-                ? 'bg-nebula-500 text-white shadow-glow-sm'
+                ? 'bg-white text-slate-900'
                 : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50'
             }`}
           >
@@ -551,7 +551,7 @@ export default function OperationsTab() {
             {tab.count !== undefined && tab.count > 0 && (
               <span
                 className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  activeSubTab === tab.id ? 'bg-white/20 text-white' : 'bg-slate-700 text-slate-400'
+                  activeSubTab === tab.id ? 'bg-white/20 text-slate-900' : 'bg-slate-700 text-slate-400'
                 }`}
               >
                 {tab.count}
@@ -595,7 +595,7 @@ export default function OperationsTab() {
                 <h2 className="text-xl font-semibold text-slate-100">Critical Conjunction Events</h2>
                 <button
                   onClick={() => handleSubTabChange('conjunctions')}
-                  className="text-nebula-300 hover:text-nebula-200 text-sm"
+                  className="text-slate-200 hover:text-white text-sm"
                 >
                   View All &rarr;
                 </button>
@@ -615,7 +615,7 @@ export default function OperationsTab() {
                 <h2 className="text-xl font-semibold text-slate-100">Top Sustainability Performers</h2>
                 <button
                   onClick={() => handleSubTabChange('scorecards')}
-                  className="text-nebula-300 hover:text-nebula-200 text-sm"
+                  className="text-slate-200 hover:text-white text-sm"
                 >
                   View All &rarr;
                 </button>
@@ -650,7 +650,7 @@ export default function OperationsTab() {
                         <span className={`text-xs font-bold px-2 py-0.5 rounded ${SEVERITY_INFO[alert.severity].bgColor} ${SEVERITY_INFO[alert.severity].color}`}>
                           {alert.severity.toUpperCase()}
                         </span>
-                        <span className="text-nebula-300 font-medium">{alert.frequencyBand}</span>
+                        <span className="text-slate-200 font-medium">{alert.frequencyBand}</span>
                       </div>
                       <p className="text-slate-300 text-sm line-clamp-2">{alert.description}</p>
                     </div>
@@ -711,7 +711,7 @@ export default function OperationsTab() {
                 onClick={() => setAlertLevelFilter('')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   alertLevelFilter === ''
-                    ? 'bg-nebula-500 text-white'
+                    ? 'bg-white text-slate-900'
                     : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
                 }`}
               >
@@ -782,7 +782,7 @@ export default function OperationsTab() {
                 onClick={() => setGradeFilter('')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   gradeFilter === ''
-                    ? 'bg-nebula-500 text-white'
+                    ? 'bg-white text-slate-900'
                     : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
                 }`}
               >
@@ -844,10 +844,10 @@ export default function OperationsTab() {
               <div>
                 <h4 className="text-slate-300 font-medium mb-2">Score Components</h4>
                 <ul className="space-y-2 text-slate-400">
-                  <li><span className="text-nebula-300">Deorbit Score:</span> Compliance with deorbit guidelines, active propulsion capability, target deorbit timeline</li>
-                  <li><span className="text-nebula-300">Maneuver Score:</span> Collision avoidance responsiveness, autonomous maneuvering capability</li>
-                  <li><span className="text-nebula-300">Debris Score:</span> Historical debris creation, design for demise compliance</li>
-                  <li><span className="text-nebula-300">Transparency Score:</span> Data sharing with Space-Track, public reporting</li>
+                  <li><span className="text-slate-200">Deorbit Score:</span> Compliance with deorbit guidelines, active propulsion capability, target deorbit timeline</li>
+                  <li><span className="text-slate-200">Maneuver Score:</span> Collision avoidance responsiveness, autonomous maneuvering capability</li>
+                  <li><span className="text-slate-200">Debris Score:</span> Historical debris creation, design for demise compliance</li>
+                  <li><span className="text-slate-200">Transparency Score:</span> Data sharing with Space-Track, public reporting</li>
                 </ul>
               </div>
               <div>
@@ -875,7 +875,7 @@ export default function OperationsTab() {
                 onClick={() => setSeverityFilter('')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   severityFilter === ''
-                    ? 'bg-nebula-500 text-white'
+                    ? 'bg-white text-slate-900'
                     : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
                 }`}
               >
@@ -949,7 +949,7 @@ export default function OperationsTab() {
               ].map((band) => (
                 <div key={band.band} className="bg-slate-800/50 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-nebula-300 font-medium">{band.band}</span>
+                    <span className="text-slate-200 font-medium">{band.band}</span>
                     <span className={`text-xs px-2 py-0.5 rounded ${
                       band.level === 'very_high' ? 'bg-red-500/20 text-red-400' :
                       band.level === 'high' ? 'bg-orange-500/20 text-orange-400' :
@@ -976,7 +976,7 @@ export default function OperationsTab() {
           </div>
 
           {/* SCS Coordination Note */}
-          <div className="card p-6 mt-6 border-l-4 border-nebula-500">
+          <div className="card p-6 mt-6 border-l-4 border-white/15">
             <h3 className="text-lg font-semibold text-slate-100 mb-2">SCS Coordination Status</h3>
             <p className="text-slate-400 text-sm mb-4">
               Supplemental Coverage from Space (SCS) enables direct-to-device (D2D) satellite connectivity for smartphones.

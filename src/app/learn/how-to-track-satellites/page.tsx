@@ -253,7 +253,7 @@ export default function HowToTrackSatellitesPage() {
         {/* Hero */}
         <header className="mb-10">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-nebula-500/10 text-nebula-400 border border-nebula-500/20">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15/20">
               Technical Guide
             </span>
             <span className="text-xs text-slate-500">Updated February 2026</span>
@@ -291,23 +291,23 @@ export default function HowToTrackSatellitesPage() {
             <h3 className="text-white font-semibold mb-3">Who uses satellite tracking?</h3>
             <ul className="space-y-2">
               <li className="flex items-start gap-3 text-slate-300 text-sm">
-                <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                 <span><strong className="text-white">Satellite operators</strong> — Monitor fleet health, plan maneuvers, avoid collisions</span>
               </li>
               <li className="flex items-start gap-3 text-slate-300 text-sm">
-                <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                 <span><strong className="text-white">Military & intelligence</strong> — Space domain awareness, treaty verification, threat assessment</span>
               </li>
               <li className="flex items-start gap-3 text-slate-300 text-sm">
-                <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                 <span><strong className="text-white">Amateur astronomers</strong> — Predict ISS passes, spot satellite flares, photograph satellites</span>
               </li>
               <li className="flex items-start gap-3 text-slate-300 text-sm">
-                <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                 <span><strong className="text-white">Researchers</strong> — Study orbital debris, analyze conjunction risks, model orbital environments</span>
               </li>
               <li className="flex items-start gap-3 text-slate-300 text-sm">
-                <span className="text-nebula-400 mt-0.5 shrink-0">&#10003;</span>
+                <span className="text-slate-300 mt-0.5 shrink-0">&#10003;</span>
                 <span><strong className="text-white">Spectrum managers</strong> — Coordinate radio frequency usage, avoid interference</span>
               </li>
             </ul>
@@ -366,7 +366,7 @@ export default function HowToTrackSatellitesPage() {
                   </div>
                   <div>
                     <span className="text-slate-500">Objects:</span>
-                    <span className="text-nebula-400 ml-1">{orbit.objectCount}</span>
+                    <span className="text-slate-300 ml-1">{orbit.objectCount}</span>
                   </div>
                 </div>
                 <p className="text-slate-400 text-sm mb-3">{orbit.description}</p>
@@ -399,7 +399,7 @@ export default function HowToTrackSatellitesPage() {
                   <h3 className="text-white font-semibold">{sat.name}</h3>
                   <Link
                     href={sat.link}
-                    className="text-xs text-nebula-400 hover:underline"
+                    className="text-xs text-slate-300 hover:underline"
                   >
                     Track on SpaceNexus
                   </Link>
@@ -434,12 +434,12 @@ export default function HowToTrackSatellitesPage() {
           <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-6">
             <ol className="space-y-5">
               <li className="flex items-start gap-3">
-                <span className="text-nebula-400 font-bold text-lg shrink-0">1.</span>
+                <span className="text-slate-300 font-bold text-lg shrink-0">1.</span>
                 <div>
                   <h4 className="text-white font-semibold">Open the Satellite Tracker</h4>
                   <p className="text-slate-400 text-sm mt-1">
                     Navigate to{' '}
-                    <Link href="/satellites" className="text-nebula-400 hover:underline">
+                    <Link href="/satellites" className="text-slate-300 hover:underline">
                       SpaceNexus Satellite Tracker
                     </Link>{' '}
                     from the main menu under Space Operations. The interactive 3D globe loads with all
@@ -448,7 +448,7 @@ export default function HowToTrackSatellitesPage() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-nebula-400 font-bold text-lg shrink-0">2.</span>
+                <span className="text-slate-300 font-bold text-lg shrink-0">2.</span>
                 <div>
                   <h4 className="text-white font-semibold">Search for a Satellite</h4>
                   <p className="text-slate-400 text-sm mt-1">
@@ -459,7 +459,7 @@ export default function HowToTrackSatellitesPage() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-nebula-400 font-bold text-lg shrink-0">3.</span>
+                <span className="text-slate-300 font-bold text-lg shrink-0">3.</span>
                 <div>
                   <h4 className="text-white font-semibold">Filter by Orbit or Type</h4>
                   <p className="text-slate-400 text-sm mt-1">
@@ -470,7 +470,7 @@ export default function HowToTrackSatellitesPage() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-nebula-400 font-bold text-lg shrink-0">4.</span>
+                <span className="text-slate-300 font-bold text-lg shrink-0">4.</span>
                 <div>
                   <h4 className="text-white font-semibold">View Orbital Details</h4>
                   <p className="text-slate-400 text-sm mt-1">
@@ -481,12 +481,12 @@ export default function HowToTrackSatellitesPage() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-nebula-400 font-bold text-lg shrink-0">5.</span>
+                <span className="text-slate-300 font-bold text-lg shrink-0">5.</span>
                 <div>
                   <h4 className="text-white font-semibold">Monitor Constellations</h4>
                   <p className="text-slate-400 text-sm mt-1">
                     Use the{' '}
-                    <Link href="/constellations" className="text-nebula-400 hover:underline">
+                    <Link href="/constellations" className="text-slate-300 hover:underline">
                       Constellation Tracker
                     </Link>{' '}
                     to visualize entire satellite networks. See deployment progress, orbital planes,
@@ -495,12 +495,12 @@ export default function HowToTrackSatellitesPage() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-nebula-400 font-bold text-lg shrink-0">6.</span>
+                <span className="text-slate-300 font-bold text-lg shrink-0">6.</span>
                 <div>
                   <h4 className="text-white font-semibold">Track Debris and Space Weather</h4>
                   <p className="text-slate-400 text-sm mt-1">
                     The{' '}
-                    <Link href="/space-environment" className="text-nebula-400 hover:underline">
+                    <Link href="/space-environment" className="text-slate-300 hover:underline">
                       Space Environment
                     </Link>{' '}
                     module provides debris density visualization, conjunction warnings, solar weather
@@ -552,7 +552,7 @@ export default function HowToTrackSatellitesPage() {
         </section>
 
         {/* CTA */}
-        <div className="bg-slate-800/60 border border-nebula-500/30 rounded-xl p-6 text-center mb-12">
+        <div className="bg-slate-800/60 border border-white/10 rounded-xl p-6 text-center mb-12">
           <h3 className="text-xl font-bold text-white mb-2">Start Tracking Satellites Now</h3>
           <p className="text-slate-400 text-sm mb-4">
             SpaceNexus tracks over 30,000 objects in real time with 3D visualization, pass predictions,
@@ -561,7 +561,7 @@ export default function HowToTrackSatellitesPage() {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/satellites"
-              className="inline-block bg-nebula-500 hover:bg-nebula-600 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+              className="inline-block bg-white hover:bg-slate-100 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
             >
               Open Satellite Tracker
             </Link>
@@ -593,28 +593,28 @@ export default function HowToTrackSatellitesPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Link
               href="/satellites"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Satellite Tracker</div>
               <div className="text-slate-500 text-xs">30,000+ objects</div>
             </Link>
             <Link
               href="/space-environment"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Environment</div>
               <div className="text-slate-500 text-xs">Weather & debris</div>
             </Link>
             <Link
               href="/constellations"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Constellations</div>
               <div className="text-slate-500 text-xs">Fleet tracking</div>
             </Link>
             <Link
               href="/orbital-costs"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Orbital Costs</div>
               <div className="text-slate-500 text-xs">Pricing data</div>
@@ -628,21 +628,21 @@ export default function HowToTrackSatellitesPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Link
               href="/learn/satellite-launch-cost"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Satellite Launch Costs</div>
               <div className="text-slate-500 text-xs">Complete cost breakdown</div>
             </Link>
             <Link
               href="/learn/space-industry-market-size"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Industry Market Size</div>
               <div className="text-slate-500 text-xs">$1.8 trillion and growing</div>
             </Link>
             <Link
               href="/learn/space-companies-to-watch"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Top Space Companies 2026</div>
               <div className="text-slate-500 text-xs">25 companies to watch</div>

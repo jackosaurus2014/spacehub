@@ -160,7 +160,7 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Header */}
         <header className="mb-10">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs font-medium px-3 py-1 rounded-full bg-nebula-500/20 text-nebula-300 border border-nebula-500/30">
+            <span className="text-xs font-medium px-3 py-1 rounded-full bg-white/10 text-slate-200 border border-white/10">
               {categoryLabel}
             </span>
             <span className="text-slate-500 text-sm">{post.readingTime} min read</span>
@@ -194,20 +194,20 @@ export default async function BlogPostPage({ params }: Props) {
             prose-p:text-slate-300 prose-p:leading-relaxed
             prose-li:text-slate-300
             prose-strong:text-white
-            prose-a:text-nebula-400 prose-a:no-underline hover:prose-a:underline
+            prose-a:text-slate-300 prose-a:no-underline hover:prose-a:underline
             prose-ul:space-y-1 prose-ol:space-y-1"
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content, SAFE_HTML_CONFIG) }}
         />
 
         {/* Topic-Aware CTA */}
         {BLOG_CTA_MAP[post.slug] && (
-          <div className="mt-12 p-5 bg-nebula-500/10 border border-nebula-500/30 rounded-xl flex items-center justify-between gap-4">
+          <div className="mt-12 p-5 bg-white/10 border border-white/10 rounded-xl flex items-center justify-between gap-4">
             <p className="text-sm text-slate-300">
               Explore this topic with our <span className="text-white font-medium">{BLOG_CTA_MAP[post.slug].tool}</span>
             </p>
             <Link
               href={BLOG_CTA_MAP[post.slug].path}
-              className="text-sm font-medium text-nebula-400 hover:text-nebula-300 transition-colors whitespace-nowrap"
+              className="text-sm font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap"
             >
               Try {BLOG_CTA_MAP[post.slug].tool} &rarr;
             </Link>
@@ -224,7 +224,7 @@ export default async function BlogPostPage({ params }: Props) {
           </p>
           <Link
             href="/register"
-            className="inline-block bg-nebula-500 hover:bg-nebula-600 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+            className="inline-block bg-white hover:bg-slate-100 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
           >
             Get Started Free
           </Link>
@@ -243,15 +243,15 @@ export default async function BlogPostPage({ params }: Props) {
                 <Link
                   key={rp.slug}
                   href={`/blog/${rp.slug}`}
-                  className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-nebula-500/40 hover:bg-slate-800/70 transition-all"
+                  className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/15/40 hover:bg-slate-800/70 transition-all"
                 >
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-nebula-500/15 text-nebula-300 border border-nebula-500/20">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/15 text-slate-200 border border-white/15/20">
                       {BLOG_CATEGORIES.find((c) => c.value === rp.category)?.label || rp.category}
                     </span>
                     <span className="text-xs text-slate-500">{rp.readingTime} min</span>
                   </div>
-                  <h4 className="text-sm font-semibold text-white group-hover:text-nebula-400 transition-colors line-clamp-2 mb-2">
+                  <h4 className="text-sm font-semibold text-white group-hover:text-slate-300 transition-colors line-clamp-2 mb-2">
                     {rp.title}
                   </h4>
                   <p className="text-xs text-slate-400 line-clamp-2 mb-3 flex-1">
@@ -259,7 +259,7 @@ export default async function BlogPostPage({ params }: Props) {
                   </p>
                   <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-700/30">
                     <span>{formatDate(rp.publishedAt)}</span>
-                    <span className="text-nebula-400 group-hover:text-nebula-300 transition-colors font-medium">
+                    <span className="text-slate-300 group-hover:text-slate-200 transition-colors font-medium">
                       Read more &rarr;
                     </span>
                   </div>
@@ -273,7 +273,7 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="mt-8 pt-8 border-t border-slate-700/50">
           <Link
             href="/blog"
-            className="text-sm text-slate-400 hover:text-nebula-400 transition-colors"
+            className="text-sm text-slate-400 hover:text-slate-300 transition-colors"
           >
             &larr; Back to all posts
           </Link>

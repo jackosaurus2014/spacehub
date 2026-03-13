@@ -458,7 +458,7 @@ function LocationModifierSection({
               onClick={() => onSelect(isSelected ? '' : loc.id)}
               className={`text-center px-2 py-2 rounded-lg border transition-all text-xs ${
                 isSelected
-                  ? 'bg-white/10 border-white/15 text-white'
+                  ? 'bg-white/10 border-white/15 text-slate-900'
                   : 'bg-slate-700/30 border-slate-700/50 text-slate-400 hover:border-slate-600 hover:text-slate-300'
               }`}
               title={loc.description}
@@ -653,7 +653,7 @@ function SalaryBenchmarksContent() {
             }}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeView === tab.id
-                ? 'bg-white text-white shadow-lg shadow-black/20/25'
+                ? 'bg-white text-slate-900 shadow-lg shadow-black/20/25'
                 : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
@@ -739,7 +739,7 @@ function SalaryBenchmarksContent() {
                   updateUrl({ category: null });
                 }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  activeCategory === '' ? 'bg-white text-white' : 'bg-slate-700/50 text-slate-400 hover:text-white'
+                  activeCategory === '' ? 'bg-white text-slate-900' : 'bg-slate-700/50 text-slate-400 hover:text-slate-900'
                 }`}
               >
                 All ({SALARY_ROLES.length})

@@ -131,7 +131,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
 
   if (isPrimary && launchDate) {
     return (
-      <div className="bg-gradient-to-br from-slate-100 to-nebula-500/20 rounded-xl p-6 border border-nebula-500/30">
+      <div className="bg-gradient-to-br from-slate-100 to-slate-200/20 rounded-xl p-6 border border-white/10">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-2">
             <span className={`${typeInfo.color} text-white text-xs font-semibold px-2 py-1 rounded inline-flex items-center gap-1.5`}>
@@ -200,7 +200,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
   }
 
   return (
-    <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50 hover:border-nebula-500/30 transition-colors">
+    <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50 hover:border-white/10 transition-colors">
       <div className="flex items-start gap-3">
         {eventLogo ? (
           <Image src={eventLogo} alt={event.name} width={40} height={40} className="rounded-md flex-shrink-0" />
@@ -221,7 +221,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
             <p className="text-slate-400 text-xs mt-0.5">{event.agency}</p>
           )}
           {launchDate && !live && (
-            <p className="text-nebula-300 text-xs mt-1">
+            <p className="text-slate-200 text-xs mt-1">
               {launchDate.toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
@@ -292,7 +292,7 @@ export default function MissionControlModule() {
           </h2>
         </div>
         <div className="flex justify-center py-12">
-          <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+          <div className="w-10 h-10 border-3 border-white/15 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
         </div>
       </div>
     );
@@ -303,12 +303,12 @@ export default function MissionControlModule() {
 
   return (
     <Link href="/mission-control" className="block">
-      <div className="card p-6 glow-border hover:border-nebula-400/50 transition-all cursor-pointer group">
+      <div className="card p-6 glow-border hover:border-white/10/50 transition-all cursor-pointer group">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-display font-bold text-slate-200 flex items-center gap-2">
             <span>🎯</span> Mission Control
           </h2>
-          <span className="text-slate-400 text-sm group-hover:text-nebula-200 transition-colors flex items-center gap-1">
+          <span className="text-slate-400 text-sm group-hover:text-white transition-colors flex items-center gap-1">
             View All <span>→</span>
           </span>
         </div>
@@ -347,7 +347,7 @@ export default function MissionControlModule() {
         )}
 
         <div className="mt-4 pt-4 border-t border-slate-700/50 text-center">
-          <span className="text-nebula-300 text-sm group-hover:text-nebula-200 transition-colors">
+          <span className="text-slate-200 text-sm group-hover:text-white transition-colors">
             Click to explore 5-year mission timeline →
           </span>
         </div>

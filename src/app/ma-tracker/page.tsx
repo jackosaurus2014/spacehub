@@ -965,7 +965,7 @@ export default function MATrackerPage() {
               onClick={() => setActiveTab(key)}
               className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all min-h-[44px] ${
                 activeTab === key
-                  ? 'bg-white text-white shadow-lg shadow-black/10'
+                  ? 'bg-white text-slate-900 shadow-lg shadow-black/10'
                   : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
               }`}
             >

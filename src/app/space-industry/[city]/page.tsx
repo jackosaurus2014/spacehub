@@ -113,7 +113,7 @@ export default function CityPage({ params }: Props) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           {city.stats.map((stat) => (
             <div key={stat.label} className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-nebula-400 mb-1">{stat.value}</div>
+              <div className="text-2xl font-bold text-slate-300 mb-1">{stat.value}</div>
               <div className="text-xs text-slate-400">{stat.label}</div>
             </div>
           ))}
@@ -157,7 +157,7 @@ export default function CityPage({ params }: Props) {
                     <td className="py-3">
                       <Link
                         href={`/company-profiles/${company.slug}`}
-                        className="text-nebula-400 hover:underline text-sm"
+                        className="text-slate-300 hover:underline text-sm"
                       >
                         View profile
                       </Link>
@@ -168,7 +168,7 @@ export default function CityPage({ params }: Props) {
             </table>
           </div>
           <p className="text-slate-500 text-sm mt-4">
-            <Link href="/company-profiles" className="text-nebula-400 hover:underline">
+            <Link href="/company-profiles" className="text-slate-300 hover:underline">
               Browse all 200+ space company profiles
             </Link>
           </p>
@@ -200,7 +200,7 @@ export default function CityPage({ params }: Props) {
             </div>
           </div>
           <p className="text-slate-500 text-sm mt-4">
-            <Link href="/space-talent" className="text-nebula-400 hover:underline">
+            <Link href="/space-talent" className="text-slate-300 hover:underline">
               Browse all space industry jobs
             </Link>
           </p>
@@ -212,7 +212,7 @@ export default function CityPage({ params }: Props) {
           <ul className="space-y-3">
             {city.whyThisCity.map((reason, i) => (
               <li key={i} className="flex items-start gap-3 text-slate-300">
-                <span className="text-nebula-400 mt-1 shrink-0">&#10003;</span>
+                <span className="text-slate-300 mt-1 shrink-0">&#10003;</span>
                 {reason}
               </li>
             ))}
@@ -231,7 +231,7 @@ export default function CityPage({ params }: Props) {
               </ul>
             </div>
             <p className="text-slate-500 text-sm mt-4">
-              <Link href="/spaceports" className="text-nebula-400 hover:underline">
+              <Link href="/spaceports" className="text-slate-300 hover:underline">
                 View all global launch sites
               </Link>
             </p>
@@ -261,7 +261,7 @@ export default function CityPage({ params }: Props) {
           </p>
           <Link
             href="/register"
-            className="inline-block bg-nebula-500 hover:bg-nebula-600 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+            className="inline-block bg-white hover:bg-slate-100 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
           >
             Get Started Free
           </Link>
@@ -275,7 +275,7 @@ export default function CityPage({ params }: Props) {
               <Link
                 key={c.slug}
                 href={`/space-industry/${c.slug}`}
-                className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+                className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
               >
                 <div className="text-white text-sm font-medium">{c.name}</div>
                 <div className="text-slate-500 text-xs">{c.state}</div>

@@ -46,7 +46,7 @@ function ResourceCard({
   const launchMultiplier = spacePriceKg / earthPriceKg;
 
   return (
-    <div className="card p-4 hover:border-nebula-500/50 transition-all">
+    <div className="card p-4 hover:border-white/15/50 transition-all">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-lg">{categoryInfo?.icon || '📦'}</span>
@@ -78,7 +78,7 @@ function ResourceCard({
 
       <div className="flex items-center justify-between mt-3 text-xs">
         <span className="text-slate-400">{categoryInfo?.label}</span>
-        <span className="text-nebula-300">
+        <span className="text-slate-200">
           {launchMultiplier >= 1000
             ? `${(launchMultiplier / 1000).toFixed(1)}K×`
             : `${launchMultiplier.toFixed(1)}×`}{' '}

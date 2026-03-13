@@ -82,7 +82,7 @@ const CATEGORY_LOGOS: Record<string, string> = {
 };
 
 export default function NewsCard({ article, featured = false, priority = false }: NewsCardProps) {
-  const categoryColor = categoryColors[article.category] || 'bg-nebula-500';
+  const categoryColor = categoryColors[article.category] || 'bg-white';
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -121,9 +121,9 @@ export default function NewsCard({ article, featured = false, priority = false }
               className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-space-800 to-nebula-600/30 flex items-center justify-center">
+            <div className="w-full h-full bg-gradient-to-br from-space-800 to-slate-300/30 flex items-center justify-center">
               <div className="w-16 h-16 rounded-full bg-slate-700/50 flex items-center justify-center">
-                <svg className="w-8 h-8 text-nebula-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
                 </svg>
               </div>
@@ -139,7 +139,7 @@ export default function NewsCard({ article, featured = false, priority = false }
               )}
               {article.category}
             </span>
-            <h3 className="text-xl md:text-2xl font-bold text-white mt-3 line-clamp-2 group-hover:text-nebula-200 transition-colors">
+            <h3 className="text-xl md:text-2xl font-bold text-white mt-3 line-clamp-2 group-hover:text-white transition-colors">
               {article.title}
             </h3>
             {article.companyTags && article.companyTags.length > 0 && (
@@ -161,7 +161,7 @@ export default function NewsCard({ article, featured = false, priority = false }
                         window.location.href = `/company-profiles/${company.slug}`;
                       }
                     }}
-                    className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/20"
+                    className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded bg-white/20 text-slate-900 border border-white/30 hover:bg-white/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/20"
                   >
                     {company.name}
                   </span>

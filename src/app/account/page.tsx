@@ -264,7 +264,7 @@ function ProfileSection({ session }: { session: any }) {
               <button
                 onClick={handleSaveName}
                 disabled={isSavingName}
-                className="px-4 py-2 bg-white hover:bg-slate-600 disabled:bg-slate-700 text-white rounded-lg text-sm font-medium transition-colors"
+                className="px-4 py-2 bg-white hover:bg-slate-600 disabled:bg-slate-700 text-slate-900 rounded-lg text-sm font-medium transition-colors"
               >
                 {isSavingName ? 'Saving...' : 'Save'}
               </button>
@@ -515,7 +515,7 @@ function SecuritySection() {
         <button
           type="submit"
           disabled={isChanging || !currentPassword || !newPassword || !confirmPassword}
-          className="px-6 py-2 bg-white hover:bg-slate-600 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg text-sm font-medium transition-colors"
+          className="px-6 py-2 bg-white hover:bg-slate-600 disabled:bg-slate-700 disabled:text-slate-500 text-slate-900 rounded-lg text-sm font-medium transition-colors"
         >
           {isChanging ? 'Changing Password...' : 'Change Password'}
         </button>

@@ -73,7 +73,7 @@ export default function ModuleCustomizer({
   }));
 
   return (
-    <div className="card p-6 border-nebula-500/50">
+    <div className="card p-6 border-white/15/50">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-display font-bold text-white flex items-center gap-2">
           <span>⚙️</span> Customize Dashboard
@@ -119,7 +119,7 @@ export default function ModuleCustomizer({
                       onDragEnd={handleDragEnd}
                       className={`flex items-center gap-3 p-3 rounded-lg border transition-all cursor-move ${
                         draggedModule === module.moduleId
-                          ? 'bg-nebula-500/20 border-nebula-500'
+                          ? 'bg-white/10 border-white/15'
                           : 'bg-space-700/30 border-space-600 hover:border-space-500'
                       }`}
                     >
@@ -165,7 +165,7 @@ export default function ModuleCustomizer({
                       <button
                         onClick={() => onToggle(module.moduleId, !module.enabled)}
                         className={`relative w-12 h-6 rounded-full transition-colors overflow-hidden ${
-                          module.enabled ? 'bg-nebula-500' : 'bg-space-600'
+                          module.enabled ? 'bg-white' : 'bg-space-600'
                         }`}
                       >
                         <span

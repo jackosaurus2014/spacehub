@@ -92,7 +92,7 @@ export default function SaveSearchButton({ searchType, filters, query }: SaveSea
       <button
         onClick={handleSave}
         disabled={saving}
-        className="px-2.5 py-1.5 bg-white hover:bg-slate-100 text-white rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+        className="px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
       >
         {saving ? '...' : 'Save'}
       </button>

@@ -163,10 +163,10 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
   const senLabel = SENIORITY_LABELS[job.seniorityLevel as SeniorityLevel] || job.seniorityLevel;
 
   const inner = (
-    <div className="card p-5 hover:border-nebula-500/50 transition-all group">
+    <div className="card p-5 hover:border-white/15/50 transition-all group">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-white text-base group-hover:text-nebula-200 transition-colors">
+          <h3 className="font-semibold text-white text-base group-hover:text-white transition-colors">
             {job.title}
           </h3>
           <div className="flex items-center gap-2 mt-0.5">
@@ -174,7 +174,7 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
             <Link
               href={`/market-intel?search=${encodeURIComponent(job.company)}`}
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-nebula-500/10 text-nebula-300 hover:bg-nebula-500/20 transition-colors"
+              className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
             >
               Market Intel
             </Link>
@@ -182,7 +182,7 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
         </div>
         <div className="flex items-center gap-2 ml-3 flex-shrink-0">
           {job.remoteOk && (
-            <span className="text-xs bg-nebula-500/20 text-nebula-300 px-2 py-0.5 rounded">
+            <span className="text-xs bg-white/10 text-slate-200 px-2 py-0.5 rounded">
               Remote
             </span>
           )}
@@ -212,7 +212,7 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <span className="text-sm font-medium text-nebula-300">
+          <span className="text-sm font-medium text-slate-200">
             {formatSalary(job.salaryMin ?? 0)} - {formatSalary(job.salaryMax ?? 0)}
           </span>
           {job.yearsExperience !== null && job.yearsExperience !== undefined && (
@@ -297,7 +297,7 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
         </div>
         <div>
           <span className="text-slate-400 text-xs block mb-1">Median Salary</span>
-          <div className="text-nebula-300 font-bold text-lg">{formatSalary(trend.medianSalary ?? 0)}</div>
+          <div className="text-slate-200 font-bold text-lg">{formatSalary(trend.medianSalary ?? 0)}</div>
         </div>
       </div>
 
@@ -344,7 +344,7 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
           <span className="text-slate-400 text-xs block mb-2">Top Hiring</span>
           <div className="flex flex-wrap gap-1.5">
             {topCompanies.map((company) => (
-              <span key={company} className="text-xs px-2 py-0.5 rounded bg-nebula-500/10 text-nebula-300">
+              <span key={company} className="text-xs px-2 py-0.5 rounded bg-white/10 text-slate-200">
                 {company}
               </span>
             ))}
@@ -393,14 +393,14 @@ function BenchmarkBar({
           style={{ left: `${minPct}%`, width: `${Math.max(maxPct - minPct, 1)}%` }}
         />
         <div
-          className="absolute h-full w-1 bg-nebula-400 rounded-full"
+          className="absolute h-full w-1 bg-slate-400 rounded-full"
           style={{ left: `${medianPct}%` }}
         />
       </div>
 
       <div className="flex justify-between text-xs text-slate-400">
         <span>{formatSalary(avgMin)}</span>
-        <span className="text-nebula-300 font-medium">Median: {formatSalary(avgMedian)}</span>
+        <span className="text-slate-200 font-medium">Median: {formatSalary(avgMedian)}</span>
         <span>{formatSalary(avgMax)}</span>
       </div>
     </div>
@@ -556,7 +556,7 @@ function GeographicDistributionSection() {
             onClick={() => setGeoView('us')}
             className={`px-3 py-1 rounded text-xs font-medium transition-all ${
               geoView === 'us'
-                ? 'bg-nebula-500 text-white'
+                ? 'bg-white text-slate-900'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -566,7 +566,7 @@ function GeographicDistributionSection() {
             onClick={() => setGeoView('intl')}
             className={`px-3 py-1 rounded text-xs font-medium transition-all ${
               geoView === 'intl'
-                ? 'bg-nebula-500 text-white'
+                ? 'bg-white text-slate-900'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -600,7 +600,7 @@ function GeographicDistributionSection() {
                         <span className="text-white font-medium">{loc.location}</span>
                       </div>
                       <div className="mt-1 h-1 bg-slate-800/50 rounded-full overflow-hidden w-24">
-                        <div className="h-full bg-nebula-500 rounded-full" style={{ width: `${barPct}%` }} />
+                        <div className="h-full bg-white rounded-full" style={{ width: `${barPct}%` }} />
                       </div>
                     </td>
                     <td className="text-right py-3 px-3 text-white font-medium">{loc.jobs.toLocaleString()}</td>
@@ -933,7 +933,7 @@ function TopEmployersSection() {
           placeholder="Search companies..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-star-400 focus:outline-none focus:border-nebula-500/50 transition-colors w-48"
+          className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-star-400 focus:outline-none focus:border-white/15/50 transition-colors w-48"
           aria-label="Search top employers"
         />
         <div className="flex gap-1 bg-slate-800/50 rounded-lg p-0.5">
@@ -947,7 +947,7 @@ function TopEmployersSection() {
               key={t.id}
               onClick={() => setFilterTier(t.id)}
               className={`px-3 py-1 rounded text-xs font-medium transition-all ${
-                filterTier === t.id ? 'bg-nebula-500 text-white' : 'text-slate-400 hover:text-white'
+                filterTier === t.id ? 'bg-white text-slate-900' : 'text-slate-400 hover:text-white'
               }`}
             >
               {t.label}
@@ -964,7 +964,7 @@ function TopEmployersSection() {
               key={s.id}
               onClick={() => setSortKey(s.id)}
               className={`px-3 py-1 rounded text-xs font-medium transition-all ${
-                sortKey === s.id ? 'bg-nebula-500 text-white' : 'text-slate-400 hover:text-white'
+                sortKey === s.id ? 'bg-white text-slate-900' : 'text-slate-400 hover:text-white'
               }`}
             >
               {s.label}
@@ -990,7 +990,7 @@ function TopEmployersSection() {
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/company-profiles/${employer.company.toLowerCase().replace(/[\s\/]+/g, '-').replace(/[^a-z0-9-]/g, '')}`}
-                        className="text-white font-semibold hover:text-nebula-300 transition-colors"
+                        className="text-white font-semibold hover:text-slate-200 transition-colors"
                       >
                         {employer.company}
                       </Link>
@@ -1090,7 +1090,7 @@ function SkillsTagCloudSection() {
             onClick={() => setActiveFilter(f.id)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
               activeFilter === f.id
-                ? 'bg-nebula-500/20 text-nebula-300 border border-nebula-500/30'
+                ? 'bg-white/10 text-slate-200 border border-white/10'
                 : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
             }`}
           >
@@ -1713,7 +1713,7 @@ function SpaceTalentHubContent() {
                 </p>
                 <a
                   href="mailto:talent@spacenexus.us?subject=Expert Network Application"
-                  className="inline-flex items-center gap-2 bg-white hover:bg-slate-700 text-white font-medium px-6 py-2 rounded-lg transition-colors"
+                  className="inline-flex items-center gap-2 bg-white hover:bg-slate-700 text-slate-900 font-medium px-6 py-2 rounded-lg transition-colors"
                 >
                   Apply to Join Network
                 </a>
@@ -1774,7 +1774,7 @@ function SpaceTalentHubContent() {
                         onClick={() => setWebinarFilter(filter.value as typeof webinarFilter)}
                         className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${
                           webinarFilter === filter.value
-                            ? 'bg-white text-white'
+                            ? 'bg-white text-slate-900'
                             : `bg-slate-700/50 hover:bg-slate-600/50 ${filter.color || 'text-slate-300'}`
                         }`}
                       >
@@ -1905,7 +1905,7 @@ function SpaceTalentHubContent() {
                       </p>
                       <button
                         onClick={() => setIsContactModalOpen(false)}
-                        className="bg-white hover:bg-slate-700 text-white font-medium px-6 py-2 rounded-lg transition-colors"
+                        className="bg-white hover:bg-slate-700 text-slate-900 font-medium px-6 py-2 rounded-lg transition-colors"
                       >
                         Close
                       </button>
@@ -2117,7 +2117,7 @@ function SpaceTalentHubContent() {
                         <button
                           type="submit"
                           disabled={spSubmitting}
-                          className="flex-1 bg-white hover:bg-slate-700 disabled:bg-white/50 disabled:cursor-not-allowed text-white font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+                          className="flex-1 bg-white hover:bg-slate-700 disabled:bg-white/50 disabled:cursor-not-allowed text-slate-900 font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
                         >
                           {spSubmitting ? (
                             <>
@@ -2173,7 +2173,7 @@ function SpaceTalentHubContent() {
                 </div>
               </div>
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-nebula-300">
+                <div className="text-2xl font-bold font-display text-slate-200">
                   {JOB_CATEGORIES.find((c) => c.value === wfStats.topCategory)?.label || wfStats.topCategory}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -2226,7 +2226,7 @@ function SpaceTalentHubContent() {
                   onClick={() => handleWfSubTabChange(tab.id)}
                   className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                     wfSubTab === tab.id
-                      ? 'bg-nebula-500 text-white shadow-glow-sm'
+                      ? 'bg-white text-slate-900'
                       : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
                   }`}
                 >
@@ -2235,7 +2235,7 @@ function SpaceTalentHubContent() {
                     <span
                       className={`text-xs px-1.5 py-0.5 rounded-full ${
                         wfSubTab === tab.id
-                          ? 'bg-white/20 text-white'
+                          ? 'bg-white/20 text-slate-900'
                           : 'bg-slate-700/50 text-slate-500'
                     }`}
                     >
@@ -2261,7 +2261,7 @@ function SpaceTalentHubContent() {
                       placeholder="Search jobs by title, company, location, or specialization..."
                       value={searchInput}
                       onChange={(e) => setSearchInput(e.target.value)}
-                      className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-lg px-4 py-2.5 text-sm text-white placeholder-star-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
+                      className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-lg px-4 py-2.5 text-sm text-white placeholder-star-400 focus:outline-none focus:border-white/15/50 transition-colors"
                     />
                     <button type="submit" className="btn-primary px-6">
                       Search
@@ -2305,7 +2305,7 @@ function SpaceTalentHubContent() {
                     onClick={handleRemoteToggle}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                       remoteOnly
-                        ? 'bg-nebula-500/20 text-nebula-300 border border-nebula-500/30'
+                        ? 'bg-white/10 text-slate-200 border border-white/10'
                         : 'bg-slate-800/50 text-slate-500 border border-slate-700/50 hover:border-slate-700/50'
                     }`}
                   >
@@ -2473,7 +2473,7 @@ function SpaceTalentHubContent() {
                       onClick={() => handleSalaryViewChange('category')}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                         salaryView === 'category'
-                          ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                          ? 'bg-slate-700/50 text-white border border-slate-700/50'
                           : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-700/50'
                       }`}
                     >
@@ -2483,7 +2483,7 @@ function SpaceTalentHubContent() {
                       onClick={() => handleSalaryViewChange('seniority')}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                         salaryView === 'seniority'
-                          ? 'bg-slate-700/50 text-white border border-slate-700/50 shadow-glow-sm'
+                          ? 'bg-slate-700/50 text-white border border-slate-700/50'
                           : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-700/50'
                       }`}
                     >
@@ -2519,7 +2519,7 @@ function SpaceTalentHubContent() {
                           <BenchmarkBar
                             key={level}
                             label={SENIORITY_LABELS[level] || level}
-                            color="text-nebula-300"
+                            color="text-slate-200"
                             avgMin={b.avgMin}
                             avgMax={b.avgMax}
                             avgMedian={b.avgMedian}
@@ -2539,7 +2539,7 @@ function SpaceTalentHubContent() {
                         <span>Salary Range (Min to Max)</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-1 h-4 bg-nebula-400 rounded-full" />
+                        <div className="w-1 h-4 bg-slate-400 rounded-full" />
                         <span>Median</span>
                       </div>
                       <span className="ml-auto text-slate-400/70">

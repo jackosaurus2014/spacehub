@@ -24,13 +24,13 @@ export default function CategoriesModule() {
           <Link
             key={category.slug}
             href={`/news?category=${category.slug}`}
-            className="card px-3 py-5 text-center group hover:border-nebula-500/50 transition-all flex flex-col items-center justify-center gap-2"
+            className="card px-3 py-5 text-center group hover:border-white/15/50 transition-all flex flex-col items-center justify-center gap-2"
           >
             <span className="text-4xl">
               {categoryIcons[category.slug]}
             </span>
             <div>
-              <h3 className="font-semibold text-white text-sm group-hover:text-nebula-200 transition-colors">
+              <h3 className="font-semibold text-white text-sm group-hover:text-white transition-colors">
                 {category.name}
               </h3>
               <p className="text-star-300 text-xs mt-1 hidden lg:block">{category.description}</p>

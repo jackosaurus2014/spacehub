@@ -225,7 +225,7 @@ function SubsystemBrowser() {
             onClick={() => setActiveCategory(cat.id)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               activeCategory === cat.id
-                ? 'bg-white text-white shadow-lg shadow-black/15'
+                ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
                 : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
             }`}
           >

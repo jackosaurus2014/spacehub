@@ -217,7 +217,7 @@ export default function CookiePolicyPage() {
                   <a href="https://support.google.com/chrome/answer/95647"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-nebula-300 hover:text-nebula-200 underline">
+                     className="text-slate-200 hover:text-white underline">
                     Google Chrome
                   </a>
                 </li>
@@ -225,7 +225,7 @@ export default function CookiePolicyPage() {
                   <a href="https://support.mozilla.org/en-US/kb/cookies-information-websites-store-on-your-computer"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-nebula-300 hover:text-nebula-200 underline">
+                     className="text-slate-200 hover:text-white underline">
                     Mozilla Firefox
                   </a>
                 </li>
@@ -233,7 +233,7 @@ export default function CookiePolicyPage() {
                   <a href="https://support.apple.com/guide/safari/manage-cookies-sfri11471/mac"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-nebula-300 hover:text-nebula-200 underline">
+                     className="text-slate-200 hover:text-white underline">
                     Safari
                   </a>
                 </li>
@@ -241,7 +241,7 @@ export default function CookiePolicyPage() {
                   <a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-nebula-300 hover:text-nebula-200 underline">
+                     className="text-slate-200 hover:text-white underline">
                     Microsoft Edge
                   </a>
                 </li>
@@ -256,7 +256,7 @@ export default function CookiePolicyPage() {
                   <a href="https://optout.networkadvertising.org/"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-nebula-300 hover:text-nebula-200 underline">
+                     className="text-slate-200 hover:text-white underline">
                     Network Advertising Initiative Opt-Out
                   </a>
                 </li>
@@ -264,7 +264,7 @@ export default function CookiePolicyPage() {
                   <a href="https://optout.aboutads.info/"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-nebula-300 hover:text-nebula-200 underline">
+                     className="text-slate-200 hover:text-white underline">
                     Digital Advertising Alliance Opt-Out
                   </a>
                 </li>
@@ -272,7 +272,7 @@ export default function CookiePolicyPage() {
                   <a href="https://www.youronlinechoices.eu/"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-nebula-300 hover:text-nebula-200 underline">
+                     className="text-slate-200 hover:text-white underline">
                     European Interactive Digital Advertising Alliance
                   </a>
                 </li>
@@ -327,13 +327,13 @@ export default function CookiePolicyPage() {
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/privacy"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Privacy Policy
                 </Link>
                 <Link
                   href="/terms"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Terms of Service
                 </Link>

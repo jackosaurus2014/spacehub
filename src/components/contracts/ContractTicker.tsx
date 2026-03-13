@@ -82,7 +82,7 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
       <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
         <div className="flex items-center justify-center h-16">
           <div className="animate-pulse flex items-center gap-2">
-            <div className="w-3 h-3 bg-nebula-500 rounded-full animate-bounce"></div>
+            <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
             <span className="text-slate-400 text-sm">Loading contracts...</span>
           </div>
         </div>
@@ -121,7 +121,7 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
             onClick={() => handleAgencyFilter('')}
             className={`px-3 py-1 text-xs rounded-full transition-colors ${
               selectedAgency === ''
-                ? 'bg-nebula-500 text-white'
+                ? 'bg-white text-slate-900'
                 : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
             }`}
           >
@@ -167,7 +167,7 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
               <button
                 key={`${contract.id}-${index}`}
                 onClick={() => setSelectedContract(contract)}
-                className="flex items-center gap-3 bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 hover:border-nebula-500/50 hover:bg-slate-800/50 transition-all cursor-pointer min-w-max"
+                className="flex items-center gap-3 bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 hover:border-white/15/50 hover:bg-slate-800/50 transition-all cursor-pointer min-w-max"
               >
                 {/* Agency Badge */}
                 <span className={`px-2 py-0.5 rounded text-xs font-medium ${getAgencyStyle(contract.agency)}`}>

@@ -134,7 +134,7 @@ export default function HowSatelliteTrackingWorksPage() {
         <header className="relative overflow-hidden py-20 md:py-28">
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-b from-nebula-600/30 via-space-900/80 to-transparent pointer-events-none"
+            className="absolute inset-0 bg-gradient-to-b from-slate-200/30 via-space-900/80 to-transparent pointer-events-none"
           />
           <div className="relative container mx-auto px-4 text-center max-w-4xl">
             <div className="flex items-center justify-center gap-2 text-star-300 text-sm mb-4">
@@ -161,7 +161,7 @@ export default function HowSatelliteTrackingWorksPage() {
               <span className="hidden sm:inline text-star-300/40">|</span>
               <span>By SpaceNexus Research</span>
             </div>
-            <div className="w-24 h-[3px] bg-gradient-to-r from-nebula-500 to-plasma-400 rounded-full mx-auto mt-8" />
+            <div className="w-24 h-[3px] bg-gradient-to-r from-white to-plasma-400 rounded-full mx-auto mt-8" />
           </div>
         </header>
 

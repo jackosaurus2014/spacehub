@@ -332,7 +332,7 @@ export default function AdvertiserDashboard() {
                   {campaign.status === 'draft' && (
                     <button
                       onClick={() => handleStatusChange(campaign.id, 'pending_review')}
-                      className="text-xs px-3 py-1.5 rounded bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors"
+                      className="text-xs px-3 py-1.5 rounded bg-white/10 text-slate-200 hover:bg-white/15 transition-colors"
                     >
                       Submit for Review
                     </button>
@@ -379,7 +379,7 @@ export default function AdvertiserDashboard() {
                   <div className="flex items-center gap-2">
                     <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-nebula-500 rounded-full transition-all"
+                        className="h-full bg-white rounded-full transition-all"
                         style={{ width: `${Math.min(100, (campaign.spent / campaign.budget) * 100)}%` }}
                       />
                     </div>

@@ -497,7 +497,7 @@ export default function LaunchEconomicsPage() {
                 onClick={() => setFilter(f)}
                 className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-all duration-200 ${
                   filter === f
-                    ? 'bg-white text-white'
+                    ? 'bg-white text-slate-900'
                     : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
                 }`}
               >
@@ -520,7 +520,7 @@ export default function LaunchEconomicsPage() {
                 onClick={() => setSortKey(s.key)}
                 className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-all duration-200 ${
                   sortKey === s.key
-                    ? 'bg-white text-white'
+                    ? 'bg-white text-slate-900'
                     : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
                 }`}
               >

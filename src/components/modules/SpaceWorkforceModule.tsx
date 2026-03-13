@@ -64,7 +64,7 @@ function JobPostingCard({ job }: { job: SpaceJobPosting }) {
           <p className="text-slate-400 text-xs">{job.company}</p>
         </div>
         {job.remoteOk && (
-          <span className="text-xs bg-nebula-500/20 text-nebula-300 px-2 py-0.5 rounded ml-2 whitespace-nowrap">
+          <span className="text-xs bg-white/10 text-slate-200 px-2 py-0.5 rounded ml-2 whitespace-nowrap">
             Remote
           </span>
         )}
@@ -81,7 +81,7 @@ function JobPostingCard({ job }: { job: SpaceJobPosting }) {
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-nebula-300">
+        <span className="text-sm font-medium text-slate-200">
           {formatSalary(job.salaryMin ?? 0)} - {formatSalary(job.salaryMax ?? 0)}
         </span>
         {job.clearanceRequired && (
@@ -178,14 +178,14 @@ function SalaryBenchmarkBar({ benchmark }: { benchmark: SalaryBenchmark }) {
           style={{ left: `${minPct}%`, width: `${Math.max(maxPct - minPct, 1)}%` }}
         />
         <div
-          className="absolute h-full w-1 bg-nebula-400 rounded-full"
+          className="absolute h-full w-1 bg-slate-400 rounded-full"
           style={{ left: `${medianPct}%` }}
         />
       </div>
 
       <div className="flex justify-between text-xs text-slate-400">
         <span>{formatSalary(benchmark.avgMin)}</span>
-        <span className="text-nebula-300 font-medium">Median: {formatSalary(benchmark.avgMedian)}</span>
+        <span className="text-slate-200 font-medium">Median: {formatSalary(benchmark.avgMedian)}</span>
         <span>{formatSalary(benchmark.avgMax)}</span>
       </div>
     </div>
@@ -281,7 +281,7 @@ export default function SpaceWorkforceModule() {
         </div>
         <Link
           href="/space-talent?tab=workforce"
-          className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
+          className="text-slate-200 hover:text-white transition-colors text-sm"
         >
           Full Dashboard →
         </Link>
@@ -302,7 +302,7 @@ export default function SpaceWorkforceModule() {
           <div className="text-slate-400 text-xs">Avg Salary ($K)</div>
         </div>
         <div className="card p-3 text-center">
-          <div className="text-2xl font-bold text-nebula-300">
+          <div className="text-2xl font-bold text-slate-200">
             {CATEGORY_LABELS[stats.topCategory as JobCategory]?.label || stats.topCategory}
           </div>
           <div className="text-slate-400 text-xs">Top Category</div>
@@ -331,7 +331,7 @@ export default function SpaceWorkforceModule() {
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeTab === tab.id
-                ? 'bg-nebula-500 text-white'
+                ? 'bg-white text-slate-900'
                 : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
             }`}
           >

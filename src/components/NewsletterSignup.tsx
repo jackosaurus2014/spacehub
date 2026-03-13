@@ -118,7 +118,7 @@ export default function NewsletterSignup({
           <button
             type="submit"
             disabled={status === 'loading' || !email}
-            className="w-full px-3 py-2.5 min-h-[44px] text-sm font-medium bg-white hover:bg-slate-100 text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+            className="w-full px-3 py-2.5 min-h-[44px] text-sm font-medium bg-white hover:bg-slate-100 text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 rounded-lg transition-colors"
           >
             {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
           </button>
@@ -140,7 +140,7 @@ export default function NewsletterSignup({
   return (
     <div className="relative card p-10 md:p-16 text-center rounded-3xl overflow-hidden">
       {/* Decorative glow orb */}
-      <div className="absolute -top-20 -right-20 w-64 h-64 bg-nebula-300/20 rounded-full blur-[80px] pointer-events-none" />
+      <div className="absolute -top-20 -right-20 w-64 h-64 bg-slate-300/20 rounded-full blur-[80px] pointer-events-none" />
       <div className="relative">
         <h2 className="text-3xl md:text-display-md font-display font-bold text-slate-100 mb-4">
           Stay Ahead of the Curve
@@ -191,7 +191,7 @@ export default function NewsletterSignup({
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name (optional)"
                 aria-label="Your name"
-                className="flex-1 px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
+                className="flex-1 px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-white/15/50 transition-colors"
                 disabled={status === 'loading'}
               />
               <input
@@ -203,7 +203,7 @@ export default function NewsletterSignup({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
                 aria-label="Email address"
-                className="flex-1 px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-nebula-500/50 transition-colors"
+                className="flex-1 px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-white/15/50 transition-colors"
                 required
                 disabled={status === 'loading'}
               />

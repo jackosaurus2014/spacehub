@@ -323,7 +323,7 @@ export default function SpaceLaunchSchedule2026Page() {
                   'Read post-launch analysis in our News feed, auto-tagged by company',
                 ].map((step, i) => (
                   <li key={step} className="flex items-start gap-3">
-                    <span className="bg-white text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">
                       {i + 1}
                     </span>
                     <span className="text-slate-400 text-sm">{step}</span>

@@ -22,7 +22,7 @@ function getDaysRemaining(trialEndsAt: Date): number {
 const URGENCY_STYLES: Record<UrgencyLevel, { banner: string; button: string; icon: string }> = {
   info: {
     banner: 'bg-gradient-to-r from-white/5 to-white/10 border-white/10',
-    button: 'bg-white hover:bg-slate-100 text-white',
+    button: 'bg-white hover:bg-slate-100 text-slate-900',
     icon: 'text-slate-300',
   },
   warning: {

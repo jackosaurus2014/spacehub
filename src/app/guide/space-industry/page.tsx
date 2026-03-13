@@ -157,7 +157,7 @@ export default function SpaceIndustryGuidePage() {
           {/* Background gradient */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-b from-nebula-600/30 via-space-900/80 to-transparent pointer-events-none"
+            className="absolute inset-0 bg-gradient-to-b from-slate-200/30 via-space-900/80 to-transparent pointer-events-none"
           />
           <div className="relative container mx-auto px-4 text-center max-w-4xl">
             <div className="flex items-center justify-center gap-2 text-star-300 text-sm mb-4">
@@ -187,7 +187,7 @@ export default function SpaceIndustryGuidePage() {
                 description="Comprehensive guide to the $630B+ space industry covering markets, companies, trends, careers, and opportunities."
               />
             </div>
-            <div className="w-24 h-[3px] bg-gradient-to-r from-nebula-500 to-plasma-400 rounded-full mx-auto mt-8" />
+            <div className="w-24 h-[3px] bg-gradient-to-r from-white to-plasma-400 rounded-full mx-auto mt-8" />
           </div>
         </header>
 
@@ -526,14 +526,14 @@ export default function SpaceIndustryGuidePage() {
                   </p>
 
                   {/* Data callout */}
-                  <div className="card p-6 my-8 border-l-4 border-l-nebula-400">
+                  <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-nebula-300">~$25B</div>
+                        <div className="text-3xl font-display font-bold text-slate-200">~$25B</div>
                         <div className="text-star-300 text-sm mt-1">NASA Annual Budget</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-nebula-300">~$30B</div>
+                        <div className="text-3xl font-display font-bold text-slate-200">~$30B</div>
                         <div className="text-star-300 text-sm mt-1">U.S. Space Force &amp; NRO (est.)</div>
                       </div>
                     </div>

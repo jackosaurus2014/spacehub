@@ -113,7 +113,7 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
       {/* Actions */}
       <div className="flex items-center gap-3">
         <button
-          className="flex-1 bg-white hover:bg-slate-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+          className="flex-1 bg-white hover:bg-slate-700 text-slate-900 text-sm font-medium py-2 px-4 rounded-lg transition-colors"
           onClick={() => window.location.href = `mailto:${talent.contactEmail}?subject=Consultation Request`}
         >
           Book Consultation

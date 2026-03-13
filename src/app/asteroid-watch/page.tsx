@@ -1114,7 +1114,7 @@ function AsteroidWatchContent() {
               onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-nebula-500 text-white shadow-glow-sm'
+                  ? 'bg-white text-slate-900'
                   : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50'
               }`}
             >
@@ -1151,11 +1151,11 @@ function AsteroidWatchContent() {
             ))}
 
             {/* Key Upcoming Events Highlight */}
-            <div className="card p-6 border border-nebula-500/30 bg-nebula-500/5 mt-6">
+            <div className="card p-6 border border-white/10 bg-white/5 mt-6">
               <h3 className="text-lg font-semibold text-white mb-4">Key Upcoming Events</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 bg-slate-800/50 rounded-lg">
-                  <div className="text-nebula-300 font-semibold mb-1">Apophis Close Approach</div>
+                  <div className="text-slate-200 font-semibold mb-1">Apophis Close Approach</div>
                   <div className="text-slate-400 text-sm">April 13, 2029</div>
                   <p className="text-slate-400 text-sm mt-2">
                     99942 Apophis will pass within 31,600 km of Earth -- closer than geostationary satellites.
@@ -1164,7 +1164,7 @@ function AsteroidWatchContent() {
                   </p>
                 </div>
                 <div className="p-4 bg-slate-800/50 rounded-lg">
-                  <div className="text-nebula-300 font-semibold mb-1">Bennu Close Approach</div>
+                  <div className="text-slate-200 font-semibold mb-1">Bennu Close Approach</div>
                   <div className="text-slate-400 text-sm">September 25, 2060</div>
                   <p className="text-slate-400 text-sm mt-2">
                     101955 Bennu will make a very close approach to Earth. While cumulative impact
@@ -1325,7 +1325,7 @@ function AsteroidWatchContent() {
                 <div className="text-slate-500 text-xs mt-0.5">MOID &lt; 0.05 AU, H &lt; 22</div>
               </div>
               <div className="card p-5 text-center">
-                <div className="text-3xl font-bold font-display text-nebula-300">{NEO_STATS.lastYearDiscoveries.toLocaleString()}</div>
+                <div className="text-3xl font-bold font-display text-slate-200">{NEO_STATS.lastYearDiscoveries.toLocaleString()}</div>
                 <div className="text-slate-400 text-sm mt-1">Discovered Last Year</div>
                 <div className="text-slate-500 text-xs mt-0.5">~{Math.round(NEO_STATS.lastYearDiscoveries / 12)} per month average</div>
               </div>
@@ -1413,7 +1413,7 @@ function AsteroidWatchContent() {
                       <span className="text-white font-display text-lg">{cls.count.toLocaleString()}</span>
                     </div>
                     <div className="h-2 bg-slate-800 rounded-full overflow-hidden mb-3">
-                      <div className="h-full bg-gradient-to-r from-nebula-500 to-plasma-400 rounded-full" style={{ width: `${cls.percentage}%` }} />
+                      <div className="h-full bg-gradient-to-r from-white to-plasma-400 rounded-full" style={{ width: `${cls.percentage}%` }} />
                     </div>
                     <p className="text-slate-400 text-xs leading-relaxed">{cls.description}</p>
                     <div className="text-slate-500 text-xs mt-1">{cls.percentage}% of NEOs</div>
@@ -1457,7 +1457,7 @@ function AsteroidWatchContent() {
                     return (
                       <div key={m.year} className="flex-1 flex flex-col items-center gap-1 group relative">
                         <div
-                          className="w-full bg-gradient-to-t from-nebula-500 to-plasma-400 rounded-t transition-all group-hover:opacity-80"
+                          className="w-full bg-gradient-to-t from-white to-plasma-400 rounded-t transition-all group-hover:opacity-80"
                           style={{ height: `${heightPct}%`, minHeight: '2px' }}
                         />
                         <span className="text-[9px] text-slate-500 rotate-[-45deg] origin-center whitespace-nowrap">{m.year}</span>
@@ -1520,7 +1520,7 @@ function AsteroidWatchContent() {
                     <ul className="space-y-1">
                       {program.keyResults.map((result, idx) => (
                         <li key={idx} className="text-slate-400 text-sm flex items-start gap-2">
-                          <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                          <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                           {result}
                         </li>
                       ))}
@@ -1557,15 +1557,15 @@ function AsteroidWatchContent() {
               <h3 className="text-lg font-semibold text-white mb-3">Related Modules</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
-                  <div className="text-sm font-medium text-white group-hover:text-nebula-300">Debris Monitor</div>
+                  <div className="text-sm font-medium text-white group-hover:text-slate-200">Debris Monitor</div>
                   <p className="text-xs text-slate-400 mt-1">Impact debris and conjunction tracking</p>
                 </Link>
                 <Link href="/solar-exploration" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
-                  <div className="text-sm font-medium text-white group-hover:text-nebula-300">Solar Exploration</div>
+                  <div className="text-sm font-medium text-white group-hover:text-slate-200">Solar Exploration</div>
                   <p className="text-xs text-slate-400 mt-1">Planetary missions and surface landers</p>
                 </Link>
                 <Link href="/space-mining" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
-                  <div className="text-sm font-medium text-white group-hover:text-nebula-300">Space Mining</div>
+                  <div className="text-sm font-medium text-white group-hover:text-slate-200">Space Mining</div>
                   <p className="text-xs text-slate-400 mt-1">Asteroid mining intelligence</p>
                 </Link>
               </div>
@@ -1596,7 +1596,7 @@ function AsteroidWatchContent() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-nebula-300 font-bold text-sm">{target.estimatedValue}</div>
+                        <div className="text-slate-200 font-bold text-sm">{target.estimatedValue}</div>
                         <div className="text-slate-500 text-xs">Est. Value</div>
                       </div>
                     </div>
@@ -1691,7 +1691,7 @@ function AsteroidWatchContent() {
               </div>
               <Link
                 href="/space-mining"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-nebula-500/20 text-nebula-300 hover:bg-nebula-500/30 transition-colors border border-nebula-500/30 whitespace-nowrap"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10 whitespace-nowrap"
               >
                 Space Mining Hub &rarr;
               </Link>
@@ -1730,7 +1730,7 @@ function AsteroidWatchContent() {
                         <div className="flex items-center gap-3 mb-2">
                           <div className="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-gradient-to-r from-nebula-500 to-plasma-400 rounded-full"
+                              className="h-full bg-gradient-to-r from-white to-plasma-400 rounded-full"
                               style={{ width: `${widthPct}%` }}
                             />
                           </div>
@@ -1815,7 +1815,7 @@ function AsteroidWatchContent() {
                   { date: '2017', name: 'Oumuamua (1I/2017 U1)', note: 'First known interstellar object to pass through our solar system. Discovered by Pan-STARRS.' },
                 ].map((discovery, idx) => (
                   <div key={idx} className="p-3 bg-slate-800/20 rounded-lg flex items-start gap-3">
-                    <span className="text-nebula-400 text-xs font-mono font-medium mt-0.5 flex-shrink-0 w-10">{discovery.date}</span>
+                    <span className="text-slate-300 text-xs font-mono font-medium mt-0.5 flex-shrink-0 w-10">{discovery.date}</span>
                     <div>
                       <span className="text-white font-medium text-sm">{discovery.name}</span>
                       <p className="text-slate-400 text-xs mt-0.5">{discovery.note}</p>

@@ -59,7 +59,7 @@ export default function DMCAPage() {
                 <p className="text-slate-300 font-medium">SpaceNexus DMCA Agent</p>
                 <p className="text-slate-400 mt-2">
                   Email:{' '}
-                  <a href="mailto:dmca@spacenexus.us" className="text-nebula-300 hover:text-nebula-200 underline">
+                  <a href="mailto:dmca@spacenexus.us" className="text-slate-200 hover:text-white underline">
                     dmca@spacenexus.us
                   </a>
                 </p>
@@ -118,7 +118,7 @@ export default function DMCAPage() {
               </ol>
               <p className="text-slate-400 leading-relaxed mt-4">
                 Send your completed takedown notice to{' '}
-                <a href="mailto:dmca@spacenexus.us" className="text-nebula-300 hover:text-nebula-200 underline">
+                <a href="mailto:dmca@spacenexus.us" className="text-slate-200 hover:text-white underline">
                   dmca@spacenexus.us
                 </a>. Notices that do not substantially comply with all six requirements above may
                 not receive a response.
@@ -160,7 +160,7 @@ export default function DMCAPage() {
               </ol>
               <p className="text-slate-400 leading-relaxed mt-4">
                 Send your counter-notice to{' '}
-                <a href="mailto:dmca@spacenexus.us" className="text-nebula-300 hover:text-nebula-200 underline">
+                <a href="mailto:dmca@spacenexus.us" className="text-slate-200 hover:text-white underline">
                   dmca@spacenexus.us
                 </a>.
               </p>
@@ -206,7 +206,7 @@ export default function DMCAPage() {
                   <li>
                     If you are a victim or an authorized representative, you may request the
                     removal of non-consensual intimate images by contacting{' '}
-                    <a href="mailto:takedown@spacenexus.us" className="text-nebula-300 hover:text-nebula-200 underline">
+                    <a href="mailto:takedown@spacenexus.us" className="text-slate-200 hover:text-white underline">
                       takedown@spacenexus.us
                     </a>
                   </li>
@@ -256,19 +256,19 @@ export default function DMCAPage() {
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/terms"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Terms of Service
                 </Link>
                 <Link
                   href="/privacy"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Privacy Policy
                 </Link>
                 <Link
                   href="/community/guidelines"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Community Guidelines
                 </Link>

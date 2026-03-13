@@ -263,7 +263,7 @@ function WatchlistsContent() {
                 key={t.key}
                 onClick={() => setTab(t.key)}
                 className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
-                  tab === t.key ? 'bg-white text-white' : 'text-slate-400 hover:text-white'
+                  tab === t.key ? 'bg-white text-slate-900' : 'text-slate-400 hover:text-slate-900'
                 }`}
               >
                 {t.label}
@@ -376,7 +376,7 @@ function WatchlistsContent() {
                 description="Create your first watchlist to track companies, launches, and topics that matter to you."
                 action={
                   <Link href="/company-profiles">
-                    <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-semibold transition-colors">
+                    <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-semibold transition-colors">
                       Create Watchlist
                     </button>
                   </Link>
@@ -478,7 +478,7 @@ function WatchlistsContent() {
                 </p>
                 <div className="flex justify-center gap-3">
                   <Link href="/company-profiles">
-                    <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors">
+                    <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                       </svg>
@@ -581,7 +581,7 @@ function WatchlistsContent() {
                 )}
                 {watchlist.length === 0 && (
                   <Link href="/company-profiles">
-                    <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors">
+                    <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />

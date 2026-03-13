@@ -134,7 +134,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
         {[1, 2, 3, 4].map((s) => (
           <div key={s} className="flex items-center gap-2 flex-1">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-              s <= step ? 'bg-white text-white' : 'bg-slate-700 text-slate-500'
+              s <= step ? 'bg-white text-slate-900' : 'bg-slate-700 text-slate-500'
             }`}>
               {s < step ? '✓' : s}
             </div>
@@ -156,7 +156,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                   onClick={() => updateField('category', cat.value)}
                   className={`p-3 rounded-lg text-left transition-all ${
                     form.category === cat.value
-                      ? 'bg-white/10 ring-2 ring-white/15 text-white'
+                      ? 'bg-white/10 ring-2 ring-white/15 text-slate-900'
                       : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
                   }`}
                 >
@@ -196,7 +196,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
           <button
             onClick={() => setStep(2)}
             disabled={!form.category || !form.title}
-            className="w-full py-2.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg font-medium transition-colors"
+            className="w-full py-2.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 disabled:text-slate-500 text-slate-900 rounded-lg font-medium transition-colors"
           >
             Continue
           </button>
@@ -236,7 +236,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
             <button
               onClick={() => setStep(3)}
               disabled={!form.description}
-              className="flex-1 py-2.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg font-medium transition-colors"
+              className="flex-1 py-2.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 disabled:text-slate-500 text-slate-900 rounded-lg font-medium transition-colors"
             >
               Continue
             </button>
@@ -345,7 +345,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
             </button>
             <button
               onClick={() => { if (validateBudgetAndDates()) setStep(4); }}
-              className="flex-1 py-2.5 bg-white hover:bg-slate-100 text-white rounded-lg font-medium transition-colors"
+              className="flex-1 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg font-medium transition-colors"
             >
               Review
             </button>

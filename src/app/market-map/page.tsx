@@ -566,7 +566,7 @@ export default function MarketMapPage() {
               </p>
               <button
                 onClick={() => { setSelectedSector(null); setSelectedStage(null); setSearchQuery(''); }}
-                className="px-5 py-2.5 bg-white hover:bg-slate-100 text-white text-sm font-medium rounded-lg transition-colors"
+                className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm font-medium rounded-lg transition-colors"
               >
                 Reset all filters
               </button>

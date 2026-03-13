@@ -16,7 +16,7 @@ function SceneLoading() {
   return (
     <div className="h-[300px] flex items-center justify-center bg-slate-800/50 rounded-lg">
       <div className="text-center">
-        <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" style={{ borderWidth: '3px' }} />
+        <div className="w-10 h-10 border-3 border-white/15 border-t-transparent rounded-full animate-spin mx-auto mb-3" style={{ borderWidth: '3px' }} />
         <p className="text-slate-400 text-sm">Loading 3D visualization...</p>
       </div>
     </div>
@@ -66,7 +66,7 @@ export default function SolarExplorationModule() {
           </h2>
         </div>
         <div className="card p-8 text-center">
-          <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderWidth: '3px' }} />
+          <div className="w-10 h-10 border-3 border-white/15 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderWidth: '3px' }} />
         </div>
       </div>
     );
@@ -108,7 +108,7 @@ export default function SolarExplorationModule() {
         </h2>
         <Link
           href="/solar-exploration"
-          className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
+          className="text-slate-200 hover:text-white transition-colors text-sm"
         >
           Explore All →
         </Link>
@@ -122,7 +122,7 @@ export default function SolarExplorationModule() {
             onClick={() => setSelectedBodySlug(body.slug)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               selectedBodySlug === body.slug
-                ? 'bg-nebula-500 text-white'
+                ? 'bg-white text-slate-900'
                 : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
             }`}
           >
@@ -206,7 +206,7 @@ export default function SolarExplorationModule() {
             {/* View All Link */}
             <Link
               href={`/solar-exploration?body=${selectedBody.slug}`}
-              className="block w-full text-center py-2 bg-slate-800 hover:bg-slate-700 text-nebula-300 rounded-lg text-sm transition-colors"
+              className="block w-full text-center py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-sm transition-colors"
             >
               View All {selectedBody.name} Missions
             </Link>

@@ -41,7 +41,7 @@ export default function CommunityGuidelinesPage() {
                 together. These guidelines establish the standards of behavior we expect from every
                 participant. By using any community feature on SpaceNexus, you agree to abide by
                 these guidelines and our{' '}
-                <Link href="/terms" className="text-nebula-300 hover:text-nebula-200 underline">
+                <Link href="/terms" className="text-slate-200 hover:text-white underline">
                   Terms of Service
                 </Link>.
               </p>
@@ -192,7 +192,7 @@ export default function CommunityGuidelinesPage() {
                 <li>
                   If you believe your copyrighted work has been used without authorization on
                   SpaceNexus, please review our{' '}
-                  <Link href="/legal/dmca" className="text-nebula-300 hover:text-nebula-200 underline">
+                  <Link href="/legal/dmca" className="text-slate-200 hover:text-white underline">
                     DMCA &amp; Copyright Policy
                   </Link>{' '}
                   and file a takedown notice
@@ -271,7 +271,7 @@ export default function CommunityGuidelinesPage() {
               <ul className="list-disc list-inside text-slate-400 space-y-2 ml-4">
                 <li>
                   Send your appeal to{' '}
-                  <a href="mailto:community@spacenexus.us" className="text-nebula-300 hover:text-nebula-200 underline">
+                  <a href="mailto:community@spacenexus.us" className="text-slate-200 hover:text-white underline">
                     community@spacenexus.us
                   </a>{' '}
                   within 30 days of the enforcement action
@@ -304,7 +304,7 @@ export default function CommunityGuidelinesPage() {
                 </li>
                 <li>
                   For urgent matters or issues not covered by the report button, email{' '}
-                  <a href="mailto:community@spacenexus.us" className="text-nebula-300 hover:text-nebula-200 underline">
+                  <a href="mailto:community@spacenexus.us" className="text-slate-200 hover:text-white underline">
                     community@spacenexus.us
                   </a>
                 </li>
@@ -325,19 +325,19 @@ export default function CommunityGuidelinesPage() {
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/terms"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Terms of Service
                 </Link>
                 <Link
                   href="/privacy"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   Privacy Policy
                 </Link>
                 <Link
                   href="/legal/dmca"
-                  className="text-nebula-300 hover:text-nebula-200 underline"
+                  className="text-slate-200 hover:text-white underline"
                 >
                   DMCA &amp; Copyright Policy
                 </Link>

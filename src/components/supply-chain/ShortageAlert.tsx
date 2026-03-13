@@ -102,7 +102,7 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
           </span>
           {shortage.estimatedResolution && (
             <span className="text-slate-400">
-              Est. resolution: <span className="text-nebula-300">{shortage.estimatedResolution}</span>
+              Est. resolution: <span className="text-slate-200">{shortage.estimatedResolution}</span>
             </span>
           )}
         </div>

@@ -261,7 +261,7 @@ export default function SatelliteLaunchCostPage() {
         {/* Hero */}
         <header className="mb-10">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-nebula-500/10 text-nebula-400 border border-nebula-500/20">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15/20">
               Cost Analysis
             </span>
             <span className="text-xs text-slate-500">Updated February 2026</span>
@@ -280,17 +280,17 @@ export default function SatelliteLaunchCostPage() {
 
         {/* Quick Answer */}
         <ScrollReveal>
-        <div className="bg-slate-800/60 border border-nebula-500/30 rounded-xl p-6 mb-12">
+        <div className="bg-slate-800/60 border border-white/10 rounded-xl p-6 mb-12">
           <h2 className="text-lg font-bold text-white mb-4">Quick Answer: Satellite Launch Costs in 2026</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-slate-900/50 rounded-lg p-4">
               <div className="text-sm text-slate-400 mb-1">Rideshare (shared rocket)</div>
-              <div className="text-2xl font-bold text-nebula-400">$5,000 - $10,000 / kg</div>
+              <div className="text-2xl font-bold text-slate-300">$5,000 - $10,000 / kg</div>
               <div className="text-xs text-slate-500 mt-1">Lowest cost, limited orbit flexibility</div>
             </div>
             <div className="bg-slate-900/50 rounded-lg p-4">
               <div className="text-sm text-slate-400 mb-1">Dedicated (your own rocket)</div>
-              <div className="text-2xl font-bold text-nebula-400">$2,500 - $67,000 / kg</div>
+              <div className="text-2xl font-bold text-slate-300">$2,500 - $67,000 / kg</div>
               <div className="text-xs text-slate-500 mt-1">Full orbit control, varies by vehicle</div>
             </div>
           </div>
@@ -341,7 +341,7 @@ export default function SatelliteLaunchCostPage() {
                     </td>
                     <td className="py-3 pr-4 text-slate-300">{lp.payloadLeo}</td>
                     <td className="py-3 pr-4 text-slate-300">{lp.dedicatedPrice}</td>
-                    <td className="py-3 pr-4 text-nebula-400 font-medium">{lp.pricePerKgLeo}</td>
+                    <td className="py-3 pr-4 text-slate-300 font-medium">{lp.pricePerKgLeo}</td>
                     <td className="py-3 text-slate-300">{lp.ridesharePerKg}</td>
                   </tr>
                 ))}
@@ -383,7 +383,7 @@ export default function SatelliteLaunchCostPage() {
                   </div>
                   <div>
                     <span className="text-slate-500">Cost/kg LEO:</span>
-                    <span className="text-nebula-400 ml-1">{lp.pricePerKgLeo}</span>
+                    <span className="text-slate-300 ml-1">{lp.pricePerKgLeo}</span>
                   </div>
                   <div>
                     <span className="text-slate-500">Cost/kg GTO:</span>
@@ -445,7 +445,7 @@ export default function SatelliteLaunchCostPage() {
                 {historicalCosts.map((hc) => (
                   <tr key={hc.year} className="border-b border-slate-700/30">
                     <td className="py-3 pr-4 text-white font-medium">{hc.year}</td>
-                    <td className="py-3 pr-4 text-nebula-400 font-medium">{hc.costPerKg}</td>
+                    <td className="py-3 pr-4 text-slate-300 font-medium">{hc.costPerKg}</td>
                     <td className="py-3 pr-4 text-slate-300">{hc.vehicle}</td>
                     <td className="py-3 text-slate-400 text-xs">{hc.notes}</td>
                   </tr>
@@ -466,7 +466,7 @@ export default function SatelliteLaunchCostPage() {
             <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Low Earth Orbit (LEO)</h3>
               <div className="text-sm text-slate-500 mb-3">160 - 2,000 km altitude</div>
-              <div className="text-xl font-bold text-nebula-400 mb-2">$2,500 - $25,000 / kg</div>
+              <div className="text-xl font-bold text-slate-300 mb-2">$2,500 - $25,000 / kg</div>
               <p className="text-slate-400 text-sm">
                 Most accessible orbit. Used by Earth observation, communications constellations (Starlink),
                 ISS resupply, and scientific missions. Shortest travel time and lowest energy requirement.
@@ -476,7 +476,7 @@ export default function SatelliteLaunchCostPage() {
             <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Medium Earth Orbit (MEO)</h3>
               <div className="text-sm text-slate-500 mb-3">2,000 - 35,786 km altitude</div>
-              <div className="text-xl font-bold text-nebula-400 mb-2">$5,000 - $35,000 / kg</div>
+              <div className="text-xl font-bold text-slate-300 mb-2">$5,000 - $35,000 / kg</div>
               <p className="text-slate-400 text-sm">
                 Home to navigation constellations (GPS, Galileo, GLONASS) and some communications systems.
                 Requires more energy than LEO but less than GEO. Longer orbital lifetime.
@@ -486,7 +486,7 @@ export default function SatelliteLaunchCostPage() {
             <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Geostationary Orbit (GEO)</h3>
               <div className="text-sm text-slate-500 mb-3">35,786 km altitude (equatorial)</div>
-              <div className="text-xl font-bold text-nebula-400 mb-2">$8,000 - $67,000 / kg</div>
+              <div className="text-xl font-bold text-slate-300 mb-2">$8,000 - $67,000 / kg</div>
               <p className="text-slate-400 text-sm">
                 Satellites appear stationary over one point on Earth. Ideal for broadcast television,
                 weather monitoring, and wide-area communications. Highest cost due to energy requirements.
@@ -496,7 +496,7 @@ export default function SatelliteLaunchCostPage() {
             <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Sun-Synchronous Orbit (SSO)</h3>
               <div className="text-sm text-slate-500 mb-3">600 - 800 km altitude (polar)</div>
-              <div className="text-xl font-bold text-nebula-400 mb-2">$5,000 - $15,000 / kg</div>
+              <div className="text-xl font-bold text-slate-300 mb-2">$5,000 - $15,000 / kg</div>
               <p className="text-slate-400 text-sm">
                 Passes over the same point at the same local time each day, providing consistent lighting
                 for imaging. Most Earth observation satellites use SSO. Slightly more expensive than
@@ -513,7 +513,7 @@ export default function SatelliteLaunchCostPage() {
           <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-6">
             <ol className="space-y-4">
               <li className="flex items-start gap-3">
-                <span className="text-nebula-400 font-bold text-lg shrink-0">1.</span>
+                <span className="text-slate-300 font-bold text-lg shrink-0">1.</span>
                 <div>
                   <h4 className="text-white font-semibold">Choose rideshare over dedicated launch</h4>
                   <p className="text-slate-400 text-sm mt-1">
@@ -523,7 +523,7 @@ export default function SatelliteLaunchCostPage() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-nebula-400 font-bold text-lg shrink-0">2.</span>
+                <span className="text-slate-300 font-bold text-lg shrink-0">2.</span>
                 <div>
                   <h4 className="text-white font-semibold">Optimize satellite mass</h4>
                   <p className="text-slate-400 text-sm mt-1">
@@ -533,7 +533,7 @@ export default function SatelliteLaunchCostPage() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-nebula-400 font-bold text-lg shrink-0">3.</span>
+                <span className="text-slate-300 font-bold text-lg shrink-0">3.</span>
                 <div>
                   <h4 className="text-white font-semibold">Consider emerging launch providers</h4>
                   <p className="text-slate-400 text-sm mt-1">
@@ -543,7 +543,7 @@ export default function SatelliteLaunchCostPage() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-nebula-400 font-bold text-lg shrink-0">4.</span>
+                <span className="text-slate-300 font-bold text-lg shrink-0">4.</span>
                 <div>
                   <h4 className="text-white font-semibold">Book early, be flexible on schedule</h4>
                   <p className="text-slate-400 text-sm mt-1">
@@ -553,7 +553,7 @@ export default function SatelliteLaunchCostPage() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-nebula-400 font-bold text-lg shrink-0">5.</span>
+                <span className="text-slate-300 font-bold text-lg shrink-0">5.</span>
                 <div>
                   <h4 className="text-white font-semibold">Use a launch broker or aggregator</h4>
                   <p className="text-slate-400 text-sm mt-1">
@@ -567,7 +567,7 @@ export default function SatelliteLaunchCostPage() {
         </section>
 
         {/* CTA */}
-        <div className="bg-slate-800/60 border border-nebula-500/30 rounded-xl p-6 text-center mb-12">
+        <div className="bg-slate-800/60 border border-white/10 rounded-xl p-6 text-center mb-12">
           <h3 className="text-xl font-bold text-white mb-2">Calculate Your Mission Cost</h3>
           <p className="text-slate-400 text-sm mb-4">
             Use the SpaceNexus Mission Cost Calculator to estimate total launch cost based on your
@@ -576,7 +576,7 @@ export default function SatelliteLaunchCostPage() {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/mission-cost"
-              className="inline-block bg-nebula-500 hover:bg-nebula-600 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+              className="inline-block bg-white hover:bg-slate-100 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
             >
               Open Mission Cost Calculator
             </Link>
@@ -608,28 +608,28 @@ export default function SatelliteLaunchCostPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Link
               href="/mission-cost"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Mission Cost</div>
               <div className="text-slate-500 text-xs">Calculator</div>
             </Link>
             <Link
               href="/orbital-costs"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Orbital Costs</div>
               <div className="text-slate-500 text-xs">Pricing data</div>
             </Link>
             <Link
               href="/space-insurance"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Insurance</div>
               <div className="text-slate-500 text-xs">Coverage & rates</div>
             </Link>
             <Link
               href="/launch-vehicles"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Launch Vehicles</div>
               <div className="text-slate-500 text-xs">Full catalog</div>
@@ -643,21 +643,21 @@ export default function SatelliteLaunchCostPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Link
               href="/learn/space-industry-market-size"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Industry Market Size</div>
               <div className="text-slate-500 text-xs">$1.8 trillion and growing</div>
             </Link>
             <Link
               href="/learn/how-to-track-satellites"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">How to Track Satellites</div>
               <div className="text-slate-500 text-xs">Real-time tracking guide</div>
             </Link>
             <Link
               href="/learn/space-companies-to-watch"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-nebula-500/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
             >
               <div className="text-white text-sm font-medium">Top Space Companies 2026</div>
               <div className="text-slate-500 text-xs">25 companies to watch</div>

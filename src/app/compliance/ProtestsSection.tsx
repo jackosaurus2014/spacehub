@@ -126,7 +126,7 @@ function ProtestsOverviewTab({ protests }: { protests: BidProtest[] }) {
         const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
         const isExpanded = expandedId === protest.id;
         return (
-          <div key={protest.id} className="card p-5 hover:border-nebula-500/50 transition-all">
+          <div key={protest.id} className="card p-5 hover:border-white/15/50 transition-all">
             <div className="flex items-start justify-between mb-3 gap-3">
               <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-white text-base">{protest.shortTitle}</h4>
@@ -139,12 +139,12 @@ function ProtestsOverviewTab({ protests }: { protests: BidProtest[] }) {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
               <div><span className="text-star-300 text-xs block">Protester</span><span className="text-white text-sm font-medium">{protest.protester}</span></div>
-              <div><span className="text-star-300 text-xs block">Awardee</span><span className="text-nebula-300 text-sm">{protest.awardee}</span></div>
+              <div><span className="text-star-300 text-xs block">Awardee</span><span className="text-slate-200 text-sm">{protest.awardee}</span></div>
               <div><span className="text-star-300 text-xs block">Agency</span><span className="text-white text-sm">{protest.agency}</span></div>
               <div><span className="text-star-300 text-xs block">Contract Value</span><span className="text-white text-sm font-bold">{protest.contractValue}</span></div>
             </div>
             <p className="text-star-300 text-sm leading-relaxed mb-3">{protest.description}</p>
-            <button onClick={() => setExpandedId(isExpanded ? null : protest.id)} className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors mb-2">{isExpanded ? 'Show Less' : 'View Key Findings & Significance'}</button>
+            <button onClick={() => setExpandedId(isExpanded ? null : protest.id)} className="text-sm text-slate-200 hover:text-white transition-colors mb-2">{isExpanded ? 'Show Less' : 'View Key Findings & Significance'}</button>
             {isExpanded && (
               <div className="mt-3 pt-3 border-t border-white/10 space-y-3">
                 <div><h5 className="text-xs font-semibold text-star-300 mb-2 uppercase tracking-wider">Key Findings</h5><ul className="space-y-1.5">{protest.keyFindings.map((finding, i) => (<li key={i} className="flex items-start gap-2 text-xs text-star-300"><svg className="w-3 h-3 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{finding}</li>))}</ul></div>
@@ -152,7 +152,7 @@ function ProtestsOverviewTab({ protests }: { protests: BidProtest[] }) {
                 <div className="text-xs text-star-300">
                   <span className="font-medium text-white">{protest.title}</span>
                   <span className="mx-2 text-slate-600">|</span>
-                  <span>Program: <span className="text-nebula-300">{PROTEST_PROGRAM_LABELS[protest.program]}</span></span>
+                  <span>Program: <span className="text-slate-200">{PROTEST_PROGRAM_LABELS[protest.program]}</span></span>
                   {protest.judge && (<><span className="mx-2 text-slate-600">|</span><span>{protest.judge}</span></>)}
                 </div>
               </div>
@@ -162,13 +162,13 @@ function ProtestsOverviewTab({ protests }: { protests: BidProtest[] }) {
               <span className="text-slate-600">|</span>
               <span>Decided: <span className="text-white font-medium">{protest.decisionDate}</span></span>
               <span className="text-slate-600">|</span>
-              <span className="text-nebula-300">{PROTEST_PROGRAM_LABELS[protest.program]}</span>
+              <span className="text-slate-200">{PROTEST_PROGRAM_LABELS[protest.program]}</span>
             </div>
           </div>
         );
       })}</div>
 
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No protests match your search</h3><button onClick={() => { setSearch(''); setForumFilter(''); setOutcomeFilter(''); setProgramFilter(''); setAgencyFilter(''); }} className="text-nebula-300 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No protests match your search</h3><button onClick={() => { setSearch(''); setForumFilter(''); setOutcomeFilter(''); setProgramFilter(''); setAgencyFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -218,7 +218,7 @@ function ProtestsTimelineTab({ protests }: { protests: BidProtest[] }) {
         {years.map((year) => (
           <div key={year} className="mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-nebula-500 flex items-center justify-center text-white text-xs font-bold relative z-10">{protestsByYear[year].length}</div>
+              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-white text-xs font-bold relative z-10">{protestsByYear[year].length}</div>
               <h3 className="text-xl font-bold font-display text-white">{year}</h3>
               <div className="h-px flex-1 bg-white/10" />
             </div>
@@ -231,7 +231,7 @@ function ProtestsTimelineTab({ protests }: { protests: BidProtest[] }) {
                 const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome] || DEFAULT_PROTEST_STYLE;
                 const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
                 return (
-                  <div key={protest.id} className="card p-4 hover:border-nebula-500/50 transition-all relative">
+                  <div key={protest.id} className="card p-4 hover:border-white/15/50 transition-all relative">
                     <div className={`absolute left-[-28px] top-4 w-3 h-3 rounded-full ${outcomeColors[protest.outcome]} border-2 border-slate-900`} />
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
@@ -361,7 +361,7 @@ function ProtestsAnalysisTab({ protests }: { protests: BidProtest[] }) {
               <div key={year} className="flex items-center gap-3">
                 <span className="text-xs text-star-300 w-10 text-right font-mono">{year}</span>
                 <div className="flex-1 h-6 bg-white/5 rounded overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-nebula-500 to-slate-400 rounded flex items-center justify-end pr-2" style={{ width: `${(volumeByYear[year] / maxVolume) * 100}%` }}>
+                  <div className="h-full bg-gradient-to-r from-white to-slate-400 rounded flex items-center justify-end pr-2" style={{ width: `${(volumeByYear[year] / maxVolume) * 100}%` }}>
                     <span className="text-xs text-white font-bold">{volumeByYear[year]}</span>
                   </div>
                 </div>
@@ -399,7 +399,7 @@ function ProtestsAnalysisTab({ protests }: { protests: BidProtest[] }) {
             {byProgram.map(([program, count]) => (
               <div key={program} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                 <span className="text-sm text-white">{PROTEST_PROGRAM_LABELS[program as ProtestProgram]}</span>
-                <span className="text-sm font-bold text-nebula-300">{count}</span>
+                <span className="text-sm font-bold text-slate-200">{count}</span>
               </div>
             ))}
           </div>
@@ -411,7 +411,7 @@ function ProtestsAnalysisTab({ protests }: { protests: BidProtest[] }) {
             {byAgency.map(([agency, count]) => (
               <div key={agency} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                 <span className="text-sm text-white">{agency}</span>
-                <span className="text-sm font-bold text-nebula-300">{count}</span>
+                <span className="text-sm font-bold text-slate-200">{count}</span>
               </div>
             ))}
           </div>

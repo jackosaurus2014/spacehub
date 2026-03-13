@@ -853,7 +853,7 @@ function SupplyChainContent() {
             }}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all text-sm ${
               activeTab === tab.id
-                ? 'bg-nebula-500/20 text-nebula-300 border border-nebula-500/50'
+                ? 'bg-white/10 text-slate-200 border border-white/15/50'
                 : 'bg-space-800 text-slate-400 border border-space-700 hover:border-space-600 hover:text-white'
             }`}
           >
@@ -957,7 +957,7 @@ function SupplyChainContent() {
                 type="checkbox"
                 checked={showHighRiskOnly}
                 onChange={(e) => setShowHighRiskOnly(e.target.checked)}
-                className="rounded bg-space-700 border-space-600 text-nebula-300 focus:ring-nebula-500"
+                className="rounded bg-space-700 border-space-600 text-slate-200 focus:ring-white/15"
               />
               Show high-risk only
             </label>
@@ -1044,7 +1044,7 @@ function SupplyChainContent() {
                 </div>
                 <button
                   onClick={() => setActiveTab('shortages')}
-                  className="mt-4 text-sm text-nebula-300 hover:text-nebula-200"
+                  className="mt-4 text-sm text-slate-200 hover:text-white"
                 >
                   View all shortages &rarr;
                 </button>
@@ -1126,7 +1126,7 @@ function SupplyChainContent() {
                                 {/* Supplier Header */}
                                 <div className={`${cat.bgColor}/10 p-4 border-b border-space-700`}>
                                   <div className="flex items-center justify-between mb-2">
-                                    <h4 className="font-semibold text-white group-hover:text-nebula-300 transition-colors">{supplier.name}</h4>
+                                    <h4 className="font-semibold text-white group-hover:text-slate-200 transition-colors">{supplier.name}</h4>
                                     {tierInfo && (
                                       <span className={`text-xs font-medium px-2 py-0.5 rounded ${tierInfo.bgColor}/20 ${tierInfo.color}`}>
                                         {tierInfo.label}

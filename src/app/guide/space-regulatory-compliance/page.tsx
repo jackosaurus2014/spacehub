@@ -127,11 +127,11 @@ export default function SpaceRegulatoryCompliancePage() {
         {/* Breadcrumbs */}
         <nav className="pt-6 mb-4" aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm text-slate-400">
-            <li><Link href="/" className="hover:text-nebula-400 transition-colors">Home</Link></li>
+            <li><Link href="/" className="hover:text-slate-300 transition-colors">Home</Link></li>
             <li>/</li>
-            <li><Link href="/guide/space-industry" className="hover:text-nebula-400 transition-colors">Guides</Link></li>
+            <li><Link href="/guide/space-industry" className="hover:text-slate-300 transition-colors">Guides</Link></li>
             <li>/</li>
-            <li className="text-nebula-400">Space Regulatory Compliance</li>
+            <li className="text-slate-300">Space Regulatory Compliance</li>
           </ol>
         </nav>
 
@@ -163,7 +163,7 @@ export default function SpaceRegulatoryCompliancePage() {
                 <li key={item.id}>
                   <a
                     href={`#${item.id}`}
-                    className="text-nebula-400 hover:underline text-sm transition-colors"
+                    className="text-slate-300 hover:underline text-sm transition-colors"
                   >
                     {i + 1}. {item.label}
                   </a>
@@ -271,19 +271,19 @@ export default function SpaceRegulatoryCompliancePage() {
               <h3 className="text-xl font-bold text-white mb-3 mt-6">ITAR Compliance Requirements</h3>
               <ul className="text-slate-300 space-y-2 mb-4">
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Registration</strong> &mdash; Any company manufacturing, exporting, or brokering defense articles must register with DDTC (annual fee: $2,250 minimum).</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Licensing</strong> &mdash; Export licenses are required for permanent and temporary exports of defense articles and technical data to non-US persons.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Technology Control Plans</strong> &mdash; Facilities handling ITAR data must implement physical and cybersecurity controls to prevent unauthorized access.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-nebula-400 mt-1 flex-shrink-0">&#9656;</span>
+                  <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                   <span><strong className="text-white">Deemed Exports</strong> &mdash; Sharing ITAR technical data with a non-US person within the United States is considered an export and requires a license.</span>
                 </li>
               </ul>
@@ -298,7 +298,7 @@ export default function SpaceRegulatoryCompliancePage() {
                 focused space companies.
               </p>
               <p className="text-slate-300 text-sm mt-4">
-                <Link href="/guide/itar-compliance-guide" className="text-nebula-400 hover:underline">
+                <Link href="/guide/itar-compliance-guide" className="text-slate-300 hover:underline">
                   Read our detailed ITAR compliance guide &rarr;
                 </Link>
               </p>
@@ -400,7 +400,7 @@ export default function SpaceRegulatoryCompliancePage() {
                 is creating significant coordination challenges and regulatory innovation.
               </p>
               <p className="text-slate-300 text-sm mt-4">
-                <Link href="/spectrum" className="text-nebula-400 hover:underline">
+                <Link href="/spectrum" className="text-slate-300 hover:underline">
                   Track spectrum allocations and auction results on SpaceNexus &rarr;
                 </Link>
               </p>
@@ -443,7 +443,7 @@ export default function SpaceRegulatoryCompliancePage() {
                 national regulations and industry best practices worldwide.
               </p>
               <p className="text-slate-300 text-sm mt-4">
-                <Link href="/compliance" className="text-nebula-400 hover:underline">
+                <Link href="/compliance" className="text-slate-300 hover:underline">
                   Track treaty obligations and regulatory changes on SpaceNexus &rarr;
                 </Link>
               </p>
@@ -491,23 +491,23 @@ export default function SpaceRegulatoryCompliancePage() {
               </p>
               <ol className="text-slate-300 space-y-2 mb-6">
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
-                  <span><strong className="text-white">Regulatory Dashboard</strong> &mdash; Track all your licenses, filings, and compliance obligations across FAA, FCC, NOAA, and DDTC in one place via our <Link href="/compliance" className="text-nebula-400 hover:underline">Compliance Hub</Link>.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
+                  <span><strong className="text-white">Regulatory Dashboard</strong> &mdash; Track all your licenses, filings, and compliance obligations across FAA, FCC, NOAA, and DDTC in one place via our <Link href="/compliance" className="text-slate-300 hover:underline">Compliance Hub</Link>.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
-                  <span><strong className="text-white">Spectrum Coordination</strong> &mdash; Monitor spectrum assignments, ITU filings, and interference environments via our <Link href="/spectrum" className="text-nebula-400 hover:underline">Spectrum Management tool</Link>.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">2</span>
+                  <span><strong className="text-white">Spectrum Coordination</strong> &mdash; Monitor spectrum assignments, ITU filings, and interference environments via our <Link href="/spectrum" className="text-slate-300 hover:underline">Spectrum Management tool</Link>.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
-                  <span><strong className="text-white">Orbital Slot Tracking</strong> &mdash; Track orbital position assignments and coordination status via our <Link href="/orbital-slots" className="text-nebula-400 hover:underline">Orbital Slots tracker</Link>.</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">3</span>
+                  <span><strong className="text-white">Orbital Slot Tracking</strong> &mdash; Track orbital position assignments and coordination status via our <Link href="/orbital-slots" className="text-slate-300 hover:underline">Orbital Slots tracker</Link>.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">4</span>
                   <span><strong className="text-white">Treaty Monitor</strong> &mdash; Stay informed about international treaty developments, Artemis Accords updates, and UN COPUOS proceedings.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-nebula-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">5</span>
+                  <span className="bg-white text-slate-900 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">5</span>
                   <span><strong className="text-white">Regulatory Alerts</strong> &mdash; Receive automated notifications when regulations change, deadlines approach, or new rulemakings affect your operations.</span>
                 </li>
               </ol>
@@ -541,16 +541,16 @@ export default function SpaceRegulatoryCompliancePage() {
             <section className="pt-6 border-t border-slate-700/50">
               <h3 className="text-lg font-bold text-white mb-4">Related Guides</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Link href="/guide/itar-compliance-guide" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/itar-compliance-guide" className="text-slate-300 hover:underline text-sm transition-colors">
                   Detailed ITAR Compliance Guide &rarr;
                 </Link>
-                <Link href="/guide/space-business-opportunities" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-business-opportunities" className="text-slate-300 hover:underline text-sm transition-colors">
                   Space Business Opportunities &rarr;
                 </Link>
-                <Link href="/guide/space-industry" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-industry" className="text-slate-300 hover:underline text-sm transition-colors">
                   Complete Guide to the Space Industry &rarr;
                 </Link>
-                <Link href="/guide/space-launch-schedule-2026" className="text-nebula-400 hover:underline text-sm transition-colors">
+                <Link href="/guide/space-launch-schedule-2026" className="text-slate-300 hover:underline text-sm transition-colors">
                   2026 Space Launch Schedule &rarr;
                 </Link>
               </div>

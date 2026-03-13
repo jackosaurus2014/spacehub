@@ -52,7 +52,7 @@ export default function NewsFeedModule() {
           </h2>
         </div>
         <div className="flex justify-center py-12">
-          <div className="w-10 h-10 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+          <div className="w-10 h-10 border-3 border-white/15 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
         </div>
       </div>
     );
@@ -72,7 +72,7 @@ export default function NewsFeedModule() {
           </h3>
           <Link
             href="/news"
-            className="text-nebula-300 hover:text-nebula-200 transition-colors text-sm"
+            className="text-slate-200 hover:text-white transition-colors text-sm"
           >
             View All News →
           </Link>
@@ -82,7 +82,7 @@ export default function NewsFeedModule() {
             <Link
               key={category.slug}
               href={`/news?category=${category.slug}`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-space-700/50 hover:bg-space-600/50 border border-space-600 hover:border-nebula-500/50 rounded-full text-sm transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-space-700/50 hover:bg-space-600/50 border border-space-600 hover:border-white/15/50 rounded-full text-sm transition-all"
             >
               <span className="text-base">{categoryIcons[category.slug] || '📁'}</span>
               <span className="text-star-200">{category.name}</span>

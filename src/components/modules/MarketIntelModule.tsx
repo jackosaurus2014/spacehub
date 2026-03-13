@@ -45,7 +45,7 @@ function PublicCompanyCard({
   const is30DPositive = stockData ? stockData.change30D >= 0 : true;
 
   return (
-    <div className="card p-4 hover:border-nebula-500/50 transition-all">
+    <div className="card p-4 hover:border-white/15/50 transition-all">
       {stockData && (
         <span className="sr-only">
           {`${company.name} (${company.exchange}:${company.ticker}): Price ${formatPrice(stockData.price)}, ${isPositive ? 'up' : 'down'} ${formatChange(stockData.changePercent, true)} today, 30-day change ${formatChange(stockData.change30D, true)}`}
@@ -56,7 +56,7 @@ function PublicCompanyCard({
           <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
           <div>
             <h3 className="font-semibold text-slate-200 text-sm">{company.name}</h3>
-            <span className="text-xs text-nebula-300 font-mono">
+            <span className="text-xs text-slate-200 font-mono">
               {company.exchange}:{company.ticker}
             </span>
           </div>
@@ -319,7 +319,7 @@ export default function MarketIntelModule() {
             <div className="text-slate-400 text-xs">Private</div>
           </div>
           <div className="card p-3 text-center">
-            <div className="text-2xl font-bold text-nebula-300">
+            <div className="text-2xl font-bold text-slate-200">
               {stats.totalMarketCap
                 ? `$${
                     stats.totalMarketCap >= 1000
@@ -353,7 +353,7 @@ export default function MarketIntelModule() {
                   onClick={() => company.ticker && toggleTicker(company.ticker)}
                   className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-mono font-medium transition-all ${
                     isSelected
-                      ? 'bg-nebula-500/30 text-nebula-300 border border-nebula-500/50'
+                      ? 'bg-white/15 text-slate-200 border border-white/15/50'
                       : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-500'
                   }`}
                 >
@@ -406,7 +406,7 @@ export default function MarketIntelModule() {
                       <span className="text-lg flex-shrink-0">{countryInfo?.flag || '🌐'}</span>
                       <div className="min-w-0">
                         <div className="font-medium text-slate-200 text-sm truncate">{company.name}</div>
-                        <span className="text-nebula-300 font-mono text-xs">{company.exchange}:{company.ticker}</span>
+                        <span className="text-slate-200 font-mono text-xs">{company.exchange}:{company.ticker}</span>
                       </div>
                     </div>
 

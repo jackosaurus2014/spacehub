@@ -22,7 +22,7 @@ const sizeClasses: Record<'sm' | 'md' | 'lg', string> = {
 };
 
 const variantGradients: Record<'default' | 'success' | 'warning', string> = {
-  default: 'from-nebula-500 via-plasma-400 to-plasma-300',
+  default: 'from-white via-plasma-400 to-plasma-300',
   success: 'from-emerald-600 via-emerald-500 to-emerald-400',
   warning: 'from-amber-600 via-amber-500 to-rocket-400',
 };

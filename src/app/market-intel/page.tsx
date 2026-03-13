@@ -127,7 +127,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
               ) : company.name}
             </div>
             {company.ticker ? (
-              <div className="text-xs text-nebula-300 font-mono">
+              <div className="text-xs text-slate-200 font-mono">
                 {company.exchange}:{company.ticker}
               </div>
             ) : (
@@ -207,7 +207,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
               href={company.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-nebula-300 hover:text-nebula-200 text-sm"
+              className="text-slate-200 hover:text-white text-sm"
             >
               Visit →
             </a>
@@ -234,7 +234,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
           )}
           <Link
             href={`/orbital-slots?tab=operators`}
-            className="text-xs text-nebula-300 hover:text-nebula-200"
+            className="text-xs text-slate-200 hover:text-white"
           >
             Satellites →
           </Link>
@@ -457,7 +457,7 @@ function MarketIntelContent() {
               </StaggerItem>
               <StaggerItem>
                 <div className="card-elevated p-6 text-center">
-                  <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
+                  <div className="text-4xl font-bold font-display tracking-tight text-slate-200">
                     ${stats.totalMarketCap >= 1000
                       ? `${(stats.totalMarketCap / 1000).toFixed(1)}T`
                       : `${stats.totalMarketCap.toFixed(0)}B`}
@@ -491,7 +491,7 @@ function MarketIntelContent() {
             <div className="mb-8">
               <button
                 onClick={() => setShowCompanyRequestDialog(true)}
-                className="text-slate-400 hover:text-nebula-200 text-sm transition-colors flex items-center gap-2"
+                className="text-slate-400 hover:text-white text-sm transition-colors flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -521,7 +521,7 @@ function MarketIntelContent() {
                       return (
                         <StaggerItem key={company.id}>
                         <div
-                          className="card p-4 hover:border-nebula-500/50 transition-all"
+                          className="card p-4 hover:border-white/15/50 transition-all"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div>
@@ -530,7 +530,7 @@ function MarketIntelContent() {
                                   <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline">{company.name}</Link>
                                 ) : company.name}
                               </div>
-                              <div className="text-xs text-nebula-300 font-mono">
+                              <div className="text-xs text-slate-200 font-mono">
                                 {company.exchange}:{company.ticker}
                               </div>
                             </div>
@@ -623,7 +623,7 @@ function MarketIntelContent() {
                       onClick={() => setEtfFilter(tab.value)}
                       className={`px-4 py-2 min-h-[44px] rounded-lg text-sm font-medium transition-colors ${
                         etfFilter === tab.value
-                          ? 'bg-nebula-500 text-white'
+                          ? 'bg-white text-slate-900'
                           : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                       }`}
                     >
@@ -643,7 +643,7 @@ function MarketIntelContent() {
 
                       return (
                         <StaggerItem key={etf.ticker}>
-                          <div className="card p-4 hover:border-nebula-500/50 transition-all relative">
+                          <div className="card p-4 hover:border-white/15/50 transition-all relative">
                             {/* Category & leveraged badges */}
                             <div className="flex items-center gap-1.5 mb-2">
                               <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
@@ -661,7 +661,7 @@ function MarketIntelContent() {
                             </div>
 
                             <div className="flex items-center justify-between mb-1">
-                              <div className="font-mono text-sm font-bold text-nebula-300">{etf.ticker}</div>
+                              <div className="font-mono text-sm font-bold text-slate-200">{etf.ticker}</div>
                               <span
                                 className={`text-xs font-medium px-2 py-0.5 rounded ${
                                   isPositive
@@ -776,7 +776,7 @@ function MarketIntelContent() {
                         setSelectedType('');
                         setSelectedFocus('');
                       }}
-                      className="text-sm text-nebula-300 hover:text-nebula-200 py-2 min-h-[44px]"
+                      className="text-sm text-slate-200 hover:text-white py-2 min-h-[44px]"
                     >
                       Clear Filters
                     </button>
@@ -928,7 +928,7 @@ function MarketIntelContent() {
                                         <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline">{company.name}</Link>
                                       ) : company.name}
                                     </div>
-                                    <div className="text-xs text-nebula-300 font-mono">
+                                    <div className="text-xs text-slate-200 font-mono">
                                       {company.exchange}:{company.ticker}
                                     </div>
                                   </div>
@@ -971,7 +971,7 @@ function MarketIntelContent() {
                               </td>
                               <td className="py-4 px-4">
                                 {company.website && (
-                                  <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-nebula-300 hover:text-nebula-200 text-sm">
+                                  <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-slate-200 hover:text-white text-sm">
                                     Visit →
                                   </a>
                                 )}
@@ -1002,7 +1002,7 @@ function MarketIntelContent() {
                                   <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline">{company.name}</Link>
                                 ) : company.name}
                               </div>
-                              <div className="text-xs text-nebula-300 font-mono">
+                              <div className="text-xs text-slate-200 font-mono">
                                 {company.exchange}:{company.ticker}
                               </div>
                             </div>
@@ -1038,7 +1038,7 @@ function MarketIntelContent() {
                           })}
                         </div>
                         {company.website && (
-                          <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-nebula-300 hover:text-nebula-200 text-xs">
+                          <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-slate-200 hover:text-white text-xs">
                             Visit →
                           </a>
                         )}
@@ -1153,7 +1153,7 @@ function MarketIntelContent() {
                               </td>
                               <td className="py-4 px-4">
                                 {company.website && (
-                                  <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-nebula-300 hover:text-nebula-200 text-sm">
+                                  <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-slate-200 hover:text-white text-sm">
                                     Visit →
                                   </a>
                                 )}
@@ -1224,7 +1224,7 @@ function MarketIntelContent() {
                           })}
                         </div>
                         {company.website && (
-                          <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-nebula-300 hover:text-nebula-200 text-xs mt-2 inline-block">
+                          <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-slate-200 hover:text-white text-xs mt-2 inline-block">
                             Visit →
                           </a>
                         )}

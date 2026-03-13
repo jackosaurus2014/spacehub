@@ -263,7 +263,7 @@ export default function SpaceWeatherTab() {
         <p className="text-slate-400 mb-4">Failed to load solar activity data</p>
         <button
           onClick={fetchWeatherData}
-          className="px-4 py-2 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors"
+          className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors"
         >
           Try Again
         </button>
@@ -285,7 +285,7 @@ export default function SpaceWeatherTab() {
           <div className="text-red-400 text-sm font-medium mb-3">{error}</div>
           <button
             onClick={fetchWeatherData}
-            className="px-4 py-2 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors"
+            className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-900 rounded-lg text-sm font-medium transition-colors"
           >
             Try Again
           </button>
@@ -395,7 +395,7 @@ export default function SpaceWeatherTab() {
             onClick={() => setSelectedSubTab(tab)}
             className={`px-4 py-2 rounded-lg font-medium capitalize transition-all ${
               selectedSubTab === tab
-                ? 'bg-slate-700/50 text-white border-slate-700/50 shadow-glow-sm'
+                ? 'bg-slate-700/50 text-white border-slate-700/50'
                 : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
             }`}
           >
@@ -537,19 +537,19 @@ export default function SpaceWeatherTab() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
-                <div className="text-sm font-medium text-white group-hover:text-nebula-200">&#128752; Debris Monitor</div>
+                <div className="text-sm font-medium text-white group-hover:text-white">&#128752; Debris Monitor</div>
                 <p className="text-xs text-slate-400 mt-1">Solar storms can alter debris orbits</p>
               </Link>
               <Link href="/orbital-slots" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
-                <div className="text-sm font-medium text-white group-hover:text-nebula-200">&#128225; Orbital Slots</div>
+                <div className="text-sm font-medium text-white group-hover:text-white">&#128225; Orbital Slots</div>
                 <p className="text-xs text-slate-400 mt-1">Check satellite exposure to solar events</p>
               </Link>
               <Link href="/space-insurance" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
-                <div className="text-sm font-medium text-white group-hover:text-nebula-200">&#128737;&#65039; Space Insurance</div>
+                <div className="text-sm font-medium text-white group-hover:text-white">&#128737;&#65039; Space Insurance</div>
                 <p className="text-xs text-slate-400 mt-1">Solar activity affects insurance risk</p>
               </Link>
               <Link href="/mission-control" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
-                <div className="text-sm font-medium text-white group-hover:text-nebula-200">&#127919; Mission Control</div>
+                <div className="text-sm font-medium text-white group-hover:text-white">&#127919; Mission Control</div>
                 <p className="text-xs text-slate-400 mt-1">Solar weather impacts launch windows</p>
               </Link>
             </div>
@@ -686,7 +686,7 @@ export default function SpaceWeatherTab() {
       {/* Dynamic Content Sections */}
       {contentLoading ? (
         <div className="flex justify-center py-8">
-          <div className="w-8 h-8 border-3 border-nebula-500 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+          <div className="w-8 h-8 border-3 border-white/15 border-t-transparent rounded-full animate-spin" style={{ borderWidth: '3px' }} />
         </div>
       ) : (
         <>
@@ -744,7 +744,7 @@ export default function SpaceWeatherTab() {
                             href={event.sources[0].url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-nebula-300 hover:text-nebula-200 transition-colors"
+                            className="text-xs text-slate-200 hover:text-white transition-colors"
                           >
                             Source: {event.sources[0].id} &rarr;
                           </a>

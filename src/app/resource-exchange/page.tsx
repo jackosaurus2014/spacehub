@@ -80,7 +80,7 @@ function ResourceRow({
         <div className="text-slate-400 text-xs">{formatPrice(spacePriceLb)}/lb</div>
       </td>
       <td className="py-4 px-4 text-right">
-        <div className="text-nebula-300 font-medium">
+        <div className="text-slate-200 font-medium">
           {launchMultiplier >= 10000
             ? `${(launchMultiplier / 1000).toFixed(0)}K×`
             : launchMultiplier >= 1000
@@ -123,7 +123,7 @@ function LaunchProviderCard({
       onClick={onSelect}
       className={`card p-4 text-left transition-all ${
         isSelected
-          ? 'border-nebula-500 bg-nebula-500/10'
+          ? 'border-white/15 bg-white/10'
           : 'hover:border-space-500'
       }`}
     >
@@ -146,7 +146,7 @@ function LaunchProviderCard({
         <Link
           href={`/market-intel?search=${encodeURIComponent(provider.name)}`}
           onClick={(e) => e.stopPropagation()}
-          className="text-xs text-nebula-300 hover:text-nebula-200 bg-nebula-500/10 px-1.5 py-0.5 rounded transition-colors"
+          className="text-xs text-slate-200 hover:text-white bg-white/10 px-1.5 py-0.5 rounded transition-colors"
         >
           Company info
         </Link>
@@ -324,7 +324,7 @@ function ResourceExchangeContent() {
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Min Launch $/kg</div>
               </div>
               <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-nebula-300">
+                <div className="text-4xl font-bold font-display tracking-tight text-slate-200">
                   {providers.length}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Launch Providers</div>
@@ -364,7 +364,7 @@ function ResourceExchangeContent() {
                         onClick={() => handleDestinationChange(dest)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                           destination === dest
-                            ? 'bg-slate-700 text-white border-slate-600 shadow-glow-sm'
+                            ? 'bg-slate-700 text-white border-slate-600'
                             : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
                         }`}
                       >
@@ -628,12 +628,12 @@ function DynamicResourceContent() {
             <p className="text-slate-400 text-sm mb-4">{commentary.summary}</p>
 
             {commentary.keyTakeaways.length > 0 && (
-              <div className="mb-4 p-4 bg-nebula-500/5 rounded-lg border border-nebula-500/20">
-                <h4 className="text-sm font-semibold text-nebula-300 mb-2">Key Takeaways</h4>
+              <div className="mb-4 p-4 bg-white/5 rounded-lg border border-white/15/20">
+                <h4 className="text-sm font-semibold text-slate-200 mb-2">Key Takeaways</h4>
                 <ul className="space-y-1">
                   {commentary.keyTakeaways.map((t, i) => (
                     <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
-                      <span className="text-nebula-300 mt-0.5">•</span>
+                      <span className="text-slate-200 mt-0.5">•</span>
                       {t}
                     </li>
                   ))}
@@ -649,7 +649,7 @@ function DynamicResourceContent() {
 
             <button
               onClick={() => setShowFullCommentary(!showFullCommentary)}
-              className="text-sm text-nebula-300 hover:text-nebula-200 font-medium transition-colors"
+              className="text-sm text-slate-200 hover:text-white font-medium transition-colors"
             >
               {showFullCommentary ? 'Show Less' : 'Read Full Analysis →'}
             </button>
@@ -675,9 +675,9 @@ function DynamicResourceContent() {
                   href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block p-3 rounded-lg border border-slate-700 hover:border-nebula-500/30 hover:bg-nebula-500/5 transition-all group"
+                  className="block p-3 rounded-lg border border-slate-700 hover:border-white/10 hover:bg-white/5 transition-all group"
                 >
-                  <h4 className="text-sm font-medium text-white group-hover:text-nebula-300 line-clamp-2 mb-1">
+                  <h4 className="text-sm font-medium text-white group-hover:text-slate-200 line-clamp-2 mb-1">
                     {article.title}
                   </h4>
                   <p className="text-xs text-slate-400 line-clamp-2 mb-2">

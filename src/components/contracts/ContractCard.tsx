@@ -205,7 +205,7 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
               href={getSAMUrl()}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 bg-nebula-600 hover:bg-nebula-500 text-white font-medium py-3 px-4 rounded-lg text-center transition-colors flex items-center justify-center gap-2"
+              className="flex-1 bg-white hover:bg-slate-100 text-slate-900 font-medium py-3 px-4 rounded-lg text-center transition-colors flex items-center justify-center gap-2"
             >
               <span>View on SAM.gov</span>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
