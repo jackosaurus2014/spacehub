@@ -38,7 +38,7 @@ interface TLESatellite {
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 const ORBIT_COLORS: Record<OrbitClass, string> = {
-  LEO: '#22d3ee',   // cyan-400
+  LEO: '#60a5fa',   // blue-400
   MEO: '#facc15',   // yellow-400
   GEO: '#e879f9',   // fuchsia-400
   HEO: '#4ade80',   // green-400

@@ -627,7 +627,7 @@ export const FALLBACK_ISS_EXPERIMENT_CATEGORIES: ISSExperimentCategory[] = [
     name: 'Earth & Space Science',
     icon: '🌍',
     count: 520,
-    color: 'text-cyan-400',
+    color: 'text-slate-300',
     description: 'Combustion science, fluid dynamics, fundamental physics, and Earth observation',
     keyResults: [
       'Cool flames discovery -- combustion at temperatures previously thought impossible',
@@ -1053,7 +1053,7 @@ export const FALLBACK_IMG_USE_CASES: UseCase[] = [
 ];
 
 export const FALLBACK_IMG_MARKET_TRENDS: MarketTrend[] = [
-  { title: 'SAR Market Expansion', description: 'Synthetic Aperture Radar has emerged as the fastest-growing segment in commercial Earth observation. All-weather, day-night capability drives adoption for defense, insurance, maritime, and infrastructure monitoring.', color: 'text-cyan-400', borderColor: 'border-cyan-500/30', stats: ['SAR market growing at 15-20% CAGR through 2030', '100+ commercial SAR satellites now in orbit', 'Sub-25cm SAR resolution now commercially available', 'InSAR analytics market exceeding $500M annually'] },
+  { title: 'SAR Market Expansion', description: 'Synthetic Aperture Radar has emerged as the fastest-growing segment in commercial Earth observation. All-weather, day-night capability drives adoption for defense, insurance, maritime, and infrastructure monitoring.', color: 'text-slate-300', borderColor: 'border-slate-500/30', stats: ['SAR market growing at 15-20% CAGR through 2030', '100+ commercial SAR satellites now in orbit', 'Sub-25cm SAR resolution now commercially available', 'InSAR analytics market exceeding $500M annually'] },
   { title: 'Hyperspectral Emergence', description: 'Commercial hyperspectral satellites are transitioning from experimental to operational. Pixxel, Wyvern, Planet (Tanager), and OroraTech are deploying constellations that capture hundreds of spectral bands.', color: 'text-purple-400', borderColor: 'border-purple-500/30', stats: ['First commercial hyperspectral constellations deployed 2023-2024', 'Methane detection from space now operational (Tanager, MethaneSAT)', 'Precision agriculture driving demand for 10+ spectral bands', 'Hyperspectral market projected to reach $1.8B by 2030'] },
   { title: 'AI-Powered Analytics', description: 'The value chain is shifting from raw imagery to automated intelligence. Providers are increasingly offering AI/ML analytics layers as the primary product, with imagery as the underlying data source.', color: 'text-amber-400', borderColor: 'border-amber-500/30', stats: ['Geospatial AI analytics market exceeding $3B annually', 'Automated object detection accuracy now >95% for major features', 'Foundation models (IBM/NASA Prithvi, Clay) accelerating adoption', 'Analytics revenue growing faster than imagery revenue for most providers'] },
   { title: 'Very High Resolution Competition', description: 'The sub-50cm resolution market is intensifying with new entrants challenging Maxar and Airbus dominance. Albedo targets 10cm from VLEO, Satellogic offers sub-meter at disruptive pricing.', color: 'text-green-400', borderColor: 'border-green-500/30', stats: ['10cm resolution planned from VLEO (Albedo) by 2025-2026', '30cm now standard for premium optical providers', 'Sub-meter imagery pricing dropped 50%+ since 2020', 'Daily sub-meter coverage becoming feasible by 2027'] },
@@ -1062,7 +1062,7 @@ export const FALLBACK_IMG_MARKET_TRENDS: MarketTrend[] = [
 ];
 
 export const FALLBACK_IMG_HERO_STATS = [
-  { label: 'Providers Tracked', value: '14', color: 'text-cyan-400' },
+  { label: 'Providers Tracked', value: '14', color: 'text-slate-300' },
   { label: 'Satellites in Orbit', value: '550+', color: 'text-blue-400' },
   { label: 'Best Optical GSD', value: '10cm', color: 'text-green-400' },
   { label: 'Best SAR GSD', value: '16cm', color: 'text-amber-400' },
@@ -1071,8 +1071,8 @@ export const FALLBACK_IMG_HERO_STATS = [
 export const IMG_STATUS_STYLES: Record<string, { bg: string; text: string; border: string }> = {
   Operational: { bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/40' },
   active: { bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/40' },
-  Deploying: { bg: 'bg-cyan-900/30', text: 'text-cyan-400', border: 'border-cyan-500/40' },
-  deploying: { bg: 'bg-cyan-900/30', text: 'text-cyan-400', border: 'border-cyan-500/40' },
+  Deploying: { bg: 'bg-slate-700/30', text: 'text-slate-300', border: 'border-slate-500/40' },
+  deploying: { bg: 'bg-slate-700/30', text: 'text-slate-300', border: 'border-slate-500/40' },
   Development: { bg: 'bg-amber-900/30', text: 'text-amber-400', border: 'border-amber-500/40' },
   development: { bg: 'bg-amber-900/30', text: 'text-amber-400', border: 'border-amber-500/40' },
 };
@@ -1080,7 +1080,7 @@ export const DEFAULT_IMG_STATUS_STYLE = { bg: 'bg-slate-700/30', text: 'text-sta
 
 export const SENSOR_COLORS: Record<SensorType, string> = {
   Optical: 'text-blue-400 bg-blue-500/10 border-blue-500/30',
-  SAR: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30',
+  SAR: 'text-slate-300 bg-slate-500/10 border-slate-500/30',
   Multispectral: 'text-green-400 bg-green-500/10 border-green-500/30',
   Hyperspectral: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
   Thermal: 'text-red-400 bg-red-500/10 border-red-500/30',

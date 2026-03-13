@@ -91,7 +91,7 @@ describe('parseMentions', () => {
 describe('renderMentionsHtml', () => {
   it('wraps @username in styled span', () => {
     const html = renderMentionsHtml('Hello @alice');
-    expect(html).toContain('<span class="text-cyan-400 font-medium cursor-pointer hover:underline">@alice</span>');
+    expect(html).toContain('<span class="text-slate-300 font-medium cursor-pointer hover:text-white hover:underline">@alice</span>');
   });
 
   it('handles multiple mentions', () => {

@@ -73,8 +73,8 @@ export const SPACE_SCORE_TIERS: SpaceScoreTier[] = [
     minScore: 600,
     maxScore: 749,
     color: 'text-slate-300',
-    bgColor: 'bg-cyan-500/20',
-    borderColor: 'border-cyan-500/40',
+    bgColor: 'bg-blue-500/20',
+    borderColor: 'border-blue-500/40',
     description: 'Competitive companies with proven technology, growing revenue, and increasing market influence.',
   },
   {
@@ -396,7 +396,7 @@ export const DIMENSION_COLORS: Record<string, string> = {
 export const DIMENSION_BG_COLORS: Record<string, string> = {
   innovation: 'bg-purple-500',
   financial: 'bg-emerald-500',
-  market: 'bg-cyan-500',
+  market: 'bg-blue-500',
   operations: 'bg-amber-500',
   growth: 'bg-blue-500',
 };

@@ -69,7 +69,7 @@ export interface SectorEmployment {
 
 export const SECTOR_EMPLOYMENT_DATA: SectorEmployment[] = [
   { sector: 'Launch Services', employees: 38500, growthRate: 12.4, color: 'bg-blue-500' },
-  { sector: 'Satellite Manufacturing', employees: 52200, growthRate: 8.7, color: 'bg-cyan-500' },
+  { sector: 'Satellite Manufacturing', employees: 52200, growthRate: 8.7, color: 'bg-blue-500' },
   { sector: 'Ground Systems & Operations', employees: 44100, growthRate: 6.2, color: 'bg-green-500' },
   { sector: 'Space Science & Exploration', employees: 28900, growthRate: 9.1, color: 'bg-purple-500' },
   { sector: 'National Security Space', employees: 67800, growthRate: 11.3, color: 'bg-red-500' },
@@ -235,7 +235,7 @@ export interface WorkforceOverviewStat {
 }
 
 export const WORKFORCE_OVERVIEW_STATS: WorkforceOverviewStat[] = [
-  { label: 'Total US Space Workforce', value: '~360,000', detail: 'Across government, commercial, and defense sectors', icon: 'users', color: 'text-cyan-400' },
+  { label: 'Total US Space Workforce', value: '~360,000', detail: 'Across government, commercial, and defense sectors', icon: 'users', color: 'text-blue-400' },
   { label: 'Average Salary', value: '$108,000', detail: 'Median base compensation for full-time positions', icon: 'dollar', color: 'text-green-400' },
   { label: 'Gender Diversity', value: '~24% Women', detail: 'Improving year-over-year, up from 20% in 2020', icon: 'diversity', color: 'text-purple-400' },
   { label: 'Average Age', value: '42 Years', detail: 'With 31% of workforce nearing retirement within 10 years', icon: 'age', color: 'text-orange-400' },
@@ -266,7 +266,7 @@ export interface AgeDistribution {
 }
 
 export const AGE_DISTRIBUTION_DATA: AgeDistribution[] = [
-  { range: 'Under 25', percentage: 8.2, color: 'bg-cyan-500' },
+  { range: 'Under 25', percentage: 8.2, color: 'bg-blue-500' },
   { range: '25-34', percentage: 23.2, color: 'bg-blue-500' },
   { range: '35-44', percentage: 28.8, color: 'bg-indigo-500' },
   { range: '45-54', percentage: 20.0, color: 'bg-purple-500' },

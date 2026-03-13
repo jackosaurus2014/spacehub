@@ -31,7 +31,7 @@ export const SECTOR_COLORS: Record<GraphNode['sector'], string> = {
   satellite: '#22c55e',    // green-500
   defense: '#a855f7',      // purple-500
   infrastructure: '#f97316', // orange-500
-  analytics: '#06b6d4',   // cyan-500
+  analytics: '#3b82f6',   // blue-500
   materials: '#eab308',    // yellow-500
   electronics: '#ec4899',  // pink-500
   propulsion: '#ef4444',   // red-500

@@ -15,7 +15,7 @@ export interface OverviewStat {
 }
 
 export const OVERVIEW_STATS: OverviewStat[] = [
-  { label: 'US Space Workforce', value: '360,000+', detail: 'Government, commercial, and defense sectors combined', color: 'text-cyan-400' },
+  { label: 'US Space Workforce', value: '360,000+', detail: 'Government, commercial, and defense sectors combined', color: 'text-blue-400' },
   { label: 'Global Space Workforce', value: '1.1M+', detail: 'Across 80+ nations with active space programs', color: 'text-blue-400' },
   { label: 'Annual Job Growth', value: '8%', detail: 'Year-over-year growth driven by commercial expansion', color: 'text-emerald-400' },
   { label: 'Average Salary', value: '$112,000', detail: 'Median base compensation for full-time US positions', color: 'text-green-400' },
@@ -34,7 +34,7 @@ export interface SectorData {
 
 export const SECTOR_DATA: SectorData[] = [
   { sector: 'Defense / Intelligence', employees: 140000, color: 'bg-red-500', description: 'Military space, NRO, Space Force, and cleared contractor workforce' },
-  { sector: 'Commercial Satellite', employees: 60000, color: 'bg-cyan-500', description: 'Satellite manufacturing, operations, and communications services' },
+  { sector: 'Commercial Satellite', employees: 60000, color: 'bg-blue-500', description: 'Satellite manufacturing, operations, and communications services' },
   { sector: 'NASA / Government Civil', employees: 45000, color: 'bg-blue-500', description: 'NASA centers, civil servants, and on-site support contractors' },
   { sector: 'NewSpace Startups', employees: 35000, color: 'bg-purple-500', description: 'Venture-backed companies founded since 2010' },
   { sector: 'Launch Providers', employees: 25000, color: 'bg-orange-500', description: 'Rocket manufacturing, launch operations, and ground support' },
@@ -162,7 +162,7 @@ export const DIVERSITY_METRICS: DiversityMetric[] = [
   { category: 'Women in Leadership', percentage: 21.5, trend: 'up', detail: '+3.4% since 2022; VP+ level representation improving', color: 'text-fuchsia-400' },
   { category: 'Underrepresented Minorities', percentage: 28.3, trend: 'up', detail: '+1.8% since 2022; strongest in NewSpace companies', color: 'text-orange-400' },
   { category: 'Veterans', percentage: 22.1, trend: 'flat', detail: 'Concentrated in defense primes and government roles', color: 'text-emerald-400' },
-  { category: 'Workers Under 35', percentage: 31.4, trend: 'up', detail: 'NewSpace companies skew younger; median age 34', color: 'text-cyan-400' },
+  { category: 'Workers Under 35', percentage: 31.4, trend: 'up', detail: 'NewSpace companies skew younger; median age 34', color: 'text-blue-400' },
 ];
 
 export interface PipelineStat {

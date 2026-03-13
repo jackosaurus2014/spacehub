@@ -48,7 +48,7 @@ const colorClasses: Record<string, { border: string; bg: string; text: string; g
     border: 'border-white/10 hover:border-white/10',
     bg: 'bg-white/5',
     text: 'text-slate-300',
-    glow: 'group-hover:shadow-[0_0_20px_rgba(6,182,212,0.15)]',
+    glow: 'group-hover:shadow-[0_0_20px_rgba(255,255,255,0.08)]',
   },
   purple: {
     border: 'border-purple-500/30 hover:border-purple-400/60',

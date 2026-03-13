@@ -576,7 +576,7 @@ export function getScoreLabel(score: number): string {
 
 export function getScoreColor(score: number): string {
   if (score >= 85) return 'text-emerald-400';
-  if (score >= 70) return 'text-cyan-400';
+  if (score >= 70) return 'text-blue-400';
   if (score >= 55) return 'text-amber-400';
   if (score >= 40) return 'text-orange-400';
   return 'text-red-400';
@@ -584,7 +584,7 @@ export function getScoreColor(score: number): string {
 
 export function getScoreBgColor(score: number): string {
   if (score >= 85) return 'bg-emerald-500';
-  if (score >= 70) return 'bg-cyan-500';
+  if (score >= 70) return 'bg-blue-500';
   if (score >= 55) return 'bg-amber-500';
   if (score >= 40) return 'bg-orange-500';
   return 'bg-red-500';
@@ -592,7 +592,7 @@ export function getScoreBgColor(score: number): string {
 
 export function getScoreRingColor(score: number): string {
   if (score >= 85) return '#10b981'; // emerald-500
-  if (score >= 70) return '#06b6d4'; // cyan-500
+  if (score >= 70) return '#3b82f6'; // blue-500
   if (score >= 55) return '#f59e0b'; // amber-500
   if (score >= 40) return '#f97316'; // orange-500
   return '#ef4444';                   // red-500
@@ -600,7 +600,7 @@ export function getScoreRingColor(score: number): string {
 
 export function getGradeColor(grade: string): string {
   if (grade.startsWith('A')) return 'text-emerald-400';
-  if (grade.startsWith('B')) return 'text-cyan-400';
+  if (grade.startsWith('B')) return 'text-blue-400';
   if (grade.startsWith('C')) return 'text-amber-400';
   if (grade.startsWith('D')) return 'text-orange-400';
   return 'text-red-400';
