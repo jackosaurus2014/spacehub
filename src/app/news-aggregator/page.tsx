@@ -587,7 +587,7 @@ export default function NewsAggregatorPage() {
                   }}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-white text-slate-900 shadow-lg shadow-black/20/25'
+                      ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
                       : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700/60 hover:text-slate-200'
                   }`}
                 >

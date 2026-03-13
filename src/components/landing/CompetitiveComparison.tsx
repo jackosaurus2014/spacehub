@@ -114,7 +114,7 @@ export default function CompetitiveComparison() {
           <div className="text-center mt-10">
             <Link
               href="/register"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all duration-300 shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all duration-300 shadow-lg shadow-black/15 hover:shadow-black/20"
             >
               Start Free Today
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

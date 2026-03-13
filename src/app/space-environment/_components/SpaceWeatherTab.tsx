@@ -186,7 +186,7 @@ function getEventCategoryColor(categoryTitle: string): string {
   for (const [key, value] of Object.entries(EARTH_EVENT_CATEGORY_COLORS)) {
     if (lower.includes(key)) return value;
   }
-  return 'bg-slate-800/500/20 text-slate-400 border-slate-500/30';
+  return 'bg-slate-800/30 text-slate-400 border-slate-500/30';
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -716,7 +716,7 @@ export default function SpaceWeatherTab() {
                         <span className={`text-xs px-2 py-0.5 rounded border ${categoryColor}`}>
                           {categoryTitle}
                         </span>
-                        <span className={`text-xs px-2 py-0.5 rounded ${isOpen ? 'bg-green-500/20 text-green-400' : 'bg-slate-800/500/20 text-slate-400'}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded ${isOpen ? 'bg-green-500/20 text-green-400' : 'bg-slate-800/30 text-slate-400'}`}>
                           {isOpen ? 'Active' : 'Closed'}
                         </span>
                       </div>

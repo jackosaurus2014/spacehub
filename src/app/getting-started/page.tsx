@@ -227,7 +227,7 @@ export default function GettingStartedPage() {
               <ScrollReveal key={step.step} delay={index * 0.1}>
                 <div className="relative flex items-start gap-6 rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-6 md:p-8">
                   {/* Step number */}
-                  <div className="shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-white to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-black/20/25">
+                  <div className="shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-white to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-black/15">
                     {step.step}
                   </div>
 
@@ -344,7 +344,7 @@ export default function GettingStartedPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
+                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all shadow-lg shadow-black/15 hover:shadow-black/20"
                 >
                   Create Free Account
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

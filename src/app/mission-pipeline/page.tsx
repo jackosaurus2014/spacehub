@@ -459,7 +459,7 @@ export default function MissionPipelinePage() {
               const conf = CONFIDENCE_STYLES[mission.confidence];
               return (
                 <StaggerItem key={`${mission.year}-${mission.name}`}>
-                  <div className="group bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 h-full flex flex-col hover:border-white/10 hover:bg-slate-800/70 transition-all duration-300 hover:shadow-lg hover:shadow-black/20/5">
+                  <div className="group bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 h-full flex flex-col hover:border-white/10 hover:bg-slate-800/70 transition-all duration-300 hover:shadow-lg hover:shadow-black/20">
                     {/* Top Row: Icon + Year Badge */}
                     <div className="flex items-start justify-between mb-3">
                       <span className="text-3xl" role="img" aria-label={mission.name}>

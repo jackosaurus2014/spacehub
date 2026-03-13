@@ -44,7 +44,7 @@ function TemplateCard({
 }) {
   return (
     <div
-      className={`relative group bg-slate-800/50 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-black/20/5 ${
+      className={`relative group bg-slate-800/50 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-black/20 ${
         isActive
           ? 'border-white/10 ring-2 ring-white/10 shadow-lg shadow-black/5'
           : 'border-slate-700/50 hover:border-white/10'

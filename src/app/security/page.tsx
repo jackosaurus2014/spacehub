@@ -344,7 +344,7 @@ export default function SecurityPage() {
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                   <Link
                     href="/contact?utm_source=security&utm_medium=cta&utm_campaign=security-inquiry"
-                    className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
+                    className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-black/15 hover:shadow-black/20"
                   >
                     Contact Our Security Team
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">

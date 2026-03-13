@@ -312,7 +312,7 @@ export default function NotificationCenter() {
 
                     {/* Unread Indicator */}
                     {!notification.read && (
-                      <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white shadow-lg shadow-black/20/50" />
+                      <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white shadow-lg shadow-black/20" />
                     )}
                   </div>
                 ))}

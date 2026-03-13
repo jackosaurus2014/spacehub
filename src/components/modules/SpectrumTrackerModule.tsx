@@ -115,7 +115,7 @@ function FilingRow({ filing }: { filing: SpectrumFiling }) {
     pending: 'bg-yellow-500/20 text-yellow-400',
     coordinating: 'bg-blue-500/20 text-blue-400',
     denied: 'bg-red-500/20 text-red-400',
-    expired: 'bg-slate-800/500/20 text-slate-400',
+    expired: 'bg-slate-800/30 text-slate-400',
   };
 
   const statusClass = statusColors[filing.status] || 'bg-space-600 text-star-300';

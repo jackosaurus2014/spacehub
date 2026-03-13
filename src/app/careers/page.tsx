@@ -132,7 +132,7 @@ export default function CareersPage() {
           </p>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all duration-200 shadow-lg shadow-black/20/25"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all duration-200 shadow-lg shadow-black/15"
           >
             Get in Touch
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

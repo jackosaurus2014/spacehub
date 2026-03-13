@@ -235,7 +235,7 @@ function DetailModal({
             href={offering.websiteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full py-3 px-4 rounded-lg bg-gradient-to-r from-white to-blue-500 text-white font-semibold text-center hover:from-slate-300 hover:to-blue-400 transition-all shadow-lg shadow-black/20/25"
+            className="block w-full py-3 px-4 rounded-lg bg-gradient-to-r from-white to-blue-500 text-white font-semibold text-center hover:from-slate-300 hover:to-blue-400 transition-all shadow-lg shadow-black/15"
           >
             Visit {offering.provider} Website
           </a>
@@ -973,7 +973,7 @@ function SpaceTourismContent() {
                         disabled={selectedForCompare.length < 2}
                         className={`px-5 py-2 rounded-lg font-semibold text-sm transition-all ${
                           selectedForCompare.length >= 2
-                            ? 'bg-gradient-to-r from-white to-blue-500 text-white shadow-lg shadow-black/20/25 hover:shadow-black/20/40'
+                            ? 'bg-gradient-to-r from-white to-blue-500 text-white shadow-lg shadow-black/15 hover:shadow-black/20'
                             : 'bg-slate-700 text-slate-400 cursor-not-allowed'
                         }`}
                       >

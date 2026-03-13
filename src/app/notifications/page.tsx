@@ -272,7 +272,7 @@ export default function NotificationsPage() {
                 <div className="flex items-start gap-3 p-4">
                   {/* Unread dot */}
                   {!notif.read && (
-                    <div className="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white shadow-lg shadow-black/20/50" />
+                    <div className="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white shadow-lg shadow-black/20" />
                   )}
 
                   {/* Icon */}

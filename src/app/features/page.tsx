@@ -344,7 +344,7 @@ export default function FeaturesPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/register"
-                className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold transition-all shadow-lg shadow-black/20/25"
+                className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold transition-all shadow-lg shadow-black/15"
               >
                 Get Started Free
                 <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

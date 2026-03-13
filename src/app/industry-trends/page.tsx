@@ -561,7 +561,7 @@ export default function IndustryTrendsPage() {
               <ScrollReveal key={trend.title} delay={idx * 0.05}>
                 <div
                   className={`bg-slate-900/60 border rounded-xl transition-all duration-300 ${
-                    isExpanded ? 'border-white/15 shadow-lg shadow-black/20/5' : 'border-slate-700/50 hover:border-slate-600/50'
+                    isExpanded ? 'border-white/15 shadow-lg shadow-black/20' : 'border-slate-700/50 hover:border-slate-600/50'
                   }`}
                 >
                   {/* Card Header */}

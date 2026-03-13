@@ -640,7 +640,7 @@ function getAccelerationBadge(acc: string): { label: string; color: string; bg: 
     case 'moderate': return { label: 'Growing', color: 'text-yellow-400', bg: 'bg-yellow-500/20' };
     case 'steady': return { label: 'Steady', color: 'text-blue-400', bg: 'bg-blue-500/20' };
     case 'declining': return { label: 'Declining', color: 'text-red-400', bg: 'bg-red-500/20' };
-    default: return { label: acc, color: 'text-slate-400', bg: 'bg-slate-800/500/20' };
+    default: return { label: acc, color: 'text-slate-400', bg: 'bg-slate-800/30' };
   }
 }
 
@@ -649,8 +649,8 @@ function getStatusBadge(status: string): { label: string; color: string; bg: str
     case 'available': return { label: 'Available', color: 'text-green-400', bg: 'bg-green-500/20' };
     case 'licensed': return { label: 'Licensed', color: 'text-blue-400', bg: 'bg-blue-500/20' };
     case 'active': return { label: 'Active (Restricted)', color: 'text-yellow-400', bg: 'bg-yellow-500/20' };
-    case 'expired': return { label: 'Expired', color: 'text-slate-400', bg: 'bg-slate-800/500/20' };
-    default: return { label: status, color: 'text-slate-400', bg: 'bg-slate-800/500/20' };
+    case 'expired': return { label: 'Expired', color: 'text-slate-400', bg: 'bg-slate-800/30' };
+    default: return { label: status, color: 'text-slate-400', bg: 'bg-slate-800/30' };
   }
 }
 
@@ -658,9 +658,9 @@ function getLitigationBadge(status: string): { label: string; color: string; bg:
   switch (status) {
     case 'settled': return { label: 'Settled', color: 'text-blue-400', bg: 'bg-blue-500/20' };
     case 'ongoing': return { label: 'Ongoing', color: 'text-yellow-400', bg: 'bg-yellow-500/20' };
-    case 'dismissed': return { label: 'Dismissed', color: 'text-slate-400', bg: 'bg-slate-800/500/20' };
+    case 'dismissed': return { label: 'Dismissed', color: 'text-slate-400', bg: 'bg-slate-800/30' };
     case 'decided': return { label: 'Decided', color: 'text-green-400', bg: 'bg-green-500/20' };
-    default: return { label: status, color: 'text-slate-400', bg: 'bg-slate-800/500/20' };
+    default: return { label: status, color: 'text-slate-400', bg: 'bg-slate-800/30' };
   }
 }
 

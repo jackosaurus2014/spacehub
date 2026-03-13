@@ -35,7 +35,7 @@ export default function StickyMobileCTA({
   const gradientClass =
     variant === 'enterprise'
       ? 'bg-gradient-to-r from-purple-500 to-indigo-600 shadow-purple-500/25 hover:shadow-purple-500/40'
-      : 'bg-gradient-to-r from-white to-blue-600 shadow-black/20/25 hover:shadow-black/20/40';
+      : 'bg-gradient-to-r from-white to-blue-600 shadow-black/15 hover:shadow-black/20';
 
   const sharedClass = [
     'flex items-center justify-center gap-2',

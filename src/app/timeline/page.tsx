@@ -448,7 +448,7 @@ function TimelineCard({
     >
       <div
         className={`group relative bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 backdrop-blur-sm
-          hover:border-white/15 hover:bg-slate-800/70 hover:shadow-lg hover:shadow-black/20/5 transition-all duration-300`}
+          hover:border-white/15 hover:bg-slate-800/70 hover:shadow-lg hover:shadow-black/20 transition-all duration-300`}
       >
         {/* Year badge */}
         <div className="flex items-center gap-3 mb-3">

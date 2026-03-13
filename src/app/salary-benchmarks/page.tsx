@@ -653,7 +653,7 @@ function SalaryBenchmarksContent() {
             }}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeView === tab.id
-                ? 'bg-white text-slate-900 shadow-lg shadow-black/20/25'
+                ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
                 : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50 hover:text-white'
             }`}
           >

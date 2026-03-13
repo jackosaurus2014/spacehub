@@ -662,7 +662,7 @@ export default function GlossaryPage() {
                     disabled={!hasTerms}
                     className={`w-9 h-9 rounded-lg text-sm font-bold flex items-center justify-center transition-all ${
                       hasTerms
-                        ? 'bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-100/20 hover:border-white/10 hover:shadow-lg hover:shadow-black/20/5 cursor-pointer'
+                        ? 'bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-100/20 hover:border-white/10 hover:shadow-lg hover:shadow-black/20 cursor-pointer'
                         : 'text-slate-600 cursor-not-allowed'
                     }`}
                     aria-label={`Jump to letter ${letter}`}
@@ -713,7 +713,7 @@ export default function GlossaryPage() {
                         <div
                           className={`group rounded-xl border transition-all duration-300 ${
                             isExpanded
-                              ? 'bg-slate-800/70 border-white/10 shadow-lg shadow-black/20/5'
+                              ? 'bg-slate-800/70 border-white/10 shadow-lg shadow-black/20'
                               : 'bg-slate-800/50 border-slate-700/50 hover:border-white/10 hover:bg-slate-800/60'
                           }`}
                         >

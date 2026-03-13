@@ -404,7 +404,7 @@ export default function PremiumGate({
             <div className="space-y-3">
               <Link
                 href="/pricing"
-                className="block w-full py-3 px-6 rounded-xl bg-gradient-to-r from-white to-purple-500 text-white font-semibold hover:from-slate-300 hover:to-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-black/20/25"
+                className="block w-full py-3 px-6 rounded-xl bg-gradient-to-r from-white to-purple-500 text-white font-semibold hover:from-slate-300 hover:to-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-black/15"
               >
                 {plan?.trialDays
                   ? `Start ${plan.trialDays}-Day Free Trial`

@@ -228,7 +228,7 @@ export default function EnterprisePage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href="/contact?utm_source=enterprise&utm_medium=hero&utm_campaign=demo"
-                className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
+                className="inline-flex items-center gap-2 px-8 py-3 bg-white hover:bg-slate-100 text-slate-900 font-semibold rounded-lg transition-all shadow-lg shadow-black/10"
               >
                 Schedule a Demo
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -345,7 +345,7 @@ export default function EnterprisePage() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Link
                   href="/contact?utm_source=enterprise&utm_medium=pricing&utm_campaign=demo"
-                  className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-black/20/25"
+                  className="inline-flex items-center gap-2 px-8 py-3 bg-white hover:bg-slate-100 text-slate-900 font-semibold rounded-lg transition-all shadow-lg shadow-black/10"
                 >
                   Get Custom Pricing
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -399,7 +399,7 @@ export default function EnterprisePage() {
                 <div className="shrink-0">
                   <Link
                     href="/contact?utm_source=enterprise&utm_medium=cta&utm_campaign=demo"
-                    className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-bold text-lg rounded-xl transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
+                    className="inline-flex items-center gap-2 px-10 py-4 bg-white hover:bg-slate-100 text-slate-900 font-bold text-lg rounded-xl transition-all shadow-lg shadow-black/10"
                   >
                     Book Your Demo
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">

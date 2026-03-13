@@ -147,7 +147,7 @@ export default function TourismCard({
         {/* Learn More Button */}
         <button
           onClick={() => onLearnMore(offering)}
-          className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-white to-blue-500 text-white font-semibold text-sm hover:from-slate-300 hover:to-blue-400 transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
+          className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-white to-blue-500 text-white font-semibold text-sm hover:from-slate-300 hover:to-blue-400 transition-all shadow-lg shadow-black/15 hover:shadow-black/20"
         >
           Learn More
         </button>

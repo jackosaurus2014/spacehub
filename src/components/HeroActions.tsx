@@ -13,7 +13,7 @@ export default function HeroActions() {
     <>
       <div className="flex flex-col items-center gap-4">
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/mission-control" className="btn-primary text-base py-4 px-10 shadow-lg shadow-black/20/30">
+          <Link href="/mission-control" className="btn-primary text-base py-4 px-10 shadow-lg shadow-black/20">
             Mission Control
           </Link>
           <Link
