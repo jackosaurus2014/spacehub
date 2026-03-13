@@ -122,7 +122,7 @@ html.high-contrast .card-elevated {
 
 /* ——— High-contrast button improvements ——— */
 html.high-contrast .btn-primary {
-  @apply from-nebula-500 to-nebula-400 shadow-lg;
+  @apply bg-white text-slate-900 shadow-lg;
 }
 
 html.high-contrast .btn-secondary {

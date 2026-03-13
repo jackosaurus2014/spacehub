@@ -1036,10 +1036,10 @@ export default function Navigation() {
                       </Link>
                       <Link
                         href="/register"
-                        className="btn-primary text-sm py-3 px-4 text-center block"
+                        className="bg-white text-slate-900 font-medium text-sm py-3 px-4 rounded-lg text-center block hover:bg-slate-100 transition-all duration-200 ease-smooth"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        Register
+                        Get Started
                       </Link>
                     </>
                   )}
