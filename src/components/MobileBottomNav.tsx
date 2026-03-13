@@ -348,13 +348,14 @@ export default function MobileBottomNav() {
         style={{ bottom: '4rem' }}
       >
         <div
-          className="bg-slate-900 border-t border-slate-800 rounded-t-2xl max-h-[70vh] overflow-y-auto overscroll-contain"
+          className="border-t border-white/[0.06] rounded-t-2xl max-h-[70vh] overflow-y-auto overscroll-contain"
           style={{
-            boxShadow: '0 -8px 32px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(6, 182, 212, 0.12)',
+            background: 'rgba(5, 10, 21, 0.97)',
+            boxShadow: '0 -8px 32px -8px rgba(0, 0, 0, 0.6)',
           }}
         >
           {/* Handle / close header */}
-          <div className="sticky top-0 z-10 bg-slate-900/95 backdrop-blur-sm border-b border-slate-800/60 px-4 pt-3 pb-2 flex items-center justify-between">
+          <div className="sticky top-0 z-10 bg-[#050a15]/95 backdrop-blur-sm border-b border-white/[0.06] px-4 pt-3 pb-2 flex items-center justify-between">
             <span className="text-sm font-semibold text-slate-300 tracking-wide uppercase">
               All Modules
             </span>
@@ -362,7 +363,7 @@ export default function MobileBottomNav() {
               type="button"
               onClick={() => setMoreOpen(false)}
               aria-label="Close menu"
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors"
             >
               <NavIcon icon="close" className="w-5 h-5" />
             </button>
@@ -370,7 +371,7 @@ export default function MobileBottomNav() {
 
           {/* Drag handle indicator */}
           <div className="flex justify-center -mt-px">
-            <div className="w-10 h-1 rounded-full bg-slate-700 my-1" />
+            <div className="w-10 h-1 rounded-full bg-white/[0.1] my-1" />
           </div>
 
           {/* Category sections */}
@@ -390,8 +391,8 @@ export default function MobileBottomNav() {
                         aria-current={active ? 'page' : undefined}
                         className={`flex flex-col items-center justify-center min-h-[72px] min-w-[44px] px-2 py-3 rounded-xl transition-all duration-200 ${
                           active
-                            ? 'bg-white/10 text-slate-900 ring-1 ring-white/10'
-                            : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 active:bg-slate-800'
+                            ? 'bg-white/[0.08] text-white ring-1 ring-white/[0.1]'
+                            : 'text-slate-400 hover:bg-white/[0.05] hover:text-slate-200 active:bg-white/[0.08]'
                         }`}
                       >
                         <NavIcon icon={item.icon} className="w-6 h-6 mb-1.5" />
@@ -413,10 +414,8 @@ export default function MobileBottomNav() {
         aria-label="Mobile navigation"
         className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
         style={{
-          background:
-            'linear-gradient(0deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 100%)',
-          boxShadow:
-            '0 -4px 16px -4px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(6, 182, 212, 0.15)',
+          background: 'rgba(5, 10, 21, 0.97)',
+          boxShadow: '0 -4px 24px -4px rgba(0, 0, 0, 0.4)',
         }}
       >
         {/* Top gradient border */}

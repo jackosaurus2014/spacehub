@@ -309,8 +309,8 @@ function DropdownMenu({
           role="menu"
           aria-label={`${label} submenu`}
           onKeyDown={handleMenuKeyDown}
-          className={`absolute top-full left-0 mt-3 backdrop-blur-xl border border-white/[0.08] rounded-xl overflow-hidden animate-fade-in-down z-50 ${items.length > 12 ? 'w-[32rem]' : 'w-72'}`}
-          style={{ background: 'rgba(15, 23, 42, 0.95)', boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06)' }}
+          className={`absolute top-full left-0 mt-3 backdrop-blur-xl border border-white/[0.06] rounded-2xl overflow-hidden animate-fade-in-down z-50 ${items.length > 12 ? 'w-[32rem]' : 'w-72'}`}
+          style={{ background: 'rgba(5, 10, 21, 0.95)', boxShadow: '0 8px 32px -4px rgba(0, 0, 0, 0.5)' }}
         >
           <div className={`p-2 max-h-[70vh] overflow-y-auto scrollbar-hide ${items.length > 12 ? 'grid grid-cols-2 gap-x-1' : ''}`}>
             {items.map((item, index) => (
@@ -320,7 +320,7 @@ function DropdownMenu({
                 href={item.href}
                 role="menuitem"
                 tabIndex={-1}
-                className={`block px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-all duration-150 group ${focusedIndex === index ? 'bg-slate-700/50' : ''}`}
+                className={`block px-3 py-2 rounded-lg hover:bg-white/[0.05] transition-all duration-150 ease-smooth group ${focusedIndex === index ? 'bg-white/[0.05]' : ''}`}
                 onClick={onToggle}
                 onMouseEnter={() => setFocusedIndex(index)}
               >
@@ -478,10 +478,10 @@ export default function Navigation() {
       className={`nav-persistent sticky top-0 z-50 transition-all duration-300 backdrop-blur-xl safe-area-pt ${navHidden ? '-translate-y-full' : 'translate-y-0'}`}
       style={{
         background: scrolled
-          ? 'linear-gradient(145deg, rgba(3, 7, 18, 0.97) 0%, rgba(15, 23, 42, 0.95) 25%, rgba(15, 23, 42, 0.93) 50%, rgba(15, 23, 42, 0.95) 75%, rgba(3, 7, 18, 0.97) 100%)'
-          : 'linear-gradient(145deg, rgba(3, 7, 18, 0.9) 0%, rgba(15, 23, 42, 0.87) 25%, rgba(15, 23, 42, 0.85) 50%, rgba(15, 23, 42, 0.87) 75%, rgba(3, 7, 18, 0.9) 100%)',
+          ? 'rgba(5, 10, 21, 0.95)'
+          : 'rgba(5, 10, 21, 0.8)',
         boxShadow: scrolled
-          ? '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 10px 20px -5px rgba(0, 0, 0, 0.3)'
+          ? '0 4px 24px -4px rgba(0, 0, 0, 0.4)'
           : 'none'
       }}
     >
@@ -567,7 +567,7 @@ export default function Navigation() {
                   (opener as () => void)();
                 }
               }}
-              className="relative flex items-center gap-2 px-3 py-1.5 min-h-[44px] rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/40 transition-colors border border-slate-700/50 hover:border-slate-600/50"
+              className="relative flex items-center gap-2 px-3 py-1.5 min-h-[44px] rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors ease-smooth border border-white/[0.08] hover:border-white/[0.12]"
               aria-label="Search (Ctrl+K)"
             >
               <svg
@@ -581,7 +581,7 @@ export default function Navigation() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
               <span className="text-xs text-slate-500">Search</span>
-              <kbd className="hidden xl:inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px] font-mono text-slate-500">
+              <kbd className="hidden xl:inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 bg-white/[0.03] border border-white/[0.08] rounded text-[10px] font-mono text-slate-500">
                 Ctrl+K
               </kbd>
             </button>
@@ -593,7 +593,7 @@ export default function Navigation() {
                   (opener as () => void)();
                 }
               }}
-              className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/40 transition-colors"
+              className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors"
               aria-label="Keyboard shortcuts (?)"
             >
               <svg
@@ -613,8 +613,8 @@ export default function Navigation() {
               onClick={toggleHighContrast}
               className={`relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors group ${
                 isHighContrast
-                  ? 'text-slate-200 bg-slate-700/60'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/40'
+                  ? 'text-slate-200 bg-white/[0.06]'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.05]'
               }`}
               aria-label="Toggle high contrast mode"
               aria-pressed={isHighContrast}
@@ -635,7 +635,7 @@ export default function Navigation() {
             {/* Reading List */}
             <Link
               href="/reading-list"
-              className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/40 transition-colors"
+              className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors"
               aria-label="Reading List"
               title="Reading List"
             >
@@ -673,18 +673,18 @@ export default function Navigation() {
                 </span>
                 <button
                   onClick={() => signOut()}
-                  className="text-slate-300 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-slate-700/50 transition-colors"
+                  className="text-slate-300 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors ease-smooth"
                 >
                   Sign Out
                 </button>
               </div>
             ) : (
               <>
-                <Link href="/login" className="text-slate-300 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-slate-700/50 transition-colors">
+                <Link href="/login" className="text-slate-300 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors ease-smooth">
                   Sign In
                 </Link>
-                <Link href="/register" className="btn-primary text-xs py-2 px-5">
-                  Register
+                <Link href="/register" className="bg-white text-slate-900 font-medium text-xs py-2 px-5 rounded-lg hover:bg-slate-100 transition-all duration-200 ease-smooth">
+                  Get Started
                 </Link>
               </>
             )}
@@ -744,7 +744,7 @@ export default function Navigation() {
         {isMenuOpen && createPortal(
           <div className="lg:hidden fixed inset-0 top-[72px] z-[60] animate-fade-in">
             <div className="absolute inset-0 bg-black/50" onClick={() => setIsMenuOpen(false)} role="presentation" aria-hidden="true" />
-            <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] backdrop-blur-xl border-l border-white/[0.06] overflow-y-auto animate-slide-in-right" style={{ background: 'rgba(15, 23, 42, 0.97)', boxShadow: '-8px 0 24px -4px rgba(0, 0, 0, 0.5)' }}>
+            <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] backdrop-blur-xl border-l border-white/[0.06] overflow-y-auto animate-slide-in-right" style={{ background: 'rgba(5, 10, 21, 0.97)', boxShadow: '-8px 0 32px -4px rgba(0, 0, 0, 0.5)' }}>
               <div className="p-6 space-y-4">
                 {/* Mobile Search Input */}
                 <div className="relative">
@@ -764,7 +764,7 @@ export default function Navigation() {
                     placeholder="Search modules..."
                     value={mobileSearchQuery}
                     onChange={(e) => setMobileSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-800/50 border border-white/[0.08] text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/10 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.08] text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-white/[0.15] focus:ring-1 focus:ring-white/[0.08] transition-colors ease-smooth"
                     aria-label="Search navigation modules"
                   />
                   {mobileSearchQuery && (
@@ -794,7 +794,7 @@ export default function Navigation() {
                         <Link
                           key={mod.href}
                           href={mod.href}
-                          className="block px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 hover:text-white active:bg-slate-700/70 transition-colors text-sm font-medium"
+                          className="block px-3 py-2 rounded-lg text-slate-300 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           {mod.label}
@@ -857,7 +857,7 @@ export default function Navigation() {
                               <Link
                                 key={item.href}
                                 href={item.href}
-                                className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-white active:bg-slate-700/70 transition-colors touch-target"
+                                className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors touch-target"
                                 onClick={() => setIsMenuOpen(false)}
                               >
                                 <div className="flex items-center justify-between">
@@ -914,7 +914,7 @@ export default function Navigation() {
                     <h3 className="text-slate-300 text-xs uppercase tracking-widest font-medium mb-3">Admin</h3>
                     <Link
                       href="/admin"
-                      className="block px-3 py-2.5 rounded-lg text-amber-400 hover:bg-slate-700/50 hover:text-amber-300 transition-colors text-sm font-medium"
+                      className="block px-3 py-2.5 rounded-lg text-amber-400 hover:bg-white/[0.05] hover:text-amber-300 transition-colors text-sm font-medium"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Admin Panel
@@ -923,9 +923,9 @@ export default function Navigation() {
                 )}
 
                 {/* Global Search link (mobile) */}
-                <div className="pt-4 border-t border-slate-700/50">
+                <div className="pt-4 border-t border-white/[0.06]">
                   <button
-                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-white active:bg-slate-700/70 transition-colors text-sm font-medium touch-target"
+                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium touch-target"
                     onClick={() => {
                       setIsMenuOpen(false);
                       setTimeout(() => {
@@ -947,17 +947,17 @@ export default function Navigation() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                     </svg>
                     Global Search
-                    <kbd className="ml-auto px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px] font-mono text-slate-500">
+                    <kbd className="ml-auto px-1.5 py-0.5 bg-white/[0.03] border border-white/[0.08] rounded text-[10px] font-mono text-slate-500">
                       Ctrl+K
                     </kbd>
                   </button>
                 </div>
 
                 {/* Reading List link (mobile) */}
-                <div className="pt-4 border-t border-slate-700/50">
+                <div className="pt-4 border-t border-white/[0.06]">
                   <Link
                     href="/reading-list"
-                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-white active:bg-slate-700/70 transition-colors text-sm font-medium touch-target"
+                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium touch-target"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <svg
@@ -979,13 +979,13 @@ export default function Navigation() {
                 </div>
 
                 {/* Accessibility */}
-                <div className="pt-4 border-t border-slate-700/50">
+                <div className="pt-4 border-t border-white/[0.06]">
                   <button
                     onClick={toggleHighContrast}
                     className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors touch-target ${
                       isHighContrast
                         ? 'text-slate-200 bg-slate-700/50'
-                        : 'text-slate-200 hover:bg-slate-700/50 hover:text-white'
+                        : 'text-slate-200 hover:bg-white/[0.05] hover:text-white'
                     }`}
                     aria-pressed={isHighContrast}
                   >
@@ -1005,7 +1005,7 @@ export default function Navigation() {
                 </div>
 
                 {/* Auth Section */}
-                <div className="pt-4 border-t border-slate-700/50 space-y-2 pb-4">
+                <div className="pt-4 border-t border-white/[0.06] space-y-2 pb-4">
                   {!isPro && (
                     <Link
                       href="/pricing"
@@ -1021,7 +1021,7 @@ export default function Navigation() {
                         signOut();
                         setIsMenuOpen(false);
                       }}
-                      className="w-full text-sm py-3 px-4 rounded-lg border border-white/[0.08] text-slate-200 hover:bg-slate-700/50 hover:text-white active:bg-slate-700/70 transition-colors touch-target"
+                      className="w-full text-sm py-3 px-4 rounded-lg border border-white/[0.08] text-slate-200 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors touch-target"
                     >
                       Sign Out
                     </button>
@@ -1029,7 +1029,7 @@ export default function Navigation() {
                     <>
                       <Link
                         href="/login"
-                        className="block text-sm py-3 px-4 text-center rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-white active:bg-slate-700/70 transition-colors touch-target"
+                        className="block text-sm py-3 px-4 text-center rounded-lg text-slate-200 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors touch-target"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Sign In
