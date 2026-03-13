@@ -199,7 +199,7 @@ export default function SpaceLaunchCostComparisonPage() {
               {/* 1. Introduction                     */}
               {/* ──────────────────────────────────── */}
               <section id="introduction" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Introduction
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -232,7 +232,7 @@ export default function SpaceLaunchCostComparisonPage() {
               {/* 2. The Cost Revolution               */}
               {/* ──────────────────────────────────── */}
               <section id="cost-revolution" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   The Launch Cost Revolution
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -303,7 +303,7 @@ export default function SpaceLaunchCostComparisonPage() {
               {/* 3. Vehicle Comparison                */}
               {/* ──────────────────────────────────── */}
               <section id="vehicle-comparison" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Vehicle-by-Vehicle Comparison
                 </h2>
                 <div className="space-y-6 text-star-200 leading-relaxed text-lg">
@@ -419,7 +419,7 @@ export default function SpaceLaunchCostComparisonPage() {
               {/* 4. Cost Per Kilogram Analysis        */}
               {/* ──────────────────────────────────── */}
               <section id="cost-per-kg" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Cost Per Kilogram Analysis
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -521,7 +521,7 @@ export default function SpaceLaunchCostComparisonPage() {
               {/* 5. Rideshare & Smallsat Pricing      */}
               {/* ──────────────────────────────────── */}
               <section id="rideshare" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Rideshare &amp; Smallsat Pricing
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -579,7 +579,7 @@ export default function SpaceLaunchCostComparisonPage() {
               {/* 6. Government Contract Pricing       */}
               {/* ──────────────────────────────────── */}
               <section id="government-pricing" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Government Contract Pricing
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -641,7 +641,7 @@ export default function SpaceLaunchCostComparisonPage() {
               {/* 7. Hidden Costs                      */}
               {/* ──────────────────────────────────── */}
               <section id="hidden-costs" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Hidden Costs &amp; Total Mission Cost
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -711,7 +711,7 @@ export default function SpaceLaunchCostComparisonPage() {
               {/* 8. Cost Trends & Future Outlook      */}
               {/* ──────────────────────────────────── */}
               <section id="cost-trends" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Cost Trends &amp; Future Outlook
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -768,7 +768,7 @@ export default function SpaceLaunchCostComparisonPage() {
               {/* 9. Choosing a Launch Provider        */}
               {/* ──────────────────────────────────── */}
               <section id="choosing" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Choosing a Launch Provider
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -815,7 +815,7 @@ export default function SpaceLaunchCostComparisonPage() {
               {/* 10. SpaceNexus CTA                   */}
               {/* ──────────────────────────────────── */}
               <section id="spacenexus" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Plan Missions on SpaceNexus
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -860,7 +860,7 @@ export default function SpaceLaunchCostComparisonPage() {
               {/* FAQ                                  */}
               {/* ──────────────────────────────────── */}
               <section className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Frequently Asked Questions
                 </h2>
                 <div className="space-y-3">
@@ -887,7 +887,7 @@ export default function SpaceLaunchCostComparisonPage() {
               {/* Newsletter CTA                       */}
               {/* ──────────────────────────────────── */}
               <section className="card p-8 md:p-12 text-center glow-border">
-                <h2 className="text-display-sm font-display font-bold text-white mb-4">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-4">
                   Optimize Your Launch Strategy
                 </h2>
                 <p className="text-star-200 text-lg mb-8 max-w-2xl mx-auto">

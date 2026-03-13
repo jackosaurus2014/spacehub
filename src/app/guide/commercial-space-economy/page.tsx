@@ -201,7 +201,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* 1. Introduction                     */}
               {/* ──────────────────────────────────── */}
               <section id="introduction" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Introduction
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -236,7 +236,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* 2. Commercial vs. Government         */}
               {/* ──────────────────────────────────── */}
               <section id="commercial-vs-government" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Commercial vs. Government Space
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -292,7 +292,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* 3. Satellite Broadband               */}
               {/* ──────────────────────────────────── */}
               <section id="satellite-broadband" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Satellite Broadband: The Dominant Growth Engine
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -384,7 +384,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* 4. Earth Observation & Analytics     */}
               {/* ──────────────────────────────────── */}
               <section id="earth-observation" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Earth Observation &amp; Geospatial Analytics
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -461,7 +461,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* 5. Commercial Launch                 */}
               {/* ──────────────────────────────────── */}
               <section id="commercial-launch" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Commercial Launch Services
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -520,7 +520,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* 6. Satellite Manufacturing           */}
               {/* ──────────────────────────────────── */}
               <section id="manufacturing" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Satellite Manufacturing
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -561,7 +561,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* 7. In-Space Services                 */}
               {/* ──────────────────────────────────── */}
               <section id="in-space-services" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   In-Space Services: Servicing, Manufacturing &amp; Logistics
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -629,7 +629,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* 8. Commercial Space Stations         */}
               {/* ──────────────────────────────────── */}
               <section id="space-stations" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Commercial Space Stations
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -682,7 +682,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* 9. The Startup Ecosystem             */}
               {/* ──────────────────────────────────── */}
               <section id="startups" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   The Space Startup Ecosystem
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -750,7 +750,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* 10. Space Business Models            */}
               {/* ──────────────────────────────────── */}
               <section id="business-models" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Space Business Models
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -810,7 +810,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* 11. Business Opportunities           */}
               {/* ──────────────────────────────────── */}
               <section id="opportunities" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Business Opportunities in the Space Economy
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -881,7 +881,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* 12. SpaceNexus CTA                   */}
               {/* ──────────────────────────────────── */}
               <section id="spacenexus" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Explore the Space Economy on SpaceNexus
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -925,7 +925,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* FAQ                                  */}
               {/* ──────────────────────────────────── */}
               <section className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Frequently Asked Questions
                 </h2>
                 <div className="space-y-3">
@@ -952,7 +952,7 @@ export default function CommercialSpaceEconomyPage() {
               {/* Newsletter CTA                       */}
               {/* ──────────────────────────────────── */}
               <section className="card p-8 md:p-12 text-center glow-border">
-                <h2 className="text-display-sm font-display font-bold text-white mb-4">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-4">
                   Navigate the Commercial Space Economy
                 </h2>
                 <p className="text-star-200 text-lg mb-8 max-w-2xl mx-auto">

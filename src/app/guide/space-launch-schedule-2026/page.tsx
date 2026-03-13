@@ -99,10 +99,10 @@ export default function SpaceLaunchSchedule2026Page() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <header className="mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
               2026 Space Launch Schedule: Every Mission This Year
             </h1>
-            <p className="text-lg text-slate-300 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <p className="text-lg text-slate-300 leading-relaxed">
               A comprehensive, continuously updated guide to every orbital and suborbital launch
               planned for 2026 — from SpaceX Falcon 9 rideshares to Ariane 6 commercial flights.
             </p>

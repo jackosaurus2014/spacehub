@@ -153,10 +153,10 @@ export default function SpaceBusinessOpportunitiesPage() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <header className="mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Space Business Opportunities in 2026: Complete Industry Guide
             </h1>
-            <p className="text-lg text-slate-300 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <p className="text-lg text-slate-300 leading-relaxed">
               The space economy has crossed $630 billion and is accelerating. This guide maps every major
               business opportunity — from billion-dollar government contracts to emerging startup niches — and
               shows you how to position your company to capture market share.

@@ -156,10 +156,10 @@ export default function SpaceEconomyInvestmentPage() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <header className="mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Investing in the Space Economy: Complete 2026 Guide
             </h1>
-            <p className="text-lg text-slate-300 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <p className="text-lg text-slate-300 leading-relaxed">
               The space economy is one of the most compelling investment themes of the decade, projected
               to nearly triple from $630 billion to $1.8 trillion by 2035. This guide covers every
               avenue for investing in space — from public stocks and ETFs to venture capital and emerging

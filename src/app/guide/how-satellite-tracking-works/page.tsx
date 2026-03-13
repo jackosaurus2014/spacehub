@@ -202,7 +202,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 1. Introduction                     */}
               {/* ──────────────────────────────────── */}
               <section id="introduction" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Introduction
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -236,7 +236,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 2. Orbital Mechanics Basics          */}
               {/* ──────────────────────────────────── */}
               <section id="orbital-mechanics" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Orbital Mechanics Basics
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -320,7 +320,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 3. Types of Orbits                   */}
               {/* ──────────────────────────────────── */}
               <section id="orbit-types" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Types of Orbits
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -391,7 +391,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 4. Tracking Methods                  */}
               {/* ──────────────────────────────────── */}
               <section id="tracking-methods" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Satellite Tracking Methods
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -466,7 +466,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 5. Space Surveillance Networks       */}
               {/* ──────────────────────────────────── */}
               <section id="ssn" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Space Surveillance Networks
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -524,7 +524,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 6. TLE Data Explained                */}
               {/* ──────────────────────────────────── */}
               <section id="tle-data" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   TLE Data Explained
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -585,7 +585,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 7. Orbit Prediction & Propagation    */}
               {/* ──────────────────────────────────── */}
               <section id="prediction" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Orbit Prediction &amp; Propagation
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -650,7 +650,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 8. Conjunction Assessment            */}
               {/* ──────────────────────────────────── */}
               <section id="conjunction" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Conjunction Assessment &amp; Collision Avoidance
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -693,7 +693,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 9. Commercial Tracking Services      */}
               {/* ──────────────────────────────────── */}
               <section id="commercial-tracking" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Commercial Tracking Services
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -744,7 +744,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 10. Modern Challenges                */}
               {/* ──────────────────────────────────── */}
               <section id="challenges" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Modern Challenges in Satellite Tracking
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -803,7 +803,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 11. Space Traffic Management         */}
               {/* ──────────────────────────────────── */}
               <section id="stm" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Space Traffic Management
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -843,7 +843,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 12. Tools & Platforms                 */}
               {/* ──────────────────────────────────── */}
               <section id="tools" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Satellite Tracking Tools &amp; Platforms
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -900,7 +900,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* 13. SpaceNexus CTA                   */}
               {/* ──────────────────────────────────── */}
               <section id="spacenexus" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Track Satellites on SpaceNexus
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -940,7 +940,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* FAQ                                  */}
               {/* ──────────────────────────────────── */}
               <section className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Frequently Asked Questions
                 </h2>
                 <div className="space-y-3">
@@ -967,7 +967,7 @@ export default function HowSatelliteTrackingWorksPage() {
               {/* Newsletter CTA                       */}
               {/* ──────────────────────────────────── */}
               <section className="card p-8 md:p-12 text-center glow-border">
-                <h2 className="text-display-sm font-display font-bold text-white mb-4">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-4">
                   Monitor the Space Domain
                 </h2>
                 <p className="text-star-200 text-lg mb-8 max-w-2xl mx-auto">

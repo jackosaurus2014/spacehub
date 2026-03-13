@@ -201,7 +201,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 1. Market Overview                   */}
               {/* ──────────────────────────────────── */}
               <section id="overview" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Market Overview
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -236,7 +236,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 2. Total Market Size                 */}
               {/* ──────────────────────────────────── */}
               <section id="total-market" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Total Market Size: The $630 Billion Space Economy
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -294,7 +294,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 3. Sector Breakdown                  */}
               {/* ──────────────────────────────────── */}
               <section id="sector-breakdown" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Sector Breakdown
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -378,7 +378,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 4. Satellite Services                */}
               {/* ──────────────────────────────────── */}
               <section id="satellite-services" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Satellite Services: The Largest Commercial Segment
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -454,7 +454,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 5. Launch Services Market             */}
               {/* ──────────────────────────────────── */}
               <section id="launch-market" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Launch Services Market
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -518,7 +518,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 6. Ground Equipment                  */}
               {/* ──────────────────────────────────── */}
               <section id="ground-equipment" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Ground Equipment &amp; Infrastructure
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -562,7 +562,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 7. Government Spending               */}
               {/* ──────────────────────────────────── */}
               <section id="government-spending" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Government Space Spending
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -641,7 +641,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 8. Regional Analysis                 */}
               {/* ──────────────────────────────────── */}
               <section id="regional-analysis" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Regional Analysis
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -703,7 +703,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 9. Growth Drivers                    */}
               {/* ──────────────────────────────────── */}
               <section id="growth-drivers" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Key Growth Drivers
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -780,7 +780,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 10. Market Forecasts                 */}
               {/* ──────────────────────────────────── */}
               <section id="forecasts" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Market Forecasts: The Road to $1.8 Trillion
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -851,7 +851,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 11. Investment Flows                 */}
               {/* ──────────────────────────────────── */}
               <section id="investment-flows" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Venture Capital &amp; Investment Flows
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -896,7 +896,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 12. Data Sources & Methodology       */}
               {/* ──────────────────────────────────── */}
               <section id="methodology" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Data Sources &amp; Methodology
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -940,7 +940,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* 13. SpaceNexus CTA                   */}
               {/* ──────────────────────────────────── */}
               <section id="spacenexus" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Track Space Market Data on SpaceNexus
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -990,7 +990,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* FAQ                                  */}
               {/* ──────────────────────────────────── */}
               <section className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Frequently Asked Questions
                 </h2>
                 <div className="space-y-3">
@@ -1017,7 +1017,7 @@ export default function SpaceIndustryMarketSizePage() {
               {/* Newsletter CTA                       */}
               {/* ──────────────────────────────────── */}
               <section className="card p-8 md:p-12 text-center glow-border">
-                <h2 className="text-display-sm font-display font-bold text-white mb-4">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-4">
                   Stay Ahead of the Space Economy
                 </h2>
                 <p className="text-star-200 text-lg mb-8 max-w-2xl mx-auto">

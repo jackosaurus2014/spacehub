@@ -69,7 +69,6 @@ export default function CareersPage() {
             SpaceNexus is the premier intelligence platform for the space industry.
             We&apos;re looking for passionate people to join our mission.
           </p>
-          <div className="gradient-line max-w-xs mx-auto mt-6" />
         </div>
 
         {/* Values */}

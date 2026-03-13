@@ -209,7 +209,7 @@ export default function ItarComplianceGuidePage() {
               {/* 1. Introduction                     */}
               {/* ──────────────────────────────────── */}
               <section id="introduction" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Introduction
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -245,7 +245,7 @@ export default function ItarComplianceGuidePage() {
               {/* 2. What Is ITAR?                     */}
               {/* ──────────────────────────────────── */}
               <section id="what-is-itar" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   What Is ITAR?
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -313,7 +313,7 @@ export default function ItarComplianceGuidePage() {
               {/* 3. USML Categories for Space         */}
               {/* ──────────────────────────────────── */}
               <section id="usml-categories" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   USML Categories Relevant to Space
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -386,7 +386,7 @@ export default function ItarComplianceGuidePage() {
               {/* 4. Who Must Comply                   */}
               {/* ──────────────────────────────────── */}
               <section id="who-must-comply" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Who Must Comply with ITAR
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -452,7 +452,7 @@ export default function ItarComplianceGuidePage() {
               {/* 5. DDTC Registration                 */}
               {/* ──────────────────────────────────── */}
               <section id="registration" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   DDTC Registration
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -488,7 +488,7 @@ export default function ItarComplianceGuidePage() {
               {/* 6. Licensing & Agreements            */}
               {/* ──────────────────────────────────── */}
               <section id="licensing" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Licensing &amp; Agreements
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -549,7 +549,7 @@ export default function ItarComplianceGuidePage() {
               {/* 7. Technical Data Controls           */}
               {/* ──────────────────────────────────── */}
               <section id="technical-data" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Technical Data Controls
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -617,7 +617,7 @@ export default function ItarComplianceGuidePage() {
               {/* 8. EAR vs. ITAR                      */}
               {/* ──────────────────────────────────── */}
               <section id="ear-vs-itar" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   EAR vs. ITAR: Understanding the Distinction
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -694,7 +694,7 @@ export default function ItarComplianceGuidePage() {
               {/* 9. Penalties & Enforcement           */}
               {/* ──────────────────────────────────── */}
               <section id="penalties" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Penalties &amp; Enforcement
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -762,7 +762,7 @@ export default function ItarComplianceGuidePage() {
               {/* 10. Building a Compliance Program    */}
               {/* ──────────────────────────────────── */}
               <section id="compliance-program" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Building an ITAR Compliance Program
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -851,7 +851,7 @@ export default function ItarComplianceGuidePage() {
               {/* 11. Recent Developments              */}
               {/* ──────────────────────────────────── */}
               <section id="recent-developments" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Recent Developments &amp; Trends
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -920,7 +920,7 @@ export default function ItarComplianceGuidePage() {
               {/* 12. SpaceNexus CTA                   */}
               {/* ──────────────────────────────────── */}
               <section id="spacenexus" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Track Compliance on SpaceNexus
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -965,7 +965,7 @@ export default function ItarComplianceGuidePage() {
               {/* FAQ                                  */}
               {/* ──────────────────────────────────── */}
               <section className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Frequently Asked Questions
                 </h2>
                 <div className="space-y-3">
@@ -992,7 +992,7 @@ export default function ItarComplianceGuidePage() {
               {/* Newsletter CTA                       */}
               {/* ──────────────────────────────────── */}
               <section className="card p-8 md:p-12 text-center glow-border">
-                <h2 className="text-display-sm font-display font-bold text-white mb-4">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-4">
                   Stay Compliant in the Space Industry
                 </h2>
                 <p className="text-star-200 text-lg mb-8 max-w-2xl mx-auto">

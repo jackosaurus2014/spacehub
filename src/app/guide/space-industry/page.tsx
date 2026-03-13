@@ -228,7 +228,7 @@ export default function SpaceIndustryGuidePage() {
               {/* 1. Introduction                     */}
               {/* ──────────────────────────────────── */}
               <section id="introduction" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Introduction
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -260,7 +260,7 @@ export default function SpaceIndustryGuidePage() {
               {/* 2. Market Size & Growth              */}
               {/* ──────────────────────────────────── */}
               <section id="market-size" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Space Economy Market Size &amp; Growth
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -327,7 +327,7 @@ export default function SpaceIndustryGuidePage() {
               {/* 3. Key Sectors                       */}
               {/* ──────────────────────────────────── */}
               <section id="key-sectors" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Key Sectors of the Space Industry
                 </h2>
                 <div className="space-y-6 text-star-200 leading-relaxed text-lg">
@@ -431,7 +431,7 @@ export default function SpaceIndustryGuidePage() {
               {/* 4. Major Companies                   */}
               {/* ──────────────────────────────────── */}
               <section id="major-companies" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Major Companies &amp; Market Positions
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -515,7 +515,7 @@ export default function SpaceIndustryGuidePage() {
               {/* 5. Government Programs               */}
               {/* ──────────────────────────────────── */}
               <section id="government-programs" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Government Programs &amp; Budgets
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -600,7 +600,7 @@ export default function SpaceIndustryGuidePage() {
               {/* 6. Emerging Trends                   */}
               {/* ──────────────────────────────────── */}
               <section id="emerging-trends" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Emerging Trends
                 </h2>
                 <div className="space-y-6 text-star-200 leading-relaxed text-lg">
@@ -711,7 +711,7 @@ export default function SpaceIndustryGuidePage() {
               {/* 7. Career Opportunities              */}
               {/* ──────────────────────────────────── */}
               <section id="careers" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Career Opportunities in Space
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -794,7 +794,7 @@ export default function SpaceIndustryGuidePage() {
               {/* 8. Investment Landscape              */}
               {/* ──────────────────────────────────── */}
               <section id="investment" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Investment &amp; Funding Landscape
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -854,7 +854,7 @@ export default function SpaceIndustryGuidePage() {
               {/* 9. How SpaceNexus Helps              */}
               {/* ──────────────────────────────────── */}
               <section id="spacenexus" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   How SpaceNexus Helps You Navigate the Space Industry
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
@@ -909,7 +909,7 @@ export default function SpaceIndustryGuidePage() {
               {/* 10. FAQ                              */}
               {/* ──────────────────────────────────── */}
               <section id="faq" className="mb-16 scroll-mt-24">
-                <h2 className="text-display-sm font-display font-bold text-white mb-6">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-6">
                   Frequently Asked Questions
                 </h2>
                 <div className="space-y-3">
@@ -939,7 +939,7 @@ export default function SpaceIndustryGuidePage() {
               {/* Newsletter CTA                       */}
               {/* ──────────────────────────────────── */}
               <section className="card p-8 md:p-12 text-center glow-border">
-                <h2 className="text-display-sm font-display font-bold text-white mb-4">
+                <h2 className="text-display text-2xl md:text-3xl text-white mb-4">
                   Stay Ahead of the Space Economy
                 </h2>
                 <p className="text-star-200 text-lg mb-8 max-w-2xl mx-auto">

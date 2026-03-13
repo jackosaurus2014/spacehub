@@ -138,10 +138,10 @@ export default function SpaceRegulatoryCompliancePage() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <header className="mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Space Regulatory Compliance Guide: ITAR, FCC, FAA &amp; More
             </h1>
-            <p className="text-lg text-slate-300 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <p className="text-lg text-slate-300 leading-relaxed">
               Navigating the regulatory landscape is one of the most complex challenges for space companies.
               This guide covers every major regulatory framework — from export controls and launch licensing
               to spectrum coordination and international treaties — so you can operate with confidence.
