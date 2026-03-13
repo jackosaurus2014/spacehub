@@ -18,6 +18,7 @@ export default function Error({
         >
           Try again
         </button>
+        <a href="/" className="block mt-3 text-sm text-slate-400 hover:text-white transition-colors">Go Home</a>
       </div>
     </div>
   );

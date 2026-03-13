@@ -15,6 +15,7 @@ export default function Error({
         <button onClick={reset} className="px-6 py-2 bg-white hover:bg-slate-100 text-slate-900 rounded-lg transition-colors">
           Try again
         </button>
+        <a href="/" className="block mt-3 text-sm text-slate-400 hover:text-white transition-colors">Go Home</a>
       </div>
     </div>
   );

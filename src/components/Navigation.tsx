@@ -88,7 +88,7 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Funding Tracker', href: '/funding-tracker', description: 'Live funding rounds & M&A deals' },
   { label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes across the industry' },
   { label: 'Regulatory Hub', href: '/compliance', description: 'Compliance, space law & filings' },
-  { label: 'Space Law & Treaties', href: '/space-law', description: '20+ international treaties and regulatory frameworks' },
+  { label: 'Space Law & Treaties', href: '/compliance?tab=treaties', description: '20+ international treaties and regulatory frameworks' },
   { label: 'Regulatory Risk', href: '/regulatory-risk', description: 'Jurisdiction risk scoring & alerts' },
   { label: 'Regulation Explainers', href: '/regulation-explainers', description: 'AI plain-English regulation summaries' },
   { label: 'Spectrum Management', href: '/spectrum', description: 'Allocations, auctions & filings' },

@@ -139,7 +139,7 @@ export default function NotFound() {
         .shooting-star {
           position: absolute;
           height: 1px;
-          background: linear-gradient(90deg, rgba(6,182,212,0.8), transparent);
+          background: linear-gradient(90deg, rgba(148,163,184,0.6), transparent);
           border-radius: 999px;
           pointer-events: none;
         }
@@ -149,7 +149,7 @@ export default function NotFound() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse 600px 400px at 50% 40%, rgba(6,182,212,0.06) 0%, transparent 70%), radial-gradient(ellipse 400px 300px at 30% 60%, rgba(139,92,246,0.04) 0%, transparent 70%), radial-gradient(ellipse 400px 300px at 70% 30%, rgba(59,130,246,0.04) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 600px 400px at 50% 40%, rgba(148,163,184,0.04) 0%, transparent 70%), radial-gradient(ellipse 400px 300px at 30% 60%, rgba(139,92,246,0.04) 0%, transparent 70%), radial-gradient(ellipse 400px 300px at 70% 30%, rgba(59,130,246,0.04) 0%, transparent 70%)',
         }}
       />
 
@@ -196,25 +196,25 @@ export default function NotFound() {
 
           {/* Satellite body */}
           <div style={{ animation: 'float 6s ease-in-out infinite' }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <svg width="72" height="72" viewBox="0 0 64 64" fill="none" className="drop-shadow-[0_0_16px_rgba(6,182,212,0.5)]">
+            <svg width="72" height="72" viewBox="0 0 64 64" fill="none" className="drop-shadow-[0_0_16px_rgba(148,163,184,0.4)]">
               {/* Main body */}
-              <rect x="24" y="20" width="16" height="24" rx="2" fill="#1e293b" stroke="#06b6d4" strokeWidth="1.5" />
+              <rect x="24" y="20" width="16" height="24" rx="2" fill="#1e293b" stroke="#94a3b8" strokeWidth="1.5" />
               {/* Solar panels */}
-              <rect x="4" y="26" width="18" height="12" rx="1" fill="#0f172a" stroke="#06b6d4" strokeWidth="1" />
-              <rect x="42" y="26" width="18" height="12" rx="1" fill="#0f172a" stroke="#06b6d4" strokeWidth="1" />
+              <rect x="4" y="26" width="18" height="12" rx="1" fill="#0f172a" stroke="#94a3b8" strokeWidth="1" />
+              <rect x="42" y="26" width="18" height="12" rx="1" fill="#0f172a" stroke="#94a3b8" strokeWidth="1" />
               {/* Panel lines */}
-              <line x1="10" y1="26" x2="10" y2="38" stroke="#06b6d4" strokeWidth="0.5" opacity="0.5" />
-              <line x1="16" y1="26" x2="16" y2="38" stroke="#06b6d4" strokeWidth="0.5" opacity="0.5" />
-              <line x1="48" y1="26" x2="48" y2="38" stroke="#06b6d4" strokeWidth="0.5" opacity="0.5" />
-              <line x1="54" y1="26" x2="54" y2="38" stroke="#06b6d4" strokeWidth="0.5" opacity="0.5" />
+              <line x1="10" y1="26" x2="10" y2="38" stroke="#94a3b8" strokeWidth="0.5" opacity="0.5" />
+              <line x1="16" y1="26" x2="16" y2="38" stroke="#94a3b8" strokeWidth="0.5" opacity="0.5" />
+              <line x1="48" y1="26" x2="48" y2="38" stroke="#94a3b8" strokeWidth="0.5" opacity="0.5" />
+              <line x1="54" y1="26" x2="54" y2="38" stroke="#94a3b8" strokeWidth="0.5" opacity="0.5" />
               {/* Antenna */}
-              <line x1="32" y1="20" x2="32" y2="12" stroke="#06b6d4" strokeWidth="1.5" />
-              <circle cx="32" cy="10" r="2.5" fill="#0f172a" stroke="#06b6d4" strokeWidth="1" />
+              <line x1="32" y1="20" x2="32" y2="12" stroke="#94a3b8" strokeWidth="1.5" />
+              <circle cx="32" cy="10" r="2.5" fill="#0f172a" stroke="#94a3b8" strokeWidth="1" />
               {/* Signal waves (disconnected look) */}
-              <path d="M26 8a8 8 0 0 1 12 0" stroke="#06b6d4" strokeWidth="0.8" fill="none" strokeDasharray="2 2">
+              <path d="M26 8a8 8 0 0 1 12 0" stroke="#94a3b8" strokeWidth="0.8" fill="none" strokeDasharray="2 2">
                 <animate attributeName="opacity" values="0.15;0.5;0.15" dur="2.5s" repeatCount="indefinite" />
               </path>
-              <path d="M23 5a12 12 0 0 1 18 0" stroke="#06b6d4" strokeWidth="0.6" fill="none" strokeDasharray="3 3">
+              <path d="M23 5a12 12 0 0 1 18 0" stroke="#94a3b8" strokeWidth="0.6" fill="none" strokeDasharray="3 3">
                 <animate attributeName="opacity" values="0.1;0.35;0.1" dur="3s" repeatCount="indefinite" />
               </path>
               {/* Status light - warning orange blink */}
