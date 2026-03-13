@@ -162,7 +162,7 @@ export default function SocialProof() {
             What Professionals Say
           </motion.p>
           <motion.h2
-            className="text-display-sm font-display font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
+            className="text-display text-3xl md:text-4xl text-white mb-4"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -179,7 +179,7 @@ export default function SocialProof() {
           >
             SpaceNexus brings together real-time data, analytics, and tools for every role in the space industry.
           </motion.p>
-          <div className="gradient-line max-w-xs mx-auto mt-5" />
+          <div className="hidden" />
         </div>
 
         {/* Testimonial Cards — horizontal swipe on mobile, grid on desktop */}
@@ -198,10 +198,7 @@ export default function SocialProof() {
               viewport={{ once: true, amount: 0.3 }}
               data-index={i}
             >
-              {/* Gradient border effect */}
-              <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-b from-slate-600/40 via-slate-700/20 to-slate-800/10 group-hover:from-white/30 group-hover:via-blue-500/15 group-hover:to-transparent transition-all duration-500" />
-
-              <div className="relative card p-7 rounded-2xl backdrop-blur-sm h-full flex flex-col">
+              <div className="relative card-glass p-7 h-full flex flex-col">
                 {/* Large decorative quotation mark */}
                 <div className="absolute top-4 right-5 text-6xl font-serif leading-none text-slate-300/[0.07] select-none pointer-events-none">
                   &ldquo;
@@ -270,7 +267,7 @@ export default function SocialProof() {
             {['Aerospace Firms', 'Government Agencies', 'Venture Capital', 'Defense', 'Startups', 'Universities'].map((label) => (
               <span
                 key={label}
-                className="px-4 py-2 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs font-medium text-slate-400 hover:text-slate-300 hover:border-slate-600 transition-colors"
+                className="px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] text-xs font-medium text-slate-400 hover:text-slate-300 hover:border-white/[0.12] transition-all duration-200 ease-smooth"
               >
                 {label}
               </span>
@@ -280,13 +277,12 @@ export default function SocialProof() {
 
         {/* Live Usage Counter */}
         <motion.div
-          className="relative overflow-hidden card p-8 rounded-2xl mb-8"
+          className="relative overflow-hidden card-glass p-8 mb-8"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-white/[0.04] via-transparent to-blue-500/[0.04] pointer-events-none" />
           <p className="text-center text-lg font-bold text-white mb-6 relative z-10">
             The space intelligence platform
           </p>
@@ -309,14 +305,12 @@ export default function SocialProof() {
         {/* Stats Bar */}
         <motion.div
           ref={statsRef}
-          className="relative overflow-hidden card p-8 rounded-2xl"
+          className="relative overflow-hidden card-glass p-8"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 0.5 }}
         >
-          {/* Subtle background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/[0.03] via-transparent to-blue-500/[0.03] pointer-events-none" />
 
           <h3 className="text-center text-sm font-semibold text-slate-500 mb-6 uppercase tracking-widest relative z-10">
             SpaceNexus by the Numbers

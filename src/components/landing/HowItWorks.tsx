@@ -45,12 +45,11 @@ const item = {
 
 export default function HowItWorks() {
   return (
-    <section className="py-16 relative z-10 bg-slate-900/50">
+    <section className="py-20 relative z-10">
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="text-center mb-12">
-          <h2 className="text-display-sm font-display font-bold text-white mb-3">How It Works</h2>
+          <h2 className="text-display text-3xl md:text-4xl text-white mb-3">How It Works</h2>
           <p className="text-slate-400 text-lg">From sign-up to insight in under a minute</p>
-          <div className="gradient-line max-w-xs mx-auto mt-4" />
         </div>
 
         <motion.div
@@ -70,11 +69,11 @@ export default function HowItWorks() {
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
               className="group flex flex-col items-center text-center cursor-default"
             >
-              <div className="relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-white to-blue-600 flex items-center justify-center shadow-lg shadow-black/10 mb-5 group-hover:shadow-xl group-hover:shadow-black/15 transition-all duration-300 ring-4 ring-white/15 group-hover:ring-white/15">
-                <span className="absolute -top-1.5 -right-1.5 w-7 h-7 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-white/10 text-xs font-bold text-slate-200 flex items-center justify-center shadow-md">
+              <div className="relative z-10 w-20 h-20 rounded-full bg-white/[0.05] backdrop-blur-sm border border-white/[0.08] flex items-center justify-center mb-5 group-hover:border-white/15 transition-all duration-200 ease-smooth">
+                <span className="absolute -top-1.5 -right-1.5 w-7 h-7 rounded-full bg-[#050a15] border border-white/[0.12] text-xs font-bold text-slate-300 flex items-center justify-center">
                   {s.step}
                 </span>
-                <span className="text-white">{s.icon}</span>
+                <span className="text-slate-300 group-hover:text-white transition-colors duration-200">{s.icon}</span>
               </div>
               <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-white transition-colors duration-200">{s.title}</h3>
               <p className="text-sm text-slate-400 leading-relaxed max-w-xs">{s.description}</p>
@@ -85,7 +84,7 @@ export default function HowItWorks() {
         <div className="text-center mt-12">
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all duration-200 shadow-lg shadow-black/15"
+            className="inline-flex items-center gap-2 bg-white text-slate-900 font-medium text-sm py-3 px-8 rounded-lg transition-all duration-200 ease-smooth hover:bg-slate-100 hover:shadow-lg hover:shadow-white/[0.05] active:scale-[0.98]"
           >
             Get Started in 60 Seconds
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

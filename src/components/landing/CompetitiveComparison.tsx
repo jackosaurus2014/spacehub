@@ -24,19 +24,18 @@ export default function CompetitiveComparison() {
       <div className="container mx-auto px-4">
         <ScrollReveal>
           <div className="text-center mb-12">
-            <h2 className="text-display-sm font-display font-bold text-white mb-3">
+            <h2 className="text-display text-3xl md:text-4xl text-white mb-3">
               Why Space Professionals Choose SpaceNexus
             </h2>
             <p className="text-slate-400 text-lg max-w-2xl mx-auto">
               Enterprise-grade intelligence at a fraction of the cost
             </p>
-            <div className="gradient-line max-w-xs mx-auto mt-4" />
           </div>
         </ScrollReveal>
 
         {/* Desktop table */}
         <ScrollReveal delay={0.15} className="hidden md:block max-w-5xl mx-auto">
-          <div className="card overflow-hidden">
+          <div className="card-glass overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-700/50">
@@ -114,7 +113,7 @@ export default function CompetitiveComparison() {
           <div className="text-center mt-10">
             <Link
               href="/register"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all duration-300 shadow-lg shadow-black/15 hover:shadow-black/20"
+              className="inline-flex items-center gap-2 bg-white text-slate-900 font-medium text-sm py-3 px-8 rounded-lg transition-all duration-200 ease-smooth hover:bg-slate-100 hover:shadow-lg hover:shadow-white/[0.05] active:scale-[0.98]"
             >
               Start Free Today
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

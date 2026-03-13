@@ -67,18 +67,17 @@ export default function IndustrySnapshot() {
     <section className="py-16 md:py-24 relative z-10">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
-          <h2 className="text-display-sm font-display font-bold text-white mb-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+          <h2 className="text-display text-3xl md:text-4xl text-white mb-3">
             Space Industry at a Glance
           </h2>
           <p className="text-slate-400 text-lg">Key metrics updated quarterly</p>
-          <div className="gradient-line max-w-xs mx-auto mt-4" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
           {SNAPSHOT_METRICS.map((metric, i) => (
             <motion.div
               key={metric.label}
-              className="card p-4 rounded-2xl border border-slate-700/50 hover:border-white/10 transition-all duration-200"
+              className="card-glass p-4"
               variants={cardVariants}
               initial="hidden"
               whileInView="visible"

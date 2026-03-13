@@ -65,13 +65,12 @@ export default function RecentUpdates() {
       <div className="container mx-auto px-4">
         {/* Section header */}
         <div className="text-center mb-10">
-          <h2 className="text-display-sm font-display font-bold text-white mb-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+          <h2 className="text-display text-3xl md:text-4xl text-white mb-3">
             What&apos;s New on SpaceNexus
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
             Recent platform updates and feature launches
           </p>
-          <div className="gradient-line max-w-xs mx-auto mt-4" />
         </div>
 
         {/* Updates timeline */}

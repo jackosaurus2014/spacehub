@@ -162,13 +162,7 @@ export default function KPIStrip() {
       className="py-6 md:py-8 relative z-10"
     >
       <div className="container mx-auto px-4">
-        <div
-          className="rounded-2xl border border-slate-700/50 backdrop-blur-sm overflow-hidden"
-          style={{
-            background:
-              'linear-gradient(145deg, rgba(30, 41, 59, 0.5) 0%, rgba(51, 65, 85, 0.3) 50%, rgba(30, 41, 59, 0.5) 100%)',
-          }}
-        >
+        <div className="card-glass overflow-hidden">
           <div className="overflow-x-auto md:overflow-x-visible scrollbar-hide">
             <div className="grid grid-cols-3 md:grid-cols-6 min-w-0 divide-x divide-slate-700/30">
               {KPI_METRICS.map((metric) => (
