@@ -65,38 +65,41 @@ function HeroReveal({ children, delay, className = '' }: { children: React.React
 export default function LandingHero() {
   return (
     <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Video Background */}
-      <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover"
-          poster="/SpaceNexus%20background.jpg"
-        >
-          <source src="/Space_Station_Docking_and_Solar_Array.mp4" type="video/mp4" />
-        </video>
-        {/* Dark gradient overlay on video */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#050a15]/80 via-[#050a15]/60 to-[#050a15]/95" />
-      </div>
+      {/* Gradient Mesh Background — replaces video for faster load and modern aesthetic */}
+      <div className="absolute inset-0 z-0 hero-gradient-mesh hero-noise" />
 
-      {/* Subtle atmospheric accent — single, restrained */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-slate-400/5 rounded-full blur-[200px] pointer-events-none z-[1]" />
+      {/* Grid pattern overlay for depth */}
+      <div
+        className="absolute inset-0 z-[1] pointer-events-none opacity-[0.03]"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+          backgroundSize: '64px 64px',
+        }}
+      />
+
+      {/* Subtle atmospheric accent orbs */}
+      <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-blue-500/[0.04] rounded-full blur-[150px] pointer-events-none z-[1]" />
+      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet-500/[0.03] rounded-full blur-[120px] pointer-events-none z-[1]" />
 
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
-          {/* Headline — clean Inter, tight tracking */}
-          <HeroReveal delay={0.3} className="mb-6">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.05] text-white">
+          {/* Badge */}
+          <HeroReveal delay={0.2} className="mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs text-slate-400 font-medium tracking-wide">Live data from 50+ sources</span>
+            </div>
+          </HeroReveal>
+
+          {/* Headline — clean Inter, tight tracking, display style */}
+          <HeroReveal delay={0.35} className="mb-6">
+            <h1 className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white">
               Space Industry<br />Intelligence Platform
             </h1>
           </HeroReveal>
 
-          {/* Subtitle -- condensed value proposition */}
+          {/* Subtitle — condensed value proposition */}
           <HeroReveal delay={0.5} className="mb-10">
             <p className="text-base md:text-lg text-slate-400 max-w-xl mx-auto leading-relaxed">
               Real-time data, interactive tools, regulatory intelligence, and market
@@ -105,17 +108,18 @@ export default function LandingHero() {
           </HeroReveal>
 
           {/* CTA Buttons — clean, minimal */}
-          <HeroReveal delay={0.7} className="mb-6">
+          <HeroReveal delay={0.65} className="mb-6">
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/mission-control?utm_source=homepage&utm_medium=hero&utm_campaign=explore"
-                className="bg-white text-slate-900 font-medium text-sm py-3 px-8 rounded-lg transition-all duration-200 hover:bg-slate-100 active:scale-[0.98] inline-flex items-center justify-center"
+                className="bg-white text-slate-900 font-medium text-sm py-3 px-8 rounded-lg transition-all duration-200 ease-smooth hover:bg-slate-100 hover:shadow-lg hover:shadow-white/[0.05] active:scale-[0.98] inline-flex items-center justify-center ring-glow"
               >
                 Get Started
+                <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
               </Link>
               <Link
                 href="/pricing?utm_source=homepage&utm_medium=hero&utm_campaign=freetrial"
-                className="border border-white/20 text-white font-medium text-sm py-3 px-8 rounded-lg transition-all duration-200 hover:bg-white/10 active:scale-[0.98] inline-flex items-center justify-center"
+                className="border border-white/20 text-white font-medium text-sm py-3 px-8 rounded-lg transition-all duration-200 ease-smooth hover:bg-white/10 hover:border-white/30 active:scale-[0.98] inline-flex items-center justify-center ring-glow"
               >
                 View Pricing
               </Link>
@@ -123,9 +127,9 @@ export default function LandingHero() {
           </HeroReveal>
 
           {/* Trust micro-copy */}
-          <HeroReveal delay={0.85} className="mb-4">
-            <p className="text-xs text-slate-400 flex items-center justify-center gap-2 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-              <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <HeroReveal delay={0.75} className="mb-4">
+            <p className="text-xs text-slate-500 flex items-center justify-center gap-2">
+              <svg className="w-3.5 h-3.5 text-emerald-400/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
               No credit card required &middot; 14-day free trial &middot; Cancel anytime
@@ -133,28 +137,28 @@ export default function LandingHero() {
           </HeroReveal>
 
           {/* Secondary links */}
-          <HeroReveal delay={0.9} className="mb-14">
+          <HeroReveal delay={0.85} className="mb-16">
             <div className="flex gap-6 justify-center">
               <Link
                 href="/register?utm_source=homepage&utm_medium=hero&utm_campaign=signup"
-                className="text-slate-400 hover:text-white text-sm transition-colors"
+                className="text-slate-500 hover:text-white text-sm transition-colors duration-200"
               >
                 Create Free Account
               </Link>
-              <span className="text-slate-600">·</span>
+              <span className="text-slate-700">·</span>
               <Link
                 href="/news?utm_source=homepage&utm_medium=hero&utm_campaign=news"
-                className="text-slate-400 hover:text-white text-sm transition-colors"
+                className="text-slate-500 hover:text-white text-sm transition-colors duration-200"
               >
                 Browse News
               </Link>
             </div>
           </HeroReveal>
 
-          {/* Animated Platform Stats */}
-          <HeroReveal delay={1.1}>
+          {/* Animated Platform Stats — glassmorphism cards */}
+          <HeroReveal delay={1.0}>
             <div
-              className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-3xl mx-auto"
+              className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto"
               role="list"
               aria-label="Platform statistics"
             >
@@ -169,10 +173,10 @@ export default function LandingHero() {
       {/* Scroll indicator */}
       <div
         className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float animate-reveal-up"
-        style={{ animationDelay: '1.6s', animationFillMode: 'both' }}
+        style={{ animationDelay: '1.4s', animationFillMode: 'both' }}
       >
-        <div className="w-6 h-10 border-2 border-white/15 rounded-full flex items-start justify-center p-1.5 shadow-lg shadow-black/10">
-          <div className="w-1.5 h-2.5 bg-white/70 rounded-full animate-pulse" />
+        <div className="w-6 h-10 border border-white/10 rounded-full flex items-start justify-center p-1.5">
+          <div className="w-1 h-2 bg-white/50 rounded-full animate-pulse" />
         </div>
       </div>
 
@@ -183,7 +187,7 @@ export default function LandingHero() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Individual stat counter tile                                       */
+/*  Individual stat counter tile — glassmorphism style                  */
 /* ------------------------------------------------------------------ */
 function StatCounter({
   stat,
@@ -197,9 +201,9 @@ function StatCounter({
   return (
     <div
       role="listitem"
-      className="relative rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-5 text-center hover:border-white/[0.12] transition-all duration-200"
+      className="card-glass px-4 py-5 text-center"
     >
-      <span className="text-xl mb-1 block" aria-hidden="true">{stat.icon}</span>
+      <span className="text-lg mb-1 block" aria-hidden="true">{stat.icon}</span>
       <span
         ref={ref}
         className="text-2xl md:text-3xl font-semibold font-mono text-white tracking-tight"

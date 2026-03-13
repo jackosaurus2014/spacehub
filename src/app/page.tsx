@@ -53,9 +53,9 @@ const NewsTicker = nextDynamic(() => import('@/components/widgets/NewsTicker'), 
   ssr: false,
   loading: () => <div className="h-10 bg-slate-900/80 border-y border-slate-700/40" />,
 });
-const FeaturedTools = nextDynamic(() => import('@/components/landing/FeaturedTools'), {
+const BentoFeatures = nextDynamic(() => import('@/components/landing/BentoFeatures'), {
   ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-slate-800 rounded w-1/3 mx-auto mb-8"></div><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">{[1,2,3,4,5,6].map(i => <div key={i} className="h-32 bg-slate-800 rounded-xl"></div>)}</div></div></div></div>,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-slate-800 rounded w-1/3 mx-auto mb-8"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">{[1,2,3,4,5,6,7].map(i => <div key={i} className="h-[180px] bg-slate-800 rounded-2xl"></div>)}</div></div></div></div>,
 });
 const KPIStrip = nextDynamic(() => import('@/components/landing/KPIStrip'), {
   ssr: false,
@@ -191,8 +191,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Featured Engineering Tools — Quick-access for first-time visitors */}
-      <FeaturedTools />
+      {/* Platform Feature Showcase — Bento Grid */}
+      <BentoFeatures />
 
       {/* Latest from SpaceNexus — Original Content Showcase (above value prop) */}
       {topContent.length > 0 && (

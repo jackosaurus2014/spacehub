@@ -78,26 +78,25 @@ export default function LandingValueProp() {
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="text-center mb-14">
-              <h2 className="text-display-md font-display font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              <h2 className="text-display text-3xl md:text-4xl text-white mb-4">
                 What Nobody Else Offers
               </h2>
-              <p className="text-slate-300 text-lg max-w-2xl mx-auto drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+              <p className="text-slate-400 text-lg max-w-2xl mx-auto">
                 SpaceNexus fills the gap between news outlets, expensive consultants,
                 government tools, and engineering software.
               </p>
-              <div className="gradient-line max-w-xs mx-auto mt-6" />
             </div>
           </ScrollReveal>
 
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {VALUE_PILLARS.map((pillar) => (
               <StaggerItem key={pillar.title}>
-                <div className="glass-panel p-8 text-center h-full hover:border-white/10 transition-all duration-300 hover:-translate-y-1">
+                <div className="card-glass p-8 text-center h-full">
                   <div className="text-4xl mb-4">{pillar.icon}</div>
-                  <h3 className="text-xl font-display font-bold text-white mb-3">
+                  <h3 className="text-xl font-semibold text-white mb-3">
                     {pillar.title}
                   </h3>
-                  <p className="text-slate-300 text-sm leading-relaxed">
+                  <p className="text-slate-400 text-sm leading-relaxed">
                     {pillar.description}
                   </p>
                 </div>
@@ -135,21 +134,20 @@ export default function LandingValueProp() {
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="text-center mb-14">
-              <h2 className="text-display-md font-display font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              <h2 className="text-display text-3xl md:text-4xl text-white mb-4">
                 Built for Space Industry Professionals
               </h2>
-              <p className="text-slate-300 text-lg max-w-2xl mx-auto drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+              <p className="text-slate-400 text-lg max-w-2xl mx-auto">
                 Whether you&apos;re launching a satellite, evaluating a startup for
                 investment, or advising a client on ITAR compliance.
               </p>
-              <div className="gradient-line max-w-xs mx-auto mt-6" />
             </div>
           </ScrollReveal>
 
           <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto" staggerDelay={0.08}>
             {AUDIENCES.map((audience) => (
               <StaggerItem key={audience.title}>
-                <div className="glass-panel p-6 h-full hover:border-white/10 transition-all duration-300 hover:-translate-y-1">
+                <div className="card-glass p-6 h-full">
                   <div className="flex items-start gap-4">
                     <span className="text-2xl flex-shrink-0 mt-1">{audience.icon}</span>
                     <div>

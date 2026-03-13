@@ -57,8 +57,8 @@ html.high-contrast {
   --hc-text-primary: #ffffff;      /* pure white */
   --hc-text-secondary: #e2e8f0;   /* slate-200 (was slate-400) */
   --hc-text-muted: #cbd5e1;       /* slate-300 (was slate-500) */
-  --hc-border-default: rgba(6, 182, 212, 0.55); /* brighter border */
-  --hc-border-strong: rgba(6, 182, 212, 0.75);
+  --hc-border-default: rgba(148, 163, 184, 0.55); /* brighter border */
+  --hc-border-strong: rgba(148, 163, 184, 0.75);
   --hc-card-bg-alpha: 0.96;
   --hc-btn-border: rgba(148, 163, 184, 0.55);
 }
@@ -69,8 +69,8 @@ html.high-contrast {
     --hc-text-primary: #ffffff;
     --hc-text-secondary: #e2e8f0;
     --hc-text-muted: #cbd5e1;
-    --hc-border-default: rgba(6, 182, 212, 0.55);
-    --hc-border-strong: rgba(6, 182, 212, 0.75);
+    --hc-border-default: rgba(148, 163, 184, 0.55);
+    --hc-border-strong: rgba(148, 163, 184, 0.75);
     --hc-card-bg-alpha: 0.96;
     --hc-btn-border: rgba(148, 163, 184, 0.55);
   }
@@ -1207,6 +1207,102 @@ pre {
 }
 @media (prefers-reduced-motion: reduce) {
   .animate-float { animation: none; }
+}
+
+/* ——— 2026 Redesign: Gradient Mesh Hero Background ——— */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hero-gradient-mesh {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 30%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 50% at 50% 80%, rgba(59, 130, 246, 0.04) 0%, transparent 60%),
+    linear-gradient(180deg, #050a15 0%, #0a1628 50%, #050a15 100%);
+  background-size: 200% 200%;
+  animation: gradient-shift 20s ease-in-out infinite;
+}
+
+/* Noise texture overlay for depth */
+.hero-noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ——— 2026 Redesign: Glassmorphism Card ——— */
+.card-glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.card-glass:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ——— 2026 Redesign: Typography Refinements ——— */
+.text-display {
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  font-weight: 600;
+}
+
+.text-heading {
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+/* ——— 2026 Redesign: Standardized Easing ——— */
+.ease-smooth {
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Glow ring for interactive focus states */
+.ring-glow:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2), 0 0 12px 2px rgba(59, 130, 246, 0.15);
+}
+
+/* Bento grid layout */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.bento-span-2 {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  .bento-span-2 {
+    grid-column: span 1;
+  }
 }
 
 /* ——— CTA pulse glow — subtle attention draw ——— */

@@ -95,20 +95,20 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-slate-900 border-t border-slate-800 mt-auto relative">
-        {/* Top border */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-white/[0.06]" />
+      <footer className="bg-[#050a15] border-t border-white/[0.06] mt-auto relative">
+        {/* Subtle gradient glow at top */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
 
         <div className="container mx-auto px-4">
           {/* Quick CTA */}
-          <div className="py-8 border-b border-slate-800/60">
+          <div className="py-8 border-b border-white/[0.06]">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-slate-300 text-sm sm:text-base font-medium text-center sm:text-left">
+              <p className="text-slate-400 text-sm sm:text-base font-medium text-center sm:text-left">
                 Ready to explore space industry intelligence?
               </p>
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-slate-900 bg-white hover:bg-slate-100 rounded-lg transition-colors shrink-0"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-slate-900 bg-white hover:bg-slate-100 rounded-lg transition-all duration-200 ease-smooth shrink-0 hover:shadow-lg hover:shadow-white/[0.05]"
               >
                 Get Started Free
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -119,7 +119,7 @@ export default function Footer() {
           </div>
 
           {/* Mobile Quick Help — visible only on small screens */}
-          <div className="sm:hidden border-b border-slate-800/60 py-6">
+          <div className="sm:hidden border-b border-white/[0.06] py-6">
             <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-3">Quick Links</h4>
             <div className="grid grid-cols-2 gap-2">
               <Link href="/getting-started" className="flex items-center gap-2 text-slate-400 hover:text-white text-sm py-2 min-h-[44px] transition-colors">
@@ -160,11 +160,11 @@ export default function Footer() {
                 height={70}
                 className="h-8 w-auto mb-3 opacity-80"
               />
-              <p className="text-slate-400 text-xs uppercase tracking-wider font-medium mb-1">
+              <p className="text-slate-500 text-xs uppercase tracking-wider font-medium mb-1">
                 Space Industry Intelligence Platform
               </p>
-              <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                Your gateway to the space industry. Real-time data, market intelligence, and expert insights.
+              <p className="text-slate-500 text-sm leading-relaxed mb-4">
+                Real-time data, market intelligence, and expert insights for space professionals.
               </p>
               {/* Social links */}
               <div className="flex items-center gap-3 mb-4">
@@ -235,7 +235,7 @@ export default function Footer() {
           </div>
 
           {/* Bottom bar */}
-          <div className="border-t border-slate-800/60 py-5 flex flex-col md:flex-row items-center justify-between gap-4 pb-24 lg:pb-5">
+          <div className="border-t border-white/[0.06] py-5 flex flex-col md:flex-row items-center justify-between gap-4 pb-24 lg:pb-5">
             {/* Copyright */}
             <p className="text-slate-400 text-xs">
               &copy; {new Date().getFullYear()} SpaceNexus LLC. All rights reserved.
